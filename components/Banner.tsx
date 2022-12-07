@@ -12,7 +12,6 @@ interface Props {
 
 function Banner({ randomImage }: Props) {
   const [image, setImage] = useState<Images | null>(randomImage);
-  console.log(image?.urls.regular)
   const srcImg: string = image?.urls.regular != null ? image?.urls.regular : ''
 
 
