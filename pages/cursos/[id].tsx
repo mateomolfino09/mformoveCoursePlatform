@@ -17,7 +17,7 @@ function Curso({ curso, playlist }: Props) {
   return (
     <div>
        <h1>Curso 1</h1> 
-        <Youtube playlist = {playlist.items}/>
+        <Youtube playlist = {playlist?.items}/>
     </div>
   )
 }
@@ -32,7 +32,7 @@ export const getStaticPaths = async () => {
     return { paths, fallback: false }
 }
 
-export const getStaticProps = async (context: any) => {
+export const getServerSideProps = async (context: any) => {
     const id = context.params.id;
 
     const res = await fetch(requests.fetchRickAndmort + '/' + id)

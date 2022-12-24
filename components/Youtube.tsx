@@ -9,7 +9,7 @@ interface Props {
 function Youtube({ playlist }: Props) {
   return (
     <div className='w-full h-full'>
-        {playlist.map((item) => {
+        {playlist?.map((item) => {
           const { id, snippet } = item;
           const { title, thumbnails } = snippet;
           const { medium } = thumbnails
