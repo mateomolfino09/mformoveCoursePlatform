@@ -41,15 +41,15 @@ export const getStaticProps = async (context: any) => {
 
     const data = await res.json()
 
-    const session = await getSession(context)
-    if(!session) {
-    return {
-        redirect: {
-        destination: "/src/user/login"
+    // const session = await getSession(context)
+    // if(!session) {
+    // return {
+    //     redirect: {
+    //     destination: "/src/user/login"
         
-        }
-    }
-    }
+    //     }
+    // }
+    // }
 
     return {
         props: { curso: data, playlist: dataYT }
