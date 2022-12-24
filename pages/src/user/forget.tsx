@@ -9,7 +9,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 
 
-function forget() {
+function Forget() {
     const [email, setEmail] = useState('')
     const router = useRouter()
 
@@ -98,4 +98,4 @@ function forget() {
   )
 }
 
-export default forget
+export default Forget

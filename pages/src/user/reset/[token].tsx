@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 
-function token() {
+function Token() {
     const [password, setPassword] = useState('')
     const [conPassword, setConPassword] = useState('')
     const router = useRouter()
@@ -94,4 +94,4 @@ function token() {
   )
 }
 
-export default token
+export default Token
