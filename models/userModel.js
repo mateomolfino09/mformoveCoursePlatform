@@ -18,8 +18,8 @@ const userSchema = new mongoose.Schema(
     },
     resetToken: { type: String },
     update: { type: String },
-    // validEmail: { type: String, default: "not" },
-    // emailToken: { type: String },
+    validEmail: { type: String, default: "not" },
+    emailToken: { type: String },
   },
   { timestamps: true }
 );

@@ -38,11 +38,14 @@ export default async(req,res) => {
           }
           
           if(!exists) {
-            res.status(401).json({ message: "La combinación usuario contraseña es incorrecta" })
+            return res.status(401).json({ message: "La combinación usuario contraseña es incorrecta" })
           }
     
         }
+        else {
+          return res.status(401).json({ error: "La combinación usuario contraseña es incorrecta" })
+        }
       } catch (error) {
-        console.log(error)
+        return res.status(500).json({ error: "Error inesperado. Vuelva a intentar." })
       }
 }

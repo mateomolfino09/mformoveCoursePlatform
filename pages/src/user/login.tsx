@@ -16,11 +16,29 @@ import { LiteralUnion } from "react-hook-form";
 import { BuiltInProviderType } from "next-auth/providers";
 import { GetServerSideProps } from "next";
 import { GetServerSidePropsCallback } from "next-redux-wrapper";
+import { wrapper } from "../../../redux/store";
+import { loadUser } from "../../../redux/user/userAction";
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+}
 
-const Login = ({ providers }: any) => {
+interface ProfileUser {
+  user: User | null;
+  loading: boolean;
+  error: any;
+}
 
-    const { data: session } = useSession()
+interface Props {
+  email: String;
+  user: User;
+}
+
+const Login = ({ providers, session }: any) => {
+
     const cookies = parseCookies()
 
     const [email, setEmail] = useState('')
@@ -38,7 +56,7 @@ const Login = ({ providers }: any) => {
       if (cookies?.user) {
         router.push("/")
       }
-    }, [session])
+    }, [session, router])
 
 
     const signinUser = async (e: any) => {
@@ -147,12 +165,29 @@ const Login = ({ providers }: any) => {
     )
 }
 
-export const getServerSideProps:GetServerSideProps = async (context) => {
+export const getServerSideProps = wrapper.getServerSideProps(
+  (store) =>
+    async ({ req }) => {
+      const session = await getSession({ req })
+      const providers = await getProviders()
+      const cookies = parseCookies()
 
-    const providers = await getProviders()
-    return {
-      props: { providers },
+      const user: User = cookies?.user ? JSON.parse(cookies.user) : session?.user
+
+      await store.dispatch(loadUser(user?.email, user))
+
+      return {
+        props: {
+          providers,
+          session,
+          
+        },
+      }
     }
-}
+)
+
+
+
+
 
 export default Login

@@ -5,14 +5,24 @@ import imageLoader from '../imageLoader';
 import { Images } from '../typings'
 import { FaPlay } from 'react-icons/fa'
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { loadCourse } from '../redux/courseModal/courseModalAction';
+import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../hooks/useTypeSelector';
+import { useSelector } from 'react-redux';
 
 interface Props {
     randomImage: Images;
 }
 
 function Banner({ randomImage }: Props) {
-  const [image, setImage] = useState<Images | null>(randomImage);
-  const srcImg: string = image?.urls.regular != null ? image?.urls.regular : ''
+    const [image, setImage] = useState<Images | null>(randomImage);
+    const srcImg: string = image?.urls.regular != null ? image?.urls.regular : ''
+    const dispatch = useAppDispatch()
+
+
+  const handleOpen = () => {
+    dispatch(loadCourse());
+  }
 
 
   return (
@@ -32,13 +42,14 @@ function Banner({ randomImage }: Props) {
 
 
         <div className='flex space-x-3'>
-            <button className='bannerButton bg-white text-black'> 
+            <button className='bannerButton bg-white text-black'  onClick={handleOpen}> 
                <FaPlay className='h-4 w-4 text-black md:h-7 md:w-7 '/> Play
             </button>
             <button className='bannerButton bg-[gray]/70'>
                 More Info <InformationCircleIcon className='h-5 w-5 md:h-8 md:w-8'/>
             </button>
         </div>
+        {}
     </div>
   )
 }

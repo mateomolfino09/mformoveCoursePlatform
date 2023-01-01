@@ -35,8 +35,6 @@ export const sendEmail = (options: Options) => {
     const email = process.env.EMAIL_FROM;
     const pass = process.env.EMAIL_SERVER_PASSWORD;
 
-    console.log( email, pass, 'logger' )
-
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -53,7 +51,7 @@ export const sendEmail = (options: Options) => {
   
     transporter.sendMail(mailOptions, function (err, info) {
       if (err) {
-        console.log(err)
+        console.log('error', err)
       } else {
         console.log(info)
       }

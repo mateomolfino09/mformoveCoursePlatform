@@ -9,8 +9,6 @@ export default async (req, res) => {
     if (req.method === "POST") {
       const { email } = req.body
 
-    //   console.log(email, password, firstName, lastName)
-
       const user = await User.findOne({ email: email })
 
       user.password = undefined
@@ -18,6 +16,6 @@ export default async (req, res) => {
       return res.status(200).send(user)
     }
   } catch (err) {
-    console.log(err)
+    console.log('ERROR' ,err)
   }
 }

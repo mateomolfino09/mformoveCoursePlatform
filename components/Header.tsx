@@ -6,15 +6,13 @@ import { parseCookies } from "nookies";
 import cookie from "js-cookie";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  LOAD_USER_REQUEST,
-  LOAD_USER_FAIL,
-  LOAD_USER_SUCCESS,
-} from "../slices/userSlice";
-import { RootState } from "../redux/store";
 import { Interface } from "readline";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { loadUser } from "../redux/user/userAction";
+import { State } from "../redux/reducers";
+import { useAppDispatch } from "../hooks/useTypeSelector";
+
 
 const Header = () => {
   interface User {
@@ -34,34 +32,11 @@ const Header = () => {
     email: String;
     user: User;
   }
-  const dispatch = useDispatch();
-  const LoadUser = async (email: String, user: User) => {
-    try {
-      dispatch(LOAD_USER_REQUEST());
 
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+  const dispatch = useAppDispatch()
+  const profile = useSelector((state: State) => state.profile)
+  const { loading, error, dbUser } = profile
 
-      const { data } = await axios.post(`/api/user/profile`, { email }, config);
-
-
-      dispatch(LOAD_USER_SUCCESS(data || user));
-    } catch (error: any) {
-      dispatch(
-        LOAD_USER_FAIL(
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message
-        )
-      );
-    }
-  };
-  const { loading, error, dbUser } = useSelector(
-    (state: RootState) => state.profileUser
-  );
 
   const cookies = parseCookies();
   const { data: session } = useSession();
@@ -82,7 +57,7 @@ const Header = () => {
     session ? setUserState(session.user) : setUserState(user);
 
     if (user) {
-      LoadUser(user.email, user);
+      dispatch(loadUser(user.email, user))
     }
 
     const handleScroll = () => {
@@ -98,15 +73,7 @@ const Header = () => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [router, useState]);
-
-  // useEffect(() => {
-  //     session ? setUserState(session.user) : setUserState(user)
-
-  //     // if(user) {
-  //     // }
-
-  // }, [router, userState])
+  }, [router, setUserState]);
 
   const logoutHandler = async () => {
     if (session) signOut();

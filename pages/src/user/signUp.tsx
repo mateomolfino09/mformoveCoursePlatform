@@ -56,8 +56,6 @@ function SignUp() {
           return
         }
 
-        console.log(firstname, lastname)
-
         const config = {
           headers: {
             'Content-Type': 'application/json',
@@ -197,10 +195,10 @@ function SignUp() {
                     height={150}
                 />
                 <div className='relative mt-24 space-y-8 rounded bg-black/75 py-10 px-6 md:mt-0 md:max-w-lg md:px-14'>
-                    <h1 className='text-4xl font-semibold'>Enhorabuena!</h1>
+                    <h1 className='text-4xl font-semibold'>Hemos enviado un correo a tu cuenta.</h1>
                     <div className='space-y-4'>
                         <label className='inline-block w-full'>
-                            <p>El usuario ha sido registrado con exito</p>
+                            <p>Verifica tu casilla de correos para poder confirmar tu cuenta!</p>
                         </label>
                         <Link href={"/src/user/login"}> 
                         <button type='button' className='text-white underline cursor-pointer'>Volver al Inicio</button>

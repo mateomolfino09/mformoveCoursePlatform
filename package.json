@@ -9,7 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
     "@heroicons/react": "^2.0.13",
+    "@mui/material": "^5.11.2",
     "@next-auth/mongodb-adapter": "^1.1.1",
     "@reduxjs/toolkit": "^1.9.1",
     "@types/bcrypt": "^5.0.0",
@@ -39,6 +42,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.40.0",
     "react-icons": "^4.7.1",
+    "react-player": "^2.11.0",
     "react-redux": "^8.0.5",
     "react-social-login-buttons": "^3.6.1",
     "react-toastify": "^9.1.1",

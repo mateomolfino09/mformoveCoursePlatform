@@ -5,9 +5,11 @@ import { SessionProvider } from 'next-auth/react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Provider } from 'react-redux'
-import { store }  from '../redux/store';
+import { wrapper }  from '../redux/store';
 
-function App({ Component, pageProps }: AppProps) {
+function App({ Component, ...rest }: AppProps) {
+  const { store, props } = wrapper.useWrappedStore(rest);
+  const { pageProps } = props;
   return (
       <SessionProvider session={pageProps.session}>
         <Provider store={store}>

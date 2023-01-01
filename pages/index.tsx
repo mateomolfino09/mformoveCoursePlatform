@@ -13,8 +13,13 @@ import { getSession, useSession } from 'next-auth/react'
 import { Session } from 'next-auth'
 import { parseCookies } from 'nookies'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
-
+import { useEffect, useState } from 'react'
+import { wrapper } from '../redux/store'
+import { loadUser } from '../redux/user/userAction'
+import { useSelector } from 'react-redux'
+import Modal from '../components/Modal'
+import { CourseModal } from '../redux/courseModal/courseModalTypes'
+import { State } from '../redux/reducers'
 
 interface Props {
   randomImage: Images
@@ -23,9 +28,21 @@ interface Props {
 
 }
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+}
+
 const Home = ({ randomImage, rickAndMorty
  } : Props) => {
+
+  const course: CourseModal = useSelector((state: State) => state.courseModaleducer)
+  let { loading, error,activeModal,dbCourse  } = course
   
+  const [showModal, setShowModal] = useState(false)
+  const userDB = useSelector((state: any) => state.dbUser)  
   const cookies = parseCookies()
   const {data: session} = useSession() 
   const router = useRouter()
@@ -39,7 +56,6 @@ const Home = ({ randomImage, rickAndMorty
     }
   }, [router, session, cookies])
   
-
   return (
     <div className="relative h-screen bg-gradient-to-b lg:h-[140vh]">
       <Head>
@@ -56,26 +72,54 @@ const Home = ({ randomImage, rickAndMorty
           {/* <Row title={"Mi Lista"}/> */}
         </section>
       </main>
+
+      {activeModal && <Modal />}
     </div>
  )
 }
 
-export const getServerSideProps: any = async (context: any) => {
-  const [
-    randomImage,
-    rickAndMorty
-  ] = await Promise.all([
-    fetch(requests.fetchRandomImages).then((res) => res.json()),
-    fetch(requests.fetchRickAndmort).then((res) => res.json())
-  ])
+// export const getServerSideProps: any = async (context: any) => {
+//   const [
+//     randomImage,
+//     rickAndMorty
+//   ] = await Promise.all([
+//     fetch(requests.fetchRandomImages).then((res) => res.json()),
+//     fetch(requests.fetchRickAndmort).then((res) => res.json())
+//   ])
 
-  return {
-    props: {
-      randomImage: randomImage,
-      rickAndMorty : rickAndMorty.results ,
+//   return {
+//     props: {
+//       randomImage: randomImage,
+//       rickAndMorty : rickAndMorty.results ,
+//   }
+// }
+// }
+
+export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(
+  (store) =>
+    async ({ req }) => {
+      const cookies = parseCookies()
+      const session = await getSession({ req })
+      const [
+        randomImage,
+        rickAndMorty
+      ] = await Promise.all([
+        fetch(requests.fetchRandomImages).then((res) => res.json()),
+        fetch(requests.fetchRickAndmort).then((res) => res.json())
+      ])
+
+      const user: User = cookies?.user ? JSON.parse(cookies.user) : session?.user
+
+      await store.dispatch(loadUser(user?.email, user))
+
+      return {
+        props: {
+          randomImage: randomImage,
+          rickAndMorty : rickAndMorty.results ,
+      }
+    }
   }
-}
-}
+)
 
 export default Home;
 

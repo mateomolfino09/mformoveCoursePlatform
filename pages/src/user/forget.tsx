@@ -15,9 +15,7 @@ function Forget() {
 
     const handleSubmit = async (event: any) => {
       event.preventDefault()
-      console.log(event.currentTarget)
       try {
-        console.log(email)
         const config = {
           headers: {
             "Content-Type": "application/json",
