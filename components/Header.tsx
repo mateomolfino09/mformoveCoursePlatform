@@ -5,22 +5,14 @@ import { signOut, useSession } from "next-auth/react";
 import { parseCookies } from "nookies";
 import cookie from "js-cookie";
 import { useRouter } from "next/router";
-import { useDispatch, useSelector } from "react-redux";
-import { Interface } from "readline";
-import axios from "axios";
-import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 import { loadUser } from "../redux/user/userAction";
 import { State } from "../redux/reducers";
 import { useAppDispatch } from "../hooks/useTypeSelector";
+import { User } from "../typings";
 
 
 const Header = () => {
-  interface User {
-    id: number;
-    name: string;
-    email: string;
-    password: string;
-  }
 
   interface ProfileUser {
     user: User | null;
@@ -94,10 +86,18 @@ const Header = () => {
         />
 
         <ul className="hidden space-x-4 md:flex">
-          <li className="headerLink">Home</li>
+        <Link href={'/src/admin/createAs'}><li className="headerLink">Home</li></Link>
           <li className="headerLink">Cursos</li>
           <li className="headerLink">Nuevo</li>
           <li className="headerLink">Mi Lista</li>
+          { user?.rol === 'Admin' ? (
+            <>
+            <Link href={'/src/admin/createCourse'}><li className="headerLink">Crear Curso</li></Link>
+            <Link href={'/src/admin/users'}><li className="headerLink">Usuarios</li></Link>
+            </>
+          ) : null
+          }
+
         </ul>
       </div>
       <div className="flex items-center space-x-4 text-sm font-light">

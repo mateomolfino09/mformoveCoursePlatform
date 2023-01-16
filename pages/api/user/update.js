@@ -5,7 +5,7 @@ import User from "../../../models/userModel"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
-connectDB()
+ connectDB()
 
 export default async (req, res) => {
   const { email, update } = req.body

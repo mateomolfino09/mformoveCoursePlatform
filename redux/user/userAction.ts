@@ -2,11 +2,11 @@ import {
   LOAD_USER_REQUEST,
   LOAD_USER_SUCCESS,
   LOAD_USER_FAIL,
-  User,
-  Action
+  Action,
 } from "./userTypes"
 import axios from "axios"
 import { Dispatch } from "redux"
+import { User } from "../../typings"
 
 interface Props {
   user: User
@@ -23,7 +23,7 @@ export const loadUser = (email: string, user: User) => async (dispatch: Dispatch
       },
     }
 
-    const { data } = await axios.post(`/api/user/profile`, { email }, config)
+    const { data } = await axios.post(`api/user/profile`, { email }, config)
 
     dispatch({
       type: LOAD_USER_SUCCESS,

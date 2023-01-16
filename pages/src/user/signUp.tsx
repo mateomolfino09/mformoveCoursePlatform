@@ -53,6 +53,7 @@ function SignUp() {
         setLoading(true)
 
         if(password !== conPassword) {
+          toast.error('Las contraseñas no coinciden')
           return
         }
 

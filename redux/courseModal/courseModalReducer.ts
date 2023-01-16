@@ -1,7 +1,8 @@
 import {
     LOAD_COURSE_FAIL,
     LOAD_COURSE_REQUEST,
-    LOAD_COURSE_SUCCESS,
+    LOAD_COURSE_SUCCESS, 
+    LOAD_COURSES_SUCCESS,
     Action,
     CourseModal,
     CLOSE_COURSE
@@ -10,6 +11,8 @@ import {
 
 const initialState: CourseModal = {
   dbCourse: null,
+  dbCourses: null,
+  youtubeVideo: null,
   activeModal: false,
   error: false,
   loading: false
@@ -26,6 +29,8 @@ const initialState: CourseModal = {
         return { loading: false, error: action.payload }
       case CLOSE_COURSE:
         return { loading: false,  activeModal: false}
+      case LOAD_COURSES_SUCCESS:
+          return { loading: false, dbCourses: action.payload}
       default:
       return state
     }

@@ -3,11 +3,13 @@ import {
     LOAD_COURSE_FAIL,
     LOAD_COURSE_REQUEST,
     LOAD_COURSE_SUCCESS,
+    LOAD_COURSES_SUCCESS,
     CLOSE_COURSE
   } from "./courseModalTypes"
   import axios from "axios"
 import { Dispatch } from "react"
 import requests from "../../utils/requests"
+import { User } from "../../typings"
 
   export const closeCourse = () => (dispatch: Dispatch<Action>) => {
     dispatch({ type: CLOSE_COURSE })
@@ -32,6 +34,35 @@ import requests from "../../utils/requests"
       dispatch({
         type: LOAD_COURSE_SUCCESS,
         payload: data.items,
+      })
+    } catch (error: any) {
+      dispatch({
+        type: LOAD_COURSE_FAIL,
+        payload:
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+      })
+    }
+  }
+
+  export const loadCourses = (user: User) => async (dispatch: Dispatch<Action>) => {
+    try {
+      dispatch({ type: LOAD_COURSE_REQUEST })
+  
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+  
+      const { data } = await axios.post(`api/course`, config)    
+      // const url =  `https://www.youtube.com/embed/BbTyUo99Qvs`
+
+      
+      dispatch({
+        type: LOAD_COURSES_SUCCESS,
+        payload: data,
       })
     } catch (error: any) {
       dispatch({

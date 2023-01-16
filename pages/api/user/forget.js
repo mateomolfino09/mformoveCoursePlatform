@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken"
 import absoluteUrl from "next-absolute-url"
 import { sendEmail } from "../../../helpers/sendEmail"
 
-connectDB()
+ connectDB()
 
 
 

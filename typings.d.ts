@@ -40,28 +40,6 @@ export interface Social {
     paypal_email?: any;
 }
 
-export interface User {
-    id: string;
-    updated_at: Date;
-    username: string;
-    name: string;
-    first_name: string;
-    last_name: string;
-    twitter_username: string;
-    portfolio_url: string;
-    bio: string;
-    location: string;
-    links: Links2;
-    profile_image: ProfileImage;
-    instagram_username: string;
-    total_collections: number;
-    total_likes: number;
-    total_photos: number;
-    accepted_tos: boolean;
-    for_hire: boolean;
-    social: Social;
-}
-
 export interface Images {
     id: string;
     created_at: Date;
@@ -186,3 +164,27 @@ export interface Playlist {
     pageInfo: PageInfo;
 }
 
+export interface Courses {
+    name: string
+    playlistId: string,
+    imageUrl: string,
+}
+
+export interface User {
+    _id: number;
+    name: string;
+    email: string;
+    password: string;
+    rol: string;
+  }
+
+export interface CoursesDB {
+    _id: string,
+    id: number,
+    playlist_code: string,
+    image_url: string,
+    name: string,
+    dbLikes: string,
+    likes: number,
+    users: User[]
+}

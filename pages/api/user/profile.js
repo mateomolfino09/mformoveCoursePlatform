@@ -2,7 +2,7 @@ import connectDB from "../../../config/connectDB"
 import User from "../../../models/userModel"
 import bcrypt from "bcryptjs"
 
-connectDB()
+ connectDB()
 
 export default async (req, res) => {
   try {

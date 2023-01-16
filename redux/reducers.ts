@@ -5,7 +5,7 @@ import { courseModalReducer } from "./courseModal/courseModalReducer"
 
 const reducers = combineReducers({
   profile: profileReducer,
-  courseModaleducer: courseModalReducer,
+  courseModalReducer: courseModalReducer,
 })
 
 export default reducers

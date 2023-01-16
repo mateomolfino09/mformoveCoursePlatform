@@ -12,6 +12,11 @@ const userSchema = new mongoose.Schema(
       unique: true,
       validate: [validator.isEmail, "Porfavor escriba un Email válido"],
     },
+    rol: { 
+      type: String,
+      required: true,
+      default: 'User'
+    },
     password: {
       type: String,
       required: true,
