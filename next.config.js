@@ -7,13 +7,12 @@ const nextConfig = {
     loader: "custom",
     path: "/"
   },
-  webpack: (config, options) => {
+  webpack: (config) => {
     config.experiments = {
-        ...config.experiments,
-        "topLevelAwait": true
+      topLevelAwait: true,
     }
     return config
-  },
+  }
 };
 
 module.exports = nextConfig
