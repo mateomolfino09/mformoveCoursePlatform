@@ -85,7 +85,7 @@ export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps
       const courses: any = await getCourses()
 
       const user: User = cookies?.user ? JSON.parse(cookies.user) : session?.user
-      await store.dispatch(loadUser(user?.email, user))
+      store.dispatch(loadUser(user?.email, user))
 
       return {
         props: {
