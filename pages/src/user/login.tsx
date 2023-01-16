@@ -18,13 +18,8 @@ import { GetServerSideProps } from "next";
 import { GetServerSidePropsCallback } from "next-redux-wrapper";
 import { wrapper } from "../../../redux/store";
 import { loadUser } from "../../../redux/user/userAction";
+import { User } from "../../../typings";
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-}
 
 interface ProfileUser {
   user: User | null;
