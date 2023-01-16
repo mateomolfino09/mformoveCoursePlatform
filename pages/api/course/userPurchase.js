@@ -7,7 +7,7 @@ import Course from "../../../models/courseModel"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
-await connectDB()
+connectDB()
 
 export default async (req, res) => {
   const { email, courseName } = req.body
