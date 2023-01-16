@@ -16,6 +16,7 @@ function CourseThumbnail({ items }: Props) {
         {items?.map((item: Item) => (
             <div className='relative h-28 min-w-[180px] cursor-pointer transition duration-200 ease-out md:h-36 md:min-w-[260px] md:hover:scale-105 bg-[#181818]' >
             <Image 
+                key={item.id}
                 src={item.snippet.thumbnails.standard.url} 
                 layout="fill"
                 className='rounded-sm object-cover md:rounded'

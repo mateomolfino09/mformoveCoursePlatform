@@ -32,7 +32,7 @@ interface Props {
   session: User
 }
 
-const createCourse = () => {
+const CreateCourse = () => {
 
     const [name, setName] = useState('')
     const [playlistId, setPlaylistId] = useState('')
@@ -237,4 +237,4 @@ const createCourse = () => {
 
 
 
-export default createCourse
+export default CreateCourse
