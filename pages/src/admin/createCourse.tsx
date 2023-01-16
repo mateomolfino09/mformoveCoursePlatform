@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import axios from "axios";
 import { parseCookies } from "nookies";
-import { loadUser } from "../../services/user";
+import { loadUser } from "../../api/user/loadUser";
 import { Accept, useDropzone } from 'react-dropzone'
 import { toast } from "react-toastify";
 import { ArrowUpTrayIcon, DocumentIcon } from "@heroicons/react/24/outline";
