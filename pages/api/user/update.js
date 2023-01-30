@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken"
 
  connectDB()
 
-export default async (req, res) => {
+const update = async (req, res) => {
   const { email, update } = req.body
 
   //   console.log(req.body)
@@ -34,3 +34,5 @@ export default async (req, res) => {
     console.log(err)
   }
 }
+
+export default update

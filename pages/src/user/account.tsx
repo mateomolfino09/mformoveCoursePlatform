@@ -23,7 +23,7 @@ function Account() {
     const dispatch = useAppDispatch()
     const profile = useSelector((state: State) => state.profile)
     const [userDB, setUserDB] = useState<User | null>(null)  
-    const { loading, error, dbUser } = profile
+    const { dbUser } = profile
     const cookies = parseCookies();
     const { data: session } = useSession();
     const router = useRouter();
@@ -39,11 +39,7 @@ function Account() {
 
     useEffect(() => {
         session ? setUserState(session.user) : setUserState(user);
-    
-        if (user && user.email) {
-          dispatch(loadUser(user?.email, dbUser))
-        }
-
+  
     const getUserDB = async () => {
         try {
           const config = {
@@ -54,7 +50,7 @@ function Account() {
           const email = user.email
           const { data } = await axios.post('/api/user/getUser', { email }, config)
           !userDB ? setUserDB(data) : null
-  
+          //eslint-disable-next-line react-hooks/exhaustive-deps
         ;
         } catch (error: any) {
             console.log(error.message)

@@ -105,7 +105,6 @@ const Home = ({ randomImage, rickAndMorty, courses
   }
 
   useEffect(() => {
-    user = cookies?.user ? JSON.parse(cookies.user): session?.user ? session.user : ''
     if (user === '') {
       router.push("/src/user/login")
     }

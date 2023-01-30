@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken"
 
  connectDB()
 
-export default async (req, res) => {
+const validateCourse = async (req, res) => {
   const { email, course } = req.body
 
   try {
@@ -26,3 +26,5 @@ export default async (req, res) => {
     console.log(err)
   }
 }
+
+export default validateCourse

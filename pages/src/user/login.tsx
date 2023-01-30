@@ -51,7 +51,7 @@ const Login = ({ providers, session }: any) => {
       if (cookies?.user) {
         router.push("/")
       }
-    }, [session, router])
+    }, [session, router, cookies?.user])
 
 
     const signinUser = async (e: any) => {

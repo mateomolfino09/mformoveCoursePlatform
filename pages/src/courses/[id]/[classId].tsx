@@ -51,9 +51,6 @@ function Course({ clase }: Props) {
   const router = useRouter()
   let user = cookies?.user ? JSON.parse(cookies.user): session?.user ? session.user : ''
 
-  
-  const [muted, setMuted] = useState(false);  
-
   useEffect(() => {
     if (typeof window !== "undefined") {
       setHasWindow(true);
@@ -82,7 +79,7 @@ function Course({ clase }: Props) {
       }
   }
       getUserDB()
-  }, [])
+  }, [session, router])
 
   return (
     <div className="relative h-screen bg-gradient-to-b lg:h-[140vh]">
