@@ -7,7 +7,7 @@ import absoluteUrl from "next-absolute-url"
 
 connectDB()
 
-export default async (req, res) => {
+const dislikeCourse = async (req, res) => {
     const { courseId, userId } = req.body
     try {
       if (req.method === "PUT") {
@@ -36,4 +36,4 @@ export default async (req, res) => {
       console.log(err)
       return res.status(401).json({ error: "Algo salio mal" })  }
   }
-  
+  export default dislikeCourse

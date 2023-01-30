@@ -9,7 +9,7 @@ import { sendEmail } from "../../../helpers/sendEmail"
 
 connectDB()
 
-export default async(req,res) => {
+const register = async(req,res) => {
     try {
         if (req.method === "POST") {
           const { email, password, firstname, lastname } = req.body
@@ -53,3 +53,5 @@ export default async(req,res) => {
         console.log(error.message)
       }
 }
+
+export default register

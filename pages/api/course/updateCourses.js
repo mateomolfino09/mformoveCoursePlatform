@@ -13,7 +13,7 @@ connectDB()
 
 
 
-export default async (req, res) => {
+const updateCourses =  async (req, res) => {
     try {
       if (req.method === "PUT") {
         const courses = await Courses.find({  })
@@ -68,3 +68,5 @@ export default async (req, res) => {
 
 //       }
 // }
+
+export default updateCourses

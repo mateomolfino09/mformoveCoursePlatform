@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken"
 import absoluteUrl from "next-absolute-url"
 
 connectDB()
-export default async (req, res) => {
+const token = async (req, res) => {
   try {
     if (req.method === "PUT") {
       const { token } = req.query
@@ -44,3 +44,5 @@ export default async (req, res) => {
     console.log(error)
   }
 }
+
+export default token

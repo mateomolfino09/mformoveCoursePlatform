@@ -58,7 +58,6 @@ function Course({ clase }: Props) {
     if (typeof window !== "undefined") {
       setHasWindow(true);
     }
-    user = cookies?.user ? JSON.parse(cookies.user): session?.user ? session.user : ''
     if (user === '') {
       router.push("/src/user/login")
     }

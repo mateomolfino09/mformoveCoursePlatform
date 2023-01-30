@@ -44,8 +44,6 @@ function Account() {
           dispatch(loadUser(user?.email, dbUser))
         }
 
-
-
     const getUserDB = async () => {
         try {
           const config = {
@@ -64,7 +62,7 @@ function Account() {
     }
   
     getUserDB()
-      }, [router, setUserState]);
+      }, [router, session]);
     
     const logoutHandler = async () => {
     if (session) signOut();

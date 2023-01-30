@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs"
 
  connectDB()
 
-export default async (req, res) => {
+const profile = async (req, res) => {
   try {
     if (req.method === "POST") {
       const { email } = req.body
@@ -19,3 +19,5 @@ export default async (req, res) => {
     console.log('ERROR' ,err)
   }
 }
+
+export default profile

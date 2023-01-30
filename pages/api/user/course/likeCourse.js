@@ -7,7 +7,7 @@ import absoluteUrl from "next-absolute-url"
 
 connectDB()
 
-export default async (req, res) => {
+const likeCourse = async (req, res) => {
     const { courseId, userId } = req.body
     try {
       if (req.method === "PUT") {
@@ -37,3 +37,4 @@ export default async (req, res) => {
       return res.status(401).json({ error: "Algo salio mal" })  }
   }
   
+  export default likeCourse

@@ -5,7 +5,7 @@ import { ConnectionPoolClosedEvent } from "mongodb"
 
  connectDB()
 
- export default async (req, res) => {
+ const getUser = async (req, res) => {
     try {
         if (req.method === "POST") {
             const { email } = req.body
@@ -17,3 +17,5 @@ import { ConnectionPoolClosedEvent } from "mongodb"
      console.log(err)
     }
 }
+
+export default getUser

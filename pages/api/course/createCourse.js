@@ -10,7 +10,7 @@ import { sendEmail } from "../../../helpers/sendEmail"
 
 connectDB()
 
-export default async(req,res) => {
+const createCourse = async(req,res) => {
     try {
         if (req.method === "POST") {
           const { name, playlistId, imgUrl, password, userEmail } = req.body
@@ -89,3 +89,5 @@ export default async(req,res) => {
 
       }
 }
+
+export default createCourse

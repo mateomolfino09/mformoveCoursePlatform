@@ -75,7 +75,7 @@ function ValueLabelComponent(props: SliderValueLabelProps) {
   }
   
 
-export default ({ onPlayPause, playing, onFastForward, onRewind, muted, onMute, onVolumeChange, onVolumeSeekUp, volume, playbackRate, onPlaybackRateChange , onToggleFullScreen, fullScreen, played, onSeek, onSeekMouseDown, onSeekMouseUp}: Props) =>{
+export default function PlayerControls ({ onPlayPause, playing, onFastForward, onRewind, muted, onMute, onVolumeChange, onVolumeSeekUp, volume, playbackRate, onPlaybackRateChange , onToggleFullScreen, fullScreen, played, onSeek, onSeekMouseDown, onSeekMouseUp}: Props) {
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
   const handlePopover = (event: React.MouseEvent<HTMLButtonElement>) => {

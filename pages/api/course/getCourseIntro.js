@@ -1,6 +1,6 @@
 
 
-export default async (req, res) => {
+const getCourseIntro =  async (req, res) => {
   const { youtubeURL } = req.body
   try {
     if (req.method === "POST") {
@@ -14,3 +14,5 @@ export default async (req, res) => {
     console.log(err)
     return res.status(401).json({ error: "Algo salio mal" })  }
 }
+
+export default getCourseIntro

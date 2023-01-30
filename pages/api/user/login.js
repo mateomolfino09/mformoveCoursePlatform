@@ -6,7 +6,7 @@ import connectDB from '../../../config/connectDB'
 
 connectDB()
 
-export default async(req,res) => {
+const login =  async(req,res) => {
   const { email, password } = req.body
     try {
         if (req.method === "POST") {
@@ -49,3 +49,5 @@ export default async(req,res) => {
         return res.status(500).json({ error: "Error inesperado. Vuelva a intentar." })
       }
 }
+
+export default login

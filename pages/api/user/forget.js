@@ -8,7 +8,7 @@ import { sendEmail } from "../../../helpers/sendEmail"
 
 
 
-export default async (req, res) => {
+const forget = async (req, res) => {
 
   try {
     if (req.method === "POST") {
@@ -50,3 +50,5 @@ export default async (req, res) => {
     console.log(error)
   }
 }
+
+export default forget

@@ -7,7 +7,7 @@ import absoluteUrl from "next-absolute-url"
 
 connectDB()
 
-export default async (req, res) => {
+const addToList = async (req, res) => {
     const { courseId, dbUser } = req.body
     try {
       if (req.method === "POST") {
@@ -33,3 +33,4 @@ export default async (req, res) => {
       return res.status(401).json({ error: "Algo salio mal" })  }
   }
   
+  export default addToList

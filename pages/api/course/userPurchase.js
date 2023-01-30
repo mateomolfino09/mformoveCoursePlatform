@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken"
 
 connectDB()
 
-export default async (req, res) => {
+const userPurchase = async (req, res) => {
   const { email, courseName } = req.body
 
   try {
@@ -28,3 +28,5 @@ export default async (req, res) => {
   } catch (err) {
     return res.status(401).json({ error: "Algo salio mal" })  }
 }
+
+export default userPurchase
