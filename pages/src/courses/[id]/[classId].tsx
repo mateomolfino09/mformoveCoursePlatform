@@ -91,6 +91,7 @@ function Course({ clase }: Props) {
       <header className={`bg-[#141414]`}>
         <Link href="/">
           <img
+            alt='Logo Video Stream'
             src="https://rb.gy/ulxxee"
             width={120}
             height={120}
