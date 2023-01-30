@@ -68,7 +68,7 @@ function SignUp() {
         config
         )
 
-        if (data?.message == 'Usuario registrado correctamente') {
+        if (data?.message) {
           setRegistered(true)
         }
 

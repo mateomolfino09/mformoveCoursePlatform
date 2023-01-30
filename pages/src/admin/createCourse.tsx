@@ -86,7 +86,6 @@ const CreateCourse = () => {
             const formData = new FormData();
     
             for( const file of files) {
-              console.log(file)
                 formData.append('file', file)
             }
     
@@ -98,6 +97,8 @@ const CreateCourse = () => {
                 body: formData
             }).then(r => r.json())
 
+            console.log(imageData)
+
             const imgUrl = imageData.secure_url
     
             const config = {
@@ -105,6 +106,8 @@ const CreateCourse = () => {
                   'Content-Type': 'application/json',
                 },
               }
+
+              console.log(name, playlistId, imgUrl, password, userEmail)
                 
             const { data } = await axios.post('../../api/course/createCourse',
             {name, playlistId, imgUrl, password, userEmail}, 

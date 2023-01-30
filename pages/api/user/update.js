@@ -2,6 +2,7 @@
 
 import connectDB from "../../../config/connectDB"
 import User from "../../../models/userModel"
+import Courses from "../../../models/courseModel"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
@@ -14,7 +15,12 @@ export default async (req, res) => {
 
   try {
     if (req.method === "PUT") {
-      const user = await User.findOne({ email })
+      const user = await User.findOne({ })
+      const courses = await Courses.find({ })
+
+      courses.forEach(course => {
+        newUser.courses.course = course
+      });
 
       user.update = update
 

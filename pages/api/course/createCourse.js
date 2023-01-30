@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs'
 import Courses from '../../../models/courseModel'
 import Users from '../../../models/userModel'
+import Classes from '../../../models/classModel'
 import mongoose from 'mongoose'
 import connectDB from '../../../config/connectDB'
 import jwt from "jsonwebtoken"
@@ -16,6 +17,7 @@ export default async(req,res) => {
 
         //Existe?
             const user = await Users.findOne({ email: userEmail })
+            const users = await Users.find({  })
 
             const exists = await bcrypt.compare(password, user.password)
 
@@ -29,8 +31,9 @@ export default async(req,res) => {
                 return res.status(422).json({ error: "Este usuario no tiene permisos para crear un curso" })
             }
 
+            //Busco ultimo curso
+
             const lastCourse = await Courses.find().sort({_id: -1}).limit(1);
-            console.log(JSON.stringify(lastCourse))
                 
             const newCourse = await new Courses({
             id: JSON.stringify(lastCourse) != '[]' ? lastCourse[0].id + 1 : 1,
@@ -38,11 +41,51 @@ export default async(req,res) => {
             playlist_code: playlistId,
             image_url: imgUrl       
             }).save()
+
+            //Traigo clases de YT
+
+            const youtubeURL = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${newCourse.playlist_code}&maxResults=50&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`
+
+            const initial = await fetch(youtubeURL);
+            const data = await initial.json()
+            const items = data.items
+  
+            for (let index = 0; index < items.length; index++) {
+              const item = items[index];
+  
+              const newClass = await new Classes({
+              id: index + 1,
+              name: item.snippet.title,
+              class_code: item.snippet.resourceId.videoId,
+              image_url: item.snippet.thumbnails.standard.url,
+              course: newCourse   
+              }).save()
+
+              newCourse.classes.push(newClass)
+              await newCourse.save()
+              console.log(newCourse)
+
+  
+            }
+
+            //Agrego curso a Usuarios
+
+            users.forEach(async (user) => {
+              user.courses.push({
+                course: newCourse,
+                purchased: user.rol === 'Admin' ? true : false,
+                like: false
+              })
+              //Optimizar
+              await user.save()
+            })
+
+
             res.status(200).json({ message: 'Curso creado correctamente'})
             
         }
       } catch (error) {
-        throw new Error(error)
+        console.log(error.message)
 
       }
 }

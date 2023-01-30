@@ -1,6 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
+import { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from "react"
 import { useSelector } from "react-redux"
 import { loadCourse } from "../redux/courseModal/courseModalAction"
 import { CourseModal } from "../redux/courseModal/courseModalTypes"
@@ -15,10 +15,13 @@ interface Props {
     setSelectedCourse: Dispatch<SetStateAction<CoursesDB | null>> | null,
     items: Item[] | null,
     courseDB: CoursesDB | null
+    actualCourseIndex: Number
+    setRef: any
 }
 
-function Row({ title, courses, setSelectedCourse, items, courseDB} : Props) {
+function Row({ title, courses, setSelectedCourse, items, courseDB, actualCourseIndex, setRef} : Props) {
     const rowRef = useRef<HTMLDivElement>(null);
+    const listRef = useRef<HTMLDivElement>(null);
     const[isMoved, setIsMoved] = useState(false);
     const course: CourseModal = useSelector((state: State) => state.courseModalReducer)
     let { loading, error, activeModal, dbCourse  } = course
@@ -29,18 +32,20 @@ function Row({ title, courses, setSelectedCourse, items, courseDB} : Props) {
         if(rowRef.current) {
             const { scrollLeft, clientWidth } = rowRef.current
 
-            console.log(scrollLeft, clientWidth)
-
             const scrollTo = direction === "left"
                 ? scrollLeft - clientWidth
                 : scrollLeft + clientWidth
 
             rowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' })
         }
-    } 
+    }
+    
+    useEffect(() => {
+        if(rowRef != null && setRef != null) setRef(rowRef)
+    }, [rowRef])   
 
     return (
-        <div className="h-40 space-y-0.5 md:space-y-2">
+        <div className="h-40 space-y-0.5 md:space-y-2 w-full" ref={listRef}>
                 {!activeModal ? (
                     <>
                         <h2 className="w-56 cursor-pointer text-sm font-semibold text-[#E5E5E5] transition duration-200 hover:text-white md:text-2xl" >{title}</h2>
@@ -60,13 +65,10 @@ function Row({ title, courses, setSelectedCourse, items, courseDB} : Props) {
 
                 ) : (
                     <>
-                    <div className="group relative md:-ml-2">
-                        <ChevronLeftIcon className={`ScrollIcon ${!isMoved && 'hidden'} text-[#000000]`}  onClick={() => handleClick("left")}/>
-                        <div ref={rowRef} className="scrollbar-hide flex items-center space-x-0.5 overflow-x-scroll md:space-x-2.5 md:p-2">
-                            <CourseThumbnail items={items}/>
+                    <div className="group relative w-full">
+                        <div ref={rowRef} className="scrollbar-hide flex flex-col items-center space-y-12 bg-[#181818]">
+                            <CourseThumbnail items={items} course={courseDB} actualCourseIndex={actualCourseIndex}/>
                         </div>
-
-                        <ChevronRightIcon className={`ScrollIcon right-2 text-[#000000]`} onClick={() => handleClick("right")}/>
                     </div>
                     </>
 

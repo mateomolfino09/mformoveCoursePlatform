@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const connectDB = () => {
     if(mongoose.connections[0].readyState) {
         console.log('Already connected')
+        console.log(mongoose.models)
         return
     }
 
@@ -12,6 +13,7 @@ const connectDB = () => {
     }, err => {
         if(err) throw err;
         console.log('Connected to mongodb.')
+
     })
 
 }

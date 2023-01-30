@@ -1,6 +1,6 @@
 import { MagnifyingGlassIcon, BellIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { parseCookies } from "nookies";
 import cookie from "js-cookie";
@@ -12,7 +12,7 @@ import { useAppDispatch } from "../hooks/useTypeSelector";
 import { User } from "../typings";
 
 
-const Header = () => {
+const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) => {
 
   interface ProfileUser {
     user: User | null;
@@ -65,7 +65,7 @@ const Header = () => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [router, setUserState]);
+  }, [router]);
 
   const logoutHandler = async () => {
     if (session) signOut();
@@ -86,10 +86,12 @@ const Header = () => {
         />
 
         <ul className="hidden space-x-4 md:flex">
-        <Link href={'/src/admin/createAs'}><li className="headerLink">Home</li></Link>
-          <li className="headerLink">Cursos</li>
-          <li className="headerLink">Nuevo</li>
-          <li className="headerLink">Mi Lista</li>
+        <Link href={'/'}><li className="headerLink">Home</li></Link>
+        {scrollToModa != null ? <li onClick={scrollToModa} className="headerLink">Cursos</li> : <Link href={'/'}><li className="headerLink">Cursos</li></Link>}
+        {scrollToNuevo != null ? <li onClick={scrollToNuevo} className="headerLink">Nuevo</li> : <Link href={'/'}><li className="headerLink">Nuevo</li></Link>}
+        {scrollToList != null ? <li onClick={scrollToList} className="headerLink">Mi Lista</li> : <Link href={'/'}><li className="headerLink">Mi Lista</li></Link>}
+        {scrollToMy != null ? <li onClick={scrollToMy} className="headerLink">Mis Cursos</li> : <Link href={'/'}><li className="headerLink">Mis Cursos</li></Link>}
+          
           { user?.rol === 'Admin' ? (
             <>
             <Link href={'/src/admin/createCourse'}><li className="headerLink">Crear Curso</li></Link>
@@ -105,12 +107,15 @@ const Header = () => {
         <p className="hidden lg:inline">Mis cursos</p>
         <BellIcon className="h-6 w-6" />
         {/* <Link href="/account"> */}
-        <img
-          src="https://rb.gy/g1pwyx"
-          alt=""
-          className="cursor-pointer rounded"
-          onClick={() => logoutHandler()}
-        />
+        <Link href={'src/user/account'}>
+          <img
+            src="https://rb.gy/g1pwyx"
+            alt=""
+            className="cursor-pointer rounded"
+            
+          />
+        </Link>
+
         {/* </Link> */}
       </div>
     </header>

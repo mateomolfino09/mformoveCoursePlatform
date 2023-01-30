@@ -12,8 +12,6 @@ connectDB()
 export default async (req, res) => {
   const { email, courseName } = req.body
 
-  //   console.log(req.body)
-
   try {
     if (req.method === "PUT") {
       const user = await User.findOne({ email })

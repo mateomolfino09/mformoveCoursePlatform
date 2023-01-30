@@ -1,5 +1,6 @@
 import connectDB from "../../../../config/connectDB"
 import User from "../../../../models/userModel"
+import Courses from '../../../../models/courseModel'
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import absoluteUrl from "next-absolute-url"
@@ -9,6 +10,7 @@ export default async (req, res) => {
   try {
     if (req.method === "PUT") {
       const { token } = req.query
+      const courses = await Courses.find({ })
 
       if (token) {
         const decoded = await jwt.verify(token, process.env.NEXTAUTH_SECRET)
@@ -23,6 +25,16 @@ export default async (req, res) => {
       if (user) {
         user.validEmail = "yes"
         user.emailToken = undefined
+        user.courses = [];
+
+        courses.forEach(course => {
+          user.courses.push({
+            course,
+            like: false,
+            purchased: user.rol === 'Admin' ? true : false
+          })
+        });
+
         await user.save()
 
         return res.status(200).json({ message: "Cuenta verificada con éxito" })

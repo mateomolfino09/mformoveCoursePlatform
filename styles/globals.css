@@ -32,6 +32,38 @@
     @apply w-full rounded bg-[#333] px-5 py-3.5 placeholder-[gray] outline-none focus:bg-[#454545];
   }
 
+
+.notificationWrapper {
+  @apply flex flex-row items-center justify-between w-96 bg-[#181818] px-4 py-6 text-white shadow-2xl hover:shadow-none transform-gpu translate-y-0 hover:translate-y-1 rounded-xl relative transition-all duration-500 ease-in-out;
+}
+.notificationWrapperLike {
+  @apply flex flex-row items-center justify-between w-80 bg-[#181818] px-4 py-6 text-white shadow-2xl hover:shadow-none transform-gpu translate-y-0 hover:translate-y-1 rounded-xl relative transition-all duration-500 ease-in-out;
+}
+
+.iconWrapper {
+  @apply text-xl;
+}
+
+.contentWrapper {
+  @apply flex flex-col items-start justify-center ml-4 cursor-default;
+}
+
+.contentWrapper h1 {
+  @apply text-base text-gray-200 font-semibold leading-none tracking-wider;
+}
+
+.contentWrapper p {
+  @apply text-sm text-gray-400 mt-2 leading-relaxed tracking-wider;
+}
+
+.closeIcon {
+  @apply absolute top-2 right-2 cursor-pointer text-lg;
+}
+
+.membershipLink {
+   @apply cursor-pointer text-blue-500 hover:underline
+}
+
   @keyframes spinner {
     0% {
       transform: rotate(0deg);

@@ -170,21 +170,46 @@ export interface Courses {
     imageUrl: string,
 }
 
+export interface CourseUser {
+    course: string
+    like: Boolean,
+    inList: Boolean,
+    actualChapter: number,
+    purchased: Boolean
+}
+
 export interface User {
     _id: number;
     name: string;
     email: string;
     password: string;
+    createdAt: string
     rol: string;
+    emailToken: string;
+    courses: CourseUser[]
+
   }
 
 export interface CoursesDB {
     _id: string,
     id: number,
+    createdAt: string,
+    udpatedAt: string ,
     playlist_code: string,
     image_url: string,
     name: string,
     dbLikes: string,
     likes: number,
     users: User[]
+    classes: ClassesDB[]
 }
+
+export interface ClassesDB {
+    id: number,
+    name: string,
+    createdAt: string,
+    class_code: string,
+    image_url: string,
+    likes: number,
+    course: CoursesDB
+} 

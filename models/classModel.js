@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import validator from "validator";
 
-const courseSchema = new mongoose.Schema(
+const classSchema = new mongoose.Schema(
   {
     id: {
       type: Number,
@@ -16,7 +16,7 @@ const courseSchema = new mongoose.Schema(
         immutable: true,
         default: () => Date.now()
     },
-    playlist_code: {
+    class_code: {
       type: String,
       required: true,
     },
@@ -28,21 +28,13 @@ const courseSchema = new mongoose.Schema(
       type: Number,
       default: () => 12
     },
-    users: [{
+    course: {
         type: mongoose.Types.ObjectId,
-        ref: "User"
-    }],
-    classes: [{
-      type: mongoose.Types.ObjectId,
-      ref: "Class"
-  }]
+        ref: "Course"
+    }
   },
   { timestamps: true }
 );
 
-// courseSchema.pre('validate', function(next) {
-//   this
-// })
-
-let Dataset = mongoose.models.Course || mongoose.model("Course", courseSchema);
+let Dataset = mongoose.models.Class || mongoose.model("Class", classSchema);
 export default Dataset;
