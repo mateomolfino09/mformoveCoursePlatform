@@ -17,7 +17,8 @@ function Youtube({ playlist }: Props) {
             <li key={id}>
               <h3>{title}</h3>
               <p>
-                <img width={medium.width} height={medium.height} src={medium.url}/>
+                <img width={medium.width} height={medium.height} src={medium.url} alt='icon youtube'
+/>
               </p>
             </li>
           )

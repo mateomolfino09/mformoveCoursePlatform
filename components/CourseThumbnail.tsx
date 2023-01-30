@@ -16,7 +16,7 @@ function CourseThumbnail({ items, course, actualCourseIndex }: Props) {
   return (
     <>
         {items?.map((item: Item, index) => (
-          <div className='w-full h-full flex items-center justify-center'>
+          <div className='w-full h-full flex items-center justify-center' key={item.id}>
             <div className={`w-[90%] max-h-40 rounded-sm md:rounded px-12 flex justify-center items-center space-x-12 py-8 ${items.indexOf(item) == actualCourseIndex && 'bg-[#333333]'}`} key={item.id}>
               <h3 className='text-[#d2d2d2] flex text-2xl justify-center'>{(items?.indexOf(item) + 1).toString()}</h3>
 

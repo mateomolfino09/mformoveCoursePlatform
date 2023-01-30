@@ -100,6 +100,8 @@ const Login = ({ providers, session }: any) => {
             className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6"
             width={150}
             height={150}
+            alt='icon image'
+
             />
             <div className="relative mt-24 mb-4 space-y-8 rounded bg-black/75 py-10 px-6 md:mt-0 md:max-w-lg md:px-10 md:mx-6">
                 <form className='relative space-y-8 md:mt-0 md:max-w-lg'>
