@@ -1,6 +1,6 @@
 import React, { ElementType, useState } from 'react'
-import { Button, Container, Grid, IconButton, Slider, styled, Tooltip, Typography, Popover, ValueLabelProps } from '@material-ui/core';
-import { Bookmark, FastRewind, PlayArrow, Pause, FastForward, VolumeUp, Fullscreen, VolumeOff } from '@material-ui/icons'
+import { Button, Container, Grid, IconButton, Slider, styled, Tooltip, Typography, Popover } from '@mui/material';
+import { Bookmark, FastRewind, PlayArrow, Pause, FastForward, VolumeUp, Fullscreen, VolumeOff } from '@mui/icons-material'
 import { SliderValueLabelProps } from '@mui/material';
 
 

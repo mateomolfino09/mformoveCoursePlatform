@@ -1,6 +1,6 @@
 import React, { useState, useRef, HtmlHTMLAttributes } from 'react'
 import ReactPlayer from 'react-player';
-import { Container } from '@material-ui/core';
+import { Container } from '@mui/material';
 import PlayerControls from './PlayerControls';
 import screenfull from 'screenfull'
 
