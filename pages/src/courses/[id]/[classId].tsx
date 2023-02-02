@@ -12,17 +12,11 @@ import { getLastCourseClass } from '../../../api/course/getLastCourseClass'
 import Head from 'next/head'
 import Header from '../../../../components/Header'
 import Link from 'next/link'
-import ReactPlayer from 'react-player'
-import { AiFillPlusCircle, AiOutlinePlusCircle } from 'react-icons/ai'
-import { HiHandThumbUp, HiOutlineHandThumbUp } from 'react-icons/hi2'
-import { FaPlay, FaVolumeMute, FaVolumeUp } from 'react-icons/fa'
-import { TfiArrowCircleLeft, TfiArrowCircleRight, TfiArrowLeft } from 'react-icons/tfi'
-
 import { FiArrowLeft, FiArrowRight} from 'react-icons/fi'
-import { getSourceMapRange } from 'typescript'
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
+
 import { parseCookies } from 'nookies'
 import { getSession, useSession } from 'next-auth/react'
-import { getUserFromBack } from '../../../api/user/getUserFromBack'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import { ArrowDownLeftIcon } from '@heroicons/react/24/outline'
@@ -108,23 +102,11 @@ function Course({ clase }: Props) {
         </Link>
       </header>
 
-      <div className='relative bg-gradient-to-b h-32'>
-        {hasWindow && <VideoPlayer url={`https://www.youtube.com/embed/${clase.class_code}?controls=1`}/>}
-          <div className='absolute bottom-0 flex w-full items-center justify-end space-x-4 px-10 pt-4'>
-              {/* <button className='modalButton' onClick={() => {
-                  setMuted(!muted)}}>
-                  {muted ? (
-                      <FaVolumeMute className='h-6 w-6'/>
-                  ) : (
-                      <FaVolumeUp className='h-6 w-6'/>
-                  )}
-              </button> */}
-          </div>
+      <div className='relative bg-gradient-to-b h-32 flex'>
+      <Link href={clase.id - 1 == 0 ? `/src/courses/${courseDB.id}/${clase.id}` : `/src/courses/${courseDB.id}/${clase.id - 1}`}><MdKeyboardArrowLeft className='h-24 w-24 relative top-80 left-0 text-[#e6e5e5] transform scale-90 hover:text-[#fff] hover:transform hover:scale-100 hover:bg-[gray]/5 hover:rounded-full'/></Link>
+        {hasWindow && <VideoPlayer url={`https://www.youtube.com/embed/${clase.class_code}?controls=1`} title={clase.name} img={courseDB.image_url}/>}
+        <Link href={clase.id + 1 == lastClass ? `/src/courses/${courseDB.id}/1` : `/src/courses/${courseDB.id}/${clase.id + 1}`}>            <MdKeyboardArrowRight className='h-24 w-24  relative top-80 right-0 text-[#e6e5e5] transform scale-90 hover:text-[#fff] hover:transform hover:scale-100 hover:bg-[gray]/5 hover:rounded-full'/></Link>
       </div>
-      {/* <div className='flex space-x-96 justify-center items-center bg-gray-400/5 h-20 w-[50%] mx-auto' >
-        <Link href={clase.id - 1 == 0 ? `/src/courses/${courseDB.id}/${clase.id}` : `/src/courses/${courseDB.id}/${clase.id - 1}`}><TfiArrowCircleLeft className='h-8 w-8'/></Link>
-        <Link href={clase.id + 1 == lastClass ? `/src/courses/${courseDB.id}/1` : `/src/courses/${courseDB.id}/${clase.id + 1}`}>            <TfiArrowCircleRight className='h-8 w-8'/></Link>
-          </div> */}
     </div>
   )
 }

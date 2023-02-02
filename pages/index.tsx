@@ -1,5 +1,4 @@
 import { GetServerSideProps } from 'next'
-import Head from 'next/head'
 import Header from '../components/Header'
 import Banner from '../components/Banner'
 import requests from '../utils/requests'
@@ -17,6 +16,7 @@ import { CourseModal } from '../redux/courseModal/courseModalTypes'
 import { State } from '../redux/reducers'
 import { getCourses } from './api/course/getCourses'
 import axios from 'axios'
+import Head from 'next/head'
 
 interface Props {
   randomImage: Images
