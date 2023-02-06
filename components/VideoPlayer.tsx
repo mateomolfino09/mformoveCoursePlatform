@@ -129,7 +129,6 @@ const addBookmark = () => {
   canvas.width = 160;
   canvas.height = 90;
   const ctx = canvas.getContext("2d");
-  console.log(playerRef.current ? playerRef.current.getInternalPlayer().logImaAdEvent() : null)
 
   if(playerRef.current != null) {
     // ctx.drawImage(

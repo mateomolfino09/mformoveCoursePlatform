@@ -29,7 +29,6 @@ interface Props {
 }
 
 function Course({ clase }: Props) {
-
   const courseDB = clase.course
   const lastClass = courseDB.classes.length
   const youtubeURL = `${requests.playlistYTAPI}?part=snippet&playlistId=${courseDB?.playlist_code}&maxResults=50&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`
@@ -52,6 +51,7 @@ function Course({ clase }: Props) {
     if (user === '') {
       router.push("/src/user/login")
     }
+
     const getUserDB = async () => {
       try {
         const config = {
@@ -59,19 +59,20 @@ function Course({ clase }: Props) {
               "Content-Type": "application/json",
             },
           }
+        const courseId = courseDB._id
+        const actualChapter = clase.id
         const email = user.email
         const { data } = await axios.post('/api/user/getUser', { email }, config)
+        await axios.post('/api/user/updateActualCourse', { email, courseId, actualChapter }, config)
         !userDB ? setUserDB(data) : null
 
         let courseActual = data.courses.find((course: CourseUser) => course.course === courseDB._id)
         setCourseUser(courseActual)
-        console.log(courseActual)
-
 
       } catch (error: any) {
           console.log(error.message)
       }
-  }
+    }
       getUserDB()
   }, [session, router])
 
