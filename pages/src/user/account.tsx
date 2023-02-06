@@ -68,9 +68,6 @@ function Account() {
     router.push("/src/user/login");
     };
 
-    console.log(userDB)
-
-
   return (
     <div>
         <Head>

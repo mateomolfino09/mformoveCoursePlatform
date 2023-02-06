@@ -31,9 +31,9 @@ function Banner({ randomImage }: Props) {
             <Image 
             src={srcImg}
             alt={image?.alt_description || 'image'}
-            layout="fill"
+            fill={true}
             loader={imageLoader}
-            objectFit="cover"
+            className='object-cover'
             />
         </div>
 

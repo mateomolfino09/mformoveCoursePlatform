@@ -8,7 +8,7 @@ import { getSession, useSession } from 'next-auth/react'
 import { Session } from 'next-auth'
 import { parseCookies } from 'nookies'
 import { useRouter } from 'next/router'
-import { RefObject, useEffect, useRef, useState } from 'react'
+import { RefObject, useContext, useEffect, useRef, useState } from 'react'
 import { wrapper } from '../redux/store'
 import { useSelector } from 'react-redux'
 import Modal from '../components/Modal'
@@ -17,6 +17,8 @@ import { State } from '../redux/reducers'
 import { getCourses } from './api/course/getCourses'
 import axios from 'axios'
 import Head from 'next/head'
+import { listClasses } from '@mui/material'
+import { CourseListContext } from '../hooks/courseListContext'
 
 interface Props {
   randomImage: Images
@@ -30,14 +32,13 @@ interface Props {
 const Home = ({ randomImage, rickAndMorty, courses
  } : Props) => {
   const [selectedCourse, setSelectedCourse] = useState<CoursesDB | null>(null)  
-  const [listCourses, setListCourses] = useState<CoursesDB[]>([])  
   const [myCourses, setMyCourses] = useState<CoursesDB[]>([])  
   const [nuevoCourses, setNuevoCourses] = useState<CoursesDB[]>([])  
-  const [actualCourseIndex, setActualCourseIndex] = useState<Number>(0)  
   const [refToList, setRefToList] = useState<RefObject<HTMLDivElement> | null>(null);
   const [refToMy, setRefToMy] = useState<RefObject<HTMLDivElement> | null>(null);
   const [refToModa, setRefToModa] = useState<RefObject<HTMLDivElement> | null>(null);
   const [refToNuevo, setRefToNuevo] = useState<RefObject<HTMLDivElement> | null>(null);
+  const {listCourse, setListCourse} = useContext( CourseListContext )
 
 
   const [userDB, setUserDB] = useState<User | null>(null)  
@@ -49,8 +50,6 @@ const Home = ({ randomImage, rickAndMorty, courses
   const router = useRouter()
 
   let user = cookies?.user ? JSON.parse(cookies.user): session?.user ? session.user : ''
-
-
 
   function scrollToList() {
     if(refToList?.current) {
@@ -91,15 +90,6 @@ const Home = ({ randomImage, rickAndMorty, courses
     setRefToModa(ref)
   }
 
-  function setList(courseDB: CoursesDB, list: boolean) {
-    if(!list && !listCourses.includes(courseDB)) {
-      setListCourses([...listCourses, courseDB])
-    } 
-    else if(listCourses.includes(courseDB)) {
-      setListCourses(listCourses.filter((value) => value.id != courseDB.id))
-    } 
-  }
-
   function updateUserDB(user: User) {
     setUserDB(user)
   }
@@ -125,15 +115,15 @@ const Home = ({ randomImage, rickAndMorty, courses
         const { data } = await axios.post('/api/user/getUser', { email }, config)
         !userDB ? setUserDB(data) : null
 
+       let listToSet: CoursesDB[] = []
+
         data.courses.forEach((course: CourseUser) => {
           let courseInCourseIndex = courses.findIndex((x) => {
             return  x._id === course.course
           })
-          setActualCourseIndex(userDB?.courses[courseInCourseIndex].actualChapter ? userDB?.courses[courseInCourseIndex].actualChapter - 1 : 0)
 
-          const arrCopy = [...listCourses]
+          const arrCopy = [...listToSet]
           const myCopy = [...myCourses]
-
 
           if(course.purchased) {
             let hasCourse = myCopy.filter((x, i) => x.id == courses[courseInCourseIndex].id).length != 0
@@ -149,28 +139,23 @@ const Home = ({ randomImage, rickAndMorty, courses
 
           if(course.inList) {
             let hasCourse = arrCopy.filter((x, i) => x.id == courses[courseInCourseIndex].id).length != 0
-            if(!listCourses.includes(courses[courseInCourseIndex]) && !hasCourse) {
-              setListCourses([...listCourses, courses[courseInCourseIndex]])
-            } 
-          }
-          else {
-            if(listCourses.includes(courses[courseInCourseIndex])) {
-              setListCourses(listCourses.filter((value) => value._id != course.course))
+            if(!listToSet.includes(courses[courseInCourseIndex]) && !hasCourse) {
+              listToSet.push(courses[courseInCourseIndex])
             }
           }
-        });
+        })
 
+        setListCourse([...listToSet])
 
       } catch (error: any) {
           console.log(error.message)
       }
   }
-
   getUserDB()
   // setListCourses(listCourses.filter((item, index) => listCourses.indexOf(item) === index))
 
 
-  }, [router, session, listCourses])
+  }, [router, session])
 
 
 
@@ -187,14 +172,14 @@ const Home = ({ randomImage, rickAndMorty, courses
       <main className='relative pl-4 pb-24 lg:space-y-24 lg:pl-16'>
         <Banner randomImage={randomImage}/>
         <section className='md:space-y-24 mt-48 md:mt-24 lg:mt-0'>
-          <Row title="Cursos de Moda" courses={courses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={actualCourseIndex} setRef={setRefToModaSend}/>
-          <Row title={"Nuevo"} courses={nuevoCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={actualCourseIndex} setRef={setRefToNuevoSend}/>
-          <Row title={"Mi Lista"} courses={listCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={actualCourseIndex} setRef={setRefToListSend}/>
-          <Row title={"Mis Cursos"} courses={myCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={actualCourseIndex} setRef={setRefMySend}/>
+          <Row title="Todos Los Cursos" courses={courses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToModaSend}/>
+          <Row title={"Nuevo"} courses={nuevoCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToNuevoSend}/>
+          <Row title={"Mi Lista"} courses={listCourse} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToListSend}/>
+          <Row title={"Mis Cursos"} courses={myCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefMySend}/>
         </section>
       </main>
 
-      {activeModal && <Modal courseDB={selectedCourse} user={userDB} actualCourseIndex={actualCourseIndex} setListFunc={setList} listCourses={listCourses} updateUserDB={updateUserDB} />}
+      {activeModal && <Modal courseDB={selectedCourse} user={userDB} updateUserDB={updateUserDB}/>}
     </div>
  )
 }

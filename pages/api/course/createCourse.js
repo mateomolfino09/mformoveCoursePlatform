@@ -63,8 +63,6 @@ const createCourse = async(req,res) => {
 
               newCourse.classes.push(newClass)
               await newCourse.save()
-              console.log(newCourse)
-
   
             }
 

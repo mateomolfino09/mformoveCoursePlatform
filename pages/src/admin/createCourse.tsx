@@ -106,8 +106,6 @@ const CreateCourse = () => {
                   'Content-Type': 'application/json',
                 },
               }
-
-              console.log(name, playlistId, imgUrl, password, userEmail)
                 
             const { data } = await axios.post('../../api/course/createCourse',
             {name, playlistId, imgUrl, password, userEmail}, 
