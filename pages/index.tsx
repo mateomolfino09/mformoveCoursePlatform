@@ -33,7 +33,8 @@ const Home = ({ randomImage, rickAndMorty, courses
   const [selectedCourse, setSelectedCourse] = useState<CoursesDB | null>(null)  
   const course: CourseModal = useSelector((state: State) => state.courseModalReducer)
   let { loading, error, activeModal, dbCourse, youtubeVideo  } = course
-  const userDB = useSelector((state: any) => state.dbUser)  
+  const userDB = useSelector((state: any) => state.dbUser)
+   
   const cookies = parseCookies()
   const {data: session} = useSession() 
   const router = useRouter()

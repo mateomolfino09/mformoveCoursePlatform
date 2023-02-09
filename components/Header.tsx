@@ -27,6 +27,7 @@ const Header = () => {
 
   const dispatch = useAppDispatch()
   const profile = useSelector((state: State) => state.profile)
+  
   const { loading, error, dbUser } = profile
 
 

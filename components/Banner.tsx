@@ -18,7 +18,7 @@ function Banner({ randomImage }: Props) {
     const [image, setImage] = useState<Images | null>(randomImage);
     const srcImg: string = image?.urls.regular != null ? image?.urls.regular : ''
     const dispatch = useAppDispatch()
-
+                         
 
   const handleOpen = () => {
     dispatch(loadCourse());
@@ -30,6 +30,7 @@ function Banner({ randomImage }: Props) {
         <div className='absolute top-0 left-0 h-[95vh] w-screen -z-10'>
             <Image 
             src={srcImg}
+            // src="https://www.nationalgeographic.com.es/medio/2022/12/12/camello-1_b09f28fe_221212154814_1280x720.jpg"
             alt={image?.alt_description || 'image'}
             layout="fill"
             loader={imageLoader}
