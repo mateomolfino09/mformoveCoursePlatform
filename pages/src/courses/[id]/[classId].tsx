@@ -20,6 +20,7 @@ import { getSession, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import { ArrowDownLeftIcon } from '@heroicons/react/24/outline'
+import ClassDescription from '../../../../components/ClassDescription'
 
 interface Props {
   clase: ClassesDB
@@ -35,8 +36,6 @@ function Course({ clase }: Props) {
   const [items, setItems] = useState<Item[] | null>(null)
   const [courseUser, setCourseUser] = useState<string | null>(null)
   const url =  `https://www.youtube.com/embed/${clase.class_code}?rel=0`
-  const [like, setLike] = useState<boolean>(false)
-  const [list, setList] = useState<boolean>(false)
   const [hasWindow, setHasWindow] = useState(false);
   const [userDB, setUserDB] = useState<User | null>(null)  
   const cookies = parseCookies()
@@ -103,11 +102,19 @@ function Course({ clase }: Props) {
         </Link>
       </header>
 
-      <div className='relative bg-gradient-to-b h-32 flex'>
-      <Link href={clase.id - 1 == 0 ? `/src/courses/${courseDB.id}/${clase.id}` : `/src/courses/${courseDB.id}/${clase.id - 1}`}><MdKeyboardArrowLeft className='h-24 w-24 relative top-80 left-0 text-[#e6e5e5] transform scale-90 hover:text-[#fff] hover:transform hover:scale-100 hover:bg-[gray]/5 hover:rounded-full'/></Link>
-        {hasWindow && <VideoPlayer url={`https://www.youtube.com/embed/${clase.class_code}?controls=1`} title={clase.name} img={courseDB.image_url}/>}
-        <Link href={clase.id + 1 == lastClass ? `/src/courses/${courseDB.id}/1` : `/src/courses/${courseDB.id}/${clase.id + 1}`}>            <MdKeyboardArrowRight className='h-24 w-24  relative top-80 right-0 text-[#e6e5e5] transform scale-90 hover:text-[#fff] hover:transform hover:scale-100 hover:bg-[gray]/5 hover:rounded-full'/></Link>
-      </div>
+      <main className='relative bg-gradient-to-b h-[100vh] flex flex-col'>
+        <div className='w-full h-[80%] flex flex-row'>
+          <Link href={clase.id - 1 == 0 ? `/src/courses/${courseDB.id}/${clase.id}` : `/src/courses/${courseDB.id}/${clase.id - 1}`}><MdKeyboardArrowLeft className='h-24 w-24 relative top-80 left-0 text-[#e6e5e5] transform scale-90 hover:text-[#fff] hover:transform hover:scale-100 hover:bg-[gray]/5 hover:rounded-full'/></Link>
+          {hasWindow && <VideoPlayer url={`https://www.youtube.com/embed/${clase.class_code}?controls=1`} title={clase.name} img={courseDB.image_url}/>}
+          <Link href={clase.id + 1 == lastClass ? `/src/courses/${courseDB.id}/1` : `/src/courses/${courseDB.id}/${clase.id + 1}`}>            <MdKeyboardArrowRight className='h-24 w-24  relative top-80 right-0 text-[#e6e5e5] transform scale-90 hover:text-[#fff] hover:transform hover:scale-100 hover:bg-[gray]/5 hover:rounded-full'/></Link>
+        </div>
+        <div className='w-full h-[60vh]'> 
+          <ClassDescription clase={clase} youtubeURL={youtubeURL} courseDB={courseDB}/>
+        </div>
+      </main>
+
+
+
     </div>
   )
 }
