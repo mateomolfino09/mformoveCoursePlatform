@@ -172,10 +172,10 @@ const Home = ({ randomImage, rickAndMorty, courses
       <main className='relative pl-4 pb-24 lg:space-y-24 lg:pl-16'>
         <Banner randomImage={randomImage}/>
         <section className='md:space-y-24 mt-48 md:mt-24 lg:mt-0'>
-          <Row title="Todos Los Cursos" courses={courses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToModaSend}/>
-          <Row title={"Nuevo"} courses={nuevoCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToNuevoSend}/>
-          <Row title={"Mi Lista"} courses={listCourse} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToListSend}/>
-          <Row title={"Mis Cursos"} courses={myCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefMySend}/>
+          <Row title="Todos Los Cursos" courses={courses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToModaSend} isClass={false}/>
+          <Row title={"Nuevo"} courses={nuevoCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToNuevoSend} isClass={false}/>
+          <Row title={"Mi Lista"} courses={listCourse} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToListSend} isClass={false}/>
+          <Row title={"Mis Cursos"} courses={myCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefMySend} isClass={false}/>
         </section>
       </main>
 
