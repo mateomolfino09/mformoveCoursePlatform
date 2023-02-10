@@ -92,22 +92,22 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
 
         courseInCourseIndex != null ? setActualCourseIndex(user?.courses[courseInCourseIndex].actualChapter ? user?.courses[courseInCourseIndex].actualChapter - 1 : 0) : null
 
-        const getCourseIntro = async () => {
+        const getCourseInfo = async () => {
             try {
                 const config = {
                     headers: {
                       "Content-Type": "application/json",
                     },
                   }
-                let { data } = await axios.post('/api/course/getCourseIntro', { youtubeURL }, config)
-                setUrl(`https://www.youtube.com/embed/${data.items[0].snippet.resourceId.videoId}?rel=0`) 
+                let { data } = await axios.post('/api/course/getCourseInfo', { youtubeURL }, config)
+                courseInCourseIndex != null ?  setUrl(user?.courses[courseInCourseIndex].actualChapter ? `https://www.youtube.com/embed/${data.items[user?.courses[courseInCourseIndex].actualChapter -1].snippet.resourceId.videoId}?rel=0` : '') : null
                 setItems(data.items)
 
             } catch (error: any) {
                 console.log(error.message)
             }
         }
-        getCourseIntro()
+        getCourseInfo()
         user?.courses && indexCourse != undefined && user.courses[indexCourse].like ? setLike(true) : null
         user?.courses && indexCourse != undefined && user.courses[indexCourse].inList ? setList(true) : null
 
@@ -259,7 +259,7 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
 
                 </div>
                 <div className='flex space-x-16 rounded-b-md bg-[#181818]'>
-                        <Row items={items} courseDB={courseDB} title= {items != null ? items[0].snippet.title : ''} courses={null} setSelectedCourse={null} actualCourseIndex={actualCourseIndex} setRef={null}/> 
+                        <Row items={items} courseDB={courseDB} title= {items != null ? items[0].snippet.title : ''} courses={null} setSelectedCourse={null} actualCourseIndex={actualCourseIndex} setRef={null} isClass={false}/> 
                 </div>
                 <Toaster />
             </>
