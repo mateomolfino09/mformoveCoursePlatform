@@ -21,6 +21,10 @@ const login =  async(req,res) => {
             return res.status(404).json({ message: "La combinación usuario contraseña es incorrecta" })
           }
 
+          if(user.validEmail === 'not') {
+            return res.status(404).json({ message: "Debe confirmar su cuenta antes de ingresar al sitio", validate: true })
+          }
+
           const exists = await bcrypt.compare(password, user.password)
 
           if(exists) {

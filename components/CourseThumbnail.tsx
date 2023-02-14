@@ -10,13 +10,14 @@ interface Props {
   items: Item[] | null,
   course: CoursesDB | null
   actualCourseIndex: Number
+  isClass: boolean
 } 
-function CourseThumbnail({ items, course, actualCourseIndex }: Props) {
+function CourseThumbnail({ items, course, actualCourseIndex, isClass }: Props) {
 
   return (
     <>
         {items?.map((item: Item, index) => (
-          <div className='w-full h-full flex items-center justify-center' key={item.id}>
+          <div className='w-full h-full flex items-center justify-center flex-col' key={item.id}>
             <div className={`w-[90%] max-h-40 rounded-sm md:rounded px-12 flex justify-center items-center space-x-12 py-8 ${items.indexOf(item) == actualCourseIndex && 'bg-[#333333]'}`} key={item.id}>
               <h3 className='text-[#d2d2d2] flex text-2xl justify-center'>{(items?.indexOf(item) + 1).toString()}</h3>
 
@@ -32,11 +33,13 @@ function CourseThumbnail({ items, course, actualCourseIndex }: Props) {
               </Link>
 
 
+
+
               </div>
-              <div className='flex flex-col space-y-2 max-h-40 overflow-scroll scrollbar-hide py-2'>
+              {!isClass && (<div className='flex flex-col space-y-2 max-h-40 overflow-scroll scrollbar-hide py-2'>
                 <h4 className='text-base'>{item.snippet.title}</h4>
                 <p className='text-xs text-[#d2d2d2]'>{item.snippet.description}</p>
-              </div>
+              </div>)}
             </div>
           </div>
 

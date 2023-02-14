@@ -17,9 +17,10 @@ interface Props {
     courseDB: CoursesDB | null
     actualCourseIndex: Number
     setRef: any
+    isClass: boolean
 }
 
-function Row({ title, courses, setSelectedCourse, items, courseDB, actualCourseIndex, setRef} : Props) {
+function Row({ title, courses, setSelectedCourse, items, courseDB, actualCourseIndex, setRef, isClass} : Props) {
     const rowRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
     const[isMoved, setIsMoved] = useState(false);
@@ -44,9 +45,10 @@ function Row({ title, courses, setSelectedCourse, items, courseDB, actualCourseI
         if(rowRef != null && setRef != null) setRef(rowRef)
     }, [rowRef])   
 
+
     return (
         <div className="h-40 space-y-0.5 md:space-y-2 w-full" ref={listRef}>
-                {!activeModal ? (
+                {!activeModal && !isClass ? (
                     <>
                         <h2 className="w-56 cursor-pointer text-sm font-semibold text-[#E5E5E5] transition duration-200 hover:text-white md:text-2xl" >{title}</h2>
                         <div className="group relative md:-ml-2">
@@ -67,7 +69,7 @@ function Row({ title, courses, setSelectedCourse, items, courseDB, actualCourseI
                     <>
                     <div className="group relative w-full">
                         <div ref={rowRef} className="scrollbar-hide flex flex-col items-center space-y-12 bg-[#181818]">
-                            <CourseThumbnail items={items} course={courseDB} actualCourseIndex={actualCourseIndex}/>
+                            <CourseThumbnail items={items} course={courseDB} actualCourseIndex={actualCourseIndex} isClass={isClass}/>
                         </div>
                     </div>
                     </>

@@ -32,9 +32,9 @@ function Banner({ randomImage }: Props) {
             src="https://imagenes.lainformacion.com/files/image_656_370/uploads/imagenes/2011/05/07/camello.jpg"
             // src={srcImg}
             alt={image?.alt_description || 'image'}
-            layout="fill"
+            fill={true}
             loader={imageLoader}
-            objectFit="cover"
+            className='object-cover'
             />
         </div>
 

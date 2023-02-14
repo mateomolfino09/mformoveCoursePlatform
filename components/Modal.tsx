@@ -1,5 +1,5 @@
 import MuiModal from '@mui/material/Modal'
-import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { State } from '../redux/reducers'
 import { Courses, CoursesDB, Item, User } from '../typings'
@@ -19,13 +19,11 @@ import toast, { Toaster } from "react-hot-toast";
 import { MdOutlineClose } from "react-icons/md";
 import { toast as toaster } from "react-toastify";
 import ReactCanvasConfetti from "react-canvas-confetti";
+import { CourseListContext } from '../hooks/courseListContext'
 
 interface Props {
     courseDB : CoursesDB | null,
     user: User | null,
-    actualCourseIndex: Number
-    setListFunc:  (courseDB: CoursesDB, list: boolean) => void,
-    listCourses: CoursesDB[] ,
     updateUserDB: (user: User) => void,
 
 }
@@ -65,19 +63,21 @@ const notify = ( message: String, agregado: boolean, like: boolean ) =>
     { id: "unique-notification", position: "top-center" }
   );
 
-function Modal({ courseDB, user, actualCourseIndex, setListFunc, listCourses, updateUserDB } : Props) {
+function Modal({ courseDB, user, updateUserDB } : Props) {
     const youtubeURL = `${requests.playlistYTAPI}?part=snippet&playlistId=${courseDB?.playlist_code}&maxResults=50&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`
     const [items, setItems] = useState<Item[] | null>(null)
     const [url, setUrl] = useState<string | null>(null)
     const [like, setLike] = useState<boolean>(false)
     const [list, setList] = useState<boolean>(false)
+    const [actualCourseIndex, setActualCourseIndex] = useState<Number>(0)  
+    const {listCourse, setListCourse} = useContext( CourseListContext )
+
     const course: CourseModal = useSelector((state: State) => state.courseModalReducer)
     let { loading, error,activeModal,dbCourse, youtubeVideo  } = course
     const dispatch = useAppDispatch()
     const indexCourse = user?.courses.findIndex((element: any) => {
         return element.course.valueOf() === courseDB?._id
     })
-    console.log(indexCourse)
 
     const [muted, setMuted] = useState(false);
     const videoFromDB:Item | null = youtubeVideo != null ? youtubeVideo[0] : null
@@ -85,23 +85,29 @@ function Modal({ courseDB, user, actualCourseIndex, setListFunc, listCourses, up
 
     useEffect(() => {
         if(!courseDB) return
-        const id = courseDB.id
-        const getCourseIntro = async () => {
+        let courseInCourseIndex = user?.courses.findIndex((x) => {
+            return  x.course.valueOf() === courseDB._id.valueOf()
+        })
+
+
+        courseInCourseIndex != null ? setActualCourseIndex(user?.courses[courseInCourseIndex].actualChapter ? user?.courses[courseInCourseIndex].actualChapter - 1 : 0) : null
+
+        const getCourseInfo = async () => {
             try {
                 const config = {
                     headers: {
                       "Content-Type": "application/json",
                     },
                   }
-                let { data } = await axios.post('/api/course/getCourseIntro', { youtubeURL }, config)
-                setUrl(`https://www.youtube.com/embed/${data.items[0].snippet.resourceId.videoId}?rel=0`) 
+                let { data } = await axios.post('/api/course/getCourseInfo', { youtubeURL }, config)
+                courseInCourseIndex != null ?  setUrl(user?.courses[courseInCourseIndex].actualChapter ? `https://www.youtube.com/embed/${data.items[user?.courses[courseInCourseIndex].actualChapter -1].snippet.resourceId.videoId}?rel=0` : '') : null
                 setItems(data.items)
 
             } catch (error: any) {
                 console.log(error.message)
             }
         }
-        getCourseIntro()
+        getCourseInfo()
         user?.courses && indexCourse != undefined && user.courses[indexCourse].like ? setLike(true) : null
         user?.courses && indexCourse != undefined && user.courses[indexCourse].inList ? setList(true) : null
 
@@ -147,17 +153,23 @@ function Modal({ courseDB, user, actualCourseIndex, setListFunc, listCourses, up
         const userId = user?._id
 
         if(!list) {
-            courseDB ? setListFunc(courseDB, list) : null
+            // courseDB ? setListFunc(courseDB, list) : null
             setList(true)
             const { data } = await axios.put('/api/user/course/listCourse', { courseId, userId }, config)
             updateUserDB(data)
+
+            setListCourse([...listCourse, courseDB])
+
             notify('Agregado a la Lista', true, false)
         }
         else {
-            courseDB ? setListFunc(courseDB, list) : null
+            // courseDB ? setListFunc(courseDB, list) : null
             setList(false)
             const { data } = await axios.put('/api/user/course/dislistCourse', { courseId, userId }, config)
             updateUserDB(data)
+
+            setListCourse(listCourse.filter((value: CoursesDB) => value.id != courseDB?.id))
+
             notify('Eliminado de la Lista', false, false)
 
         }
@@ -247,7 +259,7 @@ function Modal({ courseDB, user, actualCourseIndex, setListFunc, listCourses, up
 
                 </div>
                 <div className='flex space-x-16 rounded-b-md bg-[#181818]'>
-                        <Row items={items} courseDB={courseDB} title= {items != null ? items[0].snippet.title : ''} courses={null} setSelectedCourse={null} actualCourseIndex={actualCourseIndex} setRef={null}/> 
+                        <Row items={items} courseDB={courseDB} title= {items != null ? items[0].snippet.title : ''} courses={null} setSelectedCourse={null} actualCourseIndex={actualCourseIndex} setRef={null} isClass={false}/> 
                 </div>
                 <Toaster />
             </>

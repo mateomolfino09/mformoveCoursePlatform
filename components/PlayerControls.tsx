@@ -109,9 +109,9 @@ return (
         <Typography variant='h5' style={{color: '#fff'}} className='!text-lg'>{title}</Typography>
       </Grid>
       <Grid className='hidden lg:flex'>
-          <Button onClick={onBookmark} variant='contained' color='primary' startIcon={<Bookmark />}>
+          {/* <Button onClick={onBookmark} variant='contained' color='primary' startIcon={<Bookmark />}>
             BookMark 
-          </Button>
+          </Button> */}
       </Grid>
     </Grid>
 
@@ -146,9 +146,6 @@ return (
               <ValueLabelComponent {...props} value={elapsedTime}/>
               )
           }}
-          // ValueLabelComponent={(props: any)=>(
-          // <ValueLabelComponent {...props} value={elapsedTime}/>
-          // )}
           onChange={onSeek}
           onMouseDown={onSeekMouseDown}
           onChangeCommitted={onSeekMouseUp}/>

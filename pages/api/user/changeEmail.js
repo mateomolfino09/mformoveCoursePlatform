@@ -8,11 +8,11 @@ import { sendEmail } from "../../../helpers/sendEmail"
 
 
 
-const forget = async (req, res) => {
+const changeEmail = async (req, res) => {
 
   try {
     if (req.method === "POST") {
-      const { email } = req.body
+      const { email, newEmail } = req.body
 
       const user = await User.findOne({ email })
 
@@ -28,15 +28,16 @@ const forget = async (req, res) => {
       await user.save()
 
       const { origin } = absoluteUrl(req)
-      const link = `${origin}/src/user/reset/${token}`
+      const link = `${origin}/src/user/resetEmail/${token}`
 
-      const message = `<div>Haz click en el link para resetear tu contraseña, si el link no funciona pegalo en el buscador!.</div></br>
+      const message = `<div>Haz click en el link para resetear tu email, si el link no funciona pegalo en el buscador!.</div></br>
     <div>link:${link}</div>`
 
       await sendEmail({
+        to: 'mateomolfino09@gmail.com',
         name: user.name,
-        to: user.email,
-        subject: "Resetear Contraseña",
+        // to: newEmail,
+        subject: "Resetear Email",
         message: message
 
       })
@@ -50,4 +51,4 @@ const forget = async (req, res) => {
   }
 }
 
-export default forget
+export default changeEmail

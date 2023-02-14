@@ -9,7 +9,6 @@ connectDB()
 export async function getLastCourseClass(id) {
   try {
     const res = await Course.findOne({ id })
-    console.log(res.classes.length)
     return res.classes.length
     } catch (err) {
      console.log(err)
