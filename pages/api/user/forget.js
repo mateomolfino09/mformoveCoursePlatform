@@ -34,9 +34,8 @@ const forget = async (req, res) => {
     <div>link:${link}</div>`
 
       await sendEmail({
-        to: 'mateomolfino09@gmail.com',
         name: user.name,
-        // to: user.email,
+        to: user.email,
         subject: "Resetear Contraseña",
         message: message
 

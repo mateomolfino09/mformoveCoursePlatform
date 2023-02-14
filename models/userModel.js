@@ -18,6 +18,10 @@ const courseUser = new mongoose.Schema({
     type: Number,
     default: () => 1
   },
+  actualTime: {
+    type: Number,
+    default: () => 0
+  },
   purchased: {
     type: Boolean,
     default: () => false

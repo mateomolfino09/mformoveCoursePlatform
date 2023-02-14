@@ -31,7 +31,7 @@ const generateEmailContent = (data: any) => {
   };
 
 
-export const sendEmail = (options: Options) => {
+export const sendEmail = async (options: Options) => {
     const email = process.env.EMAIL_FROM;
     const pass = process.env.EMAIL_SERVER_PASSWORD;
 
@@ -48,12 +48,17 @@ export const sendEmail = (options: Options) => {
       ...generateEmailContent(options),
       subject: options.subject,
     }
-  
-    transporter.sendMail(mailOptions, function (err, info) {
-      if (err) {
-        console.log('error', err)
-      } else {
-        console.log(info)
-      }
-    })
+
+    try {
+      await transporter.sendMail(mailOptions, function (err, info) {
+        if (err) {
+          console.log('error', err)
+        } else {
+          console.log(info)
+        }
+      })
+    } catch (error: any) {
+      console.log(error?.message) 
+    
+    }
 }
