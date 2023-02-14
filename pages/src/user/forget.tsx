@@ -7,14 +7,17 @@ import { useDispatch, useSelector } from "react-redux"
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { LoadingSpinner } from '../../../components/LoadingSpinner'
 
 
 function Forget() {
     const [email, setEmail] = useState('')
+    const [loading, setLoading] = useState(false);
     const router = useRouter()
 
     const handleSubmit = async (event: any) => {
       event.preventDefault()
+      setLoading(true)
       try {
         const config = {
           headers: {
@@ -25,9 +28,13 @@ function Forget() {
         const { data } = await axios.post(`/api/user/forget`, { email }, config)
         toast.success(data.message)
         router.push("/src/user/login")
+
       } catch (error: any) {
         toast.error(error?.response?.data?.error)
       }
+
+      setLoading(false)
+
     }
 
   return (
@@ -37,7 +44,12 @@ function Forget() {
         <meta name="description" content="Stream Video App" />
         <link rel="icon" href="/favicon.ico" />
     </Head>
-    <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
+    {loading && (
+              <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}>
+                <LoadingSpinner />
+              </div>
+    )}
+   {!loading && <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
     <Image
         src="https://rb.gy/p2hphi"
         layout="fill"
@@ -92,7 +104,7 @@ function Forget() {
                 
         
     </div>
-        </div>
+        </div>}
     </div>
   )
 }
