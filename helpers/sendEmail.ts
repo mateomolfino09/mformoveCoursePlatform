@@ -35,13 +35,7 @@ export const sendEmail = async (options: Options) => {
     const email = process.env.EMAIL_FROM;
     const pass = process.env.EMAIL_SERVER_PASSWORD;
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: email,
-        pass
-      },
-    })
+
     const mailOptions: any = {
       from: process.env.EMAIL_FROM,
       to: options.to,
@@ -49,16 +43,22 @@ export const sendEmail = async (options: Options) => {
       subject: options.subject,
     }
 
-    try {
-      await transporter.sendMail(mailOptions, function (err, info) {
+    return new Promise((resolve, reject) => {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: email,
+          pass
+        },
+      })
+
+      transporter.sendMail(mailOptions, function (err, info) {
         if (err) {
           console.log('error', err)
+          resolve(false)
         } else {
-          console.log(info)
+          resolve(true)
         }
       })
-    } catch (error: any) {
-      console.log(error?.message) 
-    
-    }
+    })
 }
