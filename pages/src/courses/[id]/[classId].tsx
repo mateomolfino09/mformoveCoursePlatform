@@ -18,7 +18,7 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
 import { parseCookies } from 'nookies'
 import { getSession, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import axios from 'axios'
+import axios from "axios"
 import { ArrowDownLeftIcon } from '@heroicons/react/24/outline'
 
 interface Props {

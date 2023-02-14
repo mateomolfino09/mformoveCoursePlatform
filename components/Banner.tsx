@@ -16,7 +16,7 @@ interface Props {
 
 function Banner({ randomImage }: Props) {
     const [image, setImage] = useState<Images | null>(randomImage);
-    const srcImg: string = image?.urls.regular != null ? image?.urls.regular : ''
+    // const srcImg: string = image?.urls.regular != null ? image?.urls.regular : ''
     const dispatch = useAppDispatch()
 
 
@@ -29,7 +29,8 @@ function Banner({ randomImage }: Props) {
     <div className='flex flex-col space-y-2 py-16 md:space-y-4 lg:h-[65vh] lg:justify-end' >
         <div className='absolute top-0 left-0 h-[95vh] w-screen -z-10'>
             <Image 
-            src={srcImg}
+            src="https://imagenes.lainformacion.com/files/image_656_370/uploads/imagenes/2011/05/07/camello.jpg"
+            // src={srcImg}
             alt={image?.alt_description || 'image'}
             layout="fill"
             loader={imageLoader}
