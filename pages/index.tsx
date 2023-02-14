@@ -15,7 +15,7 @@ import Modal from '../components/Modal'
 import { CourseModal } from '../redux/courseModal/courseModalTypes'
 import { State } from '../redux/reducers'
 import { getCourses } from './api/course/getCourses'
-import axios from 'axios'
+import axios from "axios"
 import Head from 'next/head'
 import { listClasses } from '@mui/material'
 import { CourseListContext } from '../hooks/courseListContext'
