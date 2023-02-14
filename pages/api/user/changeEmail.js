@@ -33,7 +33,7 @@ const changeEmail = async (req, res) => {
       const message = `<div>Haz click en el link para resetear tu email, si el link no funciona pegalo en el buscador!.</div></br>
     <div>link:${link}</div>`
 
-      await sendEmail({
+    let resp = await sendEmail({
         to: 'mateomolfino09@gmail.com',
         name: user.name,
         // to: newEmail,

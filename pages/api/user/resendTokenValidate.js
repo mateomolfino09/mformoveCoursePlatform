@@ -37,7 +37,8 @@ const resendTokenValidate = async(req,res) => {
           const message = `<div>Haga Click en el link para verificar su cuenta, si el link no funciona pegalo en el buscador!</div></br>
         <div>link:${link}</div>`
     
-          await sendEmail({
+          let resp = await sendEmail({
+            name: user.name,
             to: user.email,
             subject: "Confirmar Mail",
             text: message,
