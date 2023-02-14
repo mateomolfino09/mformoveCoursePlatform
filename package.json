@@ -17,6 +17,7 @@
     "@mui/material": "^5.11.6",
     "@next-auth/mongodb-adapter": "^1.1.1",
     "@reduxjs/toolkit": "^1.9.1",
+    "@sendgrid/mail": "^7.7.0",
     "@types/bcrypt": "^5.0.0",
     "@types/node": "18.11.18",
     "@types/nodemailer": "^6.4.7",

@@ -3,6 +3,7 @@ import User from "../../../models/userModel"
 import jwt from "jsonwebtoken"
 import absoluteUrl from "next-absolute-url"
 import { sendEmail } from "../../../helpers/sendEmail"
+import sendMailGrid from "./sendMail"
 
  connectDB()
 
@@ -33,20 +34,24 @@ const forget = async (req, res) => {
       const message = `<div>Haz click en el link para resetear tu contraseña, si el link no funciona pegalo en el buscador!.</div></br>
     <div>link:${link}</div>`
 
-      await sendEmail({
+      let resp = await sendEmail({
         name: user.name,
         to: user.email,
         subject: "Resetear Contraseña",
         message: message
-
       })
 
-      return res.status(200).json({
-        message: `Email enviado a ${user.email}, porfavor checkea tu email`,
+      console.log(resp)
+
+      res.status(200).json({
+        message:  `Se ha enviado un mail a ${user.email}, revisa tu correo porfavor.`,
       })
+
     }
   } catch (error) {
-    console.log(error)
+    res.status(500).json({
+      message:  `Hubo un error al enviar un mail a tu cuenta`,
+    })
   }
 }
 
