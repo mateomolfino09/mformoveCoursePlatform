@@ -82,7 +82,7 @@ function Forget() {
                         </label>
                     </div>
 
-                    <button className='w-full rounded bg-[#e50914] py-3 font-semibold' onClick={(e) => handleSubmit(e)}>Resetear</button>
+                    <button className='w-full rounded bg-light-red py-3 font-semibold' onClick={(e) => handleSubmit(e)}>Resetear</button>
 
                 </form>
                 <div className="flex items-start justify-between flex-row">

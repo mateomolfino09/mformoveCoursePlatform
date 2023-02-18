@@ -1,6 +1,24 @@
 import mongoose from "mongoose";
 import validator from "validator";
 
+const classUser = new mongoose.Schema({
+  id: {
+    type: Number,
+  },
+  class: {
+    type: mongoose.Types.ObjectId,
+    ref: "Class"
+  },
+  like: {
+    type: Boolean,
+    default: () => false
+  },
+  actualTime: {
+    type: Number,
+    default: () => 0
+  },
+})
+
 const courseUser = new mongoose.Schema({
   course: {
     type: mongoose.Types.ObjectId,
@@ -18,10 +36,7 @@ const courseUser = new mongoose.Schema({
     type: Number,
     default: () => 1
   },
-  actualTime: {
-    type: Number,
-    default: () => 0
-  },
+  classes: [classUser],
   purchased: {
     type: Boolean,
     default: () => false

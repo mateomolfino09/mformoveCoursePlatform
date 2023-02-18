@@ -170,12 +170,18 @@ export interface Courses {
     imageUrl: string,
 }
 
+export interface ClassesUser {
+    actualTime: number
+}
+
 export interface CourseUser {
     course: string
     like: Boolean,
     inList: Boolean,
     actualChapter: number,
+    actualTime: number,
     purchased: Boolean
+    classes: [ClassesUser]
 }
 
 export interface User {
@@ -211,5 +217,6 @@ export interface ClassesDB {
     class_code: string,
     image_url: string,
     likes: number,
+    totalTime: number,
     course: CoursesDB
 } 

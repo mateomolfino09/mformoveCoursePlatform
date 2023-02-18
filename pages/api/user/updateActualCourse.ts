@@ -15,6 +15,8 @@ import { CourseUser, User as UserType } from "../../../typings"
 
             index != null && user != null ? user.courses[index].actualChapter = actualChapter : null
 
+            user.courses[index].actualTime = 0;
+
             await user?.save()
 
             console.log()

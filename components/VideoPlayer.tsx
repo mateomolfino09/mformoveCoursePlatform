@@ -1,13 +1,21 @@
-import React, { useState, useRef, HtmlHTMLAttributes, RefObject } from 'react'
+import React, { useState, useRef, HtmlHTMLAttributes, RefObject, useEffect } from 'react'
 import ReactPlayer from 'react-player';
 import { Container, Grid, Paper, Typography } from '@mui/material';
 import PlayerControls from './PlayerControls';
 import screenfull from 'screenfull'
+import { ClassesDB, CourseUser, User } from '../typings';
+import { useRouter } from 'next/router';
+import axios from 'axios';
+import { parseCookies } from 'nookies';
+import { useSession } from 'next-auth/react';
 
 interface Props {
   url: string | null
-  title: string
   img: string
+  courseUser: CourseUser | null
+  clase: ClassesDB | null
+  setPlayerRef: any
+  play: boolean
 }
 
 const format = (seconds: any) => {
@@ -27,7 +35,8 @@ const format = (seconds: any) => {
 let count = 0
 
 
-function Youtube({ url, title, img }: Props) {
+function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
+  const router = useRouter()
   const [state, setState] = useState({
     playing: true,
     muted: false,
@@ -38,21 +47,34 @@ function Youtube({ url, title, img }: Props) {
     seeking: false
   })
 
+  const cookies = parseCookies()
+  const {data: session} = useSession() 
+
+
   const [timeDisplayFormat, setTimeDisplayFormat] = React.useState("normal");
   const [bookmarks, setBookmarks] = useState<any>([]);
 
 
   const { playing, muted, volume, playbackRate, fullScreen, played, seeking } = state
   const [controlRef, setControlRef] = useState<RefObject<HTMLDivElement> | null>(null);
-
   const playerRef= useRef<ReactPlayer>(null)
   const playerContainerRef= useRef<any>(null)
   const canvasRef = useRef<any>(null);
   const controlsRef = useRef<any>(null);
 
+  useEffect(() => {
+    setState({...state, playing: !playing})
+  }, [play])
+
+  useEffect(() => {
+    setPlayerRef(playerRef)
+    // playerRef.current && playerRef.current.seekTo(courseUser?.actualTime != null ? courseUser?.actualTime : 0)
+ }, [router])
+
   const handlePlayPause = () => {
     setState({...state, playing: !state.playing})
   }
+
 const handleRewind = () => {
   playerRef.current && playerRef.current.seekTo(playerRef.current.getCurrentTime() - 10)
 }
@@ -131,14 +153,7 @@ const addBookmark = () => {
   const ctx = canvas.getContext("2d");
 
   if(playerRef.current != null) {
-    // ctx.drawImage(
-    //   playerRef.current.getInternalPlayer().logImaAdEvent(),
-    //   0,
-    //   0,
-    //   canvas.width,
-    //   canvas.height
-    // );
-    // const dataUri = canvas.toDataURL();
+
     canvas.width = 0;
     canvas.height = 0;
     const bookmarksCopy = [...bookmarks];
@@ -211,7 +226,7 @@ const totalDuration = format(duration)
               totalDuration={totalDuration}
               onBookmark={addBookmark}
               setPlayerRef={setControlRef}
-              title={title}
+              title={clase?.name != null ? clase.name : ''}
               />
           </div>
 

@@ -10,7 +10,8 @@ const token = async (req, res) => {
   try {
     if (req.method === "PUT") {
       const { token } = req.query
-      const courses = await Courses.find({ })
+      const courses = await Courses.find({ }).populate('classes')
+      
 
       if (token) {
         const decoded = await jwt.verify(token, process.env.NEXTAUTH_SECRET)
@@ -26,12 +27,24 @@ const token = async (req, res) => {
         user.validEmail = "yes"
         user.emailToken = undefined
         user.courses = [];
+        let userClass = [];
 
         courses.forEach(course => {
+
+          course.classes.forEach(clase => {
+            userClass.push({
+              class: clase,
+              id: clase.id,
+              actualTime: 0,
+              like: false
+            })
+          });
+
           user.courses.push({
             course,
             like: false,
-            purchased: user.rol === 'Admin' ? true : false
+            purchased: user.rol === 'Admin' ? true : false,
+            classes: userClass
           })
         });
 

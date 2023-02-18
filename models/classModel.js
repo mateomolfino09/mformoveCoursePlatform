@@ -28,6 +28,10 @@ const classSchema = new mongoose.Schema(
       type: Number,
       default: () => 12
     },
+    totalTime: {
+      type: Number,
+      default: () => 0
+    },
     course: {
         type: mongoose.Types.ObjectId,
         ref: "Course"

@@ -140,13 +140,14 @@ const CreateCourse = () => {
 
             <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}>
             {/* Logo position */}
+            <Link href={'/'}>
             <img
               src="https://rb.gy/ulxxee"
               className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6"
               width={150}
               height={150}
             />
-            
+            </Link>
             <form className='relative mt-24 space-y-8 rounded bg-black/75 py-12 px-8 md:mt-0 md:max-w-lg md:px-14' onSubmit={handleSubmit}>
               <h1 className='text-4xl font-semibold'>Agregar un Curso</h1>
               <div className='space-y-8'>
@@ -210,7 +211,7 @@ const CreateCourse = () => {
                     />
                   </label>
               </div>
-            <button onClick={(e) => (e)} className='w-full rounded bg-[#e50914] py-3 font-semibold'>Crear Curso </button>
+            <button onClick={(e) => (e)} className='w-full rounded bg-light-red py-3 font-semibold'>Crear Curso </button>
             <div className='text-[gray]'>
                   Volver al Inicio
                   <Link href={"/"}> 

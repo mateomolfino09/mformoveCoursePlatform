@@ -170,7 +170,7 @@ function SignUp() {
                 />
               </label>
           </div>
-        <button onClick={(e) => signupUser(e)} className='w-full rounded bg-[#e50914] py-3 font-semibold'>Registrarme </button>
+        <button onClick={(e) => signupUser(e)} className='w-full rounded bg-light-red py-3 font-semibold'>Registrarme </button>
         <div className='text-[gray]'>
               Ya tienes una cuenta?
               <Link href={"/src/user/login"}> 

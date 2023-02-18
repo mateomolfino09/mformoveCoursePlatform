@@ -7,7 +7,7 @@ function LoginButton({ provider, bgColor, txtColor }: any) {
   return (
     <div>
       <button
-        className="w-full rounded bg-[#e50914] py-3 font-semibold -mt-6"
+        className="w-full rounded bg-light-red py-3 font-semibold -mt-6"
         style={{ background: `${bgColor}`, color: `${txtColor}` }}
         onClick={() => signIn(provider.id)}
       >

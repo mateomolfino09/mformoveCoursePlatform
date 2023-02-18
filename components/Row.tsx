@@ -5,7 +5,7 @@ import { useSelector } from "react-redux"
 import { loadCourse } from "../redux/courseModal/courseModalAction"
 import { CourseModal } from "../redux/courseModal/courseModalTypes"
 import { State } from "../redux/reducers"
-import { Courses, Ricks, CoursesDB, Item } from "../typings"
+import { Courses, Ricks, CoursesDB, Item, User } from "../typings"
 import CourseThumbnail from "./CourseThumbnail"
 import Thumbnail from "./Thumbnail"
 
@@ -15,12 +15,14 @@ interface Props {
     setSelectedCourse: Dispatch<SetStateAction<CoursesDB | null>> | null,
     items: Item[] | null,
     courseDB: CoursesDB | null
-    actualCourseIndex: Number
+    actualCourseIndex: number
     setRef: any
     isClass: boolean
+    user: User | null
+    courseIndex: number
 }
 
-function Row({ title, courses, setSelectedCourse, items, courseDB, actualCourseIndex, setRef, isClass} : Props) {
+function Row({ title, courses, setSelectedCourse, items, courseDB, actualCourseIndex, setRef, isClass, user, courseIndex} : Props) {
     const rowRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
     const[isMoved, setIsMoved] = useState(false);
@@ -55,7 +57,7 @@ function Row({ title, courses, setSelectedCourse, items, courseDB, actualCourseI
                             <ChevronLeftIcon className={`ScrollIcon left-2 ${!isMoved && 'hidden'}`}  onClick={() => handleClick("left")}/>
                             <div ref={rowRef} className="scrollbar-hide flex items-center space-x-0.5 overflow-x-scroll md:space-x-2.5 md:p-2">
                             {courses?.map((course) => (
-                                <Thumbnail key={course._id} course={course} setSelectedCourse={setSelectedCourse}/>
+                                <Thumbnail key={course?._id} course={course} setSelectedCourse={setSelectedCourse}/>
                             ))}
                             </div>
 
@@ -69,7 +71,7 @@ function Row({ title, courses, setSelectedCourse, items, courseDB, actualCourseI
                     <>
                     <div className="group relative w-full">
                         <div ref={rowRef} className="scrollbar-hide flex flex-col items-center space-y-12 bg-[#181818]">
-                            <CourseThumbnail items={items} course={courseDB} actualCourseIndex={actualCourseIndex} isClass={isClass}/>
+                            <CourseThumbnail items={items} course={courseDB} actualClassIndex={actualCourseIndex} isClass={isClass} user={user} courseIndex={courseIndex}/>
                         </div>
                     </div>
                     </>

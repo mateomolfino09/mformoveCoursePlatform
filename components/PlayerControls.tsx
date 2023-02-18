@@ -109,9 +109,6 @@ return (
         <Typography variant='h5' style={{color: '#fff'}} className='!text-lg'>{title}</Typography>
       </Grid>
       <Grid className='hidden lg:flex'>
-          {/* <Button onClick={onBookmark} variant='contained' color='primary' startIcon={<Bookmark />}>
-            BookMark 
-          </Button> */}
       </Grid>
     </Grid>
 
@@ -131,12 +128,6 @@ return (
     </Grid>
     <Grid container direction='row' justifyContent='space-between' alignItems='center' style={{padding:16}} className={fullScreen ? !playing ? 'md:!mt-64' : 'md:!mt-[450px]' : 'relative md:top-72 md:!mt-0' }>
       <Grid item xs={12}>
-      {/* <Slider
-        size="small"
-        defaultValue={70}
-        aria-label="Small"
-        valueLabelDisplay="auto"
-      /> */}
         <PrettoSlider 
           min={0}
           max={100}

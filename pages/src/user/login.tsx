@@ -179,7 +179,7 @@ const Login = ({ providers, session }: any) => {
                           </label>
                       </div>
   
-                      <button className='w-full rounded bg-[#e50914] py-3 font-semibold' onClick={(e) => signinUser(e)}>Sign In </button>
+                      <button className='w-full rounded bg-light-red py-3 font-semibold' onClick={(e) => signinUser(e)}>Sign In </button>
   
                   </form>
                   <LoginButton provider={providers?.google}/> 
@@ -230,7 +230,7 @@ const Login = ({ providers, session }: any) => {
                                   <label className='inline-block w-full'>
                                       <p>¿Desea que volvamos a enviar un email de confirmación?</p>
                                   </label>
-                                  <button className='w-full rounded bg-[#e50914] py-3 font-semibold' onClick={(e) => resendTokenValidate(e)}>Volver a Enviar </button>
+                                  <button className='w-full rounded bg-light-red py-3 font-semibold' onClick={(e) => resendTokenValidate(e)}>Volver a Enviar </button>
                                   <Link href={"/src/user/login"}> 
                                   <button type='button' className='text-white underline cursor-pointer mt-4'>Volver al Inicio</button>
                                   </Link>

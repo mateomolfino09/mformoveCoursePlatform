@@ -64,6 +64,10 @@
    @apply cursor-pointer text-blue-500 hover:underline
 }
 
+.bg-light-red {
+  @apply bg-[#e50914]
+}
+
   @keyframes spinner {
     0% {
       transform: rotate(0deg);

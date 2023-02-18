@@ -9,20 +9,27 @@ import { wrapper }  from '../redux/store';
 import { CourseListContext } from '../hooks/courseListContext';
 import { useMemo, useState } from 'react';
 import { CoursesDB } from '../typings';
+import { ClassContext } from '../hooks/classContext';
 
 function App({ Component, ...rest }: AppProps) {
   const [listCourse, setListCourse] = useState<CoursesDB[]>([])
+  const [actualClass, setActualClass] = useState<number>(0)
+
   const providerValue = useMemo(() => ({listCourse, setListCourse}), [listCourse, setListCourse])
+  const providerValueClass = useMemo(() => ({actualClass, setActualClass}), [actualClass, setActualClass])
+
   const { store, props } = wrapper.useWrappedStore(rest);
   const { pageProps } = props;
   return (
       <SessionProvider session={pageProps.session}>
         <Provider store={store}>
+        <ClassContext.Provider value= {providerValueClass}>
         <CourseListContext.Provider value= {providerValue}>
           <NextNProgress color="red"/>
             <ToastContainer />
             <Component {...pageProps} />
         </CourseListContext.Provider>
+        </ClassContext.Provider>
 
         </Provider>
 

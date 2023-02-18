@@ -69,7 +69,8 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
     const [url, setUrl] = useState<string | null>(null)
     const [like, setLike] = useState<boolean>(false)
     const [list, setList] = useState<boolean>(false)
-    const [actualCourseIndex, setActualCourseIndex] = useState<Number>(0)  
+    const [actualCourseIndex, setActualCourseIndex] = useState<number>(0)  
+    const [courseIndex, setCourseIndex] = useState<number>(0)  
     const {listCourse, setListCourse} = useContext( CourseListContext )
 
     const course: CourseModal = useSelector((state: State) => state.courseModalReducer)
@@ -88,8 +89,7 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
         let courseInCourseIndex = user?.courses.findIndex((x) => {
             return  x.course.valueOf() === courseDB._id.valueOf()
         })
-
-
+        courseInCourseIndex && setCourseIndex(courseInCourseIndex)
         courseInCourseIndex != null ? setActualCourseIndex(user?.courses[courseInCourseIndex].actualChapter ? user?.courses[courseInCourseIndex].actualChapter - 1 : 0) : null
 
         const getCourseInfo = async () => {
@@ -259,7 +259,7 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
 
                 </div>
                 <div className='flex space-x-16 rounded-b-md bg-[#181818]'>
-                        <Row items={items} courseDB={courseDB} title= {items != null ? items[0].snippet.title : ''} courses={null} setSelectedCourse={null} actualCourseIndex={actualCourseIndex} setRef={null} isClass={false}/> 
+                        <Row items={items} courseDB={courseDB} title= {items != null ? items[0].snippet.title : ''} courses={null} setSelectedCourse={null} actualCourseIndex={actualCourseIndex} setRef={null} isClass={false} user={user} courseIndex={courseIndex}/> 
                 </div>
                 <Toaster />
             </>
