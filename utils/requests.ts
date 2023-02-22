@@ -3,7 +3,7 @@ const BASE_URL = 'https://api.unsplash.com/photos/random'
 const RICK_URL = 'https://rickandmortyapi.com/api/character'
 const YOUTUBE_PLAYLIST_ITEMS_API = 'https://www.googleapis.com/youtube/v3/playlistItems';
 const playlistId = 'PLuq6IKQNFh1HRIqNW-JZAn_4mCQgxHayh'
-const CloudinaryKey = process.env.NEXT_PUBLIC_CLOUDINARY_KEY
+const CloudinaryKey = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
 const CLOUDINARY = `https://api.cloudinary.com/v1_1/${CloudinaryKey}/image/upload`
 const fetchSingleYT = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=`;
 // xE_rMj35BIM&key=YOUR_KEY

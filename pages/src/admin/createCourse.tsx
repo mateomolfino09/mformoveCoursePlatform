@@ -41,7 +41,11 @@ const CreateCourse = () => {
     const cookies = parseCookies()
     const {data: session} = useSession() 
     const router = useRouter()
-    const [files, setFiles] = useState([])
+    const [files, setFiles] = useState<any>([])
+
+    useEffect(() => {
+      console.log(files)
+    }, [files])
   
 
     const { getRootProps, getInputProps }: any = useDropzone({
@@ -90,6 +94,12 @@ const CreateCourse = () => {
             }
     
             formData.append('upload_preset', 'my_uploads')
+
+            if(files[0].size / 1000000 > 10) {
+              toast.error('Formato Incorrecto')
+              return
+
+            }
     
             //image Url -> secure_url
             const imageData = await fetch(requests.fetchCloudinary, {
@@ -99,7 +109,7 @@ const CreateCourse = () => {
 
             console.log(imageData)
 
-            const imgUrl = imageData.secure_url
+            const imgUrl = imageData.public_id
     
             const config = {
                 headers: {
@@ -165,14 +175,6 @@ const CreateCourse = () => {
                       onChange={e => setPlaylistId(e.target.value)}
                       />
                 </label>
-                {/* <label className='inline-block w-full' onChange={handleOnChange} >
-                      <input 
-                      type="file" 
-                      name="file"
-                      placeholder='Admin Password'
-                      className='input'
-                    />
-                  </label> */}
                       {files.length != 0 ? (
                         <>
                           <div className="grid place-items-center input h-56 border-dashed border-2 border-white/80 relative" {...getRootProps()}>
@@ -185,9 +187,7 @@ const CreateCourse = () => {
                             </label>
                             {images}
                         </div>
-                       {/* <div className="bg-white h-56 w-full">
-                        {images}
-                      </div> */}
+
                         </>
 
 
@@ -199,9 +199,20 @@ const CreateCourse = () => {
                             placeholder='File'
                             {...getInputProps()} />
                           <ArrowUpTrayIcon className="flex justify-center items-center h-12 w-12 my-0 mx-auto text-white/60"/>
+                          <label className='flex justify-center items-center mx-auto text-white/60 mt-8'>
+                              <p>Max Size: 10MB</p>
+                          </label>
+                          <label className='flex justify-center items-center my-0 mx-auto text-white/60'>
+                              <p>Format: JPG</p>
+                          </label>
                       </label>
                           </div>
                       )}
+                  {files.length > 0 && (
+                    <div className="w-full my-0 relative bottom-4">
+                      <p className={`${files[0]?.size / 1000000 > 10 ? 'text-red-500' : 'text-white/60'}`}>El tamaño del archivo es {files[0]?.size / 1000000}MB</p>
+                    </div>
+                  )}
                   <label className='inline-block w-full'>
                       <input 
                       type="password" 

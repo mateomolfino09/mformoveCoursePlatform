@@ -1,3 +1,4 @@
+import { CldImage } from 'next-cloudinary'
 import Image from 'next/image'
 import React, { Dispatch, SetStateAction } from 'react'
 import { useAppDispatch } from '../hooks/useTypeSelector'
@@ -23,8 +24,9 @@ function Thumbnail({ course, setSelectedCourse }: Props) {
 
   return (
     <div className='relative h-28 min-w-[180px] cursor-pointer transition duration-200 ease-out md:h-36 md:min-w-[260px] md:hover:scale-105' >
-        <Image 
+        <CldImage 
             src={course?.image_url} 
+            preserveTransformations
             layout="fill"
             className='rounded-sm object-cover md:rounded'
             alt={course?.name}

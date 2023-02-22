@@ -3,23 +3,19 @@ import LoginButton from '../../../components/LoginButton';
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link';
-import React, { MouseEvent, use, useEffect, useState } from 'react'
+import React, { MouseEvent, use, useEffect, useRef, useState } from 'react'
 import imageLoader from '../../../imageLoader';
 import Router, { useRouter } from 'next/router'
 import { getToken } from "next-auth/jwt";
 import cookie from 'js-cookie'
 import axios from "axios";
 import { parseCookies } from "nookies";
-import { ToastContainer, toast } from 'react-toastify';
-import { useDispatch } from "react-redux";
-import { LiteralUnion } from "react-hook-form";
-import { BuiltInProviderType } from "next-auth/providers";
-import { GetServerSideProps } from "next";
-import { GetServerSidePropsCallback } from "next-redux-wrapper";
+import { toast } from 'react-toastify';
 import { wrapper } from "../../../redux/store";
 import { loadUser } from "../../../redux/user/userAction";
 import { User } from "../../../typings";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import ReCAPTCHA, { ReCAPTCHAProps } from "react-google-recaptcha"
 
 
 interface ProfileUser {
@@ -42,7 +38,6 @@ const Login = ({ providers, session }: any) => {
     const [password, setPassword] = useState('')
     const [validateEmail, setValidateEmail] = useState(false)
 
-
     const router = useRouter()
     // const dispatch = useDispatch()
 
@@ -59,20 +54,22 @@ const Login = ({ providers, session }: any) => {
 
 
     const signinUser = async (e: any) => {
+      e.preventDefault();
+
       try {
-        e.preventDefault();
         setLoading(true)
-  
+
         const config = {
           headers: {
             'Content-Type': 'application/json',
           },
         }
-  
+        console.log('aca')
         const { data } = await axios.post('/api/user/login',
         {email, password}, 
         config
         )
+        console.log('aca')
 
         toast.success(data.message)
         cookie.set('token', data?.token)
@@ -80,8 +77,13 @@ const Login = ({ providers, session }: any) => {
 
         router.push('/')
       } catch (error: any) {
-        if(error.response.data?.validate === true) setValidateEmail(true)
-        toast.error(error.response.data.message)
+        if(error?.response?.data?.validate === true) {
+          setValidateEmail(true)
+          toast.error(error.response?.data.message)
+        } 
+        else {
+          console.log(error)
+        }
       }
 
       setLoading(false)
@@ -92,7 +94,6 @@ const Login = ({ providers, session }: any) => {
       try {
         e.preventDefault();
         setLoading(true)
-        console.log(email)
 
         const config = {
           headers: {
@@ -177,7 +178,7 @@ const Login = ({ providers, session }: any) => {
                               onChange={e => setPassword(e.target.value)}
                               />
                           </label>
-                      </div>
+                </div>
   
                       <button className='w-full rounded bg-light-red py-3 font-semibold' onClick={(e) => signinUser(e)}>Sign In </button>
   
@@ -231,9 +232,12 @@ const Login = ({ providers, session }: any) => {
                                       <p>¿Desea que volvamos a enviar un email de confirmación?</p>
                                   </label>
                                   <button className='w-full rounded bg-light-red py-3 font-semibold' onClick={(e) => resendTokenValidate(e)}>Volver a Enviar </button>
-                                  <Link href={"/src/user/login"}> 
-                                  <button type='button' className='text-white underline cursor-pointer mt-4'>Volver al Inicio</button>
-                                  </Link>
+                                  <button type='button' onClick={() => {
+                                    setValidateEmail(false)
+                                    window.location.reload()
+                                  }
+   
+                                  } className='text-white underline cursor-pointer mt-4'>Volver al Inicio</button>
                               </div>
                               
                           </div>

@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { idText } from 'typescript';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
@@ -12,6 +12,7 @@ import axios from 'axios';
 import { parseCookies } from 'nookies';
 import { ToastContainer, toast } from 'react-toastify';
 import { MouseEvent } from 'react';
+import ReCAPTCHA from "react-google-recaptcha"
 
 
 interface Inputs {
@@ -32,6 +33,11 @@ function SignUp() {
     const [conPassword, setConPassword] = useState('')
     const [message, setMessage]: any = useState('')
     const router = useRouter()
+    const recaptchaRef = useRef<any>();
+
+    const key = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY  != undefined ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY  : ''
+
+
 
     useEffect(() => {
       if (session) {
@@ -52,6 +58,11 @@ function SignUp() {
         e.preventDefault();
         setLoading(true)
 
+        const captcha = await recaptchaRef?.current.executeAsync();
+        if(!captcha) {
+          toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde')
+        }
+
         if(password !== conPassword) {
           toast.error('Las contraseñas no coinciden')
           return
@@ -64,7 +75,7 @@ function SignUp() {
         }
 
         const { data } = await axios.post('/api/user/register',
-        {email, password, firstname, lastname}, 
+        {email, password, firstname, lastname, captcha}, 
         config
         )
 
@@ -169,6 +180,11 @@ function SignUp() {
                   onChange={e => setConPassword(e.target.value)}
                 />
               </label>
+              <ReCAPTCHA
+                            ref={recaptchaRef}
+                            size="invisible"
+                            sitekey={key}
+                            />   
           </div>
         <button onClick={(e) => signupUser(e)} className='w-full rounded bg-light-red py-3 font-semibold'>Registrarme </button>
         <div className='text-[gray]'>

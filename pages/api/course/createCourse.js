@@ -62,10 +62,11 @@ const createCourse = async (req, res) => {
         let data = await fetch(singleYoutubeURL);
         let singleItem = await data.json();
         let durationISO = singleItem.items[0].contentDetails.duration;
-
+        console.log(durationISO)
         let seg = 0;
 
-        if (durationISO.includes("PT")) {
+
+        if (durationISO.includes("PT") && !durationISO.includes("H")) {
           const indexPT = durationISO.indexOf("T");
           const indexMin = durationISO.indexOf("M");
           const indexSeg = durationISO.indexOf("S");
@@ -73,6 +74,9 @@ const createCourse = async (req, res) => {
           const min = +durationISO.substring(indexPT + 1, indexMin);
           seg = +durationISO.substring(indexMin + 1, indexSeg);
           seg = min * 60 + seg;
+        }
+        else {
+
         }
 
         const newClass = await new Classes({

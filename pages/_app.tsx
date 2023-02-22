@@ -10,6 +10,8 @@ import { CourseListContext } from '../hooks/courseListContext';
 import { useMemo, useState } from 'react';
 import { CoursesDB } from '../typings';
 import { ClassContext } from '../hooks/classContext';
+import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
+
 
 function App({ Component, ...rest }: AppProps) {
   const [listCourse, setListCourse] = useState<CoursesDB[]>([])
@@ -20,8 +22,9 @@ function App({ Component, ...rest }: AppProps) {
 
   const { store, props } = wrapper.useWrappedStore(rest);
   const { pageProps } = props;
+  const key = process.env.NEXT_PUBLIC_RECAPTHA_SITE_KEY ? process.env.NEXT_PUBLIC_RECAPTHA_SITE_KEY : ''
   return (
-      <SessionProvider session={pageProps.session}>
+    <SessionProvider session={pageProps.session}>
         <Provider store={store}>
         <ClassContext.Provider value= {providerValueClass}>
         <CourseListContext.Provider value= {providerValue}>
@@ -30,9 +33,7 @@ function App({ Component, ...rest }: AppProps) {
             <Component {...pageProps} />
         </CourseListContext.Provider>
         </ClassContext.Provider>
-
         </Provider>
-
      </SessionProvider>
   )
 }

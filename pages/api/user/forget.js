@@ -3,7 +3,7 @@ import User from "../../../models/userModel"
 import jwt from "jsonwebtoken"
 import absoluteUrl from "next-absolute-url"
 import { sendEmail } from "../../../helpers/sendEmail"
-import sendMailGrid from "./sendMail"
+import validateCaptcha from './validateCaptcha'
 
  connectDB()
 
@@ -14,6 +14,18 @@ const forget = async (req, res) => {
   try {
     if (req.method === "POST") {
       const { email } = req.body
+
+      const validCaptcha = await validateCaptcha(captcha)
+
+      console.log('hola')
+        
+      if (!validCaptcha) {
+        return res.status(422).json({
+          error: "Unprocessable request, Invalid captcha code.",
+        });
+      }
+
+      console.log('hola')
 
       const user = await User.findOne({ email })
 

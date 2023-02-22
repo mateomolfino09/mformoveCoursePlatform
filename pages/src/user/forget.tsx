@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import imageLoader from '../../../imageLoader'
 import Head from 'next/head'
 import { useDispatch, useSelector } from "react-redux"
@@ -8,16 +8,25 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { LoadingSpinner } from '../../../components/LoadingSpinner'
+import ReCAPTCHA from "react-google-recaptcha"
 
 
 function Forget() {
     const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false);
     const router = useRouter()
+    const recaptchaRef = useRef<any>();
+    const key = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY  != undefined ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY  : ''
+
 
     const handleSubmit = async (event: any) => {
       event.preventDefault()
       setLoading(true)
+      const captcha = await recaptchaRef?.current.executeAsync();
+      console.log('captcha')
+      if(!captcha) {
+        toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde')
+      }
       try {
         const config = {
           headers: {
@@ -25,7 +34,7 @@ function Forget() {
           },
         }
   
-        const { data } = await axios.post(`/api/user/forget`, { email }, config)
+        const { data } = await axios.post(`/api/user/forget`, { email, captcha }, config)
         toast.success(data.message)
         router.push("/src/user/login")
 
@@ -80,6 +89,11 @@ function Forget() {
                             onChange={e => setEmail(e.target.value)}
                             />
                         </label>
+                        <ReCAPTCHA
+                            ref={recaptchaRef}
+                            size="invisible"
+                            sitekey={key}
+                            />   
                     </div>
 
                     <button className='w-full rounded bg-light-red py-3 font-semibold' onClick={(e) => handleSubmit(e)}>Resetear</button>
