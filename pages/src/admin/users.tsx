@@ -79,7 +79,7 @@ const ShowUsers = ({ users }: Props) => {
 
       <div className="px-4 py-4 lg:px-10 lg:py-6">
         <h1 className="text-2xl mb-8">Usuarios</h1>
-        <table className="table-auto w-full border ">
+        <table className="min-w-full text-sm text-gray-100 ">
           <thead>
             <tr>
               <th className="border  text-xl ">Nombre</th>
@@ -97,7 +97,9 @@ const ShowUsers = ({ users }: Props) => {
                 </th>
                 <th className="border  opacity-75">{user.email}</th>
                 <th className="border  opacity-75">{user.rol}</th>
-                <th className="border  opacity-75">{user.createdAt}</th>
+                <th className="border  opacity-75">
+                  {new Date(user.createdAt).toLocaleDateString("es-ES")}
+                </th>
                 <th className=" border ">
                   <button
                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded lg:mr-4 mt-4 mb-4"
