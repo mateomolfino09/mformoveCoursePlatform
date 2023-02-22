@@ -79,7 +79,7 @@ const ShowUsers = ({ users }: Props) => {
 
       <div className="px-4 py-4 lg:px-10 lg:py-6">
         <h1 className="text-2xl mb-8">Usuarios</h1>
-        <table className="min-w-full text-sm text-gray-100 ">
+        <table className="min-w-full text-sm  ">
           <thead>
             <tr>
               <th className="border  text-xl ">Nombre</th>
@@ -92,24 +92,48 @@ const ShowUsers = ({ users }: Props) => {
           <tbody>
             {users?.map((user: any) => (
               <tr key={user._id}>
-                <th ref={ref} className="border  opacity-75">
+                <th ref={ref} className="border text-base  opacity-75">
                   {user.name}
                 </th>
-                <th className="border  opacity-75">{user.email}</th>
-                <th className="border  opacity-75">{user.rol}</th>
-                <th className="border  opacity-75">
+                <th className="border text-base  opacity-75">{user.email}</th>
+                <th className="border text-base  opacity-75">{user.rol}</th>
+                <th className="border text-base  opacity-75">
                   {new Date(user.createdAt).toLocaleDateString("es-ES")}
                 </th>
-                <th className=" border ">
-                  <button
-                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded lg:mr-4 mt-4 mb-4"
-                    onClick={openModal}
-                  >
-                    Eliminar
-                  </button>
-                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded lg:ml-4 mt-4 mb-4">
-                    Editar
-                  </button>
+                <th className=" border text-base py-3 px-6 text-center  ">
+                  <div className="flex item-center justify-center">
+                    <div className="w-6 mr-2 transform hover:text-blue-500 hover:scale-110">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="w-6 mr-2 transform hover:text-red-500 hover:scale-110">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        onClick={openModal}
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                      </svg>
+                    </div>
+                  </div>
                 </th>
               </tr>
             ))}
