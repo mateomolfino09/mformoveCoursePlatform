@@ -98,7 +98,6 @@ const CreateCourse = () => {
             if(files[0].size / 1000000 > 10) {
               toast.error('Formato Incorrecto')
               return
-
             }
     
             //image Url -> secure_url
