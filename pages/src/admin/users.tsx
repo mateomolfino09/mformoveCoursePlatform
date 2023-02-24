@@ -102,7 +102,7 @@ const ShowUsers = ({ users }: Props) => {
                 </th>
                 <th className=" border text-base py-3 px-6 text-center  ">
                   <div className="flex item-center justify-center">
-                    <div className="w-6 mr-2 transform hover:text-blue-500 hover:scale-110">
+                    <div className="opacity-75 w-6 mr-2 transform hover:text-blue-500 hover:scale-110">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -117,7 +117,7 @@ const ShowUsers = ({ users }: Props) => {
                         />
                       </svg>
                     </div>
-                    <div className="w-6 mr-2 transform hover:text-red-500 hover:scale-110">
+                    <div className="opacity-75 w-6 mr-2 transform hover:text-red-500 hover:scale-110">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
