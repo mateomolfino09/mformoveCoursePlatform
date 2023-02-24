@@ -226,9 +226,11 @@ function Course({ clase }: Props) {
 
 
   export async function getServerSideProps(context: any) {
+    console.log('hola')
       const { params } = context
       const { classId, id } = params
       const clase = await getClassById(classId, id)
+      console.log('hola')
       return {
         props: { clase  }
       }

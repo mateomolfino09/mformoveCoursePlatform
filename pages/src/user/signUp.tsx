@@ -31,7 +31,8 @@ function SignUp() {
     const [lastname, setLastname] = useState('')
     const [password, setPassword] = useState('')
     const [conPassword, setConPassword] = useState('')
-    const [message, setMessage]: any = useState('')
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+
     const router = useRouter()
     const recaptchaRef = useRef<any>();
 
@@ -53,18 +54,37 @@ function SignUp() {
       formState: { errors } 
     } = useForm<Inputs>();
 
+    const onChange = () => {
+      if(recaptchaRef.current.getValue()) {
+        setCaptchaToken(recaptchaRef.current.getValue())
+      }
+      else {
+        setCaptchaToken(null)
+
+      }
+    }
+
     const signupUser = async(e: MouseEvent<HTMLButtonElement>) => {
       try {
         e.preventDefault();
         setLoading(true)
 
-        const captcha = await recaptchaRef?.current.executeAsync();
+        const captcha = captchaToken
         if(!captcha) {
           toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde')
+          setLoading(false)
+          setTimeout(() => {
+            window.location.reload()
+          },4000)
+          return
         }
 
         if(password !== conPassword) {
           toast.error('Las contraseñas no coinciden')
+          setLoading(false)
+          setTimeout(() => {
+            window.location.reload()
+          },4000)
           return
         }
 
@@ -85,9 +105,11 @@ function SignUp() {
 
 
       } catch (error: any) {
+        console.log(error)
         toast.error(error.response.data.error)
       }
       setLoading(false)
+
 
       
     }
@@ -181,8 +203,8 @@ function SignUp() {
                 />
               </label>
               <ReCAPTCHA
+                            onChange={onChange}
                             ref={recaptchaRef}
-                            size="invisible"
                             sitekey={key}
                             />   
           </div>

@@ -10,7 +10,6 @@ import { CourseListContext } from '../hooks/courseListContext';
 import { useMemo, useState } from 'react';
 import { CoursesDB } from '../typings';
 import { ClassContext } from '../hooks/classContext';
-import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 
 
 function App({ Component, ...rest }: AppProps) {

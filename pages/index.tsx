@@ -22,14 +22,13 @@ import { CourseListContext } from '../hooks/courseListContext'
 
 interface Props {
   randomImage: Images
-  rickAndMorty: Ricks[]
   session: Session,
   courses: CoursesDB[]
   userDB: User
 }
 
 
-const Home = ({ randomImage, rickAndMorty, courses
+const Home = ({ randomImage, courses
  } : Props) => {
   const [selectedCourse, setSelectedCourse] = useState<CoursesDB | null>(null)  
   const [myCourses, setMyCourses] = useState<CoursesDB[]>([])  
@@ -189,13 +188,11 @@ export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps
     async ({ req }) => {
       const cookies = parseCookies()
       const session = await getSession({ req })
-      const [
-        randomImage,
-        rickAndMorty,
-      ] = await Promise.all([
-        fetch(requests.fetchRandomImages).then((res) => res.json()),
-        fetch(requests.fetchRickAndmort).then((res) => res.json()),
-      ])
+      // const [
+      //   randomImage,
+      // ] = await Promise.all([
+      //   fetch(requests.fetchRandomImages).then((res) => res.json()),
+      // ])
 
       const courses: any = await getCourses()
 
@@ -204,8 +201,7 @@ export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps
 
       return {
         props: {
-          randomImage: randomImage,
-          rickAndMorty : rickAndMorty.results ,
+          // randomImage: randomImage,
           courses,
       }
     }
