@@ -18,7 +18,7 @@ const forget = async (req, res) => {
       const user = await User.findOne({ email })
 
       if (!user) {
-        res.status(404).json({ error: "No hemos encontrado ningún usuario con ese email" })
+        return res.status(404).json({ error: "No hemos encontrado ningún usuario con ese email" })
       }
 
       const validCaptcha = await validateCaptcha(captcha)
@@ -51,13 +51,13 @@ const forget = async (req, res) => {
 
       console.log(resp)
 
-      res.status(200).json({
+      return res.status(200).json({
         message:  `Se ha enviado un mail a ${user.email}, revisa tu correo porfavor.`,
       })
 
     }
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message:  `Hubo un error al enviar un mail a tu cuenta`,
     })
   }

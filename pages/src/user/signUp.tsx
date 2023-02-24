@@ -109,9 +109,6 @@ function SignUp() {
         toast.error(error.response.data.error)
       }
       setLoading(false)
-      setTimeout(() => {
-        window.location.reload()
-      },4000)
 
 
       
