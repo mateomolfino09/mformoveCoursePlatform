@@ -58,10 +58,11 @@ function SignUp() {
         e.preventDefault();
         setLoading(true)
 
-        const captcha = await recaptchaRef?.current.executeAsync();
-        if(!captcha) {
-          toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde')
-        }
+        // const captcha = await recaptchaRef?.current.executeAsync();
+        // console.log('get captcha')
+        // if(!captcha) {
+        //   toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde')
+        // }
 
         if(password !== conPassword) {
           toast.error('Las contraseñas no coinciden')
@@ -75,7 +76,7 @@ function SignUp() {
         }
 
         const { data } = await axios.post('/api/user/register',
-        {email, password, firstname, lastname, captcha}, 
+        {email, password, firstname, lastname}, 
         config
         )
 
