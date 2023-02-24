@@ -14,15 +14,15 @@ connectDB()
 const register = async(req,res) => {
     try {
         if (req.method === "POST") {
-          const { email, password, firstname, lastname } = req.body
+          const { email, password, firstname, lastname, captcha } = req.body
 
-          // const validCaptcha = await validateCaptcha(captcha)
+          const validCaptcha = await validateCaptcha(captcha)
         
-          // if (!validCaptcha) {
-          //   return res.status(422).json({
-          //     error: "Unprocessable request, Invalid captcha code.",
-          //   });
-          // }
+          if (!validCaptcha) {
+            return res.status(422).json({
+              error: "Unprocessable request, Invalid captcha code.",
+            });
+          }
     
           const user = await Users.findOne({ email: email })  
           if (user) {

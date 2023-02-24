@@ -14,18 +14,33 @@ import ReCAPTCHA from "react-google-recaptcha"
 function Forget() {
     const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false);
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null)
     const router = useRouter()
     const recaptchaRef = useRef<any>();
     const key = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY  != undefined ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY  : ''
 
+    const onChange = () => {
+      if(recaptchaRef.current.getValue()) {
+        setCaptchaToken(recaptchaRef.current.getValue())
+      }
+      else {
+        setCaptchaToken(null)
+
+      }
+    }
 
     const handleSubmit = async (event: any) => {
       event.preventDefault()
       setLoading(true)
-      const captcha = await recaptchaRef?.current.executeAsync();
-      console.log('captcha')
+      
+      const captcha = captchaToken
       if(!captcha) {
         toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde')
+        setLoading(false)
+        setTimeout(() => {
+          window.location.reload()
+        },4000)       
+        return
       }
       try {
         const config = {
@@ -41,7 +56,9 @@ function Forget() {
       } catch (error: any) {
         toast.error(error?.response?.data?.error)
       }
-
+      setTimeout(() => {
+        window.location.reload()
+      },4000)
       setLoading(false)
 
     }
@@ -91,8 +108,8 @@ function Forget() {
                         </label>
                         <ReCAPTCHA
                             ref={recaptchaRef}
-                            size="invisible"
                             sitekey={key}
+                            onChange={onChange}
                             />   
                     </div>
 

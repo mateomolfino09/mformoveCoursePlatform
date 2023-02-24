@@ -13,24 +13,20 @@ const forget = async (req, res) => {
 
   try {
     if (req.method === "POST") {
-      const { email } = req.body
-
-      const validCaptcha = await validateCaptcha(captcha)
-
-      console.log('hola')
-        
-      if (!validCaptcha) {
-        return res.status(422).json({
-          error: "Unprocessable request, Invalid captcha code.",
-        });
-      }
-
-      console.log('hola')
+      const { email, captcha } = req.body
 
       const user = await User.findOne({ email })
 
       if (!user) {
-        res.status(404).json({ error: "email not found" })
+        res.status(404).json({ error: "No hemos encontrado ningún usuario con ese email" })
+      }
+
+      const validCaptcha = await validateCaptcha(captcha)
+        
+      if (!validCaptcha) {
+        return res.status(422).json({
+          error: "Captcha Invalido",
+        });
       }
 
       const token = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
