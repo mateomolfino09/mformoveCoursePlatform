@@ -78,7 +78,7 @@ function CourseThumbnail({ items, course, actualClassIndex, isClass, user, cours
               <div className='flex items-center justify-center h-28 min-w-[180px] relative cursor-pointer transition duration-200 ease-out md:h-28 md:min-w-[200px] md:hover:scale-105'  >
               <Link href={`/src/courses/${course?.id}/${index + 1}`}>
                 <Image 
-                    src={item.snippet.thumbnails.standard.url} 
+                    src={item.snippet.thumbnails.standard?.url} 
                     fill={true}
                     className='rounded-sm object-cover md:rounded ' 
                     alt={item.snippet.title}
