@@ -11,6 +11,7 @@ import { Accept, useDropzone } from 'react-dropzone'
 import { toast } from "react-toastify";
 import { ArrowUpTrayIcon, DocumentIcon } from "@heroicons/react/24/outline";
 import requests from "../../../utils/requests";
+import AdmimDashboardLayout from "../../../components/AdmimDashboardLayout";
 
 interface User {
   id: number;
@@ -140,7 +141,8 @@ const CreateCourse = () => {
     }
 
     return (
-        <div className='relative flex w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent'>
+      <AdmimDashboardLayout>
+      <div className='relative flex w-full flex-col bg-black md:items-center md:justify-center md:bg-transparent'>
             <Head>
                 <title>Video Streaming</title>
                 <meta name="description" content="Stream Video App" />
@@ -149,15 +151,7 @@ const CreateCourse = () => {
 
             <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}>
             {/* Logo position */}
-            <Link href={'/'}>
-            <img
-              src="https://rb.gy/ulxxee"
-              className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6"
-              width={150}
-              height={150}
-            />
-            </Link>
-            <form className='relative mt-24 space-y-8 rounded bg-black/75 py-12 px-8 md:mt-0 md:max-w-lg md:px-14' onSubmit={handleSubmit}>
+            <form className='relative mt-24 space-y-8 rounded bg-black/75 py-12  px-8 md:mt-4 md:max-w-lg md:px-14' onSubmit={handleSubmit}>
               <h1 className='text-4xl font-semibold'>Agregar un Curso</h1>
               <div className='space-y-8'>
               <label className='inline-block w-full'>
@@ -232,6 +226,8 @@ const CreateCourse = () => {
           </div>
 
         </div>
+    </AdmimDashboardLayout>
+
       )
 }
 

@@ -1,4 +1,4 @@
-import { MagnifyingGlassIcon, BellIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, BellIcon, Cog8ToothIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { RefObject, useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
@@ -92,21 +92,21 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) 
         {scrollToNuevo != null ? <li onClick={scrollToNuevo} className="headerLink">Nuevo</li> : <Link href={'/'}><li className="headerLink">Nuevo</li></Link>}
         {scrollToList != null ? <li onClick={scrollToList} className="headerLink">Mi Lista</li> : <Link href={'/'}><li className="headerLink">Mi Lista</li></Link>}
         {scrollToMy != null ? <li onClick={scrollToMy} className="headerLink">Mis Cursos</li> : <Link href={'/'}><li className="headerLink">Mis Cursos</li></Link>}
-          
-          { user?.rol === 'Admin' ? (
-            <>
-            <Link href={'/src/admin/createCourse'}><li className="headerLink">Crear Curso</li></Link>
-            <Link href={'/src/admin/users'}><li className="headerLink">Usuarios</li></Link>
-            </>
-          ) : null
-          }
-
+        
         </ul>
       </div>
       <div className="flex items-center space-x-4 text-sm font-light">
-        <MagnifyingGlassIcon className="hidden h-6 w-6 sm:inline " />
+      { user?.rol === 'Admin' ? (
+            <>
+            <Link href={'/src/admin'}>
+              <Cog8ToothIcon className="hidden h-6 w-6 sm:inline cursor-pointer" />
+            </Link>
+            </>
+          ) : null
+          }
+        <MagnifyingGlassIcon className="hidden h-6 w-6 sm:inline cursor-pointer" />
         <p className="hidden lg:inline">Mis cursos</p>
-        <BellIcon className="h-6 w-6" />
+        <BellIcon className="h-6 w-6 cursor-pointer" />
         {/* <Link href="/account"> */}
         <Link href={'src/user/account'}>
           <img

@@ -68,6 +68,11 @@
   @apply bg-[#e50914]
 }
 
+.bg-light-red-darker {
+  @apply bg-[#e5091499]
+}
+
+
   @keyframes spinner {
     0% {
       transform: rotate(0deg);
