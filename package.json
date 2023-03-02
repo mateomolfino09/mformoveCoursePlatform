@@ -19,6 +19,7 @@
     "@mui/x-data-grid": "^5.17.25",
     "@next-auth/mongodb-adapter": "^1.1.1",
     "@reduxjs/toolkit": "^1.9.1",
+    "@rollup/plugin-inject": "^5.0.3",
     "@sendgrid/mail": "^7.7.0",
     "@types/bcrypt": "^5.0.0",
     "@types/node": "18.11.18",
