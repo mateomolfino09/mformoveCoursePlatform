@@ -15,20 +15,21 @@ import Modal from '../components/Modal'
 import { CourseModal } from '../redux/courseModal/courseModalTypes'
 import { State } from '../redux/reducers'
 import { getCourses } from './api/course/getCourses'
-import axios from "axios"
 import Head from 'next/head'
 import { listClasses } from '@mui/material'
 import { CourseListContext } from '../hooks/courseListContext'
+import { getCookie } from 'cookies-next'
+import { getUserFromBack } from './api/user/getUserFromBack'
 
 interface Props {
   randomImage: Images
   session: Session,
   courses: CoursesDB[]
-  userDB: User
+  user: User
 }
 
 
-const Home = ({ randomImage, courses
+const Home = ({ user, randomImage, courses
  } : Props) => {
   const [selectedCourse, setSelectedCourse] = useState<CoursesDB | null>(null)  
   const [myCourses, setMyCourses] = useState<CoursesDB[]>([])  
@@ -47,8 +48,6 @@ const Home = ({ randomImage, courses
   const cookies = parseCookies()
   const {data: session} = useSession() 
   const router = useRouter()
-
-  let user = cookies?.user ? JSON.parse(cookies.user): session?.user ? session.user : ''
 
   function scrollToList() {
     if(refToList?.current) {
@@ -94,7 +93,7 @@ const Home = ({ randomImage, courses
   }
 
   useEffect(() => {
-    if (user === '') {
+    if (!user) {
       router.push("/src/user/login")
     }
     const quantity = Math.round(courses.length / 3) 
@@ -103,20 +102,10 @@ const Home = ({ randomImage, courses
     new Date(Date.parse(b.udpatedAt) - Date.parse(a.udpatedAt)).getTime()
   ).splice(-quantity))
 
-    const getUserDB = async () => {
-      try {
-        const config = {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        const email = user.email
-        const { data } = await axios.post('/api/user/getUser', { email }, config)
-        !userDB ? setUserDB(data) : null
-
+    const manageUser = () => {
        let listToSet: CoursesDB[] = []
 
-        data.courses.forEach((course: CourseUser) => {
+        user.courses.forEach((course: CourseUser) => {
           let courseInCourseIndex = courses.findIndex((x) => {
             return  x._id === course.course
           })
@@ -145,14 +134,8 @@ const Home = ({ randomImage, courses
         })
 
         setListCourse([...listToSet])
-
-      } catch (error: any) {
-          console.log(error.message)
-      }
   }
-  getUserDB()
-  // setListCourses(listCourses.filter((item, index) => listCourses.indexOf(item) === index))
-
+  manageUser()
 
   }, [router, session])
 
@@ -178,31 +161,26 @@ const Home = ({ randomImage, courses
         </section>
       </main>
 
-      {activeModal && <Modal courseDB={selectedCourse} user={userDB} updateUserDB={updateUserDB}/>}
+      {activeModal && <Modal courseDB={selectedCourse} user={user} updateUserDB={updateUserDB}/>}
     </div>
  )
 }
 
 export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(
   (store) =>
-    async ({ req }) => {
+    async ({ req, res }) => {
       const cookies = parseCookies()
       const session = await getSession({ req })
-      // const [
-      //   randomImage,
-      // ] = await Promise.all([
-      //   fetch(requests.fetchRandomImages).then((res) => res.json()),
-      // ])
-
       const courses: any = await getCourses()
-
-      const user: User = cookies?.user ? JSON.parse(cookies.user) : session?.user
-
+      const jsonCookie = getCookie('user', { req, res })?.toString();
+      const userCookie = jsonCookie != null ? JSON.parse(jsonCookie) : null
+      const email = userCookie.email   
+      const user = await getUserFromBack(email)
 
       return {
         props: {
-          // randomImage: randomImage,
           courses,
+          user
       }
     }
   }

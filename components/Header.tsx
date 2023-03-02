@@ -33,8 +33,7 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) 
   const cookies = parseCookies();
   const { data: session } = useSession();
   const router = useRouter();
-  const [userState, setUserState] = useState<any>(null);
-
+  const [userState, setUserState] = useState<any>(null); 
   const [isScrolled, setIsScrolled] = useState(false);
 
   const user: User = dbUser

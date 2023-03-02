@@ -2,7 +2,7 @@ import {getSession, useSession } from "next-auth/react";
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link';
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import axios from "axios";
 import { parseCookies } from "nookies";
@@ -12,6 +12,9 @@ import { toast } from "react-toastify";
 import { ArrowUpTrayIcon, DocumentIcon } from "@heroicons/react/24/outline";
 import requests from "../../../utils/requests";
 import AdmimDashboardLayout from "../../../components/AdmimDashboardLayout";
+import { getCookie } from "cookies-next";
+import { getUserFromBack } from "../../api/user/getUserFromBack";
+import { UserContext } from "../../../hooks/userContext";
 
 interface User {
   id: number;
@@ -33,7 +36,11 @@ interface Props {
   session: User
 }
 
-const CreateCourse = () => {
+interface Props {
+  user: User 
+}
+
+const CreateCourse = ({ user }: Props) => {
 
     const [name, setName] = useState('')
     const [playlistId, setPlaylistId] = useState('')
@@ -43,12 +50,10 @@ const CreateCourse = () => {
     const {data: session} = useSession() 
     const router = useRouter()
     const [files, setFiles] = useState<any>([])
+    const [userCtx, setUserCtx] = useState<User>(user)
 
-    useEffect(() => {
-      console.log(files)
-    }, [files])
+    const providerValue = useMemo(() => ({userCtx, setUserCtx}), [userCtx, setUserCtx])
   
-
     const { getRootProps, getInputProps }: any = useDropzone({
       onDrop: (acceptedFiles: any) => {
         setFiles(acceptedFiles.map((file: any) => Object.assign(file, {
@@ -63,25 +68,11 @@ const CreateCourse = () => {
     (
       <img src={file.preview} key={file.name} alt="image" className="cursor-pointer object-cover w-full h-full absolute"/>
     ))
-  
-
-    let user = cookies?.user ? JSON.parse(cookies.user): session?.user ? session.user : ''
-    // const dispatch = useDispatch()
 
     useEffect(() => {
-            const fetchData = async () => {
-                try {
-                user = await loadUser(user?.email, user, '../../api/user/profile')
-                if (user === null || user.rol != 'Admin') {
-                    router.push("/src/user/login")
-                }
-
-                } catch (error: any) {
-                    console.log(error.message)
-                }
-            }
-            fetchData()
-
+      if (user === null || user.rol != 'Admin') {
+          router.push("/src/user/login")
+      }
     }, [session, router])
 
     async function handleSubmit(event: any) {
@@ -141,6 +132,7 @@ const CreateCourse = () => {
     }
 
     return (
+      <UserContext.Provider value={providerValue}>
       <AdmimDashboardLayout>
       <div className='relative flex w-full flex-col bg-black md:items-center md:justify-center md:bg-transparent'>
             <Head>
@@ -227,18 +219,21 @@ const CreateCourse = () => {
 
         </div>
     </AdmimDashboardLayout>
+    </UserContext.Provider>
 
       )
 }
 
     export async function getServerSideProps(context: any) {
-        const cookies = parseCookies()
         const session = await getSession(context)
+        const { req, res } = context
+        const jsonCookie = getCookie('user', { req, res })?.toString();
+        const userCookie = jsonCookie != null ? JSON.parse(jsonCookie) : null
+        const email = userCookie.email   
+        const user = await getUserFromBack(email)
 
         return {
-            props: {
-                session
-            }
+          props: { user }
         }
     }
 

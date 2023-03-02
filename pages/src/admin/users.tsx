@@ -5,52 +5,45 @@ import { getUserFromBack } from "../../api/user/getUserFromBack";
 import { getSession, useSession } from "next-auth/react";
 import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { loadUser } from "../../api/user/loadUser";
 import DeleteUser from "../../../components/DeleteUser";
 import AdmimDashboardLayout from "../../../components/AdmimDashboardLayout";
 import { PencilIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { getCookie } from "cookies-next";
+import { getClassById } from "../../api/class/getClassById";
+import { updateActualCourseSS } from "../../api/user/updateActualCourseSS";
+import { User } from "../../../typings";
+import { UserContext } from "../../../hooks/userContext";
 
 interface Props {
   users: any;
+  user: User
 }
-const ShowUsers = ({ users }: Props) => {
+const ShowUsers = ({ users, user }: Props) => {
   const cookies = parseCookies();
   const { data: session } = useSession();
   const router = useRouter();
   let [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
-  let user = cookies?.user
-    ? JSON.parse(cookies.user)
-    : session?.user
-    ? session.user
-    : "";
+  const [userCtx, setUserCtx] = useState<User>(user)
+
+  const providerValue = useMemo(() => ({userCtx, setUserCtx}), [userCtx, setUserCtx])
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        user = await loadUser(user?.email, user, "../../api/user/profile");
         if (user === null || user.rol != "Admin") {
           router.push("/src/user/login");
         }
-      } catch (error: any) {
-        console.log(error.message);
-      }
-    };
-    fetchData();
+      
   }, [session, router]);
-
-  useEffect(() => {
-    if (ref.current != null) {
-      console.log("ref", ref.current);
-    }
-  });
 
   function openModal() {
     setIsOpen(true);
   }
 
   return (
+    <UserContext.Provider value={providerValue}>
+
     <AdmimDashboardLayout>
       <>
         <Head>
@@ -100,17 +93,18 @@ const ShowUsers = ({ users }: Props) => {
         <DeleteUser isOpen={isOpen} setIsOpen={setIsOpen} />
       </>
     </AdmimDashboardLayout>
+    </UserContext.Provider>
 
   );
 };
-export async function getServerSideProps() {
+export async function getServerSideProps(context: any) {
+  const { params, query, req, res } = context
+  const jsonCookie = getCookie('user', { req, res })?.toString();
+  const userCookie = jsonCookie != null ? JSON.parse(jsonCookie) : null
+  const email = userCookie.email   
+  const user = await getUserFromBack(email)
   const users: any = await getConfirmedUsers();
-
-  // for (let i = 0; i < users.length; i++) {
-  //     // console.log(users[0].courses)
-
-  // }
-  return { props: { users } };
+  return { props: { users, user } };
 }
 
 export default ShowUsers;

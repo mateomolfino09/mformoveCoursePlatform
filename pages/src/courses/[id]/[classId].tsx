@@ -9,7 +9,7 @@ import VideoPlayer from '../../../../components/VideoPlayer'
 import Head from 'next/head'
 import Link from 'next/link'
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
-
+import { getCookies, getCookie, setCookie, deleteCookie } from 'cookies-next';
 import { parseCookies } from 'nookies'
 import { getSession, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
@@ -18,36 +18,31 @@ import { ArrowDownLeftIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import ClassDescription from '../../../../components/ClassDescription'
 import ReactPlayer from 'react-player'
 import { ClassContext } from '../../../../hooks/classContext'
+import { updateActualCourseSS } from '../../../api/user/updateActualCourseSS'
+import Cookies from 'js-cookie'
 
 interface Props {
   clase: ClassesDB
   classId: number
   lastCourseClass: number
-  user: any
+  user: User | null
 }
 
-function Course({ clase }: Props) {
+function Course({ clase, user }: Props) {
   const courseDB = clase.course
   const lastClass = courseDB.classes.length
   const youtubeURL = `${requests.playlistYTAPI}?part=snippet&playlistId=${courseDB?.playlist_code}&maxResults=50&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`
-  const [items, setItems] = useState<Item[] | null>(null)
   const [forward, setForward] = useState<boolean>(false)
   const [time, setTime] = useState<number | null | undefined>(null)
   const [play, setPlay] = useState<boolean>(false)
-
   const [resumeModal, setResumeModal] = useState<boolean>(false)
-
   const [courseUser, setCourseUser] = useState<CourseUser | null>(null)
-  const url =  `https://www.youtube.com/embed/${clase.class_code}?rel=0`
   const [hasWindow, setHasWindow] = useState(false);
-  const [userDB, setUserDB] = useState<User | null>(null)  
   const [playerRef, setPlayerRef] = useState<RefObject<ReactPlayer> | null>(null);
   const cookies = parseCookies()
   const {data: session} = useSession() 
-  const {actualClass, setActualClass} = useContext( ClassContext )
   const router = useRouter()
   const MINUTE_MS = process.env.NEXT_PUBLIC_TIME_COURSE_SAVE ? +process.env.NEXT_PUBLIC_TIME_COURSE_SAVE : 0
-  let user = cookies?.user ? JSON.parse(cookies.user): session?.user ? session.user : ''
 
   const exitingFunction = async (actual = 0) => {
     const actualTime = actual == 0 ? time : actual;
@@ -110,45 +105,21 @@ function Course({ clase }: Props) {
   useEffect(() => {
 
     exitingFunction()
-
-    setActualClass(clase.id)
   }, [router])
 
   useEffect(() => {
-
     if (typeof window !== "undefined") {
       setHasWindow(true);
     }
-    if (user === '') {
+    if (!user) {
       router.push("/src/user/login")
     }
-
-    const getUserDB = async () => {
-      try {
-        const config = {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        const courseId = courseDB._id
-        const actualChapter = clase.id
-        const email = user.email
-        const { data } = await axios.post('/api/user/getUser', { email }, config)
-        await axios.post('/api/user/updateActualCourse', { email, courseId, actualChapter }, config)
-        !userDB ? setUserDB(data) : null
-
-        let courseActual = data.courses.find((course: CourseUser) => course.course === courseDB._id)
-        setTime(courseActual.classes[clase.id -1].actualTime)
-        setCourseUser(courseActual)
-        handleLoad(courseActual.classes[clase.id -1].actualTime , playerRef?.current?.getDuration() ?  playerRef?.current?.getDuration() : 0)
-
-      } catch (error: any) {
-          console.log(error.message)
-      }
+    else {
+      let courseActual = user.courses.find((course: CourseUser) => course.course === courseDB._id)
+      setTime(courseActual?.classes[clase.id -1].actualTime)
+      setCourseUser(courseActual ? courseActual : null)
+      handleLoad(courseActual ? courseActual?.classes[clase.id -1].actualTime : 0 , playerRef?.current?.getDuration() ?  playerRef?.current?.getDuration() : 0)
     }
-    getUserDB()
-
-
   }, [router])
 
   return (
@@ -226,13 +197,16 @@ function Course({ clase }: Props) {
 
 
   export async function getServerSideProps(context: any) {
-    console.log('hola')
-      const { params } = context
+      const { params, query, req, res } = context
+      const jsonCookie = getCookie('user', { req, res })?.toString();
+      const userCookie = jsonCookie != null ? JSON.parse(jsonCookie) : null
+      const email = userCookie.email   
       const { classId, id } = params
       const clase = await getClassById(classId, id)
-      console.log('hola')
+      const user = await updateActualCourseSS(email, id, classId)
+
       return {
-        props: { clase  }
+        props: { clase, user  }
       }
   } 
 

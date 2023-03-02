@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 import {
   Bars3CenterLeftIcon,
   PencilIcon,
@@ -9,13 +9,18 @@ import {
 import { BellIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { Menu, Transition, Popover } from "@headlessui/react";
 import Link from "next/link";
+import { User } from "../typings";
+import { UserContext } from "../hooks/userContext";
 
 interface Props {
   showNav: any
   setShowNav: any
+  dbUser: User | null
 }
 
 const AdminDashboardTopBar = ({ showNav, setShowNav}: Props) => {
+  const {userCtx, setUserCtx} = useContext( UserContext )
+
   return (
     <div className={`bg-gray-100 fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] ${showNav ? 'pl-56' : ''}`}>
       <div className="pl-4 md:pl-16">
@@ -113,7 +118,7 @@ const AdminDashboardTopBar = ({ showNav, setShowNav}: Props) => {
               />
               </picture>
               <span className="hidden md:block font-medium text-gray-700">
-                UserName
+                {userCtx?.name}
               </span>
               <ChevronDownIcon className="ml-2 h-4 w-4 text-gray-700" />
             </Menu.Button>

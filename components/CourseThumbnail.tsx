@@ -67,6 +67,7 @@ interface Props {
 } 
 function CourseThumbnail({ items, course, actualClassIndex, isClass, user, courseIndex }: Props) {
   const classes = user?.courses[courseIndex].classes
+  const email = user?.email
 
   return (
     <>
@@ -76,7 +77,7 @@ function CourseThumbnail({ items, course, actualClassIndex, isClass, user, cours
               <h3 className='text-[#d2d2d2] flex text-2xl justify-center'>{(items?.indexOf(item) + 1).toString()}</h3>
 
               <div className='flex items-center justify-center h-28 min-w-[180px] relative cursor-pointer transition duration-200 ease-out md:h-28 md:min-w-[200px] md:hover:scale-105'  >
-              <Link href={`/src/courses/${course?.id}/${index + 1}`}>
+              <Link href={{ pathname: `/src/courses/${course?.id}/${index + 1}`, query: { email }}}>
                 <Image 
                     src={item.snippet.thumbnails.standard?.url} 
                     fill={true}
@@ -84,7 +85,7 @@ function CourseThumbnail({ items, course, actualClassIndex, isClass, user, cours
                     alt={item.snippet.title}
                     loader={imageLoader}
                     />
-                                  </Link>
+              </Link>
 
               <div className={`absolute top-[64px] left-0 right-0 bottom-0 flex-col space-y-48 justify-between z-[1]`}></div>
                 <Grid container direction='row' justifyContent='space-between' alignItems='center' className={'w-full relative top-14 md:top-[3.7rem] md:!mt-0' }>
