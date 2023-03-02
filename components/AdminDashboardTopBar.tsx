@@ -20,7 +20,8 @@ interface Props {
 
 const AdminDashboardTopBar = ({ showNav, setShowNav}: Props) => {
   const {userCtx, setUserCtx} = useContext( UserContext )
-
+ 
+  
   return (
     <div className={`bg-gray-100 fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] ${showNav ? 'pl-56' : ''}`}>
       <div className="pl-4 md:pl-16">
