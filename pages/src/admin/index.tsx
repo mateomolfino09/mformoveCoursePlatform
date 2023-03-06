@@ -13,7 +13,7 @@ interface Props {
   user: User 
 }
 
-const index = ({ user }: Props) => {
+const Index = ({ user }: Props) => {
   const [userCtx, setUserCtx] = useState<User>(user)
   const router = useRouter()
 
@@ -57,4 +57,4 @@ export async function getServerSideProps(context: any) {
   }
 } 
 
-export default index
+export default Index
