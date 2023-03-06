@@ -19,7 +19,6 @@ import Head from 'next/head'
 import { listClasses } from '@mui/material'
 import { CourseListContext } from '../hooks/courseListContext'
 import { getUserFromBack } from './api/user/getUserFromBack'
-import Cookies from 'cookies'
 
 interface Props {
   randomImage: Images

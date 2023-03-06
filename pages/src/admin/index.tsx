@@ -1,5 +1,6 @@
-import Cookies from 'cookies'
+import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import { parseCookies } from 'nookies'
 import React, { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout'  
@@ -43,12 +44,12 @@ const index = ({ user }: Props) => {
 
 export async function getServerSideProps(context: any) {
   const { params, query, req, res } = context
-  const cookies = new Cookies(req, res)
-  // Get a cookie
-  const jsonCookie = cookies.get('user')?.toString();
+  const session = await getSession({ req })
+    // Get a cookie
+  const cookies = parseCookies(context)
+  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
+  const email = userCookie.email 
 
-  const userCookie = jsonCookie != null ? JSON.parse(jsonCookie) : null
-  const email = userCookie.email   
   const user = await getUserFromBack(email)
 
   return {
