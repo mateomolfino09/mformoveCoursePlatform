@@ -9,7 +9,6 @@ import VideoPlayer from '../../../../components/VideoPlayer'
 import Head from 'next/head'
 import Link from 'next/link'
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
-import { getCookies, getCookie, setCookie, deleteCookie } from 'cookies-next';
 import { parseCookies } from 'nookies'
 import { getSession, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
@@ -19,7 +18,6 @@ import ClassDescription from '../../../../components/ClassDescription'
 import ReactPlayer from 'react-player'
 import { ClassContext } from '../../../../hooks/classContext'
 import { updateActualCourseSS } from '../../../api/user/updateActualCourseSS'
-import Cookies from 'js-cookie'
 
 interface Props {
   clase: ClassesDB
@@ -198,8 +196,9 @@ function Course({ clase, user }: Props) {
 
   export async function getServerSideProps(context: any) {
       const { params, query, req, res } = context
-      const jsonCookie = getCookie('user', { req, res })?.toString();
-      const userCookie = jsonCookie != null ? JSON.parse(jsonCookie) : null
+      const session = await getSession({ req })
+      const cookies = parseCookies(context)
+      const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
       const email = userCookie.email   
       const { classId, id } = params
       const clase = await getClassById(classId, id)

@@ -18,8 +18,8 @@ import { getCourses } from './api/course/getCourses'
 import Head from 'next/head'
 import { listClasses } from '@mui/material'
 import { CourseListContext } from '../hooks/courseListContext'
-import { getCookie } from 'cookies-next'
 import { getUserFromBack } from './api/user/getUserFromBack'
+import Cookies from 'cookies'
 
 interface Props {
   randomImage: Images
@@ -168,14 +168,18 @@ const Home = ({ user, randomImage, courses
 
 export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(
   (store) =>
-    async ({ req, res }) => {
-      const cookies = parseCookies()
+    async (ctx) => {
+      const { req } = ctx
       const session = await getSession({ req })
       const courses: any = await getCourses()
-      const jsonCookie = getCookie('user', { req, res })?.toString();
-      const userCookie = jsonCookie != null ? JSON.parse(jsonCookie) : null
-      const email = userCookie.email   
+        // Get a cookie
+      const cookies = parseCookies(ctx)
+      const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
+      const email = userCookie.email 
+  
       const user = await getUserFromBack(email)
+
+      console.log(email)
 
       return {
         props: {

@@ -12,7 +12,6 @@ import { toast } from "react-toastify";
 import { ArrowUpTrayIcon, DocumentIcon } from "@heroicons/react/24/outline";
 import requests from "../../../utils/requests";
 import AdmimDashboardLayout from "../../../components/AdmimDashboardLayout";
-import Cookies from 'cookies'
 import { getUserFromBack } from "../../api/user/getUserFromBack";
 import { UserContext } from "../../../hooks/userContext";
 
@@ -226,11 +225,9 @@ const CreateCourse = ({ user }: Props) => {
 
     export async function getServerSideProps(context: any) {
         const session = await getSession(context)
-        const { req, res } = context
-        const cookies = new Cookies(req, res)
-        // Get a cookie
-        const jsonCookie = cookies.get('user')?.toString();
-        const userCookie = jsonCookie != null ? JSON.parse(jsonCookie) : null
+        const { params, query, req, res } = context
+        const cookies = parseCookies(context)
+        const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
         const email = userCookie.email   
         const user = await getUserFromBack(email)
 

@@ -1,4 +1,4 @@
-import { getCookie } from 'cookies-next'
+import Cookies from 'cookies'
 import { useRouter } from 'next/router'
 import React, { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -43,7 +43,10 @@ const index = ({ user }: Props) => {
 
 export async function getServerSideProps(context: any) {
   const { params, query, req, res } = context
-  const jsonCookie = getCookie('user', { req, res })?.toString();
+  const cookies = new Cookies(req, res)
+  // Get a cookie
+  const jsonCookie = cookies.get('user')?.toString();
+
   const userCookie = jsonCookie != null ? JSON.parse(jsonCookie) : null
   const email = userCookie.email   
   const user = await getUserFromBack(email)

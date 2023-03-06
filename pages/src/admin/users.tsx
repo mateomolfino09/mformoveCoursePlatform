@@ -10,7 +10,6 @@ import { loadUser } from "../../api/user/loadUser";
 import DeleteUser from "../../../components/DeleteUser";
 import AdmimDashboardLayout from "../../../components/AdmimDashboardLayout";
 import { PencilIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
-import { getCookie } from "cookies-next";
 import { getClassById } from "../../api/class/getClassById";
 import { updateActualCourseSS } from "../../api/user/updateActualCourseSS";
 import { User } from "../../../typings";
@@ -99,8 +98,9 @@ const ShowUsers = ({ users, user }: Props) => {
 };
 export async function getServerSideProps(context: any) {
   const { params, query, req, res } = context
-  const jsonCookie = getCookie('user', { req, res })?.toString();
-  const userCookie = jsonCookie != null ? JSON.parse(jsonCookie) : null
+  const session = await getSession({ req })
+  const cookies = parseCookies(context)
+  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
   const email = userCookie.email   
   const user = await getUserFromBack(email)
   const users: any = await getConfirmedUsers();
