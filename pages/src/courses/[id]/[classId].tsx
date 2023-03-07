@@ -128,7 +128,7 @@ function Course({ clase, user }: Props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className={`bg-[#141414]`}>
-          <div onClick={() => handleRouteChange('/')}
+          <div onClick={() => handleRouteChange('/src/home')}
           >
             <img
               alt='Logo Video Stream'
@@ -203,7 +203,7 @@ function Course({ clase, user }: Props) {
       const { classId, id } = params
       const clase = await getClassById(classId, id)
       const user = await updateActualCourseSS(email, id, classId)
-
+ 
       return {
         props: { clase, user  }
       }

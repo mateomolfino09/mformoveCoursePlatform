@@ -44,11 +44,11 @@ const Login = ({ providers, session }: any) => {
     useEffect(() => {
       if (session) {
         toast.success("Login exitoso!")
-        router.push("/")
+        router.push("/src/home")
       }
   
       if (cookies?.user) {
-        router.push("/")
+        router.push("/src/home")
       }
     }, [session, router, cookies?.user])
 
@@ -69,13 +69,11 @@ const Login = ({ providers, session }: any) => {
         {email, password}, 
         config
         )
-        console.log('aca')
-
         toast.success(data.message)
         cookie.set('token', data?.token)
         cookie.set('user', JSON.stringify(data?.user))
 
-        router.push('/')
+        router.push('/src/home')
       } catch (error: any) {
         if(error?.response?.data?.validate === true) {
           setValidateEmail(true)

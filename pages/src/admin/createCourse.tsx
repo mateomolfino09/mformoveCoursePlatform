@@ -209,7 +209,7 @@ const CreateCourse = ({ user }: Props) => {
             <button onClick={(e) => (e)} className='w-full rounded bg-light-red py-3 font-semibold'>Crear Curso </button>
             <div className='text-[gray]'>
                   Volver al Inicio
-                  <Link href={"/"}> 
+                  <Link href={"/src/home"}> 
                   <button type='button' className='text-white hover:underline ml-2'> Volver</button>
                   </Link>
               </div>

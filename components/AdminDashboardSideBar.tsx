@@ -9,7 +9,7 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(({ showNav }: any, re
   return (
     <div ref={ref} className='fixed w-56 h-full bg-gray-100 shadow-sm'>
       <div className='flex justify-center mt-6 mb-14'>
-        <Link href={'/'}>
+        <Link href={'/src/home'}>
           <picture>
             <img
               alt='icon image'

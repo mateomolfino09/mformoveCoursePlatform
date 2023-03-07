@@ -42,11 +42,11 @@ function SignUp() {
 
     useEffect(() => {
       if (session) {
-        router.push("/")
+        router.push("/src/home")
       }
   
       if (cookies?.user) {
-        router.push("/")
+        router.push("/src/home")
       }
     }, [router])
     //using React Hook Form library

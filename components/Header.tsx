@@ -71,7 +71,7 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) 
     cookie.remove("token");
     cookie.remove("user");
 
-    router.push("/src/user/login");
+    router.push("/user/login");
   };
 
   return (
@@ -86,18 +86,18 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) 
         />
 
         <ul className="hidden space-x-4 md:flex">
-        <Link href={'/'}><li className="headerLink">Home</li></Link>
-        {scrollToModa != null ? <li onClick={scrollToModa} className="headerLink">Cursos</li> : <Link href={'/'}><li className="headerLink">Cursos</li></Link>}
-        {scrollToNuevo != null ? <li onClick={scrollToNuevo} className="headerLink">Nuevo</li> : <Link href={'/'}><li className="headerLink">Nuevo</li></Link>}
-        {scrollToList != null ? <li onClick={scrollToList} className="headerLink">Mi Lista</li> : <Link href={'/'}><li className="headerLink">Mi Lista</li></Link>}
-        {scrollToMy != null ? <li onClick={scrollToMy} className="headerLink">Mis Cursos</li> : <Link href={'/'}><li className="headerLink">Mis Cursos</li></Link>}
+        <Link href={'/src/home'}><li className="headerLink">Home</li></Link>
+        {scrollToModa != null ? <li onClick={scrollToModa} className="headerLink">Cursos</li> : <Link href={'/src/home'}><li className="headerLink">Cursos</li></Link>}
+        {scrollToNuevo != null ? <li onClick={scrollToNuevo} className="headerLink">Nuevo</li> : <Link href={'/src/home'}><li className="headerLink">Nuevo</li></Link>}
+        {scrollToList != null ? <li onClick={scrollToList} className="headerLink">Mi Lista</li> : <Link href={'/src/home'}><li className="headerLink">Mi Lista</li></Link>}
+        {scrollToMy != null ? <li onClick={scrollToMy} className="headerLink">Mis Cursos</li> : <Link href={'/src/home'}><li className="headerLink">Mis Cursos</li></Link>}
         
         </ul>
       </div>
       <div className="flex items-center space-x-4 text-sm font-light">
       { user?.rol === 'Admin' ? (
             <>
-            <Link href={'/src/admin'}>
+            <Link href={'/admin'}>
               <Cog8ToothIcon className="hidden h-6 w-6 sm:inline cursor-pointer" />
             </Link>
             </>
@@ -107,7 +107,7 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) 
         <p className="hidden lg:inline">Mis cursos</p>
         <BellIcon className="h-6 w-6 cursor-pointer" />
         {/* <Link href="/account"> */}
-        <Link href={'src/user/account'}>
+        <Link href={'user/account'}>
           <img
             src="https://rb.gy/g1pwyx"
             alt=""

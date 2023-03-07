@@ -11,7 +11,7 @@ import { useAppDispatch } from '../hooks/useTypeSelector';
 import { useSelector } from 'react-redux';
 
 interface Props {
-    randomImage: Images;
+    randomImage: Images | null;
 }
 
 function Banner({ randomImage }: Props) {

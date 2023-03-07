@@ -77,7 +77,7 @@ function Account() {
       </Head>
 
       <header className={`bg-[#141414]`}>
-        <Link href="/">
+        <Link href="/src/home">
           <img
             src="https://rb.gy/ulxxee"
             width={120}
