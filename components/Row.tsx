@@ -53,33 +53,33 @@ function Row({ title, courses, setSelectedCourse, items, courseDB, actualCourseI
                 {!activeModal && !isClass ? (
                     <>
                         <h2 className="w-56 cursor-pointer text-sm font-semibold text-[#E5E5E5] transition duration-200 hover:text-white md:text-2xl" >{title}</h2>
-                        <div className="group relative md:-ml-2">
+          <div className="group relative md:-ml-2">
                             <ChevronLeftIcon className={`ScrollIcon left-2 ${!isMoved && 'hidden'}`}  onClick={() => handleClick("left")}/>
                             <div ref={rowRef} className="scrollbar-hide flex items-center space-x-0.5 overflow-x-scroll md:space-x-2.5 md:p-2">
-                            {courses?.map((course) => (
+              {courses?.map((course) => (
                                 <Thumbnail key={course?._id} course={course} setSelectedCourse={setSelectedCourse}/>
-                            ))}
-                            </div>
+              ))}
+            </div>
 
                             <ChevronRightIcon className={`ScrollIcon right-2`} onClick={() => handleClick("right")}/>
                             
-                        </div>
+          </div>
 
-                    </>
+        </>
 
-                ) : (
-                    <>
-                    <div className="group relative w-full">
+      ) : (
+        <>
+          <div className="group relative w-full">
                         <div ref={rowRef} className="scrollbar-hide flex flex-col items-center space-y-12 bg-[#181818]">
                             <CourseThumbnail items={items} course={courseDB} actualClassIndex={actualCourseIndex} isClass={isClass} user={user} courseIndex={courseIndex}/>
-                        </div>
-                    </div>
-                    </>
+            </div>
+          </div>
+        </>
 
-                )}
+      )}
 
 
-        </div>
+    </div>
   )
 }
 
