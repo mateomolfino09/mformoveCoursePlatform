@@ -39,15 +39,14 @@ const forget = async (req, res) => {
       const link = `${origin}/src/user/reset/${token}`;
 
       const message = `
-      <div>
-       Haz click en el link para resetear tu contraseña, si el link no funciona pegalo en el buscador!.
-       </br>
+      <div>     
        <div>
-       <button>
-        <a href="${link}">Restablecer contraseña</a>
+       <button style="background-color:#e50914; border:none;border-radius: 4px;width:100%; padding:14px 0px; margin-bottom:15px">
+        <a style="color:white; text-decoration: none; font-weight:700; font-size:14px" href="${link}">Restablecer contraseña</a>
        </button>
        </div>
-       
+       <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de Video Stream.</p>
+       <hr style="height:2px;background-color:#221f1f;border:none">       
       </div> `;
 
       let resp = await sendEmail({
@@ -55,11 +54,9 @@ const forget = async (req, res) => {
         content:
           "Restablezcamos tu contraseña para que puedas seguir disfrutando Video Stream.",
         message: message,
-        to: user.email,
-        subject: "Resetear Contraseña",
+        to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
+        subject: "Resetear contraseña",
       });
-
-      console.log(resp);
 
       return res.status(200).json({
         message: `Se ha enviado un mail a ${user.email}, revisa tu correo porfavor.`,
