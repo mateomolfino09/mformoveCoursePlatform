@@ -32,6 +32,7 @@ function Token() {
       } catch (error: any) {
         toast.error(error?.response?.data?.error)
       }
+      router.push('/src/user/login')
     }
 
   return (
