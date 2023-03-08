@@ -148,7 +148,7 @@ const Home = ({ user, randomImage, courses
         <meta name="description" content="Stream Video App" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Header scrollToList={scrollToList} scrollToModa={scrollToModa} scrollToNuevo={scrollToNuevo} scrollToMy={scrollToMy}/>
+      <Header scrollToList={scrollToList} scrollToModa={scrollToModa} scrollToNuevo={scrollToNuevo} scrollToMy={scrollToMy} dbUser={user}/>
 
       <main className='relative pl-4 lg:space-y-24 lg:pl-16'>
         <Banner randomImage={randomImage}/>

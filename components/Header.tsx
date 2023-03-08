@@ -12,7 +12,7 @@ import { useAppDispatch } from "../hooks/useTypeSelector";
 import { User } from "../typings";
 
 
-const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) => {
+const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy, dbUser }: any) => {
 
   interface ProfileUser {
     user: User | null;
@@ -24,11 +24,6 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) 
     email: String;
     user: User;
   }
-
-  const dispatch = useAppDispatch()
-  const profile = useSelector((state: State) => state.profile)
-  const { loading, error, dbUser } = profile
-
 
   const cookies = parseCookies();
   const { data: session } = useSession();
@@ -47,10 +42,6 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) 
   useEffect(() => {
     session ? setUserState(session.user) : setUserState(user);
 
-    if (user) {
-      dispatch(loadUser(user.email, user))
-    }
-
     const handleScroll = () => {
       if (window.scrollY > 0) {
         setIsScrolled(true);
@@ -65,14 +56,6 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) 
       window.removeEventListener("scroll", handleScroll);
     };
   }, [router]);
-
-  const logoutHandler = async () => {
-    if (session) signOut();
-    cookie.remove("token");
-    cookie.remove("user");
-
-    router.push("/user/login");
-  };
 
   return (
     <header className={`${isScrolled && "bg-[#141414]"}`}>
@@ -97,7 +80,7 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) 
       <div className="flex items-center space-x-4 text-sm font-light">
       { user?.rol === 'Admin' ? (
             <>
-            <Link href={'/admin'}>
+            <Link href={'/src/admin'}>
               <Cog8ToothIcon className="hidden h-6 w-6 sm:inline cursor-pointer" />
             </Link>
             </>

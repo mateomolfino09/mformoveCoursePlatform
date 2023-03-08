@@ -51,7 +51,7 @@ const ShowUsers = ({ users, user }: Props) => {
           <link rel="icon" href="/favicon.ico" />
         </Head>
 
-      <div className="px-4 py-4 lg:px-10 lg:py-6">
+      <div className="w-full px-4 py-4 lg:px-10 lg:py-6">
         <h1 className="text-2xl mb-8">Usuarios</h1>
         <table className="min-w-full text-sm  ">
           <thead>
