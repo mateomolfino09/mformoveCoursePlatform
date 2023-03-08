@@ -50,7 +50,7 @@ return (
                     </div>
     
                 ) : (
-                    <div className="w-24 bg-light-red-darker">
+                    <div className="w-24 bg-light-red-darker transition duration-500 hover:bg-red-700">
                         <button className="p-1" onClick={() => router.push('/src/user/login')}> 
                             Login
                         </button>

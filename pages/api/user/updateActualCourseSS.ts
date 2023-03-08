@@ -5,10 +5,10 @@ import Course from "../../../models/courseModel"
 import { ConnectionPoolClosedEvent } from "mongodb"
 import { CoursesDB, CourseUser, User as UserType } from "../../../typings"
 
-connectDB()
 
 export async function updateActualCourseSS(email: string, courseId: string, actualChapter: number) {
   try {
+    connectDB()
     const user: any | null = await User.findOne({ email: email }).exec()
     const courseDB: CoursesDB | null = await Course.findOne({ id: courseId}).exec()
 
