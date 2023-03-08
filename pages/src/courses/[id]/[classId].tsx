@@ -1,5 +1,5 @@
 import { GetServerSideProps, GetStaticProps } from 'next'
-// import MuiModal from '@mui/material/Modal'
+import MuiModal from '@mui/material/Modal'
 import { ParsedUrlQuery } from 'querystring'
 import React, { RefObject, useContext, useEffect, useState } from 'react'
 import { CoursesDB, ClassesDB, Item, User, CourseUser } from '../../../../typings'
@@ -18,6 +18,7 @@ import ClassDescription from '../../../../components/ClassDescription'
 import ReactPlayer from 'react-player'
 import { ClassContext } from '../../../../hooks/classContext'
 import { updateActualCourseSS } from '../../../api/user/updateActualCourseSS'
+import connectDB from '../../../../config/connectDB'
 
 interface Props {
   clase: ClassesDB
@@ -164,27 +165,27 @@ function Course({ clase, user }: Props) {
           <ClassDescription clase={clase} youtubeURL={youtubeURL} courseDB={courseDB}/>
         </div>
       </main>
-      {/* {resumeModal && (
-            //     <MuiModal open={resumeModal} onClose={handleClose} className="fixed z-50 m-auto w-full max-w-md md:max-w-xl max-h-48 overflow-hidden overflow-y-scroll rounded-md scrollbar-hide bg-[#181818]/90 shadow-2xl">
-            //     <>
-            //     <button onClick={handleClose} className='modalButton absolute right-0 top-2 !z-40 h-9 w-9 border-none'>
-            //         <XCircleIcon className='h-6 w-6'/>
-            //     </button>
-            //     <div className='flex w-full h-full justify-center items-center p-12 relative bottom-6'>
-            //       <h3 className='text-lg md:text-xl flex text-center'>Esta clase ya fue empezada, desea continuar viendo desde el minuto</h3> 
-            //     </div>
-            //     <button onClick={handleMove} className='modalButton absolute left-12 top-32 !z-40 h-8 w-24 md:w-32 bg-light-red hover:scale-105 transition duration-300 shadow-2xl'>
-            //         <h3 className='text-sm md:text-sm'>Continuar</h3>
-            //     </button>
-            //     <button onClick={handleClose} className='modalButton absolute right-12 top-32 !z-40 h-8 w-24 md:w-32 shadow-2xl
-            //     bg-black hover:scale-105 transition duration-300'>
-            //         <h3 className='text-sm md:text-sm'>Descartar</h3>
-            //     </button>
+      {resumeModal && (
+                <MuiModal open={resumeModal} onClose={handleClose} className="fixed z-50 m-auto w-full max-w-md md:max-w-xl max-h-48 overflow-hidden overflow-y-scroll rounded-md scrollbar-hide bg-[#181818]/90 shadow-2xl">
+                <>
+                <button onClick={handleClose} className='modalButton absolute right-0 top-2 !z-40 h-9 w-9 border-none'>
+                    <XCircleIcon className='h-6 w-6'/>
+                </button>
+                <div className='flex w-full h-full justify-center items-center p-12 relative bottom-6'>
+                  <h3 className='text-lg md:text-xl flex text-center'>Esta clase ya fue empezada, desea continuar viendo desde el minuto</h3> 
+                </div>
+                <button onClick={handleMove} className='modalButton absolute left-12 top-32 !z-40 h-8 w-24 md:w-32 bg-light-red hover:scale-105 transition duration-300 shadow-2xl'>
+                    <h3 className='text-sm md:text-sm'>Continuar</h3>
+                </button>
+                <button onClick={handleClose} className='modalButton absolute right-12 top-32 !z-40 h-8 w-24 md:w-32 shadow-2xl
+                bg-black hover:scale-105 transition duration-300'>
+                    <h3 className='text-sm md:text-sm'>Descartar</h3>
+                </button>
 
                   
-            //     </>
-            // </MuiModal>
-      )} */}
+                </>
+            </MuiModal>
+      )}
 
 
 
@@ -199,7 +200,7 @@ function Course({ clase, user }: Props) {
       const session = await getSession({ req })
       const cookies = parseCookies(context)
       const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
-      const email = userCookie.email   
+      const email = userCookie?.email   
       const { classId, id } = params
       const clase = await getClassById(classId, id)
       const user = await updateActualCourseSS(email, id, classId)

@@ -6,6 +6,8 @@ import imageLoader from '../imageLoader'
 import { loadCourse } from '../redux/courseModal/courseModalAction'
 import { CoursesDB, Item, Ricks, User } from '../typings'
 import { Button, Container, Grid, IconButton, Slider, styled, Tooltip, Typography, Popover, SliderValueLabelProps } from '@mui/material';
+import { useRouter } from 'next/router'
+import axios from 'axios'
 
 function ValueLabelComponent(props: SliderValueLabelProps) {
   const { children, value } = props;
@@ -68,6 +70,22 @@ interface Props {
 function CourseThumbnail({ items, course, actualClassIndex, isClass, user, courseIndex }: Props) {
   const classes = user?.courses[courseIndex].classes
   const email = user?.email
+  const router = useRouter()
+
+  const handleRoute = async (courseId: number | undefined, classId: number | undefined) => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+      let { data } = await axios.post('/api/connection/connectBeforeSSR', { }, config)
+      router.push( `/src/courses/${courseId}/${classId}`)
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
 
   return (
     <>
@@ -77,15 +95,16 @@ function CourseThumbnail({ items, course, actualClassIndex, isClass, user, cours
               <h3 className='text-[#d2d2d2] flex text-2xl justify-center'>{(items?.indexOf(item) + 1).toString()}</h3>
 
               <div className='flex items-center justify-center h-28 min-w-[180px] relative cursor-pointer transition duration-200 ease-out md:h-28 md:min-w-[200px] md:hover:scale-105'  >
-              <Link href={{ pathname: `/src/courses/${course?.id}/${index + 1}`}}>
+              {/* <Link href={{ pathname: `/src/courses/${course?.id}/${index + 1}`}}> */}
                 <Image 
                     src={item.snippet.thumbnails.standard?.url} 
                     fill={true}
                     className='rounded-sm object-cover md:rounded ' 
                     alt={item.snippet.title}
                     loader={imageLoader}
+                    onClick={() => handleRoute(course?.id, index+1)}
                     />
-              </Link>
+              {/* </Link> */}
 
               <div className={`absolute top-[64px] left-0 right-0 bottom-0 flex-col space-y-48 justify-between z-[1]`}></div>
                 <Grid container direction='row' justifyContent='space-between' alignItems='center' className={'w-full relative top-14 md:top-[3.7rem] md:!mt-0' }>
