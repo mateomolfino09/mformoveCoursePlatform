@@ -60,13 +60,15 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy, dbUser 
   return (
     <header className={`${isScrolled && "bg-[#141414]"}`}>
       <div className="flex items-center space-x-2 md:space-x-10">
+        <Link href={'/'}>
         <img
           alt='icon image'
           src="https://rb.gy/ulxxee"
           width={100}
           height={100}
-          className="cursor-pointer object-contain"
+          className="cursor-pointer object-contain transition duration-500 hover:scale-105"
         />
+        </Link>
 
         <ul className="hidden space-x-4 md:flex">
         <Link href={'/src/home'}><li className="headerLink">Home</li></Link>

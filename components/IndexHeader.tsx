@@ -35,7 +35,7 @@ return (
               src="https://rb.gy/ulxxee"
               width={120}
               height={120}
-              className="cursor-pointer object-contain"
+              className="cursor-pointer object-contain transition duration-500 hover:scale-105"
             />
         </div>
         <div className="flex items-center pr-4 md:pr-16">
@@ -43,7 +43,7 @@ return (
             <div>
               <Menu.Button className="inline-flex w-full justify-center items-center">
                 {user?.name ? (
-                    <div className="w-24 bg-light-red-darker">
+                    <div className="w-24 bg-light-red-darker transition duration-500 hover:bg-red-700">
                         <button className="p-1 cursor-pointer" onClick={() => router.push('/src/home')}>
                             Entrar
                         </button>

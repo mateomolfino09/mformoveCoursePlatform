@@ -135,7 +135,7 @@ function Course({ clase, user }: Props) {
               src="https://rb.gy/ulxxee"
               width={120}
               height={120}
-              className="cursor-pointer object-contain"
+              className="cursor-pointer object-contain transition duration-500 hover:scale-105"
             />
           </div>
           <img

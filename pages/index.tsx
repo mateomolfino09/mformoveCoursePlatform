@@ -21,7 +21,7 @@ const Index = ({ user }: Props) => {
           </Head>    
           <IndexHeader user={user}/>
           <main className='relative pl-4 lg:space-y-24 lg:pl-16'>
-            <Banner randomImage={null}/>
+            <Banner randomImage={'/images/bgIndex1.jpg'}/>
           </main>
             </div>
      )
