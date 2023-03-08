@@ -33,8 +33,8 @@ return (
         <img
               alt='icon image'
               src="https://rb.gy/ulxxee"
-              width={100}
-              height={100}
+              width={120}
+              height={120}
               className="cursor-pointer object-contain"
             />
         </div>
