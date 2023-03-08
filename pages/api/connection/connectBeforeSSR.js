@@ -1,9 +1,9 @@
-import connectDB from "../../../config/connectDB"
+import { db } from "../../../config/connectDB"
 
 
 const connectBeforeSSR =  async (req, res) => {
     try {
-        connectDB()
+        await db()
         console.log('connect bk')
         return res.status(200).json({message: 'connected' })
     } catch (err) {

@@ -10,8 +10,6 @@ import { loadUser } from "../../api/user/loadUser";
 import DeleteUser from "../../../components/DeleteUser";
 import AdmimDashboardLayout from "../../../components/AdmimDashboardLayout";
 import { PencilIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
-import { getClassById } from "../../api/class/getClassById";
-import { updateActualCourseSS } from "../../api/user/updateActualCourseSS";
 import { User } from "../../../typings";
 import { UserContext } from "../../../hooks/userContext";
 
