@@ -149,7 +149,7 @@ function Course({ clase, user }: Props) {
             />
         </header>
   
-        <main className='relative bg-gradient-to-b h-[100vh] flex flex-col'>
+        {/* <main className='relative bg-gradient-to-b h-[100vh] flex flex-col'>
           <div className='w-full h-[80%] flex flex-row'>
             <Link onClick={() => {
               setForward(false)
@@ -186,7 +186,7 @@ function Course({ clase, user }: Props) {
                     
                   </>
               </MuiModal>
-        )}
+        )} */}
   
   
   
