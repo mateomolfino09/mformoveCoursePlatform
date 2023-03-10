@@ -104,16 +104,16 @@ export default function PlayerControls ({ onPlayPause, playing, onFastForward, o
 
 return (
     <div ref={ref} className={`absolute top-[60px] lg:top-[75px] left-0 right-0 bottom-0 flex-col space-y-48 justify-between z-[1] ${fullScreen ? 'bg-transparent' : 'bg-black/20'} `}>
-    <Grid container direction='row' alignItems='center' justifyContent='space-between' style={{padding:16}} className={`${fullScreen ? '!hidden' : 'hidden'} h-20 !pb-0 lg:overflow-hidden`}>
-      <Grid item className='w-[80%] h-16'>
-        <Typography variant='h5' style={{color: '#fff'}} className='!text-lg'>{title}</Typography>
-      </Grid>
-      <Grid className='hidden lg:flex'>
-      </Grid>
-    </Grid>
+    <div className={`${fullScreen ? '!hidden' : 'hidden'} h-20 !pb-0 lg:overflow-hidden flex flex-row items-center justify-between p-4`}> 
+      <div className='w-[80%] h-16'>
+        <h5 className='text-white !text-lg'>{title}</h5>
+      </div>
+      <div className='hidden lg:flex'>
+      </div>
+    </div>
 
 
-    <Grid container direction='row' alignItems='center' justifyContent='center' className={`${fullScreen ? '!mt-96' : '!mt-0 relative md:!mt-1 top-36 lg:top-32 '}`}>
+    {/* <Grid container direction='row' alignItems='center' justifyContent='center' className={`${fullScreen ? '!mt-96' : '!mt-0 relative md:!mt-1 top-36 lg:top-32 '}`}>
       <IconButton onClick={onRewind} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
         <FastRewind fontSize='inherit'/>
       </IconButton>
@@ -202,7 +202,7 @@ return (
       </Grid>
     </Grid>
 
-  </Grid>
+  </Grid> */}
 
 </div>
 )}
