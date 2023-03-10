@@ -156,7 +156,7 @@ function Course({ clase, user }: Props) {
               setTime(playerRef?.current && playerRef.current.getCurrentTime())
   
               }} href={clase.id - 1 == 0 ? `/src/courses/${courseDB.id}/${clase.id}` : `/src/courses/${courseDB.id}/${clase.id - 1}`}><MdKeyboardArrowLeft className='h-24 w-24 relative top-80 left-0 text-[#e6e5e5] transform scale-90 hover:text-[#fff] hover:transform hover:scale-100 hover:bg-[gray]/5 hover:rounded-full'/></Link>
-            {/* {hasWindow && <VideoPlayer url={`https://www.youtube.com/embed/${clase.class_code}?controls=1`} clase={clase} img={courseDB.image_url} courseUser={courseUser} setPlayerRef={(val: any) => setPlayerRef(val)} play={play}/>} */}
+            {hasWindow && <VideoPlayer url={`https://www.youtube.com/embed/${clase.class_code}?controls=1`} clase={clase} img={courseDB.image_url} courseUser={courseUser} setPlayerRef={(val: any) => setPlayerRef(val)} play={play}/>}
             <Link onClick={
               () => {setForward(true)
                     setTime(playerRef?.current && playerRef.current.getCurrentTime())
