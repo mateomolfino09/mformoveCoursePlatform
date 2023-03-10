@@ -183,7 +183,7 @@ const totalDuration = format(duration)
 
   return (
     <div className='h-full w-full'>
-        <Container maxWidth='md' className='!h-full'>
+        {/* <Container maxWidth='md' className='!h-full'>
           <div ref={playerContainerRef} onMouseMove={handleMouseMove} className='w-full min-h-[40rem] relative lg:border border-3 border-solid border-black'>
             <ReactPlayer 
               ref={playerRef}
@@ -253,7 +253,7 @@ const totalDuration = format(duration)
           ))}
         </Grid>
         <canvas ref={canvasRef} />
-        </Container>
+        </Container> */}
 
     
     </div>
