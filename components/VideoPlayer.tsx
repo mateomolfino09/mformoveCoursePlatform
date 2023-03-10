@@ -230,7 +230,7 @@ const totalDuration = format(duration)
               />
           </div> */}
 
-          <Grid container style={{ marginTop: 0, marginBottom: 0 }} spacing={3}>
+          {/* <Grid container style={{ marginTop: 0, marginBottom: 0 }} spacing={3}>
           {bookmarks.map((bookmark: any, index: number) => (
             <Grid key={index} item>
               <Paper
@@ -251,7 +251,7 @@ const totalDuration = format(duration)
               </Paper>
             </Grid>
           ))}
-        </Grid>
+        </Grid> */}
         <canvas ref={canvasRef} />
         </Container>
 
