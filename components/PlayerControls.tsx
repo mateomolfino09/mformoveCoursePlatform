@@ -158,7 +158,7 @@ return (
           {muted ? <SpeakerXMarkIcon fontSize='large'/> : <SpeakerWaveIcon fontSize='large'/>}
         </button>
 
-        <Slider 
+        {/* <Slider 
           min={0}
           max={100}
           size='small'
@@ -166,7 +166,7 @@ return (
           color='primary'
           className='!w-[20%] !text-[white]'
           onChange={onVolumeChange}
-          onChangeCommitted={onVolumeSeekUp}/>
+          onChangeCommitted={onVolumeSeekUp}/> */}
 
           <button className='text-white ml-4'>
             <p> {elapsedTime}/{totalDuration}</p>
