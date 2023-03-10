@@ -114,7 +114,7 @@ return (
 
 
     <div className={`${fullScreen ? '!mt-96' : '!mt-0 relative md:!mt-1 top-36 lg:top-32'} flex flex-row items-center justify-center`}>
-      <button onClick={onRewind} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
+      {/* <button onClick={onRewind} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
         <FastRewind fontSize='inherit'/>
       </button>
 
@@ -124,7 +124,7 @@ return (
 
       <button onClick={onFastForward} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
         <FastForward fontSize='inherit'/>
-      </button>
+      </button> */}
     </div>
     {/* <Grid container direction='row' justifyContent='space-between' alignItems='center' style={{padding:16}} className={fullScreen ? !playing ? 'md:!mt-64' : 'md:!mt-[450px]' : 'relative md:top-72 md:!mt-0' }>
       <Grid item xs={12}>
