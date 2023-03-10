@@ -134,10 +134,10 @@ function Course({  }: Props) {
       const email = userCookie?.email   
       const { classId, id } = params
     //   const clase = await getClassById(classId, id)
-    //   const user = await updateActualCourseSS(email, id, classId)
+      const user = await updateActualCourseSS(email, id, classId)
  
       return {
-        props: { classId, id  }
+        props: { classId, id, user  }
       }
   } 
 
