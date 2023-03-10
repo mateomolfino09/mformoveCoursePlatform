@@ -149,14 +149,14 @@ function Course({ clase, user }: Props) {
             />
         </header>
   
-        {/* <main className='relative bg-gradient-to-b h-[100vh] flex flex-col'>
+        <main className='relative bg-gradient-to-b h-[100vh] flex flex-col'>
           <div className='w-full h-[80%] flex flex-row'>
             <Link onClick={() => {
               setForward(false)
               setTime(playerRef?.current && playerRef.current.getCurrentTime())
   
               }} href={clase.id - 1 == 0 ? `/src/courses/${courseDB.id}/${clase.id}` : `/src/courses/${courseDB.id}/${clase.id - 1}`}><MdKeyboardArrowLeft className='h-24 w-24 relative top-80 left-0 text-[#e6e5e5] transform scale-90 hover:text-[#fff] hover:transform hover:scale-100 hover:bg-[gray]/5 hover:rounded-full'/></Link>
-            {hasWindow && <VideoPlayer url={`https://www.youtube.com/embed/${clase.class_code}?controls=1`} clase={clase} img={courseDB.image_url} courseUser={courseUser} setPlayerRef={(val: any) => setPlayerRef(val)} play={play}/>}
+            {/* {hasWindow && <VideoPlayer url={`https://www.youtube.com/embed/${clase.class_code}?controls=1`} clase={clase} img={courseDB.image_url} courseUser={courseUser} setPlayerRef={(val: any) => setPlayerRef(val)} play={play}/>} */}
             <Link onClick={
               () => {setForward(true)
                     setTime(playerRef?.current && playerRef.current.getCurrentTime())
@@ -165,7 +165,7 @@ function Course({ clase, user }: Props) {
           <div className='w-full h-[60vh]'> 
             <ClassDescription clase={clase} youtubeURL={youtubeURL} courseDB={courseDB}/>
           </div>
-        </main> */}
+        </main>
         {resumeModal && (
                   <MuiModal open={resumeModal} onClose={handleClose} className="fixed z-50 m-auto w-full max-w-md md:max-w-xl max-h-48 overflow-hidden overflow-y-scroll rounded-md scrollbar-hide bg-[#181818]/90 shadow-2xl">
                   <>
