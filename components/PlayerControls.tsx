@@ -1,6 +1,5 @@
 import React, { ElementType, useState, forwardRef, useRef, useEffect } from 'react'
 import { Button, Container, Grid, IconButton, Slider, styled, Tooltip, Typography, Popover, SliderValueLabelProps } from '@mui/material';
-import { Bookmark, FastRewind, PlayArrow, Pause, FastForward, VolumeUp, Fullscreen, VolumeOff } from '@mui/icons-material'
 import {
   BackwardIcon,
   ForwardIcon,
@@ -133,8 +132,8 @@ return (
         <ForwardIcon fontSize='inherit'/>
       </button>
     </div>
-    {/* <Grid container direction='row' justifyContent='space-between' alignItems='center' style={{padding:16}} className={fullScreen ? !playing ? 'md:!mt-64' : 'md:!mt-[450px]' : 'relative md:top-72 md:!mt-0' }>
-      <Grid item xs={12}>
+    <div className={`${fullScreen ? !playing ? 'md:!mt-64' : 'md:!mt-[450px]' : 'relative md:top-72 md:!mt-0'} flex flex-row justify-between items-center p-4`}>
+      {/* <Grid item xs={12}>
         <PrettoSlider 
           min={0}
           max={100}
@@ -147,17 +146,17 @@ return (
           onChange={onSeek}
           onMouseDown={onSeekMouseDown}
           onChangeCommitted={onSeekMouseUp}/>
-      </Grid>
-    <Grid item style={{marginTop:0}} className='!w-full flex flex-row justify-between'>
-      <Grid container alignItems='center' direction='row'>
-        <IconButton onClick={onPlayPause} className='!text-[#e6e5e5] hover:!text-white'>
-        {playing ? <Pause fontSize='large'/> : <PlayArrow fontSize='large'/> }
+      </Grid> */}
+    <div style={{marginTop:0}} className='!w-full flex flex-row justify-between mt-0'>
+      <div className='flex flex-row items-center'>
+        <button onClick={onPlayPause} className='!text-[#e6e5e5] hover:!text-white'>
+        {playing ? <PauseIcon fontSize='large'/> : <PlayIcon fontSize='large'/> }
           
-        </IconButton>
+        </button>
 
-        <IconButton onClick={onMute} className='!text-[#e6e5e5] hover:!text-white'>
-          {muted ? <VolumeOff fontSize='large'/> : <VolumeUp fontSize='large'/>}
-        </IconButton>
+        <button onClick={onMute} className='!text-[#e6e5e5] hover:!text-white'>
+          {muted ? <SpeakerXMarkIcon fontSize='large'/> : <SpeakerWaveIcon fontSize='large'/>}
+        </button>
 
         <Slider 
           min={0}
@@ -169,11 +168,11 @@ return (
           onChange={onVolumeChange}
           onChangeCommitted={onVolumeSeekUp}/>
 
-          <Button variant='text' style={{color: '#fff', marginLeft: 16}}>
-            <Typography>{elapsedTime}/{totalDuration}</Typography>
-          </Button>
-      </Grid>
-      <Grid item className='w-full flex justify-end items-center'>
+          <button className='text-white ml-4'>
+            <p> {elapsedTime}/{totalDuration}</p>
+          </button>
+      </div>
+      {/* <Grid item className='w-full flex justify-end items-center'>
         <Button variant='text' className='!text-[#e6e5e5] hover:!text-white' onClick={handlePopover}>
           <Typography>{playbackRate}X</Typography>
         </Button>
@@ -206,10 +205,10 @@ return (
         <IconButton onClick={onToggleFullScreen} className='!text-[#e6e5e5] hover:!text-white'>
           <Fullscreen fontSize='large'/>
         </IconButton>
-      </Grid>
-    </Grid>
+      </Grid> */}
+    </div>
 
-  </Grid> */}
+  </div>
 
 </div>
 )}
