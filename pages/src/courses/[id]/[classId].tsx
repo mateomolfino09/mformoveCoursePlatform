@@ -197,7 +197,7 @@ function Course({ clase, user }: Props) {
 
   export async function getServerSideProps(context: any) {
 
-      await db()
+      connectDB()
       const { params, query, req, res } = context
       const session = await getSession({ req })
       const cookies = parseCookies(context)

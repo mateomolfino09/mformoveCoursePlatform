@@ -8,7 +8,6 @@ import { CoursesDB, CourseUser, User as UserType } from "../../../typings"
 
 export async function updateActualCourseSS(email: string, courseId: string, actualChapter: number) {
   try {
-    console.log('connected')
     const user: any | null = await User.findOne({ email: email }).exec()
     const courseDB: CoursesDB | null = await Course.findOne({ id: courseId}).exec()
 
