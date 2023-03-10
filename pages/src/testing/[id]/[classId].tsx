@@ -19,6 +19,7 @@ import ReactPlayer from 'react-player'
 import { ClassContext } from '../../../../hooks/classContext'
 import { updateActualCourseSS } from '../../../api/user/updateActualCourseSS'
 import connectDB, { db } from '../../../../config/connectDB'
+import { getUserFromBack } from '../../../api/user/getUserFromBack'
 
 interface Props {
   clase: ClassesDB
@@ -134,10 +135,10 @@ function Course({  }: Props) {
       const email = userCookie?.email   
       const { classId, id } = params
       const clase = await getClassById(classId, id)
-    //   const user = await updateActualCourseSS(email, id, classId)
+      const user = await getUserFromBack(email)
  
       return {
-        props: { classId, id, clase  }
+        props: { classId, id, clase, user  }
       }
   } 
 
