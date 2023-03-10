@@ -183,8 +183,8 @@ const totalDuration = format(duration)
 
   return (
     <div className='h-full w-full'>
-        {/* <Container maxWidth='md' className='!h-full'>
-          <div ref={playerContainerRef} onMouseMove={handleMouseMove} className='w-full min-h-[40rem] relative lg:border border-3 border-solid border-black'>
+        <Container maxWidth='md' className='!h-full'>
+          {/* <div ref={playerContainerRef} onMouseMove={handleMouseMove} className='w-full min-h-[40rem] relative lg:border border-3 border-solid border-black'>
             <ReactPlayer 
               ref={playerRef}
               url={url?.toString()}
@@ -228,7 +228,7 @@ const totalDuration = format(duration)
               setPlayerRef={setControlRef}
               title={clase?.name != null ? clase.name : ''}
               />
-          </div>
+          </div> */}
 
           <Grid container style={{ marginTop: 0, marginBottom: 0 }} spacing={3}>
           {bookmarks.map((bookmark: any, index: number) => (
@@ -253,7 +253,7 @@ const totalDuration = format(duration)
           ))}
         </Grid>
         <canvas ref={canvasRef} />
-        </Container> */}
+        </Container>
 
     
     </div>
