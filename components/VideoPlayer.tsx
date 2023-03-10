@@ -184,7 +184,7 @@ const totalDuration = format(duration)
   return (
     <div className='h-full w-full'>
         <Container maxWidth='md' className='!h-full'>
-          {/* <div ref={playerContainerRef} onMouseMove={handleMouseMove} className='w-full min-h-[40rem] relative lg:border border-3 border-solid border-black'>
+          <div ref={playerContainerRef} onMouseMove={handleMouseMove} className='w-full min-h-[40rem] relative lg:border border-3 border-solid border-black'>
             <ReactPlayer 
               ref={playerRef}
               url={url?.toString()}
@@ -204,7 +204,7 @@ const totalDuration = format(duration)
                 }
               }}
               />
-            <PlayerControls
+            {/* <PlayerControls
               onPlayPause={handlePlayPause} 
               playing={state.playing} 
               onRewind={handleRewind} 
@@ -227,32 +227,9 @@ const totalDuration = format(duration)
               onBookmark={addBookmark}
               setPlayerRef={setControlRef}
               title={clase?.name != null ? clase.name : ''}
-              />
-          </div> */}
+              /> */}
+          </div>
 
-          <Grid container style={{ marginTop: 0, marginBottom: 0 }} spacing={3}>
-          {/* {bookmarks.map((bookmark: any, index: number) => (
-            <Grid key={index} item>
-              <Paper
-                onClick={() => {
-                  playerRef.current ? playerRef.current.seekTo(bookmark.time) : null;
-                  controlRef?.current ? controlRef.current.style.visibility = "visible" : null
-
-                  setTimeout(() => {
-                    controlRef?.current ? controlRef.current.style.visibility = "hidden" : null;
-                  }, 1000);
-                }}
-                elevation={3}
-              >
-                <img crossOrigin="anonymous" src={bookmark.image} width={160} height={90} className='border-solid border-black border-4'/>
-                <Typography variant="body2" align="center" className='bg-black text-white'>
-                  bookmark en {bookmark.display}
-                </Typography>
-              </Paper>
-            </Grid>
-          ))} */}
-        </Grid>
-        <canvas ref={canvasRef} />
         </Container>
 
     
