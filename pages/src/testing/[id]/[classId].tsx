@@ -149,7 +149,7 @@ function Course({ clase, user }: Props) {
             />
         </header>
   
-        <main className='relative bg-gradient-to-b h-[100vh] flex flex-col'>
+        {/* <main className='relative bg-gradient-to-b h-[100vh] flex flex-col'>
           <div className='w-full h-[80%] flex flex-row'>
             <Link onClick={() => {
               setForward(false)
@@ -165,8 +165,8 @@ function Course({ clase, user }: Props) {
           <div className='w-full h-[60vh]'> 
             <ClassDescription clase={clase} youtubeURL={youtubeURL} courseDB={courseDB}/>
           </div>
-        </main>
-        {/* {resumeModal && (
+        </main> */}
+        {resumeModal && (
                   <MuiModal open={resumeModal} onClose={handleClose} className="fixed z-50 m-auto w-full max-w-md md:max-w-xl max-h-48 overflow-hidden overflow-y-scroll rounded-md scrollbar-hide bg-[#181818]/90 shadow-2xl">
                   <>
                   <button onClick={handleClose} className='modalButton absolute right-0 top-2 !z-40 h-9 w-9 border-none'>
@@ -187,7 +187,7 @@ function Course({ clase, user }: Props) {
                   </>
               </MuiModal>
         )}
-   */}
+  
   
   
   
