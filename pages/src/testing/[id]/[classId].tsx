@@ -28,8 +28,8 @@ interface Props {
   user: User | null
 }
 
-function Course({  }: Props) {
-
+function Course({ clase, user }: Props) {
+    console.log(clase, user)
   const [forward, setForward] = useState<boolean>(false)
   const [time, setTime] = useState<number | null | undefined>(null)
   const [play, setPlay] = useState<boolean>(false)
