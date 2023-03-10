@@ -7,12 +7,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Provider } from 'react-redux'
 import { wrapper }  from '../redux/store';
 import { CourseListContext } from '../hooks/courseListContext';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { CoursesDB } from '../typings';
-import { ClassContext } from '../hooks/classContext';
+import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
 
 
 function App({ Component, ...rest }: AppProps) {
+  const queryClient = useRef(new QueryClient())
   const [listCourse, setListCourse] = useState<CoursesDB[]>([])
 
   const providerValue = useMemo(() => ({listCourse, setListCourse}), [listCourse, setListCourse])
@@ -22,13 +23,17 @@ function App({ Component, ...rest }: AppProps) {
   const key = process.env.NEXT_PUBLIC_RECAPTHA_SITE_KEY ? process.env.NEXT_PUBLIC_RECAPTHA_SITE_KEY : ''
   return (
     <SessionProvider session={pageProps.session}>
-        <Provider store={store}>
-        <CourseListContext.Provider value= {providerValue}>
-          <NextNProgress color="red"/>
-            <ToastContainer />
-            <Component {...pageProps} />
-        </CourseListContext.Provider>
-        </Provider>
+        <QueryClientProvider client={queryClient.current}>
+          <Hydrate state={pageProps.dehydratedState}>
+            <Provider store={store}>
+            <CourseListContext.Provider value= {providerValue}>
+              <NextNProgress color="red"/>
+                <ToastContainer />
+                <Component {...pageProps} />
+            </CourseListContext.Provider>
+            </Provider>
+          </Hydrate>
+        </QueryClientProvider>
      </SessionProvider>
   )
 }
