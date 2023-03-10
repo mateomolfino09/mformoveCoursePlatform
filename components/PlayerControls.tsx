@@ -1,9 +1,16 @@
 import React, { ElementType, useState, forwardRef, useRef, useEffect } from 'react'
-import { Button, Container, Grid, IconButton, Slider, styled, Tooltip, Typography, Popover } from '@mui/material';
+import { Button, Container, Grid, IconButton, Slider, styled, Tooltip, Typography, Popover, SliderValueLabelProps } from '@mui/material';
 import { Bookmark, FastRewind, PlayArrow, Pause, FastForward, VolumeUp, Fullscreen, VolumeOff } from '@mui/icons-material'
-import { SliderValueLabelProps } from '@mui/material';
-
-
+import {
+  BackwardIcon,
+  ForwardIcon,
+  PlayIcon,
+  PauseIcon,
+  SpeakerWaveIcon,
+  SpeakerXMarkIcon,
+  ArrowsPointingOutIcon,
+  
+} from "@heroicons/react/24/solid";
 
 // ElementType<ValueLabelProps>
 function ValueLabelComponent(props: SliderValueLabelProps) {
@@ -114,17 +121,17 @@ return (
 
 
     <div className={`${fullScreen ? '!mt-96' : '!mt-0 relative md:!mt-1 top-36 lg:top-32'} flex flex-row items-center justify-center`}>
-      {/* <button onClick={onRewind} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
-        <FastRewind fontSize='inherit'/>
+      <button onClick={onRewind} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
+        <BackwardIcon fontSize='inherit'/>
       </button>
 
       <button onClick={onPlayPause} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
-        {playing ? <Pause fontSize='inherit'/> : <PlayArrow fontSize='inherit'/> }
+        {playing ? <PauseIcon fontSize='inherit'/> : <PlayIcon fontSize='inherit'/> }
       </button>
 
       <button onClick={onFastForward} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
-        <FastForward fontSize='inherit'/>
-      </button> */}
+        <ForwardIcon fontSize='inherit'/>
+      </button>
     </div>
     {/* <Grid container direction='row' justifyContent='space-between' alignItems='center' style={{padding:16}} className={fullScreen ? !playing ? 'md:!mt-64' : 'md:!mt-[450px]' : 'relative md:top-72 md:!mt-0' }>
       <Grid item xs={12}>
