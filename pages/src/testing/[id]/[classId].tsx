@@ -94,33 +94,33 @@ function Course({ clase, user }: Props) {
       router.push(route)
     }
   
-    // useEffect(() => {
-    //   const interval = setInterval(() => {
-    //     exitingFunction(playerRef?.current ? playerRef.current.getCurrentTime() : 0)
-    //   }, MINUTE_MS);
+    useEffect(() => {
+      const interval = setInterval(() => {
+        exitingFunction(playerRef?.current ? playerRef.current.getCurrentTime() : 0)
+      }, MINUTE_MS);
     
-    //   return () => clearInterval(interval);
-    // }, [])
+      return () => clearInterval(interval);
+    }, [])
   
-    // useEffect(() => {
+    useEffect(() => {
   
-    //   exitingFunction()
-    // }, [router])
+      exitingFunction()
+    }, [router])
   
-    // useEffect(() => {
-    //   if (typeof window !== "undefined") {
-    //     setHasWindow(true);
-    //   }
-    //   if (!user) {
-    //     router.push("/src/user/login")
-    //   }
-    //   else {
-    //     let courseActual = user.courses.find((course: CourseUser) => course.course === courseDB._id)
-    //     setTime(courseActual?.classes[clase.id -1].actualTime)
-    //     setCourseUser(courseActual ? courseActual : null)
-    //     handleLoad(courseActual ? courseActual?.classes[clase.id -1].actualTime : 0 , playerRef?.current?.getDuration() ?  playerRef?.current?.getDuration() : 0)
-    //   }
-    // }, [router])
+    useEffect(() => {
+      if (typeof window !== "undefined") {
+        setHasWindow(true);
+      }
+      if (!user) {
+        router.push("/src/user/login")
+      }
+      else {
+        let courseActual = user.courses.find((course: CourseUser) => course.course === courseDB._id)
+        setTime(courseActual?.classes[clase.id -1].actualTime)
+        setCourseUser(courseActual ? courseActual : null)
+        handleLoad(courseActual ? courseActual?.classes[clase.id -1].actualTime : 0 , playerRef?.current?.getDuration() ?  playerRef?.current?.getDuration() : 0)
+      }
+    }, [router])
   
     return (
       <div className="relative h-screen bg-gradient-to-b lg:h-[140vh]">
