@@ -204,7 +204,7 @@ const totalDuration = format(duration)
                 }
               }}
               />
-            {/* <PlayerControls
+            <PlayerControls
               onPlayPause={handlePlayPause} 
               playing={state.playing} 
               onRewind={handleRewind} 
@@ -227,7 +227,7 @@ const totalDuration = format(duration)
               onBookmark={addBookmark}
               setPlayerRef={setControlRef}
               title={clase?.name != null ? clase.name : ''}
-              /> */}
+              />
           </div>
 
         </Container>
