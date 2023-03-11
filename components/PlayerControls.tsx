@@ -119,7 +119,7 @@ return (
     </div>
 
 
-    <div className={`${fullScreen ? '!mt-96' : '!mt-0 relative md:!mt-1 top-36 lg:top-32'} flex flex-row items-center justify-center  w-full flex-wrap box-border`}>
+    <div className={`${fullScreen ? '!mt-96' : '!mt-0 relative md:!mt-1 top-36 lg:top-32 h-40'} flex flex-row items-center justify-center  w-full flex-wrap box-border`}>
       <button onClick={onRewind} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100 w-10 h-10' aria-label='required'>
         <BackwardIcon fontSize='inherit'/>
       </button>
@@ -147,7 +147,7 @@ return (
           onMouseDown={onSeekMouseDown}
           onChangeCommitted={onSeekMouseUp}/>
       </div>
-    {/* <div className='w-full flex flex-row justify-between mt-0 flex-wrap box-border'>
+    <div className='w-full flex flex-row justify-between mt-0 flex-wrap box-border'>
       <div className='flex w-1/2 flex-row items-center space-x-4'>
         <button onClick={onPlayPause} className='!text-[#e6e5e5] hover:!text-white h-7 w-7'>
         {playing ? <PauseIcon fontSize='large'/> : <PlayIcon fontSize='large'/> }
@@ -158,7 +158,7 @@ return (
           {muted ? <SpeakerXMarkIcon fontSize='large'/> : <SpeakerWaveIcon fontSize='large'/>}
         </button>
 
-        <Slider 
+        {/* <Slider 
           min={0}
           max={100}
           size='small'
@@ -166,7 +166,7 @@ return (
           color='primary'
           className='!w-[20%] !text-[white]'
           onChange={onVolumeChange}
-          onChangeCommitted={onVolumeSeekUp}/>
+          onChangeCommitted={onVolumeSeekUp}/> */}
 
           <button className='text-white ml-4'>
             <p> {elapsedTime}/{totalDuration}</p>
@@ -206,7 +206,7 @@ return (
           <ArrowsPointingOutIcon fontSize='large'/>
         </button>
       </div>
-    </div> */}
+    </div>
 
   </div>
 
