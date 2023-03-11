@@ -1,5 +1,5 @@
 import React, { ElementType, useState, forwardRef, useRef, useEffect } from 'react'
-import { Button, Container, Grid, IconButton, Slider, styled, Tooltip, Typography, Popover, SliderValueLabelProps } from '@mui/material';
+import { Slider, styled, Tooltip, Popover, SliderValueLabelProps } from '@mui/material';
 import {
   BackwardIcon,
   ForwardIcon,
@@ -109,7 +109,7 @@ export default function PlayerControls ({ onPlayPause, playing, onFastForward, o
   const id = open ? 'playbackrate-popover' : undefined;
 
 return (
-    <div ref={ref} className={`absolute top-[60px] lg:top-[75px] left-0 right-0 bottom-0 flex-col space-y-48 justify-between z-[1] ${fullScreen ? 'bg-transparent' : 'bg-black/20'} `}>
+    <div ref={ref} className={`absolute top-[60px] lg:top-[75px] left-0 right-0 bottom-0 flex-col space-y-48 justify-between z-[1] ${fullScreen ? 'bg-transparent' : 'bg-black/20'}  w-full flex-wrap box-border`}>
     <div className={`${fullScreen ? '!hidden' : 'hidden'} h-20 !pb-0 lg:overflow-hidden flex flex-row items-center justify-between p-4`}> 
       <div className='w-[80%] h-16'>
         <h5 className='text-white !text-lg'>{title}</h5>
@@ -119,21 +119,21 @@ return (
     </div>
 
 
-    <div className={`${fullScreen ? '!mt-96' : '!mt-0 relative md:!mt-1 top-36 lg:top-32'} flex flex-row items-center justify-center`}>
-      <button onClick={onRewind} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
+    <div className={`${fullScreen ? '!mt-96' : '!mt-0 relative md:!mt-1 top-36 lg:top-32'} flex flex-row items-center justify-center  w-full flex-wrap box-border`}>
+      <button onClick={onRewind} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100 w-10 h-10' aria-label='required'>
         <BackwardIcon fontSize='inherit'/>
       </button>
 
-      <button onClick={onPlayPause} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
+      <button onClick={onPlayPause} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100 h-8 w-8' aria-label='required'>
         {playing ? <PauseIcon fontSize='inherit'/> : <PlayIcon fontSize='inherit'/> }
       </button>
 
-      <button onClick={onFastForward} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
+      <button onClick={onFastForward} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100 h-10 w-10' aria-label='required'>
         <ForwardIcon fontSize='inherit'/>
       </button>
     </div>
-    <div className={`${fullScreen ? !playing ? 'md:!mt-64' : 'md:!mt-[450px]' : 'relative md:top-72 md:!mt-0'} flex flex-row justify-between items-center p-4`}>
-      {/* <Grid item xs={12}>
+    <div className={`${fullScreen ? !playing ? 'md:!mt-64' : 'md:!mt-[450px]' : ' relative md:top-72 md:!mt-0'} flex flex-row justify-between items-center p-4 w-full flex-wrap box-border`}>
+      <div className='w-full'>
         <PrettoSlider 
           min={0}
           max={100}
@@ -146,19 +146,19 @@ return (
           onChange={onSeek}
           onMouseDown={onSeekMouseDown}
           onChangeCommitted={onSeekMouseUp}/>
-      </Grid> */}
-    <div style={{marginTop:0}} className='!w-full flex flex-row justify-between mt-0'>
-      <div className='flex flex-row items-center'>
-        <button onClick={onPlayPause} className='!text-[#e6e5e5] hover:!text-white'>
+      </div>
+    {/* <div className='w-full flex flex-row justify-between mt-0 flex-wrap box-border'>
+      <div className='flex w-1/2 flex-row items-center space-x-4'>
+        <button onClick={onPlayPause} className='!text-[#e6e5e5] hover:!text-white h-7 w-7'>
         {playing ? <PauseIcon fontSize='large'/> : <PlayIcon fontSize='large'/> }
           
         </button>
 
-        <button onClick={onMute} className='!text-[#e6e5e5] hover:!text-white'>
+        <button onClick={onMute} className='!text-[#e6e5e5] hover:!text-white h-7 w-7 mr-2'>
           {muted ? <SpeakerXMarkIcon fontSize='large'/> : <SpeakerWaveIcon fontSize='large'/>}
         </button>
 
-        {/* <Slider 
+        <Slider 
           min={0}
           max={100}
           size='small'
@@ -166,16 +166,16 @@ return (
           color='primary'
           className='!w-[20%] !text-[white]'
           onChange={onVolumeChange}
-          onChangeCommitted={onVolumeSeekUp}/> */}
+          onChangeCommitted={onVolumeSeekUp}/>
 
           <button className='text-white ml-4'>
             <p> {elapsedTime}/{totalDuration}</p>
           </button>
       </div>
-      {/* <Grid item className='w-full flex justify-end items-center'>
-        <Button variant='text' className='!text-[#e6e5e5] hover:!text-white' onClick={handlePopover}>
-          <Typography>{playbackRate}X</Typography>
-        </Button>
+      <div className='flex justify-end items-center'>
+        <button className='!text-[#e6e5e5] hover:!text-white h-7 w-7' onClick={handlePopover}>
+          <p>{playbackRate}X</p>
+        </button>
 
         <Popover
           id={id}
@@ -191,22 +191,22 @@ return (
             horizontal: 'center'
           }}
         >
-          <Grid container direction='column-reverse'>
+          <div className='flex flex-wrap box-border flex-col-reverse'>
             {[0.5,1,1.5,2].map((rate => (
-            <Button key={rate} onClick={() => onPlaybackRateChange(rate)} variant='text'>
-              <Typography color={rate === playbackRate ? 'secondary' : 'primary'}>{rate}</Typography>
-            </Button>
+            <button key={rate} onClick={() => onPlaybackRateChange(rate)} className='h-6 w-6'>
+              <p color={rate === playbackRate ? 'secondary' : 'primary'}>{rate}</p>
+            </button>
             )))}
-          </Grid>
+          </div>
 
 
         </Popover>
 
-        <IconButton onClick={onToggleFullScreen} className='!text-[#e6e5e5] hover:!text-white'>
-          <Fullscreen fontSize='large'/>
-        </IconButton>
-      </Grid> */}
-    </div>
+        <button onClick={onToggleFullScreen} className='!text-[#e6e5e5] hover:!text-white h-6 w-6'>
+          <ArrowsPointingOutIcon fontSize='large'/>
+        </button>
+      </div>
+    </div> */}
 
   </div>
 
