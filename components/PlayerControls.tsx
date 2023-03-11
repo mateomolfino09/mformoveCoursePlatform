@@ -3,13 +3,15 @@ import { Slider, styled, Tooltip, Popover, SliderValueLabelProps } from '@mui/ma
 import {
   BackwardIcon,
   ForwardIcon,
-  PlayIcon,
   PauseIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
   ArrowsPointingOutIcon,
+  PlayIcon
   
 } from "@heroicons/react/24/solid";
+import { BsFillPlayFill } from 'react-icons/bs';
+import { AiFillBackward, AiFillForward, AiFillPauseCircle, AiOutlinePause } from 'react-icons/ai';
 
 // ElementType<ValueLabelProps>
 function ValueLabelComponent(props: SliderValueLabelProps) {
@@ -32,6 +34,45 @@ function ValueLabelComponent(props: SliderValueLabelProps) {
       height: 10,
       width: 10,
       backgroundColor: '#e52019',
+      border: '2px solid currentColor',
+      '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
+        boxShadow: 'inherit',
+      },
+      '&:before': {
+        display: 'none',
+      },
+    },
+    '& .MuiSlider-valueLabel': {
+      lineHeight: 1.2,
+      fontSize: 12,
+      background: 'unset',
+      padding: 0,
+      width: 32,
+      height: 32,
+      borderRadius: '50% 50% 50% 0',
+      backgroundColor: 'transparent',
+      transformOrigin: 'bottom left',
+      transform: 'translate(50%, -100%) rotate(-45deg) scale(0)',
+      '&:before': { display: 'none' },
+      '&.MuiSlider-valueLabelOpen': {
+        transform: 'translate(50%, -100%) rotate(-45deg) scale(1)',
+      },
+      '& > *': {
+        transform: 'rotate(-45deg)',
+      },
+    },
+  });
+
+  const SliderVolume = styled(Slider)({
+    color: '#fff',
+    height: 3,
+    '& .MuiSlider-track': {
+      border: 'none',
+    },
+    '& .MuiSlider-thumb': {
+      height: 10,
+      width: 10,
+      backgroundColor: '#fff',
       border: '2px solid currentColor',
       '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
         boxShadow: 'inherit',
@@ -119,20 +160,20 @@ return (
     </div>
 
 
-    <div className={`${fullScreen ? '!mt-96' : '!mt-0 relative md:!mt-1 top-36 lg:top-32 h-40'} flex flex-row items-center justify-center  w-full flex-wrap box-border`}>
-      <button onClick={onRewind} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100 w-10 h-10' aria-label='required'>
-        <BackwardIcon fontSize='inherit'/>
+    <div className={`${fullScreen ? '!mt-96' : '!mt-0 relative top-36 lg:top-32 h-64'} flex flex-row items-center justify-center  w-full flex-wrap box-border `}>
+      <button onClick={onRewind} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100 w-10 h-10 mr-2 -ml-2' aria-label='required'>
+        <AiFillBackward fontSize='inherit'/>
       </button>
 
-      <button onClick={onPlayPause} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100 h-8 w-8' aria-label='required'>
+      <button onClick={onPlayPause} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100 h-10 w-10 mt-2' aria-label='required'>
         {playing ? <PauseIcon fontSize='inherit'/> : <PlayIcon fontSize='inherit'/> }
       </button>
 
       <button onClick={onFastForward} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100 h-10 w-10' aria-label='required'>
-        <ForwardIcon fontSize='inherit'/>
+        <AiFillForward fontSize='inherit'/>
       </button>
     </div>
-    <div className={`${fullScreen ? !playing ? 'md:!mt-64' : 'md:!mt-[450px]' : ' relative md:top-72 md:!mt-0'} flex flex-row justify-between items-center p-4 w-full flex-wrap box-border`}>
+    <div className={`${fullScreen ? !playing ? 'md:!mt-64' : 'md:!mt-[450px]' : ' relative'} flex flex-row justify-between items-center p-4 w-full flex-wrap box-border`}>
       <div className='w-full'>
         <PrettoSlider 
           min={0}
@@ -157,8 +198,7 @@ return (
         <button onClick={onMute} className='!text-[#e6e5e5] hover:!text-white h-7 w-7 mr-2'>
           {muted ? <SpeakerXMarkIcon fontSize='large'/> : <SpeakerWaveIcon fontSize='large'/>}
         </button>
-
-        {/* <Slider 
+        <SliderVolume 
           min={0}
           max={100}
           size='small'
@@ -166,13 +206,13 @@ return (
           color='primary'
           className='!w-[20%] !text-[white]'
           onChange={onVolumeChange}
-          onChangeCommitted={onVolumeSeekUp}/> */}
+          onChangeCommitted={onVolumeSeekUp}/> 
 
           <button className='text-white ml-4'>
             <p> {elapsedTime}/{totalDuration}</p>
           </button>
       </div>
-      <div className='flex justify-end items-center'>
+      <div className='flex justify-end items-center space-x-4'>
         <button className='!text-[#e6e5e5] hover:!text-white h-7 w-7' onClick={handlePopover}>
           <p>{playbackRate}X</p>
         </button>
