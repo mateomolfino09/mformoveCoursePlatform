@@ -72,6 +72,10 @@
   @apply bg-[#e5091499]
 }
 
+.toggleLightening {
+  @apply transition duration-500 hover:text-white cursor-pointer
+} 
+
 
   @keyframes spinner {
     0% {

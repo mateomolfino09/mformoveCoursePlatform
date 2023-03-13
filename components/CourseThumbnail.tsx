@@ -77,7 +77,7 @@ function CourseThumbnail({ items, course, actualClassIndex, isClass, user, cours
               <h3 className='text-[#d2d2d2] flex text-2xl justify-center'>{(items?.indexOf(item) + 1).toString()}</h3>
 
               <div className='flex items-center justify-center h-28 min-w-[180px] relative cursor-pointer transition duration-200 ease-out md:h-28 md:min-w-[200px] md:hover:scale-105'  >
-              <Link href={{ pathname: `/src/courses/${course?.id}/${index + 1}`, query: { email }}}>
+              <Link href={{ pathname: `/src/courses/${course?.id}/${index + 1}`}}>
                 <Image 
                     src={item.snippet.thumbnails.standard?.url} 
                     fill={true}

@@ -12,7 +12,7 @@ import { useAppDispatch } from "../hooks/useTypeSelector";
 import { User } from "../typings";
 
 
-const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) => {
+const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy, dbUser }: any) => {
 
   interface ProfileUser {
     user: User | null;
@@ -24,11 +24,6 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) 
     email: String;
     user: User;
   }
-
-  const dispatch = useAppDispatch()
-  const profile = useSelector((state: State) => state.profile)
-  const { loading, error, dbUser } = profile
-
 
   const cookies = parseCookies();
   const { data: session } = useSession();
@@ -47,10 +42,6 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) 
   useEffect(() => {
     session ? setUserState(session.user) : setUserState(user);
 
-    if (user) {
-      dispatch(loadUser(user.email, user))
-    }
-
     const handleScroll = () => {
       if (window.scrollY > 0) {
         setIsScrolled(true);
@@ -66,31 +57,25 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) 
     };
   }, [router]);
 
-  const logoutHandler = async () => {
-    if (session) signOut();
-    cookie.remove("token");
-    cookie.remove("user");
-
-    router.push("/src/user/login");
-  };
-
   return (
     <header className={`${isScrolled && "bg-[#141414]"}`}>
       <div className="flex items-center space-x-2 md:space-x-10">
+        <Link href={'/'}>
         <img
           alt='icon image'
           src="https://rb.gy/ulxxee"
           width={100}
           height={100}
-          className="cursor-pointer object-contain"
+          className="cursor-pointer object-contain transition duration-500 hover:scale-105"
         />
+        </Link>
 
         <ul className="hidden space-x-4 md:flex">
-        <Link href={'/'}><li className="headerLink">Home</li></Link>
-        {scrollToModa != null ? <li onClick={scrollToModa} className="headerLink">Cursos</li> : <Link href={'/'}><li className="headerLink">Cursos</li></Link>}
-        {scrollToNuevo != null ? <li onClick={scrollToNuevo} className="headerLink">Nuevo</li> : <Link href={'/'}><li className="headerLink">Nuevo</li></Link>}
-        {scrollToList != null ? <li onClick={scrollToList} className="headerLink">Mi Lista</li> : <Link href={'/'}><li className="headerLink">Mi Lista</li></Link>}
-        {scrollToMy != null ? <li onClick={scrollToMy} className="headerLink">Mis Cursos</li> : <Link href={'/'}><li className="headerLink">Mis Cursos</li></Link>}
+        <Link href={'/src/home'}><li className="headerLink">Home</li></Link>
+        {scrollToModa != null ? <li onClick={scrollToModa} className="headerLink">Cursos</li> : <Link href={'/src/home'}><li className="headerLink">Cursos</li></Link>}
+        {scrollToNuevo != null ? <li onClick={scrollToNuevo} className="headerLink">Nuevo</li> : <Link href={'/src/home'}><li className="headerLink">Nuevo</li></Link>}
+        {scrollToList != null ? <li onClick={scrollToList} className="headerLink">Mi Lista</li> : <Link href={'/src/home'}><li className="headerLink">Mi Lista</li></Link>}
+        {scrollToMy != null ? <li onClick={scrollToMy} className="headerLink">Mis Cursos</li> : <Link href={'/src/home'}><li className="headerLink">Mis Cursos</li></Link>}
         
         </ul>
       </div>
@@ -107,7 +92,7 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy }: any) 
         <p className="hidden lg:inline">Mis cursos</p>
         <BellIcon className="h-6 w-6 cursor-pointer" />
         {/* <Link href="/account"> */}
-        <Link href={'src/user/account'}>
+        <Link href={'user/account'}>
           <img
             src="https://rb.gy/g1pwyx"
             alt=""

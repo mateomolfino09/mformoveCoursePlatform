@@ -9,12 +9,12 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(({ showNav }: any, re
   return (
     <div ref={ref} className='fixed w-56 h-full bg-gray-100 shadow-sm'>
       <div className='flex justify-center mt-6 mb-14'>
-        <Link href={'/'}>
+        <Link href={'/src/home'}>
           <picture>
             <img
               alt='icon image'
               src="https://rb.gy/ulxxee"
-              className="cursor-pointer object-contain w-32 h-auto"
+              className="cursor-pointer object-contain w-32 h-auto transition duration-500 hover:scale-105"
             />
           </picture>
         </Link>

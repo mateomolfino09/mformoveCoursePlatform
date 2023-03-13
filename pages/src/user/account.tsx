@@ -77,12 +77,12 @@ function Account() {
       </Head>
 
       <header className={`bg-[#141414]`}>
-        <Link href="/">
+        <Link href="/src/home">
           <img
             src="https://rb.gy/ulxxee"
             width={120}
             height={120}
-            className="cursor-pointer object-contain"
+            className="cursor-pointer object-contain transition duration-500 hover:scale-105"
           />
         </Link>
         <Link href="/src/user/account">

@@ -44,11 +44,11 @@ const Login = ({ providers, session }: any) => {
     useEffect(() => {
       if (session) {
         toast.success("Login exitoso!")
-        router.push("/")
+        router.push("/src/home")
       }
   
       if (cookies?.user) {
-        router.push("/")
+        router.push("/src/home")
       }
     }, [session, router, cookies?.user])
 
@@ -69,13 +69,11 @@ const Login = ({ providers, session }: any) => {
         {email, password}, 
         config
         )
-        console.log('aca')
-
         toast.success(data.message)
         cookie.set('token', data?.token)
         cookie.set('user', JSON.stringify(data?.user))
 
-        router.push('/')
+        router.push('/src/home')
       } catch (error: any) {
         if(error?.response?.data?.validate === true) {
           setValidateEmail(true)
@@ -149,7 +147,7 @@ const Login = ({ providers, session }: any) => {
                   loader={imageLoader}/>
               <img
               src="https://rb.gy/ulxxee"
-              className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6"
+              className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 transition duration-500 hover:scale-105"
               width={150}
               height={150}
               alt='icon image'
@@ -223,7 +221,7 @@ const Login = ({ providers, session }: any) => {
                               {/* Logo position */}
                           <img
                               src="https://rb.gy/ulxxee"
-                              className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6"
+                              className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 transition duration-500 hover:scale-105"
                               width={150}
                               height={150}
                               alt='icon image'

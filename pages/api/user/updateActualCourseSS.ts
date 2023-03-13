@@ -9,8 +9,8 @@ connectDB()
 
 export async function updateActualCourseSS(email: string, courseId: string, actualChapter: number) {
   try {
-    const user: any | null = await User.findOne({ email: email })
-    const courseDB: CoursesDB | null = await Course.findOne({ id: courseId})
+    const user: any | null = await User.findOne({ email: email }).exec()
+    const courseDB: CoursesDB | null = await Course.findOne({ id: courseId}).exec()
 
     const index = user?.courses.findIndex((course: CourseUser) => course.course.valueOf() === courseDB?._id.valueOf())
 

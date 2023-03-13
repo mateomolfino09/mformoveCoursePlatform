@@ -1,3 +1,11 @@
+import { getSession } from "next-auth/react";
+import Head from "next/head";
+import { parseCookies } from "nookies";
+import React from "react";
+import Banner from "../components/IndexBanner";
+import IndexHeader from "../components/IndexHeader";
+import { User } from "../typings";
+import { getUserFromBack } from "./api/user/getUserFromBack";
 import { GetServerSideProps } from "next";
 import Header from "../components/Header";
 import Banner from "../components/Banner";
@@ -247,8 +255,10 @@ export const getServerSideProps: GetServerSideProps =
     const cookies = parseCookies(ctx);
     const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
     const email = userCookie.email;
-    console.log(email);
+
     const user = await getUserFromBack(email);
+
+    console.log(email);
 
     return {
       props: {

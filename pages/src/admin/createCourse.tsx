@@ -142,7 +142,7 @@ const CreateCourse = ({ user }: Props) => {
 
             <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}>
             {/* Logo position */}
-            <form className='relative mt-24 space-y-8 rounded bg-black/75 py-12  px-8 md:mt-4 md:max-w-lg md:px-14' onSubmit={handleSubmit}>
+            <form className='relative mt-24 space-y-4 rounded border-2 border-black/75 bg-black/50 py-12  px-8 md:mt-12 md:max-w-lg md:px-14' onSubmit={handleSubmit}> 
               <h1 className='text-4xl font-semibold'>Agregar un Curso</h1>
               <div className='space-y-8'>
               <label className='inline-block w-full'>
@@ -209,7 +209,7 @@ const CreateCourse = ({ user }: Props) => {
             <button onClick={(e) => (e)} className='w-full rounded bg-light-red py-3 font-semibold'>Crear Curso </button>
             <div className='text-[gray]'>
                   Volver al Inicio
-                  <Link href={"/"}> 
+                  <Link href={"/src/home"}> 
                   <button type='button' className='text-white hover:underline ml-2'> Volver</button>
                   </Link>
               </div>
