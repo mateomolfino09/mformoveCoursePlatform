@@ -35,12 +35,12 @@ const resendTokenValidate = async (req, res) => {
 
       const { origin } = absoluteUrl(req);
       const link = `${origin}/src/user/email/${token}`;
-      const title = `<h1>Confirma tu mail</h1>`;
+      const title = `<h1>Confirma tu email</h1>`;
       const message = `
         <div>     
         <div>
         <button style="background-color:#e50914; border:none;border-radius: 4px;width:100%; padding:14px 0px; margin-bottom:15px">
-         <a style="color:white; text-decoration: none; font-weight:700; font-size:14px" href="${link}">Confirmar mail </a>
+         <a style="color:white; text-decoration: none; font-weight:700; font-size:14px" href="${link}">Confirmar email </a>
         </button>
         </div>
         <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de Video Stream.</p>
@@ -51,7 +51,7 @@ const resendTokenValidate = async (req, res) => {
         title: title,
         name: `Hola, ${user.name}:`,
         content:
-          "Confirma tu mail para poder empezar a difrutar de Video Stream.",
+          "Confirma tu email para poder empezar a difrutar de Video Stream.",
         message: message,
         to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
         subject: "Confirmar Mail",

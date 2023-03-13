@@ -1,14 +1,8 @@
-import { getSession } from "next-auth/react";
-import Head from "next/head";
-import { parseCookies } from "nookies";
 import React from "react";
 import Banner from "../components/IndexBanner";
 import IndexHeader from "../components/IndexHeader";
-import { User } from "../typings";
-import { getUserFromBack } from "./api/user/getUserFromBack";
 import { GetServerSideProps } from "next";
 import Header from "../components/Header";
-import Banner from "../components/Banner";
 import requests from "../utils/requests";
 import {
   Courses,
@@ -36,7 +30,7 @@ import { CourseListContext } from "../hooks/courseListContext";
 import { getUserFromBack } from "./api/user/getUserFromBack";
 
 interface Props {
-  randomImage: Images;
+  randomImage: string;
   session: Session;
   courses: CoursesDB[];
   user: User;
