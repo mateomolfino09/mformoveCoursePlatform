@@ -6,6 +6,8 @@ import imageLoader from '../imageLoader'
 import { loadCourse } from '../redux/courseModal/courseModalAction'
 import { CoursesDB, Item, Ricks, User } from '../typings'
 import { Button, Container, Grid, IconButton, Slider, styled, Tooltip, Typography, Popover, SliderValueLabelProps } from '@mui/material';
+import { useRouter } from 'next/router'
+import axios from 'axios'
 
 function ValueLabelComponent(props: SliderValueLabelProps) {
   const { children, value } = props;
@@ -68,6 +70,22 @@ interface Props {
 function CourseThumbnail({ items, course, actualClassIndex, isClass, user, courseIndex }: Props) {
   const classes = user?.courses[courseIndex].classes
   const email = user?.email
+  const router = useRouter()
+
+  // const handleRoute = (courseId: number | undefined, classId: number | undefined) => {
+  //   try {
+  //     // const config = {
+  //     //   headers: {
+  //     //     "Content-Type": "application/json",
+  //     //   },
+  //     // }
+  //     // let { data } = await axios.post('/api/connection/connectBeforeSSR', { }, config)
+  //     router.push( `/src/courses/${courseId}/${classId}`)
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+
+  // }
 
   return (
     <>

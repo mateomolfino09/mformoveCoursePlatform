@@ -18,6 +18,7 @@ import ClassDescription from '../../../../components/ClassDescription'
 import ReactPlayer from 'react-player'
 import { ClassContext } from '../../../../hooks/classContext'
 import { updateActualCourseSS } from '../../../api/user/updateActualCourseSS'
+import connectDB, { db } from '../../../../config/connectDB'
 
 interface Props {
   clase: ClassesDB
@@ -195,11 +196,13 @@ function Course({ clase, user }: Props) {
 
 
   export async function getServerSideProps(context: any) {
+
+      connectDB()
       const { params, query, req, res } = context
       const session = await getSession({ req })
       const cookies = parseCookies(context)
       const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
-      const email = userCookie.email   
+      const email = userCookie?.email   
       const { classId, id } = params
       const clase = await getClassById(classId, id)
       const user = await updateActualCourseSS(email, id, classId)

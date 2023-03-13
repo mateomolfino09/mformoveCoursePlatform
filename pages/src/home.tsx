@@ -93,48 +93,52 @@ const Home = ({ user, randomImage, courses
 
   useEffect(() => {
     if (!user) {
-      router.push("/user/login")
+      router.push("/src/user/login")
     }
-    const quantity = Math.round(courses.length / 3) 
-    const dateCourses = [...courses]
-    setNuevoCourses(dateCourses.sort((a, b) =>
-    new Date(Date.parse(b.udpatedAt) - Date.parse(a.udpatedAt)).getTime()
-  ).splice(-quantity))
-
-    const manageUser = () => {
-       let listToSet: CoursesDB[] = []
-
-        user.courses.forEach((course: CourseUser) => {
-          let courseInCourseIndex = courses.findIndex((x) => {
-            return  x._id === course.course
+    else {
+      console.log(user)
+      const quantity = Math.round(courses.length / 3) 
+      const dateCourses = [...courses]
+      setNuevoCourses(dateCourses.sort((a, b) =>
+      new Date(Date.parse(b.udpatedAt) - Date.parse(a.udpatedAt)).getTime()
+    ).splice(-quantity))
+  
+      const manageUser = () => {
+         let listToSet: CoursesDB[] = []
+  
+          user.courses.forEach((course: CourseUser) => {
+            let courseInCourseIndex = courses.findIndex((x) => {
+              return  x._id === course.course
+            })
+  
+            const arrCopy = [...listToSet]
+            const myCopy = [...myCourses]
+  
+            if(course.purchased) {
+              let hasCourse = myCopy.filter((x, i) => x.id == courses[courseInCourseIndex].id).length != 0
+              if(!myCourses.includes(courses[courseInCourseIndex]) && !hasCourse) {
+                setMyCourses([...myCourses, courses[courseInCourseIndex]])
+              } 
+            }
+            else {
+              if(myCourses.includes(courses[courseInCourseIndex])) {
+                setMyCourses(myCourses.filter((value) => value._id != course.course))
+              }
+            }
+  
+            if(course.inList) {
+              let hasCourse = arrCopy.filter((x, i) => x.id == courses[courseInCourseIndex].id).length != 0
+              if(!listToSet.includes(courses[courseInCourseIndex]) && !hasCourse) {
+                listToSet.push(courses[courseInCourseIndex])
+              }
+            }
           })
+  
+          setListCourse([...listToSet])
+    }
+    manageUser()
+    }
 
-          const arrCopy = [...listToSet]
-          const myCopy = [...myCourses]
-
-          if(course.purchased) {
-            let hasCourse = myCopy.filter((x, i) => x.id == courses[courseInCourseIndex].id).length != 0
-            if(!myCourses.includes(courses[courseInCourseIndex]) && !hasCourse) {
-              setMyCourses([...myCourses, courses[courseInCourseIndex]])
-            } 
-          }
-          else {
-            if(myCourses.includes(courses[courseInCourseIndex])) {
-              setMyCourses(myCourses.filter((value) => value._id != course.course))
-            }
-          }
-
-          if(course.inList) {
-            let hasCourse = arrCopy.filter((x, i) => x.id == courses[courseInCourseIndex].id).length != 0
-            if(!listToSet.includes(courses[courseInCourseIndex]) && !hasCourse) {
-              listToSet.push(courses[courseInCourseIndex])
-            }
-          }
-        })
-
-        setListCourse([...listToSet])
-  }
-  manageUser()
 
   }, [router, session])
 
@@ -174,9 +178,9 @@ export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps
         // Get a cookie
       const cookies = parseCookies(ctx)
       const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
-      const email = userCookie.email 
-  
-      const user = await getUserFromBack(email)
+      const email = userCookie?.email 
+      let user = null
+      if(email != null) user = await getUserFromBack(email)
 
       return {
         props: {
