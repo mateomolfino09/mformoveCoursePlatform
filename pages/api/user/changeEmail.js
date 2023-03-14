@@ -20,14 +20,14 @@ const changeEmail = async (req, res) => {
       const token = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
         expiresIn: "30d",
       });
-      console.log(user)
+      console.log(user);
 
       user.resetToken = token;
       await user.save();
 
       const { origin } = absoluteUrl(req);
       const link = `${origin}/src/user/resetEmail/${token}`;
-      const title = `<h1>Restablece tu email</h1>`;
+      const title = `<h1 style="color:black">Restablece tu email</h1>`;
       const message = `
       <div>     
       <div>
@@ -43,7 +43,7 @@ const changeEmail = async (req, res) => {
         title: title,
         name: `Hola, ${user.name}:`,
         content:
-          "Restablezcamos tu email para que puedas seguir difrutando de Video Stream.",
+          "Restablezcamos tu email para que puedas seguir disfrutando de Video Stream.",
         message: message,
         to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
         subject: "Resetear Email",
