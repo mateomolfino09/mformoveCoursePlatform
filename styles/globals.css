@@ -29,7 +29,11 @@
   }
 
   .input {
-    @apply w-full rounded bg-[#333] px-5 py-3.5 placeholder-[gray] outline-none focus:bg-[#454545];
+    @apply w-full rounded bg-[#333] px-5 py-3.5 placeholder-[#808080] outline-none focus:bg-[#454545];
+  }
+
+  .inputRegister {
+    @apply w-full rounded px-5 py-3.5 placeholder-[#a7a6a6] outline-none focus:bg-black/80 transition duration-1000 bg-black/50 border-2 border-black;
   }
 
 
@@ -70,6 +74,14 @@
 
 .bg-light-red-darker {
   @apply bg-[#e5091499]
+}
+
+.text-light-red-darker {
+  @apply text-[#e5091499]
+}
+
+.text-light-red {
+  @apply text-[#e50914]
 }
 
 .toggleLightening {

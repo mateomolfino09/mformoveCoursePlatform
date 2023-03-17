@@ -13,7 +13,7 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(({ showNav }: any, re
           <picture>
             <img
               alt='icon image'
-              src="https://rb.gy/ulxxee"
+              src="/images/logo.png"
               className="cursor-pointer object-contain w-32 h-auto transition duration-500 hover:scale-105"
             />
           </picture>

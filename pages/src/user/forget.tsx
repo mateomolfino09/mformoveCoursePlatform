@@ -86,7 +86,7 @@ function Forget() {
     />
         {/* Logo position */}
     <img
-        src="https://rb.gy/ulxxee"
+        src="/images/logo.png"
         className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 transition duration-500 hover:scale-105"
         width={150}
         height={150}
@@ -126,7 +126,7 @@ function Forget() {
                       
                       Eres nuevo en Video Stream? 
                       <br/>
-                      <Link href={'/src/user/signUp'}> 
+                      <Link href={'/src/user/register'}> 
                           <button type='button' className='text-white hover:underline'>Crea tu cuenta ahora!</button>
                       </Link>
                   </div>

@@ -139,15 +139,15 @@ const Login = ({ providers, session }: any) => {
             {!loading && !validateEmail && (
               <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
               <Image 
-                  src="https://rb.gy/p2hphi"
+                  src="/images/bgIndex2.jpg"
                   layout="fill"
-                  className="-z-10 !hidden opacity-60 sm:!inline"
+                  className="-z-10 !hidden opacity-50 sm:!inline"
                   objectFit="cover"
                   alt='icon image'
                   loader={imageLoader}/>
                   <Link href={'/'}>
                   <img
-                    src="https://rb.gy/ulxxee"
+                    src="/images/logo.png"
                     className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 transition duration-500 hover:scale-105"
                     width={150}
                     height={150}
@@ -193,7 +193,7 @@ const Login = ({ providers, session }: any) => {
                       
                         Eres nuevo en Video Stream? 
                         <br/>
-                        <Link href={'/src/user/signUp'}> 
+                        <Link href={'/src/user/register'}> 
                             <button type='button' className='text-white hover:underline'>Crea tu cuenta ahora!</button>
                         </Link>
                     </div>
@@ -214,7 +214,7 @@ const Login = ({ providers, session }: any) => {
             {!loading && validateEmail && (
                           <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
                           <Image
-                              src="https://rb.gy/p2hphi"
+                              src="images/bgIndex1.jpg"
                               layout="fill"
                               className="-z-10 !hidden opacity-60 sm:!inline"
                               objectFit="cover"
@@ -223,7 +223,7 @@ const Login = ({ providers, session }: any) => {
                           />
                               {/* Logo position */}
                           <img
-                              src="https://rb.gy/ulxxee"
+                              src="/images/logo.png"
                               className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 transition duration-500 hover:scale-105"
                               width={150}
                               height={150}

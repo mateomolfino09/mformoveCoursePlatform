@@ -7,10 +7,6 @@ import { loadCourse } from '../redux/courseModal/courseModalAction'
 import { CoursesDB, Item, Ricks, User } from '../typings'
 import { Button, Container, Grid, IconButton, Slider, styled, Tooltip, Typography, Popover, SliderValueLabelProps } from '@mui/material';
 import { useRouter } from 'next/router'
-import axios from 'axios'
-import { dehydrate, Query, useQuery } from 'react-query'
-
-
 
 function ValueLabelComponent(props: SliderValueLabelProps) {
   const { children, value } = props;

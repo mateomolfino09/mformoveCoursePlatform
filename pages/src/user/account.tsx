@@ -79,7 +79,7 @@ function Account() {
       <header className={`bg-[#141414]`}>
         <Link href="/src/home">
           <img
-            src="https://rb.gy/ulxxee"
+            src="/images/logo.png"
             width={120}
             height={120}
             className="cursor-pointer object-contain transition duration-500 hover:scale-105"
