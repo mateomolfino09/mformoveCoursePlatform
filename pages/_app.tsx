@@ -20,7 +20,6 @@ const poppins = Poppins({
 
 
 function App({ Component, ...rest }: AppProps) {
-  const queryClient = useRef(new QueryClient())
   const [listCourse, setListCourse] = useState<CoursesDB[]>([])
   const [courses, setCourses] = useState<CoursesDB[]>([])
 
