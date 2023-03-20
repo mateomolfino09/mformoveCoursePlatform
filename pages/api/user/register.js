@@ -14,7 +14,7 @@ connectDB()
 const register = async(req,res) => {
     try {
         if (req.method === "POST") {
-          const { email, password, firstname, lastname, captcha } = req.body
+          const { email, password, firstname, lastname, gender, country, captcha } = req.body
 
           const validCaptcha = await validateCaptcha(captcha)
         
@@ -33,7 +33,9 @@ const register = async(req,res) => {
           const newUser = await new Users({
             email: email,
             password: HashedPassword,
-            name: `${firstname} ${lastname}`
+            name: `${firstname} ${lastname}`,
+            gender: gender,
+            country: country
           }).save()
     
           const token = jwt.sign({ _id: newUser._id }, process.env.NEXTAUTH_SECRET, {

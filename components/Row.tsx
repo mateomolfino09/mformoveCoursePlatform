@@ -1,7 +1,8 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
-import { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from "react"
+import { Dispatch, RefObject, SetStateAction, useContext, useEffect, useRef, useState } from "react"
 import { useSelector } from "react-redux"
+import { CoursesContext } from "../hooks/coursesContext"
 import { loadCourse } from "../redux/courseModal/courseModalAction"
 import { CourseModal } from "../redux/courseModal/courseModalTypes"
 import { State } from "../redux/reducers"
@@ -11,7 +12,7 @@ import Thumbnail from "./Thumbnail"
 
 interface Props {
     title: string | null,
-    courses: CoursesDB[] | null,
+    coursesDB: CoursesDB[] | null,
     setSelectedCourse: Dispatch<SetStateAction<CoursesDB | null>> | null,
     items: Item[] | null,
     courseDB: CoursesDB | null
@@ -22,12 +23,15 @@ interface Props {
     courseIndex: number
 }
 
-function Row({ title, courses, setSelectedCourse, items, courseDB, actualCourseIndex, setRef, isClass, user, courseIndex} : Props) {
+function Row({ title, coursesDB, setSelectedCourse, items, courseDB, actualCourseIndex, setRef, isClass, user, courseIndex} : Props) {
     const rowRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
     const[isMoved, setIsMoved] = useState(false);
     const course: CourseModal = useSelector((state: State) => state.courseModalReducer)
     let { loading, error, activeModal, dbCourse  } = course
+    const [overflow, setOverflow] = useState('hidden')
+    const { courses, setCourses} = useContext( CoursesContext )
+
 
     const handleClick = (direction: string) => {
         setIsMoved(true);
@@ -45,23 +49,23 @@ function Row({ title, courses, setSelectedCourse, items, courseDB, actualCourseI
     
     useEffect(() => {
         if(rowRef != null && setRef != null) setRef(rowRef)
-    }, [rowRef])   
+    }, [])   
 
 
     return (
-        <div className="h-40 space-y-0.5 md:space-y-2 w-full" ref={listRef}>
+        <div className="sm:h-48 lg:h-40 space-y-0.5 md:space-y-2 w-full" ref={listRef}>
                 {!activeModal && !isClass ? (
                     <>
                         <h2 className="w-56 cursor-pointer text-sm font-semibold text-[#E5E5E5] transition duration-200 hover:text-white md:text-2xl" >{title}</h2>
-          <div className="group relative md:-ml-2">
+          <div className="group relative md:-ml-2  lg:-top-20">
                             <ChevronLeftIcon className={`ScrollIcon left-2 ${!isMoved && 'hidden'}`}  onClick={() => handleClick("left")}/>
-                            <div ref={rowRef} className="scrollbar-hide flex items-center space-x-0.5 overflow-x-scroll md:space-x-2.5 md:p-2">
-              {courses?.map((course) => (
-                                <Thumbnail key={course?._id} course={course} setSelectedCourse={setSelectedCourse}/>
+                            <div ref={rowRef} className="h-64 md:h-80 lg:h-96 scrollbar-hide flex items-end -top-32 space-x-0 overflow-y-hidden overflow-x-scroll md:space-x-2.5 md:p-2 relative">  
+              {coursesDB?.map((course: CoursesDB) => (
+                                <Thumbnail key={course?._id} course={course} setSelectedCourse={setSelectedCourse} user={user} courseIndex={course.id - 1}/>
               ))}
             </div>
 
-                            <ChevronRightIcon className={`ScrollIcon right-2`} onClick={() => handleClick("right")}/>
+                <ChevronRightIcon className={`ScrollIcon right-2`} onClick={() => handleClick("right")}/>
                             
           </div>
 

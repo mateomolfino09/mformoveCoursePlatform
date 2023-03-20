@@ -37,6 +37,7 @@ const forget = async (req, res) => {
 
       const { origin } = absoluteUrl(req);
       const link = `${origin}/src/user/reset/${token}`;
+      const title = `<h1>Restablece tu contraseña</h1>`;
 
       const message = `
       <div>     
@@ -50,6 +51,7 @@ const forget = async (req, res) => {
       </div> `;
 
       let resp = await sendEmail({
+        title: title,
         name: `Hola, ${user.name}:`,
         content:
           "Restablezcamos tu contraseña para que puedas seguir disfrutando Video Stream.",

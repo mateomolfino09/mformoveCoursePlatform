@@ -63,8 +63,8 @@ const ShowUsers = ({ users, user }: Props) => {
           </thead>
             <tbody>
               {users?.map((user: any) => (
-                <tr key={user._id}>
-                  <th ref={ref} className="border-solid border-transparent border border-collapse  bg-gray-900/70 text-base opacity-75">
+                <tr key={user._id} ref={ref}>
+                  <th  className="border-solid border-transparent border border-collapse  bg-gray-900/70 text-base opacity-75">
                     {user.name}
                   </th>
                   <th className="border-solid border-transparent border border-collapse text-base bg-gray-900/70 opacity-75">{user.email}</th>

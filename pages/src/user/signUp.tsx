@@ -13,6 +13,8 @@ import { parseCookies } from 'nookies';
 import { ToastContainer, toast } from 'react-toastify';
 import { MouseEvent } from 'react';
 import ReCAPTCHA from "react-google-recaptcha"
+import { genders } from '../../../constants/genders';
+import { countries } from '../../../constants/countries';
 
 
 interface Inputs {
@@ -24,13 +26,25 @@ function SignUp() {
     const { data: session } = useSession()
     const cookies = parseCookies()
 
+
+
     const [loading, setLoading] = useState(false);
+    const [state, setState] = useState({
+      email: '',
+      firstname: '',
+      lastname: '',
+      password: '',
+      conPassword: '',
+      gender: '',
+      country: ''
+    })
     const [registered, setRegistered] = useState(false);
     const [email, setEmail] = useState('')
     const [firstname, setFirstname] = useState('')
     const [lastname, setLastname] = useState('')
     const [password, setPassword] = useState('')
     const [conPassword, setConPassword] = useState('')
+
     const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
     const router = useRouter()
@@ -138,8 +152,8 @@ function SignUp() {
         />
         {/* Logo position */}
         <img
-                alt='icon image'
-          src="https://rb.gy/ulxxee"
+          alt='icon image'
+          src="/images/logo.png"
           className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 transition duration-500 hover:scale-105"
           width={150}
           height={150}
@@ -229,7 +243,7 @@ function SignUp() {
                 />
                     {/* Logo position */}
                 <img
-                    src="https://rb.gy/ulxxee"
+                    src="/images/logo.png"
                     className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 transition duration-500 hover:scale-105"
                     width={150}
                     height={150}
