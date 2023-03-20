@@ -32,10 +32,10 @@ return (
         <div className="pl-4 md:pl-16">
         <img
               alt='icon image'
-              src="/images/logoWgite.JPG"
+              src="/images/logoWhite.png"
               width={120}
               height={120}
-              className="cursor-pointer object-contain transition duration-500 hover:scale-105"
+              className="cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-50 hover:opacity-100"
             />
         </div>
         <div className="flex items-center pr-4 md:pr-16">
@@ -43,14 +43,14 @@ return (
             <div>
               <Menu.Button className="inline-flex w-full justify-center items-center">
                 {user?.name ? (
-                    <div className="w-24 bg-light-red-darker transition duration-500 hover:bg-red-700 rounded-sm">
+                    <div className="w-24 bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black hover:scale-105">
                         <button className="p-1 cursor-pointer" onClick={() => router.push('/src/home')}>
                             Entrar
                         </button>
                     </div>
     
                 ) : (
-                    <div className="w-24 bg-light-red-darker transition duration-500 hover:bg-red-700 rounded-sm">
+                    <div className="w-24 bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black hover:scale-105">
                         <button className="p-1" onClick={() => router.push('/src/user/login')}> 
                             Login
                         </button>

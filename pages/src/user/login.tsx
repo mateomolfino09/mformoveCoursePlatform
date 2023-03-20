@@ -184,7 +184,7 @@ const Login = ({ providers, session }: any) => {
                           </label>
                 </div>
   
-                      <button className='w-full rounded bg-light-red py-3 font-semibold' onClick={(e) => signinUser(e)}>Sign In </button>
+                      <button className='w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold' onClick={(e) => signinUser(e)}>Sign In </button>
   
                   </form>
                   <LoginButton provider={providers?.google}/> 
@@ -229,13 +229,13 @@ const Login = ({ providers, session }: any) => {
                               height={150}
                               alt='icon image'
                           />
-                          <div className='relative mt-24 space-y-8 rounded bg-black/75 py-10 px-6 md:mt-0 md:max-w-lg md:px-14'>
+                          <div className='relative mt-24 space-y-8 rounded-md bg-black/75 py-10 px-6 md:mt-0 md:max-w-lg md:px-14'>
                               <h1 className='text-4xl font-semibold'>No ha confirmado su cuenta aún!</h1>
                               <div className='space-y-4'>
                                   <label className='inline-block w-full'>
                                       <p>¿Desea que volvamos a enviar un email de confirmación?</p>
                                   </label>
-                                  <button className='w-full rounded bg-light-red py-3 font-semibold' onClick={(e) => resendTokenValidate(e)}>Volver a Enviar </button>
+                                  <button className='w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black hover:scale-105 py-3 font-semibold' onClick={(e) => resendTokenValidate(e)}>Volver a Enviar </button>
                                   <button type='button' onClick={() => {
                                     setValidateEmail(false)
                                     window.location.reload()
