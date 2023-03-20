@@ -134,7 +134,7 @@ function Course({ clase, user }: Props) {
             >
               <img
                 alt='Logo Video Stream'
-                src="/images/logo.png"
+                src="/images/logoWhite.png"
                 width={120}
                 height={120}
                 className="cursor-pointer object-contain transition duration-500 hover:scale-105"

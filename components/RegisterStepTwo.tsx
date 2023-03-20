@@ -30,7 +30,6 @@ const RegisterStepOne = ({ step2ToStep3, setData }: Props) => {
     const [confirmPassword, setConfirmPassword] = useState('')
 
     const handleClick = () => {
-      console.log(password.length)
         if(password != confirmPassword ) {
             toast.error('Las contraseñas no coinciden')
         } 
@@ -50,7 +49,7 @@ const RegisterStepOne = ({ step2ToStep3, setData }: Props) => {
     <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center bg-white`}>
     {/* Logo position */}
     <div className='flex flex-col items-center justify-center relative mt-48 space-y-4 rounded py-12 md:-mt-24'>
-        <AiOutlineCheckCircle className='text-light-red w-12 h-12'/>
+        <AiOutlineCheckCircle className='text-light-gray-darker w-12 h-12'/>
         <p className='font-extralight text-black text-base'>PASO 2 DE 3</p>
         <h1 className='font-extrabold text-4xl text-center text-black'>Ya estamos por terminar!</h1>
         <h2 className='font-normal text-xl text-center text-black'>Crea una contraseña segura para tu cuenta</h2>
@@ -77,7 +76,7 @@ const RegisterStepOne = ({ step2ToStep3, setData }: Props) => {
         <div className='space-x-4 flex'>
 
         </div>
-    <button onClick={() => handleClick()} className='w-1/3 rounded bg-light-red py-3 font-semibold md:w-[20%] lg:w-[10%]'>Siguiente! </button>
+    <button onClick={() => handleClick()} className='w-1/3 bg-black/70 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold md:w-[20%] lg:w-[10%]'>Siguiente! </button>
     </div>
   </div>
   )

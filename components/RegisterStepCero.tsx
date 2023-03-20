@@ -59,7 +59,7 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
         />
         </Link>
         <Link href={"/src/user/login"}> 
-          <button type='button' className='text-white text-sm rounded-md hover:underline ml-2 bg-light-red w-16 h-8 md:w-20 '>Sign In</button>
+          <button type='button' className='text-white text-sm ml-2 bg-black/70 border border-white rounded-md transition duration-500 hover:bg-black  w-16 h-8 md:w-20 '>Sign In</button>
         </Link>
     </header>
     <Image
@@ -81,7 +81,7 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
         <h2 className='font-semibold text-xl text-center'>Pronto para aprender? Ingresa tu email para crear tu cuenta.</h2>
     </div>
     <div className='flex items-center justify-center relative space-x-8 rounded px-8 md:w-full'>
-      <div className='w-2/3 bg-transparent md:w-[40%] lg:w-[30%]'>
+      <div className='w-2/3 bg-transparent border border-white rounded-md md:w-[40%] lg:w-[30%]'>
           <label className='inline-block w-full'>
               <input type="email"
               placeholder='Email' 
@@ -91,7 +91,7 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
               />
           </label>
       </div>
-    <button onClick={() => handleClick()} className='w-1/3 rounded bg-light-red py-3 font-semibold md:w-[20%] lg:w-[10%]'>Empezar! </button>
+    <button onClick={() => handleClick()} className='w-1/3 bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold md:w-[20%] lg:w-[10%]'>Empezar! </button>
     </div>
       </>
     )}
