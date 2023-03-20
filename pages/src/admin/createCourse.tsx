@@ -206,7 +206,7 @@ const CreateCourse = ({ user }: Props) => {
                     />
                   </label>
               </div>
-            <button onClick={(e) => (e)} className='w-full rounded bg-light-red py-3 font-semibold'>Crear Curso </button>
+            <button onClick={(e) => (e)} className='w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold'>Crear Curso </button>
             <div className='text-[gray]'>
                   Volver al Inicio
                   <Link href={"/src/home"}> 
