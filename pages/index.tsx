@@ -180,7 +180,7 @@ const Home = ({ user, randomImage, courses }: Props) => {
         <section className="md:space-y-24 mt-48 md:mt-24 lg:mt-0">
           <Row
             title="Todos Los Cursos"
-            courses={courses}
+            coursesDB={courses}
             setSelectedCourse={setSelectedCourse}
             items={null}
             courseDB={null}
@@ -192,7 +192,7 @@ const Home = ({ user, randomImage, courses }: Props) => {
           />
           <Row
             title={"Nuevo"}
-            courses={nuevoCourses}
+            coursesDB={nuevoCourses}
             setSelectedCourse={setSelectedCourse}
             items={null}
             courseDB={null}
@@ -204,7 +204,7 @@ const Home = ({ user, randomImage, courses }: Props) => {
           />
           <Row
             title={"Mi Lista"}
-            courses={listCourse}
+            coursesDB={listCourse}
             setSelectedCourse={setSelectedCourse}
             items={null}
             courseDB={null}
@@ -216,7 +216,7 @@ const Home = ({ user, randomImage, courses }: Props) => {
           />
           <Row
             title={"Mis Cursos"}
-            courses={myCourses}
+            coursesDB={myCourses}
             setSelectedCourse={setSelectedCourse}
             items={null}
             courseDB={null}
