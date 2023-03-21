@@ -63,10 +63,10 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy, dbUser 
         <Link href={'/'}>
         <img
           alt='icon image'
-          src="https://rb.gy/ulxxee"
+          src="/images/logoWhite.png"
           width={100}
           height={100}
-          className="cursor-pointer object-contain transition duration-500 hover:scale-105"
+          className="cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-90 hover:opacity-100"
         />
         </Link>
 

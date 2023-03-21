@@ -43,7 +43,7 @@ const ClassDescription = ({clase, youtubeURL, courseDB} : Props) => {
         <h2 className='h-full'>{item?.snippet.description}</h2>
       </div>
       <div className='w-1/3 h-full p-6 pr-12 overflow-scroll scrollbar-hide'>
-      <Row items={items} courseDB={courseDB} title= {item != null ? item.snippet.title : ''} courses={null} setSelectedCourse={null} actualCourseIndex={clase.id - 1} setRef={null} isClass={true} user={null} courseIndex={0}/> 
+      <Row items={items} courseDB={courseDB} title= {item != null ? item.snippet.title : ''} coursesDB={null} setSelectedCourse={null} actualCourseIndex={clase.id - 1} setRef={null} isClass={true} user={null} courseIndex={0}/> 
 
       </div>
     </div>

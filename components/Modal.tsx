@@ -259,7 +259,7 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
 
                 </div>
                 <div className='flex space-x-16 rounded-b-md bg-[#181818]'>
-                        <Row items={items} courseDB={courseDB} title= {items != null ? items[0].snippet.title : ''} courses={null} setSelectedCourse={null} actualCourseIndex={actualCourseIndex} setRef={null} isClass={false} user={user} courseIndex={courseIndex}/> 
+                        <Row items={items} courseDB={courseDB} title= {items != null ? items[0].snippet.title : ''} coursesDB={null} setSelectedCourse={null} actualCourseIndex={actualCourseIndex} setRef={null} isClass={false} user={user} courseIndex={courseIndex}/> 
                 </div>
                 <Toaster />
             </>

@@ -52,22 +52,21 @@ function Token() {
           loader={imageLoader}
         />
         {/* Logo position */}
-        <img
-          src="https://rb.gy/ulxxee"
-          className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 transition duration-500 hover:scale-105"
-          width={150}
-          alt="icon image"
-          height={150}
-        />
-        <div className="relative mt-24 space-y-8 rounded bg-black/75 py-10 px-6 md:mt-0 md:max-w-lg md:px-14">
-          <h1 className="text-4xl font-semibold">Resetear Email</h1>
-          <form className="relative space-y-8 md:mt-0 md:max-w-lg">
-            <div className="space-y-4">
-              <label className="inline-block w-full">
-                <input
-                  type="email"
-                  placeholder="Nuevo Email"
-                  className="input"
+    <img
+        src="/images/logo.png"
+        className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 transition duration-500 hover:scale-105"
+        width={150}
+        alt='icon image'
+        height={150}
+    />
+    <div className='relative mt-24 space-y-8 rounded bg-black/75 py-10 px-6 md:mt-0 md:max-w-lg md:px-14'>
+        <h1 className='text-4xl font-semibold'>Resetear Email</h1>
+        <form className='relative space-y-8 md:mt-0 md:max-w-lg'>
+        <label className='inline-block w-full'>
+                  <input 
+                  type="email" 
+                  placeholder='Nuevo Email'
+                  className='input'
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />

@@ -56,6 +56,14 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       minLength: 10,
     },
+    gender: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+    },
     rol: { 
       type: String,
       required: true,

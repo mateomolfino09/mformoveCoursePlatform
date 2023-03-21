@@ -19,17 +19,20 @@ import Head from 'next/head'
 import { listClasses } from '@mui/material'
 import { CourseListContext } from '../../hooks/courseListContext'
 import { getUserFromBack } from '../api/user/getUserFromBack'
+import { CoursesContext } from '../../hooks/coursesContext'
+import { Toaster } from 'react-hot-toast'
 
 interface Props {
   randomImage: Images
   session: Session,
-  courses: CoursesDB[]
+  coursesDB: CoursesDB[]
   user: User
 }
 
 
-const Home = ({ user, randomImage, courses
+const Home = ({ user, randomImage, coursesDB
  } : Props) => {
+  console.log(user)
   const [selectedCourse, setSelectedCourse] = useState<CoursesDB | null>(null)  
   const [myCourses, setMyCourses] = useState<CoursesDB[]>([])  
   const [nuevoCourses, setNuevoCourses] = useState<CoursesDB[]>([])  
@@ -38,6 +41,12 @@ const Home = ({ user, randomImage, courses
   const [refToModa, setRefToModa] = useState<RefObject<HTMLDivElement> | null>(null);
   const [refToNuevo, setRefToNuevo] = useState<RefObject<HTMLDivElement> | null>(null);
   const {listCourse, setListCourse} = useContext( CourseListContext )
+  const { courses, setCourses} = useContext( CoursesContext )
+  // setCourses([...coursesDB])
+
+  useEffect(() => {
+      setCourses([...coursesDB])
+  }, [])
 
 
   const [userDB, setUserDB] = useState<User | null>(null)  
@@ -97,8 +106,8 @@ const Home = ({ user, randomImage, courses
     }
     else {
       console.log(user)
-      const quantity = Math.round(courses.length / 3) 
-      const dateCourses = [...courses]
+      const quantity = Math.round(coursesDB.length / 3) 
+      const dateCourses = [...coursesDB]
       setNuevoCourses(dateCourses.sort((a, b) =>
       new Date(Date.parse(b.udpatedAt) - Date.parse(a.udpatedAt)).getTime()
     ).splice(-quantity))
@@ -107,7 +116,7 @@ const Home = ({ user, randomImage, courses
          let listToSet: CoursesDB[] = []
   
           user.courses.forEach((course: CourseUser) => {
-            let courseInCourseIndex = courses.findIndex((x) => {
+            let courseInCourseIndex = coursesDB.findIndex((x) => {
               return  x._id === course.course
             })
   
@@ -115,21 +124,21 @@ const Home = ({ user, randomImage, courses
             const myCopy = [...myCourses]
   
             if(course.purchased) {
-              let hasCourse = myCopy.filter((x, i) => x.id == courses[courseInCourseIndex].id).length != 0
-              if(!myCourses.includes(courses[courseInCourseIndex]) && !hasCourse) {
-                setMyCourses([...myCourses, courses[courseInCourseIndex]])
+              let hasCourse = myCopy.filter((x, i) => x.id == coursesDB[courseInCourseIndex].id).length != 0
+              if(!myCourses.includes(coursesDB[courseInCourseIndex]) && !hasCourse) {
+                setMyCourses([...myCourses, coursesDB[courseInCourseIndex]])
               } 
             }
             else {
-              if(myCourses.includes(courses[courseInCourseIndex])) {
+              if(myCourses.includes(coursesDB[courseInCourseIndex])) {
                 setMyCourses(myCourses.filter((value) => value._id != course.course))
               }
             }
   
             if(course.inList) {
-              let hasCourse = arrCopy.filter((x, i) => x.id == courses[courseInCourseIndex].id).length != 0
-              if(!listToSet.includes(courses[courseInCourseIndex]) && !hasCourse) {
-                listToSet.push(courses[courseInCourseIndex])
+              let hasCourse = arrCopy.filter((x, i) => x.id == coursesDB[courseInCourseIndex].id).length != 0
+              if(!listToSet.includes(coursesDB[courseInCourseIndex]) && !hasCourse) {
+                listToSet.push(coursesDB[courseInCourseIndex])
               }
             }
           })
@@ -157,12 +166,13 @@ const Home = ({ user, randomImage, courses
       <main className='relative pl-4 lg:space-y-24 lg:pl-16'>
         <Banner randomImage={randomImage}/>
         <section className='md:space-y-24 mt-48 md:mt-24 lg:mt-0'>
-          <Row title="Todos Los Cursos" courses={courses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToModaSend} isClass={false} user={null} courseIndex={0}/>
-          <Row title={"Nuevo"} courses={nuevoCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToNuevoSend} isClass={false} user={null} courseIndex={0}/>
-          <Row title={"Mi Lista"} courses={listCourse} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToListSend} isClass={false} user={null} courseIndex={0}/>
-          <Row title={"Mis Cursos"} courses={myCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefMySend} isClass={false} user={null} courseIndex={0}/>
+          <Row title="Todos Los Cursos" coursesDB={courses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToModaSend} isClass={false} user={user} courseIndex={0}/>
+          <Row title={"Nuevo"} coursesDB={nuevoCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToNuevoSend} isClass={false} user={user} courseIndex={0}/>
+          <Row title={"Mi Lista"} coursesDB={listCourse} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToListSend} isClass={false} user={user} courseIndex={0}/>
+          <Row title={"Mis Cursos"} coursesDB={myCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefMySend} isClass={false} user={user} courseIndex={0}/>
         </section>
       </main>
+      <Toaster />
 
       {activeModal && <Modal courseDB={selectedCourse} user={user} updateUserDB={updateUserDB}/>}
     </div>
@@ -174,7 +184,7 @@ export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps
     async (ctx) => {
       const { req } = ctx
       const session = await getSession({ req })
-      const courses: any = await getCourses()
+      const coursesDB: any = await getCourses()
         // Get a cookie
       const cookies = parseCookies(ctx)
       const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
@@ -184,7 +194,7 @@ export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps
 
       return {
         props: {
-          courses,
+          coursesDB,
           user
       }
     }

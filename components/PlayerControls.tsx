@@ -1,9 +1,17 @@
 import React, { ElementType, useState, forwardRef, useRef, useEffect } from 'react'
-import { Button, Container, Grid, IconButton, Slider, styled, Tooltip, Typography, Popover } from '@mui/material';
-import { Bookmark, FastRewind, PlayArrow, Pause, FastForward, VolumeUp, Fullscreen, VolumeOff } from '@mui/icons-material'
-import { SliderValueLabelProps } from '@mui/material';
-
-
+import { Slider, styled, Tooltip, Popover, SliderValueLabelProps } from '@mui/material';
+import {
+  BackwardIcon,
+  ForwardIcon,
+  PauseIcon,
+  SpeakerWaveIcon,
+  SpeakerXMarkIcon,
+  ArrowsPointingOutIcon,
+  PlayIcon
+  
+} from "@heroicons/react/24/solid";
+import { BsFillPlayFill } from 'react-icons/bs';
+import { AiFillBackward, AiFillForward, AiFillPauseCircle, AiOutlinePause } from 'react-icons/ai';
 
 // ElementType<ValueLabelProps>
 function ValueLabelComponent(props: SliderValueLabelProps) {
@@ -26,6 +34,45 @@ function ValueLabelComponent(props: SliderValueLabelProps) {
       height: 10,
       width: 10,
       backgroundColor: '#e52019',
+      border: '2px solid currentColor',
+      '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
+        boxShadow: 'inherit',
+      },
+      '&:before': {
+        display: 'none',
+      },
+    },
+    '& .MuiSlider-valueLabel': {
+      lineHeight: 1.2,
+      fontSize: 12,
+      background: 'unset',
+      padding: 0,
+      width: 32,
+      height: 32,
+      borderRadius: '50% 50% 50% 0',
+      backgroundColor: 'transparent',
+      transformOrigin: 'bottom left',
+      transform: 'translate(50%, -100%) rotate(-45deg) scale(0)',
+      '&:before': { display: 'none' },
+      '&.MuiSlider-valueLabelOpen': {
+        transform: 'translate(50%, -100%) rotate(-45deg) scale(1)',
+      },
+      '& > *': {
+        transform: 'rotate(-45deg)',
+      },
+    },
+  });
+
+  const SliderVolume = styled(Slider)({
+    color: '#fff',
+    height: 3,
+    '& .MuiSlider-track': {
+      border: 'none',
+    },
+    '& .MuiSlider-thumb': {
+      height: 10,
+      width: 10,
+      backgroundColor: '#fff',
       border: '2px solid currentColor',
       '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
         boxShadow: 'inherit',
@@ -103,31 +150,31 @@ export default function PlayerControls ({ onPlayPause, playing, onFastForward, o
   const id = open ? 'playbackrate-popover' : undefined;
 
 return (
-    <div ref={ref} className={`absolute top-[60px] lg:top-[75px] left-0 right-0 bottom-0 flex-col space-y-48 justify-between z-[1] ${fullScreen ? 'bg-transparent' : 'bg-black/20'} `}>
-    <Grid container direction='row' alignItems='center' justifyContent='space-between' style={{padding:16}} className={`${fullScreen ? '!hidden' : 'hidden'} h-20 !pb-0 lg:overflow-hidden`}>
-      <Grid item className='w-[80%] h-16'>
-        <Typography variant='h5' style={{color: '#fff'}} className='!text-lg'>{title}</Typography>
-      </Grid>
-      <Grid className='hidden lg:flex'>
-      </Grid>
-    </Grid>
+    <div ref={ref} className={`absolute top-[60px] lg:top-[75px] left-0 right-0 bottom-0 flex-col space-y-48 justify-between z-[1] ${fullScreen ? 'bg-transparent' : 'bg-black/20'}  w-full flex-wrap box-border`}>
+    <div className={`${fullScreen ? '!hidden' : 'hidden'} h-20 !pb-0 lg:overflow-hidden flex flex-row items-center justify-between p-4`}> 
+      <div className='w-[80%] h-16'>
+        <h5 className='text-white !text-lg'>{title}</h5>
+      </div>
+      <div className='hidden lg:flex'>
+      </div>
+    </div>
 
 
-    <Grid container direction='row' alignItems='center' justifyContent='center' className={`${fullScreen ? '!mt-96' : '!mt-0 relative md:!mt-1 top-36 lg:top-32 '}`}>
-      <IconButton onClick={onRewind} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
-        <FastRewind fontSize='inherit'/>
-      </IconButton>
+    <div className={`${fullScreen ? '!mt-96' : '!mt-0 relative top-36 lg:top-32 h-64'} flex flex-row items-center justify-center  w-full flex-wrap box-border `}>
+      <button onClick={onRewind} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100 w-10 h-10 mr-2 -ml-2' aria-label='required'>
+        <AiFillBackward fontSize='inherit'/>
+      </button>
 
-      <IconButton onClick={onPlayPause} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
-        {playing ? <Pause fontSize='inherit'/> : <PlayArrow fontSize='inherit'/> }
-      </IconButton>
+      <button onClick={onPlayPause} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100 h-10 w-10 mt-2' aria-label='required'>
+        {playing ? <PauseIcon fontSize='inherit'/> : <PlayIcon fontSize='inherit'/> }
+      </button>
 
-      <IconButton onClick={onFastForward} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100' aria-label='required'>
-        <FastForward fontSize='inherit'/>
-      </IconButton>
-    </Grid>
-    <Grid container direction='row' justifyContent='space-between' alignItems='center' style={{padding:16}} className={fullScreen ? !playing ? 'md:!mt-64' : 'md:!mt-[450px]' : 'relative md:top-72 md:!mt-0' }>
-      <Grid item xs={12}>
+      <button onClick={onFastForward} className='!text-[#e6e5e5] !text-5xl !transform !scale-90 hover:!text-[#fff] !hover:transform !hover:scale-100 h-10 w-10' aria-label='required'>
+        <AiFillForward fontSize='inherit'/>
+      </button>
+    </div>
+    <div className={`${fullScreen ? !playing ? 'md:!mt-64' : 'md:!mt-[450px]' : ' relative'} flex flex-row justify-between items-center p-4 w-full flex-wrap box-border`}>
+      <div className='w-full'>
         <PrettoSlider 
           min={0}
           max={100}
@@ -140,19 +187,18 @@ return (
           onChange={onSeek}
           onMouseDown={onSeekMouseDown}
           onChangeCommitted={onSeekMouseUp}/>
-      </Grid>
-    <Grid item style={{marginTop:0}} className='!w-full flex flex-row justify-between'>
-      <Grid container alignItems='center' direction='row'>
-        <IconButton onClick={onPlayPause} className='!text-[#e6e5e5] hover:!text-white'>
-        {playing ? <Pause fontSize='large'/> : <PlayArrow fontSize='large'/> }
+      </div>
+    <div className='w-full flex flex-row justify-between mt-0 flex-wrap box-border'>
+      <div className='flex w-1/2 flex-row items-center space-x-4'>
+        <button onClick={onPlayPause} className='!text-[#e6e5e5] hover:!text-white h-7 w-7'>
+        {playing ? <PauseIcon fontSize='large'/> : <PlayIcon fontSize='large'/> }
           
-        </IconButton>
+        </button>
 
-        <IconButton onClick={onMute} className='!text-[#e6e5e5] hover:!text-white'>
-          {muted ? <VolumeOff fontSize='large'/> : <VolumeUp fontSize='large'/>}
-        </IconButton>
-
-        <Slider 
+        <button onClick={onMute} className='!text-[#e6e5e5] hover:!text-white h-7 w-7 mr-2'>
+          {muted ? <SpeakerXMarkIcon fontSize='large'/> : <SpeakerWaveIcon fontSize='large'/>}
+        </button>
+        <SliderVolume 
           min={0}
           max={100}
           size='small'
@@ -160,16 +206,16 @@ return (
           color='primary'
           className='!w-[20%] !text-[white]'
           onChange={onVolumeChange}
-          onChangeCommitted={onVolumeSeekUp}/>
+          onChangeCommitted={onVolumeSeekUp}/> 
 
-          <Button variant='text' style={{color: '#fff', marginLeft: 16}}>
-            <Typography>{elapsedTime}/{totalDuration}</Typography>
-          </Button>
-      </Grid>
-      <Grid item className='w-full flex justify-end items-center'>
-        <Button variant='text' className='!text-[#e6e5e5] hover:!text-white' onClick={handlePopover}>
-          <Typography>{playbackRate}X</Typography>
-        </Button>
+          <button className='text-white ml-4'>
+            <p> {elapsedTime}/{totalDuration}</p>
+          </button>
+      </div>
+      <div className='flex justify-end items-center space-x-4'>
+        <button className='!text-[#e6e5e5] hover:!text-white h-7 w-7' onClick={handlePopover}>
+          <p>{playbackRate}X</p>
+        </button>
 
         <Popover
           id={id}
@@ -185,24 +231,24 @@ return (
             horizontal: 'center'
           }}
         >
-          <Grid container direction='column-reverse'>
+          <div className='flex flex-wrap box-border flex-col-reverse'>
             {[0.5,1,1.5,2].map((rate => (
-            <Button key={rate} onClick={() => onPlaybackRateChange(rate)} variant='text'>
-              <Typography color={rate === playbackRate ? 'secondary' : 'primary'}>{rate}</Typography>
-            </Button>
+            <button key={rate} onClick={() => onPlaybackRateChange(rate)} className='h-6 w-6'>
+              <p color={rate === playbackRate ? 'secondary' : 'primary'}>{rate}</p>
+            </button>
             )))}
-          </Grid>
+          </div>
 
 
         </Popover>
 
-        <IconButton onClick={onToggleFullScreen} className='!text-[#e6e5e5] hover:!text-white'>
-          <Fullscreen fontSize='large'/>
-        </IconButton>
-      </Grid>
-    </Grid>
+        <button onClick={onToggleFullScreen} className='!text-[#e6e5e5] hover:!text-white h-6 w-6'>
+          <ArrowsPointingOutIcon fontSize='large'/>
+        </button>
+      </div>
+    </div>
 
-  </Grid>
+  </div>
 
 </div>
 )}
