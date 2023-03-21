@@ -51,7 +51,7 @@ const resendTokenValidate = async (req, res) => {
         title: title,
         name: `Hola, ${user.name}:`,
         content:
-          "Confirma tu email para poder empezar a difrutar de Video Stream.",
+          "Confirma tu email para poder empezar a disfrutar de Video Stream.",
         message: message,
         to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
         subject: "Confirmar Mail",

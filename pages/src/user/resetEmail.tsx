@@ -1,52 +1,55 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import React, { useState } from 'react'
-import imageLoader from '../../../imageLoader'
-import Head from 'next/head'
-import { useDispatch, useSelector } from "react-redux"
-import { useRouter } from 'next/router'
-import axios from 'axios'
-import { toast } from 'react-toastify'
-
+import Image from "next/image";
+import Link from "next/link";
+import React, { useState } from "react";
+import imageLoader from "../../../imageLoader";
+import Head from "next/head";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/router";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 function Forget() {
-    const [email, setEmail] = useState('')
-    const [newEmail, setNewEmail] = useState('')
-    const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const router = useRouter();
 
-    const handleSubmit = async (event: any) => {
-      event.preventDefault()
-      try {
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-  
-        const { data } = await axios.post(`/api/user/changeEmail`, { email }, config)
-        toast.success(data.message)
-        router.push("/src/user/login")
-      } catch (error: any) {
-        toast.error(error?.response?.data?.error)
-      }
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      const { data } = await axios.post(
+        `/api/user/changeEmail`,
+        { email },
+        config
+      );
+      toast.success(data.message);
+      router.push("/src/user/login");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error);
     }
+  };
 
   return (
-    <div className='relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent'>
-    <Head>
+    <div className="relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent">
+      <Head>
         <title>Video Streaming</title>
         <meta name="description" content="Stream Video App" />
         <link rel="icon" href="/favicon.ico" />
-    </Head>
-    <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
-    <Image
-        src="https://rb.gy/p2hphi"
-        layout="fill"
-        className="-z-10 !hidden opacity-60 sm:!inline"
-        objectFit="cover"
-        alt='icon image'
-        loader={imageLoader}
-    />
+      </Head>
+      <div className="h-full w-full relative flex flex-col md:items-center md:justify-center">
+        <Image
+          src="https://rb.gy/p2hphi"
+          layout="fill"
+          className="-z-10 !hidden opacity-60 sm:!inline"
+          objectFit="cover"
+          alt="icon image"
+          loader={imageLoader}
+        />
         {/* Logo position */}
     <img
         src="/images/logo.png"
@@ -104,8 +107,9 @@ function Forget() {
         
     </div>
         </div>
+      </div>
     </div>
-  )
+  );
 }
 
-export default Forget
+export default Forget;
