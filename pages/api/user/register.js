@@ -48,7 +48,8 @@ const register = async(req,res) => {
     
           const { origin } = absoluteUrl(req)
           const link = `${origin}/src/user/email/${token}`
-    
+          const title = `<h1>Confirma tu email</h1>`;
+
           const message = `
           <div>     
           <div>
@@ -62,11 +63,11 @@ const register = async(req,res) => {
   
         let resp = await sendEmail({
           title: title,
-          name: `Hola, ${user.name}:`,
+          name: `Hola, ${newUser.name}:`,
           content:
             "Confirma tu email para poder empezar a disfrutar de Video Stream.",
           message: message,
-          to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
+          to: `Video Stream te envió este mensaje a [${newUser.email}] como parte de tu membresía.`,
           subject: "Confirmar Mail",
         });
   
@@ -75,7 +76,8 @@ const register = async(req,res) => {
 
         }
       } catch (error) {
-        console.log(error.message)
+        return res.status(500).json({ error: `Error al enviar un mail a ${newUser.email}. Porfavor vuelva a intentarlo`})
+
       }
 }
 
