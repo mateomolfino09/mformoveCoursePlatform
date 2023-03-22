@@ -49,14 +49,27 @@ const register = async(req,res) => {
           const { origin } = absoluteUrl(req)
           const link = `${origin}/src/user/email/${token}`
     
-          const message = `<div>Haga Click en el link para verificar su cuenta, si el link no funciona pegalo en el buscador!</div></br>
-        <div>link:${link}</div>`
-    
-          await sendEmail({
-            to: newUser.email,
-            subject: "Confirmar Mail",
-            text: message,
-          })
+          const message = `
+          <div>     
+          <div>
+          <button style="background-color:black; border:none;border-radius: 4px;width:100%; padding:14px 0px; margin-bottom:15px">
+           <a style="color:white; text-decoration: none; font-weight:700; font-size:14px" href="${link}">Confirmar email </a>
+          </button>
+          </div>
+          <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de Video Stream.</p>
+          <hr style="height:2px;background-color:#221f1f;border:none">       
+         </div>`;
+  
+        let resp = await sendEmail({
+          title: title,
+          name: `Hola, ${user.name}:`,
+          content:
+            "Confirma tu email para poder empezar a disfrutar de Video Stream.",
+          message: message,
+          to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
+          subject: "Confirmar Mail",
+        });
+  
 
           return res.status(200).json({ message: `Email enviado a ${newUser.email}, porfavor chequea tu correo.`})
 

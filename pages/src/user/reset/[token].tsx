@@ -45,7 +45,7 @@ function Token() {
     </Head>
     <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
     <Image
-        src="https://rb.gy/p2hphi"
+        src="/images/bgIndex2.jpg"
         layout="fill"
         className="-z-10 !hidden opacity-60 sm:!inline"
         objectFit="cover"
@@ -82,7 +82,7 @@ function Token() {
                 />
               </label>
 
-                    <button className='w-full rounded bg-light-red py-3 font-semibold' onClick={(e) => handleSubmit(e)}>Resetear</button>
+                    <button className='w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold' onClick={(e) => handleSubmit(e)}>Resetear</button>
 
                 </form>
         <div className='space-y-4'>

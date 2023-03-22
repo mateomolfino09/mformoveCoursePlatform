@@ -42,7 +42,7 @@ const forget = async (req, res) => {
       const message = `
       <div>     
        <div>
-       <button style="background-color:#e50914; border:none;border-radius: 4px;width:100%; padding:14px 0px; margin-bottom:15px">
+       <button style="background-color:black; border:none;border-radius: 4px;width:100%; padding:14px 0px; margin-bottom:15px">
         <a style="color:white; text-decoration: none; font-weight:700; font-size:14px" href="${link}">Restablecer contraseña</a>
        </button>
        </div>

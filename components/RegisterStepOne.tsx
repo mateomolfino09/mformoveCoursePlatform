@@ -43,11 +43,19 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
 
     }
 
+    const keyDownHandler = (event:any) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+  
+          handleClick();
+        }
+      };
+
   return (
     <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center bg-white`}>
     {/* Logo position */}
     <div className='flex flex-col items-center justify-center relative mt-48 space-y-4 rounded py-12 md:-mt-24'>
-        <AiOutlineCheckCircle className='text-light-gray-darker w-12 h-12'/>
+        <AiOutlineCheckCircle className='text-dark-gold w-12 h-12'/>
         <p className='font-extralight text-black text-base'>PASO 1 DE 3</p>
         <h1 className='font-extrabold text-4xl text-center text-black'>Completa tu Nombre, Apellidos, Pais y Género</h1>
         <h2 className='font-normal text-xl text-center text-black'>Pronto para aprender? Ingresa los datos para crear tu cuenta.</h2>
@@ -60,6 +68,7 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
                     className='input transition duration-1000 placeholder:text-white'
                     value={firstname}
                     onChange={e => setFirstname(e.target.value)}
+                    onKeyDown={keyDownHandler}
                     />
             </label>
                 <label className=''>
@@ -68,7 +77,7 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
                     className='input transition duration-1000 placeholder:text-white'
                     value={lastname}
                     onChange={e => setLastname(e.target.value)}
-                    />
+                    onKeyDown={keyDownHandler}/>
                 </label>
         </div>
         <div className='space-x-4 flex'>
@@ -80,7 +89,8 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
                 value={gender}
                 onChange={e => { 
                     return setGender(e.label)
-                    }}/>
+                    }}
+                    onKeyDown={keyDownHandler}/>
                 <Select 
                 options={countries}
                  styles={colourStyles} 
@@ -88,8 +98,8 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
                  placeholder={country || 'País'}
                  value={country}
                  onChange={e => {
-                 console.log(e.label)
-                 return setCountry(e.label)}}/>
+                 return setCountry(e.label)}}
+                 onKeyDown={keyDownHandler}/>
 
         </div>
         <div className='space-x-4 flex'>

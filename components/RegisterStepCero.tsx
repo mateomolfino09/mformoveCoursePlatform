@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import imageLoader from '../imageLoader'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -13,6 +13,7 @@ interface Props {
 const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
     const [email, setEmailStep] = useState('')
     const [loading, setLoading] = useState(false)
+
 
     const handleClick = async () => {
       if(!email.includes('@')) {
@@ -44,6 +45,14 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
 
     }
 
+    const keyDownHandler = (event:any) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+
+        handleClick();
+      }
+    };
+
   return (
     <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center bg-black`}>
     {/* Logo position */}
@@ -52,7 +61,7 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
 
         <img
                 alt='icon image'
-        src="/images/logo.png"
+        src="/images/logoWhite.png"
         className="left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 transition duration-500 hover:scale-105"
         width={150}
         height={150}
@@ -88,6 +97,7 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
               className='inputRegister'
               value={email}
               onChange={e => setEmailStep(e.target.value)}
+              onKeyDown={keyDownHandler}
               />
           </label>
       </div>

@@ -44,7 +44,7 @@ function Token() {
       </Head>
       <div className="h-full w-full relative flex flex-col md:items-center md:justify-center">
         <Image
-          src="https://rb.gy/p2hphi"
+          src="/images/bgIndex2.jpg"
           layout="fill"
           className="-z-10 !hidden opacity-60 sm:!inline"
           objectFit="cover"
@@ -62,7 +62,7 @@ function Token() {
     <div className='relative mt-24 space-y-8 rounded bg-black/75 py-10 px-6 md:mt-0 md:max-w-lg md:px-14'>
         <h1 className='text-4xl font-semibold'>Resetear Email</h1>
         <form className='relative space-y-8 md:mt-0 md:max-w-lg'>
-        <label className='inline-block w-full'>
+              <label className='inline-block w-full'>
                   <input 
                   type="email" 
                   placeholder='Nuevo Email'
@@ -80,10 +80,9 @@ function Token() {
                   onChange={(e) => setConEmail(e.target.value)}
                 />
               </label>
-            </div>
 
             <button
-              className="w-full rounded bg-light-red py-3 font-semibold"
+              className="w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold"
               onClick={(e) => handleSubmit(e)}
             >
               Resetear

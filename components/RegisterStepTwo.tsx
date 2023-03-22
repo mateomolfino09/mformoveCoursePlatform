@@ -44,12 +44,18 @@ const RegisterStepOne = ({ step2ToStep3, setData }: Props) => {
         }
 
     }
-
+    const keyDownHandler = (event:any) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+  
+          handleClick();
+        }
+      };
   return (
     <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center bg-white`}>
     {/* Logo position */}
     <div className='flex flex-col items-center justify-center relative mt-48 space-y-4 rounded py-12 md:-mt-24'>
-        <AiOutlineCheckCircle className='text-light-gray-darker w-12 h-12'/>
+        <AiOutlineCheckCircle className='text-dark-gold w-12 h-12'/>
         <p className='font-extralight text-black text-base'>PASO 2 DE 3</p>
         <h1 className='font-extrabold text-4xl text-center text-black'>Ya estamos por terminar!</h1>
         <h2 className='font-normal text-xl text-center text-black'>Crea una contraseña segura para tu cuenta</h2>
@@ -62,6 +68,7 @@ const RegisterStepOne = ({ step2ToStep3, setData }: Props) => {
                     className='input transition duration-1000'
                     value={password}
                     onChange={e => setPassword(e.target.value)}
+                    onKeyDown={keyDownHandler}
                     />
             </label>
                 <label className=''>
@@ -70,6 +77,7 @@ const RegisterStepOne = ({ step2ToStep3, setData }: Props) => {
                     className='input transition duration-1000'
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
+                    onKeyDown={keyDownHandler}
                     />
                 </label>
         </div>

@@ -9,6 +9,7 @@ import Select, { StylesConfig } from 'react-select'
 import { ConsoleConstructorOptions } from 'console'
 import { toast } from 'react-toastify'
 import ReCAPTCHA from 'react-google-recaptcha'
+import { useRouter } from 'next/router'
 
 const colourStyles: StylesConfig<any> = {
     control: (styles) => ({ ...styles, backgroundColor: '#333', height: 55, borderRadius: 6,padding: 0 }),
@@ -35,7 +36,8 @@ const RegisterStepOne = ({ user, signUp, onChange, recaptchaRef }: Props) => {
 
 
     const handleClick = () => {
-      console.log(user)
+      const router = useRouter()
+      router.push('/src/user/login')
 
     }
 
@@ -79,12 +81,12 @@ const RegisterStepOne = ({ user, signUp, onChange, recaptchaRef }: Props) => {
                             onChange={onChange}
                             ref={recaptchaRef}
                             sitekey={key}
-                            className='mb-6'
+                            className='mb-6 my-auto flex justify-center'
                             />  
-    <div className='flex flex-row items-center justify-center relative space-x-8 rounded px-8 md:w-full'>
-    <button onClick={() => handleClick()} className='w-1/3 rounded bg-light-red py-3 font-semibold md:w-[22%] lg:w-[12%]'>Volver </button>
+    <div className='flex flex-row items-center justify-evenly relative space-x-8 rounded px-8 md:w-full'>
+    <button onClick={() => handleClick()} className='w-64 bg-black/70 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold'>Volver </button>
 
-    <button onClick={(e) => signUp(e)} className='w-1/3 rounded bg-light-red py-3 font-semibold md:w-[22%] lg:w-[12%]'>Crear Cuenta </button>
+    <button onClick={(e) => signUp(e)} className='w-64 bg-black/70 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold'>Crear Cuenta </button>
     </div>
   </div>
   )

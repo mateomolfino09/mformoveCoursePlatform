@@ -44,6 +44,16 @@
   @apply flex flex-row items-center justify-between w-80 bg-[#181818] px-4 py-6 text-white shadow-2xl hover:shadow-none transform-gpu translate-y-0 hover:translate-y-1 rounded-xl relative transition-all duration-500 ease-in-out;
 }
 
+.bg-light-gold {
+   @apply bg-[#faedcd]
+}
+.text-light-gold {
+   @apply text-[#faedcd]
+}
+.text-dark-gold {
+   @apply text-[#b89000]
+}
+
 .iconWrapper {
   @apply text-xl;
 }

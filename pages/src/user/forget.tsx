@@ -79,7 +79,7 @@ function Forget() {
     )}
    {!loading && <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
     <Image
-        src="https://rb.gy/p2hphi"
+        src="/images/bgIndex2.jpg"
         layout="fill"
         className="-z-10 !hidden opacity-60 sm:!inline"
         objectFit="cover"
@@ -115,7 +115,7 @@ function Forget() {
                             />   
                     </div>
 
-                    <button className='w-full rounded bg-light-red py-3 font-semibold' onClick={(e) => handleSubmit(e)}>Resetear</button>
+                    <button className='w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold' onClick={(e) => handleSubmit(e)}>Resetear</button>
 
                 </form>
                 <div className="flex items-start justify-between flex-row">
@@ -132,37 +132,11 @@ function Forget() {
                           <button type='button' className='text-white hover:underline'>Crea tu cuenta ahora!</button>
                       </Link>
                   </div>
-              <button
-                className="w-full rounded bg-light-red py-3 font-semibold"
-                onClick={(e) => handleSubmit(e)}
-              >
-                Resetear
-              </button>
-            </form>
-            <div className="flex items-start justify-between flex-row">
-              <div className="text-xl md:text-sm">
-                <Link href={"/src/user/login"}>
-                  <button
-                    type="button"
-                    className="text-white hover:underline cursor-pointer"
-                  >
-                    Volver al Inicio
-                  </button>
-                </Link>
-              </div>
-              <div className="text-[gray] text-xl md:text-sm">
-                Eres nuevo en Video Stream?
-                <br />
-                <Link href={"/src/user/signUp"}>
-                  <button type="button" className="text-white hover:underline">
-                    Crea tu cuenta ahora!
-                  </button>
-                </Link>
-              </div>
+             
             </div>
           </div>
         </div>
-      )}
+       }
     </div>
   );
 }
