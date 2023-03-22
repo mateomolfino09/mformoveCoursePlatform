@@ -32,11 +32,12 @@ interface Props {
 const RegisterStepOne = ({ user, signUp, onChange, recaptchaRef }: Props) => {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const router = useRouter()
+
     const key = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY  != undefined ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY  : ''
 
 
     const handleClick = () => {
-      const router = useRouter()
       router.push('/src/user/login')
 
     }
