@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { baseUrl } from '../constants/images';
 import imageLoader from '../imageLoader';
 import { Images } from '../typings'
@@ -9,6 +9,7 @@ import { loadCourse } from '../redux/courseModal/courseModalAction';
 import { useDispatch } from 'react-redux';
 import { useAppDispatch } from '../hooks/useTypeSelector';
 import { useSelector } from 'react-redux';
+import { CoursesContext } from '../hooks/coursesContext';
 
 interface Props {
     randomImage: Images | null;
@@ -18,6 +19,8 @@ function Banner({ randomImage }: Props) {
     const [image, setImage] = useState<Images | null>(randomImage);
     // const srcImg: string = image?.urls.regular != null ? image?.urls.regular : ''
     const dispatch = useAppDispatch()
+    const { courses, setCourses} = useContext( CoursesContext ) 
+
 
 
   const handleOpen = () => {
@@ -46,7 +49,7 @@ function Banner({ randomImage }: Props) {
             <button className='bannerButton bg-white text-black'  onClick={handleOpen}> 
                <FaPlay className='h-4 w-4 text-black md:h-7 md:w-7 '/> Play
             </button>
-            <button className='bannerButton bg-[gray]/70'>
+            <button className='bannerButton darkGray border'>
                 More Info <InformationCircleIcon className='h-5 w-5 md:h-8 md:w-8'/>
             </button>
         </div>

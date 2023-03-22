@@ -6,7 +6,7 @@ import imageLoader from '../imageLoader'
 import { loadCourse } from '../redux/courseModal/courseModalAction'
 import { CoursesDB, Ricks, User } from '../typings'
 import { MdBlock, MdOutlineClose, MdRemove } from 'react-icons/md'
-import { ChevronDownIcon, PlayIcon } from '@heroicons/react/24/solid'
+import { ChevronDownIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid'
 import zIndex from '@mui/material/styles/zIndex'
 import { MdAdd } from 'react-icons/md'
 import { CourseListContext } from '../hooks/courseListContext'
@@ -14,6 +14,7 @@ import { AiOutlineCheckCircle, AiOutlineMinusCircle } from 'react-icons/ai'
 import { toast, Toaster } from 'react-hot-toast'
 import axios from 'axios'
 import { CoursesContext } from '../hooks/coursesContext'
+import {TbLockOpenOff} from 'react-icons/tb'
 
 interface Props {
   course: CoursesDB,
@@ -72,9 +73,9 @@ function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
   const courseId = course?.id
   const userId = user?._id
     try {
-      const { data } = await axios.put('/api/user/course/listCourse', { courseId, userId }, config)
       setListCourse([...listCourse, course])
       notify('Agregado a la Lista', true, false)
+      const { data } = await axios.put('/api/user/course/listCourse', { courseId, userId }, config)
       setList(!list)
 
     } catch (error) {
@@ -117,7 +118,7 @@ function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
   // };
 
   return (
-    <div onMouseEnter={(e) => setZIndex(1000)} onMouseLeave={() => {
+    <div onClick={handleOpen} onMouseEnter={(e) => setZIndex(1000)} onMouseLeave={() => {
       setTimeout(() => {
         setZIndex(0)
       }, 500)
@@ -137,10 +138,10 @@ function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
               src={course?.image_url} 
               preserveTransformations
               layout="fill"
-              className='rounded-sm object-cover md:rounded cursor-pointer
+              className={`rounded-sm object-cover md:rounded cursor-pointer
               transition
               duration-200
-              shadow-xl z-[200]'
+              shadow-xl z-[200] ${!courseUser?.purchased && 'opacity-50'}`}
               alt={course?.name}
               loader={imageLoader}
               onClick={handleOpen}
@@ -160,7 +161,7 @@ function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
                 rounded-b-md
                 justify-end
                 items-start'>
-                  <div className='h-1/4 w-full bg-black'>
+                  <div className='h-1/4 w-full'>
 
                   </div>
                   <div className='h-1/4 w-full'>
@@ -179,9 +180,14 @@ function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
                       <MdRemove className=" text-white w-4 h-4 lg:w-4 lg:h-4" onClick={() => removeCourseToList()}/>
                     )}
                   </div>
+                  {!courseUser?.purchased && user?.rol != 'Admin' && (
+                    <div className="cursor-pointer group/item w-4 h-4 lg:w-6 lg:h-6 border-white border rounded-full flex justify-center items-center transition hover:border-neutral-300 ml-2">
+                    <TbLockOpenOff className="text-white group-hover/item:text-neutral-300 w-4 lg:w-4"/>
+                  </div>
+                  )}
+   
                   <div className="cursor-pointer ml-auto group/item w-4 h-4 lg:w-6 lg:h-6 border-white border rounded-full flex justify-center items-center transition hover:border-neutral-300">
-                    <ChevronDownIcon className="text-white group-hover/item:text-neutral-300 w-4 lg:w-4" onClick={handleOpen}
-/>
+                    <ChevronDownIcon className="text-white group-hover/item:text-neutral-300 w-4 lg:w-4" onClick={handleOpen}/>
                   </div>
                 </div>
                 <div className="flex flex-row mt-0 lg:mt-4 gap-2 items-center"> 

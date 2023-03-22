@@ -7,6 +7,8 @@ import { loadCourse } from '../redux/courseModal/courseModalAction'
 import { CoursesDB, Item, Ricks, User } from '../typings'
 import { Button, Container, Grid, IconButton, Slider, styled, Tooltip, Typography, Popover, SliderValueLabelProps } from '@mui/material';
 import { useRouter } from 'next/router'
+import {TbLockOpenOff} from 'react-icons/tb'
+
 
 function ValueLabelComponent(props: SliderValueLabelProps) {
   const { children, value } = props;
@@ -100,6 +102,12 @@ function CourseThumbnail({ items, course, actualClassIndex, isClass, user, cours
                         alt={item.snippet.title}
                         loader={imageLoader}
                         />
+                        <div className='absolute w-full h-full bg-black/30'>
+                          <div className='w-full h-full flex items-center justify-center'>
+                          <TbLockOpenOff className="text-white group-hover/item:text-neutral-300 w-8 h-8 lg:w-12 lg:h-12 opacity-70"/>
+                          </div>
+
+                        </div>
                   </>
                 )}
 

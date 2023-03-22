@@ -20,6 +20,8 @@ import { MdOutlineClose } from "react-icons/md";
 import { toast as toaster } from "react-toastify";
 import ReactCanvasConfetti from "react-canvas-confetti";
 import { CourseListContext } from '../hooks/courseListContext'
+import {TbLockOpenOff} from 'react-icons/tb'
+
 
 interface Props {
     courseDB : CoursesDB | null,
@@ -237,6 +239,9 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
                         <p className='font-semibold text-green-400'>100% Match</p>
                             <p className='font-light'>{items != null ? new Date(items[0].snippet.publishedAt).getFullYear().toString(): ''}</p>
                             <div className='flex h-4 items-center justify-center rounded border border-white/40 px-1.5 text-xs '>HD</div>
+                            {!user?.courses[courseIndex].purchased && 
+                            <div className='flex h-4 items-center justify-center rounded border border-white/40 px-1.5 text-xs '><TbLockOpenOff/></div>
+                            }
                         </div>
                         <div className='flex flex-col gap-x-10 gap-y-4 font-light md:flex-row '>
                             <p className='w-5/6 text-sm leading-6'>{items != null ? items[0].snippet.description.toString() : ''}</p>

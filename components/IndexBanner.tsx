@@ -9,6 +9,7 @@ import { loadCourse } from '../redux/courseModal/courseModalAction';
 import { useDispatch } from 'react-redux';
 import { useAppDispatch } from '../hooks/useTypeSelector';
 import { useSelector } from 'react-redux';
+import Link from 'next/link';
 
 interface Props {
     randomImage: string;
@@ -35,19 +36,26 @@ function Banner({ randomImage }: Props) {
             className='object-cover'
             />
         </div>
-        <div className='flex flex-col justify-end items-end !mb-4 -space-y-1 text-[#d1cfcf6e] toggleLightening'>
-            <h2 className='font-light lg:text-xl'>Mis Clases</h2>
-            <h1 className='text-4xl font-normal lg:text-7xl md:text-4xl '>Aprender en línea</h1>
+        <Link href={'/src/home'}>
+            <div className='flex flex-col justify-end items-end !mb-4 -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'>
+                <h2 className='font-light lg:text-xl'>Mis Clases</h2>
+                <h1 className='text-4xl font-normal lg:text-7xl md:text-4xl '>Aprender en línea</h1>
+            </div>
+        </Link>
+        <Link href={'/'}>
+        <div className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'>
+                    <h2 className='font-light lg:text-xl'>En Línea</h2>
+                    <h1 className='text-4xl font-normal lg:text-7xl md:text-4xl'>Corrientes</h1>
         </div>
-        <div className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#d1cfcf6e] toggleLightening'>
-            <h2 className='font-light lg:text-xl'>En Línea</h2>
-            <h1 className='text-4xl font-normal lg:text-7xl md:text-4xl text-[#d1cfcf6e] toggleLightening'>Corrientes</h1>
-        </div>
-        <div className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#d1cfcf6e] toggleLightening'>
-            <h2 className='font-light lg:text-xl'>Sobre nosotros</h2>
-            <h1 className='text-4xl font-normal lg:text-7xl md:text-4xl'>Salón</h1>
-        </div>
-        <div className='flex flex-col justify-end items-end  -space-y-1 text-[#d1cfcf6e] toggleLightening'>
+        </Link>
+        <Link href={'/aboutUs'}>
+            <div className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'>
+                <h2 className='font-light lg:text-xl'>Sobre nosotros</h2>
+                <h1 className='text-4xl font-normal lg:text-7xl md:text-4xl'>Salón</h1>
+            </div>
+        </Link>
+
+        <div className='flex flex-col justify-end items-end  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'>
             <h2 className='font-light lg:text-xl'>Mis Bienes</h2>
             <h1 className='text-4xl font-normal lg:text-7xl md:text-4xl'>Comercio</h1>
         </div>
