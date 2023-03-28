@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
+import axios from "axios";
 import { getConfirmedUsers } from "../../api/user/getConfirmedUsers";
 import { getUserFromBack } from "../../api/user/getUserFromBack";
 import { getSession, useSession } from "next-auth/react";
@@ -28,7 +29,9 @@ const ShowUsers = ({ users, user }: Props) => {
   let [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
   const [userCtx, setUserCtx] = useState<User>(user);
-  const [userSelected, setUserSelected] = useState(null);
+
+  const [userSelected, setUserSelected] = useState<User>(user);
+  const [elementos, setElementos] = useState<User[]>([]);
 
   const providerValue = useMemo(
     () => ({ userCtx, setUserCtx }),
@@ -40,8 +43,27 @@ const ShowUsers = ({ users, user }: Props) => {
       router.push("/src/user/login");
     }
   }, [session, router]);
+  useEffect(() => {
+    setElementos(users);
+  }, []);
 
-  function openModal(user: any) {
+  const deleteUser = async () => {
+    const userId = userSelected?._id;
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const response = await axios.delete(`/api/user/delete/${userId}`, config);
+    const updatedUsers = users.filter(
+      (person: User) => person._id !== userSelected._id
+    );
+    setElementos(updatedUsers);
+    setIsOpen(false);
+  };
+  function openModal(user: User) {
     setUserSelected(user);
     setIsOpen(true);
   }
@@ -69,7 +91,7 @@ const ShowUsers = ({ users, user }: Props) => {
                 </tr>
               </thead>
               <tbody>
-                {users?.map((user: any) => (
+                {elementos?.map((user: any) => (
                   <tr key={user._id}>
                     <th
                       ref={ref}
@@ -105,6 +127,7 @@ const ShowUsers = ({ users, user }: Props) => {
             isOpen={isOpen}
             setIsOpen={setIsOpen}
             user={userSelected}
+            deleteUser={deleteUser}
           />
         </>
       </AdmimDashboardLayout>
