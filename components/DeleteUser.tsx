@@ -1,13 +1,21 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
-import axios from "axios";
-const DeleteUser = ({ isOpen, setIsOpen, email }: any) => {
+import { Fragment, useState, useEffect } from "react";
+import { User } from "../typings";
+
+interface Props {
+  user: User;
+  deleteUser: any;
+  isOpen: any;
+  setIsOpen: any;
+}
+const DeleteUser = ({ user, deleteUser, isOpen, setIsOpen }: Props) => {
   function closeModal() {
     setIsOpen(false);
   }
-  async function handleSubmit(userId: any) {
-    const response = await axios.delete(`../../api/user/deleteUser/${userId}`);
-    console.log(response.data);
+
+  async function handleSubmit() {
+    deleteUser();
+    setIsOpen(false);
   }
   return (
     <>
@@ -51,7 +59,7 @@ const DeleteUser = ({ isOpen, setIsOpen, email }: any) => {
                     <button
                       type="button"
                       className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-4 mt-4 mb-4"
-                      onClick={closeModal}
+                      onClick={() => handleSubmit()}
                     >
                       Eliminar
                     </button>
