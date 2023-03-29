@@ -27,7 +27,7 @@ const ShowUsers = ({ users, user }: Props) => {
   const cookies = parseCookies();
   const { data: session } = useSession();
   const router = useRouter();
-  let [isOpen, setIsOpen] = useState(false);
+  let [isOpenDelete, setIsOpenDelete] = useState(false);
   const ref = useRef(null);
   const [userCtx, setUserCtx] = useState<User>(user);
 
@@ -66,11 +66,11 @@ const ShowUsers = ({ users, user }: Props) => {
       toast.success(`${userSelected.name} fue eliminado correctamente`);
     }
 
-    setIsOpen(false);
+    setIsOpenDelete(false);
   };
-  function openModal(user: User) {
+  function openModalDelete(user: User) {
     setUserSelected(user);
-    setIsOpen(true);
+    setIsOpenDelete(true);
   }
 
   return (
@@ -119,7 +119,7 @@ const ShowUsers = ({ users, user }: Props) => {
                           <PencilIcon />
                         </div>
                         <div className="w-6 mr-2 transform hover:text-red-500 hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse text-base bg-gray-900/70">
-                          <TrashIcon onClick={() => openModal(user)} />
+                          <TrashIcon onClick={() => openModalDelete(user)} />
                         </div>
                       </div>
                     </th>
@@ -129,8 +129,8 @@ const ShowUsers = ({ users, user }: Props) => {
             </table>
           </div>
           <DeleteUser
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
+            isOpen={isOpenDelete}
+            setIsOpen={setIsOpenDelete}
             user={userSelected}
             deleteUser={deleteUser}
           />
