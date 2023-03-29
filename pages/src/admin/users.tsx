@@ -7,6 +7,7 @@ import { getSession, useSession } from "next-auth/react";
 import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
 import { useEffect, useState, useRef, useMemo } from "react";
+import { toast } from "react-toastify";
 import { loadUser } from "../../api/user/loadUser";
 import DeleteUser from "../../../components/DeleteUser";
 import AdmimDashboardLayout from "../../../components/AdmimDashboardLayout";
@@ -61,6 +62,10 @@ const ShowUsers = ({ users, user }: Props) => {
       (person: User) => person._id !== userSelected._id
     );
     setElementos(updatedUsers);
+    if (response) {
+      toast.success(`${userSelected.name} fue eliminado correctamente`);
+    }
+
     setIsOpen(false);
   };
   function openModal(user: User) {
