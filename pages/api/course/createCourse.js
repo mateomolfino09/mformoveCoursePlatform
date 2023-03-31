@@ -13,10 +13,10 @@ connectDB();
 const createCourse = async (req, res) => {
   try {
     if (req.method === "POST") {
-      const { name, playlistId, imgUrl, password, userEmail } = req.body;
+      const { name, playlistId, imgUrl, password, userEmail, description, price, currencys } = req.body;
 
       //Existe?
-      const user = await Users.findOne({ email: userEmail });
+      let user = await Users.findOne({ email: userEmail });
       const users = await Users.find({});
 
       const exists = await bcrypt.compare(password, user.password);
@@ -35,6 +35,8 @@ const createCourse = async (req, res) => {
           });
       }
 
+      user.password = null
+
       //Busco ultimo curso
 
       const lastCourse = await Courses.find().sort({ _id: -1 }).limit(1);
@@ -44,6 +46,10 @@ const createCourse = async (req, res) => {
         name: name,
         playlist_code: playlistId,
         image_url: imgUrl,
+        description: description,
+        created_by: user,
+        price: price,
+        currency: currencys
       }).save();
 
       //Traigo clases de YT

@@ -11,6 +11,11 @@ const courseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    description: {
+      type: String,
+      required: true,
+      minLength: 20,
+    },
     createdAt: {
         type: Date,
         immutable: true,
@@ -28,6 +33,14 @@ const courseSchema = new mongoose.Schema(
       type: Number,
       default: () => 12
     },
+    price: {
+      type: Number,
+      default: () => 10
+    },
+    currency: {
+      type: String,
+      default: () => '$'
+    },
     users: [{
         type: mongoose.Types.ObjectId,
         ref: "User"
@@ -35,7 +48,11 @@ const courseSchema = new mongoose.Schema(
     classes: [{
       type: mongoose.Types.ObjectId,
       ref: "Class"
-  }]
+  }],
+  created_by: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User'
+  }
   },
   { timestamps: true }
 );

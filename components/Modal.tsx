@@ -6,7 +6,7 @@ import { Courses, CoursesDB, Item, User } from '../typings'
 import { CourseModal } from '../redux/courseModal/courseModalTypes'
 import { closeCourse } from '../redux/courseModal/courseModalAction'
 import { HandThumbUpIcon, PlusCircleIcon ,PlusIcon, XCircleIcon} from '@heroicons/react/24/outline'
-import { AiFillPlusCircle, AiOutlinePlusCircle, AiOutlineCheckCircle, AiOutlineMinusCircle} from 'react-icons/ai'
+import { AiFillPlusCircle, AiOutlinePlusCircle, AiOutlineCheckCircle, AiOutlineMinusCircle, AiOutlineShoppingCart} from 'react-icons/ai'
 import { HiHandThumbUp, HiOutlineHandThumbUp } from 'react-icons/hi2'
 import { useAppDispatch } from '../hooks/useTypeSelector'
 import ReactPlayer from 'react-player/lazy'
@@ -80,7 +80,8 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
     const dispatch = useAppDispatch()
     const indexCourse = user?.courses.findIndex((element: any) => {
         return element.course.valueOf() === courseDB?._id
-    })
+    }) 
+
 
     const [muted, setMuted] = useState(false);
     const videoFromDB:Item | null = youtubeVideo != null ? youtubeVideo[0] : null
@@ -197,12 +198,21 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
                     />
                     <div className='absolute bottom-10 flex w-full items-center justify-between px-10'>
                         <div className='flex space-x-2'>
-                        <Link href={indexCourse != undefined ? `/src/courses/${courseDB?.id}/${user?.courses[indexCourse].actualChapter}` : `/src/courses/${courseDB?.id}/1`}>
-                        <button className='flex items-center gap-x-2 rounded bg-white px-8 text-xl font-bold py-1 text-black transition hover:bg-[#e6e6e6]'>           <FaPlay className='h-7 w-7 text-black'/>
-                            Ver</button>
-                        </Link>
+                            {!user?.courses[user?.courses.findIndex((x) => {
+                                return  x.course.valueOf() === courseDB?._id.valueOf()})].purchased ? (
+                           <Link href={`/src/courses/purchase/${courseDB?.id}`}>
+                            <button className='flex items-center gap-x-2 rounded bg-white px-8 text-xl font-bold py-1 text-black transition hover:bg-[#e6e6e6]'>           <AiOutlineShoppingCart className='h-7 w-7 text-black'/>
+                                    Obtener</button>
+                            </Link>
+                            ) : (
+                                <>
+                            <Link href={indexCourse != undefined ? `/src/courses/${courseDB?.id}/${user?.courses[indexCourse].actualChapter}` : `/src/courses/${courseDB?.id}/1`}>
+                                <button className='flex items-center gap-x-2 rounded bg-white px-8 text-xl font-bold py-1 text-black transition hover:bg-[#e6e6e6]'>           <FaPlay className='h-7 w-7 text-black'/>
+                                    Ver</button>
+                            </Link>    
+                                </>
 
-
+                            )}
                             <button className='modalButton' onClick={handleAddToList}>
                                 {list ? <AiFillPlusCircle className={`h-7 w-7`}/> : <AiOutlinePlusCircle className={`h-7 w-7`}/>
                                 }

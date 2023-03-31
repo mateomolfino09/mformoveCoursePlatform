@@ -1,3 +1,4 @@
+import { currency } from './constants/currency';
 export interface Urls {
     raw: string;
     full: string;
@@ -201,13 +202,17 @@ export interface CoursesDB {
     id: number,
     createdAt: string,
     udpatedAt: string ,
+    description: string ,
     playlist_code: string,
     image_url: string,
     name: string,
     dbLikes: string,
     likes: number,
     users: User[]
-    classes: ClassesDB[]
+    classes: ClassesDB[],
+    price: number
+    currency: string
+    created_by: User
 }
 
 export interface ClassesDB {

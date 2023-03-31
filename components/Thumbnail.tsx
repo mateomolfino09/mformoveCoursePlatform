@@ -73,10 +73,11 @@ function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
   const courseId = course?.id
   const userId = user?._id
     try {
-      setListCourse([...listCourse, course])
-      notify('Agregado a la Lista', true, false)
-      const { data } = await axios.put('/api/user/course/listCourse', { courseId, userId }, config)
       setList(!list)
+      notify('Agregado a la Lista', true, false)
+      setListCourse([...listCourse, course])
+      const { data } = await axios.put('/api/user/course/listCourse', { courseId, userId }, config)
+
 
     } catch (error) {
       console.log(error)
@@ -89,16 +90,16 @@ function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
         "Content-Type": "application/json",
       },
   }
-  console.log(user)
   const courseId = course?.id
   const userId = user?._id
     try {
+      setList(!list)
+      notify('Eliminado de la Lista', false, false)
+
       const { data } = await axios.put('/api/user/course/dislistCourse', { courseId, userId }, config)
   
       setListCourse([...listCourse.filter((value: CoursesDB) => value.id != course?.id)])
   
-      notify('Eliminado de la Lista', false, false)
-      setList(!list)
     } catch (error) {
       
     }
@@ -118,7 +119,7 @@ function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
   // };
 
   return (
-    <div onClick={handleOpen} onMouseEnter={(e) => setZIndex(1000)} onMouseLeave={() => {
+    <div onMouseEnter={(e) => setZIndex(1000)} onMouseLeave={() => {
       setTimeout(() => {
         setZIndex(0)
       }, 500)

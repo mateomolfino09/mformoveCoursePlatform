@@ -32,7 +32,6 @@ interface Props {
 
 const Home = ({ user, randomImage, coursesDB
  } : Props) => {
-  console.log(user)
   const [selectedCourse, setSelectedCourse] = useState<CoursesDB | null>(null)  
   const [myCourses, setMyCourses] = useState<CoursesDB[]>([])  
   const [nuevoCourses, setNuevoCourses] = useState<CoursesDB[]>([])  
@@ -105,7 +104,6 @@ const Home = ({ user, randomImage, coursesDB
       router.push("/src/user/login")
     }
     else {
-      console.log(user)
       const quantity = Math.round(coursesDB.length / 3) 
       const dateCourses = [...coursesDB]
       setNuevoCourses(dateCourses.sort((a, b) =>
@@ -114,6 +112,8 @@ const Home = ({ user, randomImage, coursesDB
   
       const manageUser = () => {
          let listToSet: CoursesDB[] = []
+         let mycourselistToSet: CoursesDB[] = []
+
   
           user.courses.forEach((course: CourseUser) => {
             let courseInCourseIndex = coursesDB.findIndex((x) => {
@@ -121,12 +121,12 @@ const Home = ({ user, randomImage, coursesDB
             })
   
             const arrCopy = [...listToSet]
-            const myCopy = [...myCourses]
-  
+            const myCopy = [...mycourselistToSet]
+
             if(course.purchased) {
               let hasCourse = myCopy.filter((x, i) => x.id == coursesDB[courseInCourseIndex].id).length != 0
-              if(!myCourses.includes(coursesDB[courseInCourseIndex]) && !hasCourse) {
-                setMyCourses([...myCourses, coursesDB[courseInCourseIndex]])
+              if(!mycourselistToSet.includes(coursesDB[courseInCourseIndex]) && !hasCourse) {
+                mycourselistToSet.push(coursesDB[courseInCourseIndex])
               } 
             }
             else {
@@ -144,6 +144,8 @@ const Home = ({ user, randomImage, coursesDB
           })
   
           setListCourse([...listToSet])
+          setMyCourses([...mycourselistToSet])
+
     }
     manageUser()
     }

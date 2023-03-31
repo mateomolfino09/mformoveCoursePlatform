@@ -8,6 +8,7 @@ import { ConnectionPoolClosedEvent } from "mongodb"
  export async function getUserFromBack(email) {
     try {
         const user = await User.findOne({ email: email }).lean().exec()
+        console.log(user)
         if(!user) return null
         user.password = undefined
         return JSON.parse(JSON.stringify(user));

@@ -34,7 +34,6 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
     const handleClick = () => {
         if(firstname == '' || lastname == '' || gender == '' ||  country == '' || firstname.length <= 2 || lastname.length <= 2) {
             toast.error('Hay un error en los datos que ingresó, rellene todos los campos o vuelva a intentar')
-            console.log('hola')
         } else {
             setData(firstname, lastname, gender, country)
             step1ToStep2()

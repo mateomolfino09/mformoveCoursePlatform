@@ -46,11 +46,11 @@ function Banner({ randomImage }: Props) {
 
 
         <div className='flex space-x-3'>
-            <button className='bannerButton bg-white text-black'  onClick={handleOpen}> 
-               <FaPlay className='h-4 w-4 text-black md:h-7 md:w-7 '/> Play
+            <button className='bannerButton bg-white text-black font-light'  onClick={handleOpen}> 
+               <FaPlay className='h-3 w-3 text-black md:h-6 md:w-6 '/> Play
             </button>
-            <button className='bannerButton darkGray border'>
-                More Info <InformationCircleIcon className='h-5 w-5 md:h-8 md:w-8'/>
+            <button className='bannerButton darkGray font-light'>
+                Más Info <InformationCircleIcon className='h-4 w-4 md:h-7 md:w-7 '/>
             </button>
         </div>
         {}
