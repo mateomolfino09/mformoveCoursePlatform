@@ -84,9 +84,20 @@ const PaymentGateway = ({ user, course }: Props) => {
       <p className='w-full text-transparent text-sm bg-clip-text bg-gradient-to-r from-white to-white shadow-2xl md:text-2xl font-light'>{course.currency} {course.price}</p>
     </div>
     <div className='w-full h-full flex flex-col  items-start space-y-2'>
-    <Link href={initPoint} target="_blank" rel="noopener noreferrer">
-          <button className={`h-10 w-28 rounded-md border border-white mt-10 hover:scale-105 transition duration-500`} >Inscribirme</button>
-    </Link>
+      {user?.courses[course.id - 1].purchased ? (
+      <>
+        <Link href={`/src/courses/${course.id}/${user.courses[course.id - 1].actualChapter}`} target="_blank" rel="noopener noreferrer">
+                  <button className={`h-10 w-28 rounded-md border border-white mt-10 hover:scale-105 transition duration-500`} >Ver Curso</button>
+        </Link>
+      </>
+      ) : (
+        <>
+        <Link href={initPoint} target="_blank" rel="noopener noreferrer">
+                  <button className={`h-10 w-28 rounded-md border border-white mt-10 hover:scale-105 transition duration-500`} >Inscribirme</button>
+        </Link>
+      </>
+      )}
+
     <div className='w-full h-full flex flex-row justify-start items-center space-x-2'> 
     <Image 
             src="/images/mplogo.png"

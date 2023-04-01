@@ -1,10 +1,14 @@
 import connectDB from "../../../../config/connectDB"
 import User from "../../../../models/userModel"
 import Course from "../../../../models/courseModel"
+import Bill from "../../../../models/billModel"
 import axios from 'axios'
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { redirect } from 'next/navigation';
+import { sendEmail } from "../../../../helpers/sendEmail";
+import absoluteUrl from "next-absolute-url";
+
 const mercadopago = require('mercadopago');
 
 mercadopago.configure({
@@ -14,8 +18,18 @@ mercadopago.configure({
 connectDB()
 
 const bookFeedbackSuccess = async (req, res) => {
-  const { email, courseId } = req.query
+  const { email, courseId,     
+    payment_id,
+    merchant_order_id,
+    preference_id,
+    collection_id,
+    payment_type,
+    processing_mode,
+    createdAt,
+    status,
+} = req.query
   try {
+    console.log(req.query)
     const user = await User.findOne({ email })
     const course = await Course.findOne({ id: courseId })
 
@@ -30,8 +44,50 @@ const bookFeedbackSuccess = async (req, res) => {
 
     await user.save()
 
+    const bill = await Bill.findOne({ payment_id })
 
-    res.redirect('/src/courses/purchase/success')
+    if(bill) res.status(409).redirect('/src/courses/purchase/duplicated')
+    else {
+      const newBill = await new Bill({
+        user,
+        course,
+        payment_id,
+        merchant_order_id,
+        preference_id,
+        collection_id,
+        payment_type,
+        processing_mode,
+        createdAt,
+        status,
+      }).save();
+  
+      const { origin } = absoluteUrl(req);
+      const link = `${origin}/src/home`;
+      const title = `<h1 style="color:black">¡Compra Realizada con éxito!</h1>`;
+      const message = `
+      <div>     
+      <div>
+      <button style="background-color:black; border:none;border-radius: 4px;width:100%; padding:14px 0px; margin-bottom:15px">
+       <a style="color:white; text-decoration: none; font-weight:700; font-size:14px" href="${link}">Volver al sitio </a>
+      </button>
+      </div>
+      <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de Video Stream.</p>
+      <hr style="height:2px;background-color:#221f1f;border:none">       
+     </div>`;
+  
+      let resp = await sendEmail({
+        title: `${title}`,
+        name: `Hola, ${user.name}:`,
+        content:
+          `Has adquirido el Curso "${course.name}" con número de órden ${merchant_order_id} e Id de Pago ${payment_id}`,
+        message: message,
+        to: `Lavis te envió este mensaje a [${user.email}] como parte de tu membresía.`,
+        subject: `Órden nro ${merchant_order_id}`,
+      });
+  
+      res.status(200).redirect('/src/courses/purchase/success')
+    }
+
 
   } catch (err) {
     console.log(err)

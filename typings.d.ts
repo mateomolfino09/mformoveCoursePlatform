@@ -1,3 +1,4 @@
+import { User } from './redux/user/userTypes';
 import { currency } from './constants/currency';
 export interface Urls {
     raw: string;
@@ -225,3 +226,17 @@ export interface ClassesDB {
     totalTime: number,
     course: CoursesDB
 } 
+
+export interface Bill {
+    payment_id: Number
+    merchant_order_id: String
+    preference_id: String
+    collection_id: String
+    payment_type: String
+    createdAt: Date
+    status: String
+    processing_mode: String
+    course: CoursesDB
+    User: User
+    
+}
