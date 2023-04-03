@@ -16,7 +16,7 @@ mercadopago.configure({
 
 connectDB()
 
-const bookFeedbackPending = async (req, res) =>{
+const bookFeedbackFailure = async (req, res) => {
   const { email, courseId,     
     payment_id,
     merchant_order_id,
@@ -31,7 +31,6 @@ const bookFeedbackPending = async (req, res) =>{
     console.log(req.query)
     const user = await User.findOne({ email })
     const course = await Course.findOne({ id: courseId })
-
     const bill = await Bill.findOne({ payment_id })
 
     if(bill) res.status(409).redirect(`/src/courses/purchase/duplicated/?courseId=${courseId}&email=${email}`)
@@ -50,11 +49,9 @@ const bookFeedbackPending = async (req, res) =>{
         amount: course.price,
         currency: course.currency
       }).save();
-  
-      const { origin } = absoluteUrl
-      (req);
+      const { origin } = absoluteUrl(req);
       const link = `${origin}/src/home`;
-      const title = `<h1 style="color:black">Pago pendiente.</h1>`;
+      const title = `<h1 style="color:black">Hubo un error con su compra...</h1>`;
       const message = `
       <div>     
       <div>
@@ -70,13 +67,13 @@ const bookFeedbackPending = async (req, res) =>{
         title: `${title}`,
         name: `Hola, ${user.name}:`,
         content:
-          `El pago del curso "${course.name}" está pendiente.`,
+          `Hubo un error al comprar "${course.name}" con número de órden ${merchant_order_id} e Id de Pago ${payment_id}`,
         message: message,
         to: `Lavis te envió este mensaje a [${user.email}] como parte de tu membresía.`,
         subject: `Órden nro ${merchant_order_id}`,
       });
   
-      res.status(401).redirect(`/src/courses/purchase/pending/?courseId=${courseId}&email=${email}`)
+      res.status(401).redirect(`/src/courses/purchase/failure/?courseId=${courseId}&email=${email}`)
     }
   }
 
@@ -86,4 +83,5 @@ const bookFeedbackPending = async (req, res) =>{
     return res.status(401).json({ error: "Algo salio mal" })  }
 }
 
-export default bookFeedbackPending
+
+export default bookFeedbackFailure

@@ -37,6 +37,8 @@ const bookFeedbackSuccess = async (req, res) => {
     const index = user.courses.findIndex((element) => {
       return element.course.valueOf() === course._id.valueOf()
     })
+
+    console.log(index)
   
     user.courses[index].purchased = true
 
@@ -46,7 +48,7 @@ const bookFeedbackSuccess = async (req, res) => {
 
     const bill = await Bill.findOne({ payment_id })
 
-    if(bill) res.status(409).redirect('/src/courses/purchase/duplicated')
+    if(bill) res.status(409).redirect(`/src/courses/purchase/duplicated/?courseId=${courseId}&email=${email}`)
     else {
       const newBill = await new Bill({
         user,
@@ -59,6 +61,8 @@ const bookFeedbackSuccess = async (req, res) => {
         processing_mode,
         createdAt,
         status,
+        amount: course.price,
+        currency: course.currency
       }).save();
   
       const { origin } = absoluteUrl(req);
@@ -85,7 +89,7 @@ const bookFeedbackSuccess = async (req, res) => {
         subject: `Órden nro ${merchant_order_id}`,
       });
   
-      res.status(200).redirect('/src/courses/purchase/success')
+      res.status(200).redirect(`/src/courses/purchase/success/?courseId=${courseId}&email=${email}`)
     }
 
 

@@ -93,7 +93,7 @@ const PaymentGateway = ({ user, course }: Props) => {
       ) : (
         <>
         <Link href={initPoint} target="_blank" rel="noopener noreferrer">
-                  <button className={`h-10 w-28 rounded-md border border-white mt-10 hover:scale-105 transition duration-500`} >Inscribirme</button>
+                  <button className={`h-10 w-28 rounded-md border border-white mt-10 hover:scale-105 transition duration-500 ${!initPoint ? 'cursor-not-allowed' : 'cursor-pointer'}`} >Inscribirme</button>
         </Link>
       </>
       )}

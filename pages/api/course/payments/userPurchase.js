@@ -48,8 +48,8 @@ const userPurchase = async (req, res) => {
       back_urls: { 
         // aca poder volver a llamar un api endpoint que redirecciona, por ejemplo si tenes que escribir en la BD, llamar a una lambda, etc. o directamente a una pagina /pages/pagos/success o lo que sea. Yo en este ejemplo llamo a una api endpoint 
         "success": `${host}/api/course/payments/bookFeedbackSuccess/?courseId=${courseId}&email=${email}`,
-        "failure": `${host}/api/course/payments/bookFeedbackFailure`,
-        "pending": `${host}/api/course/payments/bookFeedbackPending`
+        "failure": `${host}/api/course/payments/bookFeedbackFailure/?courseId=${courseId}&email=${email}`,
+        "pending": `${host}/api/course/payments/bookFeedbackPending/?courseId=${courseId}&email=${email}`
           },
     };
 

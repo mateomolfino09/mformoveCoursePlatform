@@ -9,7 +9,7 @@ import { getCourseById } from '../../../api/course/getCourseById'
 import { getUserFromBack } from '../../../api/user/getUserFromBack'
 import { CoursesDB, User } from '../../../../typings'
 import { AiFillCheckCircle } from 'react-icons/ai'
-import { duration } from '@mui/material'
+import { VscError } from 'react-icons/vsc'
 
 interface Props {
     user: User,
@@ -61,20 +61,20 @@ const Success = ({ course, user }: Props) => {
     <m.div initial={{ y: "-120%"}}
      animate={{y: "0%"}} transition={{duration: 0.9, ease: 'easeOut'}} exit={{opacity: 1}} className='relative mt-24 space-y-8 rounded md:bg-black/90 py-10 px-6 md:mt-0 md:max-w-lg md:px-14'>
         <div className='w-full flex flex-row justify-between items-start'>
-        <h1 className='text-4xl font-semibold'>Tu compra fue realizada con éxito.</h1>
+        <h1 className='text-4xl font-semibold'>Hubo un error al realizar tu compra.</h1>
         <m.div  initial={{ opacity: 0}}  animate={{ opacity: 1 }} 
-  transition={{ ease: [0.0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0, 0.5], duration: 2.5 }} className='h-12 w-12'>
-        <AiFillCheckCircle className='h-12 w-12 text-green-500'/>
+  transition={{ ease: [0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0, 0.5], duration: 2.5 }} className='h-12 w-12'>
+        <VscError className='h-12 w-12 text-red-500'/>
         </m.div>
         </div>
 
         <div className='space-y-4'>
             <label className='inline-block w-full'>
-                <p>¡Está todo pronto para comenzar a aprender con Lavis Academy!</p>
+                <p>Hubo un error al procesar tu pago</p>
             </label>
             <div className="w-full bg-black/50 flex justify-center items-center cursor-pointer border border-white rounded-md transition duration-500 hover:bg-black hover:scale-105">
-                        <button className="p-1 text-center" onClick={() => router.push(`/src/courses/${course.id}/${user.courses[course.id - 1].actualChapter}`)}> 
-                            Empezar
+                        <button className="p-1 text-center" onClick={() => router.push(`/src/courses/purchase//${course.id}`)}> 
+                            Volver a Intentar
                         </button>
                     </div>
         </div>

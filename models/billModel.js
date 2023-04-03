@@ -36,6 +36,14 @@ const billSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    price: {
+        type: Number,
+        default: () => 10
+      },
+      currency: {
+        type: String,
+        default: () => '$'
+      },
     course: {
         type: mongoose.Types.ObjectId,
         ref: "Course"
