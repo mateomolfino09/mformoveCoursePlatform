@@ -10,7 +10,6 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { toast } from "react-toastify";
 import { loadUser } from "../../api/user/loadUser";
 import DeleteUser from "../../../components/DeleteUser";
-import EditUser from "../../../components/EditUser";
 import AdmimDashboardLayout from "../../../components/AdmimDashboardLayout";
 import {
   PencilIcon,
@@ -19,6 +18,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { User } from "../../../typings";
 import { UserContext } from "../../../hooks/userContext";
+import EditUsers from "./editUser/[id]";
 
 interface Props {
   users: any;
@@ -29,7 +29,6 @@ const ShowUsers = ({ users, user }: Props) => {
   const { data: session } = useSession();
   const router = useRouter();
   let [isOpenDelete, setIsOpenDelete] = useState(false);
-  let [isOpenEdit, setIsOpenEdit] = useState(false);
   const ref = useRef(null);
   const [userCtx, setUserCtx] = useState<User>(user);
 
@@ -74,11 +73,10 @@ const ShowUsers = ({ users, user }: Props) => {
     setUserSelected(user);
     setIsOpenDelete(true);
   }
-  function openModalEdit(user: User) {
+  function openEdit(user: User) {
     setUserSelected(user);
-    setIsOpenEdit(true);
   }
-
+  console.log(userSelected._id);
   return (
     <UserContext.Provider value={providerValue}>
       <AdmimDashboardLayout>
@@ -122,7 +120,9 @@ const ShowUsers = ({ users, user }: Props) => {
                     <th className=" border-solid border-transparent border border-collapse text-base bg-gray-900/70 opacity-75 py-3 px-6 text-center  ">
                       <div className="flex item-center justify-center border-solid border-transparent border border-collapse text-base">
                         <div className="w-6 mr-2 transform hover:text-blue-500 hover:scale-110 cursor-pointer">
-                          <PencilIcon onClick={() => openModalEdit(user)} />
+                          <Link href={`/src/admin/editUser/${user._id}`}>
+                            <PencilIcon onClick={() => openEdit(user)} />
+                          </Link>
                         </div>
                         <div className="w-6 mr-2 transform hover:text-red-500 hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse text-base bg-gray-900/70">
                           <TrashIcon onClick={() => openModalDelete(user)} />
@@ -139,11 +139,6 @@ const ShowUsers = ({ users, user }: Props) => {
             setIsOpen={setIsOpenDelete}
             user={userSelected}
             deleteUser={deleteUser}
-          />
-          <EditUser
-            isOpen={isOpenEdit}
-            setIsOpen={setIsOpenEdit}
-            user={userSelected}
           />
         </>
       </AdmimDashboardLayout>
