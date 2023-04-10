@@ -18,7 +18,6 @@ import {
 } from "@heroicons/react/24/solid";
 import { User } from "../../../typings";
 import { UserContext } from "../../../hooks/userContext";
-import EditUsers from "./editUser/[id]";
 
 interface Props {
   users: any;
@@ -120,7 +119,7 @@ const ShowUsers = ({ users, user }: Props) => {
                     <th className=" border-solid border-transparent border border-collapse text-base bg-gray-900/70 opacity-75 py-3 px-6 text-center  ">
                       <div className="flex item-center justify-center border-solid border-transparent border border-collapse text-base">
                         <div className="w-6 mr-2 transform hover:text-blue-500 hover:scale-110 cursor-pointer">
-                          <Link href={`/src/admin/editUser/${user._id}`}>
+                          <Link href={`/src/admin/updateUser/${user._id}`}>
                             <PencilIcon onClick={() => openEdit(user)} />
                           </Link>
                         </div>

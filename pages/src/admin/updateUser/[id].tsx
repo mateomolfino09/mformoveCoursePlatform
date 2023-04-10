@@ -65,8 +65,11 @@ const EditUser = ({ user }: Props) => {
   const { id } = router.query;
   const [userCtx, setUserCtx] = useState<User>(user);
   const [userDB, setUserDB] = useState<User>();
-  const firstName: any[] = [];
-  const lastName: any[] = [];
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
+  const [country, setCountry] = useState("");
   const providerValue = useMemo(
     () => ({ userCtx, setUserCtx }),
     [userCtx, setUserCtx]
@@ -88,8 +91,15 @@ const EditUser = ({ user }: Props) => {
         };
         const userId = id;
         const { data } = await axios.get(`/api/user/${userId}`, config);
-        console.log(data);
+        const completeName = data.name.split(" ");
+        const name = completeName[0];
+        const last = completeName.slice(1).join(" ");
+        setFirstname(name);
+        setLastname(last);
         setUserDB(data);
+        setEmail(data.email);
+        setGender(data.gender);
+        setCountry(data.country);
       } catch (error: any) {
         console.log(error.message);
       }
@@ -98,17 +108,36 @@ const EditUser = ({ user }: Props) => {
     getUserDB();
   }, [router, session]);
 
-  const splitFullName = async (fullName: string) => {
-    const completeName = fullName.split(" ");
-    const name = completeName[0];
-    const last = completeName.slice(1).join(" ");
-    firstName.push(name);
-    lastName.push(last);
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
+    try {
+      if (userDB) {
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+        const response = await axios.patch(
+          `/api/user/update/${userDB._id}`,
+          {
+            firstname,
+            lastname,
+            email,
+            gender,
+            country,
+          },
+          config
+        );
+        if (response) {
+          router.push("/src/admin/users");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
-  if (userDB) {
-    splitFullName(userDB.name);
-  }
-
+  console.log(userDB);
+  console.log(userDB?.courses[0].purchased);
   return (
     userDB && (
       <UserContext.Provider value={providerValue}>
@@ -124,7 +153,10 @@ const EditUser = ({ user }: Props) => {
               className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}
             >
               {/* Logo position */}
-              <form className="relative mt-24 space-y-4 rounded border-2 border-black/75 bg-black/50 py-12  px-8 md:mt-12 md:max-w-lg md:px-14">
+              <form
+                onSubmit={handleSubmit}
+                className="relative mt-24 space-y-4 rounded border-2 border-black/75 bg-black/50 py-12  px-8 md:mt-12 md:max-w-lg md:px-14"
+              >
                 <h1 className="text-4xl font-semibold">Editar Usuario</h1>
                 <div className="relative space-y-8 md:mt-0 md:max-w-lg">
                   {" "}
@@ -136,19 +168,21 @@ const EditUser = ({ user }: Props) => {
                         type="firstName"
                         id="firstName"
                         name="firstName"
-                        defaultValue={firstName}
+                        value={firstname}
                         placeholder="Nombre"
                         className="input"
+                        onChange={(e) => setFirstname(e.target.value)}
                       />
                     </label>
-                    <label className="inline-block ">
+                    <label className="inline-block">
                       <input
                         name="lastName"
                         id="lastName"
                         type="lastName"
-                        defaultValue={lastName}
+                        value={lastname}
                         placeholder="Apellido"
                         className="input"
+                        onChange={(e) => setLastname(e.target.value)}
                       />
                     </label>
                   </div>
@@ -159,8 +193,9 @@ const EditUser = ({ user }: Props) => {
                         id="email"
                         name="email"
                         placeholder="Email"
-                        defaultValue={userDB.email}
+                        value={email}
                         className="input"
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </label>
                   </div>
@@ -170,8 +205,10 @@ const EditUser = ({ user }: Props) => {
                       styles={colourStyles}
                       placeholder={"Género"}
                       className="w-52 mr-2"
-                      // defaultValue={userDB.gender}
-                      // value={gender}
+                      defaultInputValue={gender}
+                      onChange={(e) => {
+                        return setGender(e.label);
+                      }}
                       // onChange={(e) => {
                       //   return setGender(e.label);
                       // }}
@@ -182,7 +219,11 @@ const EditUser = ({ user }: Props) => {
                       styles={colourStyles}
                       className=" w-52"
                       placeholder={"País"}
-                      // defaultValue={userDB.country}
+                      defaultInputValue={country}
+                      value={country}
+                      onChange={(e) => {
+                        return setCountry(e.label);
+                      }}
                       // value={country}
                       //  onChange={e => {
                       //  return setCountry(e.label)}}
@@ -196,7 +237,7 @@ const EditUser = ({ user }: Props) => {
 
                 <div className="text-[gray]">
                   Volver al Inicio
-                  <Link href={"/src/home"}>
+                  <Link href={"/src/admin/users"}>
                     <button
                       type="button"
                       className="text-white hover:underline ml-2"
