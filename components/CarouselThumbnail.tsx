@@ -16,6 +16,7 @@ import axios from 'axios'
 import { CoursesContext } from '../hooks/coursesContext'
 import {TbLockOpenOff} from 'react-icons/tb'
 import { UserContext } from '../hooks/userContext'
+import { motion as m } from "framer-motion"
 
 interface Props {
   course: CoursesDB,
@@ -58,7 +59,7 @@ const notify = ( message: String, agregado: boolean, like: boolean ) =>
   );
 
 
-function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
+function CarouselThumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
   const dispatch = useAppDispatch()
   const [courseUser, setCourseUser] = useState<CourseUser | null>(null)
   const [ zIndex, setZIndex ] = useState(0)
@@ -117,86 +118,49 @@ function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
   }
 
   return (
-    <div onMouseEnter={(e) => setZIndex(1000)} onMouseLeave={() => {
-      setTimeout(() => {
-        setZIndex(0)
-      }, 500)
-      return
-    }} style={{zIndex: zIndex}} className={`group/item relative h-60 min-w-[350px] cursor-pointer transition duration-1000 ease-out md:h-36 md:min-w-[260px] md:hover:scale-105 overflow-visible`}>
+    <m.div className={`thumbnailContainer darkGray  `}>
+      <div className='thumbnailItem'>
         <CldImage 
-            src={course?.image_url} 
-            preserveTransformations
-            layout="fill"
-            className={`rounded-sm object-cover md:rounded cursor-pointer transition duration-200 delay-300 group-hover/item:opacity-90 sm:group-hover/item:opacity-0 z-0`}
-            alt={course?.name}
-            loader={imageLoader}
-            onClick={handleOpen}
-            />
-            <div className={`absolute opacity-0 top-0 h-full w-full transition duration-200 sm:visible invisible delay-300 group-hover/item:scale-105 group-hover/item:-translate-y-[6vw] group-hover/item:translate-x-[1vw] group-hover/item:opacity-100`}>
-              <CldImage 
               src={course?.image_url} 
               preserveTransformations
-              layout="fill"
-              className={`rounded-sm object-cover md:rounded cursor-pointer
-              transition
-              duration-200
-              shadow-xl z-[200] ${!courseUser?.purchased && 'opacity-50'}`}
+              width={1000}
+              height={1000}
+              className={`cldImage`}
               alt={course?.name}
               loader={imageLoader}
               onClick={handleOpen}
               />
-              <div className='
-                z-[100]
-                darkGray
-                p-2
-                lg:p-4
-                flex
-                flex-col
-                w-full
-                h-56
-                absolute
-                transition
-                shadow-md
-                rounded-b-md
-                justify-end
-                items-start'>
-                  <div className='h-1/4 w-full'>
-
-                  </div>
-                  <div className='h-1/4 w-full'>
-
-                  </div>
-                  <div className='h-1/2 w-full z-[100]'>
-                  <div className="flex flex-row items-center mt-10">
-                  <div className="cursor-pointer w-4 h-4 lg:w-6 lg:h-6 bg-white rounded-full flex justify-center items-center transition hover:bg-neutral-300 ">
-                    <PlayIcon className="text-black w-4 h-4 lg:w-4 lg:h-4" onClick={handleOpen}
+      </div>
+      <div className='flex w-full  h-full flex-col p-4 justify-start space-y-8'>
+      <div className="flex flex-row items-center">
+                  <div className="cursor-pointer w-8 h-8 bg-white rounded-full flex justify-center items-center transition hover:bg-neutral-300 ">
+                    <PlayIcon className="text-black w-6 h-6" onClick={handleOpen}
 />
                   </div>
-                  <div className="cursor-pointer w-4 h-4 lg:w-6 lg:h-6 bg-transparent border-white  border rounded-full flex justify-center items-center transition  ml-2">
+                  <div className="cursor-pointer w-8 h-8 bg-transparent border-white  border rounded-full flex justify-center items-center transition  ml-2">
                     {!userCtx?.courses[courseIndex].inList ? (
-                      <MdAdd className=" text-white w-4 h-4 lg:w-4 lg:h-4" onClick={() => addCourseToList()}/>
+                      <MdAdd className=" text-white w-6 h-6" onClick={() => addCourseToList()}/>
                     ) : (
-                      <MdRemove className=" text-white w-4 h-4 lg:w-4 lg:h-4" onClick={() => removeCourseToList()}/>
+                      <MdRemove className=" text-white w-6 h-6" onClick={() => removeCourseToList()}/>
                     )}
                   </div>
                   {!courseUser?.purchased && user?.rol != 'Admin' && (
-                    <div className="cursor-pointer group/item w-4 h-4 lg:w-6 lg:h-6 border-white border rounded-full flex justify-center items-center transition hover:border-neutral-300 ml-2">
-                    <TbLockOpenOff className="text-white group-hover/item:text-neutral-300 w-4 lg:w-4"/>
+                    <div className="cursor-pointer group/item w-8 h-8 border-white border rounded-full flex justify-center items-center transition hover:border-neutral-300 ml-2">
+                    <TbLockOpenOff className="text-white group-hover/item:text-neutral-300 w-6"/>
                   </div>
                   )}
    
-                  <div className="cursor-pointer ml-auto group/item w-4 h-4 lg:w-6 lg:h-6 border-white border rounded-full flex justify-center items-center transition hover:border-neutral-300">
-                    <ChevronDownIcon className="text-white group-hover/item:text-neutral-300 w-4 lg:w-4" onClick={handleOpen}/>
+                  <div className="cursor-pointer ml-auto group/item w-8 h-8 border-white border rounded-full flex justify-center items-center transition hover:border-neutral-300">
+                    <ChevronDownIcon className="text-white group-hover/item:text-neutral-300 w-6" onClick={handleOpen}/>
                   </div>
-                </div>
-                <div className="flex flex-row mt-0 lg:mt-4 gap-2 items-center"> 
-            <p className="text-white text-[10px] lg:text-sm">{course?.name}</p>
-          </div>
-                  </div>
-              </div>
-            </div>
       </div>
+      <div className="flex flex-row mt-0 lg:mt-4 gap-2 items-center"> 
+        <p className="text-white text-lg lg:text-xl">{course?.name}</p>
+      </div>
+      </div>
+
+      </m.div>
   )
 }
 
-export default Thumbnail
+export default CarouselThumbnail

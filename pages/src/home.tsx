@@ -21,6 +21,8 @@ import { CourseListContext } from '../../hooks/courseListContext'
 import { getUserFromBack } from '../api/user/getUserFromBack'
 import { CoursesContext } from '../../hooks/coursesContext'
 import { Toaster } from 'react-hot-toast'
+import { UserContext } from '../../hooks/userContext'
+import Carousel from '../../components/Carousel'
 
 interface Props {
   randomImage: Images
@@ -39,12 +41,15 @@ const Home = ({ user, randomImage, coursesDB
   const [refToMy, setRefToMy] = useState<RefObject<HTMLDivElement> | null>(null);
   const [refToModa, setRefToModa] = useState<RefObject<HTMLDivElement> | null>(null);
   const [refToNuevo, setRefToNuevo] = useState<RefObject<HTMLDivElement> | null>(null);
-  const {listCourse, setListCourse} = useContext( CourseListContext )
+  const { listCourse, setListCourse } = useContext( CourseListContext )
   const { courses, setCourses} = useContext( CoursesContext )
+  const {userCtx, setUserCtx} = useContext( UserContext )
+
   // setCourses([...coursesDB])
 
   useEffect(() => {
       setCourses([...coursesDB])
+      setUserCtx(user)
   }, [])
 
 
@@ -57,26 +62,46 @@ const Home = ({ user, randomImage, coursesDB
   const router = useRouter()
 
   function scrollToList() {
-    if(refToList?.current) {
-      return refToList?.current.scrollIntoView({behavior: 'smooth'})
+    if(refToList?.current && window) {
+      const yOffset = -90; 
+      const y = refToList?.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+  
+      window.scrollTo({top: y, behavior: 'smooth'});
+      return
+      // return refToModa?.current.scrollIntoView({behavior: 'smooth'})
     }
   }
 
   function scrollToMy() {
-    if(refToMy?.current) {
-      return refToMy?.current.scrollIntoView({behavior: 'smooth'})
+    if(refToMy?.current && window) {
+      const yOffset = -90; 
+      const y = refToMy?.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+  
+      window.scrollTo({top: y, behavior: 'smooth'});
+      return
+      // return refToModa?.current.scrollIntoView({behavior: 'smooth'})
     }
   }
 
   function scrollToNuevo() {
-    if(refToNuevo?.current) {
-      return refToNuevo?.current.scrollIntoView({behavior: 'smooth'})
+    if(refToNuevo?.current && window) {
+      const yOffset = -90; 
+      const y = refToNuevo?.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+  
+      window.scrollTo({top: y, behavior: 'smooth'});
+      return
+      // return refToModa?.current.scrollIntoView({behavior: 'smooth'})
     }
   }
 
   function scrollToModa() {
-    if(refToModa?.current) {
-      return refToModa?.current.scrollIntoView({behavior: 'smooth'})
+    if(refToModa?.current && window) {
+      const yOffset = -90; 
+      const y = refToModa?.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+  
+      window.scrollTo({top: y, behavior: 'smooth'});
+      return
+      // return refToModa?.current.scrollIntoView({behavior: 'smooth'})
     }
   }
 
@@ -157,7 +182,7 @@ const Home = ({ user, randomImage, coursesDB
 
   
   return (
-    <div className="relative h-screen bg-gradient-to-b lg:h-[140vh]">
+    <div className="relative h-full bg-gradient-to-b lg:h-full">
       <Head>
         <title>Video Streaming</title>
         <meta name="description" content="Stream Video App" />
@@ -165,13 +190,13 @@ const Home = ({ user, randomImage, coursesDB
       </Head>
       <Header scrollToList={scrollToList} scrollToModa={scrollToModa} scrollToNuevo={scrollToNuevo} scrollToMy={scrollToMy} dbUser={user}/>
 
-      <main className='relative pl-4 lg:space-y-24 lg:pl-16'>
-        <Banner randomImage={randomImage}/>
-        <section className='md:space-y-24 mt-48 md:mt-24 lg:mt-0'>
-          <Row title="Todos Los Cursos" coursesDB={courses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToModaSend} isClass={false} user={user} courseIndex={0}/>
-          <Row title={"Nuevo"} coursesDB={nuevoCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToNuevoSend} isClass={false} user={user} courseIndex={0}/>
-          <Row title={"Mi Lista"} coursesDB={listCourse} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToListSend} isClass={false} user={user} courseIndex={0}/>
-          <Row title={"Mis Cursos"} coursesDB={myCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefMySend} isClass={false} user={user} courseIndex={0}/>
+      <main className='relative lg:space-y-24'>
+        <Banner randomImage={randomImage} scrollToModa={scrollToModa}/>
+        <section className='!mt-0'>
+          <Carousel title="Todos Los Cursos" coursesDB={courses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToModaSend} isClass={false} user={user} courseIndex={0}/>
+          <Carousel title={"Nuevo"} coursesDB={nuevoCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToNuevoSend} isClass={false} user={user} courseIndex={0}/>
+          <Carousel title={"Mi Lista"} coursesDB={listCourse} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToListSend} isClass={false} user={user} courseIndex={0}/>
+          <Carousel title={"Mis Cursos"} coursesDB={myCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefMySend} isClass={false} user={user} courseIndex={0}/>
         </section>
       </main>
       <Toaster />

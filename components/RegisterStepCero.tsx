@@ -13,6 +13,25 @@ interface Props {
 const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
     const [email, setEmailStep] = useState('')
     const [loading, setLoading] = useState(false)
+    const [capsLock, setCapsLock] = useState<boolean>(false)
+
+    useEffect(() => {
+        if(typeof window != undefined && document != undefined) {
+          document.addEventListener("keydown", testCapsLock);
+          document.addEventListener("keyup", testCapsLock);      }
+      }, [])
+  
+      
+      function testCapsLock(event: any) {
+        if(event.code === "CapsLock"){
+            let isCapsLockOn = event.getModifierState("CapsLock");
+            if(isCapsLockOn) {
+                setCapsLock(true)
+            } else {
+              setCapsLock(false)
+            }
+        }
+    }
 
 
     const handleClick = async () => {
@@ -103,6 +122,9 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
       </div>
     <button onClick={() => handleClick()} className='w-1/3 bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold md:w-[20%] lg:w-[10%]'>Empezar! </button>
     </div>
+        <div className="w-full my-0 flex justify-center items-center relative top-2">
+          <p className={`text-white/80 text-xs ${!capsLock && 'hidden'}`}>Bloq Mayús Activado</p>
+        </div>
       </>
     )}
 

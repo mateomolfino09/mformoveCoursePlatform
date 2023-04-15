@@ -37,9 +37,29 @@ const Login = ({ providers, session }: any) => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [validateEmail, setValidateEmail] = useState(false)
+    const [capsLock, setCapsLock] = useState<boolean>(false)
 
     const router = useRouter()
     // const dispatch = useDispatch()
+
+    useEffect(() => {
+      if(typeof window != undefined && document != undefined) {
+        document.addEventListener("keydown", testCapsLock);
+        document.addEventListener("keyup", testCapsLock);      }
+    }, [])
+
+    
+    function testCapsLock(event: any) {
+      if(event.code === "CapsLock"){
+          let isCapsLockOn = event.getModifierState("CapsLock");
+          if(isCapsLockOn) {
+              setCapsLock(true)
+          } else {
+            setCapsLock(false)
+          }
+      }
+  }
+  
 
     useEffect(() => {
       if (session) {
@@ -156,7 +176,7 @@ const Login = ({ providers, session }: any) => {
                     />
                   </Link>
 
-              <div className="relative mt-24 mb-4 space-y-8 rounded bg-black/75 py-10 px-6 md:mt-0 md:max-w-lg md:px-10 md:mx-6">
+              <div className="relative mt-24 mb-4 space-y-8 rounded bg-black/75 py-10 px-6 md:mt-0 md:max-w-lg md:px-10 md:top-12 md:mx-6">
                   <form className='relative space-y-8 md:mt-0 md:max-w-lg'>
                       <h1 className='text-4xl font-semibold'>Te damos la bienvenida a Video Stream!</h1>
                       <h2 className='text-2xl font-semibold'>Ingresa tu cuenta para acceder al sitio</h2>
@@ -181,6 +201,11 @@ const Login = ({ providers, session }: any) => {
                               value={password}
                               onChange={e => setPassword(e.target.value)}
                               />
+                          </label>
+                          <label className="inline-block w-full">
+                          <div className="w-full my-0 relative bottom-2">
+                      <p className={`text-white/80 text-xs ${!capsLock && 'hidden'}`}>Bloq Mayús Activado</p>
+                        </div>
                           </label>
                 </div>
   

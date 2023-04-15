@@ -4,7 +4,7 @@ import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout'
 const billing = () => {
   return (
     <AdmimDashboardLayout>
-    <div>
+    <div className='min-h-screen'>
         <p className="text-white text-3xl my-12 font-bold">Proximamente...</p>
     </div>
     </AdmimDashboardLayout>

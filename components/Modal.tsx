@@ -16,11 +16,12 @@ import axios from 'axios'
 import Row from './Row'
 import Link from 'next/link'
 import toast, { Toaster } from "react-hot-toast";
-import { MdOutlineClose } from "react-icons/md";
+import { MdAdd, MdOutlineClose, MdRemove } from "react-icons/md";
 import { toast as toaster } from "react-toastify";
 import ReactCanvasConfetti from "react-canvas-confetti";
 import { CourseListContext } from '../hooks/courseListContext'
 import {TbLockOpenOff} from 'react-icons/tb'
+import { UserContext } from '../hooks/userContext'
 
 
 interface Props {
@@ -74,9 +75,50 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
     const [actualCourseIndex, setActualCourseIndex] = useState<number>(0)  
     const [courseIndex, setCourseIndex] = useState<number>(0)  
     const {listCourse, setListCourse} = useContext( CourseListContext )
-
+    const {userCtx, setUserCtx} = useContext( UserContext )
+  
+    const addCourseToList = async () => {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+    }
+    const courseId = courseDB?.id
+    const userId = user?._id
+      try {
+        notify('Agregado a la Lista', true, false)
+        const { data } = await axios.put('/api/user/course/listCourse', { courseId, userId }, config)
+        setListCourse([...listCourse, courseDB])
+        setUserCtx(data)
+  
+  
+      } catch (error) {
+        console.log(error)
+      }
+  
+    }
+    const removeCourseToList = async () => {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+    }
+    const courseId = courseDB?.id
+    const userId = user?._id
+      try {
+        notify('Eliminado de la Lista', false, false)
+        setListCourse([...listCourse.filter((value: CoursesDB) => value.id != courseDB?.id)])
+        const { data } = await axios.put('/api/user/course/dislistCourse', { courseId, userId }, config)
+        setUserCtx(data)
+  
+      } catch (error) {
+        
+      }
+  
+  
+    }
     const course: CourseModal = useSelector((state: State) => state.courseModalReducer)
-    let { loading, error,activeModal,dbCourse, youtubeVideo  } = course
+    let { activeModal  } = course
     const dispatch = useAppDispatch()
     const indexCourse = user?.courses.findIndex((element: any) => {
         return element.course.valueOf() === courseDB?._id
@@ -84,7 +126,6 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
 
 
     const [muted, setMuted] = useState(false);
-    const videoFromDB:Item | null = youtubeVideo != null ? youtubeVideo[0] : null
 
 
     useEffect(() => {
@@ -111,12 +152,16 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
             }
         }
         getCourseInfo()
-        user?.courses && indexCourse != undefined && user.courses[indexCourse].like ? setLike(true) : null
-        user?.courses && indexCourse != undefined && user.courses[indexCourse].inList ? setList(true) : null
+        indexCourse != undefined && userCtx.courses[indexCourse].like ? setLike(true) : null
+        indexCourse != undefined && userCtx.courses[indexCourse].inList ? setList(true) : null
 
 
 
     }, [])
+
+    useEffect(() => {
+        
+      }, [userCtx])
 
     const handleClose = () => {
         dispatch(closeCourse())
@@ -147,33 +192,12 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
     }
 
     const handleAddToList = async () => {
-        const config = {
-            headers: {
-              "Content-Type": "application/json",
-            },
-        }
-        const courseId = courseDB?.id
-        const userId = user?._id
-
         if(!list) {
             // courseDB ? setListFunc(courseDB, list) : null
-            setList(true)
-            const { data } = await axios.put('/api/user/course/listCourse', { courseId, userId }, config)
-            updateUserDB(data)
-
-            setListCourse([...listCourse, courseDB])
-
-            notify('Agregado a la Lista', true, false)
+            await addCourseToList()
         }
         else {
-            // courseDB ? setListFunc(courseDB, list) : null
-            setList(false)
-            const { data } = await axios.put('/api/user/course/dislistCourse', { courseId, userId }, config)
-            updateUserDB(data)
-
-            setListCourse(listCourse.filter((value: CoursesDB) => value.id != courseDB?.id))
-
-            notify('Eliminado de la Lista', false, false)
+            await removeCourseToList()
 
         }
     }
@@ -198,7 +222,7 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
                     />
                     <div className='absolute bottom-10 flex w-full items-center justify-between px-10'>
                         <div className='flex space-x-2'>
-                            {!user?.courses[user?.courses.findIndex((x) => {
+                            {!userCtx?.courses[userCtx?.courses.findIndex((x: any) => {
                                 return  x.course.valueOf() === courseDB?._id.valueOf()})].purchased ? (
                            <Link href={`/src/courses/purchase/${courseDB?.id}`}>
                             <button className='flex items-center gap-x-2 rounded bg-white px-8 text-xl font-bold py-1 text-black transition hover:bg-[#e6e6e6]'>           <AiOutlineShoppingCart className='h-7 w-7 text-black'/>
@@ -206,31 +230,34 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
                             </Link>
                             ) : (
                                 <>
-                            <Link href={indexCourse != undefined ? `/src/courses/${courseDB?.id}/${user?.courses[indexCourse].actualChapter}` : `/src/courses/${courseDB?.id}/1`}>
+                            <Link href={indexCourse != undefined ? `/src/courses/${courseDB?.id}/${userCtx?.courses[indexCourse].actualChapter}` : `/src/courses/${courseDB?.id}/1`}>
                                 <button className='flex items-center gap-x-2 rounded bg-white px-8 text-xl font-bold py-1 text-black transition hover:bg-[#e6e6e6]'>           <FaPlay className='h-7 w-7 text-black'/>
                                     Ver</button>
                             </Link>    
                                 </>
 
                             )}
-                            <button className='modalButton' onClick={handleAddToList}>
-                                {list ? <AiFillPlusCircle className={`h-7 w-7`}/> : <AiOutlinePlusCircle className={`h-7 w-7`}/>
-                                }
-                            </button>
-                            <button className='modalButton' onClick={handleLike}>
+                            <div className="cursor-pointer w-8 h-8 bg-transparent border-white  border rounded-full flex justify-center items-center transition  ml-2">
+                            {!userCtx?.courses[courseIndex].inList ? (
+                                <MdAdd className=" text-white w-6 h-6" onClick={() => addCourseToList()}/>
+                                ) : (
+                                <MdRemove className=" text-white w-6 h-6" onClick={() => removeCourseToList()}/>
+                                )}
+                            </div>
+                            {/* <button className='modalButton' onClick={handleLike}>
                             {like ? (
                                 <>
-                                    <HiHandThumbUp className={`h-7 w-7`}/>
+                                    <HiHandThumbUp className={`h-8 w-8`}/>
  
                                 </>
                             ) : (<>
-                            <HiOutlineHandThumbUp className={`h-7 w-7`}/>
+                            <HiOutlineHandThumbUp className={`h-8 w-8`}/>
 
                             </>
                             
                             )
                             }
-                            </button>
+                            </button> */}
                         </div>
                         <button className='modalButton' onClick={() => {
                             setMuted(!muted)}}>
@@ -249,7 +276,7 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
                         <p className='font-semibold text-green-400'>100% Match</p>
                             <p className='font-light'>{items != null ? new Date(items[0].snippet.publishedAt).getFullYear().toString(): ''}</p>
                             <div className='flex h-4 items-center justify-center rounded border border-white/40 px-1.5 text-xs '>HD</div>
-                            {!user?.courses[courseIndex].purchased && 
+                            {!userCtx?.courses[courseIndex].purchased && 
                             <div className='flex h-4 items-center justify-center rounded border border-white/40 px-1.5 text-xs '><TbLockOpenOff/></div>
                             }
                         </div>

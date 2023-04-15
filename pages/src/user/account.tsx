@@ -12,6 +12,7 @@ import cookie from "js-cookie";
 import axios from 'axios';
 import { User } from '../../../typings';
 import Membership from '../../../components/Membership';
+import { AiOutlineUser } from 'react-icons/ai';
 
 const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"
@@ -86,12 +87,8 @@ function Account() {
           />
         </Link>
         <Link href="/src/user/account">
-          <img
-            src="https://rb.gy/g1pwyx"
-            alt=""
-            className="cursor-pointer rounded"
-            // onClick={() => logoutHandler()}
-          />
+        <AiOutlineUser className="h-6 w-6 cursor-pointer"/>
+
         </Link>
       </header>
 

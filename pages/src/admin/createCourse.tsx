@@ -15,7 +15,7 @@ import AdmimDashboardLayout from "../../../components/AdmimDashboardLayout";
 import { getUserFromBack } from "../../api/user/getUserFromBack";
 import { UserContext } from "../../../hooks/userContext";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
-import Select, { StylesConfig } from 'react-select'
+import Select, { StylesConfig, components } from 'react-select'
 import { currency } from '../../../constants/currency'
 
 
@@ -42,6 +42,8 @@ interface Props {
 interface Props {
   user: User 
 }
+
+const Input = (inputProps: any) => <components.Input {...inputProps} autoComplete="nope" />
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({ ...styles, backgroundColor: '#333', height: 52, borderRadius: 6,padding: 0, border: 'none' }),
@@ -210,7 +212,7 @@ const CreateCourse = ({ user }: Props) => {
 
             <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}>
             {/* Logo position */}
-            <form className='relative mt-24 space-y-4 rounded border-2 border-black/75 bg-black/50 py-12 px-8 my-12 md:max-w-lg md:px-14' onSubmit={handleSubmit}> 
+            <form className='relative mt-24 space-y-4 rounded border-2 border-black/75 bg-black/50 py-12 px-8 my-12 md:max-w-lg md:px-14' autoComplete="nope" onSubmit={handleSubmit}> 
               <h1 className='text-4xl font-semibold'>Agregar un Curso</h1>
               <div className='space-y-8'>
               <label className='inline-block w-full'>
@@ -282,6 +284,9 @@ const CreateCourse = ({ user }: Props) => {
                       <input type="number"
                       placeholder='Precio' 
                       className='input'
+                      key={'price'}
+                      autoComplete="off"
+                      value={price ? price : 0}
                       onChange={e => setPrice(+e.target.value)}
                       />
                     </label>
@@ -290,6 +295,7 @@ const CreateCourse = ({ user }: Props) => {
                     styles={colourStyles}
                     placeholder={currencys || '$'}
                     className='w-48'
+                    components={{ Input }}                    
                     value={currencys}
                     onChange={e => { 
                     return setCurrency(e.label)

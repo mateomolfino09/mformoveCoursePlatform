@@ -19,6 +19,18 @@ import ReactPlayer from 'react-player'
 import connectDB, { db } from '../../../../config/connectDB'
 import { getUserFromBack } from '../../../api/user/getUserFromBack'
 import PaymentGateway from '../../../../components/PaymentGateway'
+import { motion as m, AnimatePresence} from 'framer-motion'
+import {
+  headContainerAnimation,
+  headContentAnimation,
+  headTextAnimation,
+  slideAnimation
+} from '../../../../config/motion';
+import Image from 'next/image'
+import imageLoader from '../../../../imageLoader'
+import Customizer from '../../../../components/Customizer'
+import { useSnapshot } from 'valtio'
+import state from './../../../../valtio'
 
 interface Props {
   course: CoursesDB
@@ -41,6 +53,7 @@ function Course({ course, user }: Props) {
   const cookies = parseCookies()
   const {data: session} = useSession() 
   const router = useRouter()
+  const snap = useSnapshot(state)
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -55,42 +68,37 @@ function Course({ course, user }: Props) {
     }
   }, [router])
 
-  const handleRouteChange = async (route: string) => {
-    router.push(route)
-  }
 
   return (
-    <div className="relative h-full">
+    <section>
       <Head>
         <title>Video Streaming</title>
         <meta name="description" content="Stream Video App" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <header className={``}>
-          <div onClick={() => handleRouteChange('/src/home')}
-          >
-            <img
-              alt='Logo Video Stream'
-              src="/images/logoWhite.png"
-              width={120}
-              height={120}
-              className="cursor-pointer object-contain transition duration-500 hover:scale-105 md:opacity-70 hover:opacity-90" 
+        <main className='app transition-all ease-in'>
+        <div className='absolute top-0 left-0 h-[100vh] w-screen -z-10'>
+            <Image 
+            src="/images/facebg.jpg"
+            // src={srcImg}
+            alt={'image'}
+            fill={true}
+            loader={imageLoader}
+            className='object-cover object-left   opacity-60  '
             />
+        </div>
+          <PaymentGateway user={user} course={course} />
+          <Customizer />
+        </main>
+        {!snap.intro && (
+          
+          <div className='absolute w-full top-0 left-1/2 -ml-[50%] h-full '>
+
           </div>
-          <img
-            onClick={() => handleRouteChange('/src/user/account')}
-            src="https://rb.gy/g1pwyx"
-            alt=""
-            className="cursor-pointer rounded"
-            // onClick={() => logoutHandler()}
-          />
-      </header>
 
-      <main className='relative h-full flex flex-col'>
-        <PaymentGateway user={user} course={course} />
-      </main>
+    )}
+    </section>
 
-    </div>
   )
 }
 
