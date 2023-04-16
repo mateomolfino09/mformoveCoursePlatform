@@ -19,7 +19,7 @@ interface Props {
   bills: Bill[];
   user: User
 }
-const billing = ({ bills, user }: Props) => {
+const Billing = ({ bills, user }: Props) => {
   const cookies = parseCookies();
   const { data: session } = useSession();
   const router = useRouter();
@@ -120,4 +120,4 @@ export async function getServerSideProps(context: any) {
   return { props: { bills, user } };
 }
 
-export default billing;
+export default Billing;
