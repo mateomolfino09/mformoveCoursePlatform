@@ -39,7 +39,7 @@ function Banner({ randomImage }: Props) {
         <Link href={'/src/home'}>
             <div className='flex flex-col justify-end items-end !mb-4 -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'>
                 <h2 className='font-light lg:text-xl'>Mis Clases</h2>
-                <h1 className='text-4xl font-normal lg:text-7xl md:text-4xl '>Aprender en línea</h1>
+                <h1 className='text-4xl font-normal lg:text-7xl md:text-4xl text-end'>Aprender en línea</h1>
             </div>
         </Link>
         <Link href={'/'}>

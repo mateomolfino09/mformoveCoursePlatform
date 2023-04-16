@@ -119,7 +119,7 @@ function CarouselThumbnail({ course, setSelectedCourse , user, courseIndex}: Pro
 
   return (
     <m.div className={`thumbnailContainer darkGray  `}>
-      <div className='thumbnailItem'>
+      <div className='thumbnailItem' onClick={handleOpen}>
         <CldImage 
               src={course?.image_url} 
               preserveTransformations
