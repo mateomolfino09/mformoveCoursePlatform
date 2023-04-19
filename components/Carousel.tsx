@@ -44,7 +44,7 @@ function Carousel({ title, coursesDB, setSelectedCourse, items, courseDB, actual
 
     return (
     <m.div className="carousel" ref={rowRef}>
-        <h2 className="w-56 md:ml-4 relative cursor-pointer text-lg font-semibold text-[#E5E5E5] transition duration-200 hover:text-white md:text-2xl mb-4 ml-1" >{title}</h2>
+        <h2 className="w-56 ml-4 relative cursor-pointer text-lg font-semibold text-[#E5E5E5] transition duration-200 hover:text-white md:text-2xl mb-4" >{title}</h2>
         <m.div className="inner-carousel" drag='x' dragConstraints={{right: 0, left: theWidth}} whileTap={{cursor: 'grabbing'}}>
             {coursesDB?.map((course: CoursesDB) => (
             <>

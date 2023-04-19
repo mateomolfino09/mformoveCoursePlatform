@@ -7,6 +7,8 @@ const state = proxy({
   isFullTexture: false,
   logoDecal: '/images/logo.png',
   fullDecal: '/images/logo.png',
+  volumeModal: true,
+  volumeIndex: false
 });
 
 export default state;

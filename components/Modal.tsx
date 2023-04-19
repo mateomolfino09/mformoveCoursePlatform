@@ -273,6 +273,7 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
                 <div className='flex space-x-16 rounded-b-md bg-[#181818] px-10 py-10'>
                     <div className='space-y-6 text-lg'>
                         <div className='flex items-center space-x-2 text-sm'>
+                        <p className='font-semibold text-green-400'>100% Match</p>
                             <p className='font-light'>{items != null ? new Date(items[0].snippet.publishedAt).getFullYear().toString(): ''}</p>
                             <div className='flex h-4 items-center justify-center rounded border border-white/40 px-1.5 text-xs '>HD</div>
                             {!userCtx?.courses[courseIndex].purchased && 
@@ -288,13 +289,13 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
                                 </div>
 
                                 <div>
-                                    <span className='text-[gray]'>Idioma Original: </span> <br/>
-                                    ES
+                                    <span className='text-[gray]'>Idioma Original: </span>
+                                    en
                                 </div>
                             </div>
 
                         </div>
-                        <h1 className='pt-12 text-2xl'>Clases</h1>
+                        <h1 className='pt-12 text-2xl'>Episodios</h1>
 
                     </div>
 

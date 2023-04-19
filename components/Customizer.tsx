@@ -3,9 +3,6 @@ import { AnimatePresence, motion as m } from 'framer-motion';
 import { useSnapshot } from 'valtio';
 
 import state from '../valtio';
-import { download } from '../assets';
-import { downloadCanvasToImage, reader } from '../config/helper';
-import { EditorTabs, FilterTabs, DecalTypes } from '../constants/customizer';
 import { fadeAnimation, slideAnimation, slideAnimationTabs } from '../config/motion';
 import CustomButton from './CustomButton'
 

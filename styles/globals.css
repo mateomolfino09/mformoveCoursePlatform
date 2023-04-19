@@ -102,6 +102,10 @@
   @apply bg-[#c2c9d2]
 }
 
+.bg-almost-black {
+  @apply bg-[#0f0f11]
+}
+
 .darkGray {
   @apply bg-[#333]
 }
