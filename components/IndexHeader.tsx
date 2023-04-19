@@ -58,7 +58,7 @@ return (
               src="/images/logoWhite.png"
               width={120}
               height={120}
-              className="cursor-pointer object-contain transition duration-500 hover:scale-105 lg:opacity-50 hover:opacity-100"
+              className="cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-100"
             />
         </div>
         <div className="flex items-center pr-4 md:pr-16">
