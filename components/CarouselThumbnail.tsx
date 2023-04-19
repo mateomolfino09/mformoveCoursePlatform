@@ -118,7 +118,7 @@ function CarouselThumbnail({ course, setSelectedCourse , user, courseIndex}: Pro
   }
 
   return (
-    <m.div className={`thumbnailContainer darkGray  `}>
+    <m.div className={`thumbnailContainer bg-almost-black-lighter  `}>
       <div className='thumbnailItem' onClick={handleOpen}>
         <CldImage 
               src={course?.image_url} 

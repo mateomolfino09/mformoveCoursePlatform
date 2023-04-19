@@ -15,14 +15,14 @@ const VolumeModal = () => {
                 <p className='text-lg'>Este Website usa sonidos</p>
             </div>
             <div className='flex flex-row justify-center items-center space-x-4 mt-8 px-4'>
-                <div className='h-12 w-48 border border-1 border-white flex justify-center items-center px-2 py-2 rounded-md hover:bg-white hover:text-black transition duration-200'>
+                <div className='h-12 w-36 md:w-48 border border-1 border-white flex justify-center items-center px-2 py-2 rounded-md hover:bg-white hover:text-black transition duration-200'>
                 <button className='' onClick={() => {
                     state.volumeIndex = true
                     state.volumeModal = false
                     }}>Continuar</button>
 
                 </div>
-                <div className='h-12 border border-1 border-white w-48 flex justify-center items-center px-2 py-2 rounded-md hover:bg-white hover:text-black transition duration-200'>
+                <div className='h-12 border border-1 border-white w-36 md:w-48 flex justify-center items-center px-2 py-2 rounded-md hover:bg-white hover:text-black transition duration-200'>
                 <button className='' onClick={() => {
                     state.volumeIndex = false
                     state.volumeModal = false
