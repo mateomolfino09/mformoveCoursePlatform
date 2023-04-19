@@ -70,6 +70,9 @@ const EditUser = ({ user }: Props) => {
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState("");
   const [country, setCountry] = useState("");
+  const [rol, setRol] = useState("");
+  const [purchased, setPurchased] = useState("");
+
   const providerValue = useMemo(
     () => ({ userCtx, setUserCtx }),
     [userCtx, setUserCtx]
@@ -80,7 +83,20 @@ const EditUser = ({ user }: Props) => {
       router.push("/src/user/login");
     }
   }, [session, router]);
-
+  const test = [
+    {
+      name: "test1",
+      inList: false,
+      like: true,
+      purchased: true,
+    },
+    {
+      name: "test2",
+      inList: false,
+      like: true,
+      purchased: false,
+    },
+  ];
   useEffect(() => {
     const getUserDB = async () => {
       try {
@@ -100,6 +116,9 @@ const EditUser = ({ user }: Props) => {
         setEmail(data.email);
         setGender(data.gender);
         setCountry(data.country);
+        setRol(data.rol);
+
+        setPurchased(data.courses[0].purchased);
       } catch (error: any) {
         console.log(error.message);
       }
@@ -125,6 +144,7 @@ const EditUser = ({ user }: Props) => {
             email,
             gender,
             country,
+            rol,
           },
           config
         );
@@ -136,8 +156,9 @@ const EditUser = ({ user }: Props) => {
       console.log(error);
     }
   };
-  console.log(userDB);
-  console.log(userDB?.courses[0].purchased);
+  // console.log(userDB);
+  // console.log(userDB?.courses);
+  console.log(purchased);
   return (
     userDB && (
       <UserContext.Provider value={providerValue}>
@@ -199,6 +220,32 @@ const EditUser = ({ user }: Props) => {
                       />
                     </label>
                   </div>
+                  <div>
+                    <label className="inline-block w-full ">
+                      <input
+                        type="text"
+                        id="rol"
+                        name="rol"
+                        placeholder="Rol"
+                        value={rol}
+                        className="input"
+                        onChange={(e) => setRol(e.target.value)}
+                      />
+                    </label>
+                  </div>
+                  <div>
+                    <label className="inline-block w-full ">
+                      <input
+                        type="text"
+                        id="rol"
+                        name="rol"
+                        placeholder="Rol"
+                        value={purchased}
+                        className="input"
+                        onChange={(e) => setPurchased(e.target.value)}
+                      />
+                    </label>
+                  </div>
                   <div className="flex   ">
                     <Select
                       options={genders}
@@ -230,22 +277,24 @@ const EditUser = ({ user }: Props) => {
                       //  onKeyDown={keyDownHandler}
                     />
                   </div>
-                  <button className="w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold">
-                    Editar Usuario{" "}
-                  </button>
-                </div>
-
-                <div className="text-[gray]">
-                  Volver al Inicio
-                  <Link href={"/src/admin/users"}>
-                    <button
-                      type="button"
-                      className="text-white hover:underline ml-2"
-                    >
-                      {" "}
-                      Volver
+                  <div></div>
+                  <div>
+                    <button className="w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold">
+                      Editar Usuario{" "}
                     </button>
-                  </Link>
+                  </div>
+                  <div className="text-[gray]">
+                    Volver al Inicio
+                    <Link href={"/src/admin/users"}>
+                      <button
+                        type="button"
+                        className="text-white hover:underline ml-2"
+                      >
+                        {" "}
+                        Volver
+                      </button>
+                    </Link>
+                  </div>
                 </div>
               </form>
             </div>
@@ -270,167 +319,3 @@ export async function getServerSideProps(context: any) {
 }
 
 export default EditUser;
-
-//===============================================================
-
-// import { Dialog, Transition } from "@headlessui/react";
-// import { Fragment, useState, useEffect } from "react";
-// import Select, { StylesConfig } from "react-select";
-// import { genders } from "../../../constants/genders";
-// import { countries } from "../../../constants/countries";
-// import { User } from "../../../typings";
-
-// const colourStyles: StylesConfig<any> = {
-//   control: (styles) => ({
-//     ...styles,
-//     backgroundColor: "#333",
-//     height: 55,
-//     borderRadius: 6,
-//     padding: 0,
-//   }),
-//   option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-//     return { ...styles, color: "#808080" };
-//   },
-//   input: (styles) => ({ ...styles, backgroundColor: "", color: "#fff" }),
-//   placeholder: (styles) => ({ ...styles, color: "#fff" }),
-//   singleValue: (styles, { data }) => ({ ...styles, color: "#808080" }),
-// };
-// interface Props {
-//   user: User;
-//   isOpen: any;
-//   setIsOpen: any;
-// }
-
-// const EditUser = ({ user, isOpen, setIsOpen }: Props) => {
-//   console.log(genders);
-//   const firstName: any[] = [];
-//   const lastName: any[] = [];
-//   function closeModal() {
-//     setIsOpen(false);
-//   }
-
-//   async function handleSubmit() {
-//     setIsOpen(false);
-//   }
-//   function splitFullName(fullName: any) {
-//     const completeName = fullName.split(" ");
-//     const name = completeName[0];
-//     const last = completeName.slice(1).join(" ");
-//     firstName.push(name);
-//     lastName.push(last);
-//   }
-//   useEffect(() => {
-//     splitFullName(user.name);
-//   });
-
-//   return (
-//     <>
-//       <Transition appear show={isOpen} as={Fragment}>
-//         <Dialog as="div" className="relative z-10" onClose={closeModal}>
-//           <Transition.Child
-//             as={Fragment}
-//             enter="ease-out duration-300"
-//             enterFrom="opacity-0"
-//             enterTo="opacity-100"
-//             leave="ease-in duration-200"
-//             leaveFrom="opacity-100"
-//             leaveTo="opacity-0"
-//           >
-//             <div className="fixed inset-0 bg-black bg-opacity-50" />
-//           </Transition.Child>
-
-//           <div className="fixed inset-0 overflow-y-auto">
-//             <div className="flex min-h-full items-center justify-center p-4 text-center">
-//               <Transition.Child
-//                 as={Fragment}
-//                 enter="ease-out duration-300"
-//                 enterFrom="opacity-0 scale-95"
-//                 enterTo="opacity-100 scale-100"
-//                 leave="ease-in duration-200"
-//                 leaveFrom="opacity-100 scale-100"
-//                 leaveTo="opacity-0 scale-95"
-//               >
-//                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#141414] p-6 text-left align-middle  transition-all ">
-//                   <Dialog.Title
-//                     as="h3"
-//                     className="text-lg font-medium leading-6 text-white-900 mb-4"
-//                   >
-//                     Editar Usuario
-//                   </Dialog.Title>
-//                   <form className="relative space-y-8 md:mt-0 md:max-w-lg">
-//                     <div className="flex ">
-//                       <label className="inline-block mr-2 ">
-//                         <input
-//                           type="firstName"
-//                           id="firstName"
-//                           name="firstName"
-//                           defaultValue={firstName}
-//                           placeholder="Nombre"
-//                           className="input"
-//                         />
-//                       </label>
-//                       <label className="inline-block ">
-//                         <input
-//                           name="lastName"
-//                           id="lastName"
-//                           type="lastName"
-//                           defaultValue={lastName}
-//                           placeholder="Apellido"
-//                           className="input"
-//                         />
-//                       </label>
-//                     </div>
-//                     <div className="space-y-4">
-//                       <label className="inline-block w-full ">
-//                         <input
-//                           type="email"
-//                           id="email"
-//                           name="email"
-//                           placeholder="Email"
-//                           className="input"
-//                         />
-//                       </label>
-//                     </div>
-//                     <div className="flex   ">
-//                       <Select
-//                         options={genders}
-//                         styles={colourStyles}
-//                         placeholder={"Género"}
-//                         className="w-52 mr-2"
-//                         // value={gender}
-//                         // onChange={(e) => {
-//                         //   return setGender(e.label);
-//                         // }}
-//                         // onKeyDown={keyDownHandler}
-//                       />
-//                       <Select
-//                         options={countries}
-//                         styles={colourStyles}
-//                         className=" w-52"
-//                         placeholder={"País"}
-//                         // value={country}
-//                         //  onChange={e => {
-//                         //  return setCountry(e.label)}}
-//                         //  onKeyDown={keyDownHandler}
-//                       />
-//                     </div>
-
-//                     <button
-//                       type="button"
-//                       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4  mb-4"
-//                       onClick={() => handleSubmit()}
-//                     >
-//                       Editar
-//                     </button>
-//                   </form>
-//                 </Dialog.Panel>
-//               </Transition.Child>
-//             </div>
-//           </div>
-//         </Dialog>
-//       </Transition>
-//     </>
-//   );
-// };
-
-// export default EditUser;

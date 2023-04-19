@@ -5,7 +5,7 @@ import User from "../../../../models/userModel";
 connectDB();
 export default async function handler(req, res) {
   const userId = req.query.updateUser;
-  const { firstname, lastname, email, gender, country } = req.body;
+  const { firstname, lastname, email, gender, country, rol } = req.body;
   const fullName = firstname + " " + lastname;
   try {
     if (req.method === "PATCH") {
@@ -14,6 +14,7 @@ export default async function handler(req, res) {
         email: email,
         gender: gender,
         country: country,
+        rol: rol,
       });
     }
     console.log("funciona");
