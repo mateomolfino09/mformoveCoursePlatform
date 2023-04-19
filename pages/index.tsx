@@ -30,7 +30,7 @@ const Index = ({ user }: Props) => {
           </Head>    
           <IndexHeader user={user}/>
           <main className='relative pl-4 lg:space-y-24 lg:pl-16'>
-            <Banner randomImage={'/images/bgIndex1.jpg'}/>
+            <Banner />
           </main>
           <VolumeModal/>
           <div className='absolute right-0 bottom-0 h-12 w-12'>
