@@ -1,12 +1,7 @@
-import Image from 'next/image'
-import Link from 'next/link'
+
 import React, { useState } from 'react'
-import imageLoader from '../imageLoader'
 import { AiOutlineCheckCircle } from 'react-icons/ai'
-import { genders } from '../constants/genders'
-import { countries } from '../constants/countries'
 import Select, { StylesConfig } from 'react-select'
-import { ConsoleConstructorOptions } from 'console'
 import { toast } from 'react-toastify'
 
 const colourStyles: StylesConfig<any> = {
@@ -35,7 +30,6 @@ const RegisterStepOne = ({ step2ToStep3, setData }: Props) => {
         } 
         else if(password.length < 8) {
           toast.error('La contraseña debe contener almenos 8 caracteres')
-          console.log('hola')
         } 
         else {
             setData(password, confirmPassword)

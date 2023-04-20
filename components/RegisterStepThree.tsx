@@ -1,13 +1,6 @@
-import Image from 'next/image'
-import Link from 'next/link'
 import React, { useState } from 'react'
-import imageLoader from '../imageLoader'
 import { AiOutlineCheckCircle } from 'react-icons/ai'
-import { genders } from '../constants/genders'
-import { countries } from '../constants/countries'
 import Select, { StylesConfig } from 'react-select'
-import { ConsoleConstructorOptions } from 'console'
-import { toast } from 'react-toastify'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { useRouter } from 'next/router'
 

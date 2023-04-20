@@ -81,7 +81,6 @@ function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
       notify('Agregado a la Lista', true, false)
       const { data } = await axios.put('/api/user/course/listCourse', { courseId, userId }, config)
       setListCourse([...listCourse, course])
-      console.log(data)
       setUserCtx(data)
 
 

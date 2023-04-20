@@ -12,6 +12,7 @@ import { ArrowUpTrayIcon, DocumentIcon } from "@heroicons/react/24/outline";
 import Select, { StylesConfig } from "react-select";
 import { genders } from "../../../../constants/genders";
 import { countries } from "../../../../constants/countries";
+import { rols } from "../../../../constants/rols";
 import { purchased } from "../../../../constants/purchased";
 import { loadUser } from "../../../api/user/loadUser";
 import requests from "../../../../utils/requests";
@@ -64,7 +65,7 @@ interface Course {
   name: string;
   inList: boolean;
   like: boolean;
-  purchased: boolean;
+  purchased: boolean | string;
 }
 
 const EditUser = ({ user }: Props) => {
@@ -169,28 +170,20 @@ const EditUser = ({ user }: Props) => {
   console.log(userDB);
   console.log(userDB?.courses);
 
-  // const namesList = purchased.map((item) => (
-  //   <>
-  //     <label className="inline-block w-full ">ID del curso: {item._id}</label>
-  //     <input
-  //       type="text"
-  //       id="purchased"
-  //       name="purchased"
-  //       placeholder="Purchased"
-  //       value={item.purchased.toString()}
-  //       className="input"
-  //       onChange={(e) => setPurchased(e.target.value)}
-  //     />
-  //   </>
-  // ));
-  function handleInputChange(
-    event: ChangeEvent<HTMLInputElement>,
-    index: number
-  ) {
-    const { name, value } = event.target;
+  function handleInputChange(event: any, index: number) {
+    const str = event.label;
+    let purchased: boolean | string;
+    if (str === "true") {
+      purchased = true;
+    }
+    if (str === "false") {
+      purchased = false;
+    }
     setCourses((prevCourses) => {
       const updatedCourses = [...prevCourses];
-      updatedCourses[index] = { ...updatedCourses[index], [name]: value };
+
+      updatedCourses[index] = { ...updatedCourses[index], purchased };
+
       return updatedCourses;
     });
   }
@@ -257,34 +250,33 @@ const EditUser = ({ user }: Props) => {
                   </div>
                   <div>
                     <Select
-                      options={purchased}
+                      options={rols}
                       styles={colourStyles}
-                      placeholder={"Género"}
-                      className="w-52 mr-2"
+                      placeholder={"Rol"}
+                      className="w-full "
                       defaultInputValue={rol}
                       onChange={(e) => {
                         return setRol(e.label);
                       }}
                     />
                   </div>
-                  <div>
+                  <>
                     {courses.map((course, index) => (
                       <div key={index}>
                         <label className="inline-block w-full ">
                           ID del curso: {course._id}
                         </label>
-                        <input
-                          type="text"
-                          id="purchased"
-                          name="purchased"
-                          placeholder="Purchased"
-                          value={course.purchased.toString()}
-                          className="input"
+                        <Select
+                          options={purchased}
+                          styles={colourStyles}
+                          placeholder={"Comprado"}
+                          className="w-full "
+                          defaultInputValue={course.purchased.toString()}
                           onChange={(event) => handleInputChange(event, index)}
                         />
                       </div>
                     ))}
-                  </div>
+                  </>
                   <div className="flex   ">
                     <Select
                       options={genders}
