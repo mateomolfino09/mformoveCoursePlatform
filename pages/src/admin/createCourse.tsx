@@ -14,6 +14,10 @@ import requests from "../../../utils/requests";
 import AdmimDashboardLayout from "../../../components/AdmimDashboardLayout";
 import { getUserFromBack } from "../../api/user/getUserFromBack";
 import { UserContext } from "../../../hooks/userContext";
+import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import Select, { StylesConfig, components } from 'react-select'
+import { currency } from '../../../constants/currency'
+
 
 interface User {
   id: number;
@@ -39,9 +43,22 @@ interface Props {
   user: User 
 }
 
-const CreateCourse = ({ user }: Props) => {
+const Input = (inputProps: any) => <components.Input {...inputProps} autoComplete="nope" />
 
+const colourStyles: StylesConfig<any> = {
+  control: (styles) => ({ ...styles, backgroundColor: '#333', height: 52, borderRadius: 6,padding: 0, border: 'none' }),
+  option: (styles, { data, isDisabled, isFocused, isSelected }) => { 
+      return { ...styles, color: '#808080',}
+  },
+  input: (styles) => ({ ...styles, backgroundColor: '', color: '#fff'}),
+  placeholder: (styles) => ({ ...styles, color: '#fff' }),
+  singleValue: (styles, { data }) => ({ ...styles, color: '#808080' }),
+  
+};
+
+const CreateCourse = ({ user }: Props) => {
     const [name, setName] = useState('')
+    const [description, setDescription] = useState('')
     const [playlistId, setPlaylistId] = useState('')
     const [image, setImage] = useState<string | ArrayBuffer | null | undefined>(null)
     const [password, setPassword] = useState('')    
@@ -49,7 +66,10 @@ const CreateCourse = ({ user }: Props) => {
     const {data: session} = useSession() 
     const router = useRouter()
     const [files, setFiles] = useState<any>([])
+    const [price, setPrice] = useState<number | null>(null)
+    const [currencys, setCurrency] = useState<string>('$')
     const [userCtx, setUserCtx] = useState<User>(user)
+    const [loading, setLoading] = useState<boolean>(false)
 
     const providerValue = useMemo(() => ({userCtx, setUserCtx}), [userCtx, setUserCtx])
   
@@ -74,7 +94,46 @@ const CreateCourse = ({ user }: Props) => {
       }
     }, [session, router])
 
+
+
+  const keyDownHandler = (event:any) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+
+        handleSubmit(event);
+      }
+    };
+
+
     async function handleSubmit(event: any) {
+      setLoading(true)
+      if(name.length < 5) {
+        toast.error('El Nombre del curso debe tener almenos 5 caracteres')
+        setLoading(false)
+        return
+      } 
+      else if(playlistId.length <=5) {
+        console.log(playlistId)
+        toast.error('Debe poner una Playlist Id para el curso')
+        setLoading(false)
+        return
+      } 
+      else if(files.length == 0) {
+        toast.error('Debe poner una imágen para el curso')
+        setLoading(false)
+        return
+      } 
+      else if(description.length < 30) {
+        toast.error('La descripción del curso debe tener almenos 30 caracteres')
+        setLoading(false)
+        return
+      }
+      else if(price == null) {
+        toast.error('Debe indicar el precio del curso')
+        setLoading(false)
+        return
+      }
+
         try {
             event.preventDefault();
             const userEmail = user.email
@@ -106,9 +165,11 @@ const CreateCourse = ({ user }: Props) => {
                   'Content-Type': 'application/json',
                 },
               }
+
+              console.log(description)
                 
             const { data } = await axios.post('../../api/course/createCourse',
-            {name, playlistId, imgUrl, password, userEmail}, 
+            {name, playlistId, imgUrl, password, userEmail, description, price, currencys}, 
             config
             )
 
@@ -118,6 +179,8 @@ const CreateCourse = ({ user }: Props) => {
             toast.error(error.response.data.error)
 
         }
+        setLoading(false)
+
     }
 
     function handleOnChange(changeEvent: any) {
@@ -133,7 +196,14 @@ const CreateCourse = ({ user }: Props) => {
     return (
       <UserContext.Provider value={providerValue}>
       <AdmimDashboardLayout>
-      <div className='relative flex w-full flex-col bg-black md:items-center md:justify-center md:bg-transparent'>
+        {loading ? (
+          <div className="md:h-[100vh] w-full flex flex-col justify-center items-center">
+          <LoadingSpinner/>
+          <p className="font-light text-xs text-[gray] mt-4">Esto puede demorar unos segundos...</p>
+          </div>
+        ) : (
+          <>
+                <div className='relative flex w-full flex-col bg-transparent md:items-center md:justify-center md:bg-transparent'>
             <Head>
                 <title>Video Streaming</title>
                 <meta name="description" content="Stream Video App" />
@@ -142,7 +212,7 @@ const CreateCourse = ({ user }: Props) => {
 
             <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}>
             {/* Logo position */}
-            <form className='relative mt-24 space-y-4 rounded border-2 border-black/75 bg-black/50 py-12  px-8 md:mt-12 md:max-w-lg md:px-14' onSubmit={handleSubmit}> 
+            <form className='relative mt-24 space-y-4 rounded border-2 border-black/75 bg-black/50 py-12 px-8 my-12 md:max-w-lg md:px-14' autoComplete="nope" onSubmit={handleSubmit}> 
               <h1 className='text-4xl font-semibold'>Agregar un Curso</h1>
               <div className='space-y-8'>
               <label className='inline-block w-full'>
@@ -197,6 +267,42 @@ const CreateCourse = ({ user }: Props) => {
                       <p className={`${files[0]?.size / 1000000 > 10 ? 'text-red-500' : 'text-white/60'}`}>El tamaño del archivo es {files[0]?.size / 1000000}MB</p>
                     </div>
                   )}
+                  <div className="flex flex-col justify-center items-start">
+                  <label className='inline-block w-full'>
+                      <textarea
+                      placeholder='Descripción' 
+                      className='input'
+                      onChange={e => setDescription(e.target.value)}
+                      />
+                      </label>
+
+                      <p className="font-light text-xs text-[gray]">Largo mínimo 30 caracteres</p>
+
+                  </div>
+                  <div className="flex flex-row space-x-2 justify-center items-start">
+                  <label className='inline-block w-full'>
+                      <input type="number"
+                      placeholder='Precio' 
+                      className='input'
+                      key={'price'}
+                      autoComplete="off"
+                      value={price ? price : 0}
+                      onChange={e => setPrice(+e.target.value)}
+                      />
+                    </label>
+                    <Select 
+                    options={currency} 
+                    styles={colourStyles}
+                    placeholder={currencys || '$'}
+                    className='w-48'
+                    components={{ Input }}                    
+                    value={currencys}
+                    onChange={e => { 
+                    return setCurrency(e.label)
+                    }}
+                    onKeyDown={keyDownHandler}/>
+                  </div>
+
                   <label className='inline-block w-full'>
                       <input 
                       type="password" 
@@ -217,6 +323,9 @@ const CreateCourse = ({ user }: Props) => {
           </div>
 
         </div>
+          </>
+        )}
+
     </AdmimDashboardLayout>
     </UserContext.Provider>
 

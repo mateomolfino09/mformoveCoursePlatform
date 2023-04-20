@@ -11,6 +11,7 @@ import { Menu, Transition, Popover } from "@headlessui/react";
 import Link from "next/link";
 import { User } from "../typings";
 import { UserContext } from "../hooks/userContext";
+import { AiOutlineUser } from "react-icons/ai";
 
 interface Props {
   showNav: any
@@ -23,7 +24,7 @@ const AdminDashboardTopBar = ({ showNav, setShowNav}: Props) => {
  
   
   return (
-    <div className={`bg-gray-100 fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] ${showNav ? 'pl-56' : ''}`}>
+    <div className={`bg-gray-100 fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] z-10 ${showNav ? 'pl-56' : ''}`}>
       <div className="pl-4 md:pl-16">
         <Bars3CenterLeftIcon className="h-8 w-8 text-gray-700 cursor-pointer" onClick={() => setShowNav(!showNav)} />
       </div>
@@ -110,14 +111,7 @@ const AdminDashboardTopBar = ({ showNav, setShowNav}: Props) => {
         <Menu as="div" className="relative inline-block text-left">
           <div>
             <Menu.Button className="inline-flex w-full justify-center items-center">
-              <picture>
-              <img
-                src="https://rb.gy/g1pwyx"
-                alt=""
-                className="rounded h-8 md:mr-4 border-2 border-white shadow-sm"
-                
-              />
-              </picture>
+            <AiOutlineUser className=" cursor-pointer text-black rounded h-6 w-6 md:mr-2 border-2 border-white shadow-sm"/>
               <span className="hidden md:block font-medium text-gray-700">
                 {userCtx?.name}
               </span>

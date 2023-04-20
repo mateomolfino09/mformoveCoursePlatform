@@ -1,3 +1,5 @@
+import { User } from "./redux/user/userTypes";
+import { currency } from "./constants/currency";
 export interface Urls {
   raw: string;
   full: string;
@@ -199,6 +201,7 @@ export interface CoursesDB {
   id: number;
   createdAt: string;
   udpatedAt: string;
+  description: string;
   playlist_code: string;
   image_url: string;
   name: string;
@@ -206,6 +209,9 @@ export interface CoursesDB {
   likes: number;
   users: User[];
   classes: ClassesDB[];
+  price: number;
+  currency: string;
+  created_by: User;
 }
 
 export interface ClassesDB {
@@ -217,4 +223,17 @@ export interface ClassesDB {
   likes: number;
   totalTime: number;
   course: CoursesDB;
+}
+
+export interface Bill {
+  payment_id: Number;
+  merchant_order_id: String;
+  preference_id: String;
+  collection_id: String;
+  payment_type: String;
+  createdAt: Date;
+  status: String;
+  processing_mode: String;
+  course: CoursesDB;
+  User: User;
 }

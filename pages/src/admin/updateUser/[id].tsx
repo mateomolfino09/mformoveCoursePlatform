@@ -12,12 +12,14 @@ import { ArrowUpTrayIcon, DocumentIcon } from "@heroicons/react/24/outline";
 import Select, { StylesConfig } from "react-select";
 import { genders } from "../../../../constants/genders";
 import { countries } from "../../../../constants/countries";
+import { purchased } from "../../../../constants/purchased";
 import { loadUser } from "../../../api/user/loadUser";
 import requests from "../../../../utils/requests";
 import AdmimDashboardLayout from "../../../../components/AdmimDashboardLayout";
 import { getUserFromBack } from "../../../api/user/getUserFromBack";
 import { UserContext } from "../../../../hooks/userContext";
 import { User } from "../../../../typings";
+import { ChangeEvent } from "react";
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -57,6 +59,13 @@ const colourStyles: StylesConfig<any> = {
 interface Props {
   user: User;
 }
+interface Course {
+  _id: string;
+  name: string;
+  inList: boolean;
+  like: boolean;
+  purchased: boolean;
+}
 
 const EditUser = ({ user }: Props) => {
   const cookies = parseCookies();
@@ -71,7 +80,7 @@ const EditUser = ({ user }: Props) => {
   const [gender, setGender] = useState("");
   const [country, setCountry] = useState("");
   const [rol, setRol] = useState("");
-  const [purchased, setPurchased] = useState("");
+  const [courses, setCourses] = useState<Course[]>([]);
 
   const providerValue = useMemo(
     () => ({ userCtx, setUserCtx }),
@@ -118,7 +127,7 @@ const EditUser = ({ user }: Props) => {
         setCountry(data.country);
         setRol(data.rol);
 
-        setPurchased(data.courses[0].purchased);
+        setCourses(data.courses);
       } catch (error: any) {
         console.log(error.message);
       }
@@ -145,6 +154,7 @@ const EditUser = ({ user }: Props) => {
             gender,
             country,
             rol,
+            courses,
           },
           config
         );
@@ -156,9 +166,34 @@ const EditUser = ({ user }: Props) => {
       console.log(error);
     }
   };
-  // console.log(userDB);
-  // console.log(userDB?.courses);
-  console.log(purchased);
+  console.log(userDB);
+  console.log(userDB?.courses);
+
+  // const namesList = purchased.map((item) => (
+  //   <>
+  //     <label className="inline-block w-full ">ID del curso: {item._id}</label>
+  //     <input
+  //       type="text"
+  //       id="purchased"
+  //       name="purchased"
+  //       placeholder="Purchased"
+  //       value={item.purchased.toString()}
+  //       className="input"
+  //       onChange={(e) => setPurchased(e.target.value)}
+  //     />
+  //   </>
+  // ));
+  function handleInputChange(
+    event: ChangeEvent<HTMLInputElement>,
+    index: number
+  ) {
+    const { name, value } = event.target;
+    setCourses((prevCourses) => {
+      const updatedCourses = [...prevCourses];
+      updatedCourses[index] = { ...updatedCourses[index], [name]: value };
+      return updatedCourses;
+    });
+  }
   return (
     userDB && (
       <UserContext.Provider value={providerValue}>
@@ -221,30 +256,34 @@ const EditUser = ({ user }: Props) => {
                     </label>
                   </div>
                   <div>
-                    <label className="inline-block w-full ">
-                      <input
-                        type="text"
-                        id="rol"
-                        name="rol"
-                        placeholder="Rol"
-                        value={rol}
-                        className="input"
-                        onChange={(e) => setRol(e.target.value)}
-                      />
-                    </label>
+                    <Select
+                      options={purchased}
+                      styles={colourStyles}
+                      placeholder={"Género"}
+                      className="w-52 mr-2"
+                      defaultInputValue={rol}
+                      onChange={(e) => {
+                        return setRol(e.label);
+                      }}
+                    />
                   </div>
                   <div>
-                    <label className="inline-block w-full ">
-                      <input
-                        type="text"
-                        id="rol"
-                        name="rol"
-                        placeholder="Rol"
-                        value={purchased}
-                        className="input"
-                        onChange={(e) => setPurchased(e.target.value)}
-                      />
-                    </label>
+                    {courses.map((course, index) => (
+                      <div key={index}>
+                        <label className="inline-block w-full ">
+                          ID del curso: {course._id}
+                        </label>
+                        <input
+                          type="text"
+                          id="purchased"
+                          name="purchased"
+                          placeholder="Purchased"
+                          value={course.purchased.toString()}
+                          className="input"
+                          onChange={(event) => handleInputChange(event, index)}
+                        />
+                      </div>
+                    ))}
                   </div>
                   <div className="flex   ">
                     <Select
@@ -256,10 +295,6 @@ const EditUser = ({ user }: Props) => {
                       onChange={(e) => {
                         return setGender(e.label);
                       }}
-                      // onChange={(e) => {
-                      //   return setGender(e.label);
-                      // }}
-                      // onKeyDown={keyDownHandler}
                     />
                     <Select
                       options={countries}
@@ -271,13 +306,8 @@ const EditUser = ({ user }: Props) => {
                       onChange={(e) => {
                         return setCountry(e.label);
                       }}
-                      // value={country}
-                      //  onChange={e => {
-                      //  return setCountry(e.label)}}
-                      //  onKeyDown={keyDownHandler}
                     />
                   </div>
-                  <div></div>
                   <div>
                     <button className="w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold">
                       Editar Usuario{" "}

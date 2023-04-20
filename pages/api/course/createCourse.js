@@ -13,10 +13,10 @@ connectDB();
 const createCourse = async (req, res) => {
   try {
     if (req.method === "POST") {
-      const { name, playlistId, imgUrl, password, userEmail } = req.body;
+      const { name, playlistId, imgUrl, password, userEmail, description, price, currencys } = req.body;
 
       //Existe?
-      const user = await Users.findOne({ email: userEmail });
+      let user = await Users.findOne({ email: userEmail });
       const users = await Users.find({});
 
       const exists = await bcrypt.compare(password, user.password);
@@ -35,6 +35,8 @@ const createCourse = async (req, res) => {
           });
       }
 
+      user.password = null
+
       //Busco ultimo curso
 
       const lastCourse = await Courses.find().sort({ _id: -1 }).limit(1);
@@ -44,6 +46,10 @@ const createCourse = async (req, res) => {
         name: name,
         playlist_code: playlistId,
         image_url: imgUrl,
+        description: description,
+        created_by: user,
+        price: price,
+        currency: currencys
       }).save();
 
       //Traigo clases de YT
@@ -61,12 +67,12 @@ const createCourse = async (req, res) => {
         const singleYoutubeURL = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`;
         let data = await fetch(singleYoutubeURL);
         let singleItem = await data.json();
-        let durationISO = singleItem.items[0].contentDetails.duration;
+        let durationISO = singleItem.items[0]?.contentDetails.duration;
         console.log(durationISO)
         let seg = 0;
 
 
-        if (durationISO.includes("PT") && !durationISO.includes("H")) {
+        if (durationISO && durationISO.includes("PT") && !durationISO.includes("H")) {
           const indexPT = durationISO.indexOf("T");
           const indexMin = durationISO.indexOf("M");
           const indexSeg = durationISO.indexOf("S");
@@ -74,9 +80,6 @@ const createCourse = async (req, res) => {
           const min = +durationISO.substring(indexPT + 1, indexMin);
           seg = +durationISO.substring(indexMin + 1, indexSeg);
           seg = min * 60 + seg;
-        }
-        else {
-
         }
 
         const newClass = await new Classes({

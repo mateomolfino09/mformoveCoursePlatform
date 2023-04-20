@@ -4,7 +4,7 @@ import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from
 import { useAppDispatch } from '../hooks/useTypeSelector'
 import imageLoader from '../imageLoader'
 import { loadCourse } from '../redux/courseModal/courseModalAction'
-import { CoursesDB, Ricks, User } from '../typings'
+import { CourseUser, CoursesDB, Ricks, User } from '../typings'
 import { MdBlock, MdOutlineClose, MdRemove } from 'react-icons/md'
 import { ChevronDownIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid'
 import zIndex from '@mui/material/styles/zIndex'
@@ -15,6 +15,7 @@ import { toast, Toaster } from 'react-hot-toast'
 import axios from 'axios'
 import { CoursesContext } from '../hooks/coursesContext'
 import {TbLockOpenOff} from 'react-icons/tb'
+import { UserContext } from '../hooks/userContext'
 
 interface Props {
   course: CoursesDB,
@@ -59,10 +60,14 @@ const notify = ( message: String, agregado: boolean, like: boolean ) =>
 
 function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
   const dispatch = useAppDispatch()
-  const courseUser = user?.courses[courseIndex]
+  const [courseUser, setCourseUser] = useState<CourseUser | null>(null)
   const [ zIndex, setZIndex ] = useState(0)
-  const [ list, setList ] = useState(courseUser?.inList)
   const {listCourse, setListCourse} = useContext( CourseListContext )
+  const {userCtx, setUserCtx} = useContext( UserContext )
+
+  useEffect(() => {
+    setCourseUser(userCtx?.courses[courseIndex])
+  }, [userCtx])
 
   const addCourseToList = async () => {
     const config = {
@@ -73,10 +78,12 @@ function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
   const courseId = course?.id
   const userId = user?._id
     try {
-      setListCourse([...listCourse, course])
       notify('Agregado a la Lista', true, false)
       const { data } = await axios.put('/api/user/course/listCourse', { courseId, userId }, config)
-      setList(!list)
+      setListCourse([...listCourse, course])
+      console.log(data)
+      setUserCtx(data)
+
 
     } catch (error) {
       console.log(error)
@@ -89,41 +96,33 @@ function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
         "Content-Type": "application/json",
       },
   }
-  console.log(user)
   const courseId = course?.id
   const userId = user?._id
     try {
-      const { data } = await axios.put('/api/user/course/dislistCourse', { courseId, userId }, config)
-  
-      setListCourse([...listCourse.filter((value: CoursesDB) => value.id != course?.id)])
-  
       notify('Eliminado de la Lista', false, false)
-      setList(!list)
+      setListCourse([...listCourse.filter((value: CoursesDB) => value.id != course?.id)])
+      const { data } = await axios.put('/api/user/course/dislistCourse', { courseId, userId }, config)
+      setUserCtx(data)
+
     } catch (error) {
       
     }
 
 
   }
-
-
-
+  
   const handleOpen = () => {
     dispatch(loadCourse());
     if(setSelectedCourse != null) setSelectedCourse(course)
   }
 
-  // const styles = {
-  //   zIndex: 1000,
-  // };
-
   return (
-    <div onClick={handleOpen} onMouseEnter={(e) => setZIndex(1000)} onMouseLeave={() => {
+    <div onMouseEnter={(e) => setZIndex(1000)} onMouseLeave={() => {
       setTimeout(() => {
         setZIndex(0)
       }, 500)
       return
-    }} style={{zIndex: zIndex}} className={`group/item relative h-28 min-w-[180px] cursor-pointer transition duration-1000 ease-out md:h-36 md:min-w-[260px] md:hover:scale-105 overflow-visible`}>
+    }} style={{zIndex: zIndex}} className={`group/item relative h-60 min-w-[350px] cursor-pointer transition duration-1000 ease-out md:h-36 md:min-w-[260px] md:hover:scale-105 overflow-visible`}>
         <CldImage 
             src={course?.image_url} 
             preserveTransformations
@@ -174,7 +173,7 @@ function Thumbnail({ course, setSelectedCourse , user, courseIndex}: Props) {
 />
                   </div>
                   <div className="cursor-pointer w-4 h-4 lg:w-6 lg:h-6 bg-transparent border-white  border rounded-full flex justify-center items-center transition  ml-2">
-                    {!list ? (
+                    {!userCtx?.courses[courseIndex].inList ? (
                       <MdAdd className=" text-white w-4 h-4 lg:w-4 lg:h-4" onClick={() => addCourseToList()}/>
                     ) : (
                       <MdRemove className=" text-white w-4 h-4 lg:w-4 lg:h-4" onClick={() => removeCourseToList()}/>

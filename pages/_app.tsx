@@ -8,9 +8,10 @@ import { Provider } from "react-redux";
 import { wrapper } from "../redux/store";
 import { CourseListContext } from "../hooks/courseListContext";
 import { useMemo, useRef, useState } from "react";
-import { CoursesDB } from "../typings";
+import { CoursesDB, User } from "../typings";
 import { Poppins } from "@next/font/google";
 import { CoursesContext } from "../hooks/coursesContext";
+import { UserContext } from "../hooks/userContext";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -20,6 +21,7 @@ const poppins = Poppins({
 function App({ Component, ...rest }: AppProps) {
   const [listCourse, setListCourse] = useState<CoursesDB[]>([]);
   const [courses, setCourses] = useState<CoursesDB[]>([]);
+  const [userCtx, setUserCtx] = useState<User | null>(null);
 
   const providerValue = useMemo(
     () => ({ listCourse, setListCourse }),
@@ -28,6 +30,10 @@ function App({ Component, ...rest }: AppProps) {
   const coursesProviderValue = useMemo(
     () => ({ courses, setCourses }),
     [courses, setCourses]
+  );
+  const userProviderValue = useMemo(
+    () => ({ userCtx, setUserCtx }),
+    [userCtx, setUserCtx]
   );
 
   const { store, props } = wrapper.useWrappedStore(rest);
@@ -41,9 +47,11 @@ function App({ Component, ...rest }: AppProps) {
         <Provider store={store}>
           <CourseListContext.Provider value={providerValue}>
             <CoursesContext.Provider value={coursesProviderValue}>
-              <NextNProgress color="#c2c9d2" />
-              <ToastContainer />
-              <Component {...pageProps} />
+              <UserContext.Provider value={userProviderValue}>
+                <NextNProgress color="#c2c9d2" />
+                <ToastContainer />
+                <Component {...pageProps} />
+              </UserContext.Provider>
             </CoursesContext.Provider>
           </CourseListContext.Provider>
         </Provider>

@@ -72,8 +72,8 @@ const AdmimDashboardLayout = ({ children }: Props) => {
         >
           <AdminDashboardSideBar/>
       </Transition>
-      <main className={`bg-gray-700 rounded-sm h-screen pt-16 transition-all duration-[400ms] ${showNav && !isMobile ? 'pl-56' : ''}`}>
-        <div className="flex flex-col justify-center items-center px-4 md:px-16 rounded-sm">
+      <main className={`bg-gray-700 rounded-sm h-full pt-16 transition-all duration-[400ms] ${showNav && !isMobile ? 'pl-56' : ''}`}>
+        <div className="flex flex-col justify-center items-center px-4 md:px-16 rounded-sm h-full w-full">
           {children}
         </div>
       </main>

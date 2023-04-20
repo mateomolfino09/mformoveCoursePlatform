@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import imageLoader from '../imageLoader'
 import { AiOutlineCheckCircle } from 'react-icons/ai'
 import { genders } from '../constants/genders'
@@ -30,11 +30,29 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
     const [lastname, setLastname] = useState('')
     const [gender, setGender] = useState('')
     const [country, setCountry] = useState('')
+    const [capsLock, setCapsLock] = useState<boolean>(false)
+
+    useEffect(() => {
+        if(typeof window != undefined && document != undefined) {
+          document.addEventListener("keydown", testCapsLock);
+          document.addEventListener("keyup", testCapsLock);      }
+      }, [])
+  
+      
+      function testCapsLock(event: any) {
+        if(event.code === "CapsLock"){
+            let isCapsLockOn = event.getModifierState("CapsLock");
+            if(isCapsLockOn) {
+                setCapsLock(true)
+            } else {
+              setCapsLock(false)
+            }
+        }
+    }
 
     const handleClick = () => {
         if(firstname == '' || lastname == '' || gender == '' ||  country == '' || firstname.length <= 2 || lastname.length <= 2) {
             toast.error('Hay un error en los datos que ingresó, rellene todos los campos o vuelva a intentar')
-            console.log('hola')
         } else {
             setData(firstname, lastname, gender, country)
             step1ToStep2()

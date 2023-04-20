@@ -219,14 +219,13 @@ function Register() {
 
         {registered && !loading && (
             <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
-                <Image
-                    src="https://rb.gy/p2hphi"
-                    layout="fill"
-                    className="-z-10 !hidden opacity-60 sm:!inline"
-                    objectFit="cover"
-                    alt='icon image'
-                    loader={imageLoader}
-                />
+              <Image 
+                  src="/images/bgIndex2.jpg"
+                  layout="fill"
+                  className="-z-10 !hidden opacity-50 sm:!inline"
+                  objectFit="cover"
+                  alt='icon image'
+                  loader={imageLoader}/>
                     {/* Logo position */}
                 <img
                     src="/images/logo.png"

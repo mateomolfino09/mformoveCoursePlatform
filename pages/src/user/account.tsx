@@ -12,6 +12,9 @@ import cookie from "js-cookie";
 import axios from 'axios';
 import { User } from '../../../typings';
 import Membership from '../../../components/Membership';
+import { AiOutlineUser } from 'react-icons/ai';
+import { VideoCameraIcon } from '@heroicons/react/24/solid';
+import { FaHistory } from 'react-icons/fa';
 
 const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"
@@ -68,6 +71,8 @@ function Account() {
     router.push("/src/user/login");
     };
 
+    const cantCourses = userDB?.courses.length
+
   return (
     <div>
         <Head>
@@ -86,20 +91,16 @@ function Account() {
           />
         </Link>
         <Link href="/src/user/account">
-          <img
-            src="https://rb.gy/g1pwyx"
-            alt=""
-            className="cursor-pointer rounded"
-            // onClick={() => logoutHandler()}
-          />
+        <AiOutlineUser className="h-6 w-6 cursor-pointer"/>
+
         </Link>
       </header>
 
       <main className='mx-auto max-w-6xl pt-24 px-5 pb-12 transition-all md:px-10 '>
         <div className='flex flex-col gap-x-4 md:flex-row md:items-center'>
             <h1 className='text-3xl md:text-4xl'>Cuenta</h1>
-            <div className='-ml-0.5 flex items-center gap-x-1.5'>
-                <img src="https://rb.gy/4vfk4r" alt="" className='h-7 w-7'/>
+            <div className='flex items-center gap-x-1.5'>
+                <FaHistory className='h-4 w-4 '/>
                 <p className='text-xs font-semibold text=[#5555]'>Miembro desde el {userDB?.createdAt && new Date(userDB?.createdAt).getDate().toString()} de  {userDB?.createdAt && monthNames[new Date(userDB?.createdAt).getMonth()]} del {userDB?.createdAt && new Date(userDB?.createdAt).getFullYear().toString()} </p>
 
             </div>
@@ -115,14 +116,17 @@ function Account() {
                 (product) => product.id === subscription?.product
               )[0]?.name
             } */}
-            Basic
+            Cuentas con una cantidad de {cantCourses} cursos
           </div>
+          <Link href={'/src/user/profile/myCourses'}>
           <p
             className="cursor-pointer text-blue-500 hover:underline md:text-right"
             // onClick={goToBillingPortal}
           >
-            Cambiar plan
+            Detalles de Cursos
           </p>
+          
+          </Link>
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-x-4 border px-4 py-4 md:grid-cols-4 md:border-x-0 md:border-t md:border-b-0 md:px-0">

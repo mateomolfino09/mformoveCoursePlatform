@@ -9,6 +9,7 @@ import { State } from "../redux/reducers"
 import { Courses, Ricks, CoursesDB, Item, User } from "../typings"
 import CourseThumbnail from "./CourseThumbnail"
 import Thumbnail from "./Thumbnail"
+import { motion as m } from "framer-motion"
 
 interface Props {
     title: string | null,
@@ -53,16 +54,16 @@ function Row({ title, coursesDB, setSelectedCourse, items, courseDB, actualCours
 
 
     return (
-        <div className="h-48 lg:h-56 space-y-0.5 md:space-y-2 w-full" ref={listRef}>
+        <div className="h-80 lg:h-80 space-y-0.5 md:space-y-2 w-full !mb-12 py-8" ref={rowRef}>
                 {!activeModal && !isClass ? (
                     <>
-                        <h2 className="w-56 relative -top-20 md:top-2 lg:top-8 cursor-pointer text-sm font-semibold text-[#E5E5E5] transition duration-200 hover:text-white md:text-2xl" >{title}</h2>
-          <div className="group relative md:-ml-2 lg:-top-20">
+                        <h2 className="w-56 md:ml-4 relative cursor-pointer text-lg font-semibold text-[#E5E5E5] transition duration-200 hover:text-white md:text-2xl mb-4 ml-1" >{title}</h2>
+                        <div className="group block md:-ml-2">
                             <ChevronLeftIcon className={`ScrollIcon left-2 ${!isMoved && 'hidden'}`}  onClick={() => handleClick("left")}/>
-                            <div ref={rowRef} className="h-42 lg:h-72 lg:pb-0 scrollbar-hide flex items-end -top-16 md:-top-0 space-x-0 overflow-y-hidden overflow-x-scroll md:space-x-2.5 md:p-2 relative">  
-              {coursesDB?.map((course: CoursesDB) => (
+                            <div className="h-42 lg:h-72 lg:pb-0 scrollbar-hide flex items-center justify-start md:-top-0 space-x-0 overflow-y-hidden overflow-x-scroll md:space-x-2.5 md:p-2 relative">  
+                            {/* {coursesDB?.map((course: CoursesDB) => (
                                 <Thumbnail key={course?._id} course={course} setSelectedCourse={setSelectedCourse} user={user} courseIndex={course.id - 1}/>
-              ))}
+              ))} */}
             </div>
 
                 <ChevronRightIcon className={`ScrollIcon right-2`} onClick={() => handleClick("right")}/>

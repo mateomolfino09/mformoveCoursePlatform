@@ -19,6 +19,7 @@ import ReactPlayer from 'react-player'
 import { ClassContext } from '../../../../hooks/classContext'
 import { updateActualCourseSS } from '../../../api/user/updateActualCourseSS'
 import connectDB, { db } from '../../../../config/connectDB'
+import { AiOutlineUser } from 'react-icons/ai'
 
 interface Props {
   clase: ClassesDB
@@ -139,13 +140,8 @@ function Course({ clase, user }: Props) {
               className="cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-70 hover:opacity-90" 
             />
           </div>
-          <img
-            onClick={() => handleRouteChange('/src/user/account')}
-            src="https://rb.gy/g1pwyx"
-            alt=""
-            className="cursor-pointer rounded"
-            // onClick={() => logoutHandler()}
-          />
+          <AiOutlineUser className="h-6 w-6 cursor-pointer"/>
+
       </header>
 
       <main className='relative bg-gradient-to-b h-[100vh] flex flex-col'>

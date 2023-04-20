@@ -14,6 +14,7 @@ import { loadUser } from "../redux/user/userAction";
 import { State } from "../redux/reducers";
 import { useAppDispatch } from "../hooks/useTypeSelector";
 import { User } from "../typings";
+import { AiOutlineUser } from "react-icons/ai";
 
 const Header = ({
   scrollToList,
@@ -65,6 +66,16 @@ const Header = ({
     };
   }, [router]);
 
+  function scrollToHome() {
+    if (window) {
+      const y = 0;
+
+      window.scrollTo({ top: y, behavior: "smooth" });
+      return;
+      // return refToModa?.current.scrollIntoView({behavior: 'smooth'})
+    }
+  }
+
   return (
     <header className={`${isScrolled && "bg-[#141414]"}`}>
       <div className="flex items-center space-x-2 md:space-x-10">
@@ -79,9 +90,9 @@ const Header = ({
         </Link>
 
         <ul className="hidden space-x-4 md:flex">
-          <Link href={"/src/home"}>
-            <li className="headerLink">Home</li>
-          </Link>
+          <li className="headerLink" onClick={scrollToHome}>
+            Home
+          </li>
           {scrollToModa != null ? (
             <li onClick={scrollToModa} className="headerLink">
               Cursos
@@ -133,11 +144,7 @@ const Header = ({
         <BellIcon className="h-6 w-6 cursor-pointer" />
         {/* <Link href="/account"> */}
         <Link href={"user/account"}>
-          <img
-            src="https://rb.gy/g1pwyx"
-            alt=""
-            className="cursor-pointer rounded"
-          />
+          <AiOutlineUser className="h-6 w-6 cursor-pointer" />
         </Link>
 
         {/* </Link> */}
