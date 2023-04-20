@@ -63,43 +63,48 @@ const createCourse = async (req, res) => {
 
       for (let index = 0; index < items.length; index++) {
         const item = items[index];
-        const videoId = item.snippet.resourceId.videoId;
-        const singleYoutubeURL = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`;
-        let data = await fetch(singleYoutubeURL);
-        let singleItem = await data.json();
-        let durationISO = singleItem.items[0]?.contentDetails.duration;
-        console.log(durationISO)
-        let seg = 0;
+        console.log(item.snippet.title)
 
+        if(item.snippet.title !== 'Private video') {
+          const videoId = item.snippet.resourceId.videoId;
+          const singleYoutubeURL = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`;
+          let data = await fetch(singleYoutubeURL);
+          let singleItem = await data.json();
+          let durationISO = singleItem.items[0]?.contentDetails.duration;
+          console.log(durationISO)
+          let seg = 0;
+  
+  
+          if (durationISO && durationISO.includes("PT") && !durationISO.includes("H")) {
+            const indexPT = durationISO.indexOf("T");
+            const indexMin = durationISO.indexOf("M");
+            const indexSeg = durationISO.indexOf("S");
+  
+            const min = +durationISO.substring(indexPT + 1, indexMin);
+            seg = +durationISO.substring(indexMin + 1, indexSeg);
+            seg = min * 60 + seg;
+          }
+  
+          const newClass = await new Classes({
+            id: index + 1,
+            name: item.snippet.title,
+            class_code: item.snippet.resourceId.videoId,
+            image_url: item.snippet.thumbnails.standard.url,
+            totalTime: seg,
+            course: newCourse,
+          }).save();
+  
+          newCourse.classes.push(newClass);
+          await newCourse.save();
+  
+          userClass.push({
+            class: newClass,
+            id: newClass.id,
+            actualTime: 0,
+            like: false,
+          });
 
-        if (durationISO && durationISO.includes("PT") && !durationISO.includes("H")) {
-          const indexPT = durationISO.indexOf("T");
-          const indexMin = durationISO.indexOf("M");
-          const indexSeg = durationISO.indexOf("S");
-
-          const min = +durationISO.substring(indexPT + 1, indexMin);
-          seg = +durationISO.substring(indexMin + 1, indexSeg);
-          seg = min * 60 + seg;
         }
-
-        const newClass = await new Classes({
-          id: index + 1,
-          name: item.snippet.title,
-          class_code: item.snippet.resourceId.videoId,
-          image_url: item.snippet.thumbnails.standard.url,
-          totalTime: seg,
-          course: newCourse,
-        }).save();
-
-        newCourse.classes.push(newClass);
-        await newCourse.save();
-
-        userClass.push({
-          class: newClass,
-          id: newClass.id,
-          actualTime: 0,
-          like: false,
-        });
       }
 
       //Agrego curso a Usuarios

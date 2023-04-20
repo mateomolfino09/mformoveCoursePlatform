@@ -94,7 +94,7 @@ const Header = ({ scrollToList, scrollToModa, scrollToNuevo, scrollToMy, dbUser 
       { user?.rol === 'Admin' ? (
             <>
             <Link href={'/src/admin'}>
-              <Cog8ToothIcon className="hidden h-6 w-6 sm:inline cursor-pointer" />
+              <Cog8ToothIcon className="h-6 w-6 inline cursor-pointer" />
             </Link>
             </>
           ) : null

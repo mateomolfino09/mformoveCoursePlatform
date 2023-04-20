@@ -17,6 +17,8 @@ import { UserContext } from "../../../hooks/userContext";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import Select, { StylesConfig, components } from 'react-select'
 import { currency } from '../../../constants/currency'
+import { RxCrossCircled } from 'react-icons/rx'
+import { AiOutlineCheckCircle } from "react-icons/ai";
 
 
 interface User {
@@ -70,7 +72,7 @@ const CreateCourse = ({ user }: Props) => {
     const [currencys, setCurrency] = useState<string>('$')
     const [userCtx, setUserCtx] = useState<User>(user)
     const [loading, setLoading] = useState<boolean>(false)
-
+    const [descriptionLength, setDescriptionLength] = useState<number>(description.length)
     const providerValue = useMemo(() => ({userCtx, setUserCtx}), [userCtx, setUserCtx])
   
     const { getRootProps, getInputProps }: any = useDropzone({
@@ -93,6 +95,10 @@ const CreateCourse = ({ user }: Props) => {
           router.push("/src/user/login")
       }
     }, [session, router])
+
+    useEffect(() => {
+      console.log(descriptionLength)
+    }, [descriptionLength])
 
 
 
@@ -272,11 +278,22 @@ const CreateCourse = ({ user }: Props) => {
                       <textarea
                       placeholder='Descripción' 
                       className='input'
-                      onChange={e => setDescription(e.target.value)}
+                      onChange={e => {
+                        setDescriptionLength(e.target.value.length)
+                        setDescription(e.target.value)
+                      }}
                       />
                       </label>
+                      <div className="flex flex-row justify-center items-center space-x-2">
 
-                      <p className="font-light text-xs text-[gray]">Largo mínimo 30 caracteres</p>
+                      <p className="font-light text-xs text-[gray]">Largo mínimo 30 caracteres </p>
+                      {descriptionLength <= 30 ? (
+
+                        <RxCrossCircled className="text-xs text-red-600"/>
+                      ) : (
+                        <AiOutlineCheckCircle className="text-xs text-green-600"/>
+                      )}
+                      </div>
 
                   </div>
                   <div className="flex flex-row space-x-2 justify-center items-start">
@@ -286,11 +303,27 @@ const CreateCourse = ({ user }: Props) => {
                       className='input'
                       key={'price'}
                       autoComplete="off"
-                      value={price ? price : 0}
-                      onChange={e => setPrice(+e.target.value)}
+                      onChange={e => {
+                        +e.target.value < 0 ? null : setPrice(+e.target.value)
+                       
+                      }}
+                      min={0}
+                      step={1}
+                      value={price ? price : undefined}
+                      onKeyDown={(e) => e.key === '-' ? e.preventDefault() : null}
                       />
                     </label>
-                    <Select 
+                  <label className='inline-block w-full'>
+                      <input type="text"
+                      placeholder='Moneda' 
+                      className='input'
+                      key={'price'}
+                      autoComplete="off"
+                      value={'$'}
+                      readOnly
+                      />
+                    </label>
+                    {/* <Select 
                     options={currency} 
                     styles={colourStyles}
                     placeholder={currencys || '$'}
@@ -300,7 +333,7 @@ const CreateCourse = ({ user }: Props) => {
                     onChange={e => { 
                     return setCurrency(e.label)
                     }}
-                    onKeyDown={keyDownHandler}/>
+                    onKeyDown={keyDownHandler}/> */}
                   </div>
 
                   <label className='inline-block w-full'>

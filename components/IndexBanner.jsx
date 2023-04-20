@@ -52,6 +52,7 @@ function Banner() {
         cloudName={process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
         publicId="pexels-tima-miroshnichenko-6068292-3840x2160-25fps_znl04z"
         autoPlay loop muted={!snap.volumeIndex}
+        controls={false}
         className='object-cover h-full w-full'
       />
 

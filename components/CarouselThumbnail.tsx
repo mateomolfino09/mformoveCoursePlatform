@@ -82,7 +82,6 @@ function CarouselThumbnail({ course, setSelectedCourse , user, courseIndex}: Pro
       notify('Agregado a la Lista', true, false)
       const { data } = await axios.put('/api/user/course/listCourse', { courseId, userId }, config)
       setListCourse([...listCourse, course])
-      console.log(data)
       setUserCtx(data)
 
 
@@ -138,7 +137,7 @@ function CarouselThumbnail({ course, setSelectedCourse , user, courseIndex}: Pro
 />
                   </div>
                   <div className="cursor-pointer w-8 h-8 bg-transparent border-white  border rounded-full flex justify-center items-center transition  ml-2">
-                    {!userCtx?.courses[courseIndex].inList ? (
+                    {!userCtx?.courses[courseIndex]?.inList ? (
                       <MdAdd className=" text-white w-6 h-6" onClick={() => addCourseToList()}/>
                     ) : (
                       <MdRemove className=" text-white w-6 h-6" onClick={() => removeCourseToList()}/>

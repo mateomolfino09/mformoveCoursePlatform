@@ -34,7 +34,6 @@ const PaymentGateway = ({ user, course }: Props) => {
 
     const handleClick = () => {
       state.intro = false
-      console.log(state, snap)
     }
     //obtengo el preferenceId
     useEffect(() => {
@@ -44,7 +43,6 @@ const PaymentGateway = ({ user, course }: Props) => {
         },
       }
       axios.post('/api/course/payments/userPurchase', { email, courseId }, config).then((data: any) => {
-      console.log(data.data.data)
       setInitPoint(data.data.data.init_point)
       // setPreferenceId(data.data.id)
     }); 
@@ -52,7 +50,6 @@ const PaymentGateway = ({ user, course }: Props) => {
 
 
     useEffect(() => {
-      console.log(preferenceId)
       if(preferenceId) {
         handlScriptAdd(preferenceId)
       }
@@ -64,7 +61,6 @@ const PaymentGateway = ({ user, course }: Props) => {
 
 
     const handlScriptAdd = (preferenceId: any) => {
-      console.log(preferenceId)
       const script = document.createElement('script');
       script.type = 'text/javascript';
       script.src =

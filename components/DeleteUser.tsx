@@ -7,7 +7,6 @@ const DeleteUser = ({ isOpen, setIsOpen, email }: any) => {
   }
   async function handleSubmit(userId: any) {
     const response = await axios.delete(`../../api/user/deleteUser/${userId}`);
-    console.log(response.data);
   }
   return (
     <>
