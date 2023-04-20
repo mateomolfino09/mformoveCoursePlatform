@@ -93,20 +93,7 @@ const EditUser = ({ user }: Props) => {
       router.push("/src/user/login");
     }
   }, [session, router]);
-  const test = [
-    {
-      name: "test1",
-      inList: false,
-      like: true,
-      purchased: true,
-    },
-    {
-      name: "test2",
-      inList: false,
-      like: true,
-      purchased: false,
-    },
-  ];
+
   useEffect(() => {
     const getUserDB = async () => {
       try {
