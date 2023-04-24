@@ -179,7 +179,7 @@ export interface CourseUser {
   inList: Boolean;
   actualChapter: number;
   actualTime: number;
-  purchased: Boolean;
+  purchased: Boolean | string;
   classes: [ClassesUser];
 }
 
@@ -212,6 +212,7 @@ export interface CoursesDB {
   price: number;
   currency: string;
   created_by: User;
+  index: number;
 }
 
 export interface ClassesDB {

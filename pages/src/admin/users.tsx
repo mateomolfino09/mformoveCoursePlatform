@@ -75,7 +75,6 @@ const ShowUsers = ({ users, user }: Props) => {
   function openEdit(user: User) {
     setUserSelected(user);
   }
-  console.log(userSelected._id);
   return (
     <UserContext.Provider value={providerValue}>
       <AdmimDashboardLayout>

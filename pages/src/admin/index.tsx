@@ -1,23 +1,26 @@
-import { getSession } from 'next-auth/react'
-import { useRouter } from 'next/router'
-import { parseCookies } from 'nookies'
-import React, { useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
-import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout'  
-import { UserContext } from '../../../hooks/userContext'
-import { State } from '../../../redux/reducers'
-import { User } from '../../../typings'
-import { getUserFromBack } from '../../api/user/getUserFromBack'
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { parseCookies } from "nookies";
+import React, { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import AdmimDashboardLayout from "../../../components/AdmimDashboardLayout";
+import { UserContext } from "../../../hooks/userContext";
+import { State } from "../../../redux/reducers";
+import { User } from "../../../typings";
+import { getUserFromBack } from "../../api/user/getUserFromBack";
 
 interface Props {
-  user: User 
+  user: User;
 }
 
 const Index = ({ user }: Props) => {
-  const [userCtx, setUserCtx] = useState<User>(user)
-  const router = useRouter()
+  const [userCtx, setUserCtx] = useState<User>(user);
+  const router = useRouter();
 
-  const providerValue = useMemo(() => ({userCtx, setUserCtx}), [userCtx, setUserCtx])
+  const providerValue = useMemo(
+    () => ({ userCtx, setUserCtx }),
+    [userCtx, setUserCtx]
+  );
 
   if (user === null || user.rol != "Admin") {
     router.push("/src/user/login");
@@ -26,8 +29,10 @@ const Index = ({ user }: Props) => {
   return (
     <UserContext.Provider value={providerValue}>
       <AdmimDashboardLayout>
-        <div className='bg-gray-700 w-full'>
-          <p className="text-white text-3xl my-12 font-bold">Bienvenido al Dashboard</p>
+        <div className="bg-gray-700 h-full w-full">
+          <p className="text-white text-3xl my-12 font-bold">
+            Bienvenido al Dashboard
+          </p>
 
           <div className="grid lg:grid-cols-3 gap-5 mb-16">
             <div className="rounded bg-gray-500 h-40 shadow-sm"></div>
@@ -37,24 +42,23 @@ const Index = ({ user }: Props) => {
           <div className="grid col-1 bg-gray-500 h-96 shadow-sm"></div>
         </div>
       </AdmimDashboardLayout>
-  </UserContext.Provider>
-
-  )
-}
+    </UserContext.Provider>
+  );
+};
 
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context
-  const session = await getSession({ req })
-    // Get a cookie
-  const cookies = parseCookies(context)
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
-  const email = userCookie.email 
+  const { params, query, req, res } = context;
+  const session = await getSession({ req });
+  // Get a cookie
+  const cookies = parseCookies(context);
+  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
+  const email = userCookie.email;
 
-  const user = await getUserFromBack(email)
+  const user = await getUserFromBack(email);
 
   return {
-    props: { user  }
-  }
-} 
+    props: { user },
+  };
+}
 
-export default Index
+export default Index;

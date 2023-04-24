@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   const userId = req.query.updateUser;
   const { firstname, lastname, email, gender, country, rol, courses } =
     req.body;
-  console.log(courses);
+
   const fullName = firstname + " " + lastname;
   try {
     if (req.method === "PATCH") {
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
         courses: courses,
       });
     }
-    console.log("funciona");
+
     res.status(200).json({ message: "Product updated" });
   } catch (error) {
     return res.status(404).json({ error });

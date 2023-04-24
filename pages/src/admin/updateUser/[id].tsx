@@ -1,26 +1,22 @@
 import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
-import Image from "next/image";
 import Link from "next/link";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { parseCookies } from "nookies";
-import { Accept, useDropzone } from "react-dropzone";
 import { toast } from "react-toastify";
-import { ArrowUpTrayIcon, DocumentIcon } from "@heroicons/react/24/outline";
 import Select, { StylesConfig } from "react-select";
 import { genders } from "../../../../constants/genders";
 import { countries } from "../../../../constants/countries";
 import { rols } from "../../../../constants/rols";
 import { purchased } from "../../../../constants/purchased";
-import { loadUser } from "../../../api/user/loadUser";
-import requests from "../../../../utils/requests";
 import AdmimDashboardLayout from "../../../../components/AdmimDashboardLayout";
 import { getUserFromBack } from "../../../api/user/getUserFromBack";
 import { UserContext } from "../../../../hooks/userContext";
 import { User } from "../../../../typings";
-import { ChangeEvent } from "react";
+import { CourseUser } from "../../../../typings";
+import { LoadingSpinner } from "../../../../components/LoadingSpinner";
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -38,34 +34,8 @@ const colourStyles: StylesConfig<any> = {
   singleValue: (styles, { data }) => ({ ...styles, color: "#808080" }),
 };
 
-// interface User {
-//   id: number;
-//   name: string;
-//   rol: string;
-//   email: string;
-//   password: string;
-// }
-
-// interface ProfileUser {
-//   user: User | null;
-//   loading: boolean;
-//   error: any;
-// }
-
-// interface Props {
-//   user: User;
-//   session: User;
-// }
-
 interface Props {
   user: User;
-}
-interface Course {
-  _id: string;
-  name: string;
-  inList: boolean;
-  like: boolean;
-  purchased: boolean | string;
 }
 
 const EditUser = ({ user }: Props) => {
@@ -81,7 +51,8 @@ const EditUser = ({ user }: Props) => {
   const [gender, setGender] = useState("");
   const [country, setCountry] = useState("");
   const [rol, setRol] = useState("");
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<CourseUser[]>([]);
+  const [courseName, setCourseName] = useState<string[]>([]);
 
   const providerValue = useMemo(
     () => ({ userCtx, setUserCtx }),
@@ -109,21 +80,40 @@ const EditUser = ({ user }: Props) => {
         const last = completeName.slice(1).join(" ");
         setFirstname(name);
         setLastname(last);
-        setUserDB(data);
         setEmail(data.email);
         setGender(data.gender);
         setCountry(data.country);
         setRol(data.rol);
-
         setCourses(data.courses);
+        setUserDB(data);
       } catch (error: any) {
         console.log(error.message);
       }
     };
-
     getUserDB();
   }, [router, session]);
-
+  useEffect(() => {
+    const getCourses = async () => {
+      try {
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+        const courseArray = await Promise.all(
+          courses.map((course) =>
+            axios.get(`/api/course/${course.course}`, config).then((res) => {
+              return res.data.name;
+            })
+          )
+        );
+        setCourseName(courseArray);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getCourses();
+  }, [courses]);
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     try {
@@ -148,14 +138,15 @@ const EditUser = ({ user }: Props) => {
         );
         if (response) {
           router.push("/src/admin/users");
+          toast.success(
+            `${firstname + " " + lastname} fue editado correctamente`
+          );
         }
       }
     } catch (error) {
       console.log(error);
     }
   };
-  console.log(userDB);
-  console.log(userDB?.courses);
 
   function handleInputChange(event: any, index: number) {
     const str = event.label;
@@ -174,11 +165,12 @@ const EditUser = ({ user }: Props) => {
       return updatedCourses;
     });
   }
+
   return (
-    userDB && (
-      <UserContext.Provider value={providerValue}>
-        <AdmimDashboardLayout>
-          <div className="relative flex w-full flex-col bg-black md:items-center md:justify-center md:bg-transparent">
+    <UserContext.Provider value={providerValue}>
+      <AdmimDashboardLayout>
+        {userDB ? (
+          <div className="relative flex w-full flex-col bg-black md:items-center md:justify-center md:bg-transparent min-h-screen">
             <Head>
               <title>Video Streaming</title>
               <meta name="description" content="Stream Video App" />
@@ -251,8 +243,9 @@ const EditUser = ({ user }: Props) => {
                     {courses.map((course, index) => (
                       <div key={index}>
                         <label className="inline-block w-full ">
-                          ID del curso: {course._id}
+                          {courseName[index]}
                         </label>
+
                         <Select
                           options={purchased}
                           styles={colourStyles}
@@ -281,7 +274,6 @@ const EditUser = ({ user }: Props) => {
                       className=" w-52"
                       placeholder={"País"}
                       defaultInputValue={country}
-                      value={country}
                       onChange={(e) => {
                         return setCountry(e.label);
                       }}
@@ -308,9 +300,16 @@ const EditUser = ({ user }: Props) => {
               </form>
             </div>
           </div>
-        </AdmimDashboardLayout>
-      </UserContext.Provider>
-    )
+        ) : (
+          <div className="md:h-[100vh] w-full flex flex-col justify-center items-center">
+            <LoadingSpinner />
+            <p className="font-light text-xs text-[gray] mt-4">
+              Esto puede demorar unos segundos...
+            </p>
+          </div>
+        )}
+      </AdmimDashboardLayout>
+    </UserContext.Provider>
   );
 };
 
