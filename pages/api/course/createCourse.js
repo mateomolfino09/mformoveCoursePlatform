@@ -34,7 +34,7 @@ const createCourse = async (req, res) => {
             error: "Este usuario no tiene permisos para crear un curso",
           });
       }
-      else if(!user.admin.active) user?.admin.active = true
+      user.admin.active = true
 
       //Busco ultimo curso
 
