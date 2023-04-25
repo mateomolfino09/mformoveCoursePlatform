@@ -13,14 +13,17 @@ import Link from 'next/link'
 
 
 interface Props {
-  user: User 
+  user: User;
 }
 
 const Index = ({ user }: Props) => {
-  const [userCtx, setUserCtx] = useState<User>(user)
-  const router = useRouter()
+  const [userCtx, setUserCtx] = useState<User>(user);
+  const router = useRouter();
 
-  const providerValue = useMemo(() => ({userCtx, setUserCtx}), [userCtx, setUserCtx])
+  const providerValue = useMemo(
+    () => ({ userCtx, setUserCtx }),
+    [userCtx, setUserCtx]
+  );
 
   if (user === null || user.rol != "Admin") {
     router.push("/src/user/login");
@@ -55,24 +58,23 @@ const Index = ({ user }: Props) => {
           <div className="grid col-1 bg-gray-500 h-96 shadow-sm"></div>
         </div>
       </AdmimDashboardLayout>
-  </UserContext.Provider>
-
-  )
-}
+    </UserContext.Provider>
+  );
+};
 
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context
-  const session = await getSession({ req })
-    // Get a cookie
-  const cookies = parseCookies(context)
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
-  const email = userCookie.email 
+  const { params, query, req, res } = context;
+  const session = await getSession({ req });
+  // Get a cookie
+  const cookies = parseCookies(context);
+  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
+  const email = userCookie.email;
 
-  const user = await getUserFromBack(email)
+  const user = await getUserFromBack(email);
 
   return {
-    props: { user  }
-  }
-} 
+    props: { user },
+  };
+}
 
-export default Index
+export default Index;

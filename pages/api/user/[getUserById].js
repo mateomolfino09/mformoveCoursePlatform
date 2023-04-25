@@ -5,12 +5,11 @@ import { ConnectionPoolClosedEvent } from "mongodb";
 
 connectDB();
 
-const getUser = async (req, res) => {
+const getUserById = async (req, res) => {
   try {
-    if (req.method === "POST") {
-      const { email } = req.body;
-      const user = await User.findOne({ email: email }).lean().exec();
-      user.password = undefined;
+    if (req.method === "GET") {
+      const id = req.query.getUserById;
+      const user = await User.findOne({ _id: id });
       return res.status(200).send(user);
     }
   } catch (err) {
@@ -18,4 +17,4 @@ const getUser = async (req, res) => {
   }
 };
 
-export default getUser;
+export default getUserById;
