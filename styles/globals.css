@@ -244,7 +244,7 @@
   }
 
   .cldImage {
-    @apply w-full h-full rounded-t-xl pointer-events-none
+    @apply w-full h-[20rem] md:h-[25rem] rounded-t-xl pointer-events-none 
   }
 
   .inner-carousel {

@@ -21,9 +21,6 @@ const token = async (req, res) => {
         return res.status(200).json({ message: "no Token" })
       }
 
-      console.log('hola2')
-
-
       const user = await User.findById(req.user._id)
 
       if (user && user.validEmail != "yes" ) {
@@ -31,6 +28,25 @@ const token = async (req, res) => {
         user.emailToken = undefined
         user.courses = [];
         let userClass = [];
+
+        user.notifications.push({
+          title: 'Usuario creado',
+          message: `¡Te damos la bienvenida a Lavis Academy ${user.name}!`,
+          status: 'green'
+        })
+
+        const adminUsers = await User.find({
+          rol: 'Admin'
+        })
+        adminUsers.forEach(async (user) => {
+          user.notifications.push({
+            title: 'Usuario creado',
+            message: `¡Le damos la bienvenida a ${user.name} a Lavis Academy!`,
+            status: 'green'
+          })
+          await user.save()
+
+        })
 
 
         courses.forEach(course => {

@@ -96,12 +96,6 @@ const CreateCourse = ({ user }: Props) => {
       }
     }, [session, router])
 
-    useEffect(() => {
-      console.log(descriptionLength)
-    }, [descriptionLength])
-
-
-
   const keyDownHandler = (event:any) => {
       if (event.key === 'Enter') {
         event.preventDefault();

@@ -16,6 +16,7 @@ const update = async (req, res) => {
   try {
     if (req.method === "PUT") {
       const user = await User.findOne({ })
+      const adminUsers = await User.find({ rol: 'Admin' })
       const courses = await Courses.find({ })
 
       courses.forEach(course => {
@@ -23,6 +24,14 @@ const update = async (req, res) => {
       });
 
       user.update = update
+      adminUsers.forEach(async (admin) => {
+        admin.notifications.push({
+          title: 'Usuario actualizado',
+          message: `Has actualizado al usuario con exito`,
+          status: 'green'
+        })
+          await admin.save()
+      })
 
       const updatedUser = await user.save()
 

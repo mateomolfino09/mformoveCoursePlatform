@@ -32,7 +32,7 @@ const bookFeedbackSuccess = async (req, res) => {
     console.log(req.query)
     const user = await User.findOne({ email })
     const course = await Course.findOne({ id: courseId })
-
+    const adminUsers = await User.find({ rol: 'Admin' })
 
     const index = user.courses.findIndex((element) => {
       return element.course.valueOf() === course._id.valueOf()
@@ -41,8 +41,23 @@ const bookFeedbackSuccess = async (req, res) => {
     console.log(index)
   
     user.courses[index].purchased = true
+    
+    const noti = {
+      title: 'Curso adquirido con éxito',
+      message: '¡Ya puedes ver el curso!',
+      link:`src/courses/${course.id}/1`,
+      status: 'greens'
+    }
+    user.notifications.push(noti) 
 
-    console.log(user.courses[index].purchased, index, user.email)
+    adminUsers.forEach(async (admin) => {
+      admin.notifications.push({
+        title: 'Pago Concreteado',
+        message: `Pago concretado por ${user.name} de importe ${course.price}`,
+        status: 'green'
+      })
+      await admin.save()
+    })
 
     await user.save()
 

@@ -1,6 +1,6 @@
 import React, { forwardRef  } from 'react'
 import Link from 'next/link'
-import { HomeIcon, CreditCardIcon, UserIcon, PlusCircleIcon } from '@heroicons/react/24/solid'
+import { HomeIcon, CreditCardIcon, UserIcon, PlusCircleIcon, TableCellsIcon } from '@heroicons/react/24/solid'
 import { useRouter } from 'next/router'
 
 const AdminDashboardSideBar = forwardRef<HTMLInputElement>(({ showNav }: any, ref) => {
@@ -55,6 +55,18 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(({ showNav }: any, re
                 </div>
                 <div>
                   <p>Usuarios</p>
+                </div>
+            </div>
+        </Link>
+        <Link href={'/src/admin/courses'}>
+            <div className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+              router.pathname == "/src/admin/courses" ? 'bg-orange-100 text-orange-500' : 'text-gray-400 hover:bg-orange-100 hover:text-orange-500'
+            }`}>
+                <div className="mr-2">
+                  <TableCellsIcon className='h-5 w-5' />
+                </div>
+                <div>
+                  <p>Cursos</p>
                 </div>
             </div>
         </Link>

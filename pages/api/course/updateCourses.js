@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 import Courses from '../../../models/courseModel'
 import Classes from '../../../models/classModel'
 
-import Users from '../../../models/userModel'
+import User from '../../../models/userModel'
 import mongoose from 'mongoose'
 import connectDB from '../../../config/connectDB'
 import jwt from "jsonwebtoken"
@@ -42,6 +42,18 @@ const updateCourses =  async (req, res) => {
 
           }
         }
+        const adminUsers = await User.find({
+          rol: 'Admin'
+        })
+        adminUsers.forEach(async (user) => {
+          user.notifications.push({
+            title: 'Curso actualizado',
+            message: `Has actualizado los cursos con exito`,
+            status: 'green'
+          })
+          await user.save()
+        });
+
         return res.status(200).send({ message: 'hola'})
       } else {
         return res.status(401).json({ error: "Algo salio mal" })
@@ -50,23 +62,5 @@ const updateCourses =  async (req, res) => {
       console.log(err)
       return res.status(401).json({ error: "Algo salio mal" })  }
   }
-
-// export default async(req,res) => {
-//     try {
-//         if (req.method === "POST") {
-//             const courses = await Courses.find({})
-//             console.log(courses)
-
-//         //Existe?
-
-
-//             res.status(200).json({ message: 'Curso editado correctamente'})
-            
-//         }
-//       } catch (error) {
-//         console.log(error)
-
-//       }
-// }
 
 export default updateCourses

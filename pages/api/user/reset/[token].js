@@ -33,6 +33,11 @@ const token = async (req, res) => {
         user.password = await bcrypt.hash(password, 12)
 
         user.resetToken = undefined
+        user.notifications.push({
+          title: 'Password reseteada',
+          message: `Has cambiado tu contraseña con éxito.`,
+          status: 'green'
+        })
         await user.save()
 
         return res.status(200).json({ message: "Se ha actualizado tu contraseña con éxito!" })

@@ -27,15 +27,14 @@ const createCourse = async (req, res) => {
 
       //Es Admin?
 
-      if (user.rol !== "Admin") {
+      if (user.rol !== "Admin" || user?.admin.coursesAvailable <= 0) {
         return res
           .status(422)
           .json({
             error: "Este usuario no tiene permisos para crear un curso",
           });
       }
-
-      user.password = null
+      else if(user?.admin?.active == false) user?.admin.active = true
 
       //Busco ultimo curso
 
@@ -63,7 +62,6 @@ const createCourse = async (req, res) => {
 
       for (let index = 0; index < items.length; index++) {
         const item = items[index];
-        console.log(item.snippet.title)
 
         if(item.snippet.title !== 'Private video') {
           const videoId = item.snippet.resourceId.videoId;
@@ -107,6 +105,9 @@ const createCourse = async (req, res) => {
         }
       }
 
+      user.admin.coursesAvailable = user.admin.coursesAvailable - 1
+      await user.save()
+
       //Agrego curso a Usuarios
 
       users.forEach(async (user) => {
@@ -116,7 +117,11 @@ const createCourse = async (req, res) => {
           like: false,
           classes: userClass,
         });
-
+        user.notifications.push({
+          title: `${newCourse.name} ha sido creado con éxito`,
+          message: user.rol === 'Admin' ? 'Ya está disponibe para los usuarios' : '¡Ya está disponibe disponible en la tienda!',
+          status: 'green'
+        })
         //Optimizar
         await user.save();
       });

@@ -31,8 +31,26 @@ const bookFeedbackPending = async (req, res) =>{
     console.log(req.query)
     const user = await User.findOne({ email })
     const course = await Course.findOne({ id: courseId })
+    const adminUsers = await User.find({ rol: 'Admin' })
 
     const bill = await Bill.findOne({ payment_id })
+
+    const noti = {
+      title: 'Pago pendiente',
+      message: 'Debes esperar hasta que termine el pago para comenzar a disfrutar del curso',
+      link:`src/courses/purchase/${course.id}`,
+      status: 'yellow'
+    }
+    user.notifications.push(noti)
+    adminUsers.forEach(async (admin) => {
+      admin.notifications.push({
+        title: 'Pago Pendiente',
+        message: `Pago pendiente de ${user.name}`,
+        status: 'yellow'
+      })
+      await admin.save()
+    })
+    await user.save()
 
     if(bill) res.status(409).redirect(`/src/courses/purchase/duplicated/?courseId=${courseId}&email=${email}`)
     else {

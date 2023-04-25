@@ -30,11 +30,30 @@ const bookFeedbackFailure = async (req, res) => {
   try {
     console.log(req.query)
     const user = await User.findOne({ email })
+    const adminUsers = await User.find({ rol: 'Admin' })
     const course = await Course.findOne({ id: courseId })
     const bill = await Bill.findOne({ payment_id })
 
     if(bill) res.status(409).redirect(`/src/courses/purchase/duplicated/?courseId=${courseId}&email=${email}`)
     else {
+      const noti = {
+        title: 'Pago fallido',
+        message: 'Debes concretar el pago antes de comenzar a disfrutar del curso',
+        link:`src/courses/purchase/${course.id}`,
+        status: 'red'
+      }
+      user.notifications.push(noti) 
+      adminUsers.forEach(async (admin) => {
+        admin.notifications.push({
+          title: 'Pago fallido',
+          message: `Pago fallido de ${user.name}`,
+          link:`src/courses/${course.id}/1`,
+          status: 'red'
+        })
+        await admin.save()
+      })
+      await user.save()
+  
       const newBill = await new Bill({
         user,
         course,

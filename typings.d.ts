@@ -186,6 +186,21 @@ export interface CourseUser {
     classes: [ClassesUser]
 }
 
+export interface Notification {
+    title: string;
+    message: string;
+    status: string;
+    read: boolean
+    link: string
+
+  }
+export interface AdminUser {
+    active: Boolean;
+    coursesAvailable: number;
+
+
+  }
+
 export interface User {
     _id: number;
     name: string;
@@ -195,6 +210,8 @@ export interface User {
     rol: string;
     emailToken: string;
     courses: CourseUser[]
+    admin: AdminUser;
+    notifications: Notification[]
 
   }
 
@@ -237,6 +254,6 @@ export interface Bill {
     status: String
     processing_mode: String
     course: CoursesDB
-    User: User
+    user: User
     
 }

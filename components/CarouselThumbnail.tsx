@@ -68,6 +68,7 @@ function CarouselThumbnail({ course, setSelectedCourse , user, courseIndex}: Pro
 
   useEffect(() => {
     setCourseUser(userCtx?.courses[courseIndex])
+    console.log(userCtx?.courses[courseIndex]?.inList)
   }, [userCtx])
 
   const addCourseToList = async () => {
@@ -137,7 +138,7 @@ function CarouselThumbnail({ course, setSelectedCourse , user, courseIndex}: Pro
 />
                   </div>
                   <div className="cursor-pointer w-8 h-8 bg-transparent border-white  border rounded-full flex justify-center items-center transition  ml-2">
-                    {!userCtx?.courses[courseIndex]?.inList ? (
+                    {userCtx && !userCtx?.courses[courseIndex]?.inList ? (
                       <MdAdd className=" text-white w-6 h-6" onClick={() => addCourseToList()}/>
                     ) : (
                       <MdRemove className=" text-white w-6 h-6" onClick={() => removeCourseToList()}/>

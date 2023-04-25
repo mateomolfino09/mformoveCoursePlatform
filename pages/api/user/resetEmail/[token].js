@@ -28,6 +28,11 @@ const token = async (req, res) => {
         user.email = email
 
         user.resetToken = undefined
+        user.notifications.push({
+          title: 'Email reseteado',
+          message: `Has cambiado tu email con éxito.`,
+          status: 'green'
+        })
         await user.save()
 
         return res.status(200).json({ message: "Se ha actualizado tu email con éxito!" })
