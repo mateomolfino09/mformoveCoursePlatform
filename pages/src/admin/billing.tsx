@@ -93,7 +93,6 @@ const ShowUsers = ({ bills, user }: Props) => {
             </tbody>
           </table>
         </div>
-        <DeleteUser isOpen={isOpen} setIsOpen={setIsOpen} />
       </>
     </AdmimDashboardLayout>
     </UserContext.Provider>
