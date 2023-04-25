@@ -98,7 +98,6 @@ const MyCourses = ({ courses, user }: Props) => {
             </tbody>
           </table>
         </div>
-        <DeleteUser isOpen={isOpen} setIsOpen={setIsOpen} />
       </>
     </UserContext.Provider>
 
