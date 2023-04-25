@@ -173,6 +173,15 @@ export interface ClassesUser {
   actualTime: number;
 }
 
+export interface Notification {
+  title: string;
+  message: string;
+  status: string;
+  read: boolean
+  link: string
+
+}
+
 export interface CourseUser {
     course: string
     like: Boolean,

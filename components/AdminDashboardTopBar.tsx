@@ -79,7 +79,7 @@ const AdminDashboardTopBar = ({ showNav, setShowNav}: Props) => {
                   {userCtx?.notifications && notificationList.length > 0 ? (
                     <>
                     {notificationList.map((notification: Notification) => (
-                                        <div className="flex">
+                                        <div className="flex" key={notification.title}>
                                         <div className={`rounded-full shrink-0 ${notification.status === 'green' ? 'bg-green-200' : notification.status === 'red' ? 'bg-red-500' : 'bg-yellow-200'} h-8 w-8 flex items-center justify-center`}>
                                           <CheckIcon className={`h-4 w-4 `} />
                                         </div>
