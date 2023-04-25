@@ -150,7 +150,7 @@ const EditUser = ({ user }: Props) => {
 
   function handleInputChange(event: any, index: number) {
     const str = event.label;
-    let purchased: boolean | string;
+    let purchased: boolean;
     if (str === "true") {
       purchased = true;
     }
