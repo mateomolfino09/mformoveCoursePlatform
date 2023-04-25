@@ -193,8 +193,9 @@ export interface User {
   createdAt: string;
   rol: string;
   emailToken: string;
-  courses: CourseUser[];    admin: AdminUser;
-    notifications: Notification[]
+  courses: CourseUser[];    
+  admin: AdminUser;
+  notifications: Notification[]
 
 }
 
