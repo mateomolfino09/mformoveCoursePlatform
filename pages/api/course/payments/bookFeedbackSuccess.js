@@ -45,8 +45,8 @@ const bookFeedbackSuccess = async (req, res) => {
     const noti = {
       title: 'Curso adquirido con éxito',
       message: '¡Ya puedes ver el curso!',
-      link:`src/courses/${course.id}/1`,
-      status: 'greens'
+      link:`/src/courses/${course.id}/1`,
+      status: 'green'
     }
     user.notifications.push(noti) 
 
@@ -94,7 +94,7 @@ const bookFeedbackSuccess = async (req, res) => {
       <hr style="height:2px;background-color:#221f1f;border:none">       
      </div>`;
   
-      let resp = await sendEmail({
+      let resp = sendEmail({
         title: `${title}`,
         name: `Hola, ${user.name}:`,
         content:

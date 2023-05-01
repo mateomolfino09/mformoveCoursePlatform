@@ -67,7 +67,7 @@ const register = async (req, res) => {
           <hr style="height:2px;background-color:#221f1f;border:none">       
          </div>`;
 
-      let resp = await sendEmail({
+      let resp = sendEmail({
         title: title,
         name: `Hola, ${newUser.name}:`,
         content:

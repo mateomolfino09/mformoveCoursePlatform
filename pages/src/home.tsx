@@ -23,6 +23,9 @@ import { CoursesContext } from '../../hooks/coursesContext'
 import { Toaster } from 'react-hot-toast'
 import { UserContext } from '../../hooks/userContext'
 import Carousel from '../../components/Carousel'
+import SearchBar from '../../components/SearchBar'
+import state from '../../valtio'
+import { snapshot, useSnapshot } from 'valtio'
 
 interface Props {
   randomImage: Images
@@ -44,16 +47,13 @@ const Home = ({ user, randomImage, coursesDB
   const { listCourse, setListCourse } = useContext( CourseListContext )
   const { courses, setCourses} = useContext( CoursesContext )
   const {userCtx, setUserCtx} = useContext( UserContext )
-
-  // setCourses([...coursesDB])
+  const [userDB, setUserDB] = useState<User | null>(null) 
+  const snap = useSnapshot(state)
 
   useEffect(() => {
       setCourses([...coursesDB])
       setUserCtx(user)
   }, [])
-
-
-  const [userDB, setUserDB] = useState<User | null>(null)  
 
   const course: CourseModal = useSelector((state: State) => state.courseModalReducer)
   let { loading, error, activeModal, dbCourse, youtubeVideo  } = course
@@ -182,25 +182,28 @@ const Home = ({ user, randomImage, coursesDB
 
   
   return (
-    <div className="relative h-full bg-gradient-to-b lg:h-full">
+    <div className="relative h-full bg-to-dark lg:h-full">
       <Head>
         <title>Video Streaming</title>
         <meta name="description" content="Stream Video App" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header scrollToList={scrollToList} scrollToModa={scrollToModa} scrollToNuevo={scrollToNuevo} scrollToMy={scrollToMy} dbUser={user}/>
-
-      <main className='relative lg:space-y-24'>
-        <Banner randomImage={randomImage} scrollToModa={scrollToModa}/>
-        <section className='!mt-0'>
-          <Carousel title="Todos Los Cursos" coursesDB={courses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToModaSend} isClass={false} user={user} courseIndex={0}/>
-          <Carousel title={"Nuevo"} coursesDB={nuevoCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToNuevoSend} isClass={false} user={user} courseIndex={0}/>
-          <Carousel title={"Mi Lista"} coursesDB={listCourse} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToListSend} isClass={false} user={user} courseIndex={0}/>
-          <Carousel title={"Mis Cursos"} coursesDB={myCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefMySend} isClass={false} user={user} courseIndex={0}/>
-        </section>
-      </main>
+      {snap.searchToggle ? (
+        <></>
+      ) : (
+            <main className='relative lg:space-y-24'>
+              <Banner randomImage={randomImage} scrollToModa={scrollToModa}/>
+              <section className='!mt-0 bg-dark'>
+                <Carousel title="Todos Los Cursos" coursesDB={courses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToModaSend} isClass={false} user={user} courseIndex={0}/>
+                <Carousel title={"Nuevo"} coursesDB={nuevoCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToNuevoSend} isClass={false} user={user} courseIndex={0}/>
+                <Carousel title={"Mi Lista"} coursesDB={listCourse} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefToListSend} isClass={false} user={user} courseIndex={0}/>
+                <Carousel title={"Mis Cursos"} coursesDB={myCourses} setSelectedCourse={setSelectedCourse} items={null} courseDB={null} actualCourseIndex={0} setRef={setRefMySend} isClass={false} user={user} courseIndex={0}/>
+              </section>
+            </main>
+      )}
       <Toaster />
-
+      {snap.searchToggle && <SearchBar setSelectedCourse={setSelectedCourse} /> }
       {activeModal && <Modal courseDB={selectedCourse} user={user} updateUserDB={updateUserDB}/>}
     </div>
  )

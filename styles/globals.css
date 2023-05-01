@@ -7,7 +7,7 @@
     @apply bg-[#141414] text-white !scrollbar-track-transparent !scrollbar-thumb-[#c2c9d2] !scrollbar-thin scrollbar
   }
   header {
-    @apply fixed top-0 z-50 flex w-full items-center justify-between px-4 py-4 transition-all lg:px-10 lg:py-6
+    @apply fixed top-0 z-[1000] flex w-full items-center justify-between px-4 py-4 transition-all lg:px-10 lg:py-6
   }
 }
 
@@ -106,9 +106,6 @@
   @apply bg-[#0f0f11]
 }
 
-.bg-almost-black-lighter {
-  @apply bg-[#262628]
-}
 
 .darkGray {
   @apply bg-[#333]
@@ -127,128 +124,149 @@
 }
 
 
-  @keyframes spinner {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
   }
-  @keyframes spinner {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
+  100% {
+    transform: rotate(360deg);
   }
-  .loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 10px solid #c2c9d2; /* Light grey */
-    border-top: 10px solid #383636; /* Blue */
-    border-radius: 50%;
-    animation: spinner 1.5s linear infinite;
+}
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
   }
-  
-  .spinner-container {
-    display: grid;
-    justify-content: center;
-    align-items: center;
-    height: 350px;
+  100% {
+    transform: rotate(360deg);
   }
+}
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 10px solid #c2c9d2; /* Light grey */
+  border-top: 10px solid #383636; /* Blue */
+  border-radius: 50%;
+  animation: spinner 1.5s linear infinite;
+}
 
-  .home {
-    @apply w-fit xl:h-full flex xl:justify-between justify-start items-start flex-col xl:py-8 xl:px-36 sm:p-8 p-6 max-xl:gap-7 absolute z-10;
-  }
-  
-  .home-content {
-    @apply flex-1 xl:justify-center justify-start flex flex-col gap-10;
-  }
-  
-  .head-text {
-    @apply xl:text-[10rem] text-[6rem] xl:leading-[11rem] leading-[7rem] font-black text-black;
-  }
-  
-  .download-btn {
-    @apply w-14 h-14 flex justify-center items-center rounded-full glassmorphism cursor-pointer outline-none;
-  }
-  
-  .editortabs-container {
-    @apply glassmorphism w-16 border-[2px] rounded-lg flex flex-col justify-center items-center ml-1 py-4 gap-4;
-  }
-  
-  .filtertabs-container {
-    @apply absolute z-10 top-[3rem] right-0 left-0 w-full flex justify-center items-center flex-wrap gap-4;
-  }
-  
-  .aipicker-container {
-    @apply absolute left-full ml-3 glassmorphism p-3 w-[195px] h-[220px] rounded-md flex flex-col gap-4;
-  }
-  
-  .aipicker-textarea {
-    @apply w-full bg-transparent text-sm border border-gray-300 p-2 outline-none flex-1;
-  }
-  
-  .filepicker-container {
-    @apply absolute left-full ml-3 glassmorphism p-3 w-[195px] h-[220px] flex flex-col rounded-md;
-  }
-  
-  .filepicker-label {
-    @apply border border-gray-300 py-1.5 px-2 rounded-md shadow-sm text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer w-fit;
-  }
-  
-  .tab-btn {
-    @apply w-14 h-14 flex justify-center items-center cursor-pointer select-none;
-  }
-  
-  .glassmorphism {
-    background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 2px 30px 0 rgba(31, 38, 135, 0.07);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-  }
-  
-  input[type="file"] {
-    z-index: -1;
-    position: absolute;
-    opacity: 0;
-  }
-  
-  .sketch-picker {
-    width: 170px !important;
-    background: rgba(255, 255, 255, 0.25) !important;
-    box-shadow: 0 2px 30px 0 rgba(31, 38, 135, 0.07) !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.18) !important;
-    border-radius: 6px !important;
-  }
-  
-  .sketch-picker > div:nth-child(3) {
-    display: none !important;
-  }
+.spinner-container {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  height: 350px;
+}
 
-  .carousel {
-    @apply cursor-grab overflow-hidden mb-32
-  }
+.home {
+  @apply w-fit xl:h-full flex xl:justify-between justify-start items-start flex-col xl:py-8 xl:px-36 sm:p-8 p-6 max-xl:gap-7 absolute z-10;
+}
 
-  .thumbnailItem {
-    @apply w-[20rem] h-[20rem] md:h-[25rem] md:w-[23rem] 
-  }
+.home-content {
+  @apply flex-1 xl:justify-center justify-start flex flex-col gap-10;
+}
 
-  .thumbnailContainer {
-    @apply min-w-[20rem] min-h-[28rem] md:min-h-[30rem] md:min-w-[23rem] mx-4 rounded-xl flex justify-start items-center flex-col
-  }
+.head-text {
+  @apply xl:text-[10rem] text-[6rem] xl:leading-[11rem] leading-[7rem] font-black text-black;
+}
 
-  .cldImage {
-    @apply w-full h-[20rem] md:h-[25rem] rounded-t-xl pointer-events-none 
-  }
+.download-btn {
+  @apply w-14 h-14 flex justify-center items-center rounded-full glassmorphism cursor-pointer outline-none;
+}
 
-  .inner-carousel {
-    @apply flex my-1
+.editortabs-container {
+  @apply glassmorphism w-16 border-[2px] rounded-lg flex flex-col justify-center items-center ml-1 py-4 gap-4;
+}
+
+.filtertabs-container {
+  @apply absolute z-10 top-[3rem] right-0 left-0 w-full flex justify-center items-center flex-wrap gap-4;
+}
+
+.aipicker-container {
+  @apply absolute left-full ml-3 glassmorphism p-3 w-[195px] h-[220px] rounded-md flex flex-col gap-4;
+}
+
+.aipicker-textarea {
+  @apply w-full bg-transparent text-sm border border-gray-300 p-2 outline-none flex-1;
+}
+
+.filepicker-container {
+  @apply absolute left-full ml-3 glassmorphism p-3 w-[195px] h-[220px] flex flex-col rounded-md;
+}
+
+.filepicker-label {
+  @apply border border-gray-300 py-1.5 px-2 rounded-md shadow-sm text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer w-fit;
+}
+
+.tab-btn {
+  @apply w-14 h-14 flex justify-center items-center cursor-pointer select-none;
+}
+
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 2px 30px 0 rgba(31, 38, 135, 0.07);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+input[type="file"] {
+  z-index: -1;
+  position: absolute;
+  opacity: 0;
+}
+
+.sketch-picker {
+  width: 170px !important;
+  background: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 2px 30px 0 rgba(31, 38, 135, 0.07) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 6px !important;
+}
+
+.sketch-picker > div:nth-child(3) {
+  display: none !important;
+}
+
+.carousel {
+  @apply cursor-grab overflow-hidden mb-32
+}
+
+.thumbnailItem {
+  @apply w-[20rem] h-[20rem] md:h-[25rem] md:w-[23rem] 
+}
+
+.thumbnailContainer {
+  @apply min-w-[20rem] md:min-w-[23rem] mx-4 rounded-xl flex justify-start items-center flex-col
+}
+
+.cldImage {
+  @apply w-full h-[20rem] md:h-[25rem] rounded-xl pointer-events-none 
+}
+
+.inner-carousel {
+  @apply flex my-1
+}
+
+.bg-dark {
+  @apply bg-[#1d1e20]
+}
+.bg-almost-black-lighter {
+  @apply bg-[#555555]
+}
+
+.thumb-color {
+  background-image: linear-gradient(to bottom,#55555500 0%,#55555520 20%,#55555535 40%,#555555b7 55%,#555555ec 65%,#555555 70%,#555555 77%, #555555 90%);
+  position: absolute;
+  width: 100%;
+  z-index: 100;
+}
+
+  .bg-to-dark {
+    background-image: linear-gradient(to bottom,#1d1e2007 0,#1d1e2033 5%,#1d1e2035 29%,#1d1e2050 48%,#1d1e2070 58%,#1d1e20 90%);
+  }
+  .bg-to-almostdark {
+    background-image: linear-gradient(to bottom,#55555500 0%,#55555520 20%,#555555b6 25%,#55555550 48%,#55555570 60%,#55555570 70%, #555555 100%);
   }
   
 }

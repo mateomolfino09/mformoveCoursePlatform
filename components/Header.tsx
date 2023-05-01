@@ -4,7 +4,7 @@ import {
   Cog8ToothIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { Fragment, RefObject, useContext, useEffect, useState } from "react";
+import { Fragment, RefObject, useContext, useEffect, useRef, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { parseCookies } from "nookies";
 import cookie from "js-cookie";
@@ -19,6 +19,10 @@ import {AiOutlineUser} from 'react-icons/ai'
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { UserContext } from "../hooks/userContext";
 import axios from "axios";
+import { useSnapshot } from "valtio";
+import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
+import state from "../valtio";
+import { RxCross2 } from "react-icons/rx";
 
 const Header = ({
   scrollToList,
@@ -45,6 +49,12 @@ const Header = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const {userCtx, setUserCtx} = useContext( UserContext )
   const [notificationList, setNotificationList] = useState<null | Notification[]>(null)
+  const snap = useSnapshot(state)
+  const animationInput = useAnimation()
+  const animationIcon = useAnimation()
+  const inputRef = useRef<any>(null)
+
+
 
   const user: User = dbUser
     ? dbUser
@@ -78,6 +88,54 @@ const Header = ({
       userCtx != null ?  setNotificationList(userCtx?.notifications.filter((x: Notification) => !x.read).slice(-5)) : null
     }, [userCtx])
 
+    useEffect(() => {
+      if(snap.searchBar == true) {
+        animationInput.start({
+          width: '12rem',
+          zIndex: 500,
+          transition: {
+            delay: 0.05,
+            ease: 'linear',
+            duration: 0.25,
+            stiffness: 0
+            }
+      })
+        animationIcon.start({
+          x: -160,
+          zIndex: 500,
+          transition: {
+            delay: 0.05,
+            ease: 'linear',
+            duration: 0.25,
+            stiffness: 0
+            }
+      })
+
+      if(inputRef && inputRef.current) inputRef.current.focus()
+      }
+      else {
+        animationInput.start({
+          width: '3rem',
+          zIndex: 500,
+          transition: {
+            delay: 0.05,
+            ease: 'linear',
+            duration: 0.25,
+            stiffness: 0
+            }
+      })
+      animationIcon.start({
+        x: 0,
+        zIndex: 500,
+        transition: {
+          ease: 'linear',
+          duration: 0,
+          stiffness: 0
+          }
+    })
+      }
+    }, [snap.searchBar])
+
   useEffect(() => {
     session ? setUserState(session.user) : setUserState(user);
 
@@ -95,6 +153,32 @@ const Header = ({
       window.removeEventListener("scroll", handleScroll);
     };
   }, [router]);
+
+  const handleSearch = (e: any) => {
+    state.searchInput = e.target.value
+    state.searchToggle = true
+    // router.query.search = e.target.value
+    // router.push(router)
+
+  }
+  const handleSearchActivation = () => {
+    state.searchBar = !state.searchBar
+  }
+
+  const handleCross = () => {
+    state.searchToggle = false
+    state.searchBar = false
+    state.searchInput = ''
+
+  }
+
+  const handleBlur = () => {
+    if(state.searchToggle == false) {
+      state.searchBar = false
+      state.searchInput = ''
+
+    }
+  }
 
   function scrollToHome() {
     if (window) {
@@ -150,15 +234,9 @@ const Header = ({
               <li className="headerLink">Mi Lista</li>
             </Link>
           )}
-          {scrollToMy != null ? (
-            <li onClick={scrollToMy} className="headerLink">
-              Mis Cursos
-            </li>
-          ) : (
-            <Link href={"/src/home"}>
-              <li className="headerLink">Mis Cursos</li>
+            <Link href={'/src/user/account/myCourses'}>
+              <li className="headerLink cursor-pointer">Mis Cursos</li>
             </Link>
-          )}
         </ul>
       </div>
       <div className="flex items-center space-x-4 text-sm font-light">
@@ -169,9 +247,21 @@ const Header = ({
             </Link>
           </>
         ) : null}
-        <MagnifyingGlassIcon className="hidden h-6 w-6 sm:inline cursor-pointer" />
-        <p className="hidden lg:inline">Mis cursos</p>
-        <Popover>
+        <m.div initial={{ width: '3rem'}} animate={animationInput} className={`rounded-md h-8  items-center flex justify-end relative ${snap.searchBar ? 'border-white border bg-black/80' : 'w-12' } overflow-hidden`}>
+          <input ref={inputRef} value={snap.searchInput} onChange={e => handleSearch(e)} onBlur={handleBlur} type="text" className={`w-full ml-8 appearance-none focus:bg-black/80 ${snap.searchBar ? 'input block bg-black/80 px-1' : 'hidden'}`}/>
+          <m.div initial={{ x: 0}} animate={animationIcon} className={`hidden h-6 w-6 sm:inline cursor-pointer -right-1 absolute ${snap.searchBar ? '' : ''}`}>
+          <MagnifyingGlassIcon className={`hidden h-6 w-6 sm:inline cursor-pointer absolute right-1 ${snap.searchBar ? '' : ''}`} onClick={handleSearchActivation}/>
+          </m.div>
+          {snap.searchToggle && (
+            <div onClick={handleCross} className="h-6 w-6">
+              <RxCross2 className={`h-6 w-6  cursor-pointer absolute right-1 ${snap.searchBar ? 'sm:inline' : 'hidden'}`} />
+            </div>
+          )}
+        </m.div>
+        <Link href={'/src/user/account/myCourses'}>
+              <li className="headerLink cursor-pointer list-none">Mis Cursos</li>
+            </Link>
+          <Popover>
           <Popover.Button className='outline-none cursor-pointer text-white'>
           <BellIcon className="h-6 w-6 cursor-pointer" />
           </Popover.Button>

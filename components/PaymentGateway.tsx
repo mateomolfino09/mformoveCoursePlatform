@@ -88,7 +88,7 @@ const PaymentGateway = ({ user, course }: Props) => {
           </m.header>
       <m.div {...headContainerAnimation} className='relative h-full flex flex-col'>
         <m.div {...headContentAnimation}  className='w-full h-full flex flex-row mt-0'>
-        <m.div {...headTextAnimation} className='flex flex-col justify-center items-start mt-32 md:mt-32 pl-24 md:pl-64'>
+        <m.div {...headTextAnimation} className='flex flex-col justify-center items-start mt-32 md:mt-32 pl-24 md:pl-52'>
         <h1 className='font-semibold shadow-2xl text-5xl md:text-6xl text-start text-white'>{course.name}</h1>
         <div className='w-full flex flex-col space-y-2 mt-8'>
         <p className='w-full text-transparent text-lg bg-clip-text bg-gradient-to-r from-white to-orange-500 shadow-2xl md:text-2xl'>• Material Teórico y Práctico.</p>
@@ -107,14 +107,15 @@ const PaymentGateway = ({ user, course }: Props) => {
         <div className='w-full h-full flex flex-col  items-start space-y-2'>
         {user?.courses[course.id - 1].purchased ? (
         <>
-        {/* <Link href={`/src/courses/${course.id}/${user.courses[course.id - 1].actualChapter}`} target="_blank" rel="noopener noreferrer"> */}
-          <CustomButton title='Ver Curso' customStyles='h-10 w-28' handleClick={() => state.intro = false}/>
-        {/* </Link> */}
+        <Link href={`/src/courses/${course.id}/${user.courses[course.id - 1].actualChapter}`} target="_blank" rel="noopener noreferrer"> 
+          <CustomButton title='Ver Curso' customStyles='h-10 w-28' handleClick={() => null}/>
+        </Link>
         </>
         ) : (
         <>
+              {/* <CustomButton title='Inscribirme' customStyles={`h-10 w-28 ${!initPoint ? 'cursor-not-allowed' : 'cursor-pointer'}`} handleClick={() => state.intro = false}/> */}
         <Link href={initPoint} target="_blank" rel="noopener noreferrer">
-        <CustomButton title='Inscribirme' customStyles={`h-10 w-28 ${!initPoint ? 'cursor-not-allowed' : 'cursor-pointer'}`} handleClick={handleClick}/>
+        <CustomButton title='Inscribirme' customStyles={`h-10 w-28 ${!initPoint ? 'cursor-not-allowed' : 'cursor-pointer'}`} handleClick={() => null}/>
         </Link>
         </>
         )}

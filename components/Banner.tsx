@@ -32,7 +32,7 @@ function Banner({ randomImage, scrollToModa }: Props) {
 
   return (
     <AnimatePresence>
-      <div className="relative bg-gradient-to-b h-screen flex flex-col space-y-2 py-16">
+      <m.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} className="relative bg-to-dark h-screen flex flex-col space-y-2 py-16">
         <div className="absolute top-0 left-0 h-full w-screen -z-10">
           <Image
             src="/images/bgHome.jpg"
@@ -71,7 +71,7 @@ function Banner({ randomImage, scrollToModa }: Props) {
             </button>
           </div>
         </m.div>
-      </div>
+      </m.div>
     </AnimatePresence>
   );
 }

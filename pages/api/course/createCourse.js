@@ -2,11 +2,8 @@ import bcrypt from "bcryptjs";
 import Courses from "../../../models/courseModel";
 import Users from "../../../models/userModel";
 import Classes from "../../../models/classModel";
-import mongoose from "mongoose";
 import connectDB from "../../../config/connectDB";
-import jwt from "jsonwebtoken";
-import absoluteUrl from "next-absolute-url";
-import { sendEmail } from "../../../helpers/sendEmail";
+
 
 connectDB();
 
