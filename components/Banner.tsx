@@ -32,7 +32,7 @@ function Banner({ randomImage, scrollToModa }: Props) {
 
   return (
     <AnimatePresence>
-      <m.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} className="relative bg-to-dark h-screen flex flex-col space-y-2 py-16">
+      <div  className="relative bg-to-dark h-screen flex flex-col space-y-2 py-16">
         <div className="absolute top-0 left-0 h-full w-screen -z-10">
           <Image
             src="/images/bgHome.jpg"
@@ -48,10 +48,10 @@ function Banner({ randomImage, scrollToModa }: Props) {
           {...headContentAnimation}
           className="flex flex-col space-y-4 md:space-y-12 relative top-40 px-8 md:px-12"
         >
-          <h1 className="text-3xl font-bold lg:text-7xl md:text-4xl ">
+          <h1 className="text-3xl font-medium lg:text-7xl md:text-4xl ">
             Lavis Academy
           </h1>
-          <p className="text-lg font-bold lg:text-2xl md:text-xl">
+          <p className="text-lg font-normal lg:text-2xl md:text-xl">
             Descubre tu potencial: aprende con nosotros a crear tu propio estilo
             y expresarte con confianza.
           </p>
@@ -71,7 +71,7 @@ function Banner({ randomImage, scrollToModa }: Props) {
             </button>
           </div>
         </m.div>
-      </m.div>
+      </div>
     </AnimatePresence>
   );
 }

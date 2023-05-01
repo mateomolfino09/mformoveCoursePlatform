@@ -208,8 +208,8 @@ function CarouselThumbnail({ course, setSelectedCourse , user, courseIndex, isOp
       <div className='thumbnailItem relative'>
       <div className='absolute bottom-0 h-28 z-[100] thumbnailItem'>
         <div className='flex justify-between'>
-          <h4 className="text-white text-lg md:text-xl lg:text-2xl mt-2 ml-2">{course?.name}</h4>
-          <h4 className="text-white text-base md:text-lg lg:text-xl mt-2 mr-2">{course?.currency} {course?.price}</h4>
+          <h4 className="text-white text-lg md:text-xl lg:text-2xl mt-2 ml-2 font-light">{course?.name}</h4>
+          <h4 className="text-white text-base md:text-lg lg:text-xl mt-2 mr-2 font-light">{course?.currency} {course?.price}</h4>
         </div>
         <div className='flex w-full relative  h-full flex-col py-4 mt-4 justify-start space-y-8 z-[100]'>
       <m.div initial= {{ y: 0 }} animate={animation} 
@@ -261,17 +261,17 @@ function CarouselThumbnail({ course, setSelectedCourse , user, courseIndex, isOp
         <div className='w-1/2 flex flex-col mr-2'>
         <div className='w-full text-end mr-2 flex flex-row relative'> 
           <GoCreditCard className="text-white group-hover/item:text-neutral-300 w-6 absolute -ml-6"/>
-          <p className='text-xs md:text-sm relative left-1'>Hasta 12 cuotas </p>
+          <p className='text-xs md:text-sm font-light relative left-1'>Hasta 12 cuotas </p>
         </div>
         <div className='w-full text-end mr-2 flex flex-row relative'> 
           <FaHistory   className="text-white group-hover/item:text-neutral-300 w-6 absolute -ml-6"/>
-          <p className='text-xs md:text-sm relative left-1'>{Math.floor(course.classes.map(c => c.totalTime).reduce((prev, current) => prev + current) / 60 / 60)
+          <p className='text-xs md:text-sm relative left-1 font-light'>{Math.floor(course.classes.map(c => c.totalTime).reduce((prev, current) => prev + current) / 60 / 60)
                   } hrs {Math.floor((course.classes.map(c => c.totalTime).reduce((prev, current) => prev + current) / 60) % 60) 
                 } min </p>
         </div>
         <div className='w-full text-end mr-2 flex flex-row relative'> 
           <GiDiploma   className="text-white group-hover/item:text-neutral-300 w-6 absolute -ml-6"/>
-          <p className='text-xs md:text-sm relative left-1'>Certificado Lavis </p>
+          <p className='text-xs md:text-sm relative left-1 font-light'>Certificado Lavis </p>
         </div>
 
         </div>

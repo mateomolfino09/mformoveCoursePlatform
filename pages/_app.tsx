@@ -9,14 +9,8 @@ import { wrapper } from "../redux/store";
 import { CourseListContext } from "../hooks/courseListContext";
 import { useMemo, useRef, useState } from "react";
 import { CoursesDB, User } from "../typings";
-import { Poppins } from "@next/font/google";
 import { CoursesContext } from "../hooks/coursesContext";
 import { UserContext } from "../hooks/userContext";
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["300", "500"],
-});
 
 function App({ Component, ...rest }: AppProps) {
   const [listCourse, setListCourse] = useState<CoursesDB[]>([]);
@@ -42,7 +36,7 @@ function App({ Component, ...rest }: AppProps) {
     ? process.env.NEXT_PUBLIC_RECAPTHA_SITE_KEY
     : "";
   return (
-    <main className={poppins.className}>
+    <main>
       <SessionProvider session={pageProps.session}>
         <Provider store={store}>
           <CourseListContext.Provider value={providerValue}>
