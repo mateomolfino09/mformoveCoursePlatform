@@ -1,9 +1,6 @@
 import connectDB from "../../../../config/connectDB"
 import User from "../../../../models/userModel"
 import Course from "../../../../models/courseModel"
-import axios from 'axios'
-import bcrypt from "bcryptjs"
-import jwt from "jsonwebtoken"
 import absoluteUrl from "next-absolute-url"
 import { sendEmail } from "../../../../helpers/sendEmail"
 import Bill from "../../../../models/billModel"
@@ -82,7 +79,7 @@ const bookFeedbackFailure = async (req, res) => {
       <hr style="height:2px;background-color:#221f1f;border:none">       
      </div>`;
   
-      let resp = await sendEmail({
+      let resp = sendEmail({
         title: `${title}`,
         name: `Hola, ${user.name}:`,
         content:

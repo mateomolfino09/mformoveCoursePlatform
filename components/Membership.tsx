@@ -19,7 +19,7 @@ function Membership({ user }: Props) {
       <div className="space-y-2 py-4">
         <h4 className="">Facturación</h4>
         <button
-          onClick={() => router.push('/src/user/profile/billing')}
+          onClick={() => router.push('/src/user/account/billing')}
           //   disabled={isBillingLoading || !subscription}
           className="h-10 w-3/5 whitespace-nowrap bg-gray-300 py-2 text-sm font-medium text-black shadow-md hover:bg-gray-200 md:w-4/5"
           //   onClick={manageSubscription}
@@ -57,7 +57,7 @@ function Membership({ user }: Props) {
             />
           </div>
           <div className="md:text-right">
-            <Link href={'/src/user/profile/billing'}><p className="membershipLink">Detalles de Facturación</p>
+            <Link href={'/src/user/account/billing'}><p className="membershipLink">Detalles de Facturación</p>
           </Link>
           </div>
         </div>

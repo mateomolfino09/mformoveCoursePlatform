@@ -87,8 +87,13 @@ function Course({ course, user }: Props) {
             className='object-cover object-left   opacity-60  '
             />
         </div>
-          <PaymentGateway user={user} course={course} />
-          <Customizer />
+          <div className='w-full h-full flex'>
+            <div className='w-full h-full relative'>
+              <PaymentGateway user={user} course={course} />
+              <Customizer user={user} course={course}/>
+            </div>
+
+          </div>
         </main>
         {!snap.intro && (
           

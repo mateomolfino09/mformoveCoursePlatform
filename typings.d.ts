@@ -225,6 +225,7 @@ export interface CoursesDB {
   currency: string;
   created_by: User;
   index: number;
+  isOpen: boolean
 }
 
 export interface ClassesDB {

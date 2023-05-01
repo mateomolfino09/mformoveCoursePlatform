@@ -43,7 +43,6 @@ export const sendEmail = async (options: Options) => {
     subject: options.subject,
   };
 
-  return new Promise((resolve, reject) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -55,10 +54,8 @@ export const sendEmail = async (options: Options) => {
     transporter.sendMail(mailOptions, function (err, info) {
       if (err) {
         console.log("error", err);
-        resolve(false);
       } else {
-        resolve(true);
+        console.log("info", info);
       }
     });
-  });
 };

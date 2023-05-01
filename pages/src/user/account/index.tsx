@@ -5,13 +5,13 @@ import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
-import { useAppDispatch } from '../../../hooks/useTypeSelector';
-import { State } from '../../../redux/reducers';
-import { loadUser } from '../../../redux/user/userAction';
+import { useAppDispatch } from '../../../../hooks/useTypeSelector';
+import { State } from '../../../../redux/reducers';
+import { loadUser } from '../../../../redux/user/userAction';
 import cookie from "js-cookie";
 import axios from 'axios';
-import { User } from '../../../typings';
-import Membership from '../../../components/Membership';
+import { CourseUser, CoursesDB, User } from '../../../../typings';
+import Membership from '../../../../components/Membership';
 import { AiOutlineUser } from 'react-icons/ai';
 import { VideoCameraIcon } from '@heroicons/react/24/solid';
 import { FaHistory } from 'react-icons/fa';
@@ -71,7 +71,7 @@ function Account() {
     router.push("/src/user/login");
     };
 
-    const cantCourses = userDB?.courses.length
+    const cantCourses = userDB?.courses.filter((c:CourseUser) => c.purchased).length
 
   return (
     <div>
@@ -118,7 +118,7 @@ function Account() {
             } */}
             Cuentas con una cantidad de {cantCourses} cursos
           </div>
-          <Link href={'/src/user/profile/myCourses'}>
+          <Link href={'/src/user/account/myCourses'}>
           <p
             className="cursor-pointer text-blue-500 hover:underline md:text-right"
             // onClick={goToBillingPortal}

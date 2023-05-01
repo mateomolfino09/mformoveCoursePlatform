@@ -8,7 +8,10 @@ const state = proxy({
   logoDecal: '/images/logo.png',
   fullDecal: '/images/logo.png',
   volumeModal: true,
-  volumeIndex: false
+  volumeIndex: false,
+  searchBar: false,
+  searchToggle: false,
+  searchInput: ''
 });
 
 export default state;

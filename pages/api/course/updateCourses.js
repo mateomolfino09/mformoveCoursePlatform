@@ -1,14 +1,8 @@
-import bcrypt from 'bcryptjs'
 import Courses from '../../../models/courseModel'
 import Classes from '../../../models/classModel'
 
 import User from '../../../models/userModel'
-import mongoose from 'mongoose'
 import connectDB from '../../../config/connectDB'
-import jwt from "jsonwebtoken"
-import absoluteUrl from "next-absolute-url"
-import { sendEmail } from "../../../helpers/sendEmail"
-
 connectDB()
 
 
