@@ -55,7 +55,7 @@ const SearchBar = ({ setSelectedCourse }: Props) => {
         ) : (
             <div className='h-screen w-full flex justify-center items-center '>
                 <div className='w-full h-12 flex justify-center items-center flex-col'>
-                    <p className='text-sm font-light text-start'>No pudimos encontrar la búsqueda "{snap.searchInput}"</p>
+                    <p className='text-sm font-light text-start'>No pudimos encontrar la búsqueda {snap.searchInput}</p>
                         
                    <ul>
                         <li></li>
