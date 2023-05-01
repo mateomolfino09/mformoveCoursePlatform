@@ -31,25 +31,29 @@ function Carousel({ title, coursesDB, setSelectedCourse, items, courseDB, actual
     const[isMoved, setIsMoved] = useState(false);
     const course: CourseModal = useSelector((state: State) => state.courseModalReducer)
     const { courses, setCourses} = useContext( CoursesContext )
-    const [width, setWidth] = useState<number>(0)
     const theWidth = rowRef.current?.scrollWidth ? -(rowRef.current?.scrollWidth - rowRef.current?.offsetWidth) : 0
+    const [width, setWidth] = useState<number>(theWidth)
     const [isOpen, setIsOpen] = useState<number>(0)
 
     useEffect(() => {
 
-    }, [isOpen])
+    }, [isOpen, width])
 
     useEffect(() => {
         if(rowRef != null && setRef != null) {
             setRef(rowRef)
         } 
-    }, [])
+        setWidth(rowRef.current?.scrollWidth ? -(rowRef.current?.scrollWidth - rowRef.current?.offsetWidth) : 0)
+
+    }, [coursesDB])
+
+
 
 
     return (
     <m.div className={`carousel bg-dark ${title === 'Mis Cursos' && 'mb-0 pb-32'}`} ref={rowRef}>
-        <h2 className="w-56 ml-4 relative cursor-pointer text-lg font-semibold text-[#E5E5E5] transition duration-200 hover:text-white md:text-2xl mb-4" >{title}</h2>
-        <m.div className="inner-carousel" drag='x' dragConstraints={{right: 0, left: theWidth}} whileTap={{cursor: 'grabbing'}}>
+        <h2 className="w-56 ml-4 relative cursor-pointer text-lg font-normal text-[#E5E5E5] transition duration-200 hover:text-white md:text-2xl mb-4" >{title}</h2>
+        <m.div className="inner-carousel" drag='x' dragConstraints={{right: 0, left: width}} whileTap={{cursor: 'grabbing'}}>
             {coursesDB?.map((course: CoursesDB, index) => (
             <>
             <CarouselThumbnail key={course?._id} course={course} setSelectedCourse={setSelectedCourse} user={user} courseIndex={course.id - 1} isOpen={isOpen} setIsOpen={setIsOpen}/>
