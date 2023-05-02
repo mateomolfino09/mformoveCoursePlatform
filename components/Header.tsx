@@ -240,13 +240,6 @@ const Header = ({
         </ul>
       </div>
       <div className="flex items-center space-x-4 text-sm font-light">
-        {user?.rol === "Admin" ? (
-          <>
-            <Link href={"/src/admin"}>
-              <Cog8ToothIcon className="h-6 w-6 inline cursor-pointer" />
-            </Link>
-          </>
-        ) : null}
         <m.div initial={{ width: '3rem'}} animate={animationInput} className={`rounded-md h-8  items-center flex justify-end relative ${snap.searchBar ? 'border-white border bg-black/80' : 'w-12' } overflow-hidden`}>
           <input ref={inputRef} value={snap.searchInput} onChange={e => handleSearch(e)} onBlur={handleBlur} type="text" className={`w-full ml-8 appearance-none focus:bg-black/80 ${snap.searchBar ? 'input block bg-black/80 px-1' : 'hidden'}`}/>
           <m.div initial={{ x: 0}} animate={animationIcon} className={`hidden h-6 w-6 sm:inline cursor-pointer -right-1 absolute ${snap.searchBar ? '' : ''}`}>
@@ -258,6 +251,13 @@ const Header = ({
             </div>
           )}
         </m.div>
+        {user?.rol === "Admin" ? (
+          <>
+            <Link href={"/src/admin"}>
+              <Cog8ToothIcon className="h-6 w-6 inline cursor-pointer" />
+            </Link>
+          </>
+        ) : null}
         <Link href={'/src/user/account/myCourses'}>
               <li className="headerLink cursor-pointer list-none">Mis Cursos</li>
             </Link>

@@ -68,7 +68,7 @@ function Row({ title, coursesDB, setSelectedCourse, items, courseDB, actualCours
 
                 <ChevronRightIcon className={`ScrollIcon right-2`} onClick={() => handleClick("right")}/>
                             
-          </div>
+                        </div>
 
         </>
 

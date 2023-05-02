@@ -11,7 +11,7 @@ function LoginButton({ provider, bgColor, txtColor }: any) {
         style={{ background: `${bgColor}`, color: `${txtColor}` }}
         onClick={() => signIn(provider.id)}
       >
-        Sign In con {provider.name}
+        Log In con {provider.name}
       </button>
     </div>
   );

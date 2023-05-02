@@ -145,23 +145,21 @@ const Login = ({ providers, session }: any) => {
   
 
     return (
-        <div className="relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent">
+        <div className="relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent overflow-hidden">
             <Head>
                 <title>Video Streaming</title>
                 <meta name="description" content="Stream Video App" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             {loading && (
-              <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}>
-                <LoadingSpinner />
-              </div>
+                <LoadingSpinner/>
             )}
             {!loading && !validateEmail && (
               <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
               <Image 
                   src="/images/bgIndex2.jpg"
                   layout="fill"
-                  className="-z-10 !hidden opacity-50 sm:!inline"
+                  className="-z-10 !hidden opacity-50 sm:!inline h-screen"
                   objectFit="cover"
                   alt='icon image'
                   loader={imageLoader}/>
@@ -178,8 +176,8 @@ const Login = ({ providers, session }: any) => {
 
               <div className="relative mt-24 mb-4 space-y-8 rounded bg-black/75 py-10 px-6 md:mt-0 md:max-w-lg md:px-10 md:top-12 md:mx-6">
                   <form className='relative space-y-8 md:mt-0 md:max-w-lg'>
-                      <h1 className='text-4xl font-semibold'>Te damos la bienvenida a Video Stream!</h1>
-                      <h2 className='text-2xl font-semibold'>Ingresa tu cuenta para acceder al sitio</h2>
+                      <h1 className='text-4xl font-medium'>Te damos la bienvenida a Video Stream!</h1>
+                      <h2 className='text-2xl font-normal'>Ingresa tu cuenta para acceder al sitio</h2>
                       <div className='space-y-4'>
                           <label className='inline-block w-full'>
                               <input type="email"
@@ -204,30 +202,30 @@ const Login = ({ providers, session }: any) => {
                           </label>
                           <label className="inline-block w-full">
                           <div className="w-full my-0 relative bottom-2">
-                      <p className={`text-white/80 text-xs ${!capsLock && 'hidden'}`}>Bloq Mayús Activado</p>
+                      <p className={`text-white/80 text-xs font-light ${!capsLock && 'hidden'}`}>Bloq Mayús Activado</p>
                         </div>
                           </label>
                 </div>
   
-                      <button className='w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold' onClick={(e) => signinUser(e)}>Sign In </button>
+                      <button className='w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-medium' onClick={(e) => signinUser(e)}>Log In </button>
   
                   </form>
                   <LoginButton provider={providers?.google}/> 
-                  <div className="flex items-start justify-between flex-row">
-                    <div className='text-[gray] text-xl md:text-sm'>
+                  <div className="flex items-start justify-between flex-row text-center">
+                    <div className='text-[gray] text-xl md:text-sm font-normal'>
                       
                         Eres nuevo en Video Stream? 
                         <br/>
                         <Link href={'/src/user/register'}> 
-                            <button type='button' className='text-white hover:underline'>Crea tu cuenta ahora!</button>
+                            <button type='button' className='text-white font-normal hover:underline'>Crea tu cuenta ahora!</button>
                         </Link>
                     </div>
   
-                    <div className='text-[gray] text-xl md:text-sm'>
+                    <div className='text-[gray] text-xl md:text-sm text-center font-normal'>
                     ¿Olvidaste tu contraseña?
                         <br/>
                         <Link href={'/src/user/forget'}> 
-                            <button type='button' className='text-white hover:underline'>Recuperar mi cuenta</button>
+                            <button type='button' className='text-white hover:underline font-normal'>Recuperar mi cuenta</button>
                         </Link>
                     </div>
                   </div>

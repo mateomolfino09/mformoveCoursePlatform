@@ -5,7 +5,7 @@
 @layer base {
   body {
     font-family: 'Poppins', sans-serif;
-    @apply bg-[#141414] text-white !scrollbar-track-transparent !scrollbar-thumb-[#c2c9d2] !scrollbar-thin scrollbar 
+    @apply bg-[#141414] text-white !scrollbar-track-transparent !scrollbar-thumb-[#c2c9d2] !scrollbar-thin scrollbar tracking-normal
   }
   header {
     @apply fixed top-0 z-[1000] flex w-full items-center justify-between px-4 py-4 transition-all lg:px-10 lg:py-6
@@ -144,10 +144,10 @@
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 10px solid #c2c9d2; /* Light grey */
-  border-top: 10px solid #383636; /* Blue */
-  border-radius: 50%;
-  animation: spinner 1.5s linear infinite;
+  border: 4px solid #c2c9d2; /* Light grey */
+  border-top: 4px solid #383636; /* Blue */
+  border-radius: 90%;
+  animation: spinner 0.8s linear infinite;
 }
 
 .spinner-container {
