@@ -226,7 +226,7 @@ function SignUp() {
         <div className='text-[gray]'>
               Ya tienes una cuenta?
               <Link href={"/src/user/login"}> 
-              <button type='button' className='text-white hover:underline ml-2'>Sign In</button>
+              <button type='button' className='text-white hover:underline ml-2'>Log In</button>
               </Link>
           </div>
         </form>

@@ -244,20 +244,6 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
                                 <MdRemove className=" text-white w-6 h-6" onClick={() => removeCourseToList()}/>
                                 )}
                             </div>
-                            {/* <button className='modalButton' onClick={handleLike}>
-                            {like ? (
-                                <>
-                                    <HiHandThumbUp className={`h-8 w-8`}/>
- 
-                                </>
-                            ) : (<>
-                            <HiOutlineHandThumbUp className={`h-8 w-8`}/>
-
-                            </>
-                            
-                            )
-                            }
-                            </button> */}
                         </div>
                         <button className='modalButton' onClick={() => {
                             setMuted(!muted)}}>
@@ -281,7 +267,7 @@ function Modal({ courseDB, user, updateUserDB } : Props) {
                             }
                         </div>
                         <div className='flex flex-col gap-x-10 gap-y-4 font-light md:flex-row '>
-                            <p className='w-5/6 text-sm leading-6'>{items != null ? items[0].snippet.description.toString() : ''}</p>
+                            <p className='w-5/6 text-sm leading-6'>{courseDB?.description}</p>
                             <div className='flex flex-col space-y-3 text-sm'>
                                 <div>
                                     <span className='text-[gray]'>Generos: </span>
