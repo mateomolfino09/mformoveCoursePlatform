@@ -10,7 +10,7 @@ connectDB();
 const createCourse = async (req, res) => {
   try {
     if (req.method === "POST") {
-      const { name, playlistId, imgUrl, password, userEmail, description, price, currencys } = req.body;
+      const { name, playlistId, imgUrl, password, userEmail, description, price, currencys, moduleNumbers, breakpointTitles, cantidadClases } = req.body;
 
       //Existe?
       let user = await Users.findOne({ email: userEmail });
@@ -45,7 +45,13 @@ const createCourse = async (req, res) => {
         description: description,
         created_by: user,
         price: price,
-        currency: currencys
+        currency: currencys,
+        classesQuantity: cantidadClases,
+        modules: {
+          quantity: moduleNumbers.length,
+          breakPoints: moduleNumbers,
+          titles: breakpointTitles
+        }
       }).save();
 
       //Traigo clases de YT

@@ -68,7 +68,7 @@ function Carousel({ title, coursesDB, setSelectedCourse, items, courseDB, actual
     return (
     <m.div className={`group carousel w-full bg-dark ${title === 'Mis Cursos' && 'mb-0 pb-32'} relative`} ref={rowRef}>
         <h2 className="w-56 ml-4 relative cursor-pointer text-lg font-normal text-[#E5E5E5] transition duration-200 hover:text-white md:text-2xl mb-4" >{title}</h2>
-        <ChevronLeftIcon className={`absolute left-2 z-[250] h-9 bottom-32 md:hidden opacity-0 transition hover:scale-125 group-hover:opacity-100`}  onClick={() => handleClick("left")}/>
+        <ChevronLeftIcon className={`absolute left-2 z-[250] h-9 ${title === 'Mis Cursos' ? 'bottom-64' : 'bottom-32'}  md:hidden opacity-0 transition hover:scale-125 group-hover:opacity-100 ${coursesDB?.length && coursesDB?.length == 0 ? 'hidden' : ''}` }  onClick={() => handleClick("left")}/>
 
         <m.div className="inner-carousel overflow-y-hidden scrollbar-hide overflow-x-scroll relative" ref={scrollRowRef}>
             
@@ -80,7 +80,7 @@ function Carousel({ title, coursesDB, setSelectedCourse, items, courseDB, actual
               ))}
 
         </m.div>
-        <ChevronRightIcon className={`absolute right-0 z-[250] h-9 bottom-32 md:hidden transition hover:scale-125`} onClick={() => handleClick("right")}/>
+        <ChevronRightIcon className={`absolute right-0 z-[250] h-9 ${title === 'Mis Cursos' ? 'bottom-64' : 'bottom-32'} md:hidden transition hover:scale-125 ${coursesDB?.length && coursesDB?.length < 1 ? 'hidden' : ''}`} onClick={() => handleClick("right")}/>
 
     </m.div>
   )

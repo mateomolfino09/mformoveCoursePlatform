@@ -192,6 +192,13 @@ export interface CourseUser {
     classes: [ClassesUser]
 }
 
+export interface Modules {
+  quantity: number
+  breakPoints: [number],
+  titles: [string],
+
+}
+
 export interface User {
   _id: number;
   name: string;
@@ -225,7 +232,9 @@ export interface CoursesDB {
   currency: string;
   created_by: User;
   index: number;
+  classesQuantity: number
   isOpen: boolean
+  modules: Modules
 }
 
 export interface ClassesDB {

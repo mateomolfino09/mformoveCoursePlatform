@@ -7,6 +7,8 @@ import state from '../valtio';
 import { useSnapshot } from 'valtio';
 import { useRouter } from 'next/router';
 import { Video } from 'cloudinary-react'
+import Image from 'next/image';
+import imageLoader from '../imageLoader';
 
 function Banner() {
     // const srcImg: string = image?.urls.regular != null ? image?.urls.regular : ''
@@ -53,7 +55,13 @@ function Banner() {
         publicId="pexels-tima-miroshnichenko-6068292-3840x2160-25fps_znl04z"
         autoPlay loop muted={!snap.volumeIndex}
         controls={false}
-        className='object-cover h-full w-full'
+        className='object-cover h-full w-full hidden md:block'
+      />
+        <Image
+        src={'/images/bgIndex2.jpg'}
+        className='object-cover h-full w-full md:hidden opacity-40'
+        fill
+        loader={imageLoader}
       />
 
         </div>

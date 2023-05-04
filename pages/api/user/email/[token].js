@@ -35,6 +35,11 @@ const token = async (req, res) => {
           status: 'green'
         })
 
+        user.admin = {
+          active: false,
+          coursesAvailable: 3
+        }
+
         const adminUsers = await User.find({
           rol: 'Admin'
         })

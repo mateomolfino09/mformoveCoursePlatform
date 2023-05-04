@@ -1,6 +1,19 @@
 import mongoose from "mongoose";
 import validator from "validator";
 
+const modulesSchema = new mongoose.Schema({
+  quantity: {
+    type: Number,
+    required: true
+  },
+  breakPoints: [{
+    type: Number
+  }],
+  titles: [{
+    type: String
+  }]
+})
+
 const courseSchema = new mongoose.Schema(
   {
     id: {
@@ -23,6 +36,10 @@ const courseSchema = new mongoose.Schema(
     },
     playlist_code: {
       type: String,
+      required: true,
+    },
+    classesQuantity: {
+      type: Number,
       required: true,
     },
     image_url: {
@@ -49,6 +66,7 @@ const courseSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "Class"
   }],
+  modules: modulesSchema,
   created_by: {
       type: mongoose.Types.ObjectId,
       ref: 'User'
