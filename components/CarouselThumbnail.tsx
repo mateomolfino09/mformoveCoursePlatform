@@ -21,7 +21,7 @@ import { FaHistory, FaPlay } from 'react-icons/fa'
 import { BiAddToQueue } from 'react-icons/bi'
 import { GoCreditCard } from 'react-icons/go'
 import { GiDiploma } from 'react-icons/gi'
-import { CiPlay1 } from 'react-icons/ci'
+import { BsPlayCircle } from 'react-icons/bs'
 import Link from 'next/link'
 
 
@@ -216,7 +216,7 @@ function CarouselThumbnail({ course, setSelectedCourse , user, courseIndex, isOp
      onClick={(e) => {
         e.currentTarget.style.color = '#fff'}} className="flex flex-row items-center ">
                   <div className="cursor-pointer w-8 h-8 bg-white rounded-full flex justify-center items-center transition ml-2 first:text-black hover:bg-black hover:text-white hover:first:text-white">
-                    <PlayIcon className=" w-6 h-6 z-[200]" onClick={() => handleOpen}
+                    <PlayIcon className=" w-6 h-6 z-[200]" onClick={handleOpen}
 />
                   </div>
                   <div className="cursor-pointer w-8 h-8 bg-transparent border-white  border rounded-full flex justify-center items-center transition  ml-2">
@@ -252,7 +252,7 @@ function CarouselThumbnail({ course, setSelectedCourse , user, courseIndex, isOp
             <button onClick={handleOpen}
             className="flex items-center gap-x-2 ml-2 rounded-md px-4 py-1 text-sm transition duration-500 hover:scale-105 md:py-1.5 md:px-6 md:text-base bg-white text-black font-light max-w-[5.5rem] md:max-w-[7rem] hover:bg-black hover:text-white hover:first:text-white "
           >
-            <CiPlay1 className="h-3 w-3 md:h-4 md:w-4 text-center ml-0.5" /> Ver
+            <BsPlayCircle className="h-3 w-3 md:h-4 md:w-4 text-center ml-0.5" /> Ver
           </button>
           )}
                     {/* <p className='ml-2 mt-1'>Hola</p> */}

@@ -13,6 +13,7 @@ import { CoursesContext } from "../hooks/coursesContext";
 import { useRouter } from "next/router";
 import { motion as m, AnimatePresence } from "framer-motion";
 import { headContentAnimation } from "../config/motion";
+import { BsPlayCircle } from "react-icons/bs";
 
 interface Props {
   randomImage: Images | null;
@@ -60,14 +61,15 @@ function Banner({ randomImage, scrollToModa }: Props) {
               className="bannerButton bg-white text-black font-light"
               onClick={scrollToModa}
             >
-              <FaPlay className="h-5 w-5 text-black md:h-6 md:w-6 " /> Comenzar
+              <BsPlayCircle className="h-5 w-5 text-black md:h-6 md:w-6 " /> Comenzar
             </button>
             <button
               className="bannerButton darkGray font-light"
               onClick={() => router.push("/aboutUs")}
             >
+                            <InformationCircleIcon className="h-6 w-6 md:h-7 md:w-7 " />
+
               Más Info{" "}
-              <InformationCircleIcon className="h-6 w-6 md:h-7 md:w-7 " />
             </button>
           </div>
         </m.div>
