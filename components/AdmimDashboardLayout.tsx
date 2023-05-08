@@ -76,7 +76,7 @@ const AdmimDashboardLayout = ({ children }: Props) => {
       </Transition>
       <main
         className={`bg-gray-700 rounded-sm h-full pt-16 transition-all duration-[400ms] ${
-          showNav && !isMobile ? "pl-56" : ""
+          showNav && !isMobile ? "sm:pl-56" : ""
         }`}
       >
         <div className="flex flex-col justify-center items-center px-4 md:px-16 rounded-sm h-full w-full">
