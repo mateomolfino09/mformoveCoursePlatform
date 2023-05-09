@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import validator from "validator";
+import mongoose from 'mongoose'
+import validator from 'validator'
 
 const billSchema = new mongoose.Schema(
   {
@@ -21,41 +21,40 @@ const billSchema = new mongoose.Schema(
     },
     payment_type: {
       type: String,
-      required: true,
+      required: true
     },
     processing_mode: {
       type: String,
-      required: true,
+      required: true
     },
     createdAt: {
-        type: Date,
-        immutable: true,
-        default: () => Date.now()
+      type: Date,
+      immutable: true,
+      default: () => Date.now()
     },
     status: {
       type: String,
-      required: true,
+      required: true
     },
     price: {
-        type: Number,
-        default: () => 10
-      },
-      currency: {
-        type: String,
-        default: () => '$'
-      },
+      type: Number,
+      default: () => 10
+    },
+    currency: {
+      type: String,
+      default: () => '$'
+    },
     course: {
-        type: mongoose.Types.ObjectId,
-        ref: "Course"
+      type: mongoose.Types.ObjectId,
+      ref: 'Course'
     },
     user: {
-        type: mongoose.Types.ObjectId,
-        ref: "User"
+      type: mongoose.Types.ObjectId,
+      ref: 'User'
     }
   },
   { timestamps: true }
-);
+)
 
-
-let Dataset = mongoose.models.Bill || mongoose.model("Bill", billSchema);
-export default Dataset;
+let Dataset = mongoose.models.Bill || mongoose.model('Bill', billSchema)
+export default Dataset

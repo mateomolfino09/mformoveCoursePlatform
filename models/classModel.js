@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import validator from "validator";
+import mongoose from 'mongoose'
+import validator from 'validator'
 
 const classSchema = new mongoose.Schema(
   {
@@ -9,20 +9,20 @@ const classSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      required: true,
+      required: true
     },
     createdAt: {
-        type: Date,
-        immutable: true,
-        default: () => Date.now()
+      type: Date,
+      immutable: true,
+      default: () => Date.now()
     },
     class_code: {
       type: String,
-      required: true,
+      required: true
     },
     image_url: {
-        type: String,
-        required: true,
+      type: String,
+      required: true
     },
     likes: {
       type: Number,
@@ -33,12 +33,12 @@ const classSchema = new mongoose.Schema(
       default: () => 0
     },
     course: {
-        type: mongoose.Types.ObjectId,
-        ref: "Course"
+      type: mongoose.Types.ObjectId,
+      ref: 'Course'
     }
   },
   { timestamps: true }
-);
+)
 
-let Dataset = mongoose.models.Class || mongoose.model("Class", classSchema);
-export default Dataset;
+let Dataset = mongoose.models.Class || mongoose.model('Class', classSchema)
+export default Dataset

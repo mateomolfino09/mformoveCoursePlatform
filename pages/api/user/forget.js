@@ -1,43 +1,43 @@
-import connectDB from "../../../config/connectDB";
-import User from "../../../models/userModel";
-import jwt from "jsonwebtoken";
-import absoluteUrl from "next-absolute-url";
-import { sendEmail } from "../../../helpers/sendEmail";
-import validateCaptcha from "./validateCaptcha";
+import connectDB from '../../../config/connectDB'
+import { sendEmail } from '../../../helpers/sendEmail'
+import User from '../../../models/userModel'
+import validateCaptcha from './validateCaptcha'
+import jwt from 'jsonwebtoken'
+import absoluteUrl from 'next-absolute-url'
 
-connectDB();
+connectDB()
 
 const forget = async (req, res) => {
   try {
-    if (req.method === "POST") {
-      const { email, captcha } = req.body;
+    if (req.method === 'POST') {
+      const { email, captcha } = req.body
 
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email })
 
       if (!user) {
         return res
           .status(404)
-          .json({ error: "No hemos encontrado ningún usuario con ese email" });
+          .json({ error: 'No hemos encontrado ningún usuario con ese email' })
       }
 
-      const validCaptcha = await validateCaptcha(captcha);
+      const validCaptcha = await validateCaptcha(captcha)
 
       if (!validCaptcha) {
         return res.status(422).json({
-          error: "Captcha Invalido",
-        });
+          error: 'Captcha Invalido'
+        })
       }
 
       const token = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
-        expiresIn: "30d",
-      });
+        expiresIn: '30d'
+      })
 
-      user.resetToken = token;
-      await user.save();
+      user.resetToken = token
+      await user.save()
 
-      const { origin } = absoluteUrl(req);
-      const link = `${origin}/src/user/reset/${token}`;
-      const title = `<h1>Restablece tu contraseña</h1>`;
+      const { origin } = absoluteUrl(req)
+      const link = `${origin}/src/user/reset/${token}`
+      const title = `<h1>Restablece tu contraseña</h1>`
 
       const message = `
       <div>     
@@ -48,27 +48,27 @@ const forget = async (req, res) => {
        </div>
        <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de Video Stream.</p>
        <hr style="height:2px;background-color:#221f1f;border:none">       
-      </div> `;
+      </div> `
 
-      let resp =  sendEmail({
+      let resp = sendEmail({
         title: title,
         name: `Hola, ${user.name}:`,
         content:
-          "Restablezcamos tu contraseña para que puedas seguir disfrutando Video Stream.",
+          'Restablezcamos tu contraseña para que puedas seguir disfrutando Video Stream.',
         message: message,
         to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
-        subject: "Resetear contraseña",
-      });
+        subject: 'Resetear contraseña'
+      })
 
       return res.status(200).json({
-        message: `Se ha enviado un mail a ${user.email}, revisa tu correo porfavor.`,
-      });
+        message: `Se ha enviado un mail a ${user.email}, revisa tu correo porfavor.`
+      })
     }
   } catch (error) {
     return res.status(500).json({
-      message: `Hubo un error al enviar un mail a tu cuenta`,
-    });
+      message: `Hubo un error al enviar un mail a tu cuenta`
+    })
   }
-};
+}
 
-export default forget;
+export default forget

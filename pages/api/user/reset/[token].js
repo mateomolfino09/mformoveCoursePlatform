@@ -1,25 +1,25 @@
-import connectDB from "../../../../config/connectDB"
-import User from "../../../../models/userModel"
-import bcrypt from "bcryptjs"
-import jwt from "jsonwebtoken"
-import absoluteUrl from "next-absolute-url"
+import connectDB from '../../../../config/connectDB'
+import User from '../../../../models/userModel'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import absoluteUrl from 'next-absolute-url'
 
 connectDB()
 
 const token = async (req, res) => {
   try {
-    if (req.method === "PUT") {
+    if (req.method === 'PUT') {
       const { token } = req.query
 
       const { password, conPassword } = req.body
 
       if (password !== conPassword) {
-        return res.status(400).json({ error: "Las contraseñas no coinciden" })
+        return res.status(400).json({ error: 'Las contraseñas no coinciden' })
       }
       if (password.length < 6) {
         return res
           .status(400)
-          .json({ error: "La contraseña debe tener almenos 6 caracteres" })
+          .json({ error: 'La contraseña debe tener almenos 6 caracteres' })
       }
 
       if (token) {
@@ -40,7 +40,9 @@ const token = async (req, res) => {
         })
         await user.save()
 
-        return res.status(200).json({ message: "Se ha actualizado tu contraseña con éxito!" })
+        return res
+          .status(200)
+          .json({ message: 'Se ha actualizado tu contraseña con éxito!' })
       }
     }
   } catch (error) {

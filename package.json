@@ -6,9 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier --write .",
+    "eslint": "eslint --ext .js,.jsx,.ts,.tsx ."
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^37.1.0",
+    "@ckeditor/ckeditor5-react": "^6.0.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@headlessui/react": "^1.7.7",
@@ -39,6 +43,8 @@
     "eslint": "8.32.0",
     "eslint-config-next": "13.1.4",
     "framer-motion": "^10.10.0",
+    "html-react-parser": "^3.0.16",
+    "jodit-react": "^1.3.39",
     "js-cookie": "^3.0.1",
     "jsonwebtoken": "^9.0.0",
     "maath": "^0.5.3",
@@ -78,10 +84,15 @@
     "vercel": "^28.16.7"
   },
   "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^3.7.2",
     "@types/cookies": "^0.7.7",
     "@types/js-cookie": "^3.0.2",
     "autoprefixer": "^10.4.13",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "postcss": "^8.4.21",
+    "prettier": "^2.8.8",
+    "standard": "^17.0.0",
     "tailwind-scrollbar": "^2.1.0",
     "tailwindcss": "^3.2.4",
     "tailwindcss-textshadow": "^2.1.3"

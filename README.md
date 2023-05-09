@@ -1,1 +1,1 @@
-Video Stream es una plataforma con UI/UX basada en Netflix desarrollada para ser utilizada como plataforma de cursos. La misma hoy en dia aloja sus videos en Youtube posibilitando mediante ocultar videos un comportamiento análogo a Patreon por ejemplo. 
+Video Stream es una plataforma con UI/UX basada en Netflix desarrollada para ser utilizada como plataforma de cursos. La misma hoy en dia aloja sus videos en Youtube posibilitando mediante ocultar videos un comportamiento análogo a Patreon por ejemplo.

@@ -1,4 +1,4 @@
-import { proxy } from 'valtio';
+import { proxy } from 'valtio'
 
 const state = proxy({
   intro: true,
@@ -11,7 +11,8 @@ const state = proxy({
   volumeIndex: false,
   searchBar: false,
   searchToggle: false,
-  searchInput: ''
-});
+  searchInput: '',
+  classHeaders: 'Temario'
+})
 
-export default state;
+export default state

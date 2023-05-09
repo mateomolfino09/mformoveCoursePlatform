@@ -1,14 +1,14 @@
-import connectDB from "../../../config/connectDB";
-import User from "../../../models/userModel";
+import connectDB from '../../../config/connectDB'
+import User from '../../../models/userModel'
 
-connectDB();
+connectDB()
 
 export async function getUsers() {
   try {
-    const res = await User.find({});
-    const users = JSON.parse(JSON.stringify(res));
-    return users;
+    const res = await User.find({})
+    const users = JSON.parse(JSON.stringify(res))
+    return users
   } catch (err) {
-    console.log(err);
+    console.log(err)
   }
 }

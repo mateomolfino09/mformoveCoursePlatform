@@ -1,4 +1,4 @@
-import { createContext } from "react";
-import { CoursesDB } from "../typings";
+import { CoursesDB } from '../typings'
+import { createContext } from 'react'
 
 export const CourseListContext = createContext<any>([])

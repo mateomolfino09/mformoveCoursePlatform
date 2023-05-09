@@ -1,12 +1,12 @@
-import connectDB from "../../../config/connectDB" 
-import User from "../../../models/userModel"
-import bcrypt from "bcryptjs"
+import connectDB from '../../../config/connectDB'
+import User from '../../../models/userModel'
+import bcrypt from 'bcryptjs'
 
- connectDB()
+connectDB()
 
 const profile = async (req, res) => {
   try {
-    if (req.method === "POST") {
+    if (req.method === 'POST') {
       const { email } = req.body
 
       const user = await User.findOne({ email: email })
@@ -16,7 +16,7 @@ const profile = async (req, res) => {
       return res.status(200).send(user)
     }
   } catch (err) {
-    console.log('ERROR' ,err)
+    console.log('ERROR', err)
   }
 }
 

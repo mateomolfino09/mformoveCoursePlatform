@@ -1,60 +1,67 @@
+import { useAppDispatch } from '../hooks/useTypeSelector'
+import { UserContext } from '../hooks/userContext'
+import { State } from '../redux/reducers'
+import { loadUser } from '../redux/user/userAction'
+import { Notification, User } from '../typings'
+import state from '../valtio'
+import { Menu, Popover, Transition } from '@headlessui/react'
 import {
-  MagnifyingGlassIcon,
   BellIcon,
   Cog8ToothIcon,
-} from "@heroicons/react/24/outline";
-import Link from "next/link";
-import { Fragment, RefObject, useContext, useEffect, useRef, useState } from "react";
-import { signOut, useSession } from "next-auth/react";
-import { parseCookies } from "nookies";
-import cookie from "js-cookie";
-import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
-import { loadUser } from "../redux/user/userAction";
-import { State } from "../redux/reducers";
-import { useAppDispatch } from "../hooks/useTypeSelector";
-import { Notification, User } from "../typings";
-import { Menu, Transition, Popover } from "@headlessui/react";
-import {AiOutlineUser} from 'react-icons/ai'
-import { CheckIcon } from "@heroicons/react/24/solid";
-import { UserContext } from "../hooks/userContext";
-import axios from "axios";
-import { useSnapshot } from "valtio";
-import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
-import state from "../valtio";
-import { RxCross2 } from "react-icons/rx";
+  MagnifyingGlassIcon
+} from '@heroicons/react/24/outline'
+import { CheckIcon } from '@heroicons/react/24/solid'
+import axios from 'axios'
+import { AnimatePresence, motion as m, useAnimation } from 'framer-motion'
+import cookie from 'js-cookie'
+import { signOut, useSession } from 'next-auth/react'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { parseCookies } from 'nookies'
+import {
+  Fragment,
+  RefObject,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
+import { AiOutlineUser } from 'react-icons/ai'
+import { RxCross2 } from 'react-icons/rx'
+import { useSelector } from 'react-redux'
+import { useSnapshot } from 'valtio'
 
 const Header = ({
   scrollToList,
   scrollToModa,
   scrollToNuevo,
   scrollToMy,
-  dbUser,
+  dbUser
 }: any) => {
   interface ProfileUser {
-    user: User | null;
-    loading: boolean;
-    error: any;
+    user: User | null
+    loading: boolean
+    error: any
   }
 
   interface Props {
-    email: String;
-    user: User;
+    email: String
+    user: User
   }
 
-  const cookies = parseCookies();
-  const { data: session } = useSession();
-  const router = useRouter();
-  const [userState, setUserState] = useState<any>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const {userCtx, setUserCtx} = useContext( UserContext )
-  const [notificationList, setNotificationList] = useState<null | Notification[]>(null)
+  const cookies = parseCookies()
+  const { data: session } = useSession()
+  const router = useRouter()
+  const [userState, setUserState] = useState<any>(null)
+  const [isScrolled, setIsScrolled] = useState(false)
+  const { userCtx, setUserCtx } = useContext(UserContext)
+  const [notificationList, setNotificationList] = useState<
+    null | Notification[]
+  >(null)
   const snap = useSnapshot(state)
   const animationInput = useAnimation()
   const animationIcon = useAnimation()
   const inputRef = useRef<any>(null)
-
-
 
   const user: User = dbUser
     ? dbUser
@@ -62,67 +69,76 @@ const Header = ({
     ? JSON.parse(cookies.user)
     : session?.user
     ? session?.user
-    : "";
+    : ''
 
-    const checkReadNotis = async () => {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
+  const checkReadNotis = async () => {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json'
+      }
     }
-    const notifications = userCtx.notifications.filter((x: Notification) => !x.read).slice(-5)
+    const notifications = userCtx.notifications
+      .filter((x: Notification) => !x.read)
+      .slice(-5)
     const userId = userCtx?._id
-      try {
-        const { data } = await axios.put('/api/user/notifications/checkAsRead', { userId }, config)
-        // setListCourse([...listCourse, course])
-        setUserCtx(data)
-        setNotificationList(data.notifications.filter((x: Notification) => !x.read).slice(-5))
-  
-      } catch (error) {
-        console.log(error)
-      }
-  
+    try {
+      const { data } = await axios.put(
+        '/api/user/notifications/checkAsRead',
+        { userId },
+        config
+      )
+      // setListCourse([...listCourse, course])
+      setUserCtx(data)
+      setNotificationList(
+        data.notifications.filter((x: Notification) => !x.read).slice(-5)
+      )
+    } catch (error) {
+      console.log(error)
     }
+  }
 
-    useEffect(() => {
-      userCtx != null ?  setNotificationList(userCtx?.notifications.filter((x: Notification) => !x.read).slice(-5)) : null
-    }, [userCtx])
+  useEffect(() => {
+    userCtx != null
+      ? setNotificationList(
+          userCtx?.notifications.filter((x: Notification) => !x.read).slice(-5)
+        )
+      : null
+  }, [userCtx])
 
-    useEffect(() => {
-      if(snap.searchBar == true) {
-        animationInput.start({
-          width: '12rem',
-          zIndex: 500,
-          transition: {
-            delay: 0.05,
-            ease: 'linear',
-            duration: 0.25,
-            stiffness: 0
-            }
+  useEffect(() => {
+    if (snap.searchBar == true) {
+      animationInput.start({
+        width: '12rem',
+        zIndex: 500,
+        transition: {
+          delay: 0.05,
+          ease: 'linear',
+          duration: 0.25,
+          stiffness: 0
+        }
       })
-        animationIcon.start({
-          x: -160,
-          zIndex: 500,
-          transition: {
-            delay: 0.05,
-            ease: 'linear',
-            duration: 0.25,
-            stiffness: 0
-            }
+      animationIcon.start({
+        x: -160,
+        zIndex: 500,
+        transition: {
+          delay: 0.05,
+          ease: 'linear',
+          duration: 0.25,
+          stiffness: 0
+        }
       })
 
-      if(inputRef && inputRef.current) inputRef.current.focus()
-      }
-      else {
-        animationInput.start({
-          width: '3rem',
-          zIndex: 500,
-          transition: {
-            delay: 0.05,
-            ease: 'linear',
-            duration: 0.25,
-            stiffness: 0
-            }
+      if (inputRef && inputRef.current) inputRef.current.focus()
+    } else {
+      animationInput.start({
+        width: '3rem',
+        zIndex: 500,
+        transition: {
+          delay: 0.05,
+          ease: 'linear',
+          duration: 0.25,
+          stiffness: 0
+        }
       })
       animationIcon.start({
         x: 0,
@@ -131,35 +147,34 @@ const Header = ({
           ease: 'linear',
           duration: 0,
           stiffness: 0
-          }
-    })
-      }
-    }, [snap.searchBar])
+        }
+      })
+    }
+  }, [snap.searchBar])
 
   useEffect(() => {
-    session ? setUserState(session.user) : setUserState(user);
+    session ? setUserState(session.user) : setUserState(user)
 
     const handleScroll = () => {
       if (window.scrollY > 0) {
-        setIsScrolled(true);
+        setIsScrolled(true)
       } else {
-        setIsScrolled(false);
+        setIsScrolled(false)
       }
-    };
+    }
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll)
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [router]);
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [router])
 
   const handleSearch = (e: any) => {
     state.searchInput = e.target.value
     state.searchToggle = true
     // router.query.search = e.target.value
     // router.push(router)
-
   }
   const handleSearchActivation = () => {
     state.searchBar = !state.searchBar
@@ -169,172 +184,214 @@ const Header = ({
     state.searchToggle = false
     state.searchBar = false
     state.searchInput = ''
-
   }
 
   const handleBlur = () => {
-    if(state.searchToggle == false) {
+    if (state.searchToggle == false) {
       state.searchBar = false
       state.searchInput = ''
-
     }
   }
 
   function scrollToHome() {
     if (window) {
-      const y = 0;
+      const y = 0
 
-      window.scrollTo({ top: y, behavior: "smooth" });
-      return;
+      window.scrollTo({ top: y, behavior: 'smooth' })
+      return
       // return refToModa?.current.scrollIntoView({behavior: 'smooth'})
     }
   }
 
   return (
-    <header className={`${isScrolled && "bg-[#141414]"}`}>
-      <div className="flex items-center space-x-2 md:space-x-10">
-        <Link href={"/"}>
+    <header className={`${isScrolled && 'bg-[#141414]'}`}>
+      <div className='flex items-center space-x-2 md:space-x-10'>
+        <Link href={'/'}>
           <img
-            alt="icon image"
-            src="/images/logoWhite.png"
+            alt='icon image'
+            src='/images/logoWhite.png'
             width={100}
             height={100}
-            className="cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-90 hover:opacity-100"
+            className='cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-90 hover:opacity-100'
           />
         </Link>
 
-        <ul className="hidden space-x-4 md:flex">
-          <li className="headerLink" onClick={scrollToHome}>
+        <ul className='hidden space-x-4 md:flex'>
+          <li className='headerLink' onClick={scrollToHome}>
             Home
           </li>
           {scrollToModa != null ? (
-            <li onClick={scrollToModa} className="headerLink">
+            <li onClick={scrollToModa} className='headerLink'>
               Cursos
             </li>
           ) : (
-            <Link href={"/src/home"}>
-              <li className="headerLink">Cursos</li>
+            <Link href={'/src/home'}>
+              <li className='headerLink'>Cursos</li>
             </Link>
           )}
           {scrollToNuevo != null ? (
-            <li onClick={scrollToNuevo} className="headerLink">
+            <li onClick={scrollToNuevo} className='headerLink'>
               Nuevo
             </li>
           ) : (
-            <Link href={"/src/home"}>
-              <li className="headerLink">Nuevo</li>
+            <Link href={'/src/home'}>
+              <li className='headerLink'>Nuevo</li>
             </Link>
           )}
           {scrollToList != null ? (
-            <li onClick={scrollToList} className="headerLink">
+            <li onClick={scrollToList} className='headerLink'>
               Mi Lista
             </li>
           ) : (
-            <Link href={"/src/home"}>
-              <li className="headerLink">Mi Lista</li>
+            <Link href={'/src/home'}>
+              <li className='headerLink'>Mi Lista</li>
             </Link>
           )}
-            <Link href={'/src/user/account/myCourses'}>
-              <li className="headerLink cursor-pointer">Mis Cursos</li>
-            </Link>
+          <Link href={'/src/user/account/myCourses'}>
+            <li className='headerLink cursor-pointer'>Mis Cursos</li>
+          </Link>
         </ul>
       </div>
-      <div className="flex items-center space-x-4 text-sm font-light">
-        <m.div initial={{ width: '3rem'}} animate={animationInput} className={`rounded-md h-8  items-center flex justify-end relative ${snap.searchBar ? 'border-white border bg-black/80' : 'w-12' } overflow-hidden`}>
-          <input ref={inputRef} value={snap.searchInput} onChange={e => handleSearch(e)} onBlur={handleBlur} type="text" className={`w-full ml-8 appearance-none focus:bg-black/80 ${snap.searchBar ? 'input block bg-black/80 px-1' : 'hidden'}`}/>
-          <m.div initial={{ x: 0}} animate={animationIcon} className={`hidden h-6 w-6 sm:inline cursor-pointer -right-1 absolute ${snap.searchBar ? '' : ''}`}>
-          <MagnifyingGlassIcon className={`hidden h-6 w-6 sm:inline cursor-pointer absolute right-1 ${snap.searchBar ? '' : ''}`} onClick={handleSearchActivation}/>
+      <div className='flex items-center space-x-4 text-sm font-light'>
+        <m.div
+          initial={{ width: '3rem' }}
+          animate={animationInput}
+          className={`rounded-md h-8  items-center flex justify-end relative ${
+            snap.searchBar ? 'border-white border bg-black/80' : 'w-12'
+          } overflow-hidden`}
+        >
+          <input
+            ref={inputRef}
+            value={snap.searchInput}
+            onChange={(e) => handleSearch(e)}
+            onBlur={handleBlur}
+            type='text'
+            className={`w-full ml-8 appearance-none focus:bg-black/80 ${
+              snap.searchBar ? 'input block bg-black/80 px-1' : 'hidden'
+            }`}
+          />
+          <m.div
+            initial={{ x: 0 }}
+            animate={animationIcon}
+            className={`hidden h-6 w-6 sm:inline cursor-pointer -right-1 absolute ${
+              snap.searchBar ? '' : ''
+            }`}
+          >
+            <MagnifyingGlassIcon
+              className={`hidden h-6 w-6 sm:inline cursor-pointer absolute right-1 ${
+                snap.searchBar ? '' : ''
+              }`}
+              onClick={handleSearchActivation}
+            />
           </m.div>
           {snap.searchToggle && (
-            <div onClick={handleCross} className="h-6 w-6">
-              <RxCross2 className={`h-6 w-6  cursor-pointer absolute right-1 ${snap.searchBar ? 'sm:inline' : 'hidden'}`} />
+            <div onClick={handleCross} className='h-6 w-6'>
+              <RxCross2
+                className={`h-6 w-6  cursor-pointer absolute right-1 ${
+                  snap.searchBar ? 'sm:inline' : 'hidden'
+                }`}
+              />
             </div>
           )}
         </m.div>
-        {user?.rol === "Admin" ? (
+        {user?.rol === 'Admin' ? (
           <>
-            <Link href={"/src/admin"}>
-              <Cog8ToothIcon className="h-6 w-6 inline cursor-pointer" />
+            <Link href={'/src/admin'}>
+              <Cog8ToothIcon className='h-6 w-6 inline cursor-pointer' />
             </Link>
           </>
         ) : null}
         <Link href={'/src/user/account/myCourses'}>
-              <li className="headerLink cursor-pointer list-none">Mis Cursos</li>
-            </Link>
-          <Popover>
+          <li className='headerLink cursor-pointer list-none'>Mis Cursos</li>
+        </Link>
+        <Popover>
           <Popover.Button className='outline-none cursor-pointer text-white'>
-          <BellIcon className="h-6 w-6 cursor-pointer" />
+            <BellIcon className='h-6 w-6 cursor-pointer' />
           </Popover.Button>
           <Transition
-            enter="transition ease-out duration-100"
-            enterFrom="transform scale-95"
-            enterTo="transform scale-100"
-            leave="transition ease-in duration=75"
-            leaveFrom="transform scale-100"
-            leaveTo="transform scale-95"
+            enter='transition ease-out duration-100'
+            enterFrom='transform scale-95'
+            enterTo='transform scale-100'
+            leave='transition ease-in duration=75'
+            leaveFrom='transform scale-100'
+            leaveTo='transform scale-95'
           >
-            <Popover.Panel className="absolute -right-16 sm:right-4 z-50 mt-2 bg-white shadow-sm rounded max-w-xs sm:max-w-sm w-screen">
-              <div className="relative p-3">
-                <div className="flex justify-between items-center w-full">
-                  <p className="text-gray-700 font-medium">Notificaciones</p>
-                  <a className="text-sm text-black underline" href="#" onClick={checkReadNotis}>
+            <Popover.Panel className='absolute -right-16 sm:right-4 z-50 mt-2 bg-white shadow-sm rounded max-w-xs sm:max-w-sm w-screen'>
+              <div className='relative p-3'>
+                <div className='flex justify-between items-center w-full'>
+                  <p className='text-gray-700 font-medium'>Notificaciones</p>
+                  <a
+                    className='text-sm text-black underline'
+                    href='#'
+                    onClick={checkReadNotis}
+                  >
                     Marcar como leidos
                   </a>
                 </div>
-                
-                <div className="mt-4 grid gap-4 grid-cols-1 overflow-hidden">
-                  
-                  {userCtx?.notifications && notificationList && notificationList.length > 0 ? (
+
+                <div className='mt-4 grid gap-4 grid-cols-1 overflow-hidden'>
+                  {userCtx?.notifications &&
+                  notificationList &&
+                  notificationList.length > 0 ? (
                     <>
-                    {notificationList.map((notification: Notification) => (
-                              <>
-                                <div className="flex">
-                                <div className={`rounded-full shrink-0 ${notification.status === 'green' ? 'bg-green-200' : notification.status === 'red' ? 'bg-red-500' : 'bg-yellow-200'} h-8 w-8 flex items-center justify-center`}>
-                                  <CheckIcon className={`h-4 w-4 `} />
-                                </div>
-                                <div className="ml-4">
-                                  <p className="font-medium text-gray-700">
-                                    {notification.title}
-                                  </p>
-                                  <p className="text-sm text-gray-500 truncate break-all whitespace-normal">
-                                  {notification.message}
-                                  </p>
+                      {notificationList.map((notification: Notification) => (
+                        <>
+                          <div className='flex'>
+                            <div
+                              className={`rounded-full shrink-0 ${
+                                notification.status === 'green'
+                                  ? 'bg-green-200'
+                                  : notification.status === 'red'
+                                  ? 'bg-red-500'
+                                  : 'bg-yellow-200'
+                              } h-8 w-8 flex items-center justify-center`}
+                            >
+                              <CheckIcon className={`h-4 w-4 `} />
+                            </div>
+                            <div className='ml-4'>
+                              <p className='font-medium text-gray-700'>
+                                {notification.title}
+                              </p>
+                              <p className='text-sm text-gray-500 truncate break-all whitespace-normal'>
+                                {notification.message}
+                              </p>
 
-                                  {notification.link && notification.link != '' ? (
-                                    <a href={notification.link} className="text-sm text-gray-500 truncate break-all whitespace-normal underline">link</a>
-                                    ) : null} 
-                                </div>
-                              </div>
-                              </>
-                    ))}
+                              {notification.link && notification.link != '' ? (
+                                <a
+                                  href={notification.link}
+                                  className='text-sm text-gray-500 truncate break-all whitespace-normal underline'
+                                >
+                                  link
+                                </a>
+                              ) : null}
+                            </div>
+                          </div>
+                        </>
+                      ))}
                     </>
-
-
                   ) : (
-                    <div className="flex">
-                    <div className="ml-4">
-                      <p className="font-medium text-gray-700">
-                        No hay Notificaciones por el momento
-                      </p>
+                    <div className='flex'>
+                      <div className='ml-4'>
+                        <p className='font-medium text-gray-700'>
+                          No hay Notificaciones por el momento
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  )
-                }
-
+                  )}
                 </div>
               </div>
             </Popover.Panel>
           </Transition>
         </Popover>
         {/* <Link href="/account"> */}
-        <Link href={"user/account"}>
-          <AiOutlineUser className="h-6 w-6 cursor-pointer" />
+        <Link href={'user/account'}>
+          <AiOutlineUser className='h-6 w-6 cursor-pointer' />
         </Link>
 
         {/* </Link> */}
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

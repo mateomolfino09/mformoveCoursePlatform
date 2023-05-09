@@ -1,263 +1,260 @@
-import { User } from "./redux/user/userTypes";
-import { currency } from "./constants/currency";
+import { currency } from './constants/currency'
+import { User } from './redux/user/userTypes'
+
 export interface Urls {
-  raw: string;
-  full: string;
-  regular: string;
-  small: string;
-  thumb: string;
-  small_s3: string;
+  raw: string
+  full: string
+  regular: string
+  small: string
+  thumb: string
+  small_s3: string
 }
 
 export interface Links {
-  self: string;
-  html: string;
-  download: string;
-  download_location: string;
+  self: string
+  html: string
+  download: string
+  download_location: string
 }
 
 export interface TopicSubmissions {}
 
 export interface Links2 {
-  self: string;
-  html: string;
-  photos: string;
-  likes: string;
-  portfolio: string;
-  following: string;
-  followers: string;
+  self: string
+  html: string
+  photos: string
+  likes: string
+  portfolio: string
+  following: string
+  followers: string
 }
 
 export interface ProfileImage {
-  small: string;
-  medium: string;
-  large: string;
+  small: string
+  medium: string
+  large: string
 }
 
 export interface Social {
-  instagram_username: string;
-  portfolio_url: string;
-  twitter_username: string;
-  paypal_email?: any;
+  instagram_username: string
+  portfolio_url: string
+  twitter_username: string
+  paypal_email?: any
 }
 
 export interface Images {
-  id: string;
-  created_at: Date;
-  updated_at: Date;
-  promoted_at: Date;
-  width: number;
-  height: number;
-  color: string;
-  blur_hash: string;
-  description?: any;
-  alt_description: string;
-  urls: Urls;
-  links: Links;
-  likes: number;
-  liked_by_user: boolean;
-  current_user_collections: any[];
-  sponsorship?: any;
-  topic_submissions: TopicSubmissions;
-  user: User;
+  id: string
+  created_at: Date
+  updated_at: Date
+  promoted_at: Date
+  width: number
+  height: number
+  color: string
+  blur_hash: string
+  description?: any
+  alt_description: string
+  urls: Urls
+  links: Links
+  likes: number
+  liked_by_user: boolean
+  current_user_collections: any[]
+  sponsorship?: any
+  topic_submissions: TopicSubmissions
+  user: User
 }
 
 export interface Origin {
-  name: string;
-  url: string;
+  name: string
+  url: string
 }
 
 export interface Location {
-  name: string;
-  url: string;
+  name: string
+  url: string
 }
 
 export interface Ricks {
-  id: number;
-  name: string;
-  status: string;
-  species: string;
-  type: string;
-  gender: string;
-  origin: Origin;
-  location: Location;
-  image: string;
-  episode: string[];
-  url: string;
-  created: Date;
+  id: number
+  name: string
+  status: string
+  species: string
+  type: string
+  gender: string
+  origin: Origin
+  location: Location
+  image: string
+  episode: string[]
+  url: string
+  created: Date
 }
 
 export interface Default {
-  url: string;
-  width: number;
-  height: number;
+  url: string
+  width: number
+  height: number
 }
 
 export interface Medium {
-  url: string;
-  width: number;
-  height: number;
+  url: string
+  width: number
+  height: number
 }
 
 export interface High {
-  url: string;
-  width: number;
-  height: number;
+  url: string
+  width: number
+  height: number
 }
 
 export interface Standard {
-  url: string;
-  width: number;
-  height: number;
+  url: string
+  width: number
+  height: number
 }
 
 export interface Maxres {
-  url: string;
-  width: number;
-  height: number;
+  url: string
+  width: number
+  height: number
 }
 
 export interface PageInfo {
-  totalResults: number;
-  resultsPerPage: number;
+  totalResults: number
+  resultsPerPage: number
 }
 
 export interface Thumbnails {
-  default: Default;
-  medium: Medium;
-  high: High;
-  standard: Standard;
-  maxres: Maxres;
+  default: Default
+  medium: Medium
+  high: High
+  standard: Standard
+  maxres: Maxres
 }
 
 export interface ResourceId {
-  kind: string;
-  videoId: string;
+  kind: string
+  videoId: string
 }
 
 export interface Snippet {
-  publishedAt: Date;
-  channelId: string;
-  title: string;
-  description: string;
-  thumbnails: Thumbnails;
-  channelTitle: string;
-  playlistId: string;
-  position: number;
-  resourceId: ResourceId;
-  videoOwnerChannelTitle: string;
-  videoOwnerChannelId: string;
+  publishedAt: Date
+  channelId: string
+  title: string
+  description: string
+  thumbnails: Thumbnails
+  channelTitle: string
+  playlistId: string
+  position: number
+  resourceId: ResourceId
+  videoOwnerChannelTitle: string
+  videoOwnerChannelId: string
 }
 
 export interface Item {
-  kind: string;
-  etag: string;
-  id: string;
-  snippet: Snippet;
+  kind: string
+  etag: string
+  id: string
+  snippet: Snippet
 }
 
 export interface Playlist {
-  kind: string;
-  etag: string;
-  items: Item[];
-  pageInfo: PageInfo;
+  kind: string
+  etag: string
+  items: Item[]
+  pageInfo: PageInfo
 }
 
 export interface Courses {
-  name: string;
-  playlistId: string;
-  imageUrl: string;
+  name: string
+  playlistId: string
+  imageUrl: string
 }
 
 export interface ClassesUser {
-  actualTime: number;
+  actualTime: number
 }
 
 export interface Notification {
-  title: string;
-  message: string;
-  status: string;
+  title: string
+  message: string
+  status: string
   read: boolean
   link: string
-
 }
 
 export interface CourseUser {
-    course: string
-    like: Boolean,
-    inList: Boolean,
-    actualChapter: number,
-    actualTime: number,
-    purchased: Boolean
-    classes: [ClassesUser]
+  course: string
+  like: Boolean
+  inList: Boolean
+  actualChapter: number
+  actualTime: number
+  purchased: Boolean
+  classes: [ClassesUser]
 }
 
 export interface Modules {
   quantity: number
-  breakPoints: [number],
-  titles: [string],
-
+  breakPoints: [number]
+  titles: [string]
 }
 
 export interface User {
-  _id: number;
-  name: string;
-  email: string;
-  gender: string;
-  country: string;
-  password: string;
-  createdAt: string;
-  rol: string;
-  emailToken: string;
-  courses: CourseUser[];    
-  admin: AdminUser;
+  _id: number
+  name: string
+  email: string
+  gender: string
+  country: string
+  password: string
+  createdAt: string
+  rol: string
+  emailToken: string
+  courses: CourseUser[]
+  admin: AdminUser
   notifications: Notification[]
-
 }
 
 export interface CoursesDB {
-  _id: string;
-  id: number;
-  createdAt: string;
-  udpatedAt: string;
-  description: string;
-  playlist_code: string;
-  image_url: string;
-  name: string;
-  dbLikes: string;
-  likes: number;
-  users: User[];
-  classes: ClassesDB[];
-  price: number;
-  currency: string;
-  created_by: User;
-  index: number;
+  _id: string
+  id: number
+  createdAt: string
+  udpatedAt: string
+  description: string
+  playlist_code: string
+  image_url: string
+  name: string
+  dbLikes: string
+  likes: number
+  users: User[]
+  classes: ClassesDB[]
+  price: number
+  currency: string
+  created_by: User
+  index: number
   classesQuantity: number
   isOpen: boolean
   modules: Modules
 }
 
 export interface ClassesDB {
-  id: number;
-  name: string;
-  createdAt: string;
-  class_code: string;
-  image_url: string;
-  likes: number;
-  totalTime: number;
-  course: CoursesDB;
+  id: number
+  name: string
+  createdAt: string
+  class_code: string
+  image_url: string
+  likes: number
+  totalTime: number
+  course: CoursesDB
 }
 
 export interface Bill {
-    payment_id: Number
-    merchant_order_id: String
-    preference_id: String
-    collection_id: String
-    payment_type: String
-    createdAt: Date
-    status: String
-    processing_mode: String
-    course: CoursesDB
-    user: User
-    
+  payment_id: Number
+  merchant_order_id: String
+  preference_id: String
+  collection_id: String
+  payment_type: String
+  createdAt: Date
+  status: String
+  processing_mode: String
+  course: CoursesDB
+  user: User
 }
