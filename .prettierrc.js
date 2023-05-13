@@ -3,7 +3,6 @@ module.exports = {
   endOfLine: 'lf',
   trailingComma: 'none',
   tabWidth: 2,
-  semi: false,
   singleQuote: true,
   jsxSingleQuote: true,
   // importOrder: [
@@ -17,4 +16,4 @@ module.exports = {
   importOrderMergeDuplicateImports: true,
   importOrderCombineTypeAndValueImports: true,
   plugins: ['@ianvs/prettier-plugin-sort-imports']
-}
+};

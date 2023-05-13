@@ -1,30 +1,28 @@
-import { CoursesContext } from '../hooks/coursesContext'
-import { ClassesDB, CoursesDB } from '../typings'
-import { FlagIcon } from '@heroicons/react/24/solid'
-import { useRouter } from 'next/router'
-import React, { useContext, useEffect, useState } from 'react'
+import { CoursesContext } from '../hooks/coursesContext';
+import { ClassesDB, CoursesDB } from '../typings';
+import { FlagIcon } from '@heroicons/react/24/solid';
+import { useRouter } from 'next/router';
+import React, { useContext, useEffect, useState } from 'react';
 
 interface Props {
-  clase: ClassesDB
-  course: CoursesDB
+  clase: ClassesDB;
+  course: CoursesDB;
 }
 
 const ClassBanner = ({ clase, course }: Props) => {
-  const [module, setModule] = useState(false)
-  const { courses, setCourses } = useContext(CoursesContext)
-  const router = useRouter()
+  const [module, setModule] = useState(false);
+  const { courses, setCourses } = useContext(CoursesContext);
+  const router = useRouter();
 
   useEffect(() => {
     if (course.modules.breakPoints.includes(clase.id)) {
-      setModule(true)
+      setModule(true);
     }
-
-    console.log(course.modules)
-  }, [])
+  }, []);
 
   const handleRouteChange = () => {
-    router.push(`/src/courses/${course.id}/${clase.id}`)
-  }
+    router.push(`/src/courses/${course.id}/${clase.id}`);
+  };
 
   return (
     <div className='flex flex-col bg-dark-soft'>
@@ -60,7 +58,7 @@ const ClassBanner = ({ clase, course }: Props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ClassBanner
+export default ClassBanner;

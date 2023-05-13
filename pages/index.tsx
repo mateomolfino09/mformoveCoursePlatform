@@ -1,23 +1,23 @@
-import Banner from '../components/IndexBanner'
-import IndexHeader from '../components/IndexHeader'
-import VolumeModal from '../components/VolumeModal'
-import { User } from '../typings'
-import state from '../valtio'
-import { getUserFromBack } from './api/user/getUserFromBack'
-import { AnimatePresence, motion as m } from 'framer-motion'
-import { getSession } from 'next-auth/react'
-import Head from 'next/head'
-import { parseCookies } from 'nookies'
-import React from 'react'
-import { BiVolume, BiVolumeFull, BiVolumeMute } from 'react-icons/bi'
-import { useSnapshot } from 'valtio'
+import Banner from '../components/IndexBanner';
+import IndexHeader from '../components/IndexHeader';
+import VolumeModal from '../components/VolumeModal';
+import { User } from '../typings';
+import state from '../valtio';
+import { getUserFromBack } from './api/user/getUserFromBack';
+import { AnimatePresence, motion as m } from 'framer-motion';
+import { getSession } from 'next-auth/react';
+import Head from 'next/head';
+import { parseCookies } from 'nookies';
+import React from 'react';
+import { BiVolume, BiVolumeFull, BiVolumeMute } from 'react-icons/bi';
+import { useSnapshot } from 'valtio';
 
 interface Props {
-  user: User | null
+  user: User | null;
 }
 
 const Index = ({ user }: Props) => {
-  const snap = useSnapshot(state)
+  const snap = useSnapshot(state);
 
   return (
     <AnimatePresence>
@@ -47,23 +47,23 @@ const Index = ({ user }: Props) => {
         </div>
       </div>
     </AnimatePresence>
-  )
-}
+  );
+};
 
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context
-  const session = await getSession({ req })
+  const { params, query, req, res } = context;
+  const session = await getSession({ req });
   // Get a cookie
-  const cookies = parseCookies(context)
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
-  const email = userCookie?.email
-  let user = null
+  const cookies = parseCookies(context);
+  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
+  const email = userCookie?.email;
+  let user = null;
 
-  if (email != null) user = await getUserFromBack(email)
+  if (email != null) user = await getUserFromBack(email);
 
   return {
     props: { user }
-  }
+  };
 }
 
-export default Index
+export default Index;

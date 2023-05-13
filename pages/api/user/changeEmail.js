@@ -1,33 +1,33 @@
-import connectDB from '../../../config/connectDB'
-import { sendEmail } from '../../../helpers/sendEmail'
-import User from '../../../models/userModel'
-import jwt from 'jsonwebtoken'
-import absoluteUrl from 'next-absolute-url'
+import connectDB from '../../../config/connectDB';
+import { sendEmail } from '../../../helpers/sendEmail';
+import User from '../../../models/userModel';
+import jwt from 'jsonwebtoken';
+import absoluteUrl from 'next-absolute-url';
 
-connectDB()
+connectDB();
 
 const changeEmail = async (req, res) => {
   try {
     if (req.method === 'POST') {
-      const { email, newEmail } = req.body
+      const { email, newEmail } = req.body;
 
-      const user = await User.findOne({ email })
+      const user = await User.findOne({ email });
 
       if (!user) {
-        res.status(404).json({ error: 'email not found' })
+        res.status(404).json({ error: 'email not found' });
       }
 
       const token = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
         expiresIn: '30d'
-      })
-      console.log(user)
+      });
+      console.log(user);
 
-      user.resetToken = token
-      await user.save()
+      user.resetToken = token;
+      await user.save();
 
-      const { origin } = absoluteUrl(req)
-      const link = `${origin}/src/user/resetEmail/${token}`
-      const title = `<h1 style="color:black">Restablece tu email</h1>`
+      const { origin } = absoluteUrl(req);
+      const link = `${origin}/src/user/resetEmail/${token}`;
+      const title = `<h1 style="color:black">Restablece tu email</h1>`;
       const message = `
       <div>     
       <div>
@@ -37,7 +37,7 @@ const changeEmail = async (req, res) => {
       </div>
       <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de Video Stream.</p>
       <hr style="height:2px;background-color:#221f1f;border:none">       
-     </div>`
+     </div>`;
 
       let resp = sendEmail({
         title: title,
@@ -47,15 +47,15 @@ const changeEmail = async (req, res) => {
         message: message,
         to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
         subject: 'Resetear Email'
-      })
+      });
 
       return res.status(200).json({
         message: `Email enviado a ${user.email}, porfavor checkea tu email`
-      })
+      });
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
-export default changeEmail
+export default changeEmail;

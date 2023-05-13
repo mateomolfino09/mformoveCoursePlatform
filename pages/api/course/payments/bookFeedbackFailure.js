@@ -1,17 +1,17 @@
-import connectDB from '../../../../config/connectDB'
-import { sendEmail } from '../../../../helpers/sendEmail'
-import Bill from '../../../../models/billModel'
-import Course from '../../../../models/courseModel'
-import User from '../../../../models/userModel'
-import absoluteUrl from 'next-absolute-url'
+import connectDB from '../../../../config/connectDB';
+import { sendEmail } from '../../../../helpers/sendEmail';
+import Bill from '../../../../models/billModel';
+import Course from '../../../../models/courseModel';
+import User from '../../../../models/userModel';
+import absoluteUrl from 'next-absolute-url';
 
-const mercadopago = require('mercadopago')
+const mercadopago = require('mercadopago');
 
 mercadopago.configure({
   access_token: process.env.MERCADO_PAGO_PUBLIC_API_KEY // ojo con no poner una process.env.NEXT_PUBLIC_...
-})
+});
 
-connectDB()
+connectDB();
 
 const bookFeedbackFailure = async (req, res) => {
   const {
@@ -25,20 +25,20 @@ const bookFeedbackFailure = async (req, res) => {
     processing_mode,
     createdAt,
     status
-  } = req.query
+  } = req.query;
   try {
-    console.log(req.query)
-    const user = await User.findOne({ email })
-    const adminUsers = await User.find({ rol: 'Admin' })
-    const course = await Course.findOne({ id: courseId })
-    const bill = await Bill.findOne({ payment_id })
+    console.log(req.query);
+    const user = await User.findOne({ email });
+    const adminUsers = await User.find({ rol: 'Admin' });
+    const course = await Course.findOne({ id: courseId });
+    const bill = await Bill.findOne({ payment_id });
 
     if (bill)
       res
         .status(409)
         .redirect(
           `/src/courses/purchase/duplicated/?courseId=${courseId}&email=${email}`
-        )
+        );
     else {
       const noti = {
         title: 'Pago fallido',
@@ -46,18 +46,18 @@ const bookFeedbackFailure = async (req, res) => {
           'Debes concretar el pago antes de comenzar a disfrutar del curso',
         link: `src/courses/purchase/${course.id}`,
         status: 'red'
-      }
-      user.notifications.push(noti)
+      };
+      user.notifications.push(noti);
       adminUsers.forEach(async (admin) => {
         admin.notifications.push({
           title: 'Pago fallido',
           message: `Pago fallido de ${user.name}`,
           link: `src/courses/${course.id}/1`,
           status: 'red'
-        })
-        await admin.save()
-      })
-      await user.save()
+        });
+        await admin.save();
+      });
+      await user.save();
 
       const newBill = await new Bill({
         user,
@@ -72,10 +72,10 @@ const bookFeedbackFailure = async (req, res) => {
         status,
         amount: course.price,
         currency: course.currency
-      }).save()
-      const { origin } = absoluteUrl(req)
-      const link = `${origin}/src/home`
-      const title = `<h1 style="color:black">Hubo un error con su compra...</h1>`
+      }).save();
+      const { origin } = absoluteUrl(req);
+      const link = `${origin}/src/home`;
+      const title = `<h1 style="color:black">Hubo un error con su compra...</h1>`;
       const message = `
       <div>     
       <div>
@@ -85,7 +85,7 @@ const bookFeedbackFailure = async (req, res) => {
       </div>
       <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de Video Stream.</p>
       <hr style="height:2px;background-color:#221f1f;border:none">       
-     </div>`
+     </div>`;
 
       let resp = sendEmail({
         title: `${title}`,
@@ -94,18 +94,18 @@ const bookFeedbackFailure = async (req, res) => {
         message: message,
         to: `Lavis te envió este mensaje a [${user.email}] como parte de tu membresía.`,
         subject: `Órden nro ${merchant_order_id}`
-      })
+      });
 
       res
         .status(401)
         .redirect(
           `/src/courses/purchase/failure/?courseId=${courseId}&email=${email}`
-        )
+        );
     }
   } catch (err) {
-    console.log(err)
-    return res.status(401).json({ error: 'Algo salio mal' })
+    console.log(err);
+    return res.status(401).json({ error: 'Algo salio mal' });
   }
-}
+};
 
-export default bookFeedbackFailure
+export default bookFeedbackFailure;

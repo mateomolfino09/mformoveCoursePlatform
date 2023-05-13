@@ -1,47 +1,47 @@
-import { ClassesDB, CourseUser, User } from '../typings'
-import PlayerControls from './PlayerControls'
-import { Container, Grid, Paper, Typography } from '@mui/material'
-import axios from 'axios'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/router'
-import { parseCookies } from 'nookies'
+import { ClassesDB, CourseUser, User } from '../typings';
+import PlayerControls from './PlayerControls';
+import { Container, Grid, Paper, Typography } from '@mui/material';
+import axios from 'axios';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
 import React, {
   HtmlHTMLAttributes,
   RefObject,
   useEffect,
   useRef,
   useState
-} from 'react'
-import ReactPlayer from 'react-player'
-import screenfull from 'screenfull'
+} from 'react';
+import ReactPlayer from 'react-player';
+import screenfull from 'screenfull';
 
 interface Props {
-  url: string | null
-  img: string
-  courseUser: CourseUser | null
-  clase: ClassesDB | null
-  setPlayerRef: any
-  play: boolean
+  url: string | null;
+  img: string;
+  courseUser: CourseUser | null;
+  clase: ClassesDB | null;
+  setPlayerRef: any;
+  play: boolean;
 }
 
 const format = (seconds: any) => {
   if (isNaN(seconds)) {
-    return `00:00`
+    return `00:00`;
   }
-  const date = new Date(seconds * 1000)
-  const hh = date.getUTCHours()
-  const mm = date.getUTCMinutes()
-  const ss = date.getUTCSeconds().toString().padStart(2, '0')
+  const date = new Date(seconds * 1000);
+  const hh = date.getUTCHours();
+  const mm = date.getUTCMinutes();
+  const ss = date.getUTCSeconds().toString().padStart(2, '0');
   if (hh) {
-    return `${hh}:${mm.toString().padStart(2, '0')}:${ss}`
+    return `${hh}:${mm.toString().padStart(2, '0')}:${ss}`;
   }
-  return `${mm}:${ss}`
-}
+  return `${mm}:${ss}`;
+};
 
-let count = 0
+let count = 0;
 
 function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
-  const router = useRouter()
+  const router = useRouter();
   const [state, setState] = useState({
     playing: true,
     muted: false,
@@ -50,144 +50,146 @@ function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
     fullScreen: false,
     played: 0,
     seeking: false
-  })
+  });
 
-  const cookies = parseCookies()
-  const { data: session } = useSession()
+  const cookies = parseCookies();
+  const { data: session } = useSession();
 
-  const [timeDisplayFormat, setTimeDisplayFormat] = React.useState('normal')
-  const [bookmarks, setBookmarks] = useState<any>([])
+  const [timeDisplayFormat, setTimeDisplayFormat] = React.useState('normal');
+  const [bookmarks, setBookmarks] = useState<any>([]);
 
   const { playing, muted, volume, playbackRate, fullScreen, played, seeking } =
-    state
+    state;
   const [controlRef, setControlRef] =
-    useState<RefObject<HTMLDivElement> | null>(null)
-  const playerRef = useRef<ReactPlayer>(null)
-  const playerContainerRef = useRef<any>(null)
-  const canvasRef = useRef<any>(null)
-  const controlsRef = useRef<any>(null)
+    useState<RefObject<HTMLDivElement> | null>(null);
+  const playerRef = useRef<ReactPlayer>(null);
+  const playerContainerRef = useRef<any>(null);
+  const canvasRef = useRef<any>(null);
+  const controlsRef = useRef<any>(null);
 
   useEffect(() => {
-    setState({ ...state, playing: !playing })
-  }, [play])
+    setState({ ...state, playing: !playing });
+  }, [play]);
 
   useEffect(() => {
-    setPlayerRef(playerRef)
+    setPlayerRef(playerRef);
     // playerRef.current && playerRef.current.seekTo(courseUser?.actualTime != null ? courseUser?.actualTime : 0)
-  }, [router])
+  }, [router]);
 
   const handlePlayPause = () => {
-    setState({ ...state, playing: !state.playing })
-  }
+    setState({ ...state, playing: !state.playing });
+  };
 
   const handleRewind = () => {
     playerRef.current &&
-      playerRef.current.seekTo(playerRef.current.getCurrentTime() - 10)
-  }
+      playerRef.current.seekTo(playerRef.current.getCurrentTime() - 10);
+  };
   const handleFastForward = () => {
     playerRef.current &&
-      playerRef.current.seekTo(playerRef.current.getCurrentTime() + 10)
-  }
+      playerRef.current.seekTo(playerRef.current.getCurrentTime() + 10);
+  };
 
   const handleMute = () => {
-    setState({ ...state, muted: !state.muted })
-  }
+    setState({ ...state, muted: !state.muted });
+  };
 
   const handlePlaybackRateChange = (rate: any) => {
-    setState({ ...state, playbackRate: rate })
-  }
+    setState({ ...state, playbackRate: rate });
+  };
 
   const handleVolumeChange = (e: any, newValue: any) => {
     setState({
       ...state,
       volume: parseFloat((newValue / 100).toString()),
       muted: newValue === 0 ? true : false
-    })
-  }
+    });
+  };
 
   const handleVolumeSeek = (e: any, newValue: any) => {
     setState({
       ...state,
       volume: parseFloat((newValue / 100).toString()),
       muted: newValue === 0 ? true : false
-    })
-  }
+    });
+  };
 
   const toggleFullScreen = () => {
     setState({
       ...state,
       fullScreen: !fullScreen
-    })
-    playerContainerRef.current && screenfull.toggle(playerContainerRef.current)
-  }
+    });
+    playerContainerRef.current && screenfull.toggle(playerContainerRef.current);
+  };
 
   const handleSeekChange = (e: any, newValue: any) => {
-    setState({ ...state, played: parseFloat((newValue / 100).toString()) })
-  }
+    setState({ ...state, played: parseFloat((newValue / 100).toString()) });
+  };
 
   const handleSeekMouseDown = (e: any) => {
-    setState({ ...state, seeking: true })
-  }
+    setState({ ...state, seeking: true });
+  };
 
   const handleSeekMouseUp = (e: any, newValue: any) => {
-    setState({ ...state, seeking: false })
-    playerRef.current ? playerRef.current.seekTo(newValue / 100) : null
-  }
+    setState({ ...state, seeking: false });
+    playerRef.current ? playerRef.current.seekTo(newValue / 100) : null;
+  };
 
   const handleProgress = (changeState: any) => {
     if (count > 3) {
       controlRef?.current
         ? (controlRef.current.style.visibility = 'hidden')
-        : null
-      count = 0
+        : null;
+      count = 0;
     }
 
     if (
       controlRef?.current &&
       controlRef.current.style.visibility == 'visible'
     ) {
-      count += 1
+      count += 1;
     }
 
-    if (!state.seeking) setState({ ...state, ...changeState })
-  }
+    if (!state.seeking) setState({ ...state, ...changeState });
+  };
   const handleMouseMove = () => {
     controlRef?.current
       ? (controlRef.current.style.visibility = 'visible')
-      : null
-    count = 0
-  }
+      : null;
+    count = 0;
+  };
 
   const addBookmark = () => {
-    const canvas = canvasRef.current
-    canvas.width = 160
-    canvas.height = 90
-    const ctx = canvas.getContext('2d')
+    const canvas = canvasRef.current;
+    canvas.width = 160;
+    canvas.height = 90;
+    const ctx = canvas.getContext('2d');
 
     if (playerRef.current != null) {
-      canvas.width = 0
-      canvas.height = 0
-      const bookmarksCopy = [...bookmarks]
+      canvas.width = 0;
+      canvas.height = 0;
+      const bookmarksCopy = [...bookmarks];
       bookmarksCopy.push({
         time: playerRef.current.getCurrentTime(),
         display: format(playerRef.current.getCurrentTime()),
         image: img
-      })
-      setBookmarks(bookmarksCopy)
+      });
+      setBookmarks(bookmarksCopy);
     }
-  }
+  };
 
   function setControlerRef(ref: RefObject<HTMLDivElement>) {
-    setControlRef(ref)
+    setControlRef(ref);
   }
 
   const currentTime = playerRef.current
     ? playerRef.current.getCurrentTime()
-    : '00:00'
-  const duration = playerRef.current ? playerRef.current.getDuration() : '00:00'
+    : '00:00';
+  const duration = playerRef.current
+    ? playerRef.current.getDuration()
+    : '00:00';
 
-  const elapsedTime = format(currentTime)
-  const totalDuration = format(duration)
+  const elapsedTime = format(currentTime);
+  const totalDuration = format(duration);
 
   return (
     <div className='h-full w-full'>
@@ -243,7 +245,7 @@ function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
         </div>
       </Container>
     </div>
-  )
+  );
 }
 
-export default Youtube
+export default Youtube;

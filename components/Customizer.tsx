@@ -2,67 +2,67 @@ import {
   fadeAnimation,
   slideAnimation,
   slideAnimationTabs
-} from '../config/motion'
-import { CoursesDB, User } from '../typings'
-import state from '../valtio'
-import CustomButton from './CustomButton'
-import axios from 'axios'
-import { AnimatePresence, motion as m } from 'framer-motion'
-import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
-import { useSnapshot } from 'valtio'
+} from '../config/motion';
+import { CoursesDB, User } from '../typings';
+import state from '../valtio';
+import CustomButton from './CustomButton';
+import axios from 'axios';
+import { AnimatePresence, motion as m } from 'framer-motion';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import { useSnapshot } from 'valtio';
 
 interface Props {
-  course: CoursesDB
-  user: User | null
+  course: CoursesDB;
+  user: User | null;
 }
 
 const Customizer = ({ user, course }: Props) => {
-  const snap = useSnapshot(state)
-  const email = user?.email
-  const courseId = course.id
-  const FORM_ID = 'payment-form'
-  const [preferenceId, setPreferenceId] = useState(null)
-  const [initPoint, setInitPoint] = useState('')
-  const router = useRouter()
+  const snap = useSnapshot(state);
+  const email = user?.email;
+  const courseId = course.id;
+  const FORM_ID = 'payment-form';
+  const [preferenceId, setPreferenceId] = useState(null);
+  const [initPoint, setInitPoint] = useState('');
+  const router = useRouter();
 
   const handleClick = () => {
-    state.intro = false
-  }
+    state.intro = false;
+  };
   //obtengo el preferenceId
   useEffect(() => {
     const config = {
       headers: {
         'Content-Type': 'application/json'
       }
-    }
+    };
     axios
       .post('/api/course/payments/userPurchase', { email, courseId }, config)
       .then((data: any) => {
-        setInitPoint(data.data.data.init_point)
+        setInitPoint(data.data.data.init_point);
         // setPreferenceId(data.data.id)
-      })
-  }, [courseId])
+      });
+  }, [courseId]);
 
   useEffect(() => {
     if (preferenceId) {
-      handlScriptAdd(preferenceId)
+      handlScriptAdd(preferenceId);
     }
-  }, [preferenceId])
+  }, [preferenceId]);
 
   const handleRouteChange = async (route: string) => {
-    router.push(route)
-  }
+    router.push(route);
+  };
 
   const handlScriptAdd = (preferenceId: any) => {
-    const script = document.createElement('script')
-    script.type = 'text/javascript'
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
     script.src =
-      'https://www.mercadopago.cl/integrations/v1/web-payment-checkout.js'
-    script.setAttribute('data-preference-id', preferenceId)
-    const form = document.getElementById(FORM_ID)
-    form?.appendChild(script)
-  }
+      'https://www.mercadopago.cl/integrations/v1/web-payment-checkout.js';
+    script.setAttribute('data-preference-id', preferenceId);
+    const form = document.getElementById(FORM_ID);
+    form?.appendChild(script);
+  };
   return (
     <>
       {!snap.intro && (
@@ -80,7 +80,7 @@ const Customizer = ({ user, course }: Props) => {
         </>
       )}
     </>
-  )
-}
+  );
+};
 
-export default Customizer
+export default Customizer;

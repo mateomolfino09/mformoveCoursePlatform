@@ -4,14 +4,14 @@ import {
   PlusCircleIcon,
   TableCellsIcon,
   UserIcon
-} from '@heroicons/react/24/solid'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { forwardRef } from 'react'
+} from '@heroicons/react/24/solid';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React, { forwardRef } from 'react';
 
 const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
   ({ showNav }: any, ref) => {
-    const router = useRouter()
+    const router = useRouter();
 
     return (
       <div ref={ref} className='fixed w-56 h-full bg-gray-100 shadow-sm z-20'>
@@ -110,10 +110,10 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
           </Link>
         </div>
       </div>
-    )
+    );
   }
-)
+);
 
-AdminDashboardSideBar.displayName = 'AdminDashboardSideBar'
+AdminDashboardSideBar.displayName = 'AdminDashboardSideBar';
 
-export default AdminDashboardSideBar
+export default AdminDashboardSideBar;

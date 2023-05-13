@@ -1,34 +1,34 @@
-import { headContentAnimation, slideAnimationTabs } from '../config/motion'
-import { UserContext } from '../hooks/userContext'
-import { User } from '../typings'
-import state from '../valtio'
-import { Menu, Popover, Transition } from '@headlessui/react'
-import { BellIcon, CheckIcon } from '@heroicons/react/24/outline'
+import { headContentAnimation, slideAnimationTabs } from '../config/motion';
+import { UserContext } from '../hooks/userContext';
+import { User } from '../typings';
+import state from '../valtio';
+import { Menu, Popover, Transition } from '@headlessui/react';
+import { BellIcon, CheckIcon } from '@heroicons/react/24/outline';
 import {
   Bars3CenterLeftIcon,
   ChevronDownIcon,
   Cog8ToothIcon,
   CreditCardIcon,
   PencilIcon
-} from '@heroicons/react/24/solid'
-import { AnimatePresence, motion as m, useAnimation } from 'framer-motion'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { Fragment, useContext, useEffect, useState } from 'react'
-import { useSnapshot } from 'valtio'
+} from '@heroicons/react/24/solid';
+import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Fragment, useContext, useEffect, useState } from 'react';
+import { useSnapshot } from 'valtio';
 
 interface Props {
-  user: User | null
+  user: User | null;
 }
 const IndexHeader = ({ user }: Props) => {
-  const router = useRouter()
-  const headerAnimation = useAnimation()
+  const router = useRouter();
+  const headerAnimation = useAnimation();
 
-  const [domLoaded, setDomLoaded] = useState(false)
-  const snap = useSnapshot(state)
+  const [domLoaded, setDomLoaded] = useState(false);
+  const snap = useSnapshot(state);
 
   useEffect(() => {
-    setDomLoaded(true)
+    setDomLoaded(true);
     if (!snap.volumeModal) {
       headerAnimation.start({
         y: 0,
@@ -39,10 +39,10 @@ const IndexHeader = ({ user }: Props) => {
           restDelta: 0.001,
           duration: 1
         }
-      })
+      });
     }
-    ;[snap.volumeModal]
-  })
+    [snap.volumeModal];
+  });
 
   return (
     <>
@@ -94,7 +94,7 @@ const IndexHeader = ({ user }: Props) => {
         </m.div>
       )}
     </>
-  )
-}
+  );
+};
 
-export default IndexHeader
+export default IndexHeader;

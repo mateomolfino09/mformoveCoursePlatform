@@ -1,27 +1,27 @@
-import connectDB from '../../../../config/connectDB'
-import Course from '../../../../models/courseModel'
-import User from '../../../../models/userModel'
-import axios from 'axios'
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import connectDB from '../../../../config/connectDB';
+import Course from '../../../../models/courseModel';
+import User from '../../../../models/userModel';
+import axios from 'axios';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-const mercadopago = require('mercadopago')
+const mercadopago = require('mercadopago');
 
 mercadopago.configure({
   access_token: process.env.MERCADO_PAGO_PUBLIC_API_KEY // ojo con no poner una process.env.NEXT_PUBLIC_...
-})
+});
 
-connectDB()
+connectDB();
 
 const userPurchase = async (req, res) => {
-  const { email, courseId } = req.body
-  const user = await User.findOne({ email })
-  const course = await Course.findOne({ id: courseId })
-  const url = 'https://api.mercadopago.com/checkout/preferences'
+  const { email, courseId } = req.body;
+  const user = await User.findOne({ email });
+  const course = await Course.findOne({ id: courseId });
+  const url = 'https://api.mercadopago.com/checkout/preferences';
 
   try {
     if (req.method === 'POST') {
-      const { host } = req.headers
+      const { host } = req.headers;
 
       let preference = {
         // payer_email : req.body.payer_email,
@@ -49,25 +49,25 @@ const userPurchase = async (req, res) => {
           failure: `${host}/api/course/payments/bookFeedbackFailure/?courseId=${courseId}&email=${email}`,
           pending: `${host}/api/course/payments/bookFeedbackPending/?courseId=${courseId}&email=${email}`
         }
-      }
+      };
 
       const payment = await axios.post(url, preference, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${process.env.MERCADO_PAGO_PUBLIC_API_KEY}`
         }
-      })
+      });
 
       res.status(200).json({
         data: payment.data
-      })
+      });
     } else {
-      return res.status(401).json({ error: 'Algo salio mal' })
+      return res.status(401).json({ error: 'Algo salio mal' });
     }
   } catch (err) {
-    console.log(err)
-    return res.status(401).json({ error: 'Algo salio mal' })
+    console.log(err);
+    return res.status(401).json({ error: 'Algo salio mal' });
   }
-}
+};
 
-export default userPurchase
+export default userPurchase;

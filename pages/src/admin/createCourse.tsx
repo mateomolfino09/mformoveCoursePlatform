@@ -1,51 +1,51 @@
-import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout'
-import { LoadingSpinner } from '../../../components/LoadingSpinner'
-import { currency } from '../../../constants/currency'
-import { UserContext } from '../../../hooks/userContext'
-import requests from '../../../utils/requests'
-import { getUserFromBack } from '../../api/user/getUserFromBack'
-import { loadUser } from '../../api/user/loadUser'
-import { ArrowUpTrayIcon, DocumentIcon } from '@heroicons/react/24/outline'
-import axios from 'axios'
-import { getSession, useSession } from 'next-auth/react'
-import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { parseCookies } from 'nookies'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Accept, useDropzone } from 'react-dropzone'
-import { AiOutlineCheckCircle } from 'react-icons/ai'
-import { RxCrossCircled } from 'react-icons/rx'
-import Select, { StylesConfig, components } from 'react-select'
-import { toast } from 'react-toastify'
+import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
+import { LoadingSpinner } from '../../../components/LoadingSpinner';
+import { currency } from '../../../constants/currency';
+import { UserContext } from '../../../hooks/userContext';
+import requests from '../../../utils/requests';
+import { getUserFromBack } from '../../api/user/getUserFromBack';
+import { loadUser } from '../../api/user/loadUser';
+import { ArrowUpTrayIcon, DocumentIcon } from '@heroicons/react/24/outline';
+import axios from 'axios';
+import { getSession, useSession } from 'next-auth/react';
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Accept, useDropzone } from 'react-dropzone';
+import { AiOutlineCheckCircle } from 'react-icons/ai';
+import { RxCrossCircled } from 'react-icons/rx';
+import Select, { StylesConfig, components } from 'react-select';
+import { toast } from 'react-toastify';
 
 interface User {
-  id: number
-  name: string
-  rol: string
-  email: string
-  password: string
+  id: number;
+  name: string;
+  rol: string;
+  email: string;
+  password: string;
 }
 
 interface ProfileUser {
-  user: User | null
-  loading: boolean
-  error: any
+  user: User | null;
+  loading: boolean;
+  error: any;
 }
 
 interface Props {
-  user: User
-  session: User
+  user: User;
+  session: User;
 }
 
 interface Props {
-  user: User
+  user: User;
 }
 
 const Input = (inputProps: any) => (
   <components.Input {...inputProps} autoComplete='nope' />
-)
+);
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -57,42 +57,42 @@ const colourStyles: StylesConfig<any> = {
     border: 'none'
   }),
   option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    return { ...styles, color: '#808080' }
+    return { ...styles, color: '#808080' };
   },
   input: (styles) => ({ ...styles, backgroundColor: '', color: '#fff' }),
   placeholder: (styles) => ({ ...styles, color: '#fff' }),
   singleValue: (styles, { data }) => ({ ...styles, color: '#808080' })
-}
+};
 
 const CreateCourse = ({ user }: Props) => {
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [playlistId, setPlaylistId] = useState('')
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [playlistId, setPlaylistId] = useState('');
   const [image, setImage] = useState<string | ArrayBuffer | null | undefined>(
     null
-  )
-  const [password, setPassword] = useState('')
-  const cookies = parseCookies()
-  const { data: session } = useSession()
-  const router = useRouter()
-  const [files, setFiles] = useState<any>([])
-  const [price, setPrice] = useState<number | null>(null)
-  const [cantidadClases, setCantidadClases] = useState<number | null>(null)
-  const [modules, setModules] = useState<number | null>(null)
-  const [moduleNumbers, setModuleNumbers] = useState<number[]>([])
-  const [classesNumbers, setClassesNumbers] = useState<number[]>([])
-  const [breakpointTitles, setBreakpointTitles] = useState<string[]>([])
-  const [showBreakpoints, setShowBreakpoints] = useState<boolean>(false)
-  const [currencys, setCurrency] = useState<string>('$')
-  const [userCtx, setUserCtx] = useState<User>(user)
-  const [loading, setLoading] = useState<boolean>(false)
+  );
+  const [password, setPassword] = useState('');
+  const cookies = parseCookies();
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [files, setFiles] = useState<any>([]);
+  const [price, setPrice] = useState<number | null>(null);
+  const [cantidadClases, setCantidadClases] = useState<number | null>(null);
+  const [modules, setModules] = useState<number | null>(null);
+  const [moduleNumbers, setModuleNumbers] = useState<number[]>([]);
+  const [classesNumbers, setClassesNumbers] = useState<number[]>([]);
+  const [breakpointTitles, setBreakpointTitles] = useState<string[]>([]);
+  const [showBreakpoints, setShowBreakpoints] = useState<boolean>(false);
+  const [currencys, setCurrency] = useState<string>('$');
+  const [userCtx, setUserCtx] = useState<User>(user);
+  const [loading, setLoading] = useState<boolean>(false);
   const [descriptionLength, setDescriptionLength] = useState<number>(
     description.length
-  )
+  );
   const providerValue = useMemo(
     () => ({ userCtx, setUserCtx }),
     [userCtx, setUserCtx]
-  )
+  );
 
   const { getRootProps, getInputProps }: any = useDropzone({
     onDrop: (acceptedFiles: any) => {
@@ -102,11 +102,11 @@ const CreateCourse = ({ user }: Props) => {
             preview: URL.createObjectURL(file)
           })
         )
-      )
+      );
     },
     multiple: false,
     accept: { 'image/*': [] }
-  })
+  });
 
   const images = files.map((file: any) => (
     <img
@@ -115,135 +115,135 @@ const CreateCourse = ({ user }: Props) => {
       alt='image'
       className='cursor-pointer object-cover w-full h-full absolute'
     />
-  ))
+  ));
 
   useEffect(() => {
     if (user === null || user.rol != 'Admin') {
-      router.push('/src/user/login')
+      router.push('/src/user/login');
     }
-  }, [session, router])
+  }, [session, router]);
 
   useEffect(() => {
     if (cantidadClases !== null && modules != null) {
-      const classesNums = []
+      const classesNums = [];
       for (let index = 0; index < cantidadClases; index++) {
-        classesNums.push(index)
+        classesNums.push(index);
       }
-      setClassesNumbers(classesNums)
-      setShowBreakpoints(true)
+      setClassesNumbers(classesNums);
+      setShowBreakpoints(true);
     } else {
-      setShowBreakpoints(false)
-      setClassesNumbers([])
+      setShowBreakpoints(false);
+      setClassesNumbers([]);
     }
-  }, [cantidadClases, modules])
+  }, [cantidadClases, modules]);
 
-  useEffect(() => {}, [moduleNumbers, setModuleNumbers])
+  useEffect(() => {}, [moduleNumbers, setModuleNumbers]);
 
   const handleModuleSelection = (num: number) => {
     if (moduleNumbers.length === modules) {
       if (moduleNumbers.includes(num) && num != 1) {
-        let modules = [...moduleNumbers]
-        modules.splice(modules.indexOf(num), 1).sort((a, b) => a - b)
-        setModuleNumbers(modules)
+        let modules = [...moduleNumbers];
+        modules.splice(modules.indexOf(num), 1).sort((a, b) => a - b);
+        setModuleNumbers(modules);
       }
     } else {
       if (moduleNumbers.includes(num) && num != 1) {
-        let modules = [...moduleNumbers]
-        modules.splice(modules.indexOf(num), 1).sort((a, b) => a - b)
-        setModuleNumbers(modules)
+        let modules = [...moduleNumbers];
+        modules.splice(modules.indexOf(num), 1).sort((a, b) => a - b);
+        setModuleNumbers(modules);
       } else {
         if (num != 1) {
-          let modules = [...moduleNumbers, num].sort((a, b) => a - b)
-          setModuleNumbers(modules)
+          let modules = [...moduleNumbers, num].sort((a, b) => a - b);
+          setModuleNumbers(modules);
         }
       }
     }
-  }
+  };
 
   const handleModuleTitle = (title: string, index: number, value: number) => {
-    let breakpointsTitles = [...breakpointTitles]
-    breakpointsTitles[index] = title
-    setBreakpointTitles(breakpointsTitles)
-  }
+    let breakpointsTitles = [...breakpointTitles];
+    breakpointsTitles[index] = title;
+    setBreakpointTitles(breakpointsTitles);
+  };
 
   async function handleSubmit(event: any) {
-    setLoading(true)
+    setLoading(true);
     if (name.length < 5) {
-      toast.error('El Nombre del curso debe tener almenos 5 caracteres')
-      setLoading(false)
-      return
+      toast.error('El Nombre del curso debe tener almenos 5 caracteres');
+      setLoading(false);
+      return;
     } else if (playlistId.length <= 5) {
-      console.log(playlistId)
-      toast.error('Debe poner una Playlist Id para el curso')
-      setLoading(false)
-      return
+      console.log(playlistId);
+      toast.error('Debe poner una Playlist Id para el curso');
+      setLoading(false);
+      return;
     } else if (files.length == 0) {
-      toast.error('Debe poner una imágen para el curso')
-      setLoading(false)
-      return
+      toast.error('Debe poner una imágen para el curso');
+      setLoading(false);
+      return;
     } else if (description.length < 30) {
-      toast.error('La descripción del curso debe tener almenos 30 caracteres')
-      setLoading(false)
-      return
+      toast.error('La descripción del curso debe tener almenos 30 caracteres');
+      setLoading(false);
+      return;
     } else if (price == null) {
-      toast.error('Debe indicar el precio del curso')
-      setLoading(false)
-      return
+      toast.error('Debe indicar el precio del curso');
+      setLoading(false);
+      return;
     } else if (cantidadClases == null) {
-      toast.error('Debe indicar la cantidad de clases')
-      setLoading(false)
-      return
+      toast.error('Debe indicar la cantidad de clases');
+      setLoading(false);
+      return;
     } else if (modules == null) {
-      toast.error('Debe indicar la cantidad de módulos')
-      setLoading(false)
-      return
+      toast.error('Debe indicar la cantidad de módulos');
+      setLoading(false);
+      return;
     } else if (modules == null) {
-      toast.error('Debe indicar la cantidad de módulos')
-      setLoading(false)
-      return
+      toast.error('Debe indicar la cantidad de módulos');
+      setLoading(false);
+      return;
     } else if (moduleNumbers.length != modules) {
-      toast.error('Debe indicar los breakpoints de los módulos')
-      setLoading(false)
-      return
+      toast.error('Debe indicar los breakpoints de los módulos');
+      setLoading(false);
+      return;
     } else if (breakpointTitles.length != modules) {
-      toast.error('Debe indicar los títulos de los módulos')
-      setLoading(false)
-      return
+      toast.error('Debe indicar los títulos de los módulos');
+      setLoading(false);
+      return;
     }
 
     try {
-      event.preventDefault()
-      const userEmail = user.email
-      const formData = new FormData()
+      event.preventDefault();
+      const userEmail = user.email;
+      const formData = new FormData();
 
       for (const file of files) {
-        formData.append('file', file)
+        formData.append('file', file);
       }
 
-      formData.append('upload_preset', 'my_uploads')
+      formData.append('upload_preset', 'my_uploads');
 
       if (files[0].size / 1000000 > 10) {
-        toast.error('Formato Incorrecto')
-        return
+        toast.error('Formato Incorrecto');
+        return;
       }
 
       //image Url -> secure_url
       const imageData = await fetch(requests.fetchCloudinary, {
         method: 'POST',
         body: formData
-      }).then((r) => r.json())
+      }).then((r) => r.json());
 
-      console.log(imageData)
+      console.log(imageData);
 
-      const imgUrl = imageData.public_id
+      const imgUrl = imageData.public_id;
 
       const config = {
         headers: {
           'Content-Type': 'application/json'
         }
-      }
+      };
 
-      console.log(description)
+      console.log(description);
 
       const { data } = await axios.post(
         '../../api/course/createCourse',
@@ -261,23 +261,23 @@ const CreateCourse = ({ user }: Props) => {
           cantidadClases
         },
         config
-      )
+      );
 
-      toast.success(data.message)
+      toast.success(data.message);
     } catch (error: any) {
-      toast.error(error.response.data.error)
+      toast.error(error.response.data.error);
     }
-    setLoading(false)
+    setLoading(false);
   }
 
   function handleOnChange(changeEvent: any) {
-    const reader = new FileReader()
+    const reader = new FileReader();
 
     reader.onload = function (onLoadEvent) {
-      setImage(onLoadEvent.target?.result)
-    }
+      setImage(onLoadEvent.target?.result);
+    };
 
-    reader.readAsDataURL(changeEvent.target.files[0])
+    reader.readAsDataURL(changeEvent.target.files[0]);
   }
 
   return (
@@ -337,10 +337,10 @@ const CreateCourse = ({ user }: Props) => {
                           key={'clases'}
                           autoComplete='off'
                           onChange={(e) => {
-                            ;+e.target.value < 0
+                            +e.target.value < 0
                               ? null
-                              : setCantidadClases(+e.target.value)
-                            setModuleNumbers([1])
+                              : setCantidadClases(+e.target.value);
+                            setModuleNumbers([1]);
                           }}
                           min={0}
                           step={1}
@@ -363,11 +363,11 @@ const CreateCourse = ({ user }: Props) => {
                               cantidadClases &&
                               +e.target.value > cantidadClases
                             ) {
-                              e.preventDefault()
+                              e.preventDefault();
                             } else {
-                              ;+e.target.value < 0
+                              +e.target.value < 0
                                 ? null
-                                : setModules(+e.target.value)
+                                : setModules(+e.target.value);
                             }
                           }}
                           min={0}
@@ -517,8 +517,8 @@ const CreateCourse = ({ user }: Props) => {
                           placeholder='Descripción'
                           className='input'
                           onChange={(e) => {
-                            setDescriptionLength(e.target.value.length)
-                            setDescription(e.target.value)
+                            setDescriptionLength(e.target.value.length);
+                            setDescription(e.target.value);
                           }}
                         />
                       </label>
@@ -542,9 +542,9 @@ const CreateCourse = ({ user }: Props) => {
                           key={'price'}
                           autoComplete='off'
                           onChange={(e) => {
-                            ;+e.target.value < 0
+                            +e.target.value < 0
                               ? null
-                              : setPrice(+e.target.value)
+                              : setPrice(+e.target.value);
                           }}
                           min={0}
                           step={1}
@@ -601,20 +601,20 @@ const CreateCourse = ({ user }: Props) => {
         )}
       </AdmimDashboardLayout>
     </UserContext.Provider>
-  )
-}
+  );
+};
 
 export async function getServerSideProps(context: any) {
-  const session = await getSession(context)
-  const { params, query, req, res } = context
-  const cookies = parseCookies(context)
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
-  const email = userCookie.email
-  const user = await getUserFromBack(email)
+  const session = await getSession(context);
+  const { params, query, req, res } = context;
+  const cookies = parseCookies(context);
+  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
+  const email = userCookie.email;
+  const user = await getUserFromBack(email);
 
   return {
     props: { user }
-  }
+  };
 }
 
-export default CreateCourse
+export default CreateCourse;

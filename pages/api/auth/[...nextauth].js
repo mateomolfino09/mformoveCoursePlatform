@@ -1,12 +1,12 @@
-import connectDB from '../../../config/connectDB'
-import clientPromise from '../../../lib/mongodb'
-import Users from '../../../models/userModel'
-import { MongoDBAdapter } from '@next-auth/mongodb-adapter'
-import bcrypt from 'bcrypt'
-import nextAuth, { NextAuthOptions } from 'next-auth'
-import NextAuth from 'next-auth/next'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import GoogleProvider from 'next-auth/providers/google'
+import connectDB from '../../../config/connectDB';
+import clientPromise from '../../../config/mongodb';
+import Users from '../../../models/userModel';
+import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
+import bcrypt from 'bcrypt';
+import nextAuth, { NextAuthOptions } from 'next-auth';
+import NextAuth from 'next-auth/next';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 
 const authOptions = {
   adapter: MongoDBAdapter(clientPromise),
@@ -20,6 +20,6 @@ const authOptions = {
   pages: {
     signIn: '/src/user/login'
   }
-}
+};
 
-export default nextAuth(authOptions)
+export default nextAuth(authOptions);

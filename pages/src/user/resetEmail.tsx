@@ -1,38 +1,38 @@
-import imageLoader from '../../../imageLoader'
-import axios from 'axios'
-import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { toast } from 'react-toastify'
+import imageLoader from '../../../imageLoader';
+import axios from 'axios';
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 function Forget() {
-  const [email, setEmail] = useState('')
-  const [newEmail, setNewEmail] = useState('')
-  const router = useRouter()
+  const [email, setEmail] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const router = useRouter();
 
   const handleSubmit = async (event: any) => {
-    event.preventDefault()
+    event.preventDefault();
     try {
       const config = {
         headers: {
           'Content-Type': 'application/json'
         }
-      }
+      };
 
       const { data } = await axios.post(
         `/api/user/changeEmail`,
         { email },
         config
-      )
-      toast.success(data.message)
-      router.push('/src/user/login')
+      );
+      toast.success(data.message);
+      router.push('/src/user/login');
     } catch (error: any) {
-      toast.error(error?.response?.data?.error)
+      toast.error(error?.response?.data?.error);
     }
-  }
+  };
 
   return (
     <div className='relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent'>
@@ -117,7 +117,7 @@ function Forget() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Forget
+export default Forget;

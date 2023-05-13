@@ -1,32 +1,36 @@
-import { CourseListContext } from '../hooks/courseListContext'
-import { CoursesContext } from '../hooks/coursesContext'
-import { useAppDispatch } from '../hooks/useTypeSelector'
-import { UserContext } from '../hooks/userContext'
-import imageLoader from '../imageLoader'
-import { loadCourse } from '../redux/courseModal/courseModalAction'
-import { CourseUser, CoursesDB, Ricks, User } from '../typings'
-import { ChevronDownIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid'
-import zIndex from '@mui/material/styles/zIndex'
-import axios from 'axios'
-import { CldImage } from 'next-cloudinary'
-import Image from 'next/image'
+import { CourseListContext } from '../hooks/courseListContext';
+import { CoursesContext } from '../hooks/coursesContext';
+import { useAppDispatch } from '../hooks/useTypeSelector';
+import { UserContext } from '../hooks/userContext';
+import imageLoader from '../imageLoader';
+import { loadCourse } from '../redux/courseModal/courseModalAction';
+import { CourseUser, CoursesDB, Ricks, User } from '../typings';
+import {
+  ChevronDownIcon,
+  PlayIcon,
+  TrashIcon
+} from '@heroicons/react/24/solid';
+import zIndex from '@mui/material/styles/zIndex';
+import axios from 'axios';
+import { CldImage } from 'next-cloudinary';
+import Image from 'next/image';
 import React, {
   Dispatch,
   SetStateAction,
   useContext,
   useEffect,
   useState
-} from 'react'
-import { Toaster, toast } from 'react-hot-toast'
-import { AiOutlineCheckCircle, AiOutlineMinusCircle } from 'react-icons/ai'
-import { MdAdd, MdBlock, MdOutlineClose, MdRemove } from 'react-icons/md'
-import { TbLockOpenOff } from 'react-icons/tb'
+} from 'react';
+import { Toaster, toast } from 'react-hot-toast';
+import { AiOutlineCheckCircle, AiOutlineMinusCircle } from 'react-icons/ai';
+import { MdAdd, MdBlock, MdOutlineClose, MdRemove } from 'react-icons/md';
+import { TbLockOpenOff } from 'react-icons/tb';
 
 interface Props {
-  course: CoursesDB
-  setSelectedCourse: Dispatch<SetStateAction<CoursesDB | null>> | null
-  user: User | null
-  courseIndex: number
+  course: CoursesDB;
+  setSelectedCourse: Dispatch<SetStateAction<CoursesDB | null>> | null;
+  user: User | null;
+  courseIndex: number;
   //Firebase
   // character: Ricks | DocumentData[]
 }
@@ -56,75 +60,75 @@ const notify = (message: String, agregado: boolean, like: boolean) =>
       </div>
     ),
     { id: 'unique-notification', position: 'top-center' }
-  )
+  );
 
 function Thumbnail({ course, setSelectedCourse, user, courseIndex }: Props) {
-  const dispatch = useAppDispatch()
-  const [courseUser, setCourseUser] = useState<CourseUser | null>(null)
-  const [zIndex, setZIndex] = useState(0)
-  const { listCourse, setListCourse } = useContext(CourseListContext)
-  const { userCtx, setUserCtx } = useContext(UserContext)
+  const dispatch = useAppDispatch();
+  const [courseUser, setCourseUser] = useState<CourseUser | null>(null);
+  const [zIndex, setZIndex] = useState(0);
+  const { listCourse, setListCourse } = useContext(CourseListContext);
+  const { userCtx, setUserCtx } = useContext(UserContext);
 
   useEffect(() => {
-    setCourseUser(userCtx?.courses[courseIndex])
-  }, [userCtx])
+    setCourseUser(userCtx?.courses[courseIndex]);
+  }, [userCtx]);
 
   const addCourseToList = async () => {
     const config = {
       headers: {
         'Content-Type': 'application/json'
       }
-    }
-    const courseId = course?.id
-    const userId = user?._id
+    };
+    const courseId = course?.id;
+    const userId = user?._id;
     try {
-      notify('Agregado a la Lista', true, false)
+      notify('Agregado a la Lista', true, false);
       const { data } = await axios.put(
         '/api/user/course/listCourse',
         { courseId, userId },
         config
-      )
-      setListCourse([...listCourse, course])
-      setUserCtx(data)
+      );
+      setListCourse([...listCourse, course]);
+      setUserCtx(data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
   const removeCourseToList = async () => {
     const config = {
       headers: {
         'Content-Type': 'application/json'
       }
-    }
-    const courseId = course?.id
-    const userId = user?._id
+    };
+    const courseId = course?.id;
+    const userId = user?._id;
     try {
-      notify('Eliminado de la Lista', false, false)
+      notify('Eliminado de la Lista', false, false);
       setListCourse([
         ...listCourse.filter((value: CoursesDB) => value.id != course?.id)
-      ])
+      ]);
       const { data } = await axios.put(
         '/api/user/course/dislistCourse',
         { courseId, userId },
         config
-      )
-      setUserCtx(data)
+      );
+      setUserCtx(data);
     } catch (error) {}
-  }
+  };
 
   const handleOpen = () => {
-    dispatch(loadCourse())
-    if (setSelectedCourse != null) setSelectedCourse(course)
-  }
+    dispatch(loadCourse());
+    if (setSelectedCourse != null) setSelectedCourse(course);
+  };
 
   return (
     <div
       onMouseEnter={(e) => setZIndex(1000)}
       onMouseLeave={() => {
         setTimeout(() => {
-          setZIndex(0)
-        }, 500)
-        return
+          setZIndex(0);
+        }, 500);
+        return;
       }}
       style={{ zIndex: zIndex }}
       className={`group/item relative h-60 min-w-[350px] cursor-pointer transition duration-1000 ease-out md:h-36 md:min-w-[260px] md:hover:scale-105 overflow-visible`}
@@ -215,7 +219,7 @@ function Thumbnail({ course, setSelectedCourse, user, courseIndex }: Props) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Thumbnail
+export default Thumbnail;

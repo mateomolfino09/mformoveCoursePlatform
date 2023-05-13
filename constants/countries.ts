@@ -244,4 +244,4 @@ export const countries = [
   { value: 'YE', label: 'Yemen' },
   { value: 'ZM', label: 'Zambia' },
   { value: 'ZW', label: 'Zimbabwe' }
-]
+];

@@ -1,20 +1,20 @@
-import imageLoader from '../../../../imageLoader'
-import axios from 'axios'
-import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { useEffect } from 'react'
-import { toast } from 'react-toastify'
+import imageLoader from '../../../../imageLoader';
+import axios from 'axios';
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 function EmailVerification() {
-  const router = useRouter()
+  const router = useRouter();
 
-  const { token } = router.query
+  const { token } = router.query;
 
   useEffect(() => {
-    sendToken(token)
-  }, [token])
+    sendToken(token);
+  }, [token]);
 
   const sendToken = async (token: string | string[] | undefined) => {
     try {
@@ -22,14 +22,14 @@ function EmailVerification() {
         headers: {
           'Content-Type': 'application/json'
         }
-      }
+      };
 
-      const { data } = await axios.put(`/api/user/email/${token}`, {}, config)
-      toast.success(data.message)
+      const { data } = await axios.put(`/api/user/email/${token}`, {}, config);
+      toast.success(data.message);
     } catch (error: any) {
-      toast.error(error?.response?.data?.error)
+      toast.error(error?.response?.data?.error);
     }
-  }
+  };
 
   return (
     <div className='relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent'>
@@ -73,7 +73,7 @@ function EmailVerification() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default EmailVerification
+export default EmailVerification;

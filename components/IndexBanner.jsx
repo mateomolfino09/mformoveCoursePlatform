@@ -1,28 +1,28 @@
-import { useAppDispatch } from '../hooks/useTypeSelector'
-import imageLoader from '../imageLoader'
-import { loadCourse } from '../redux/courseModal/courseModalAction'
-import state from '../valtio'
-import { Video } from 'cloudinary-react'
-import { AnimatePresence, motion as m, useAnimation } from 'framer-motion'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import { useSnapshot } from 'valtio'
+import { useAppDispatch } from '../hooks/useTypeSelector';
+import imageLoader from '../imageLoader';
+import { loadCourse } from '../redux/courseModal/courseModalAction';
+import state from '../valtio';
+import { Video } from 'cloudinary-react';
+import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { useSnapshot } from 'valtio';
 
 function Banner() {
   // const srcImg: string = image?.urls.regular != null ? image?.urls.regular : ''
-  const dispatch = useAppDispatch()
-  const animation = useAnimation()
-  const snap = useSnapshot(state)
-  const [hasWindow, setHasWindow] = useState(false)
-  const router = useRouter()
+  const dispatch = useAppDispatch();
+  const animation = useAnimation();
+  const snap = useSnapshot(state);
+  const [hasWindow, setHasWindow] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setHasWindow(true)
+      setHasWindow(true);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (!snap.volumeModal) {
@@ -35,13 +35,13 @@ function Banner() {
           restDelta: 0.001,
           duration: 1
         }
-      })
+      });
     }
-  }, [snap.volumeModal])
+  }, [snap.volumeModal]);
 
   const handleOpen = () => {
-    dispatch(loadCourse())
-  }
+    dispatch(loadCourse());
+  };
 
   return (
     <div className='flex flex-col space-y-2 py-16 md:space-y-4 h-[75vh] lg:h-[90vh] justify-end lg:items-end mr-12 lg:mr-24'>
@@ -70,12 +70,12 @@ function Banner() {
           initial={{ color: '#fff' }}
           animate={animation}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#fff'
+            e.currentTarget.style.color = '#fff';
           }}
           onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
           onClick={(e) => {
-            e.currentTarget.style.color = '#fff'
-            router.push('/src/home')
+            e.currentTarget.style.color = '#fff';
+            router.push('/src/home');
           }}
           className='flex flex-col justify-end items-end !mb-4 -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
         >
@@ -90,12 +90,12 @@ function Banner() {
           initial={{ color: '#fff' }}
           animate={animation}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#fff'
+            e.currentTarget.style.color = '#fff';
           }}
           onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
           onClick={(e) => {
-            e.currentTarget.style.color = '#fff'
-            router.push('/')
+            e.currentTarget.style.color = '#fff';
+            router.push('/');
           }}
           className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
         >
@@ -110,12 +110,12 @@ function Banner() {
           initial={{ color: '#fff' }}
           animate={animation}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#fff'
+            e.currentTarget.style.color = '#fff';
           }}
           onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
           onClick={(e) => {
-            e.currentTarget.style.color = '#fff'
-            router.push('/aboutUs')
+            e.currentTarget.style.color = '#fff';
+            router.push('/aboutUs');
           }}
           className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
         >
@@ -130,12 +130,12 @@ function Banner() {
         initial={{ color: '#fff' }}
         animate={animation}
         onMouseEnter={(e) => {
-          e.currentTarget.style.color = '#fff'
+          e.currentTarget.style.color = '#fff';
         }}
         onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
         onClick={(e) => {
-          e.currentTarget.style.color = '#fff'
-          router.push('/')
+          e.currentTarget.style.color = '#fff';
+          router.push('/');
         }}
         className='flex flex-col justify-end items-end  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
       >
@@ -145,7 +145,7 @@ function Banner() {
         </h1>
       </m.div>
     </div>
-  )
+  );
 }
 
-export default Banner
+export default Banner;

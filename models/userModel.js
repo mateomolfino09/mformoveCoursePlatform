@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
-import validator from 'validator'
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const adminUser = new mongoose.Schema({
   active: {
@@ -10,7 +10,7 @@ const adminUser = new mongoose.Schema({
     type: Number,
     default: () => 3
   }
-})
+});
 
 const classUser = new mongoose.Schema({
   id: {
@@ -28,7 +28,7 @@ const classUser = new mongoose.Schema({
     type: Number,
     default: () => 0
   }
-})
+});
 
 const notification = new mongoose.Schema({
   title: {
@@ -50,7 +50,7 @@ const notification = new mongoose.Schema({
     type: Boolean,
     default: () => false
   }
-})
+});
 
 const courseUser = new mongoose.Schema({
   course: {
@@ -74,7 +74,7 @@ const courseUser = new mongoose.Schema({
     type: Boolean,
     default: () => false
   }
-})
+});
 
 const userSchema = new mongoose.Schema(
   {
@@ -114,11 +114,11 @@ const userSchema = new mongoose.Schema(
     emailToken: { type: String }
   },
   { timestamps: true }
-)
+);
 
 userSchema.query.byCourse = function (courseId) {
-  return this.where({ courses: { $elemMatch: { $eq: courseId } } })
-}
+  return this.where({ courses: { $elemMatch: { $eq: courseId } } });
+};
 
-let Dataset = mongoose.models.User || mongoose.model('User', userSchema)
-export default Dataset
+let Dataset = mongoose.models.User || mongoose.model('User', userSchema);
+export default Dataset;

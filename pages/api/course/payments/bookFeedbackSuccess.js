@@ -1,21 +1,21 @@
-import connectDB from '../../../../config/connectDB'
-import { sendEmail } from '../../../../helpers/sendEmail'
-import Bill from '../../../../models/billModel'
-import Course from '../../../../models/courseModel'
-import User from '../../../../models/userModel'
-import axios from 'axios'
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import absoluteUrl from 'next-absolute-url'
-import { redirect } from 'next/navigation'
+import connectDB from '../../../../config/connectDB';
+import { sendEmail } from '../../../../helpers/sendEmail';
+import Bill from '../../../../models/billModel';
+import Course from '../../../../models/courseModel';
+import User from '../../../../models/userModel';
+import axios from 'axios';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import absoluteUrl from 'next-absolute-url';
+import { redirect } from 'next/navigation';
 
-const mercadopago = require('mercadopago')
+const mercadopago = require('mercadopago');
 
 mercadopago.configure({
   access_token: process.env.MERCADO_PAGO_PUBLIC_API_KEY // ojo con no poner una process.env.NEXT_PUBLIC_...
-})
+});
 
-connectDB()
+connectDB();
 
 const bookFeedbackSuccess = async (req, res) => {
   const {
@@ -29,48 +29,48 @@ const bookFeedbackSuccess = async (req, res) => {
     processing_mode,
     createdAt,
     status
-  } = req.query
+  } = req.query;
   try {
-    console.log(req.query)
-    const user = await User.findOne({ email })
-    const course = await Course.findOne({ id: courseId })
-    const adminUsers = await User.find({ rol: 'Admin' })
+    console.log(req.query);
+    const user = await User.findOne({ email });
+    const course = await Course.findOne({ id: courseId });
+    const adminUsers = await User.find({ rol: 'Admin' });
 
     const index = user.courses.findIndex((element) => {
-      return element.course.valueOf() === course._id.valueOf()
-    })
+      return element.course.valueOf() === course._id.valueOf();
+    });
 
-    console.log(index)
+    console.log(index);
 
-    user.courses[index].purchased = true
+    user.courses[index].purchased = true;
 
     const noti = {
       title: 'Curso adquirido con éxito',
       message: '¡Ya puedes ver el curso!',
       link: `/src/courses/${course.id}/1`,
       status: 'green'
-    }
-    user.notifications.push(noti)
+    };
+    user.notifications.push(noti);
 
     adminUsers.forEach(async (admin) => {
       admin.notifications.push({
         title: 'Pago Concreteado',
         message: `Pago concretado por ${user.name} de importe ${course.price}`,
         status: 'green'
-      })
-      await admin.save()
-    })
+      });
+      await admin.save();
+    });
 
-    await user.save()
+    await user.save();
 
-    const bill = await Bill.findOne({ payment_id })
+    const bill = await Bill.findOne({ payment_id });
 
     if (bill)
       res
         .status(409)
         .redirect(
           `/src/courses/purchase/duplicated/?courseId=${courseId}&email=${email}`
-        )
+        );
     else {
       const newBill = await new Bill({
         user,
@@ -85,11 +85,11 @@ const bookFeedbackSuccess = async (req, res) => {
         status,
         amount: course.price,
         currency: course.currency
-      }).save()
+      }).save();
 
-      const { origin } = absoluteUrl(req)
-      const link = `${origin}/src/home`
-      const title = `<h1 style="color:black">¡Compra Realizada con éxito!</h1>`
+      const { origin } = absoluteUrl(req);
+      const link = `${origin}/src/home`;
+      const title = `<h1 style="color:black">¡Compra Realizada con éxito!</h1>`;
       const message = `
       <div>     
       <div>
@@ -99,7 +99,7 @@ const bookFeedbackSuccess = async (req, res) => {
       </div>
       <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de Video Stream.</p>
       <hr style="height:2px;background-color:#221f1f;border:none">       
-     </div>`
+     </div>`;
 
       let resp = sendEmail({
         title: `${title}`,
@@ -108,18 +108,18 @@ const bookFeedbackSuccess = async (req, res) => {
         message: message,
         to: `Lavis te envió este mensaje a [${user.email}] como parte de tu membresía.`,
         subject: `Órden nro ${merchant_order_id}`
-      })
+      });
 
       res
         .status(200)
         .redirect(
           `/src/courses/purchase/success/?courseId=${courseId}&email=${email}`
-        )
+        );
     }
   } catch (err) {
-    console.log(err)
-    return res.status(401).json({ error: 'Algo salio mal' })
+    console.log(err);
+    return res.status(401).json({ error: 'Algo salio mal' });
   }
-}
+};
 
-export default bookFeedbackSuccess
+export default bookFeedbackSuccess;

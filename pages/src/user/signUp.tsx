@@ -1,30 +1,30 @@
-import { LoadingSpinner } from '../../../components/LoadingSpinner'
-import { countries } from '../../../constants/countries'
-import { genders } from '../../../constants/genders'
-import imageLoader from '../../../imageLoader'
-import axios from 'axios'
-import { getSession, signIn, useSession } from 'next-auth/react'
-import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { parseCookies } from 'nookies'
-import React, { MouseEvent, useEffect, useRef, useState } from 'react'
-import ReCAPTCHA from 'react-google-recaptcha'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { ToastContainer, toast } from 'react-toastify'
-import { idText } from 'typescript'
+import { LoadingSpinner } from '../../../components/LoadingSpinner';
+import { countries } from '../../../constants/countries';
+import { genders } from '../../../constants/genders';
+import imageLoader from '../../../imageLoader';
+import axios from 'axios';
+import { getSession, signIn, useSession } from 'next-auth/react';
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import React, { MouseEvent, useEffect, useRef, useState } from 'react';
+import ReCAPTCHA from 'react-google-recaptcha';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { ToastContainer, toast } from 'react-toastify';
+import { idText } from 'typescript';
 
 interface Inputs {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 function SignUp() {
-  const { data: session } = useSession()
-  const cookies = parseCookies()
+  const { data: session } = useSession();
+  const cookies = parseCookies();
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [state, setState] = useState({
     email: '',
     firstname: '',
@@ -33,91 +33,91 @@ function SignUp() {
     conPassword: '',
     gender: '',
     country: ''
-  })
-  const [registered, setRegistered] = useState(false)
-  const [email, setEmail] = useState('')
-  const [firstname, setFirstname] = useState('')
-  const [lastname, setLastname] = useState('')
-  const [password, setPassword] = useState('')
-  const [conPassword, setConPassword] = useState('')
+  });
+  const [registered, setRegistered] = useState(false);
+  const [email, setEmail] = useState('');
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [password, setPassword] = useState('');
+  const [conPassword, setConPassword] = useState('');
 
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
-  const router = useRouter()
-  const recaptchaRef = useRef<any>()
+  const router = useRouter();
+  const recaptchaRef = useRef<any>();
 
   const key =
     process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY != undefined
       ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-      : ''
+      : '';
 
   useEffect(() => {
     if (session) {
-      router.push('/src/home')
+      router.push('/src/home');
     }
 
     if (cookies?.user) {
-      router.push('/src/home')
+      router.push('/src/home');
     }
-  }, [router])
+  }, [router]);
   //using React Hook Form library
   const {
     formState: { errors }
-  } = useForm<Inputs>()
+  } = useForm<Inputs>();
 
   const onChange = () => {
     if (recaptchaRef.current.getValue()) {
-      setCaptchaToken(recaptchaRef.current.getValue())
+      setCaptchaToken(recaptchaRef.current.getValue());
     } else {
-      setCaptchaToken(null)
+      setCaptchaToken(null);
     }
-  }
+  };
 
   const signupUser = async (e: MouseEvent<HTMLButtonElement>) => {
     try {
-      e.preventDefault()
-      setLoading(true)
+      e.preventDefault();
+      setLoading(true);
 
-      const captcha = captchaToken
+      const captcha = captchaToken;
       if (!captcha) {
-        toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde')
-        setLoading(false)
+        toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde');
+        setLoading(false);
         setTimeout(() => {
-          window.location.reload()
-        }, 4000)
-        return
+          window.location.reload();
+        }, 4000);
+        return;
       }
 
       if (password !== conPassword) {
-        toast.error('Las contraseñas no coinciden')
-        setLoading(false)
+        toast.error('Las contraseñas no coinciden');
+        setLoading(false);
         setTimeout(() => {
-          window.location.reload()
-        }, 4000)
-        return
+          window.location.reload();
+        }, 4000);
+        return;
       }
 
       const config = {
         headers: {
           'Content-Type': 'application/json'
         }
-      }
+      };
 
       const { data } = await axios.post(
         '/api/user/register',
         { email, password, firstname, lastname, captcha },
         config
-      )
+      );
 
       if (data?.message) {
-        setRegistered(true)
+        setRegistered(true);
       }
     } catch (error: any) {
-      console.log(error)
-      toast.error(error.response.data.error)
+      console.log(error);
+      toast.error(error.response.data.error);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   return (
     <div className='relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent'>
@@ -283,17 +283,17 @@ function SignUp() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export async function getServerSideProps(context: any) {
-  const session = await getSession(context)
+  const session = await getSession(context);
 
   return {
     props: {
       session
     }
-  }
+  };
 }
 
-export default SignUp
+export default SignUp;

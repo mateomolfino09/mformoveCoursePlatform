@@ -3,72 +3,72 @@ import {
   headContentAnimation,
   headTextAnimation,
   slideAnimation
-} from '../config/motion'
-import imageLoader from '../imageLoader'
-import { CoursesDB, User } from '../typings'
-import state from '../valtio'
-import CustomButton from './CustomButton'
-import axios from 'axios'
-import { AnimatePresence, motion as m } from 'framer-motion'
-import { CldImage } from 'next-cloudinary'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
-import { toast } from 'react-hot-toast'
-import { useSnapshot } from 'valtio'
+} from '../config/motion';
+import imageLoader from '../imageLoader';
+import { CoursesDB, User } from '../typings';
+import state from '../valtio';
+import CustomButton from './CustomButton';
+import axios from 'axios';
+import { AnimatePresence, motion as m } from 'framer-motion';
+import { CldImage } from 'next-cloudinary';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
+import { useSnapshot } from 'valtio';
 
 interface Props {
-  course: CoursesDB
-  user: User | null
+  course: CoursesDB;
+  user: User | null;
 }
 
 const PaymentGateway = ({ user, course }: Props) => {
-  const email = user?.email
-  const courseId = course.id
-  const FORM_ID = 'payment-form'
-  const [preferenceId, setPreferenceId] = useState(null)
-  const [initPoint, setInitPoint] = useState('')
-  const snap = useSnapshot(state)
-  const router = useRouter()
+  const email = user?.email;
+  const courseId = course.id;
+  const FORM_ID = 'payment-form';
+  const [preferenceId, setPreferenceId] = useState(null);
+  const [initPoint, setInitPoint] = useState('');
+  const snap = useSnapshot(state);
+  const router = useRouter();
 
   const handleClick = () => {
-    state.intro = false
-  }
+    state.intro = false;
+  };
   //obtengo el preferenceId
   useEffect(() => {
     const config = {
       headers: {
         'Content-Type': 'application/json'
       }
-    }
+    };
     axios
       .post('/api/course/payments/userPurchase', { email, courseId }, config)
       .then((data: any) => {
-        setInitPoint(data.data.data.init_point)
+        setInitPoint(data.data.data.init_point);
         // setPreferenceId(data.data.id)
-      })
-  }, [courseId])
+      });
+  }, [courseId]);
 
   useEffect(() => {
     if (preferenceId) {
-      handlScriptAdd(preferenceId)
+      handlScriptAdd(preferenceId);
     }
-  }, [preferenceId])
+  }, [preferenceId]);
 
   const handleRouteChange = async (route: string) => {
-    router.push(route)
-  }
+    router.push(route);
+  };
 
   const handlScriptAdd = (preferenceId: any) => {
-    const script = document.createElement('script')
-    script.type = 'text/javascript'
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
     script.src =
-      'https://www.mercadopago.cl/integrations/v1/web-payment-checkout.js'
-    script.setAttribute('data-preference-id', preferenceId)
-    const form = document.getElementById(FORM_ID)
-    form?.appendChild(script)
-  }
+      'https://www.mercadopago.cl/integrations/v1/web-payment-checkout.js';
+    script.setAttribute('data-preference-id', preferenceId);
+    const form = document.getElementById(FORM_ID);
+    form?.appendChild(script);
+  };
 
   return (
     <AnimatePresence>
@@ -194,7 +194,7 @@ const PaymentGateway = ({ user, course }: Props) => {
         </m.section>
       )}
     </AnimatePresence>
-  )
-}
+  );
+};
 
-export default PaymentGateway
+export default PaymentGateway;

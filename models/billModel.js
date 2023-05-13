@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
-import validator from 'validator'
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const billSchema = new mongoose.Schema(
   {
@@ -54,7 +54,7 @@ const billSchema = new mongoose.Schema(
     }
   },
   { timestamps: true }
-)
+);
 
-let Dataset = mongoose.models.Bill || mongoose.model('Bill', billSchema)
-export default Dataset
+let Dataset = mongoose.models.Bill || mongoose.model('Bill', billSchema);
+export default Dataset;

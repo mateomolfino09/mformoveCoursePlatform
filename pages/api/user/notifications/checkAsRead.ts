@@ -1,16 +1,16 @@
-import connectDB from '../../../../config/connectDB'
-import Courses from '../../../../models/courseModel'
-import Users from '../../../../models/userModel'
-import { Notification } from '../../../../typings'
-import absoluteUrl from 'next-absolute-url'
+import connectDB from '../../../../config/connectDB';
+import Courses from '../../../../models/courseModel';
+import Users from '../../../../models/userModel';
+import { Notification } from '../../../../typings';
+import absoluteUrl from 'next-absolute-url';
 
-connectDB()
+connectDB();
 
 const checkAsRead = async (req: any, res: any) => {
-  const { userId } = req.body
+  const { userId } = req.body;
   try {
     if (req.method === 'PUT') {
-      const dbUser = await Users.findOne({ _id: userId.valueOf() })
+      const dbUser = await Users.findOne({ _id: userId.valueOf() });
 
       dbUser.notifications.filter((x: Notification) => !x.read).slice(-5)
         .length > 0
@@ -18,19 +18,19 @@ const checkAsRead = async (req: any, res: any) => {
             .filter((x: Notification) => !x.read)
             .slice(-5)
             .forEach((noti: Notification) => {
-              noti.read = true
+              noti.read = true;
             })
-        : res.status(304).send(dbUser)
+        : res.status(304).send(dbUser);
 
-      await dbUser.save()
+      await dbUser.save();
 
-      return res.status(200).send(dbUser)
+      return res.status(200).send(dbUser);
     } else {
-      return res.status(401).json({ error: 'Algo salio mal' })
+      return res.status(401).json({ error: 'Algo salio mal' });
     }
   } catch (err) {
-    console.log(err)
-    return res.status(401).json({ error: 'Algo salio mal' })
+    console.log(err);
+    return res.status(401).json({ error: 'Algo salio mal' });
   }
-}
-export default checkAsRead
+};
+export default checkAsRead;

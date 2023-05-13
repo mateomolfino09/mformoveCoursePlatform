@@ -1,10 +1,10 @@
-import connectDB from '../../../config/connectDB'
-import Classes from '../../../models/classModel'
-import Courses from '../../../models/courseModel'
-import Users from '../../../models/userModel'
-import bcrypt from 'bcryptjs'
+import connectDB from '../../../config/connectDB';
+import Classes from '../../../models/classModel';
+import Courses from '../../../models/courseModel';
+import Users from '../../../models/userModel';
+import bcrypt from 'bcryptjs';
 
-connectDB()
+connectDB();
 
 const createCourse = async (req, res) => {
   try {
@@ -21,16 +21,16 @@ const createCourse = async (req, res) => {
         moduleNumbers,
         breakpointTitles,
         cantidadClases
-      } = req.body
+      } = req.body;
 
       //Existe?
-      let user = await Users.findOne({ email: userEmail })
-      const users = await Users.find({})
+      let user = await Users.findOne({ email: userEmail });
+      const users = await Users.find({});
 
-      const exists = await bcrypt.compare(password, user.password)
+      const exists = await bcrypt.compare(password, user.password);
 
       if (!exists) {
-        return res.status(404).json({ error: 'Credenciales incorrectas' })
+        return res.status(404).json({ error: 'Credenciales incorrectas' });
       }
 
       //Es Admin?
@@ -38,13 +38,13 @@ const createCourse = async (req, res) => {
       if (user.rol !== 'Admin' || user?.admin.coursesAvailable <= 0) {
         return res.status(422).json({
           error: 'Este usuario no tiene permisos para crear un curso'
-        })
+        });
       }
-      user.admin.active = true
+      user.admin.active = true;
 
       //Busco ultimo curso
 
-      const lastCourse = await Courses.find().sort({ _id: -1 }).limit(1)
+      const lastCourse = await Courses.find().sort({ _id: -1 }).limit(1);
 
       const newCourse = await new Courses({
         id: JSON.stringify(lastCourse) != '[]' ? lastCourse[0].id + 1 : 1,
@@ -61,41 +61,41 @@ const createCourse = async (req, res) => {
           breakPoints: moduleNumbers,
           titles: breakpointTitles
         }
-      }).save()
+      }).save();
 
       //Traigo clases de YT
 
-      const youtubeURL = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${newCourse.playlist_code}&maxResults=50&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`
+      const youtubeURL = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${newCourse.playlist_code}&maxResults=50&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`;
 
-      const initial = await fetch(youtubeURL)
-      const data = await initial.json()
-      const items = data.items
-      let userClass = []
+      const initial = await fetch(youtubeURL);
+      const data = await initial.json();
+      const items = data.items;
+      let userClass = [];
 
       for (let index = 0; index < items.length; index++) {
-        const item = items[index]
+        const item = items[index];
 
         if (item.snippet.title !== 'Private video') {
-          const videoId = item.snippet.resourceId.videoId
-          const singleYoutubeURL = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`
-          let data = await fetch(singleYoutubeURL)
-          let singleItem = await data.json()
-          let durationISO = singleItem.items[0]?.contentDetails.duration
-          console.log(durationISO)
-          let seg = 0
+          const videoId = item.snippet.resourceId.videoId;
+          const singleYoutubeURL = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`;
+          let data = await fetch(singleYoutubeURL);
+          let singleItem = await data.json();
+          let durationISO = singleItem.items[0]?.contentDetails.duration;
+          console.log(durationISO);
+          let seg = 0;
 
           if (
             durationISO &&
             durationISO.includes('PT') &&
             !durationISO.includes('H')
           ) {
-            const indexPT = durationISO.indexOf('T')
-            const indexMin = durationISO.indexOf('M')
-            const indexSeg = durationISO.indexOf('S')
+            const indexPT = durationISO.indexOf('T');
+            const indexMin = durationISO.indexOf('M');
+            const indexSeg = durationISO.indexOf('S');
 
-            const min = +durationISO.substring(indexPT + 1, indexMin)
-            seg = +durationISO.substring(indexMin + 1, indexSeg)
-            seg = min * 60 + seg
+            const min = +durationISO.substring(indexPT + 1, indexMin);
+            seg = +durationISO.substring(indexMin + 1, indexSeg);
+            seg = min * 60 + seg;
           }
 
           const newClass = await new Classes({
@@ -105,22 +105,22 @@ const createCourse = async (req, res) => {
             image_url: item.snippet.thumbnails.standard.url,
             totalTime: seg,
             course: newCourse
-          }).save()
+          }).save();
 
-          newCourse.classes.push(newClass)
-          await newCourse.save()
+          newCourse.classes.push(newClass);
+          await newCourse.save();
 
           userClass.push({
             class: newClass,
             id: newClass.id,
             actualTime: 0,
             like: false
-          })
+          });
         }
       }
 
-      user.admin.coursesAvailable = user.admin.coursesAvailable - 1
-      await user.save()
+      user.admin.coursesAvailable = user.admin.coursesAvailable - 1;
+      await user.save();
 
       //Agrego curso a Usuarios
 
@@ -130,7 +130,7 @@ const createCourse = async (req, res) => {
           purchased: user.rol === 'Admin' ? true : false,
           like: false,
           classes: userClass
-        })
+        });
         user.notifications.push({
           title: `${newCourse.name} ha sido creado con éxito`,
           message:
@@ -138,16 +138,16 @@ const createCourse = async (req, res) => {
               ? 'Ya está disponibe para los usuarios'
               : '¡Ya está disponibe disponible en la tienda!',
           status: 'green'
-        })
+        });
         //Optimizar
-        await user.save()
-      })
+        await user.save();
+      });
 
-      res.status(200).json({ message: 'Curso creado correctamente' })
+      res.status(200).json({ message: 'Curso creado correctamente' });
     }
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
   }
-}
+};
 
-export default createCourse
+export default createCourse;

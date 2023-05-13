@@ -1,39 +1,39 @@
-import imageLoader from '../../../../imageLoader'
-import axios from 'axios'
-import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { toast } from 'react-toastify'
+import imageLoader from '../../../../imageLoader';
+import axios from 'axios';
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 function Token() {
-  const [email, setEmail] = useState('')
-  const [conEmail, setConEmail] = useState('')
-  const router = useRouter()
-  const { token } = router.query
+  const [email, setEmail] = useState('');
+  const [conEmail, setConEmail] = useState('');
+  const router = useRouter();
+  const { token } = router.query;
 
   const handleSubmit = async (event: any) => {
-    event.preventDefault()
+    event.preventDefault();
     try {
       const config = {
         headers: {
           'Content-Type': 'application/json'
         }
-      }
+      };
 
       const { data } = await axios.put(
         `/api/user/resetEmail/${token}`,
         { conEmail, email },
         config
-      )
-      toast.success(data.message)
+      );
+      toast.success(data.message);
     } catch (error: any) {
-      toast.error(error?.response?.data?.error)
+      toast.error(error?.response?.data?.error);
     }
-    router.push('/src/user/login')
-  }
+    router.push('/src/user/login');
+  };
 
   return (
     <div className='relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent'>
@@ -101,7 +101,7 @@ function Token() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Token
+export default Token;

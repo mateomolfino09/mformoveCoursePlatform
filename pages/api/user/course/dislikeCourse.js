@@ -1,41 +1,41 @@
-import connectDB from '../../../../config/connectDB'
-import Courses from '../../../../models/courseModel'
-import Users from '../../../../models/userModel'
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import absoluteUrl from 'next-absolute-url'
+import connectDB from '../../../../config/connectDB';
+import Courses from '../../../../models/courseModel';
+import Users from '../../../../models/userModel';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import absoluteUrl from 'next-absolute-url';
 
-connectDB()
+connectDB();
 
 const dislikeCourse = async (req, res) => {
-  const { courseId, userId } = req.body
+  const { courseId, userId } = req.body;
   try {
     if (req.method === 'PUT') {
-      const course = await Courses.findOne({ id: courseId })
+      const course = await Courses.findOne({ id: courseId });
 
-      const dbUser = await Users.findOne({ _id: userId.valueOf() })
+      const dbUser = await Users.findOne({ _id: userId.valueOf() });
 
-      course.likes--
+      course.likes--;
 
-      await course.save()
+      await course.save();
 
       const index = dbUser.courses.findIndex((element) => {
-        return element.course.valueOf() === course._id.valueOf()
-      })
+        return element.course.valueOf() === course._id.valueOf();
+      });
 
-      dbUser.courses[index].like = false
+      dbUser.courses[index].like = false;
 
-      await dbUser.save()
+      await dbUser.save();
 
       return res
         .status(200)
-        .send({ message: 'Le has quitado like a este curso' })
+        .send({ message: 'Le has quitado like a este curso' });
     } else {
-      return res.status(401).json({ error: 'Algo salio mal' })
+      return res.status(401).json({ error: 'Algo salio mal' });
     }
   } catch (err) {
-    console.log(err)
-    return res.status(401).json({ error: 'Algo salio mal' })
+    console.log(err);
+    return res.status(401).json({ error: 'Algo salio mal' });
   }
-}
-export default dislikeCourse
+};
+export default dislikeCourse;

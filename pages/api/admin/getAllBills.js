@@ -1,8 +1,8 @@
-import connectDB from '../../../config/connectDB'
-import Bills from '../../../models/billModel'
-import bcrypt from 'bcryptjs'
+import connectDB from '../../../config/connectDB';
+import Bills from '../../../models/billModel';
+import bcrypt from 'bcryptjs';
 
-connectDB()
+connectDB();
 
 export async function getAllBills() {
   try {
@@ -10,9 +10,9 @@ export async function getAllBills() {
       .populate({ path: 'course' })
       .populate({ path: 'user' })
       .lean()
-      .exec()
-    return JSON.parse(JSON.stringify(bills))
+      .exec();
+    return JSON.parse(JSON.stringify(bills));
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 }

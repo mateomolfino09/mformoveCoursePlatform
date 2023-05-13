@@ -1,7 +1,7 @@
-import connectDB from '../../../config/connectDB'
-import User from '../../../models/userModel'
+import connectDB from '../../../config/connectDB';
+import User from '../../../models/userModel';
 
-connectDB()
+connectDB();
 
 export async function getConfirmedUsers() {
   try {
@@ -9,10 +9,10 @@ export async function getConfirmedUsers() {
       .where('validEmail')
       .equals('yes')
       .lean()
-      .exec()
-    const users = JSON.parse(JSON.stringify(res))
-    return users
+      .exec();
+    const users = JSON.parse(JSON.stringify(res));
+    return users;
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 }

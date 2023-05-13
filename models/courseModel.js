@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
-import validator from 'validator'
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const modulesSchema = new mongoose.Schema({
   quantity: {
@@ -16,7 +16,7 @@ const modulesSchema = new mongoose.Schema({
       type: String
     }
   ]
-})
+});
 
 const courseSchema = new mongoose.Schema(
   {
@@ -81,11 +81,11 @@ const courseSchema = new mongoose.Schema(
     }
   },
   { timestamps: true }
-)
+);
 
 // courseSchema.pre('validate', function(next) {
 //   this
 // })
 
-let Dataset = mongoose.models.Course || mongoose.model('Course', courseSchema)
-export default Dataset
+let Dataset = mongoose.models.Course || mongoose.model('Course', courseSchema);
+export default Dataset;

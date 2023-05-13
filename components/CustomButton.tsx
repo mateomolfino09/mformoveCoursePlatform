@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 
 interface Props {
-  title: string
-  customStyles: string
-  handleClick: any
+  title: string;
+  customStyles: string;
+  handleClick: any;
 }
 
 const CustomButton = ({ title, customStyles, handleClick }: Props) => {
@@ -14,7 +14,7 @@ const CustomButton = ({ title, customStyles, handleClick }: Props) => {
     >
       {title}
     </button>
-  )
-}
+  );
+};
 
-export default CustomButton
+export default CustomButton;

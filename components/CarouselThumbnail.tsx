@@ -1,41 +1,45 @@
-import { CourseListContext } from '../hooks/courseListContext'
-import { CoursesContext } from '../hooks/coursesContext'
-import { useAppDispatch } from '../hooks/useTypeSelector'
-import { UserContext } from '../hooks/userContext'
-import imageLoader from '../imageLoader'
-import { loadCourse } from '../redux/courseModal/courseModalAction'
-import { CourseUser, CoursesDB, Ricks, User } from '../typings'
-import { ChevronDownIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid'
-import zIndex from '@mui/material/styles/zIndex'
-import axios from 'axios'
-import { AnimatePresence, motion as m, useAnimation } from 'framer-motion'
-import { CldImage } from 'next-cloudinary'
-import Image from 'next/image'
-import Link from 'next/link'
+import { CourseListContext } from '../hooks/courseListContext';
+import { CoursesContext } from '../hooks/coursesContext';
+import { useAppDispatch } from '../hooks/useTypeSelector';
+import { UserContext } from '../hooks/userContext';
+import imageLoader from '../imageLoader';
+import { loadCourse } from '../redux/courseModal/courseModalAction';
+import { CourseUser, CoursesDB, Ricks, User } from '../typings';
+import {
+  ChevronDownIcon,
+  PlayIcon,
+  TrashIcon
+} from '@heroicons/react/24/solid';
+import zIndex from '@mui/material/styles/zIndex';
+import axios from 'axios';
+import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
+import { CldImage } from 'next-cloudinary';
+import Image from 'next/image';
+import Link from 'next/link';
 import React, {
   Dispatch,
   SetStateAction,
   useContext,
   useEffect,
   useState
-} from 'react'
-import { Toaster, toast } from 'react-hot-toast'
-import { AiOutlineCheckCircle, AiOutlineMinusCircle } from 'react-icons/ai'
-import { BiAddToQueue } from 'react-icons/bi'
-import { BsPlayCircle } from 'react-icons/bs'
-import { FaHistory, FaPlay } from 'react-icons/fa'
-import { GiDiploma } from 'react-icons/gi'
-import { GoCreditCard } from 'react-icons/go'
-import { MdAdd, MdBlock, MdOutlineClose, MdRemove } from 'react-icons/md'
-import { TbLockOpenOff } from 'react-icons/tb'
+} from 'react';
+import { Toaster, toast } from 'react-hot-toast';
+import { AiOutlineCheckCircle, AiOutlineMinusCircle } from 'react-icons/ai';
+import { BiAddToQueue } from 'react-icons/bi';
+import { BsPlayCircle } from 'react-icons/bs';
+import { FaHistory, FaPlay } from 'react-icons/fa';
+import { GiDiploma } from 'react-icons/gi';
+import { GoCreditCard } from 'react-icons/go';
+import { MdAdd, MdBlock, MdOutlineClose, MdRemove } from 'react-icons/md';
+import { TbLockOpenOff } from 'react-icons/tb';
 
 interface Props {
-  course: CoursesDB
-  setSelectedCourse: Dispatch<SetStateAction<CoursesDB | null>> | null
-  user: User | null
-  courseIndex: number
-  isOpen: number
-  setIsOpen: any
+  course: CoursesDB;
+  setSelectedCourse: Dispatch<SetStateAction<CoursesDB | null>> | null;
+  user: User | null;
+  courseIndex: number;
+  isOpen: number;
+  setIsOpen: any;
 }
 
 const notify = (message: String, agregado: boolean, like: boolean) =>
@@ -63,7 +67,7 @@ const notify = (message: String, agregado: boolean, like: boolean) =>
       </div>
     ),
     { id: 'unique-notification', position: 'top-center' }
-  )
+  );
 
 function CarouselThumbnail({
   course,
@@ -73,18 +77,18 @@ function CarouselThumbnail({
   isOpen,
   setIsOpen
 }: Props) {
-  const dispatch = useAppDispatch()
-  const [courseUser, setCourseUser] = useState<CourseUser | null>(null)
-  const [zIndex, setZIndex] = useState(0)
-  const { listCourse, setListCourse } = useContext(CourseListContext)
-  const { userCtx, setUserCtx } = useContext(UserContext)
-  const animation = useAnimation()
-  const animationButton = useAnimation()
-  const animationArrow = useAnimation()
+  const dispatch = useAppDispatch();
+  const [courseUser, setCourseUser] = useState<CourseUser | null>(null);
+  const [zIndex, setZIndex] = useState(0);
+  const { listCourse, setListCourse } = useContext(CourseListContext);
+  const { userCtx, setUserCtx } = useContext(UserContext);
+  const animation = useAnimation();
+  const animationButton = useAnimation();
+  const animationArrow = useAnimation();
 
   useEffect(() => {
-    setCourseUser(userCtx?.courses[courseIndex])
-  }, [userCtx])
+    setCourseUser(userCtx?.courses[courseIndex]);
+  }, [userCtx]);
 
   useEffect(() => {
     if (isOpen == course.id) {
@@ -97,7 +101,7 @@ function CarouselThumbnail({
           duration: 0.25,
           stiffness: 0
         }
-      })
+      });
 
       animationButton.start({
         y: -15,
@@ -109,7 +113,7 @@ function CarouselThumbnail({
           duration: 0.25,
           stiffness: 0
         }
-      })
+      });
       animationArrow.start({
         transform: 'rotate(180deg)',
         zIndex: 500,
@@ -119,7 +123,7 @@ function CarouselThumbnail({
           duration: 0.25,
           stiffness: 0
         }
-      })
+      });
     } else {
       animation.start({
         y: 0,
@@ -130,7 +134,7 @@ function CarouselThumbnail({
           duration: 0.33,
           stiffness: 0
         }
-      })
+      });
 
       animationButton.start({
         y: 50,
@@ -143,7 +147,7 @@ function CarouselThumbnail({
           modifyTarget: ''
         },
         end: zIndex
-      })
+      });
 
       animationArrow.start({
         transform: 'rotate(0deg)',
@@ -154,57 +158,57 @@ function CarouselThumbnail({
           duration: 0.25,
           stiffness: 0
         }
-      })
+      });
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const addCourseToList = async () => {
     const config = {
       headers: {
         'Content-Type': 'application/json'
       }
-    }
-    const courseId = course?.id
-    const userId = user?._id
+    };
+    const courseId = course?.id;
+    const userId = user?._id;
     try {
-      notify('Agregado a la Lista', true, false)
+      notify('Agregado a la Lista', true, false);
       const { data } = await axios.put(
         '/api/user/course/listCourse',
         { courseId, userId },
         config
-      )
-      setListCourse([...listCourse, course])
-      setUserCtx(data)
+      );
+      setListCourse([...listCourse, course]);
+      setUserCtx(data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
   const removeCourseToList = async () => {
     const config = {
       headers: {
         'Content-Type': 'application/json'
       }
-    }
-    const courseId = course?.id
-    const userId = user?._id
+    };
+    const courseId = course?.id;
+    const userId = user?._id;
     try {
-      notify('Eliminado de la Lista', false, false)
+      notify('Eliminado de la Lista', false, false);
       setListCourse([
         ...listCourse.filter((value: CoursesDB) => value.id != course?.id)
-      ])
+      ]);
       const { data } = await axios.put(
         '/api/user/course/dislistCourse',
         { courseId, userId },
         config
-      )
-      setUserCtx(data)
+      );
+      setUserCtx(data);
     } catch (error) {}
-  }
+  };
 
   const handleOpen = () => {
-    dispatch(loadCourse())
-    if (setSelectedCourse != null) setSelectedCourse(course)
-  }
+    dispatch(loadCourse());
+    if (setSelectedCourse != null) setSelectedCourse(course);
+  };
 
   return (
     <AnimatePresence>
@@ -235,7 +239,7 @@ function CarouselThumbnail({
                 initial={{ y: 0 }}
                 animate={animation}
                 onClick={(e) => {
-                  e.currentTarget.style.color = '#fff'
+                  e.currentTarget.style.color = '#fff';
                 }}
                 className='flex flex-row items-center '
               >
@@ -359,7 +363,7 @@ function CarouselThumbnail({
         </div>
       </m.div>
     </AnimatePresence>
-  )
+  );
 }
 
-export default CarouselThumbnail
+export default CarouselThumbnail;

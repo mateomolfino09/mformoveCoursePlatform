@@ -1,74 +1,74 @@
-import imageLoader from '../imageLoader'
-import { LoadingSpinner } from './LoadingSpinner'
-import axios from 'axios'
-import Image from 'next/image'
-import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
+import imageLoader from '../imageLoader';
+import { LoadingSpinner } from './LoadingSpinner';
+import axios from 'axios';
+import Image from 'next/image';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 interface Props {
-  setEmail: (email: string) => void
-  step0ToStep1: any
+  setEmail: (email: string) => void;
+  step0ToStep1: any;
 }
 
 const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
-  const [email, setEmailStep] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [capsLock, setCapsLock] = useState<boolean>(false)
+  const [email, setEmailStep] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [capsLock, setCapsLock] = useState<boolean>(false);
 
   useEffect(() => {
     if (typeof window != undefined && document != undefined) {
-      document.addEventListener('keydown', testCapsLock)
-      document.addEventListener('keyup', testCapsLock)
+      document.addEventListener('keydown', testCapsLock);
+      document.addEventListener('keyup', testCapsLock);
     }
-  }, [])
+  }, []);
 
   function testCapsLock(event: any) {
     if (event.code === 'CapsLock') {
-      let isCapsLockOn = event.getModifierState('CapsLock')
+      let isCapsLockOn = event.getModifierState('CapsLock');
       if (isCapsLockOn) {
-        setCapsLock(true)
+        setCapsLock(true);
       } else {
-        setCapsLock(false)
+        setCapsLock(false);
       }
     }
   }
 
   const handleClick = async () => {
     if (!email.includes('@')) {
-      toast.error('Ingresa un email válido')
-      return
+      toast.error('Ingresa un email válido');
+      return;
     }
-    setLoading(true)
+    setLoading(true);
 
     try {
       const config = {
         headers: {
           'Content-Type': 'application/json'
         }
-      }
+      };
       let { data } = await axios.post(
         '/api/user/email/verifyEmail',
         { email },
         config
-      )
+      );
 
-      setEmail(email)
-      step0ToStep1()
+      setEmail(email);
+      step0ToStep1();
     } catch (error: any) {
-      toast.error(error.response.data.message)
+      toast.error(error.response.data.message);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const keyDownHandler = (event: any) => {
     if (event.key === 'Enter') {
-      event.preventDefault()
+      event.preventDefault();
 
-      handleClick()
+      handleClick();
     }
-  }
+  };
 
   return (
     <div
@@ -146,7 +146,7 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default RegisterStepCero
+export default RegisterStepCero;

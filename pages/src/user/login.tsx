@@ -1,138 +1,138 @@
-import { LoadingSpinner } from '../../../components/LoadingSpinner'
-import LoginButton from '../../../components/LoginButton'
-import imageLoader from '../../../imageLoader'
-import { wrapper } from '../../../redux/store'
-import { loadUser } from '../../../redux/user/userAction'
-import { User } from '../../../typings'
-import axios from 'axios'
-import cookie from 'js-cookie'
-import { getToken } from 'next-auth/jwt'
-import { getProviders, getSession, signIn, useSession } from 'next-auth/react'
-import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
-import Router, { useRouter } from 'next/router'
-import { parseCookies } from 'nookies'
-import React, { MouseEvent, use, useEffect, useRef, useState } from 'react'
-import ReCAPTCHA, { ReCAPTCHAProps } from 'react-google-recaptcha'
-import { toast } from 'react-toastify'
+import { LoadingSpinner } from '../../../components/LoadingSpinner';
+import LoginButton from '../../../components/LoginButton';
+import imageLoader from '../../../imageLoader';
+import { wrapper } from '../../../redux/store';
+import { loadUser } from '../../../redux/user/userAction';
+import { User } from '../../../typings';
+import axios from 'axios';
+import cookie from 'js-cookie';
+import { getToken } from 'next-auth/jwt';
+import { getProviders, getSession, signIn, useSession } from 'next-auth/react';
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
+import Router, { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import React, { MouseEvent, use, useEffect, useRef, useState } from 'react';
+import ReCAPTCHA, { ReCAPTCHAProps } from 'react-google-recaptcha';
+import { toast } from 'react-toastify';
 
 interface ProfileUser {
-  user: User | null
-  loading: boolean
-  error: any
+  user: User | null;
+  loading: boolean;
+  error: any;
 }
 
 interface Props {
-  email: String
-  user: User
+  email: String;
+  user: User;
 }
 
 const Login = ({ providers, session }: any) => {
-  const cookies = parseCookies()
+  const cookies = parseCookies();
 
-  const [loading, setLoading] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [validateEmail, setValidateEmail] = useState(false)
-  const [capsLock, setCapsLock] = useState<boolean>(false)
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [validateEmail, setValidateEmail] = useState(false);
+  const [capsLock, setCapsLock] = useState<boolean>(false);
 
-  const router = useRouter()
+  const router = useRouter();
   // const dispatch = useDispatch()
 
   useEffect(() => {
     if (typeof window != undefined && document != undefined) {
-      document.addEventListener('keydown', testCapsLock)
-      document.addEventListener('keyup', testCapsLock)
+      document.addEventListener('keydown', testCapsLock);
+      document.addEventListener('keyup', testCapsLock);
     }
-  }, [])
+  }, []);
 
   function testCapsLock(event: any) {
     if (event.code === 'CapsLock') {
-      let isCapsLockOn = event.getModifierState('CapsLock')
+      let isCapsLockOn = event.getModifierState('CapsLock');
       if (isCapsLockOn) {
-        setCapsLock(true)
+        setCapsLock(true);
       } else {
-        setCapsLock(false)
+        setCapsLock(false);
       }
     }
   }
 
   useEffect(() => {
     if (session) {
-      toast.success('Login exitoso!')
-      router.push('/src/home')
+      toast.success('Login exitoso!');
+      router.push('/src/home');
     }
 
     if (cookies?.user) {
-      router.push('/src/home')
+      router.push('/src/home');
     }
-  }, [session, router, cookies?.user])
+  }, [session, router, cookies?.user]);
 
   const signinUser = async (e: any) => {
-    e.preventDefault()
+    e.preventDefault();
 
     try {
-      setLoading(true)
+      setLoading(true);
 
       const config = {
         headers: {
           'Content-Type': 'application/json'
         }
-      }
-      console.log('aca')
+      };
+      console.log('aca');
       const { data } = await axios.post(
         '/api/user/login',
         { email, password },
         config
-      )
-      toast.success(data.message)
-      cookie.set('token', data?.token)
-      cookie.set('user', JSON.stringify(data?.user))
+      );
+      toast.success(data.message);
+      cookie.set('token', data?.token);
+      cookie.set('user', JSON.stringify(data?.user));
 
-      router.push('/src/home')
+      router.push('/src/home');
     } catch (error: any) {
       if (error?.response?.data?.validate === true) {
-        setValidateEmail(true)
-        toast.error(error.response?.data.message)
+        setValidateEmail(true);
+        toast.error(error.response?.data.message);
       } else {
-        console.log(error)
-        toast.error(error.response?.data.message)
-        toast.error(error.response?.data.error)
+        console.log(error);
+        toast.error(error.response?.data.message);
+        toast.error(error.response?.data.error);
       }
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const resendTokenValidate = async (e: MouseEvent<HTMLButtonElement>) => {
     try {
-      e.preventDefault()
-      setLoading(true)
+      e.preventDefault();
+      setLoading(true);
 
       const config = {
         headers: {
           'Content-Type': 'application/json'
         }
-      }
+      };
 
       const { data } = await axios.post(
         '/api/user/resendTokenValidate',
         { email },
         config
-      )
+      );
 
       if (data?.message) {
-        toast.success(data?.message)
+        toast.success(data?.message);
       }
 
-      setValidateEmail(false)
-      setLoading(false)
+      setValidateEmail(false);
+      setLoading(false);
     } catch (error: any) {
-      toast.error(error.response.data.error)
+      toast.error(error.response.data.error);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   return (
     <div className='relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent overflow-hidden'>
@@ -279,8 +279,8 @@ const Login = ({ providers, session }: any) => {
               <button
                 type='button'
                 onClick={() => {
-                  setValidateEmail(false)
-                  window.location.reload()
+                  setValidateEmail(false);
+                  window.location.reload();
                 }}
                 className='text-white underline cursor-pointer mt-4'
               >
@@ -291,29 +291,29 @@ const Login = ({ providers, session }: any) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 export const getServerSideProps = wrapper.getServerSideProps(
   (store) =>
     async ({ req }) => {
-      const session = await getSession({ req })
-      const providers = await getProviders()
-      const cookies = parseCookies()
+      const session = await getSession({ req });
+      const providers = await getProviders();
+      const cookies = parseCookies();
 
       const user: User = cookies?.user
         ? JSON.parse(cookies.user)
-        : session?.user
+        : session?.user;
 
-      await store.dispatch(loadUser(user?.email, user))
+      await store.dispatch(loadUser(user?.email, user));
 
       return {
         props: {
           providers,
           session
         }
-      }
+      };
     }
-)
+);
 
-export default Login
+export default Login;

@@ -1,34 +1,34 @@
-import connectDB from '../../../config/connectDB'
-import User from '../../../models/userModel'
-import { CourseUser, User as UserType } from '../../../typings'
-import { ConnectionPoolClosedEvent } from 'mongodb'
+import connectDB from '../../../config/connectDB';
+import User from '../../../models/userModel';
+import { CourseUser, User as UserType } from '../../../typings';
+import { ConnectionPoolClosedEvent } from 'mongodb';
 
-connectDB()
+connectDB();
 
 const updateActualCourse = async (req: any, res: any) => {
   try {
     if (req.method === 'POST') {
-      const { email, courseId, actualChapter } = req.body
-      const user: any | null = await User.findOne({ email: email })
+      const { email, courseId, actualChapter } = req.body;
+      const user: any | null = await User.findOne({ email: email });
 
       const index = user?.courses.findIndex(
         (course: CourseUser) => course.course.valueOf() === courseId
-      )
+      );
 
       index != null && user != null
         ? (user.courses[index].actualChapter = actualChapter)
-        : null
+        : null;
 
-      user.courses[index].actualTime = 0
+      user.courses[index].actualTime = 0;
 
-      await user?.save()
+      await user?.save();
 
-      console.log()
-      return res.status(200).send(user)
+      console.log();
+      return res.status(200).send(user);
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
-export default updateActualCourse
+export default updateActualCourse;

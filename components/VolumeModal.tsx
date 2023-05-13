@@ -1,10 +1,10 @@
-import state from '../valtio'
-import React from 'react'
-import { TfiHeadphone } from 'react-icons/tfi'
-import { useSnapshot } from 'valtio'
+import state from '../valtio';
+import React from 'react';
+import { TfiHeadphone } from 'react-icons/tfi';
+import { useSnapshot } from 'valtio';
 
 const VolumeModal = () => {
-  const snap = useSnapshot(state)
+  const snap = useSnapshot(state);
 
   return (
     <div
@@ -23,8 +23,8 @@ const VolumeModal = () => {
             <button
               className=''
               onClick={() => {
-                state.volumeIndex = true
-                state.volumeModal = false
+                state.volumeIndex = true;
+                state.volumeModal = false;
               }}
             >
               Continuar
@@ -34,8 +34,8 @@ const VolumeModal = () => {
             <button
               className=''
               onClick={() => {
-                state.volumeIndex = false
-                state.volumeModal = false
+                state.volumeIndex = false;
+                state.volumeModal = false;
               }}
             >
               Apagar sonidos
@@ -44,7 +44,7 @@ const VolumeModal = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default VolumeModal
+export default VolumeModal;

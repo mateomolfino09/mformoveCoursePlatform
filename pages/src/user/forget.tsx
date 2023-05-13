@@ -1,69 +1,69 @@
-import { LoadingSpinner } from '../../../components/LoadingSpinner'
-import imageLoader from '../../../imageLoader'
-import axios from 'axios'
-import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { useRef, useState } from 'react'
-import ReCAPTCHA from 'react-google-recaptcha'
-import { useDispatch, useSelector } from 'react-redux'
-import { toast } from 'react-toastify'
+import { LoadingSpinner } from '../../../components/LoadingSpinner';
+import imageLoader from '../../../imageLoader';
+import axios from 'axios';
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React, { useRef, useState } from 'react';
+import ReCAPTCHA from 'react-google-recaptcha';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 function Forget() {
-  const [email, setEmail] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
-  const router = useRouter()
-  const recaptchaRef = useRef<any>()
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const router = useRouter();
+  const recaptchaRef = useRef<any>();
   const key =
     process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY != undefined
       ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-      : ''
+      : '';
 
   const onChange = () => {
     if (recaptchaRef.current.getValue()) {
-      setCaptchaToken(recaptchaRef.current.getValue())
+      setCaptchaToken(recaptchaRef.current.getValue());
     } else {
-      setCaptchaToken(null)
+      setCaptchaToken(null);
     }
-  }
+  };
 
   const handleSubmit = async (event: any) => {
-    event.preventDefault()
-    setLoading(true)
+    event.preventDefault();
+    setLoading(true);
 
-    const captcha = captchaToken
+    const captcha = captchaToken;
     if (!captcha) {
-      toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde')
-      setLoading(false)
+      toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde');
+      setLoading(false);
       setTimeout(() => {
-        window.location.reload()
-      }, 4000)
-      return
+        window.location.reload();
+      }, 4000);
+      return;
     }
     try {
       const config = {
         headers: {
           'Content-Type': 'application/json'
         }
-      }
+      };
 
       const { data } = await axios.post(
         `/api/user/forget`,
         { email, captcha },
         config
-      )
-      toast.success(data.message)
-      router.push('/src/user/login')
+      );
+      toast.success(data.message);
+      router.push('/src/user/login');
     } catch (error: any) {
-      toast.error(error?.response?.data?.error)
+      toast.error(error?.response?.data?.error);
     }
     setTimeout(() => {
-      window.location.reload()
-    }, 4000)
-    setLoading(false)
-  }
+      window.location.reload();
+    }, 4000);
+    setLoading(false);
+  };
 
   return (
     <div className='relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent'>
@@ -151,7 +151,7 @@ function Forget() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default Forget
+export default Forget;

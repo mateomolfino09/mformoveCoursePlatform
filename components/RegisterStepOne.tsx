@@ -1,13 +1,13 @@
-import { countries } from '../constants/countries'
-import { genders } from '../constants/genders'
-import imageLoader from '../imageLoader'
-import { ConsoleConstructorOptions } from 'console'
-import Image from 'next/image'
-import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
-import { AiOutlineCheckCircle } from 'react-icons/ai'
-import Select, { StylesConfig } from 'react-select'
-import { toast } from 'react-toastify'
+import { countries } from '../constants/countries';
+import { genders } from '../constants/genders';
+import imageLoader from '../imageLoader';
+import { ConsoleConstructorOptions } from 'console';
+import Image from 'next/image';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import { AiOutlineCheckCircle } from 'react-icons/ai';
+import Select, { StylesConfig } from 'react-select';
+import { toast } from 'react-toastify';
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -18,39 +18,39 @@ const colourStyles: StylesConfig<any> = {
     padding: 0
   }),
   option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    return { ...styles, color: '#808080' }
+    return { ...styles, color: '#808080' };
   },
   input: (styles) => ({ ...styles, backgroundColor: '', color: '#fff' }),
   placeholder: (styles) => ({ ...styles, color: '#fff' }),
   singleValue: (styles, { data }) => ({ ...styles, color: '#808080' })
-}
+};
 
 interface Props {
-  step1ToStep2: any
-  setData: any
+  step1ToStep2: any;
+  setData: any;
 }
 
 const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
-  const [firstname, setFirstname] = useState('')
-  const [lastname, setLastname] = useState('')
-  const [gender, setGender] = useState('')
-  const [country, setCountry] = useState('')
-  const [capsLock, setCapsLock] = useState<boolean>(false)
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [gender, setGender] = useState('');
+  const [country, setCountry] = useState('');
+  const [capsLock, setCapsLock] = useState<boolean>(false);
 
   useEffect(() => {
     if (typeof window != undefined && document != undefined) {
-      document.addEventListener('keydown', testCapsLock)
-      document.addEventListener('keyup', testCapsLock)
+      document.addEventListener('keydown', testCapsLock);
+      document.addEventListener('keyup', testCapsLock);
     }
-  }, [])
+  }, []);
 
   function testCapsLock(event: any) {
     if (event.code === 'CapsLock') {
-      let isCapsLockOn = event.getModifierState('CapsLock')
+      let isCapsLockOn = event.getModifierState('CapsLock');
       if (isCapsLockOn) {
-        setCapsLock(true)
+        setCapsLock(true);
       } else {
-        setCapsLock(false)
+        setCapsLock(false);
       }
     }
   }
@@ -66,20 +66,20 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
     ) {
       toast.error(
         'Hay un error en los datos que ingresó, rellene todos los campos o vuelva a intentar'
-      )
+      );
     } else {
-      setData(firstname, lastname, gender, country)
-      step1ToStep2()
+      setData(firstname, lastname, gender, country);
+      step1ToStep2();
     }
-  }
+  };
 
   const keyDownHandler = (event: any) => {
     if (event.key === 'Enter') {
-      event.preventDefault()
+      event.preventDefault();
 
-      handleClick()
+      handleClick();
     }
-  }
+  };
 
   return (
     <div
@@ -127,7 +127,7 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
             className='w-full sm:w-52'
             value={gender}
             onChange={(e) => {
-              return setGender(e.label)
+              return setGender(e.label);
             }}
             onKeyDown={keyDownHandler}
           />
@@ -138,7 +138,7 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
             placeholder={country || 'País'}
             value={country}
             onChange={(e) => {
-              return setCountry(e.label)
+              return setCountry(e.label);
             }}
             onKeyDown={keyDownHandler}
           />
@@ -152,7 +152,7 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RegisterStepOne
+export default RegisterStepOne;

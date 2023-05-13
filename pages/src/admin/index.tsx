@@ -1,37 +1,37 @@
-import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout'
-import { UserContext } from '../../../hooks/userContext'
-import { State } from '../../../redux/reducers'
-import { User } from '../../../typings'
-import { getUserFromBack } from '../../api/user/getUserFromBack'
+import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
+import { UserContext } from '../../../hooks/userContext';
+import { State } from '../../../redux/reducers';
+import { User } from '../../../typings';
+import { getUserFromBack } from '../../api/user/getUserFromBack';
 import {
   CreditCardIcon,
   HomeIcon,
   PlusCircleIcon,
   TableCellsIcon,
   UserIcon
-} from '@heroicons/react/24/solid'
-import { getSession } from 'next-auth/react'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { parseCookies } from 'nookies'
-import React, { useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
+} from '@heroicons/react/24/solid';
+import { getSession } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import React, { useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 interface Props {
-  user: User
+  user: User;
 }
 
 const Index = ({ user }: Props) => {
-  const [userCtx, setUserCtx] = useState<User>(user)
-  const router = useRouter()
+  const [userCtx, setUserCtx] = useState<User>(user);
+  const router = useRouter();
 
   const providerValue = useMemo(
     () => ({ userCtx, setUserCtx }),
     [userCtx, setUserCtx]
-  )
+  );
 
   if (user === null || user.rol != 'Admin') {
-    router.push('/src/user/login')
+    router.push('/src/user/login');
   }
 
   return (
@@ -66,22 +66,22 @@ const Index = ({ user }: Props) => {
         </div>
       </AdmimDashboardLayout>
     </UserContext.Provider>
-  )
-}
+  );
+};
 
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context
-  const session = await getSession({ req })
+  const { params, query, req, res } = context;
+  const session = await getSession({ req });
   // Get a cookie
-  const cookies = parseCookies(context)
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
-  const email = userCookie.email
+  const cookies = parseCookies(context);
+  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
+  const email = userCookie.email;
 
-  const user = await getUserFromBack(email)
+  const user = await getUserFromBack(email);
 
   return {
     props: { user }
-  }
+  };
 }
 
-export default Index
+export default Index;

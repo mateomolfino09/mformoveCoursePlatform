@@ -1,18 +1,18 @@
-import imageLoader from '../imageLoader'
-import { User } from '../typings'
-import { LoadingSpinner } from './LoadingSpinner'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { useState } from 'react'
+import imageLoader from '../imageLoader';
+import { User } from '../typings';
+import { LoadingSpinner } from './LoadingSpinner';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 interface Props {
-  user: User | null
+  user: User | null;
 }
 
 function Membership({ user }: Props) {
-  const [isBillingLoading, setBillingLoading] = useState(false)
-  const router = useRouter()
+  const [isBillingLoading, setBillingLoading] = useState(false);
+  const router = useRouter();
 
   return (
     <div className='mt-6 grid grid-cols-1 gap-x-4 border px-4 md:grid-cols-4 md:border-x-0 md:border-t md:border-b-0 md:px-0'>
@@ -64,7 +64,7 @@ function Membership({ user }: Props) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Membership
+export default Membership;

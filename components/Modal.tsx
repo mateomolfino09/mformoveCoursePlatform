@@ -1,21 +1,21 @@
-import { CourseListContext } from '../hooks/courseListContext'
-import { useAppDispatch } from '../hooks/useTypeSelector'
-import { UserContext } from '../hooks/userContext'
-import { closeCourse } from '../redux/courseModal/courseModalAction'
-import { CourseModal } from '../redux/courseModal/courseModalTypes'
-import { State } from '../redux/reducers'
-import { Courses, CoursesDB, Item, User } from '../typings'
-import requests from '../utils/requests'
-import Row from './Row'
+import { CourseListContext } from '../hooks/courseListContext';
+import { useAppDispatch } from '../hooks/useTypeSelector';
+import { UserContext } from '../hooks/userContext';
+import { closeCourse } from '../redux/courseModal/courseModalAction';
+import { CourseModal } from '../redux/courseModal/courseModalTypes';
+import { State } from '../redux/reducers';
+import { Courses, CoursesDB, Item, User } from '../typings';
+import requests from '../utils/requests';
+import Row from './Row';
 import {
   HandThumbUpIcon,
   PlusCircleIcon,
   PlusIcon,
   XCircleIcon
-} from '@heroicons/react/24/outline'
-import MuiModal from '@mui/material/Modal'
-import axios from 'axios'
-import Link from 'next/link'
+} from '@heroicons/react/24/outline';
+import MuiModal from '@mui/material/Modal';
+import axios from 'axios';
+import Link from 'next/link';
 import {
   Dispatch,
   SetStateAction,
@@ -24,38 +24,38 @@ import {
   useEffect,
   useRef,
   useState
-} from 'react'
-import ReactCanvasConfetti from 'react-canvas-confetti'
-import toast, { Toaster } from 'react-hot-toast'
+} from 'react';
+import ReactCanvasConfetti from 'react-canvas-confetti';
+import toast, { Toaster } from 'react-hot-toast';
 import {
   AiFillPlusCircle,
   AiOutlineCheckCircle,
   AiOutlineMinusCircle,
   AiOutlinePlusCircle,
   AiOutlineShoppingCart
-} from 'react-icons/ai'
+} from 'react-icons/ai';
 import {
   FaPlay,
   FaThumbsUp,
   FaVolumeMute,
   FaVolumeOff,
   FaVolumeUp
-} from 'react-icons/fa'
-import { HiHandThumbUp, HiOutlineHandThumbUp } from 'react-icons/hi2'
-import { MdAdd, MdOutlineClose, MdRemove } from 'react-icons/md'
-import { TbLockOpenOff } from 'react-icons/tb'
-import ReactPlayer from 'react-player/lazy'
-import { useSelector } from 'react-redux'
-import { toast as toaster } from 'react-toastify'
+} from 'react-icons/fa';
+import { HiHandThumbUp, HiOutlineHandThumbUp } from 'react-icons/hi2';
+import { MdAdd, MdOutlineClose, MdRemove } from 'react-icons/md';
+import { TbLockOpenOff } from 'react-icons/tb';
+import ReactPlayer from 'react-player/lazy';
+import { useSelector } from 'react-redux';
+import { toast as toaster } from 'react-toastify';
 
 interface Props {
-  courseDB: CoursesDB | null
-  user: User | null
-  updateUserDB: (user: User) => void
+  courseDB: CoursesDB | null;
+  user: User | null;
+  updateUserDB: (user: User) => void;
 }
 
 interface UserProps {
-  dbUser: User
+  dbUser: User;
 }
 
 const notify = (message: String, agregado: boolean, like: boolean) =>
@@ -83,85 +83,85 @@ const notify = (message: String, agregado: boolean, like: boolean) =>
       </div>
     ),
     { id: 'unique-notification', position: 'top-center' }
-  )
+  );
 
 function Modal({ courseDB, user, updateUserDB }: Props) {
-  const youtubeURL = `${requests.playlistYTAPI}?part=snippet&playlistId=${courseDB?.playlist_code}&maxResults=50&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`
-  const [items, setItems] = useState<Item[] | null>(null)
-  const [url, setUrl] = useState<string | null>(null)
-  const [like, setLike] = useState<boolean>(false)
-  const [list, setList] = useState<boolean>(false)
-  const [actualCourseIndex, setActualCourseIndex] = useState<number>(0)
-  const [courseIndex, setCourseIndex] = useState<number>(0)
-  const { listCourse, setListCourse } = useContext(CourseListContext)
-  const { userCtx, setUserCtx } = useContext(UserContext)
+  const youtubeURL = `${requests.playlistYTAPI}?part=snippet&playlistId=${courseDB?.playlist_code}&maxResults=50&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`;
+  const [items, setItems] = useState<Item[] | null>(null);
+  const [url, setUrl] = useState<string | null>(null);
+  const [like, setLike] = useState<boolean>(false);
+  const [list, setList] = useState<boolean>(false);
+  const [actualCourseIndex, setActualCourseIndex] = useState<number>(0);
+  const [courseIndex, setCourseIndex] = useState<number>(0);
+  const { listCourse, setListCourse } = useContext(CourseListContext);
+  const { userCtx, setUserCtx } = useContext(UserContext);
 
   const addCourseToList = async () => {
     const config = {
       headers: {
         'Content-Type': 'application/json'
       }
-    }
-    const courseId = courseDB?.id
-    const userId = user?._id
+    };
+    const courseId = courseDB?.id;
+    const userId = user?._id;
     try {
-      notify('Agregado a la Lista', true, false)
+      notify('Agregado a la Lista', true, false);
       const { data } = await axios.put(
         '/api/user/course/listCourse',
         { courseId, userId },
         config
-      )
-      setListCourse([...listCourse, courseDB])
-      setUserCtx(data)
+      );
+      setListCourse([...listCourse, courseDB]);
+      setUserCtx(data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
   const removeCourseToList = async () => {
     const config = {
       headers: {
         'Content-Type': 'application/json'
       }
-    }
-    const courseId = courseDB?.id
-    const userId = user?._id
+    };
+    const courseId = courseDB?.id;
+    const userId = user?._id;
     try {
-      notify('Eliminado de la Lista', false, false)
+      notify('Eliminado de la Lista', false, false);
       setListCourse([
         ...listCourse.filter((value: CoursesDB) => value.id != courseDB?.id)
-      ])
+      ]);
       const { data } = await axios.put(
         '/api/user/course/dislistCourse',
         { courseId, userId },
         config
-      )
-      setUserCtx(data)
+      );
+      setUserCtx(data);
     } catch (error) {}
-  }
+  };
   const course: CourseModal = useSelector(
     (state: State) => state.courseModalReducer
-  )
-  let { activeModal } = course
-  const dispatch = useAppDispatch()
+  );
+  let { activeModal } = course;
+  const dispatch = useAppDispatch();
   const indexCourse = user?.courses.findIndex((element: any) => {
-    return element.course.valueOf() === courseDB?._id
-  })
+    return element.course.valueOf() === courseDB?._id;
+  });
 
-  const [muted, setMuted] = useState(false)
+  const [muted, setMuted] = useState(false);
 
   useEffect(() => {
-    if (!courseDB) return
+    if (!courseDB) return;
     let courseInCourseIndex = user?.courses.findIndex((x) => {
-      return x.course.valueOf() === courseDB._id.valueOf()
-    })
-    courseInCourseIndex && setCourseIndex(courseInCourseIndex)
+      return x.course.valueOf() === courseDB._id.valueOf();
+    });
+    courseInCourseIndex && setCourseIndex(courseInCourseIndex);
     courseInCourseIndex != null
       ? setActualCourseIndex(
           user?.courses[courseInCourseIndex].actualChapter
             ? user?.courses[courseInCourseIndex].actualChapter - 1
             : 0
         )
-      : null
+      : null;
 
     const getCourseInfo = async () => {
       try {
@@ -169,12 +169,12 @@ function Modal({ courseDB, user, updateUserDB }: Props) {
           headers: {
             'Content-Type': 'application/json'
           }
-        }
+        };
         let { data } = await axios.post(
           '/api/course/getCourseInfo',
           { youtubeURL },
           config
-        )
+        );
         courseInCourseIndex != null
           ? setUrl(
               user?.courses[courseInCourseIndex].actualChapter
@@ -185,62 +185,62 @@ function Modal({ courseDB, user, updateUserDB }: Props) {
                   }?rel=0`
                 : ''
             )
-          : null
-        setItems(data.items)
+          : null;
+        setItems(data.items);
       } catch (error: any) {
-        console.log(error.message)
+        console.log(error.message);
       }
-    }
-    getCourseInfo()
+    };
+    getCourseInfo();
     indexCourse != undefined && userCtx.courses[indexCourse].like
       ? setLike(true)
-      : null
+      : null;
     indexCourse != undefined && userCtx.courses[indexCourse].inList
       ? setList(true)
-      : null
-  }, [])
+      : null;
+  }, []);
 
-  useEffect(() => {}, [userCtx])
+  useEffect(() => {}, [userCtx]);
 
   const handleClose = () => {
-    dispatch(closeCourse())
-  }
+    dispatch(closeCourse());
+  };
 
   const handleLike = async () => {
     const config = {
       headers: {
         'Content-Type': 'application/json'
       }
-    }
-    const courseId = courseDB?.id
-    const userId = user?._id
+    };
+    const courseId = courseDB?.id;
+    const userId = user?._id;
 
     if (!like) {
-      setLike(true)
+      setLike(true);
       const { data } = await axios.put(
         '/api/user/course/likeCourse',
         { courseId, userId },
         config
-      )
+      );
     } else {
-      setLike(false)
+      setLike(false);
       const { data } = await axios.put(
         '/api/user/course/dislikeCourse',
         { courseId, userId },
         config
-      )
-      toaster.success(data.message)
+      );
+      toaster.success(data.message);
     }
-  }
+  };
 
   const handleAddToList = async () => {
     if (!list) {
       // courseDB ? setListFunc(courseDB, list) : null
-      await addCourseToList()
+      await addCourseToList();
     } else {
-      await removeCourseToList()
+      await removeCourseToList();
     }
-  }
+  };
 
   return (
     <MuiModal
@@ -269,7 +269,7 @@ function Modal({ courseDB, user, updateUserDB }: Props) {
             <div className='flex space-x-2'>
               {!userCtx?.courses[
                 userCtx?.courses.findIndex((x: any) => {
-                  return x.course.valueOf() === courseDB?._id.valueOf()
+                  return x.course.valueOf() === courseDB?._id.valueOf();
                 })
               ].purchased ? (
                 <Link href={`/src/courses/purchase/${courseDB?.id}`}>
@@ -313,7 +313,7 @@ function Modal({ courseDB, user, updateUserDB }: Props) {
             <button
               className='modalButton'
               onClick={() => {
-                setMuted(!muted)
+                setMuted(!muted);
               }}
             >
               {muted ? (
@@ -379,7 +379,7 @@ function Modal({ courseDB, user, updateUserDB }: Props) {
         <Toaster />
       </>
     </MuiModal>
-  )
+  );
 }
 
-export default Modal
+export default Modal;

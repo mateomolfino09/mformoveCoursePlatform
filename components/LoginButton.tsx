@@ -1,7 +1,7 @@
-import next from 'next'
-import { signIn } from 'next-auth/react'
-import React from 'react'
-import { GoogleLoginButton } from 'react-social-login-buttons'
+import next from 'next';
+import { signIn } from 'next-auth/react';
+import React from 'react';
+import { GoogleLoginButton } from 'react-social-login-buttons';
 
 function LoginButton({ provider, bgColor, txtColor }: any) {
   return (
@@ -14,11 +14,11 @@ function LoginButton({ provider, bgColor, txtColor }: any) {
         Log In con {provider.name}
       </button>
     </div>
-  )
+  );
 }
 
 LoginButton.defaultProps = {
   txtColor: '#eee'
-}
+};
 
-export default LoginButton
+export default LoginButton;

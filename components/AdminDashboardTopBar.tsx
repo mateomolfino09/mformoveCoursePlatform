@@ -1,56 +1,56 @@
-import { UserContext } from '../hooks/userContext'
-import { Notification, User } from '../typings'
-import { Menu, Popover, Transition } from '@headlessui/react'
-import { BellIcon, CheckIcon } from '@heroicons/react/24/outline'
+import { UserContext } from '../hooks/userContext';
+import { Notification, User } from '../typings';
+import { Menu, Popover, Transition } from '@headlessui/react';
+import { BellIcon, CheckIcon } from '@heroicons/react/24/outline';
 import {
   Bars3CenterLeftIcon,
   ChevronDownIcon,
   Cog8ToothIcon,
   CreditCardIcon,
   PencilIcon
-} from '@heroicons/react/24/solid'
-import axios from 'axios'
-import Link from 'next/link'
-import { Fragment, useContext, useState } from 'react'
-import { AiOutlineUser } from 'react-icons/ai'
+} from '@heroicons/react/24/solid';
+import axios from 'axios';
+import Link from 'next/link';
+import { Fragment, useContext, useState } from 'react';
+import { AiOutlineUser } from 'react-icons/ai';
 
 interface Props {
-  showNav: any
-  setShowNav: any
-  dbUser: User | null
+  showNav: any;
+  setShowNav: any;
+  dbUser: User | null;
 }
 
 const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
-  const { userCtx, setUserCtx } = useContext(UserContext)
+  const { userCtx, setUserCtx } = useContext(UserContext);
   const [notificationList, setNotificationList] = useState(
     userCtx.notifications.filter((x: Notification) => !x.read).slice(-5)
-  )
+  );
 
   const checkReadNotis = async () => {
     const config = {
       headers: {
         'Content-Type': 'application/json'
       }
-    }
+    };
     const notifications = userCtx.notifications
       .filter((x: Notification) => !x.read)
-      .slice(-5)
-    const userId = userCtx?._id
+      .slice(-5);
+    const userId = userCtx?._id;
     try {
       const { data } = await axios.put(
         '/api/user/notifications/checkAsRead',
         { userId },
         config
-      )
+      );
       // setListCourse([...listCourse, course])
-      setUserCtx(data)
+      setUserCtx(data);
       setNotificationList(
         data.notifications.filter((x: Notification) => !x.read).slice(-5)
-      )
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   return (
     <div
@@ -186,7 +186,7 @@ const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
         </Menu>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AdminDashboardTopBar
+export default AdminDashboardTopBar;

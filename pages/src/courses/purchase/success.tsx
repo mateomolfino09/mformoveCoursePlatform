@@ -1,19 +1,19 @@
-import imageLoader from '../../../../imageLoader'
-import { CoursesDB, User } from '../../../../typings'
-import { getCourseById } from '../../../api/course/getCourseById'
-import { getUserFromBack } from '../../../api/user/getUserFromBack'
-import { duration } from '@mui/material'
-import { motion as m } from 'framer-motion'
-import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { useEffect } from 'react'
-import { AiFillCheckCircle } from 'react-icons/ai'
+import imageLoader from '../../../../imageLoader';
+import { CoursesDB, User } from '../../../../typings';
+import { getCourseById } from '../../../api/course/getCourseById';
+import { getUserFromBack } from '../../../api/user/getUserFromBack';
+import { duration } from '@mui/material';
+import { motion as m } from 'framer-motion';
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
+import { AiFillCheckCircle } from 'react-icons/ai';
 
 interface Props {
-  user: User
-  course: CoursesDB
+  user: User;
+  course: CoursesDB;
 }
 
 const container = {
@@ -24,14 +24,14 @@ const container = {
       delayChildren: 1.5
     }
   }
-}
+};
 
 const Success = ({ course, user }: Props) => {
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
-    if (!user || !course) router.push('/')
-  }, [])
+    if (!user || !course) router.push('/');
+  }, []);
 
   return (
     <div className='relative flex h-screen w-screen flex-col bg-transparent md:items-center md:justify-center'>
@@ -105,17 +105,17 @@ const Success = ({ course, user }: Props) => {
         </m.div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context
-  const { email, courseId } = query
-  const course = await getCourseById(courseId)
-  const user = await getUserFromBack(email)
+  const { params, query, req, res } = context;
+  const { email, courseId } = query;
+  const course = await getCourseById(courseId);
+  const user = await getUserFromBack(email);
 
   return {
     props: { course, user }
-  }
+  };
 }
-export default Success
+export default Success;

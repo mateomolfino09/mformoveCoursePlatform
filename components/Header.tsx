@@ -1,23 +1,23 @@
-import { useAppDispatch } from '../hooks/useTypeSelector'
-import { UserContext } from '../hooks/userContext'
-import { State } from '../redux/reducers'
-import { loadUser } from '../redux/user/userAction'
-import { Notification, User } from '../typings'
-import state from '../valtio'
-import { Menu, Popover, Transition } from '@headlessui/react'
+import { useAppDispatch } from '../hooks/useTypeSelector';
+import { UserContext } from '../hooks/userContext';
+import { State } from '../redux/reducers';
+import { loadUser } from '../redux/user/userAction';
+import { Notification, User } from '../typings';
+import state from '../valtio';
+import { Menu, Popover, Transition } from '@headlessui/react';
 import {
   BellIcon,
   Cog8ToothIcon,
   MagnifyingGlassIcon
-} from '@heroicons/react/24/outline'
-import { CheckIcon } from '@heroicons/react/24/solid'
-import axios from 'axios'
-import { AnimatePresence, motion as m, useAnimation } from 'framer-motion'
-import cookie from 'js-cookie'
-import { signOut, useSession } from 'next-auth/react'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { parseCookies } from 'nookies'
+} from '@heroicons/react/24/outline';
+import { CheckIcon } from '@heroicons/react/24/solid';
+import axios from 'axios';
+import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
+import cookie from 'js-cookie';
+import { signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
 import {
   Fragment,
   RefObject,
@@ -25,11 +25,11 @@ import {
   useEffect,
   useRef,
   useState
-} from 'react'
-import { AiOutlineUser } from 'react-icons/ai'
-import { RxCross2 } from 'react-icons/rx'
-import { useSelector } from 'react-redux'
-import { useSnapshot } from 'valtio'
+} from 'react';
+import { AiOutlineUser } from 'react-icons/ai';
+import { RxCross2 } from 'react-icons/rx';
+import { useSelector } from 'react-redux';
+import { useSnapshot } from 'valtio';
 
 const Header = ({
   scrollToList,
@@ -39,29 +39,29 @@ const Header = ({
   dbUser
 }: any) => {
   interface ProfileUser {
-    user: User | null
-    loading: boolean
-    error: any
+    user: User | null;
+    loading: boolean;
+    error: any;
   }
 
   interface Props {
-    email: String
-    user: User
+    email: String;
+    user: User;
   }
 
-  const cookies = parseCookies()
-  const { data: session } = useSession()
-  const router = useRouter()
-  const [userState, setUserState] = useState<any>(null)
-  const [isScrolled, setIsScrolled] = useState(false)
-  const { userCtx, setUserCtx } = useContext(UserContext)
+  const cookies = parseCookies();
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [userState, setUserState] = useState<any>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const { userCtx, setUserCtx } = useContext(UserContext);
   const [notificationList, setNotificationList] = useState<
     null | Notification[]
-  >(null)
-  const snap = useSnapshot(state)
-  const animationInput = useAnimation()
-  const animationIcon = useAnimation()
-  const inputRef = useRef<any>(null)
+  >(null);
+  const snap = useSnapshot(state);
+  const animationInput = useAnimation();
+  const animationIcon = useAnimation();
+  const inputRef = useRef<any>(null);
 
   const user: User = dbUser
     ? dbUser
@@ -69,41 +69,41 @@ const Header = ({
     ? JSON.parse(cookies.user)
     : session?.user
     ? session?.user
-    : ''
+    : '';
 
   const checkReadNotis = async () => {
     const config = {
       headers: {
         'Content-Type': 'application/json'
       }
-    }
+    };
     const notifications = userCtx.notifications
       .filter((x: Notification) => !x.read)
-      .slice(-5)
-    const userId = userCtx?._id
+      .slice(-5);
+    const userId = userCtx?._id;
     try {
       const { data } = await axios.put(
         '/api/user/notifications/checkAsRead',
         { userId },
         config
-      )
+      );
       // setListCourse([...listCourse, course])
-      setUserCtx(data)
+      setUserCtx(data);
       setNotificationList(
         data.notifications.filter((x: Notification) => !x.read).slice(-5)
-      )
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
     userCtx != null
       ? setNotificationList(
           userCtx?.notifications.filter((x: Notification) => !x.read).slice(-5)
         )
-      : null
-  }, [userCtx])
+      : null;
+  }, [userCtx]);
 
   useEffect(() => {
     if (snap.searchBar == true) {
@@ -116,7 +116,7 @@ const Header = ({
           duration: 0.25,
           stiffness: 0
         }
-      })
+      });
       animationIcon.start({
         x: -160,
         zIndex: 500,
@@ -126,9 +126,9 @@ const Header = ({
           duration: 0.25,
           stiffness: 0
         }
-      })
+      });
 
-      if (inputRef && inputRef.current) inputRef.current.focus()
+      if (inputRef && inputRef.current) inputRef.current.focus();
     } else {
       animationInput.start({
         width: '3rem',
@@ -139,7 +139,7 @@ const Header = ({
           duration: 0.25,
           stiffness: 0
         }
-      })
+      });
       animationIcon.start({
         x: 0,
         zIndex: 500,
@@ -148,57 +148,57 @@ const Header = ({
           duration: 0,
           stiffness: 0
         }
-      })
+      });
     }
-  }, [snap.searchBar])
+  }, [snap.searchBar]);
 
   useEffect(() => {
-    session ? setUserState(session.user) : setUserState(user)
+    session ? setUserState(session.user) : setUserState(user);
 
     const handleScroll = () => {
       if (window.scrollY > 0) {
-        setIsScrolled(true)
+        setIsScrolled(true);
       } else {
-        setIsScrolled(false)
+        setIsScrolled(false);
       }
-    }
+    };
 
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [router])
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [router]);
 
   const handleSearch = (e: any) => {
-    state.searchInput = e.target.value
-    state.searchToggle = true
+    state.searchInput = e.target.value;
+    state.searchToggle = true;
     // router.query.search = e.target.value
     // router.push(router)
-  }
+  };
   const handleSearchActivation = () => {
-    state.searchBar = !state.searchBar
-  }
+    state.searchBar = !state.searchBar;
+  };
 
   const handleCross = () => {
-    state.searchToggle = false
-    state.searchBar = false
-    state.searchInput = ''
-  }
+    state.searchToggle = false;
+    state.searchBar = false;
+    state.searchInput = '';
+  };
 
   const handleBlur = () => {
     if (state.searchToggle == false) {
-      state.searchBar = false
-      state.searchInput = ''
+      state.searchBar = false;
+      state.searchInput = '';
     }
-  }
+  };
 
   function scrollToHome() {
     if (window) {
-      const y = 0
+      const y = 0;
 
-      window.scrollTo({ top: y, behavior: 'smooth' })
-      return
+      window.scrollTo({ top: y, behavior: 'smooth' });
+      return;
       // return refToModa?.current.scrollIntoView({behavior: 'smooth'})
     }
   }
@@ -391,7 +391,7 @@ const Header = ({
         {/* </Link> */}
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

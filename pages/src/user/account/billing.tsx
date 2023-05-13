@@ -1,41 +1,41 @@
-import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout'
-import DeleteUser from '../../../../components/DeleteUser'
-import { UserContext } from '../../../../hooks/userContext'
-import { Bill, User } from '../../../../typings'
-import { getUserBills } from '../../../api/user/bills/getUserBills'
-import { getUserFromBack } from '../../../api/user/getUserFromBack'
-import { loadUser } from '../../../api/user/loadUser'
+import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout';
+import DeleteUser from '../../../../components/DeleteUser';
+import { UserContext } from '../../../../hooks/userContext';
+import { Bill, User } from '../../../../typings';
+import { getUserBills } from '../../../api/user/bills/getUserBills';
+import { getUserFromBack } from '../../../api/user/getUserFromBack';
+import { loadUser } from '../../../api/user/loadUser';
 import {
   PencilIcon,
   PencilSquareIcon,
   TrashIcon
-} from '@heroicons/react/24/solid'
-import { getSession, useSession } from 'next-auth/react'
-import Head from 'next/head'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { parseCookies } from 'nookies'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { AiOutlineUser } from 'react-icons/ai'
+} from '@heroicons/react/24/solid';
+import { getSession, useSession } from 'next-auth/react';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { AiOutlineUser } from 'react-icons/ai';
 
 interface Props {
-  bills: Bill[]
-  user: User
+  bills: Bill[];
+  user: User;
 }
 const Billing = ({ bills, user }: Props) => {
-  const cookies = parseCookies()
-  const { data: session } = useSession()
-  const router = useRouter()
-  let [isOpen, setIsOpen] = useState(false)
-  const ref = useRef(null)
-  const [userCtx, setUserCtx] = useState<User>(user)
+  const cookies = parseCookies();
+  const { data: session } = useSession();
+  const router = useRouter();
+  let [isOpen, setIsOpen] = useState(false);
+  const ref = useRef(null);
+  const [userCtx, setUserCtx] = useState<User>(user);
 
   const providerValue = useMemo(
     () => ({ userCtx, setUserCtx }),
     [userCtx, setUserCtx]
-  )
+  );
 
-  console.log(bills)
+  console.log(bills);
 
   //   useEffect(() => {
   //         if (user === null || user.rol != "Admin") {
@@ -45,7 +45,7 @@ const Billing = ({ bills, user }: Props) => {
   //   }, [session, router]);
 
   function openModal() {
-    setIsOpen(true)
+    setIsOpen(true);
   }
 
   return (
@@ -110,21 +110,21 @@ const Billing = ({ bills, user }: Props) => {
         </div>
       </>
     </UserContext.Provider>
-  )
-}
+  );
+};
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context
-  const session = await getSession({ req })
-  const cookies = parseCookies(context)
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
-  const email = userCookie.email
-  const user = await getUserFromBack(email)
-  const userId = user._id
-  const bills: any = await getUserBills(userId)
+  const { params, query, req, res } = context;
+  const session = await getSession({ req });
+  const cookies = parseCookies(context);
+  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
+  const email = userCookie.email;
+  const user = await getUserFromBack(email);
+  const userId = user._id;
+  const bills: any = await getUserBills(userId);
 
-  console.log(bills)
+  console.log(bills);
 
-  return { props: { bills, user } }
+  return { props: { bills, user } };
 }
 
-export default Billing
+export default Billing;

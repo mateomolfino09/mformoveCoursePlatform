@@ -1,39 +1,41 @@
-import connectDB from '../../../config/connectDB'
-import { sendEmail } from '../../../helpers/sendEmail'
-import Courses from '../../../models/courseModel'
-import Users from '../../../models/userModel'
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import mongoose from 'mongoose'
-import absoluteUrl from 'next-absolute-url'
+import connectDB from '../../../config/connectDB';
+import { sendEmail } from '../../../helpers/sendEmail';
+import Courses from '../../../models/courseModel';
+import Users from '../../../models/userModel';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
+import absoluteUrl from 'next-absolute-url';
 
-connectDB()
+connectDB();
 
 const resendTokenValidate = async (req, res) => {
   try {
     if (req.method === 'POST') {
-      const { email } = req.body
+      const { email } = req.body;
 
-      const user = await Users.findOne({ email: email })
+      const user = await Users.findOne({ email: email });
 
       if (!user) {
-        return res.status(404).json({ error: 'No se encontró este usuario' })
+        return res.status(404).json({ error: 'No se encontró este usuario' });
       }
       if (!user.validEmail === 'not') {
-        return res.status(422).json({ error: 'Este usuario ya fue verificado' })
+        return res
+          .status(422)
+          .json({ error: 'Este usuario ya fue verificado' });
       }
 
       const token = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
         expiresIn: '30d'
-      })
+      });
 
-      user.emailToken = token
+      user.emailToken = token;
 
-      await user.save()
+      await user.save();
 
-      const { origin } = absoluteUrl(req)
-      const link = `${origin}/src/user/email/${token}`
-      const title = `<h1>Confirma tu email</h1>`
+      const { origin } = absoluteUrl(req);
+      const link = `${origin}/src/user/email/${token}`;
+      const title = `<h1>Confirma tu email</h1>`;
       const message = `
         <div>     
         <div>
@@ -43,7 +45,7 @@ const resendTokenValidate = async (req, res) => {
         </div>
         <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de Video Stream.</p>
         <hr style="height:2px;background-color:#221f1f;border:none">       
-       </div>`
+       </div>`;
 
       let resp = sendEmail({
         title: title,
@@ -53,15 +55,15 @@ const resendTokenValidate = async (req, res) => {
         message: message,
         to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
         subject: 'Confirmar Mail'
-      })
+      });
 
       return res.status(200).json({
         message: `Email enviado a ${user.email}, porfavor chequea tu correo.`
-      })
+      });
     }
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
   }
-}
+};
 
-export default resendTokenValidate
+export default resendTokenValidate;

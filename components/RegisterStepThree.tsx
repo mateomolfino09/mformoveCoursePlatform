@@ -1,8 +1,8 @@
-import { useRouter } from 'next/router'
-import React, { useState } from 'react'
-import ReCAPTCHA from 'react-google-recaptcha'
-import { AiOutlineCheckCircle } from 'react-icons/ai'
-import Select, { StylesConfig } from 'react-select'
+import { useRouter } from 'next/router';
+import React, { useState } from 'react';
+import ReCAPTCHA from 'react-google-recaptcha';
+import { AiOutlineCheckCircle } from 'react-icons/ai';
+import Select, { StylesConfig } from 'react-select';
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -13,33 +13,33 @@ const colourStyles: StylesConfig<any> = {
     padding: 0
   }),
   option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    return { ...styles, color: '#808080' }
+    return { ...styles, color: '#808080' };
   },
   input: (styles) => ({ ...styles, backgroundColor: '', color: '#fff' }),
   placeholder: (styles) => ({ ...styles, color: '#fff' }),
   singleValue: (styles, { data }) => ({ ...styles, color: '#808080' })
-}
+};
 
 interface Props {
-  user: any
-  signUp: any
-  onChange: any
-  recaptchaRef: any
+  user: any;
+  signUp: any;
+  onChange: any;
+  recaptchaRef: any;
 }
 
 const RegisterStepOne = ({ user, signUp, onChange, recaptchaRef }: Props) => {
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const router = useRouter()
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const router = useRouter();
 
   const key =
     process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY != undefined
       ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-      : ''
+      : '';
 
   const handleClick = () => {
-    router.push('/src/user/login')
-  }
+    router.push('/src/user/login');
+  };
 
   return (
     <div
@@ -141,7 +141,7 @@ const RegisterStepOne = ({ user, signUp, onChange, recaptchaRef }: Props) => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RegisterStepOne
+export default RegisterStepOne;

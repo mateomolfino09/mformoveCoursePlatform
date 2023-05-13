@@ -1,54 +1,54 @@
-import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout'
-import DeleteUser from '../../../../components/DeleteUser'
-import { UserContext } from '../../../../hooks/userContext'
-import { Bill, ClassesDB, CoursesDB, User } from '../../../../typings'
-import { getUserCourses } from '../../../api/user/course/getUserCourses'
-import { getUserFromBack } from '../../../api/user/getUserFromBack'
-import { loadUser } from '../../../api/user/loadUser'
+import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout';
+import DeleteUser from '../../../../components/DeleteUser';
+import { UserContext } from '../../../../hooks/userContext';
+import { Bill, ClassesDB, CoursesDB, User } from '../../../../typings';
+import { getUserCourses } from '../../../api/user/course/getUserCourses';
+import { getUserFromBack } from '../../../api/user/getUserFromBack';
+import { loadUser } from '../../../api/user/loadUser';
 import {
   PencilIcon,
   PencilSquareIcon,
   TrashIcon
-} from '@heroicons/react/24/solid'
-import { getSession, useSession } from 'next-auth/react'
-import Head from 'next/head'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { parseCookies } from 'nookies'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { AiOutlineUser } from 'react-icons/ai'
+} from '@heroicons/react/24/solid';
+import { getSession, useSession } from 'next-auth/react';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { AiOutlineUser } from 'react-icons/ai';
 
 interface Props {
-  courses: CoursesDB[]
-  user: User
+  courses: CoursesDB[];
+  user: User;
 }
 const MyCourses = ({ courses, user }: Props) => {
-  const cookies = parseCookies()
-  const { data: session } = useSession()
-  const router = useRouter()
-  let [isOpen, setIsOpen] = useState(false)
-  const ref = useRef(null)
-  const [userCtx, setUserCtx] = useState<User>(user)
+  const cookies = parseCookies();
+  const { data: session } = useSession();
+  const router = useRouter();
+  let [isOpen, setIsOpen] = useState(false);
+  const ref = useRef(null);
+  const [userCtx, setUserCtx] = useState<User>(user);
 
   const providerValue = useMemo(
     () => ({ userCtx, setUserCtx }),
     [userCtx, setUserCtx]
-  )
+  );
 
   console.log(
     courses[0].classes
       .map((c: ClassesDB) => c.totalTime)
       .reduce((prev, next) => prev + next)
-  )
+  );
 
   useEffect(() => {
     if (user === null) {
-      router.push('/src/user/login')
+      router.push('/src/user/login');
     }
-  }, [session, router])
+  }, [session, router]);
 
   function openModal() {
-    setIsOpen(true)
+    setIsOpen(true);
   }
 
   return (
@@ -130,19 +130,19 @@ const MyCourses = ({ courses, user }: Props) => {
         </div>
       </>
     </UserContext.Provider>
-  )
-}
+  );
+};
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context
-  const session = await getSession({ req })
-  const cookies = parseCookies(context)
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
-  const email = userCookie.email
-  const user = await getUserFromBack(email)
-  const userId = user._id
-  const courses: any = await getUserCourses(userId)
+  const { params, query, req, res } = context;
+  const session = await getSession({ req });
+  const cookies = parseCookies(context);
+  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
+  const email = userCookie.email;
+  const user = await getUserFromBack(email);
+  const userId = user._id;
+  const courses: any = await getUserCourses(userId);
 
-  return { props: { courses, user } }
+  return { props: { courses, user } };
 }
 
-export default MyCourses
+export default MyCourses;

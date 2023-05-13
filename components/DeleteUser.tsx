@@ -1,21 +1,21 @@
-import { User } from '../typings'
-import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useEffect, useState } from 'react'
+import { User } from '../typings';
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment, useEffect, useState } from 'react';
 
 interface Props {
-  user: User
-  deleteUser: any
-  isOpen: any
-  setIsOpen: any
+  user: User;
+  deleteUser: any;
+  isOpen: any;
+  setIsOpen: any;
 }
 const DeleteUser = ({ user, deleteUser, isOpen, setIsOpen }: Props) => {
   function closeModal() {
-    setIsOpen(false)
+    setIsOpen(false);
   }
 
   async function handleSubmit() {
-    deleteUser()
-    setIsOpen(false)
+    deleteUser();
+    setIsOpen(false);
   }
   return (
     <>
@@ -71,7 +71,7 @@ const DeleteUser = ({ user, deleteUser, isOpen, setIsOpen }: Props) => {
         </Dialog>
       </Transition>
     </>
-  )
-}
+  );
+};
 
-export default DeleteUser
+export default DeleteUser;

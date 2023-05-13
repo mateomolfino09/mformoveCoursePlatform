@@ -1,13 +1,13 @@
-import { CoursesContext } from '../hooks/coursesContext'
-import { loadCourse } from '../redux/courseModal/courseModalAction'
-import { CourseModal } from '../redux/courseModal/courseModalTypes'
-import { State } from '../redux/reducers'
-import { Courses, CoursesDB, Item, Ricks, User } from '../typings'
-import CourseThumbnail from './CourseThumbnail'
-import Thumbnail from './Thumbnail'
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
-import { motion as m } from 'framer-motion'
-import Link from 'next/link'
+import { CoursesContext } from '../hooks/coursesContext';
+import { loadCourse } from '../redux/courseModal/courseModalAction';
+import { CourseModal } from '../redux/courseModal/courseModalTypes';
+import { State } from '../redux/reducers';
+import { Courses, CoursesDB, Item, Ricks, User } from '../typings';
+import CourseThumbnail from './CourseThumbnail';
+import Thumbnail from './Thumbnail';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { motion as m } from 'framer-motion';
+import Link from 'next/link';
 import {
   Dispatch,
   RefObject,
@@ -16,20 +16,20 @@ import {
   useEffect,
   useRef,
   useState
-} from 'react'
-import { useSelector } from 'react-redux'
+} from 'react';
+import { useSelector } from 'react-redux';
 
 interface Props {
-  title: string | null
-  coursesDB: CoursesDB[] | null
-  setSelectedCourse: Dispatch<SetStateAction<CoursesDB | null>> | null
-  items: Item[] | null
-  courseDB: CoursesDB | null
-  actualCourseIndex: number
-  setRef: any
-  isClass: boolean
-  user: User | null
-  courseIndex: number
+  title: string | null;
+  coursesDB: CoursesDB[] | null;
+  setSelectedCourse: Dispatch<SetStateAction<CoursesDB | null>> | null;
+  items: Item[] | null;
+  courseDB: CoursesDB | null;
+  actualCourseIndex: number;
+  setRef: any;
+  isClass: boolean;
+  user: User | null;
+  courseIndex: number;
 }
 
 function Row({
@@ -44,34 +44,34 @@ function Row({
   user,
   courseIndex
 }: Props) {
-  const rowRef = useRef<HTMLDivElement>(null)
-  const listRef = useRef<HTMLDivElement>(null)
-  const [isMoved, setIsMoved] = useState(false)
+  const rowRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const [isMoved, setIsMoved] = useState(false);
   const course: CourseModal = useSelector(
     (state: State) => state.courseModalReducer
-  )
-  let { loading, error, activeModal, dbCourse } = course
-  const [overflow, setOverflow] = useState('hidden')
-  const { courses, setCourses } = useContext(CoursesContext)
+  );
+  let { loading, error, activeModal, dbCourse } = course;
+  const [overflow, setOverflow] = useState('hidden');
+  const { courses, setCourses } = useContext(CoursesContext);
 
   const handleClick = (direction: string) => {
-    setIsMoved(true)
+    setIsMoved(true);
 
     if (rowRef.current) {
-      const { scrollLeft, clientWidth } = rowRef.current
+      const { scrollLeft, clientWidth } = rowRef.current;
 
       const scrollTo =
         direction === 'left'
           ? scrollLeft - clientWidth
-          : scrollLeft + clientWidth
+          : scrollLeft + clientWidth;
 
-      rowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' })
+      rowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
-  }
+  };
 
   useEffect(() => {
-    if (rowRef != null && setRef != null) setRef(rowRef)
-  }, [])
+    if (rowRef != null && setRef != null) setRef(rowRef);
+  }, []);
 
   return (
     <div
@@ -120,7 +120,7 @@ function Row({
         </>
       )}
     </div>
-  )
+  );
 }
 
-export default Row
+export default Row;

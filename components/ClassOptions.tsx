@@ -1,27 +1,27 @@
-import { ClassesDB, CoursesDB } from '../typings'
-import state from '../valtio'
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { useState } from 'react'
-import { useSnapshot } from 'valtio'
+import { ClassesDB, CoursesDB } from '../typings';
+import state from '../valtio';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React, { useState } from 'react';
+import { useSnapshot } from 'valtio';
 
 interface Props {
-  clase: ClassesDB
-  course: CoursesDB
+  clase: ClassesDB;
+  course: CoursesDB;
 }
 const ClassOptions = ({ clase, course }: Props) => {
-  const snap = useSnapshot(state)
+  const snap = useSnapshot(state);
 
   const handleClickTemario = () => {
-    state.classHeaders = 'Temario'
-  }
+    state.classHeaders = 'Temario';
+  };
   const handleClickRecursos = () => {
-    state.classHeaders = 'Recursos'
-  }
+    state.classHeaders = 'Recursos';
+  };
   const handleClickPreguntas = () => {
-    state.classHeaders = 'Preguntas'
-  }
+    state.classHeaders = 'Preguntas';
+  };
 
   return (
     <div className='w-full h-full flex flex-row mt-8 justify-between bg-dark px-2 lg:w-2/3 lg:hidden'>
@@ -85,7 +85,7 @@ const ClassOptions = ({ clase, course }: Props) => {
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ClassOptions
+export default ClassOptions;

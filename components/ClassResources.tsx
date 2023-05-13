@@ -1,8 +1,8 @@
-import { ClassesDB } from '../typings'
-import React from 'react'
+import { ClassesDB } from '../typings';
+import React from 'react';
 
 interface Props {
-  clase: ClassesDB
+  clase: ClassesDB;
 }
 
 const ClassResources = ({ clase }: Props) => {
@@ -21,7 +21,7 @@ const ClassResources = ({ clase }: Props) => {
         non maiores blanditiis asperiores debitis repudiandae?
       </p>
     </div>
-  )
-}
+  );
+};
 
-export default ClassResources
+export default ClassResources;

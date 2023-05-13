@@ -35,6 +35,9 @@
   .input {
     @apply w-full rounded bg-[#333] px-5 py-3.5 placeholder-[#808080] outline-none focus:bg-[#454545];
   }
+  .inputAnswer {
+    @apply w-full rounded bg-[#333] px-5 py-3.5 placeholder-[#808080] outline-none focus:bg-[#454545] text-sm placeholder:text-sm;
+  }
 
   .inputRegister {
     @apply w-full rounded px-5 py-3.5 placeholder-[#a7a6a6] outline-none focus:bg-black/80 transition duration-1000 bg-black/50 border-2 border-black;

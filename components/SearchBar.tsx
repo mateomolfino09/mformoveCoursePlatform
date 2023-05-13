@@ -1,33 +1,33 @@
-import { CoursesContext } from '../hooks/coursesContext'
-import { UserContext } from '../hooks/userContext'
-import { CoursesDB } from '../typings'
-import state from '../valtio'
-import Carousel from './Carousel'
-import { AnimatePresence, motion as m, useAnimation } from 'framer-motion'
-import React, { useContext, useEffect, useState } from 'react'
-import { snapshot, useSnapshot } from 'valtio'
+import { CoursesContext } from '../hooks/coursesContext';
+import { UserContext } from '../hooks/userContext';
+import { CoursesDB } from '../typings';
+import state from '../valtio';
+import Carousel from './Carousel';
+import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
+import React, { useContext, useEffect, useState } from 'react';
+import { snapshot, useSnapshot } from 'valtio';
 
 interface Props {
-  setSelectedCourse: any
+  setSelectedCourse: any;
 }
 
 const SearchBar = ({ setSelectedCourse }: Props) => {
-  const snap = useSnapshot(state)
-  const { courses, setCourses } = useContext(CoursesContext)
-  const { userCtx, setUserCtx } = useContext(UserContext)
-  const [coursesSearch, setCoursesSearch] = useState<CoursesDB[]>(courses)
-  const animation = useAnimation()
+  const snap = useSnapshot(state);
+  const { courses, setCourses } = useContext(CoursesContext);
+  const { userCtx, setUserCtx } = useContext(UserContext);
+  const [coursesSearch, setCoursesSearch] = useState<CoursesDB[]>(courses);
+  const animation = useAnimation();
 
   useEffect(() => {
     if (snap.searchInput != '') {
       const coursestToSearch = courses.filter((c: CoursesDB) =>
         c.name.toLowerCase().includes(snap.searchInput.toLowerCase())
-      )
-      setCoursesSearch(coursestToSearch)
+      );
+      setCoursesSearch(coursestToSearch);
     } else {
-      setCoursesSearch(courses)
+      setCoursesSearch(courses);
     }
-  }, [snap.searchInput])
+  }, [snap.searchInput]);
 
   useEffect(() => {
     animation.start({
@@ -38,10 +38,10 @@ const SearchBar = ({ setSelectedCourse }: Props) => {
         duration: 0.5,
         stiffness: 0
       }
-    })
-  }, [snap.searchToggle])
+    });
+  }, [snap.searchToggle]);
 
-  useEffect(() => {}, [coursesSearch])
+  useEffect(() => {}, [coursesSearch]);
 
   return (
     <AnimatePresence>
@@ -87,7 +87,7 @@ const SearchBar = ({ setSelectedCourse }: Props) => {
         </main>
       </m.div>
     </AnimatePresence>
-  )
-}
+  );
+};
 
-export default SearchBar
+export default SearchBar;

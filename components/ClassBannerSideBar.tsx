@@ -1,32 +1,32 @@
-import { CoursesContext } from '../hooks/coursesContext'
-import { ClassesDB, CoursesDB } from '../typings'
-import ClassBanner from './ClassBanner'
+import { CoursesContext } from '../hooks/coursesContext';
+import { ClassesDB, CoursesDB } from '../typings';
+import ClassBanner from './ClassBanner';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   FlagIcon
-} from '@heroicons/react/24/solid'
-import { motion as m, useAnimation } from 'framer-motion'
-import { useRouter } from 'next/router'
-import React, { Ref, forwardRef, useContext, useEffect, useState } from 'react'
+} from '@heroicons/react/24/solid';
+import { motion as m, useAnimation } from 'framer-motion';
+import { useRouter } from 'next/router';
+import React, { Ref, forwardRef, useContext, useEffect, useState } from 'react';
 
 interface Props {
-  courseDB: CoursesDB
-  showNav: any
-  clase: ClassesDB
-  setShowNav: any
+  courseDB: CoursesDB;
+  showNav: any;
+  clase: ClassesDB;
+  setShowNav: any;
 }
 
 const ClassBannerSideBar = forwardRef<HTMLInputElement, Props>(
   ({ courseDB, showNav, clase, setShowNav }: Props, ref) => {
-    const [module, setModule] = useState(false)
-    const { courses, setCourses } = useContext(CoursesContext)
-    const router = useRouter()
-    const animation = useAnimation()
+    const [module, setModule] = useState(false);
+    const { courses, setCourses } = useContext(CoursesContext);
+    const router = useRouter();
+    const animation = useAnimation();
 
     const handleRouteChange = (clas: ClassesDB) => {
-      router.push(`/src/courses/${courseDB.id}/${clas.id}`)
-    }
+      router.push(`/src/courses/${courseDB.id}/${clas.id}`);
+    };
 
     useEffect(() => {
       if (showNav) {
@@ -38,7 +38,7 @@ const ClassBannerSideBar = forwardRef<HTMLInputElement, Props>(
             duration: 0,
             stiffness: 0
           }
-        })
+        });
       } else {
         animation.start({
           opacity: 0,
@@ -48,9 +48,9 @@ const ClassBannerSideBar = forwardRef<HTMLInputElement, Props>(
             duration: 0,
             stiffness: 0
           }
-        })
+        });
       }
-    }, [showNav])
+    }, [showNav]);
 
     return (
       <div
@@ -126,8 +126,8 @@ const ClassBannerSideBar = forwardRef<HTMLInputElement, Props>(
           </div>
         ))}
       </div>
-    )
+    );
   }
-)
+);
 
-export default ClassBannerSideBar
+export default ClassBannerSideBar;

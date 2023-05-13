@@ -1,21 +1,21 @@
-import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout'
-import { LoadingSpinner } from '../../../../components/LoadingSpinner'
-import { countries } from '../../../../constants/countries'
-import { genders } from '../../../../constants/genders'
-import { purchased } from '../../../../constants/purchased'
-import { rols } from '../../../../constants/rols'
-import { UserContext } from '../../../../hooks/userContext'
-import { CourseUser, User } from '../../../../typings'
-import { getUserFromBack } from '../../../api/user/getUserFromBack'
-import axios from 'axios'
-import { getSession, useSession } from 'next-auth/react'
-import Head from 'next/head'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { parseCookies } from 'nookies'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import Select, { StylesConfig } from 'react-select'
-import { toast } from 'react-toastify'
+import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout';
+import { LoadingSpinner } from '../../../../components/LoadingSpinner';
+import { countries } from '../../../../constants/countries';
+import { genders } from '../../../../constants/genders';
+import { purchased } from '../../../../constants/purchased';
+import { rols } from '../../../../constants/rols';
+import { UserContext } from '../../../../hooks/userContext';
+import { CourseUser, User } from '../../../../typings';
+import { getUserFromBack } from '../../../api/user/getUserFromBack';
+import axios from 'axios';
+import { getSession, useSession } from 'next-auth/react';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Select, { StylesConfig } from 'react-select';
+import { toast } from 'react-toastify';
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -26,43 +26,43 @@ const colourStyles: StylesConfig<any> = {
     padding: 0
   }),
   option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    return { ...styles, color: '#808080' }
+    return { ...styles, color: '#808080' };
   },
   input: (styles) => ({ ...styles, backgroundColor: '', color: '#fff' }),
   placeholder: (styles) => ({ ...styles, color: '#fff' }),
   singleValue: (styles, { data }) => ({ ...styles, color: '#808080' })
-}
+};
 
 interface Props {
-  user: User
+  user: User;
 }
 
 const EditUser = ({ user }: Props) => {
-  const cookies = parseCookies()
-  const { data: session } = useSession()
-  const router = useRouter()
-  const { id } = router.query
-  const [userCtx, setUserCtx] = useState<User>(user)
-  const [userDB, setUserDB] = useState<User>()
-  const [firstname, setFirstname] = useState('')
-  const [lastname, setLastname] = useState('')
-  const [email, setEmail] = useState('')
-  const [gender, setGender] = useState('')
-  const [country, setCountry] = useState('')
-  const [rol, setRol] = useState('')
-  const [courses, setCourses] = useState<CourseUser[]>([])
-  const [courseName, setCourseName] = useState<string[]>([])
+  const cookies = parseCookies();
+  const { data: session } = useSession();
+  const router = useRouter();
+  const { id } = router.query;
+  const [userCtx, setUserCtx] = useState<User>(user);
+  const [userDB, setUserDB] = useState<User>();
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [email, setEmail] = useState('');
+  const [gender, setGender] = useState('');
+  const [country, setCountry] = useState('');
+  const [rol, setRol] = useState('');
+  const [courses, setCourses] = useState<CourseUser[]>([]);
+  const [courseName, setCourseName] = useState<string[]>([]);
 
   const providerValue = useMemo(
     () => ({ userCtx, setUserCtx }),
     [userCtx, setUserCtx]
-  )
+  );
 
   useEffect(() => {
     if (user === null || user.rol != 'Admin') {
-      router.push('/src/user/login')
+      router.push('/src/user/login');
     }
-  }, [session, router])
+  }, [session, router]);
 
   useEffect(() => {
     const getUserDB = async () => {
@@ -71,26 +71,26 @@ const EditUser = ({ user }: Props) => {
           headers: {
             'Content-Type': 'application/json'
           }
-        }
-        const userId = id
-        const { data } = await axios.get(`/api/user/${userId}`, config)
-        const completeName = data.name.split(' ')
-        const name = completeName[0]
-        const last = completeName.slice(1).join(' ')
-        setFirstname(name)
-        setLastname(last)
-        setEmail(data.email)
-        setGender(data.gender)
-        setCountry(data.country)
-        setRol(data.rol)
-        setCourses(data.courses)
-        setUserDB(data)
+        };
+        const userId = id;
+        const { data } = await axios.get(`/api/user/${userId}`, config);
+        const completeName = data.name.split(' ');
+        const name = completeName[0];
+        const last = completeName.slice(1).join(' ');
+        setFirstname(name);
+        setLastname(last);
+        setEmail(data.email);
+        setGender(data.gender);
+        setCountry(data.country);
+        setRol(data.rol);
+        setCourses(data.courses);
+        setUserDB(data);
       } catch (error: any) {
-        console.log(error.message)
+        console.log(error.message);
       }
-    }
-    getUserDB()
-  }, [router, session])
+    };
+    getUserDB();
+  }, [router, session]);
   useEffect(() => {
     const getCourses = async () => {
       try {
@@ -98,30 +98,30 @@ const EditUser = ({ user }: Props) => {
           headers: {
             'Content-Type': 'application/json'
           }
-        }
+        };
         const courseArray = await Promise.all(
           courses.map((course) =>
             axios.get(`/api/course/${course.course}`, config).then((res) => {
-              return res.data.name
+              return res.data.name;
             })
           )
-        )
-        setCourseName(courseArray)
+        );
+        setCourseName(courseArray);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    }
-    getCourses()
-  }, [courses])
+    };
+    getCourses();
+  }, [courses]);
   const handleSubmit = async (event: any) => {
-    event.preventDefault()
+    event.preventDefault();
     try {
       if (userDB) {
         const config = {
           headers: {
             'Content-Type': 'application/json'
           }
-        }
+        };
         const response = await axios.patch(
           `/api/user/update/${userDB._id}`,
           {
@@ -134,35 +134,35 @@ const EditUser = ({ user }: Props) => {
             courses
           },
           config
-        )
+        );
         if (response) {
-          router.push('/src/admin/users')
+          router.push('/src/admin/users');
           toast.success(
             `${firstname + ' ' + lastname} fue editado correctamente`
-          )
+          );
         }
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   function handleInputChange(event: any, index: number) {
-    const str = event.label
-    let purchased: boolean
+    const str = event.label;
+    let purchased: boolean;
     if (str === 'true') {
-      purchased = true
+      purchased = true;
     }
     if (str === 'false') {
-      purchased = false
+      purchased = false;
     }
     setCourses((prevCourses) => {
-      const updatedCourses = [...prevCourses]
+      const updatedCourses = [...prevCourses];
 
-      updatedCourses[index] = { ...updatedCourses[index], purchased }
+      updatedCourses[index] = { ...updatedCourses[index], purchased };
 
-      return updatedCourses
-    })
+      return updatedCourses;
+    });
   }
 
   return (
@@ -234,7 +234,7 @@ const EditUser = ({ user }: Props) => {
                       className='w-full '
                       defaultInputValue={rol}
                       onChange={(e) => {
-                        return setRol(e.label)
+                        return setRol(e.label);
                       }}
                     />
                   </div>
@@ -264,7 +264,7 @@ const EditUser = ({ user }: Props) => {
                       className='w-52 mr-2'
                       defaultInputValue={gender}
                       onChange={(e) => {
-                        return setGender(e.label)
+                        return setGender(e.label);
                       }}
                     />
                     <Select
@@ -274,7 +274,7 @@ const EditUser = ({ user }: Props) => {
                       placeholder={'País'}
                       defaultInputValue={country}
                       onChange={(e) => {
-                        return setCountry(e.label)
+                        return setCountry(e.label);
                       }}
                     />
                   </div>
@@ -309,20 +309,20 @@ const EditUser = ({ user }: Props) => {
         )}
       </AdmimDashboardLayout>
     </UserContext.Provider>
-  )
-}
+  );
+};
 
 export async function getServerSideProps(context: any) {
-  const session = await getSession(context)
-  const { params, query, req, res } = context
-  const cookies = parseCookies(context)
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
-  const email = userCookie.email
-  const user = await getUserFromBack(email)
+  const session = await getSession(context);
+  const { params, query, req, res } = context;
+  const cookies = parseCookies(context);
+  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
+  const email = userCookie.email;
+  const user = await getUserFromBack(email);
 
   return {
     props: { user }
-  }
+  };
 }
 
-export default EditUser
+export default EditUser;

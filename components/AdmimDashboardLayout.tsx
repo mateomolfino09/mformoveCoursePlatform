@@ -1,31 +1,31 @@
-import { useAppDispatch } from '../hooks/useTypeSelector'
-import { State } from '../redux/reducers'
-import { loadUser } from '../redux/user/userAction'
-import { User } from '../typings'
-import AdminDashboardSideBar from './AdminDashboardSideBar'
-import AdminDashboardTopBar from './AdminDashboardTopBar'
-import { Transition } from '@headlessui/react'
-import axios from 'axios'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/router'
-import { parseCookies } from 'nookies'
-import React, { Fragment, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useAppDispatch } from '../hooks/useTypeSelector';
+import { State } from '../redux/reducers';
+import { loadUser } from '../redux/user/userAction';
+import { User } from '../typings';
+import AdminDashboardSideBar from './AdminDashboardSideBar';
+import AdminDashboardTopBar from './AdminDashboardTopBar';
+import { Transition } from '@headlessui/react';
+import axios from 'axios';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import React, { Fragment, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 interface Props {
-  children: JSX.Element
+  children: JSX.Element;
 }
 
 const AdmimDashboardLayout = ({ children }: Props) => {
-  const [showNav, setShowNav] = useState(true)
-  const [isMobile, setIsMobile] = useState(false)
-  const cookies = parseCookies()
-  const { data: session } = useSession()
-  const router = useRouter()
+  const [showNav, setShowNav] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const cookies = parseCookies();
+  const { data: session } = useSession();
+  const router = useRouter();
 
-  const dispatch = useAppDispatch()
-  const profile = useSelector((state: State) => state.profile)
-  const { loading, error, dbUser } = profile
+  const dispatch = useAppDispatch();
+  const profile = useSelector((state: State) => state.profile);
+  const { loading, error, dbUser } = profile;
 
   const user: User = dbUser
     ? dbUser
@@ -33,27 +33,27 @@ const AdmimDashboardLayout = ({ children }: Props) => {
     ? JSON.parse(cookies.user)
     : session?.user
     ? session?.user
-    : ''
+    : '';
 
   function handleResize() {
     if (innerWidth <= 640) {
-      setShowNav(false)
-      setIsMobile(true)
+      setShowNav(false);
+      setIsMobile(true);
     } else {
-      setShowNav(true)
-      setIsMobile(false)
+      setShowNav(true);
+      setIsMobile(false);
     }
   }
 
   useEffect(() => {
     if (typeof window != undefined) {
-      addEventListener('resize', handleResize)
+      addEventListener('resize', handleResize);
     }
 
     return () => {
-      removeEventListener('resize', handleResize)
-    }
-  }, [])
+      removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   return (
     <div className=''>
@@ -84,7 +84,7 @@ const AdmimDashboardLayout = ({ children }: Props) => {
         </div>
       </main>
     </div>
-  )
-}
+  );
+};
 
-export default AdmimDashboardLayout
+export default AdmimDashboardLayout;

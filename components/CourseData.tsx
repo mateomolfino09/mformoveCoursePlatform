@@ -1,15 +1,15 @@
-import { ClassesDB, CoursesDB } from '../typings'
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React from 'react'
+import { ClassesDB, CoursesDB } from '../typings';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React from 'react';
 
 interface Props {
-  course: CoursesDB
-  clase: ClassesDB
-  setTime: any
-  setForward: any
-  playerRef: any
+  course: CoursesDB;
+  clase: ClassesDB;
+  setTime: any;
+  setForward: any;
+  playerRef: any;
 }
 
 const CourseData = ({
@@ -19,28 +19,26 @@ const CourseData = ({
   setForward,
   playerRef
 }: Props) => {
-  console.log(course)
-
-  const router = useRouter()
+  const router = useRouter();
 
   const handleLeft = () => {
-    setForward(false)
-    setTime(playerRef?.current && playerRef.current.getCurrentTime())
+    setForward(false);
+    setTime(playerRef?.current && playerRef.current.getCurrentTime());
     router.push(
       clase.id - 1 == 0
         ? `/src/courses/${course.id}/${clase.id}`
         : `/src/courses/${course.id}/${clase.id - 1}`
-    )
-  }
+    );
+  };
   const handleRight = () => {
-    setForward(true)
-    setTime(playerRef?.current && playerRef.current.getCurrentTime())
+    setForward(true);
+    setTime(playerRef?.current && playerRef.current.getCurrentTime());
     router.push(
       clase.id + 1 == course.classesQuantity
         ? `/src/courses/${course.id}/1`
         : `/src/courses/${course.id}/${clase.id + 1}`
-    )
-  }
+    );
+  };
 
   return (
     <div className='w-full h-full flex flex-row mt-4 justify-between bg-dark lg:w-2/3'>
@@ -63,7 +61,7 @@ const CourseData = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CourseData
+export default CourseData;

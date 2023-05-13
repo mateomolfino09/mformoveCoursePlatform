@@ -19,7 +19,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "lib/mongodb.js",
+    "config/mongodb.js",
     "pages/api/auth/[...nextauth].js",
     "redux/store.ts",
     "redux/userAction.js",

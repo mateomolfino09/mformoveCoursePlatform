@@ -1,20 +1,20 @@
-import Membership from '../../../../components/Membership'
-import { useAppDispatch } from '../../../../hooks/useTypeSelector'
-import { State } from '../../../../redux/reducers'
-import { loadUser } from '../../../../redux/user/userAction'
-import { CourseUser, CoursesDB, User } from '../../../../typings'
-import { VideoCameraIcon } from '@heroicons/react/24/solid'
-import axios from 'axios'
-import cookie from 'js-cookie'
-import { signOut, useSession } from 'next-auth/react'
-import Head from 'next/head'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { parseCookies } from 'nookies'
-import React, { useEffect, useState } from 'react'
-import { AiOutlineUser } from 'react-icons/ai'
-import { FaHistory } from 'react-icons/fa'
-import { useSelector } from 'react-redux'
+import Membership from '../../../../components/Membership';
+import { useAppDispatch } from '../../../../hooks/useTypeSelector';
+import { State } from '../../../../redux/reducers';
+import { loadUser } from '../../../../redux/user/userAction';
+import { CourseUser, CoursesDB, User } from '../../../../typings';
+import { VideoCameraIcon } from '@heroicons/react/24/solid';
+import axios from 'axios';
+import cookie from 'js-cookie';
+import { signOut, useSession } from 'next-auth/react';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import React, { useEffect, useState } from 'react';
+import { AiOutlineUser } from 'react-icons/ai';
+import { FaHistory } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 
 const monthNames = [
   'Enero',
@@ -29,17 +29,17 @@ const monthNames = [
   'Octubre',
   'Noviembre',
   'Diciembre'
-]
+];
 
 function Account() {
-  const dispatch = useAppDispatch()
-  const profile = useSelector((state: State) => state.profile)
-  const [userDB, setUserDB] = useState<User | null>(null)
-  const { dbUser } = profile
-  const cookies = parseCookies()
-  const { data: session } = useSession()
-  const router = useRouter()
-  const [userState, setUserState] = useState<any>(null)
+  const dispatch = useAppDispatch();
+  const profile = useSelector((state: State) => state.profile);
+  const [userDB, setUserDB] = useState<User | null>(null);
+  const { dbUser } = profile;
+  const cookies = parseCookies();
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [userState, setUserState] = useState<any>(null);
 
   const user: User = dbUser
     ? dbUser
@@ -47,10 +47,10 @@ function Account() {
     ? JSON.parse(cookies.user)
     : session?.user
     ? session?.user
-    : ''
+    : '';
 
   useEffect(() => {
-    session ? setUserState(session.user) : setUserState(user)
+    session ? setUserState(session.user) : setUserState(user);
 
     const getUserDB = async () => {
       try {
@@ -58,34 +58,34 @@ function Account() {
           headers: {
             'Content-Type': 'application/json'
           }
-        }
-        const email = user.email
+        };
+        const email = user.email;
         const { data } = await axios.post(
           '/api/user/getUser',
           { email },
           config
-        )
-        !userDB ? setUserDB(data) : null
+        );
+        !userDB ? setUserDB(data) : null;
         //eslint-disable-next-line react-hooks/exhaustive-deps
       } catch (error: any) {
-        console.log(error.message)
+        console.log(error.message);
       }
-    }
+    };
 
-    getUserDB()
-  }, [router, session])
+    getUserDB();
+  }, [router, session]);
 
   const logoutHandler = async () => {
-    if (session) signOut()
-    cookie.remove('token')
-    cookie.remove('user')
+    if (session) signOut();
+    cookie.remove('token');
+    cookie.remove('user');
 
-    router.push('/src/user/login')
-  }
+    router.push('/src/user/login');
+  };
 
   const cantCourses = userDB?.courses.filter(
     (c: CourseUser) => c.purchased
-  ).length
+  ).length;
 
   return (
     <div>
@@ -161,7 +161,7 @@ function Account() {
         </div>
       </main>
     </div>
-  )
+  );
 }
 
-export default Account
+export default Account;

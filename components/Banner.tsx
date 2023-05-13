@@ -1,34 +1,34 @@
-import { headContentAnimation } from '../config/motion'
-import { baseUrl } from '../constants/images'
-import { CoursesContext } from '../hooks/coursesContext'
-import { useAppDispatch } from '../hooks/useTypeSelector'
-import imageLoader from '../imageLoader'
-import { loadCourse } from '../redux/courseModal/courseModalAction'
-import { Images } from '../typings'
-import { InformationCircleIcon } from '@heroicons/react/24/outline'
-import { AnimatePresence, motion as m } from 'framer-motion'
-import Image from 'next/image'
-import { useRouter } from 'next/router'
-import { useContext, useEffect, useState } from 'react'
-import { BsPlayCircle } from 'react-icons/bs'
-import { FaPlay } from 'react-icons/fa'
-import { useDispatch, useSelector } from 'react-redux'
+import { headContentAnimation } from '../config/motion';
+import { baseUrl } from '../constants/images';
+import { CoursesContext } from '../hooks/coursesContext';
+import { useAppDispatch } from '../hooks/useTypeSelector';
+import imageLoader from '../imageLoader';
+import { loadCourse } from '../redux/courseModal/courseModalAction';
+import { Images } from '../typings';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { AnimatePresence, motion as m } from 'framer-motion';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { useContext, useEffect, useState } from 'react';
+import { BsPlayCircle } from 'react-icons/bs';
+import { FaPlay } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface Props {
-  randomImage: Images | null
-  scrollToModa: any
+  randomImage: Images | null;
+  scrollToModa: any;
 }
 
 function Banner({ randomImage, scrollToModa }: Props) {
-  const [image, setImage] = useState<Images | null>(randomImage)
+  const [image, setImage] = useState<Images | null>(randomImage);
   // const srcImg: string = image?.urls.regular != null ? image?.urls.regular : ''
-  const dispatch = useAppDispatch()
-  const { courses, setCourses } = useContext(CoursesContext)
-  const router = useRouter()
+  const dispatch = useAppDispatch();
+  const { courses, setCourses } = useContext(CoursesContext);
+  const router = useRouter();
 
   const handleOpen = () => {
-    dispatch(loadCourse())
-  }
+    dispatch(loadCourse());
+  };
 
   return (
     <AnimatePresence>
@@ -74,7 +74,7 @@ function Banner({ randomImage, scrollToModa }: Props) {
         </m.div>
       </div>
     </AnimatePresence>
-  )
+  );
 }
 
-export default Banner
+export default Banner;

@@ -1,7 +1,7 @@
-import { useAppDispatch } from '../hooks/useTypeSelector'
-import imageLoader from '../imageLoader'
-import { loadCourse } from '../redux/courseModal/courseModalAction'
-import { CoursesDB, Item, Ricks, User } from '../typings'
+import { useAppDispatch } from '../hooks/useTypeSelector';
+import imageLoader from '../imageLoader';
+import { loadCourse } from '../redux/courseModal/courseModalAction';
+import { CoursesDB, Item, Ricks, User } from '../typings';
 import {
   Button,
   Container,
@@ -13,21 +13,21 @@ import {
   Tooltip,
   Typography,
   styled
-} from '@mui/material'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { Dispatch, SetStateAction } from 'react'
-import { TbLockOpenOff } from 'react-icons/tb'
+} from '@mui/material';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React, { Dispatch, SetStateAction } from 'react';
+import { TbLockOpenOff } from 'react-icons/tb';
 
 function ValueLabelComponent(props: SliderValueLabelProps) {
-  const { children, value } = props
+  const { children, value } = props;
 
   return (
     <Tooltip enterTouchDelay={0} placement='top' title={value}>
       {children}
     </Tooltip>
-  )
+  );
 }
 
 const PrettoSlider = styled(Slider)({
@@ -67,15 +67,15 @@ const PrettoSlider = styled(Slider)({
       transform: 'rotate(-45deg)'
     }
   }
-})
+});
 
 interface Props {
-  items: Item[] | null
-  course: CoursesDB | null
-  isClass: boolean
-  user: User | null
-  actualClassIndex: number
-  courseIndex: number
+  items: Item[] | null;
+  course: CoursesDB | null;
+  isClass: boolean;
+  user: User | null;
+  actualClassIndex: number;
+  courseIndex: number;
 }
 function CourseThumbnail({
   items,
@@ -85,9 +85,9 @@ function CourseThumbnail({
   user,
   courseIndex
 }: Props) {
-  const classes = user?.courses[courseIndex].classes
-  const email = user?.email
-  const router = useRouter()
+  const classes = user?.courses[courseIndex].classes;
+  const email = user?.email;
+  const router = useRouter();
 
   return (
     <>
@@ -182,7 +182,7 @@ function CourseThumbnail({
         </div>
       ))}
     </>
-  )
+  );
 }
 
-export default CourseThumbnail
+export default CourseThumbnail;

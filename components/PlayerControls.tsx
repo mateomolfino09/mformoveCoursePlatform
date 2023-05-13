@@ -6,38 +6,38 @@ import {
   PlayIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon
-} from '@heroicons/react/24/solid'
+} from '@heroicons/react/24/solid';
 import {
   Popover,
   Slider,
   SliderValueLabelProps,
   Tooltip,
   styled
-} from '@mui/material'
+} from '@mui/material';
 import React, {
   ElementType,
   forwardRef,
   useEffect,
   useRef,
   useState
-} from 'react'
+} from 'react';
 import {
   AiFillBackward,
   AiFillForward,
   AiFillPauseCircle,
   AiOutlinePause
-} from 'react-icons/ai'
-import { BsFillPlayFill } from 'react-icons/bs'
+} from 'react-icons/ai';
+import { BsFillPlayFill } from 'react-icons/bs';
 
 // ElementType<ValueLabelProps>
 function ValueLabelComponent(props: SliderValueLabelProps) {
-  const { children, value } = props
+  const { children, value } = props;
 
   return (
     <Tooltip enterTouchDelay={0} placement='top' title={value}>
       {children}
     </Tooltip>
-  )
+  );
 }
 
 const PrettoSlider = styled(Slider)({
@@ -77,7 +77,7 @@ const PrettoSlider = styled(Slider)({
       transform: 'rotate(-45deg)'
     }
   }
-})
+});
 
 const SliderVolume = styled(Slider)({
   color: '#fff',
@@ -116,31 +116,31 @@ const SliderVolume = styled(Slider)({
       transform: 'rotate(-45deg)'
     }
   }
-})
+});
 
 interface Props {
-  onPlayPause: any
-  playing: boolean
-  onFastForward: any
-  onRewind: any
-  muted: boolean
-  onMute: any
-  onVolumeSeekUp: any
-  onVolumeChange: any
-  volume: number
-  playbackRate: number
-  onPlaybackRateChange: any
-  onToggleFullScreen: any
-  fullScreen: boolean
-  played: number
-  onSeek: any
-  onSeekMouseDown: any
-  onSeekMouseUp: any
-  elapsedTime: any
-  totalDuration: any
-  onBookmark: any
-  setPlayerRef: any
-  title: string
+  onPlayPause: any;
+  playing: boolean;
+  onFastForward: any;
+  onRewind: any;
+  muted: boolean;
+  onMute: any;
+  onVolumeSeekUp: any;
+  onVolumeChange: any;
+  volume: number;
+  playbackRate: number;
+  onPlaybackRateChange: any;
+  onToggleFullScreen: any;
+  fullScreen: boolean;
+  played: number;
+  onSeek: any;
+  onSeekMouseDown: any;
+  onSeekMouseUp: any;
+  elapsedTime: any;
+  totalDuration: any;
+  onBookmark: any;
+  setPlayerRef: any;
+  title: string;
 }
 
 export default function PlayerControls({
@@ -167,23 +167,25 @@ export default function PlayerControls({
   setPlayerRef,
   title
 }: Props) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
+  const ref = useRef<HTMLDivElement>(null);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
 
   const handlePopover = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
 
   useEffect(() => {
-    if (ref != null && setPlayerRef != null) setPlayerRef(ref)
-  }, [ref])
+    if (ref != null && setPlayerRef != null) setPlayerRef(ref);
+  }, [ref]);
 
-  const open = Boolean(anchorEl)
-  const id = open ? 'playbackrate-popover' : undefined
+  const open = Boolean(anchorEl);
+  const id = open ? 'playbackrate-popover' : undefined;
 
   return (
     <div
@@ -344,5 +346,5 @@ export default function PlayerControls({
         </div>
       </div>
     </div>
-  )
+  );
 }

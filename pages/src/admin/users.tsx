@@ -1,79 +1,79 @@
-import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout'
-import DeleteUser from '../../../components/DeleteUser'
-import { UserContext } from '../../../hooks/userContext'
-import { User } from '../../../typings'
-import { getConfirmedUsers } from '../../api/user/getConfirmedUsers'
-import { getUserFromBack } from '../../api/user/getUserFromBack'
-import { loadUser } from '../../api/user/loadUser'
+import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
+import DeleteUser from '../../../components/DeleteUser';
+import { UserContext } from '../../../hooks/userContext';
+import { User } from '../../../typings';
+import { getConfirmedUsers } from '../../api/user/getConfirmedUsers';
+import { getUserFromBack } from '../../api/user/getUserFromBack';
+import { loadUser } from '../../api/user/loadUser';
 import {
   PencilIcon,
   PencilSquareIcon,
   TrashIcon
-} from '@heroicons/react/24/solid'
-import axios from 'axios'
-import { getSession, useSession } from 'next-auth/react'
-import Head from 'next/head'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { parseCookies } from 'nookies'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { toast } from 'react-toastify'
+} from '@heroicons/react/24/solid';
+import axios from 'axios';
+import { getSession, useSession } from 'next-auth/react';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 
 interface Props {
-  users: any
-  user: User
+  users: any;
+  user: User;
 }
 const ShowUsers = ({ users, user }: Props) => {
-  const cookies = parseCookies()
-  const { data: session } = useSession()
-  const router = useRouter()
-  let [isOpenDelete, setIsOpenDelete] = useState(false)
-  const ref = useRef(null)
-  const [userCtx, setUserCtx] = useState<User>(user)
+  const cookies = parseCookies();
+  const { data: session } = useSession();
+  const router = useRouter();
+  let [isOpenDelete, setIsOpenDelete] = useState(false);
+  const ref = useRef(null);
+  const [userCtx, setUserCtx] = useState<User>(user);
 
-  const [userSelected, setUserSelected] = useState<User>(user)
-  const [elementos, setElementos] = useState<User[]>([])
+  const [userSelected, setUserSelected] = useState<User>(user);
+  const [elementos, setElementos] = useState<User[]>([]);
 
   const providerValue = useMemo(
     () => ({ userCtx, setUserCtx }),
     [userCtx, setUserCtx]
-  )
+  );
 
   useEffect(() => {
     if (user === null || user.rol != 'Admin') {
-      router.push('/src/user/login')
+      router.push('/src/user/login');
     }
-  }, [session, router])
+  }, [session, router]);
   useEffect(() => {
-    setElementos(users)
-  }, [])
+    setElementos(users);
+  }, []);
 
   const deleteUser = async () => {
-    const userId = userSelected?._id
+    const userId = userSelected?._id;
 
     const config = {
       headers: {
         'Content-Type': 'application/json'
       }
-    }
+    };
 
-    const response = await axios.delete(`/api/user/delete/${userId}`, config)
+    const response = await axios.delete(`/api/user/delete/${userId}`, config);
     const updatedUsers = users.filter(
       (person: User) => person._id !== userSelected._id
-    )
-    setElementos(updatedUsers)
+    );
+    setElementos(updatedUsers);
     if (response) {
-      toast.success(`${userSelected.name} fue eliminado correctamente`)
+      toast.success(`${userSelected.name} fue eliminado correctamente`);
     }
 
-    setIsOpenDelete(false)
-  }
+    setIsOpenDelete(false);
+  };
   function openModalDelete(user: User) {
-    setUserSelected(user)
-    setIsOpenDelete(true)
+    setUserSelected(user);
+    setIsOpenDelete(true);
   }
   function openEdit(user: User) {
-    setUserSelected(user)
+    setUserSelected(user);
   }
   return (
     <UserContext.Provider value={providerValue}>
@@ -141,17 +141,17 @@ const ShowUsers = ({ users, user }: Props) => {
         </>
       </AdmimDashboardLayout>
     </UserContext.Provider>
-  )
-}
+  );
+};
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context
-  const session = await getSession({ req })
-  const cookies = parseCookies(context)
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user
-  const email = userCookie.email
-  const user = await getUserFromBack(email)
-  const users: any = await getConfirmedUsers()
-  return { props: { users, user } }
+  const { params, query, req, res } = context;
+  const session = await getSession({ req });
+  const cookies = parseCookies(context);
+  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
+  const email = userCookie.email;
+  const user = await getUserFromBack(email);
+  const users: any = await getConfirmedUsers();
+  return { props: { users, user } };
 }
 
-export default ShowUsers
+export default ShowUsers;

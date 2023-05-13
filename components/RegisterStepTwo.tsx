@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { AiOutlineCheckCircle } from 'react-icons/ai'
-import Select, { StylesConfig } from 'react-select'
-import { toast } from 'react-toastify'
+import React, { useState } from 'react';
+import { AiOutlineCheckCircle } from 'react-icons/ai';
+import Select, { StylesConfig } from 'react-select';
+import { toast } from 'react-toastify';
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -12,39 +12,39 @@ const colourStyles: StylesConfig<any> = {
     padding: 0
   }),
   option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    return { ...styles, color: '#808080' }
+    return { ...styles, color: '#808080' };
   },
   input: (styles) => ({ ...styles, backgroundColor: '', color: '#fff' }),
   placeholder: (styles) => ({ ...styles, color: '#fff' }),
   singleValue: (styles, { data }) => ({ ...styles, color: '#808080' })
-}
+};
 
 interface Props {
-  step2ToStep3: any
-  setData: any
+  step2ToStep3: any;
+  setData: any;
 }
 
 const RegisterStepOne = ({ step2ToStep3, setData }: Props) => {
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleClick = () => {
     if (password != confirmPassword) {
-      toast.error('Las contraseñas no coinciden')
+      toast.error('Las contraseñas no coinciden');
     } else if (password.length < 8) {
-      toast.error('La contraseña debe contener almenos 8 caracteres')
+      toast.error('La contraseña debe contener almenos 8 caracteres');
     } else {
-      setData(password, confirmPassword)
-      step2ToStep3()
+      setData(password, confirmPassword);
+      step2ToStep3();
     }
-  }
+  };
   const keyDownHandler = (event: any) => {
     if (event.key === 'Enter') {
-      event.preventDefault()
+      event.preventDefault();
 
-      handleClick()
+      handleClick();
     }
-  }
+  };
   return (
     <div
       className={`h-full w-full relative flex flex-col md:items-center md:justify-center bg-white`}
@@ -92,7 +92,7 @@ const RegisterStepOne = ({ step2ToStep3, setData }: Props) => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RegisterStepOne
+export default RegisterStepOne;

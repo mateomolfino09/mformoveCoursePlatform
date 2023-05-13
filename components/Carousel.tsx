@@ -1,14 +1,14 @@
-import { CoursesContext } from '../hooks/coursesContext'
-import { loadCourse } from '../redux/courseModal/courseModalAction'
-import { CourseModal } from '../redux/courseModal/courseModalTypes'
-import { State } from '../redux/reducers'
-import { Courses, CoursesDB, Item, Ricks, User } from '../typings'
-import CarouselThumbnail from './CarouselThumbnail'
-import CourseThumbnail from './CourseThumbnail'
-import Thumbnail from './Thumbnail'
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
-import { motion as m } from 'framer-motion'
-import Link from 'next/link'
+import { CoursesContext } from '../hooks/coursesContext';
+import { loadCourse } from '../redux/courseModal/courseModalAction';
+import { CourseModal } from '../redux/courseModal/courseModalTypes';
+import { State } from '../redux/reducers';
+import { Courses, CoursesDB, Item, Ricks, User } from '../typings';
+import CarouselThumbnail from './CarouselThumbnail';
+import CourseThumbnail from './CourseThumbnail';
+import Thumbnail from './Thumbnail';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { motion as m } from 'framer-motion';
+import Link from 'next/link';
 import {
   Dispatch,
   RefObject,
@@ -17,20 +17,20 @@ import {
   useEffect,
   useRef,
   useState
-} from 'react'
-import { useSelector } from 'react-redux'
+} from 'react';
+import { useSelector } from 'react-redux';
 
 interface Props {
-  title: string | null
-  coursesDB: CoursesDB[] | null
-  setSelectedCourse: Dispatch<SetStateAction<CoursesDB | null>> | null
-  items: Item[] | null
-  courseDB: CoursesDB | null
-  actualCourseIndex: number
-  setRef: any
-  isClass: boolean
-  user: User | null
-  courseIndex: number
+  title: string | null;
+  coursesDB: CoursesDB[] | null;
+  setSelectedCourse: Dispatch<SetStateAction<CoursesDB | null>> | null;
+  items: Item[] | null;
+  courseDB: CoursesDB | null;
+  actualCourseIndex: number;
+  setRef: any;
+  isClass: boolean;
+  user: User | null;
+  courseIndex: number;
 }
 
 function Carousel({
@@ -45,48 +45,48 @@ function Carousel({
   user,
   courseIndex
 }: Props) {
-  const rowRef = useRef<HTMLDivElement>(null)
-  const scrollRowRef = useRef<HTMLDivElement>(null)
-  const listRef = useRef<HTMLDivElement>(null)
-  const [isMoved, setIsMoved] = useState(false)
+  const rowRef = useRef<HTMLDivElement>(null);
+  const scrollRowRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const [isMoved, setIsMoved] = useState(false);
   const course: CourseModal = useSelector(
     (state: State) => state.courseModalReducer
-  )
-  const { courses, setCourses } = useContext(CoursesContext)
+  );
+  const { courses, setCourses } = useContext(CoursesContext);
   const theWidth = rowRef.current?.scrollWidth
     ? -(rowRef.current?.scrollWidth - rowRef.current?.offsetWidth)
-    : 0
-  const [width, setWidth] = useState<number>(theWidth)
-  const [isOpen, setIsOpen] = useState<number>(0)
+    : 0;
+  const [width, setWidth] = useState<number>(theWidth);
+  const [isOpen, setIsOpen] = useState<number>(0);
 
-  useEffect(() => {}, [isOpen, width])
+  useEffect(() => {}, [isOpen, width]);
 
   useEffect(() => {
     if (rowRef != null && setRef != null) {
-      setRef(rowRef)
+      setRef(rowRef);
     }
     setWidth(
       rowRef.current?.scrollWidth
         ? -(rowRef.current?.scrollWidth - rowRef.current?.offsetWidth)
         : 0
-    )
-  }, [coursesDB])
+    );
+  }, [coursesDB]);
 
   const handleClick = (direction: string) => {
-    setIsMoved(true)
+    setIsMoved(true);
 
     if (scrollRowRef.current) {
-      const { scrollLeft, clientWidth } = scrollRowRef.current
-      console.log(scrollLeft, clientWidth)
+      const { scrollLeft, clientWidth } = scrollRowRef.current;
+      console.log(scrollLeft, clientWidth);
 
       const scrollTo =
         direction === 'left'
           ? scrollLeft - clientWidth
-          : scrollLeft + clientWidth
+          : scrollLeft + clientWidth;
 
-      scrollRowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' })
+      scrollRowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
-  }
+  };
 
   return (
     <m.div
@@ -134,7 +134,7 @@ function Carousel({
         onClick={() => handleClick('right')}
       />
     </m.div>
-  )
+  );
 }
 
-export default Carousel
+export default Carousel;

@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
-import validator from 'validator'
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const classSchema = new mongoose.Schema(
   {
@@ -38,7 +38,7 @@ const classSchema = new mongoose.Schema(
     }
   },
   { timestamps: true }
-)
+);
 
-let Dataset = mongoose.models.Class || mongoose.model('Class', classSchema)
-export default Dataset
+let Dataset = mongoose.models.Class || mongoose.model('Class', classSchema);
+export default Dataset;
