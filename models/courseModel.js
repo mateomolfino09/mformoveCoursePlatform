@@ -1,5 +1,22 @@
-import mongoose from "mongoose";
-import validator from "validator";
+import mongoose from 'mongoose';
+import validator from 'validator';
+
+const modulesSchema = new mongoose.Schema({
+  quantity: {
+    type: Number,
+    required: true
+  },
+  breakPoints: [
+    {
+      type: Number
+    }
+  ],
+  titles: [
+    {
+      type: String
+    }
+  ]
+});
 
 const courseSchema = new mongoose.Schema(
   {
@@ -9,25 +26,29 @@ const courseSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      required: true,
+      required: true
     },
     description: {
       type: String,
       required: true,
-      minLength: 20,
+      minLength: 20
     },
     createdAt: {
-        type: Date,
-        immutable: true,
-        default: () => Date.now()
+      type: Date,
+      immutable: true,
+      default: () => Date.now()
     },
     playlist_code: {
       type: String,
-      required: true,
+      required: true
+    },
+    classesQuantity: {
+      type: Number,
+      required: true
     },
     image_url: {
-        type: String,
-        required: true,
+      type: String,
+      required: true
     },
     likes: {
       type: Number,
@@ -41,18 +62,23 @@ const courseSchema = new mongoose.Schema(
       type: String,
       default: () => '$'
     },
-    users: [{
+    users: [
+      {
         type: mongoose.Types.ObjectId,
-        ref: "User"
-    }],
-    classes: [{
-      type: mongoose.Types.ObjectId,
-      ref: "Class"
-  }],
-  created_by: {
+        ref: 'User'
+      }
+    ],
+    classes: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: 'Class'
+      }
+    ],
+    modules: modulesSchema,
+    created_by: {
       type: mongoose.Types.ObjectId,
       ref: 'User'
-  }
+    }
   },
   { timestamps: true }
 );
@@ -61,5 +87,5 @@ const courseSchema = new mongoose.Schema(
 //   this
 // })
 
-let Dataset = mongoose.models.Course || mongoose.model("Course", courseSchema);
+let Dataset = mongoose.models.Course || mongoose.model('Course', courseSchema);
 export default Dataset;

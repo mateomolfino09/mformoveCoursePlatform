@@ -1,13 +1,11 @@
-import connectDB from "../../../config/connectDB";
-import User from "../../../models/userModel";
-import bcrypt from "bcryptjs";
-import { ConnectionPoolClosedEvent } from "mongodb";
+import connectDB from '../../../config/connectDB';
+import User from '../../../models/userModel';
 
 connectDB();
 
 const getUser = async (req, res) => {
   try {
-    if (req.method === "POST") {
+    if (req.method === 'POST') {
       const { email } = req.body;
       const user = await User.findOne({ email: email }).lean().exec();
       user.password = undefined;

@@ -1,18 +1,16 @@
-import bcrypt from "bcryptjs";
-import Users from "../../../models/userModel";
-import Courses from "../../../models/courseModel";
-import mongoose from "mongoose";
-import connectDB from "../../../config/connectDB";
-import jwt from "jsonwebtoken";
-import absoluteUrl from "next-absolute-url";
-import { sendEmail } from "../../../helpers/sendEmail";
-import validateCaptcha from "./validateCaptcha";
+import connectDB from '../../../config/connectDB';
+import { sendEmail } from '../../../helpers/sendEmail';
+import Users from '../../../models/userModel';
+import validateCaptcha from './validateCaptcha';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import absoluteUrl from 'next-absolute-url';
 
 connectDB();
 
 const register = async (req, res) => {
   try {
-    if (req.method === "POST") {
+    if (req.method === 'POST') {
       const { email, password, firstname, lastname, gender, country, captcha } =
         req.body;
 
@@ -20,7 +18,7 @@ const register = async (req, res) => {
 
       if (!validCaptcha) {
         return res.status(422).json({
-          error: "Unprocessable request, Invalid captcha code.",
+          error: 'Unprocessable request, Invalid captcha code.'
         });
       }
 
@@ -28,7 +26,7 @@ const register = async (req, res) => {
       if (user) {
         return res
           .status(422)
-          .json({ error: "Este usuario ya fue registrado" });
+          .json({ error: 'Este usuario ya fue registrado' });
       }
 
       const HashedPassword = await bcrypt.hash(password, 12);
@@ -37,14 +35,14 @@ const register = async (req, res) => {
         password: HashedPassword,
         name: `${firstname} ${lastname}`,
         gender: gender,
-        country: country,
+        country: country
       }).save();
 
       const token = jwt.sign(
         { _id: newUser._id },
         process.env.NEXTAUTH_SECRET,
         {
-          expiresIn: "30d",
+          expiresIn: '30d'
         }
       );
 
@@ -71,24 +69,20 @@ const register = async (req, res) => {
         title: title,
         name: `Hola, ${newUser.name}:`,
         content:
-          "Confirma tu email para poder empezar a disfrutar de Video Stream.",
+          'Confirma tu email para poder empezar a disfrutar de Video Stream.',
         message: message,
         to: `Video Stream te envió este mensaje a [${newUser.email}] como parte de tu membresía.`,
-        subject: "Confirmar Mail",
+        subject: 'Confirmar Mail'
       });
 
-      return res
-        .status(200)
-        .json({
-          message: `Email enviado a ${newUser.email}, porfavor chequea tu correo.`,
-        });
+      return res.status(200).json({
+        message: `Email enviado a ${newUser.email}, porfavor chequea tu correo.`
+      });
     }
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        error: `Error al enviar un mail a ${newUser.email}. Porfavor vuelva a intentarlo`,
-      });
+    return res.status(500).json({
+      error: `Error al enviar el mail. Porfavor vuelva a intentarlo`
+    });
   }
 };
 

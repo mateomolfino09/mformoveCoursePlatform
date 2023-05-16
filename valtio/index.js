@@ -11,7 +11,8 @@ const state = proxy({
   volumeIndex: false,
   searchBar: false,
   searchToggle: false,
-  searchInput: ''
+  searchInput: '',
+  classHeaders: 'Temario'
 });
 
 export default state;

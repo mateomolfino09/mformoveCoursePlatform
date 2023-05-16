@@ -1,16 +1,13 @@
-import connectDB from "../../../config/connectDB" 
-import Course from "../../../models/courseModel"
-import User from "../../../models/userModel"
-import Class from "../../../models/classModel"
-import bcrypt from "bcryptjs"
+import connectDB from '../../../config/connectDB';
+import Course from '../../../models/courseModel';
 
-connectDB()
+connectDB();
 
 export async function getLastCourseClass(id) {
   try {
-    const res = await Course.findOne({ id })
-    return res.classes.length
-    } catch (err) {
-     console.log(err)
-    }
+    const res = await Course.findOne({ id });
+    return res.classes.length;
+  } catch (err) {
+    console.log(err);
+  }
 }

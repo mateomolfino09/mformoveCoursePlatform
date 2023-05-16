@@ -1,7 +1,5 @@
-import connectDB from "../../../config/connectDB";
-import User from "../../../models/userModel";
-import bcrypt from "bcryptjs";
-import { ConnectionPoolClosedEvent } from "mongodb";
+import connectDB from '../../../config/connectDB';
+import User from '../../../models/userModel';
 
 connectDB();
 

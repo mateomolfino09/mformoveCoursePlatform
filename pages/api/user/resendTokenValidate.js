@@ -1,32 +1,29 @@
-import bcrypt from "bcryptjs";
-import Users from "../../../models/userModel";
-import Courses from "../../../models/courseModel";
-import mongoose from "mongoose";
-import connectDB from "../../../config/connectDB";
-import jwt from "jsonwebtoken";
-import absoluteUrl from "next-absolute-url";
-import { sendEmail } from "../../../helpers/sendEmail";
+import connectDB from '../../../config/connectDB';
+import { sendEmail } from '../../../helpers/sendEmail';
+import Users from '../../../models/userModel';
+import jwt from 'jsonwebtoken';
+import absoluteUrl from 'next-absolute-url';
 
 connectDB();
 
 const resendTokenValidate = async (req, res) => {
   try {
-    if (req.method === "POST") {
+    if (req.method === 'POST') {
       const { email } = req.body;
 
       const user = await Users.findOne({ email: email });
 
       if (!user) {
-        return res.status(404).json({ error: "No se encontró este usuario" });
+        return res.status(404).json({ error: 'No se encontró este usuario' });
       }
-      if (!user.validEmail === "not") {
+      if (!user.validEmail === 'not') {
         return res
           .status(422)
-          .json({ error: "Este usuario ya fue verificado" });
+          .json({ error: 'Este usuario ya fue verificado' });
       }
 
       const token = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
-        expiresIn: "30d",
+        expiresIn: '30d'
       });
 
       user.emailToken = token;
@@ -51,14 +48,14 @@ const resendTokenValidate = async (req, res) => {
         title: title,
         name: `Hola, ${user.name}:`,
         content:
-          "Confirma tu email para poder empezar a disfrutar de Video Stream.",
+          'Confirma tu email para poder empezar a disfrutar de Video Stream.',
         message: message,
         to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
-        subject: "Confirmar Mail",
+        subject: 'Confirmar Mail'
       });
 
       return res.status(200).json({
-        message: `Email enviado a ${user.email}, porfavor chequea tu correo.`,
+        message: `Email enviado a ${user.email}, porfavor chequea tu correo.`
       });
     }
   } catch (error) {

@@ -1,3 +1,3 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
-export const ClassContext = createContext<any>(0)
+export const ClassContext = createContext<any>(0);
