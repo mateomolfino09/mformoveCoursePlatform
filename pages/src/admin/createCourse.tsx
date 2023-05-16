@@ -31,10 +31,6 @@ interface ProfileUser {
   error: any;
 }
 
-interface Props {
-  user: User;
-  session: User;
-}
 
 interface Props {
   user: User;
@@ -399,6 +395,7 @@ const CreateCourse = ({ user }: Props) => {
                         <>
                           <div
                             onClick={() => handleModuleSelection(number + 1)}
+                            key={number}
                             className={`max-w-[2rem] mr-4 h-8  rounded-full justify-center items-center flex cursor-pointer hover:bg-white hover:text-black ${
                               moduleNumbers.includes(number + 1)
                                 ? 'bg-white text-black'
@@ -423,7 +420,7 @@ const CreateCourse = ({ user }: Props) => {
                         <>
                           <hr className='w-full border border-black border-dashed' />
                           {moduleNumbers.map((number: number) => (
-                            <div className='flex w-full flex-row justify-center items-center'>
+                            <div className='flex w-full flex-row justify-center items-center' key={number}>
                               <div
                                 onClick={() => handleModuleSelection(number)}
                                 className={`min-w-[2rem] mr-4 h-8  rounded-full justify-center items-center flex cursor-pointer hover:bg-white hover:text-black ${

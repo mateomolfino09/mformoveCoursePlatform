@@ -16,7 +16,8 @@
     "no-unneeded-ternary": "off",
     "camelcase": "off",
     "prefer-const": "off",
-    "no-unused-expressions": "off"
+    "no-unused-expressions": "off",
+    "react/jsx-curly-brace-presence": "off"
   }
 
 }

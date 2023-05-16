@@ -58,7 +58,7 @@ const Index = ({ user }: Props) => {
               </div>
             </Link>
           </div>
-          <div className='grid col-1 bg-gray-500 h-96 shadow-sm'></div>
+          <div className='grid col-1 bg-gray-500 h-96 shadow-sm' />
         </div>
       </AdmimDashboardLayout>
     </UserContext.Provider>
