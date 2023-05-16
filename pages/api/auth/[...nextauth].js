@@ -1,12 +1,7 @@
-import  GoogleProvider  from 'next-auth/providers/google';
-import NextAuth from "next-auth/next";
-import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
-import clientPromise from "../../../lib/mongodb"
-import CredentialsProvider from "next-auth/providers/credentials"
-import connectDB from "../../../config/connectDB";
-import Users from '../../../models/userModel'
-import bcrypt from 'bcrypt'
-import nextAuth, { NextAuthOptions } from "next-auth";
+import clientPromise from '../../../config/mongodb';
+import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
+import nextAuth from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
 
 const authOptions = {
   adapter: MongoDBAdapter(clientPromise),
@@ -14,12 +9,12 @@ const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-  ],  
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET
+    })
+  ],
   pages: {
-      signIn: "/src/user/login"
-  },
-}
+    signIn: '/src/user/login'
+  }
+};
 
-export default nextAuth(authOptions)
+export default nextAuth(authOptions);

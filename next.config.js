@@ -3,10 +3,15 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ["rickandmortyapi.com", "image.tmdb.org", "rb.gy", "https://www.googleapis.com/youtube/v3/playlistItems"],
-    loader: "custom",
-    path: "/"
-  },
+    domains: [
+      'rickandmortyapi.com',
+      'image.tmdb.org',
+      'rb.gy',
+      'https://www.googleapis.com/youtube/v3/playlistItems'
+    ],
+    loader: 'custom',
+    path: '/'
+  }
   // webpack: (config) => {
   //   config.experiments = {
   //     topLevelAwait: true,
@@ -16,4 +21,4 @@ const nextConfig = {
   // }
 };
 
-module.exports = nextConfig
+module.exports = nextConfig;

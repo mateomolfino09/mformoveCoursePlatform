@@ -1,5 +1,6 @@
-import { User } from "./redux/user/userTypes";
-import { currency } from "./constants/currency";
+import { currency } from './constants/currency';
+import { User } from './redux/user/userTypes';
+
 export interface Urls {
   raw: string;
   full: string;
@@ -177,22 +178,28 @@ export interface Notification {
   title: string;
   message: string;
   status: string;
-  read: boolean
-  link: string
-
+  read: boolean;
+  link: string;
 }
 
 export interface CourseUser {
-    course: string
-    like: Boolean,
-    inList: Boolean,
-    actualChapter: number,
-    actualTime: number,
-    purchased: Boolean
-    classes: [ClassesUser]
+  course: string;
+  like: Boolean;
+  inList: Boolean;
+  actualChapter: number;
+  actualTime: number;
+  purchased: Boolean;
+  classes: [ClassesUser];
+}
+
+export interface Modules {
+  quantity: number;
+  breakPoints: [number];
+  titles: [string];
 }
 
 export interface User {
+  id: number;
   _id: number;
   name: string;
   email: string;
@@ -202,10 +209,9 @@ export interface User {
   createdAt: string;
   rol: string;
   emailToken: string;
-  courses: CourseUser[];    
+  courses: CourseUser[];
   admin: AdminUser;
-  notifications: Notification[]
-
+  notifications: Notification[];
 }
 
 export interface CoursesDB {
@@ -225,10 +231,13 @@ export interface CoursesDB {
   currency: string;
   created_by: User;
   index: number;
-  isOpen: boolean
+  classesQuantity: number;
+  isOpen: boolean;
+  modules: Modules;
 }
 
 export interface ClassesDB {
+  _id: string;
   id: number;
   name: string;
   createdAt: string;
@@ -239,16 +248,31 @@ export interface ClassesDB {
   course: CoursesDB;
 }
 
+export interface Answer {
+  answerAdmin: User;
+  answeredAt: string;
+  answer: string;
+}
+export interface Question {
+  id: number;
+  question: string;
+  answers: Answer[];
+  user: User;
+  answerAdmin: User;
+  class: ClassesDB;
+  createdAt: string;
+  hasAnswer: boolean;
+}
+
 export interface Bill {
-    payment_id: Number
-    merchant_order_id: String
-    preference_id: String
-    collection_id: String
-    payment_type: String
-    createdAt: Date
-    status: String
-    processing_mode: String
-    course: CoursesDB
-    user: User
-    
+  payment_id: Number;
+  merchant_order_id: String;
+  preference_id: String;
+  collection_id: String;
+  payment_type: String;
+  createdAt: Date;
+  status: String;
+  processing_mode: String;
+  course: CoursesDB;
+  user: User;
 }
