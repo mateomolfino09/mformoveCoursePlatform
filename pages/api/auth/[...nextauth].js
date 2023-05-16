@@ -1,6 +1,6 @@
 import clientPromise from '../../../config/mongodb';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
-import nextAuth, { NextAuthOptions } from 'next-auth';
+import nextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
 const authOptions = {
