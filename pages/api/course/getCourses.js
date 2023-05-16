@@ -1,5 +1,7 @@
 import connectDB from '../../../config/connectDB';
+import Class from '../../../models/classModel';
 import Course from '../../../models/courseModel';
+import User from '../../../models/userModel';
 
 connectDB();
 

@@ -7,8 +7,9 @@
   ],
   "plugins": ["prettier"],
   "rules": {
-    "prettier/prettier": "error"
-  },
-  "no-unused-vars": "off"
+    "prettier/prettier": "error",
+    "no-unused-vars": "off",
+    "react/no-unescaped-entities": "off"
+  }
 
 }
