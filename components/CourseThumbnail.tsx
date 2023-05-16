@@ -142,7 +142,8 @@ function CourseThumbnail({
 
               <div
                 className={`absolute top-[64px] left-0 right-0 bottom-0 flex-col space-y-48 justify-between z-[1]`}
-              ></div>
+              />
+              
               <Grid
                 container
                 direction='row'

@@ -199,9 +199,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
                   {quest.answers &&
                     quest.answers.length > 0 &&
                     quest?.answers.map((answer: Answer) => (
-                      <>
-                        {console.log(answer)}
-
+                      <React.Fragment key={answer.answeredAt.toString()}>
                         <div className='flex justify-start items-center space-x-2 mt-6 pl-12'>
                           <UserCircleIcon className='h-8' />
                           <div className='flex flex-col'>
@@ -228,7 +226,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
                     Responder
                   </button>
                   </div> */}
-                      </>
+                      </React.Fragment>
                     ))}
                 </>
               )}

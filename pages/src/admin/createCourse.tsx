@@ -341,7 +341,6 @@ const CreateCourse = ({ user }: Props) => {
                           onKeyDown={(e) =>
                             e.key === '-' ? e.preventDefault() : null
                           }
-                          aria-required={true}
                         />
                       </label>
                       <label className='inline-block w-full'>
@@ -392,10 +391,9 @@ const CreateCourse = ({ user }: Props) => {
                       }`}
                     >
                       {classesNumbers.map((number: number) => (
-                        <>
+                        <React.Fragment key={number}>
                           <div
                             onClick={() => handleModuleSelection(number + 1)}
-                            key={number}
                             className={`max-w-[2rem] mr-4 h-8  rounded-full justify-center items-center flex cursor-pointer hover:bg-white hover:text-black ${
                               moduleNumbers.includes(number + 1)
                                 ? 'bg-white text-black'
@@ -405,7 +403,7 @@ const CreateCourse = ({ user }: Props) => {
                           >
                             <p>{number + 1}</p>
                           </div>
-                        </>
+                        </React.Fragment>
                       ))}
                     </div>
                     <div

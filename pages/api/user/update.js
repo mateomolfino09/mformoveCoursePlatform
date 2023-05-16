@@ -16,7 +16,7 @@ const update = async (req, res) => {
       const courses = await Courses.find({});
 
       courses.forEach((course) => {
-        newUser.courses.course = course;
+        user.courses.course = course;
       });
 
       user.update = update;

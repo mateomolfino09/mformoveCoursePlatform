@@ -79,7 +79,6 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
         yOffset;
 
       window.scrollTo({ top: y, behavior: 'smooth' });
-      return;
       // return refToModa?.current.scrollIntoView({behavior: 'smooth'})
     }
   }
@@ -93,7 +92,6 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
         yOffset;
 
       window.scrollTo({ top: y, behavior: 'smooth' });
-      return;
       // return refToModa?.current.scrollIntoView({behavior: 'smooth'})
     }
   }
@@ -107,7 +105,6 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
         yOffset;
 
       window.scrollTo({ top: y, behavior: 'smooth' });
-      return;
       // return refToModa?.current.scrollIntoView({behavior: 'smooth'})
     }
   }
@@ -121,7 +118,6 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
         yOffset;
 
       window.scrollTo({ top: y, behavior: 'smooth' });
-      return;
       // return refToModa?.current.scrollIntoView({behavior: 'smooth'})
     }
   }

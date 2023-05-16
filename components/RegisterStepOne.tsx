@@ -38,7 +38,7 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
   const [capsLock, setCapsLock] = useState<boolean>(false);
 
   useEffect(() => {
-    if (typeof window != undefined && document != undefined) {
+    if (typeof window != 'undefined' && document != undefined) {
       document.addEventListener('keydown', testCapsLock);
       document.addEventListener('keyup', testCapsLock);
     }
@@ -143,7 +143,7 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
             onKeyDown={keyDownHandler}
           />
         </div>
-        <div className='space-x-4 flex'></div>
+        <div className='space-x-4 flex' />
         <button
           onClick={() => handleClick()}
           className='w-40 mb-10 input py-3 font-semibold '

@@ -13,7 +13,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 interface Props {
-  children: JSX.Element;
+  children: any;
 }
 
 const AdmimDashboardLayout = ({ children }: Props) => {
@@ -46,7 +46,7 @@ const AdmimDashboardLayout = ({ children }: Props) => {
   }
 
   useEffect(() => {
-    if (typeof window !== undefined) {
+    if (typeof window !== 'undefined') {
       addEventListener('resize', handleResize);
     }
 

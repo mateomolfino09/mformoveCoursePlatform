@@ -79,7 +79,7 @@ const SearchBar = ({ setSelectedCourse }: Props) => {
                 </p>
 
                 <ul>
-                  <li></li>
+                  <li />
                 </ul>
               </div>
             </div>

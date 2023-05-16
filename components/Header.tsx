@@ -18,7 +18,7 @@ import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import {
+import React, {
   Fragment,
   RefObject,
   useContext,
@@ -198,7 +198,6 @@ const Header = ({
       const y = 0;
 
       window.scrollTo({ top: y, behavior: 'smooth' });
-      return;
       // return refToModa?.current.scrollIntoView({behavior: 'smooth'})
     }
   }
@@ -335,7 +334,7 @@ const Header = ({
                   notificationList.length > 0 ? (
                     <>
                       {notificationList.map((notification: Notification) => (
-                        <>
+                        <React.Fragment key={notification.title}>
                           <div className='flex'>
                             <div
                               className={`rounded-full shrink-0 ${
@@ -366,7 +365,7 @@ const Header = ({
                               ) : null}
                             </div>
                           </div>
-                        </>
+                        </React.Fragment>
                       ))}
                     </>
                   ) : (

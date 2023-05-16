@@ -39,7 +39,7 @@ const Login = ({ providers, session }: any) => {
   // const dispatch = useDispatch()
 
   useEffect(() => {
-    if (typeof window != undefined && document != undefined) {
+    if (typeof window != 'undefined' && document != undefined) {
       document.addEventListener('keydown', testCapsLock);
       document.addEventListener('keyup', testCapsLock);
     }

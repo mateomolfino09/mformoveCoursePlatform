@@ -202,7 +202,7 @@ export default function PlayerControls({
         <div className='w-[80%] h-16'>
           <h5 className='text-white !text-lg'>{title}</h5>
         </div>
-        <div className='hidden lg:flex'></div>
+        <div className='hidden lg:flex' />
       </div>
 
       <div

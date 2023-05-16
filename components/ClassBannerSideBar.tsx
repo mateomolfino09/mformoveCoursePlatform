@@ -58,7 +58,7 @@ const ClassBannerSideBar = forwardRef<HTMLInputElement, Props>(
         ref={ref}
       >
         {courseDB.classes.map((clas: ClassesDB) => (
-          <div className='flex flex-col bg-dark-soft'>
+          <div className='flex flex-col bg-dark-soft' key={clas.id}>
             {courseDB.modules.breakPoints.includes(clas.id) && (
               <>
                 {clas.id === 1 && (

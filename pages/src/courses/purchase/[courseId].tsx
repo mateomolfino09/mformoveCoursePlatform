@@ -74,7 +74,7 @@ function Course({ course, user }: Props) {
         </div>
       </main>
       {!snap.intro && (
-        <div className='absolute w-full top-0 left-1/2 -ml-[50%] h-full '></div>
+        <div className='absolute w-full top-0 left-1/2 -ml-[50%] h-full ' />
       )}
     </section>
   );

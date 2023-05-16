@@ -267,7 +267,7 @@ function Course({ clase, user, courseDB, questions }: Props) {
           {snap.classHeaders === 'Temario' && (
             <div className='md:hidden'>
               {courseDB.classes.map((clas: ClassesDB) => (
-                <ClassBanner clase={clas} course={courseDB} />
+                <ClassBanner clase={clas} course={courseDB} key={clas.id}/>
               ))}
             </div>
           )}

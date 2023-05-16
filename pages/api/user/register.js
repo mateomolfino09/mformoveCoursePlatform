@@ -81,7 +81,7 @@ const register = async (req, res) => {
     }
   } catch (error) {
     return res.status(500).json({
-      error: `Error al enviar un mail a ${newUser.email}. Porfavor vuelva a intentarlo`
+      error: `Error al enviar el mail. Porfavor vuelva a intentarlo`
     });
   }
 };

@@ -75,7 +75,7 @@ const Customizer = ({ user, course }: Props) => {
             />
           </m.div>
           <div className='absolute z-10 top-1/2 left-1/2 right-5 w-32'>
-            <div className='h-10 w-20 mt-0 font-bold text-sm bg-white'></div>
+            <div className='h-10 w-20 mt-0 font-bold text-sm bg-white' />
           </div>
         </>
       )}

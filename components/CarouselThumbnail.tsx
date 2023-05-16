@@ -223,7 +223,7 @@ function CarouselThumbnail({
           className={`thumb-color rounded-lg min-w-[20rem] min-h-[25rem] md:min-h-[30rem] md:min-w-[23rem] ${
             isOpen == course.id ? 'max-h-[25rem] md:max-h-[30rem]' : ''
           } overflow-hidden`}
-        ></div>
+        />
         <div className='thumbnailItem relative'>
           <div className='absolute bottom-0 h-28 z-[100] thumbnailItem'>
             <div className='flex justify-between'>
@@ -358,8 +358,8 @@ function CarouselThumbnail({
             isOpen == course.id ? 'flex z-[0]' : 'hidden'
           } w-full  h-full flex-col p-4 justify-start space-y-8 `}
         >
-          <div className='flex flex-row items-center '></div>
-          <div className='flex flex-row mt-0 lg:mt-4 gap-2 items-center'></div>
+          <div className='flex flex-row items-center ' />
+          <div className='flex flex-row mt-0 lg:mt-4 gap-2 items-center' />
         </div>
       </m.div>
     </AnimatePresence>

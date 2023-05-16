@@ -17,7 +17,7 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
   const [capsLock, setCapsLock] = useState<boolean>(false);
 
   useEffect(() => {
-    if (typeof window != undefined && document != undefined) {
+    if (typeof window != 'undefined' && document != undefined) {
       document.addEventListener('keydown', testCapsLock);
       document.addEventListener('keyup', testCapsLock);
     }

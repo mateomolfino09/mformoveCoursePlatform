@@ -128,7 +128,6 @@ function Thumbnail({ course, setSelectedCourse, user, courseIndex }: Props) {
         setTimeout(() => {
           setZIndex(0);
         }, 500);
-        return;
       }}
       style={{ zIndex: zIndex }}
       className={`group/item relative h-60 min-w-[350px] cursor-pointer transition duration-1000 ease-out md:h-36 md:min-w-[260px] md:hover:scale-105 overflow-visible`}
@@ -174,8 +173,8 @@ function Thumbnail({ course, setSelectedCourse, user, courseIndex }: Props) {
                 justify-end
                 items-start'
         >
-          <div className='h-1/4 w-full'></div>
-          <div className='h-1/4 w-full'></div>
+          <div className='h-1/4 w-full' />
+          <div className='h-1/4 w-full' />
           <div className='h-1/2 w-full z-[100]'>
             <div className='flex flex-row items-center mt-10'>
               <div className='cursor-pointer w-4 h-4 lg:w-6 lg:h-6 bg-white rounded-full flex justify-center items-center transition hover:bg-neutral-300 '>

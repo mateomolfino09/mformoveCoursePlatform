@@ -1,4 +1,4 @@
-import connectDB from '../../../config/connectDB';
+import connectDB, { db } from '../../../config/connectDB';
 import { ObjectId } from 'mongodb';
 
 connectDB();
