@@ -2,8 +2,6 @@ import connectDB from '../../../../config/connectDB';
 import Course from '../../../../models/courseModel';
 import User from '../../../../models/userModel';
 import axios from 'axios';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 
 const mercadopago = require('mercadopago');
 

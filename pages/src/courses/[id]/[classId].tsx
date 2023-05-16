@@ -1,20 +1,16 @@
 import ClassBanner from '../../../../components/ClassBanner';
 import ClassBannerSideBar from '../../../../components/ClassBannerSideBar';
-import ClassDescription from '../../../../components/ClassDescription';
 import ClassOptions from '../../../../components/ClassOptions';
 import ClassQuestions from '../../../../components/ClassQuestions';
 import ClassResources from '../../../../components/ClassResources';
 import ClassThumbnail from '../../../../components/ClassThumbnail';
 import CourseData from '../../../../components/CourseData';
 import VideoPlayer from '../../../../components/VideoPlayer';
-import connectDB, { db } from '../../../../config/connectDB';
-import { ClassContext } from '../../../../hooks/classContext';
-import { CoursesContext } from '../../../../hooks/coursesContext';
+import connectDB from '../../../../config/connectDB';
 import {
   ClassesDB,
   CourseUser,
   CoursesDB,
-  Item,
   Question,
   User
 } from '../../../../typings';
@@ -25,23 +21,18 @@ import { getCourseById } from '../../../api/course/getCourseById';
 import { getQuestionsFromClass } from '../../../api/question/getAllQuestions';
 import { updateActualCourseSS } from '../../../api/user/updateActualCourseSS';
 import { Transition } from '@headlessui/react';
-import { ArrowDownLeftIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { XCircleIcon } from '@heroicons/react/24/outline';
 import { ChevronRightIcon, FlagIcon } from '@heroicons/react/24/solid';
 import MuiModal from '@mui/material/Modal';
 import axios from 'axios';
-import { motion as m, useAnimation } from 'framer-motion';
-import { GetServerSideProps, GetStaticProps } from 'next';
+import { useAnimation } from 'framer-motion';
 import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import { title } from 'process';
-import { ParsedUrlQuery } from 'querystring';
 import React, {
   Fragment,
   RefObject,
-  useContext,
   useEffect,
   useState
 } from 'react';
@@ -60,9 +51,6 @@ interface Props {
 }
 
 function Course({ clase, user, courseDB, questions }: Props) {
-  console.log(questions);
-  const lastClass = courseDB.classes.length;
-  const youtubeURL = `${requests.playlistYTAPI}?part=snippet&playlistId=${courseDB?.playlist_code}&maxResults=50&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`;
   const [forward, setForward] = useState<boolean>(false);
   const [showNav, setShowNav] = useState(false);
   const [time, setTime] = useState<number | null | undefined>(null);
@@ -372,7 +360,7 @@ function Course({ clase, user, courseDB, questions }: Props) {
 
 export async function getServerSideProps(context: any) {
   connectDB();
-  const { params, query, req, res } = context;
+  const { params, req } = context;
   const session = await getSession({ req });
   const cookies = parseCookies(context);
   const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;

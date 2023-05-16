@@ -5,17 +5,15 @@ import RegisterStepThree from '../../../components/RegisterStepThree';
 import RegisterStepTwo from '../../../components/RegisterStepTwo';
 import imageLoader from '../../../imageLoader';
 import axios from 'axios';
-import { getSession, signIn, useSession } from 'next-auth/react';
+import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import React, { MouseEvent, useEffect, useRef, useState } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { ToastContainer, toast } from 'react-toastify';
-import { idText } from 'typescript';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 interface Inputs {
   email: string;

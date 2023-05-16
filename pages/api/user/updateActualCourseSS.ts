@@ -1,8 +1,6 @@
-import connectDB from '../../../config/connectDB';
 import Course from '../../../models/courseModel';
 import User from '../../../models/userModel';
 import { CourseUser, CoursesDB, User as UserType } from '../../../typings';
-import { ConnectionPoolClosedEvent } from 'mongodb';
 
 export async function updateActualCourseSS(
   email: string,

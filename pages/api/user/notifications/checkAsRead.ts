@@ -1,8 +1,6 @@
 import connectDB from '../../../../config/connectDB';
-import Courses from '../../../../models/courseModel';
 import Users from '../../../../models/userModel';
 import { Notification } from '../../../../typings';
-import absoluteUrl from 'next-absolute-url';
 
 connectDB();
 

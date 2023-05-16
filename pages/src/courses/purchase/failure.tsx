@@ -103,7 +103,7 @@ const Success = ({ course, user }: Props) => {
 };
 
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context;
+  const { query } = context;
   const { email, courseId } = query;
   const course = await getCourseById(courseId);
   const user = await getUserFromBack(email);

@@ -2,11 +2,9 @@ import imageLoader from '../../../../imageLoader';
 import { CoursesDB, User } from '../../../../typings';
 import { getCourseById } from '../../../api/course/getCourseById';
 import { getUserFromBack } from '../../../api/user/getUserFromBack';
-import { duration } from '@mui/material';
 import { motion as m } from 'framer-motion';
 import Head from 'next/head';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { AiFillCheckCircle } from 'react-icons/ai';
@@ -109,7 +107,7 @@ const Success = ({ course, user }: Props) => {
 };
 
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context;
+  const { query } = context;
   const { email, courseId } = query;
   const course = await getCourseById(courseId);
   const user = await getUserFromBack(email);

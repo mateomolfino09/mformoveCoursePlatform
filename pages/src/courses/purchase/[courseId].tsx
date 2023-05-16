@@ -1,40 +1,22 @@
-import ClassDescription from '../../../../components/ClassDescription';
 import Customizer from '../../../../components/Customizer';
 import PaymentGateway from '../../../../components/PaymentGateway';
-import VideoPlayer from '../../../../components/VideoPlayer';
-import connectDB, { db } from '../../../../config/connectDB';
-import {
-  headContainerAnimation,
-  headContentAnimation,
-  headTextAnimation,
-  slideAnimation
-} from '../../../../config/motion';
+import connectDB from '../../../../config/connectDB';
 import imageLoader from '../../../../imageLoader';
 import {
-  ClassesDB,
   CourseUser,
   CoursesDB,
-  Item,
   User
 } from '../../../../typings';
 import requests from '../../../../utils/requests';
 import { getCourseById } from '../../../api/course/getCourseById';
 import { getUserFromBack } from '../../../api/user/getUserFromBack';
 import state from './../../../../valtio';
-import { ArrowDownLeftIcon, XCircleIcon } from '@heroicons/react/24/outline';
-import MuiModal from '@mui/material/Modal';
-import axios from 'axios';
-import { AnimatePresence, motion as m } from 'framer-motion';
-import { GetServerSideProps, GetStaticProps } from 'next';
 import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import { ParsedUrlQuery } from 'querystring';
-import React, { RefObject, useContext, useEffect, useState } from 'react';
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
+import React, { RefObject, useEffect, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { useSnapshot } from 'valtio';
 
@@ -47,19 +29,8 @@ interface Props {
 
 function Course({ course, user }: Props) {
   const courseDB = course;
-  const lastClass = courseDB.classes.length;
-  const youtubeURL = `${requests.playlistYTAPI}?part=snippet&playlistId=${courseDB?.playlist_code}&maxResults=50&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`;
-  const [forward, setForward] = useState<boolean>(false);
-  const [time, setTime] = useState<number | null | undefined>(null);
-  const [play, setPlay] = useState<boolean>(false);
-  const [resumeModal, setResumeModal] = useState<boolean>(false);
   const [courseUser, setCourseUser] = useState<CourseUser | null>(null);
   const [hasWindow, setHasWindow] = useState(false);
-  const [playerRef, setPlayerRef] = useState<RefObject<ReactPlayer> | null>(
-    null
-  );
-  const cookies = parseCookies();
-  const { data: session } = useSession();
   const router = useRouter();
   const snap = useSnapshot(state);
 
@@ -111,7 +82,7 @@ function Course({ course, user }: Props) {
 
 export async function getServerSideProps(context: any) {
   connectDB();
-  const { params, query, req, res } = context;
+  const { params, req } = context;
   const session = await getSession({ req });
   const cookies = parseCookies(context);
   const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;

@@ -1,9 +1,7 @@
 import Membership from '../../../../components/Membership';
 import { useAppDispatch } from '../../../../hooks/useTypeSelector';
 import { State } from '../../../../redux/reducers';
-import { loadUser } from '../../../../redux/user/userAction';
-import { CourseUser, CoursesDB, User } from '../../../../typings';
-import { VideoCameraIcon } from '@heroicons/react/24/solid';
+import { CourseUser, User } from '../../../../typings';
 import axios from 'axios';
 import cookie from 'js-cookie';
 import { signOut, useSession } from 'next-auth/react';

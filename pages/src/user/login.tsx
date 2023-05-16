@@ -6,15 +6,13 @@ import { loadUser } from '../../../redux/user/userAction';
 import { User } from '../../../typings';
 import axios from 'axios';
 import cookie from 'js-cookie';
-import { getToken } from 'next-auth/jwt';
-import { getProviders, getSession, signIn, useSession } from 'next-auth/react';
+import { getProviders, getSession } from 'next-auth/react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import Router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import React, { MouseEvent, use, useEffect, useRef, useState } from 'react';
-import ReCAPTCHA, { ReCAPTCHAProps } from 'react-google-recaptcha';
 import { toast } from 'react-toastify';
 
 interface ProfileUser {

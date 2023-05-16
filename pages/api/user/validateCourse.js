@@ -1,8 +1,5 @@
 import connectDB from '../../../config/connectDB';
 import User from '../../../models/userModel';
-import Courses from '../../../models/userModel';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 
 connectDB();
 

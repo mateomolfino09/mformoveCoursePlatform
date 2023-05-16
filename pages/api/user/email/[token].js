@@ -1,10 +1,7 @@
 import connectDB from '../../../../config/connectDB';
-import Class from '../../../../models/classModel';
 import User from '../../../../models/userModel';
 import Course from '../..//../../models/courseModel';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import absoluteUrl from 'next-absolute-url';
 
 connectDB();
 const token = async (req, res) => {

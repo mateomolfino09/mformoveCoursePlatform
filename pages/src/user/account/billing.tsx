@@ -1,21 +1,13 @@
-import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout';
-import DeleteUser from '../../../../components/DeleteUser';
 import { UserContext } from '../../../../hooks/userContext';
 import { Bill, User } from '../../../../typings';
 import { getUserBills } from '../../../api/user/bills/getUserBills';
 import { getUserFromBack } from '../../../api/user/getUserFromBack';
-import { loadUser } from '../../../api/user/loadUser';
-import {
-  PencilIcon,
-  PencilSquareIcon,
-  TrashIcon
-} from '@heroicons/react/24/solid';
 import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
 
 interface Props {
@@ -113,7 +105,7 @@ const Billing = ({ bills, user }: Props) => {
   );
 };
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context;
+  const { req } = context;
   const session = await getSession({ req });
   const cookies = parseCookies(context);
   const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;

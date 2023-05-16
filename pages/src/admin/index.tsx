@@ -1,12 +1,9 @@
 import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
 import { UserContext } from '../../../hooks/userContext';
-import { State } from '../../../redux/reducers';
 import { User } from '../../../typings';
 import { getUserFromBack } from '../../api/user/getUserFromBack';
 import {
   CreditCardIcon,
-  HomeIcon,
-  PlusCircleIcon,
   TableCellsIcon,
   UserIcon
 } from '@heroicons/react/24/solid';
@@ -15,7 +12,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import React, { useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 
 interface Props {
   user: User;
@@ -70,7 +66,7 @@ const Index = ({ user }: Props) => {
 };
 
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context;
+  const { req } = context;
   const session = await getSession({ req });
   // Get a cookie
   const cookies = parseCookies(context);

@@ -1,23 +1,20 @@
 import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
-import { currency } from '../../../constants/currency';
 import { UserContext } from '../../../hooks/userContext';
 import requests from '../../../utils/requests';
 import { getUserFromBack } from '../../api/user/getUserFromBack';
-import { loadUser } from '../../api/user/loadUser';
 import { ArrowUpTrayIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Accept, useDropzone } from 'react-dropzone';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import { RxCrossCircled } from 'react-icons/rx';
-import Select, { StylesConfig, components } from 'react-select';
+import { StylesConfig, components } from 'react-select';
 import { toast } from 'react-toastify';
 
 interface User {
@@ -606,7 +603,6 @@ const CreateCourse = ({ user }: Props) => {
 
 export async function getServerSideProps(context: any) {
   const session = await getSession(context);
-  const { params, query, req, res } = context;
   const cookies = parseCookies(context);
   const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
   const email = userCookie.email;

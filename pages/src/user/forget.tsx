@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useRef, useState } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
-import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 function Forget() {

@@ -1,9 +1,6 @@
 import connectDB from '../../../config/connectDB';
-import Classes from '../../../models/classModel';
-import Courses from '../../../models/courseModel';
 import Question from '../../../models/questionModel';
 import Users from '../../../models/userModel';
-import bcrypt from 'bcryptjs';
 
 connectDB();
 

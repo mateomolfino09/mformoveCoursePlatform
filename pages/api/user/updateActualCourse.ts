@@ -1,7 +1,6 @@
 import connectDB from '../../../config/connectDB';
 import User from '../../../models/userModel';
 import { CourseUser, User as UserType } from '../../../typings';
-import { ConnectionPoolClosedEvent } from 'mongodb';
 
 connectDB();
 

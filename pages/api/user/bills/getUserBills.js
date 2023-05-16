@@ -1,6 +1,5 @@
 import connectDB from '../../../../config/connectDB';
 import Bills from '../../../../models/billModel';
-import bcrypt from 'bcryptjs';
 
 connectDB();
 

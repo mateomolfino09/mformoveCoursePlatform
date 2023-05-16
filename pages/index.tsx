@@ -4,12 +4,12 @@ import VolumeModal from '../components/VolumeModal';
 import { User } from '../typings';
 import state from '../valtio';
 import { getUserFromBack } from './api/user/getUserFromBack';
-import { AnimatePresence, motion as m } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { getSession } from 'next-auth/react';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import React from 'react';
-import { BiVolume, BiVolumeFull, BiVolumeMute } from 'react-icons/bi';
+import { BiVolumeFull, BiVolumeMute } from 'react-icons/bi';
 import { useSnapshot } from 'valtio';
 
 interface Props {
@@ -17,7 +17,6 @@ interface Props {
 }
 
 const Index = ({ user }: Props) => {
-  const snap = useSnapshot(state);
 
   return (
     <AnimatePresence>
@@ -51,7 +50,7 @@ const Index = ({ user }: Props) => {
 };
 
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context;
+  const { req } = context;
   const session = await getSession({ req });
   // Get a cookie
   const cookies = parseCookies(context);

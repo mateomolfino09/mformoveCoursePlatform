@@ -2,7 +2,6 @@ import connectDB from '../../../../config/connectDB';
 import User from '../../../../models/userModel';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import absoluteUrl from 'next-absolute-url';
 
 connectDB();
 

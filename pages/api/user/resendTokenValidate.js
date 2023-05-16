@@ -1,10 +1,7 @@
 import connectDB from '../../../config/connectDB';
 import { sendEmail } from '../../../helpers/sendEmail';
-import Courses from '../../../models/courseModel';
 import Users from '../../../models/userModel';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
 import absoluteUrl from 'next-absolute-url';
 
 connectDB();

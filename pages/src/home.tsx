@@ -2,7 +2,6 @@ import Banner from '../../components/Banner';
 import Carousel from '../../components/Carousel';
 import Header from '../../components/Header';
 import Modal from '../../components/Modal';
-import Row from '../../components/Row';
 import SearchBar from '../../components/SearchBar';
 import { CourseListContext } from '../../hooks/courseListContext';
 import { CoursesContext } from '../../hooks/coursesContext';
@@ -12,17 +11,13 @@ import { State } from '../../redux/reducers';
 import { wrapper } from '../../redux/store';
 import {
   CourseUser,
-  Courses,
   CoursesDB,
   Images,
-  Ricks,
   User
 } from '../../typings';
-import requests from '../../utils/requests';
 import state from '../../valtio';
 import { getCourses } from '../api/course/getCourses';
 import { getUserFromBack } from '../api/user/getUserFromBack';
-import { listClasses } from '@mui/material';
 import { GetServerSideProps } from 'next';
 import { Session } from 'next-auth';
 import { getSession, useSession } from 'next-auth/react';
@@ -32,7 +27,7 @@ import { parseCookies } from 'nookies';
 import { RefObject, useContext, useEffect, useRef, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { useSelector } from 'react-redux';
-import { snapshot, useSnapshot } from 'valtio';
+import { useSnapshot } from 'valtio';
 
 interface Props {
   randomImage: Images;

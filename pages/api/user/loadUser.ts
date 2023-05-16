@@ -1,8 +1,4 @@
 import {
-  Action,
-  LOAD_USER_FAIL,
-  LOAD_USER_REQUEST,
-  LOAD_USER_SUCCESS,
   User
 } from '../../../redux/user/userTypes';
 import axios from 'axios';

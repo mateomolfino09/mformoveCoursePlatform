@@ -1,15 +1,7 @@
-import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout';
-import DeleteUser from '../../../../components/DeleteUser';
 import { UserContext } from '../../../../hooks/userContext';
-import { Bill, ClassesDB, CoursesDB, User } from '../../../../typings';
+import { ClassesDB, CoursesDB, User } from '../../../../typings';
 import { getUserCourses } from '../../../api/user/course/getUserCourses';
 import { getUserFromBack } from '../../../api/user/getUserFromBack';
-import { loadUser } from '../../../api/user/loadUser';
-import {
-  PencilIcon,
-  PencilSquareIcon,
-  TrashIcon
-} from '@heroicons/react/24/solid';
 import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -133,7 +125,7 @@ const MyCourses = ({ courses, user }: Props) => {
   );
 };
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context;
+  const { req } = context;
   const session = await getSession({ req });
   const cookies = parseCookies(context);
   const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;

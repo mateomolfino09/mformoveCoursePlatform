@@ -3,9 +3,6 @@ import { sendEmail } from '../../../../helpers/sendEmail';
 import Bill from '../../../../models/billModel';
 import Course from '../../../../models/courseModel';
 import User from '../../../../models/userModel';
-import axios from 'axios';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
 
 const mercadopago = require('mercadopago');

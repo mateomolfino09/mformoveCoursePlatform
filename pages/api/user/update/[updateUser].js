@@ -1,6 +1,5 @@
 import connectDB from '../../../../config/connectDB';
 import User from '../../../../models/userModel';
-import { ObjectId } from 'mongodb';
 
 connectDB();
 export default async function handler(req, res) {
