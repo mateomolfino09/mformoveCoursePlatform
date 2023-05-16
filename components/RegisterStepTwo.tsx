@@ -83,7 +83,7 @@ const RegisterStepOne = ({ step2ToStep3, setData }: Props) => {
             />
           </label>
         </div>
-        <div className='space-x-4 flex'></div>
+        <div className='space-x-4 flex' />
         <button
           onClick={() => handleClick()}
           className='w-40 bg-black/70 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold  '

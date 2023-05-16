@@ -9,7 +9,7 @@ import Thumbnail from './Thumbnail';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { motion as m } from 'framer-motion';
 import Link from 'next/link';
-import {
+import React, {
   Dispatch,
   RefObject,
   SetStateAction,
@@ -112,7 +112,7 @@ function Carousel({
         ref={scrollRowRef}
       >
         {coursesDB?.map((course: CoursesDB, index) => (
-          <>
+          <React.Fragment key={index}>
             <CarouselThumbnail
               key={course?._id}
               course={course}
@@ -122,7 +122,7 @@ function Carousel({
               isOpen={isOpen}
               setIsOpen={setIsOpen}
             />
-          </>
+          </React.Fragment>
         ))}
       </m.div>
       <ChevronRightIcon
