@@ -13,7 +13,10 @@
     "eqeqeq": "off",
     "object-shorthand": "off",
     "spaced-comment": "off",
-    "no-unneeded-ternary": "off"
+    "no-unneeded-ternary": "off",
+    "camelcase": "off",
+    "prefer-const": "off",
+    "no-unused-expressions": "off"
   }
 
 }

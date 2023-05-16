@@ -18,8 +18,6 @@ const createAnswer = async (req, res) => {
         answerAdmin: user,
         answeredAt: Date.now()
       };
-
-      !question.answers ? (question.answers = []) : null;
       question.answers.push(answerObj);
 
       question.hasAnswer = true;

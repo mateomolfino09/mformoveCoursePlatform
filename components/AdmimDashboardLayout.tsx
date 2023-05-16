@@ -46,7 +46,7 @@ const AdmimDashboardLayout = ({ children }: Props) => {
   }
 
   useEffect(() => {
-    if (typeof window != undefined) {
+    if (typeof window !== undefined) {
       addEventListener('resize', handleResize);
     }
 
