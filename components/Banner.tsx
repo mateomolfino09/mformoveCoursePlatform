@@ -1,5 +1,4 @@
 import { headContentAnimation } from '../config/motion';
-import { baseUrl } from '../constants/images';
 import { CoursesContext } from '../hooks/coursesContext';
 import { useAppDispatch } from '../hooks/useTypeSelector';
 import imageLoader from '../imageLoader';

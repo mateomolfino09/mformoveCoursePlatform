@@ -11,7 +11,6 @@ import { useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
 
 function Banner() {
-  // const srcImg: string = image?.urls.regular != null ? image?.urls.regular : ''
   const dispatch = useAppDispatch();
   const animation = useAnimation();
   const snap = useSnapshot(state);

@@ -51,7 +51,7 @@ const ClassDescription = ({ clase, youtubeURL, courseDB }: Props) => {
         <Row
           items={items}
           courseDB={courseDB}
-          title={item != null ? item.snippet.title : ''}
+          title={item !== null ? item.snippet.title : ''}
           coursesDB={null}
           setSelectedCourse={null}
           actualCourseIndex={clase.id - 1}

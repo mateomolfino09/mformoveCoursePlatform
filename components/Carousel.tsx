@@ -62,7 +62,7 @@ function Carousel({
   useEffect(() => {}, [isOpen, width]);
 
   useEffect(() => {
-    if (rowRef != null && setRef != null) {
+    if (rowRef !== null && setRef !== null) {
       setRef(rowRef);
     }
     setWidth(

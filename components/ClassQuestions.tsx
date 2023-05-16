@@ -120,7 +120,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
             value={content}
           />
         </label>
-        {message != '' && (
+        {message !== '' && (
           <p
             className={` ${
               messageType === 'error' ? 'text-red-500' : 'text-green-500'

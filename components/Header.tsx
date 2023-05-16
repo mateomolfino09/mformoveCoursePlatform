@@ -98,7 +98,7 @@ const Header = ({
   };
 
   useEffect(() => {
-    userCtx != null
+    userCtx !== null
       ? setNotificationList(
           userCtx?.notifications.filter((x: Notification) => !x.read).slice(-5)
         )
@@ -220,7 +220,7 @@ const Header = ({
           <li className='headerLink' onClick={scrollToHome}>
             Home
           </li>
-          {scrollToModa != null ? (
+          {scrollToModa !== null ? (
             <li onClick={scrollToModa} className='headerLink'>
               Cursos
             </li>
@@ -229,7 +229,7 @@ const Header = ({
               <li className='headerLink'>Cursos</li>
             </Link>
           )}
-          {scrollToNuevo != null ? (
+          {scrollToNuevo !== null ? (
             <li onClick={scrollToNuevo} className='headerLink'>
               Nuevo
             </li>
@@ -238,7 +238,7 @@ const Header = ({
               <li className='headerLink'>Nuevo</li>
             </Link>
           )}
-          {scrollToList != null ? (
+          {scrollToList !== null ? (
             <li onClick={scrollToList} className='headerLink'>
               Mi Lista
             </li>
@@ -356,7 +356,7 @@ const Header = ({
                                 {notification.message}
                               </p>
 
-                              {notification.link && notification.link != '' ? (
+                              {notification.link && notification.link !== '' ? (
                                 <a
                                   href={notification.link}
                                   className='text-sm text-gray-500 truncate break-all whitespace-normal underline'

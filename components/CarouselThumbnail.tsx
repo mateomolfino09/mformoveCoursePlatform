@@ -207,7 +207,7 @@ function CarouselThumbnail({
 
   const handleOpen = () => {
     dispatch(loadCourse());
-    if (setSelectedCourse != null) setSelectedCourse(course);
+    if (setSelectedCourse !== null) setSelectedCourse(course);
   };
 
   return (
@@ -259,7 +259,7 @@ function CarouselThumbnail({
                     />
                   )}
                 </div>
-                {!courseUser?.purchased && user?.rol != 'Admin' && (
+                {!courseUser?.purchased && user?.rol !== 'Admin' && (
                   <div className='cursor-pointer group/item w-8 h-8 border-white border rounded-full flex justify-center items-center transition hover:border-neutral-300 ml-2'>
                     <TbLockOpenOff className='text-white group-hover/item:text-neutral-300 w-6' />
                   </div>
@@ -273,7 +273,7 @@ function CarouselThumbnail({
                   <ChevronDownIcon
                     className='text-white group-hover/item:text-neutral-300 w-6 z-[200]'
                     onClick={() =>
-                      isOpen != course.id ? setIsOpen(course.id) : setIsOpen(0)
+                      isOpen !== course.id ? setIsOpen(course.id) : setIsOpen(0)
                     }
                   />
                 </m.div>
@@ -284,7 +284,7 @@ function CarouselThumbnail({
                 className={`absolute flex justify-between h-auto w-full !mt-0`}
               >
                 <div className='flex w-full h-auto flex-col '>
-                  {!courseUser?.purchased && user?.rol != 'Admin' ? (
+                  {!courseUser?.purchased && user?.rol !== 'Admin' ? (
                     <Link href={`/src/courses/purchase/${course.id}`}>
                       <button
                         className='flex items-center gap-x-2 ml-2 rounded-md px-4 py-1 text-sm transition duration-500 hover:scale-105 md:py-1.5 md:px-6 md:text-base

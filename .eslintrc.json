@@ -9,7 +9,11 @@
   "rules": {
     "prettier/prettier": 0,
     "no-unused-vars": "off",
-    "react/no-unescaped-entities": "off"
+    "react/no-unescaped-entities": "off",
+    "eqeqeq": "off",
+    "object-shorthand": "off",
+    "spaced-comment": "off",
+    "no-unneeded-ternary": "off"
   }
 
 }
