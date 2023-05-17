@@ -20,15 +20,15 @@
     "**/*.ts",
     "**/*.tsx",
     "config/mongodb.js",
-    "pages/api/auth/[...nextauth].js",
-    "redux/store.ts",
-    "redux/userAction.js",
+    "src/pages/api/auth/[...nextauth].js",
+    "src/redux/store.ts",
+    "src/redux/userAction.js",
     "constants/admin.js",
     "canvas/Backdrop.jsx",
     "canvas/CameraRig.jsx",
     "canvas/Shirt.jsx",
-    "components/IndexBanner.jsx",
-    "components/Jodit.jsx"
+    "src/components/IndexBanner.jsx",
+    "src/components/Jodit.jsx"
   ],
   "exclude": ["node_modules"]
 }

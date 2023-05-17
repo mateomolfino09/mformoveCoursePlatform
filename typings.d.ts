@@ -1,5 +1,4 @@
-import { currency } from './constants/currency';
-import { User } from './redux/user/userTypes';
+import { User } from './src/redux/user/userTypes';
 
 export interface Urls {
   raw: string;
