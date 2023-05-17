@@ -2,7 +2,7 @@ import {
   fadeAnimation,
   slideAnimation,
   slideAnimationTabs
-} from '../../config/motion';
+} from '../config/motion';
 import { CoursesDB, User } from '../../typings';
 import state from '../valtio';
 import CustomButton from './CustomButton';

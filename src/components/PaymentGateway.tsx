@@ -3,7 +3,7 @@ import {
   headContentAnimation,
   headTextAnimation,
   slideAnimation
-} from '../../config/motion';
+} from '../config/motion';
 import imageLoader from '../../imageLoader';
 import { CoursesDB, User } from '../../typings';
 import state from '../valtio';

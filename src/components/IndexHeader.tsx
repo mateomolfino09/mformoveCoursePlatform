@@ -1,4 +1,3 @@
-import { headContentAnimation, slideAnimationTabs } from '../../config/motion';
 import { UserContext } from '../hooks/userContext';
 import { User } from '../../typings';
 import state from '../valtio';
