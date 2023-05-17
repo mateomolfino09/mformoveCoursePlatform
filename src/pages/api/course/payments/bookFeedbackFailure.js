@@ -1,4 +1,4 @@
-import connectDB from '../../../config/connectDB';
+import connectDB from '../../../../config/connectDB';
 import { sendEmail } from '../../../../helpers/sendEmail';
 import Bill from '../../../../models/billModel';
 import Course from '../../../../models/courseModel';

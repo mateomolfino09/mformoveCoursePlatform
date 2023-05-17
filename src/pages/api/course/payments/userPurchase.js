@@ -1,4 +1,4 @@
-import connectDB from '../../../config/connectDB';
+import connectDB from '../../../../config/connectDB';
 import Course from '../../../../models/courseModel';
 import User from '../../../../models/userModel';
 import axios from 'axios';
