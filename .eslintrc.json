@@ -3,7 +3,8 @@
     "./node_modules/standard/eslintrc.json",
     "next/core-web-vitals",
     "plugin:prettier/recommended",
-    "prettier"
+    "prettier",
+    "next/babel"
   ],
   "plugins": ["prettier"],
   "rules": {
