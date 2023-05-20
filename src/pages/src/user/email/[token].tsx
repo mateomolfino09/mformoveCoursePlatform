@@ -1,5 +1,6 @@
 import imageLoader from '../../../../../imageLoader';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -11,6 +12,14 @@ function EmailVerification() {
   const router = useRouter();
 
   const { token } = router.query;
+
+  useEffect(() => {
+    const cookies: any = Cookies.get('userToken')
+  
+    if (cookies) {
+      router.push('/src/home');
+    }
+  }, [router]);
 
   useEffect(() => {
     sendToken(token);

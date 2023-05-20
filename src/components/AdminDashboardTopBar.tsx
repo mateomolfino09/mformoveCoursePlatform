@@ -11,8 +11,11 @@ import {
 } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import Link from 'next/link';
-import { Fragment, useContext, useState } from 'react';
+import { Fragment, useContext, useEffect, useState } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
+import { useAuth } from '../hooks/useAuth';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/router';
 
 interface Props {
   showNav: any;
@@ -21,10 +24,30 @@ interface Props {
 }
 
 const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
-  const { userCtx, setUserCtx } = useContext(UserContext);
-  const [notificationList, setNotificationList] = useState(
-    userCtx.notifications.filter((x: Notification) => !x.read).slice(-5)
+  const auth = useAuth()
+  const router = useRouter()
+  const [notificationList, setNotificationList] = useState<Notification[] | null>(
+    null
   );
+
+  useEffect(() => {
+
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies ) {
+      router.push('/src/user/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+    else if(auth.user.rol != 'Admin') router.push('/src/user/login');
+    else {
+      setNotificationList(auth.user.notifications.filter((x: Notification) => !x.read).slice(-5))
+    }
+
+
+  }, [auth.user]);
 
   const checkReadNotis = async () => {
     const config = {
@@ -32,10 +55,10 @@ const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
         'Content-Type': 'application/json'
       }
     };
-    const notifications = userCtx.notifications
+    const notifications = auth.user.notifications
       .filter((x: Notification) => !x.read)
       .slice(-5);
-    const userId = userCtx?._id;
+    const userId = auth.user?._id;
     try {
       const { data } = await axios.put(
         '/api/user/notifications/checkAsRead',
@@ -43,7 +66,7 @@ const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
         config
       );
       // setListCourse([...listCourse, course])
-      setUserCtx(data);
+      auth.setUserBack(data);
       setNotificationList(
         data.notifications.filter((x: Notification) => !x.read).slice(-5)
       );
@@ -92,7 +115,7 @@ const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
                 </div>
 
                 <div className='mt-4 grid gap-4 grid-cols-1 overflow-hidden'>
-                  {userCtx?.notifications && notificationList.length > 0 ? (
+                  {auth.user?.notifications && notificationList && notificationList.length > 0 ? (
                     <>
                       {notificationList.map((notification: Notification) => (
                         <div className='flex' key={notification.title}>
@@ -137,7 +160,7 @@ const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
             <Menu.Button className='inline-flex w-full justify-center items-center'>
               <AiOutlineUser className=' cursor-pointer text-black rounded h-6 w-6 md:mr-2 border-2 border-white shadow-sm' />
               <span className='hidden md:block font-medium text-gray-700'>
-                {userCtx?.name}
+                {auth.user?.name}
               </span>
               <ChevronDownIcon className='ml-2 h-4 w-4 text-gray-700' />
             </Menu.Button>

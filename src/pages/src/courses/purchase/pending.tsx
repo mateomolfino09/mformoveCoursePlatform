@@ -6,8 +6,11 @@ import { motion as m } from 'framer-motion';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
 import React, { useEffect } from 'react';
 import { BiErrorCircle } from 'react-icons/bi';
+import { useAuth } from '../../../../hooks/useAuth';
+import Cookies from 'js-cookie';
 
 interface Props {
   user: User;
@@ -24,12 +27,23 @@ const container = {
   }
 };
 
-const Success = ({ course, user }: Props) => {
+const Success = ({ course }: Props) => {
   const router = useRouter();
+  const auth = useAuth()
 
   useEffect(() => {
-    if (!user || !course) router.push('/');
-  }, []);
+
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies) {
+      router.push('/src/user/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+
+  }, [auth.user]);
 
   return (
     <div className='relative flex h-screen w-screen flex-col bg-transparent md:items-center md:justify-center'>
@@ -103,12 +117,11 @@ const Success = ({ course, user }: Props) => {
 
 export async function getServerSideProps(context: any) {
   const { query } = context;
-  const { email, courseId } = query;
+  const { courseId } = query;
   const course = await getCourseById(courseId);
-  const user = await getUserFromBack(email);
 
   return {
-    props: { course, user }
+    props: { course }
   };
 }
 export default Success;

@@ -13,6 +13,8 @@ import React, { useEffect, useState } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
 import { FaHistory } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
+import { useAuth } from '../../../../hooks/useAuth';
+import Cookies from 'js-cookie';
 
 const monthNames = [
   'Enero',
@@ -30,48 +32,23 @@ const monthNames = [
 ];
 
 function Account() {
-  const dispatch = useAppDispatch();
-  const profile = useSelector((state: State) => state.profile);
-  const [userDB, setUserDB] = useState<User | null>(null);
-  const { dbUser } = profile;
-  const cookies = parseCookies();
   const { data: session } = useSession();
   const router = useRouter();
-  const [userState, setUserState] = useState<any>(null);
-
-  const user: User = dbUser
-    ? dbUser
-    : cookies?.user
-    ? JSON.parse(cookies.user)
-    : session?.user
-    ? session?.user
-    : '';
+  const auth = useAuth()
 
   useEffect(() => {
-    session ? setUserState(session.user) : setUserState(user);
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies) {
+      router.push('/src/user/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
 
-    const getUserDB = async () => {
-      try {
-        const config = {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        };
-        const email = user.email;
-        const { data } = await axios.post(
-          '/api/user/getUser',
-          { email },
-          config
-        );
-        !userDB ? setUserDB(data) : null;
-        //eslint-disable-next-line react-hooks/exhaustive-deps
-      } catch (error: any) {
-        console.log(error.message);
-      }
-    };
 
-    getUserDB();
-  }, [router, session]);
+  }, [auth.user]);
 
   const logoutHandler = async () => {
     if (session) signOut();
@@ -81,7 +58,7 @@ function Account() {
     router.push('/src/user/login');
   };
 
-  const cantCourses = userDB?.courses.filter(
+  const cantCourses = auth.user?.courses.filter(
     (c: CourseUser) => c.purchased
   ).length;
 
@@ -114,19 +91,19 @@ function Account() {
             <FaHistory className='h-4 w-4 ' />
             <p className='text-xs font-semibold text=[#5555]'>
               Miembro desde el{' '}
-              {userDB?.createdAt &&
-                new Date(userDB?.createdAt).getDate().toString()}{' '}
+              {auth.user?.createdAt &&
+                new Date(auth.user?.createdAt).getDate().toString()}{' '}
               de{' '}
-              {userDB?.createdAt &&
-                monthNames[new Date(userDB?.createdAt).getMonth()]}{' '}
+              {auth.user?.createdAt &&
+                monthNames[new Date(auth.user?.createdAt).getMonth()]}{' '}
               del{' '}
-              {userDB?.createdAt &&
-                new Date(userDB?.createdAt).getFullYear().toString()}{' '}
+              {auth.user?.createdAt &&
+                new Date(auth.user?.createdAt).getFullYear().toString()}{' '}
             </p>
           </div>
         </div>
 
-        <Membership user={userDB} />
+        <Membership user={auth.user} />
         <div className='mt-6 grid grid-cols-1 gap-x-4 border px-4 py-4 md:grid-cols-4 md:border-x-0 md:border-t md:border-b-0 md:px-0 md:pb-0'>
           <h4 className='text-lg text-[gray]'>Detalles del Plan</h4>
           {/* Find the current plan */}

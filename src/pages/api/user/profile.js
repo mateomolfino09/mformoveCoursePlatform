@@ -1,21 +1,26 @@
 import connectDB from '../../../config/connectDB';
 import User from '../../../models/userModel';
+import { verify } from 'jsonwebtoken'
 
 connectDB();
 
 const profile = async (req, res) => {
   try {
-    if (req.method === 'POST') {
-      const { email } = req.body;
+      const { userToken } = req.cookies;
 
-      const user = await User.findOne({ email: email });
+      console.log(userToken)
 
-      user.password = undefined;
+      const data =  verify(userToken, process.env.NEXTAUTH_SECRET)
+
+      console.log(data)
+
+      const user = await User.findOne({ _id: data.userId });
+
+      user ? user.password = undefined : null;
 
       return res.status(200).send(user);
-    }
   } catch (err) {
-    console.log('ERROR', err);
+    return res.status(401).send('Invalid Token');
   }
 };
 

@@ -361,16 +361,12 @@ function Course({ clase, user, courseDB, questions }: Props) {
 export async function getServerSideProps(context: any) {
   connectDB();
   const { params, req } = context;
-  const session = await getSession({ req });
-  const cookies = parseCookies(context);
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
-  const email = userCookie?.email;
   const { classId, id } = params;
   const clase = await getClassById(classId, id);
   const classUId = clase._id;
   const courseId = clase.course.id;
   const courseDB = await getCourseById(courseId);
-  const user = await updateActualCourseSS(email, id, classId);
+  const user = await updateActualCourseSS(req, id, classId);
   const questions = await getQuestionsFromClass(classUId);
 
   return {

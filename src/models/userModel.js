@@ -108,6 +108,7 @@ const userSchema = new mongoose.Schema(
     courses: [courseUser],
     notifications: [notification],
     admin: adminUser,
+    token: { type: String },
     resetToken: { type: String },
     update: { type: String },
     validEmail: { type: String, default: 'not' },

@@ -9,6 +9,8 @@ import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
+import Cookies from 'js-cookie';
+import { useAuth } from '../../../../hooks/useAuth';
 
 interface Props {
   courses: CoursesDB[];
@@ -20,31 +22,27 @@ const MyCourses = ({ courses, user }: Props) => {
   const router = useRouter();
   let [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
-  const [userCtx, setUserCtx] = useState<User>(user);
-
-  const providerValue = useMemo(
-    () => ({ userCtx, setUserCtx }),
-    [userCtx, setUserCtx]
-  );
-
-  console.log(
-    courses[0].classes
-      .map((c: ClassesDB) => c.totalTime)
-      .reduce((prev, next) => prev + next)
-  );
+  const auth = useAuth()
 
   useEffect(() => {
-    if (user === null) {
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies) {
       router.push('/src/user/login');
     }
-  }, [session, router]);
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+
+
+  }, [auth.user]);
 
   function openModal() {
     setIsOpen(true);
   }
 
   return (
-    <UserContext.Provider value={providerValue}>
       <>
         <Head>
           <title>Mis Cursos</title>
@@ -121,20 +119,13 @@ const MyCourses = ({ courses, user }: Props) => {
           </table>
         </div>
       </>
-    </UserContext.Provider>
   );
 };
 export async function getServerSideProps(context: any) {
   const { req } = context;
-  const session = await getSession({ req });
-  const cookies = parseCookies(context);
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
-  const email = userCookie.email;
-  const user = await getUserFromBack(email);
-  const userId = user._id;
-  const courses: any = await getUserCourses(userId);
+  const courses: any = await getUserCourses(req);
 
-  return { props: { courses, user } };
+  return { props: { courses } };
 }
 
 export default MyCourses;

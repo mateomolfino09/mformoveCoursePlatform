@@ -51,7 +51,6 @@ import { toast as toaster } from 'react-toastify';
 interface Props {
   courseDB: CoursesDB | null;
   user: User | null;
-  updateUserDB: (user: User) => void;
 }
 
 interface UserProps {
@@ -85,7 +84,7 @@ const notify = (message: String, agregado: boolean, like: boolean) =>
     { id: 'unique-notification', position: 'top-center' }
   );
 
-function Modal({ courseDB, user, updateUserDB }: Props) {
+function Modal({ courseDB, user }: Props) {
   const youtubeURL = `${requests.playlistYTAPI}?part=snippet&playlistId=${courseDB?.playlist_code}&maxResults=50&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`;
   const [items, setItems] = useState<Item[] | null>(null);
   const [url, setUrl] = useState<string | null>(null);

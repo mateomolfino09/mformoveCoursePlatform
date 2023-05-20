@@ -11,6 +11,7 @@ import { wrapper } from '../redux/store';
 import { CoursesDB, User } from '../../typings';
 import { useMemo, useState } from 'react';
 import { Provider } from 'react-redux';
+import { ProviderAuth } from '../hooks/useAuth';
 
 function App({ Component, ...rest }: AppProps) {
   const [listCourse, setListCourse] = useState<CoursesDB[]>([]);
@@ -35,19 +36,21 @@ function App({ Component, ...rest }: AppProps) {
 
   return (
     <main>
-      <SessionProvider session={pageProps.session}>
-        <Provider store={store}>
-          <CourseListContext.Provider value={providerValue}>
-            <CoursesContext.Provider value={coursesProviderValue}>
-              <UserContext.Provider value={userProviderValue}>
-                <NextNProgress color='#c2c9d2' />
-                <ToastContainer />
-                <Component {...pageProps} />
-              </UserContext.Provider>
-            </CoursesContext.Provider>
-          </CourseListContext.Provider>
-        </Provider>
-      </SessionProvider>
+      <ProviderAuth>
+        <SessionProvider session={pageProps.session}>
+          <Provider store={store}>
+            <CourseListContext.Provider value={providerValue}>
+              <CoursesContext.Provider value={coursesProviderValue}>
+                <UserContext.Provider value={userProviderValue}>
+                  <NextNProgress color='#c2c9d2' />
+                  <ToastContainer />
+                  <Component {...pageProps} />
+                </UserContext.Provider>
+              </CoursesContext.Provider>
+            </CourseListContext.Provider>
+          </Provider>
+        </SessionProvider>   
+      </ProviderAuth>
     </main>
   );
 }

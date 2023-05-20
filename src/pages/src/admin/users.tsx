@@ -13,55 +13,67 @@ import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../../hooks/useAuth';
+import Cookies from 'js-cookie';
 
 interface Props {
   users: any;
   user: User;
 }
-const ShowUsers = ({ users, user }: Props) => {
+const ShowUsers = ({ users }: Props) => {
   const cookies = parseCookies();
   const { data: session } = useSession();
   const router = useRouter();
   let [isOpenDelete, setIsOpenDelete] = useState(false);
   const ref = useRef(null);
-  const [userCtx, setUserCtx] = useState<User>(user);
-
-  const [userSelected, setUserSelected] = useState<User>(user);
+  const [userSelected, setUserSelected] = useState<User | null>(null);
   const [elementos, setElementos] = useState<User[]>([]);
 
-  const providerValue = useMemo(
-    () => ({ userCtx, setUserCtx }),
-    [userCtx, setUserCtx]
-  );
+  const auth = useAuth()
 
   useEffect(() => {
-    if (user === null || user.rol != 'Admin') {
+
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies ) {
       router.push('/src/user/login');
     }
-  }, [session, router]);
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+    else if(auth.user.rol != 'Admin') router.push('/src/user/login');
+
+
+  }, [auth.user]);
+
+
   useEffect(() => {
     setElementos(users);
   }, []);
 
   const deleteUser = async () => {
-    const userId = userSelected?._id;
+    if(userSelected) {
 
-    const config = {
-      headers: {
-        'Content-Type': 'application/json'
+      const userId = userSelected?._id;
+  
+      const config = {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      };
+  
+      const response = await axios.delete(`/api/user/delete/${userId}`, config);
+      const updatedUsers = users.filter(
+        (person: User) => person._id !== userSelected._id
+      );
+      setElementos(updatedUsers);
+      if (response) {
+        toast.success(`${userSelected.name} fue eliminado correctamente`);
       }
-    };
-
-    const response = await axios.delete(`/api/user/delete/${userId}`, config);
-    const updatedUsers = users.filter(
-      (person: User) => person._id !== userSelected._id
-    );
-    setElementos(updatedUsers);
-    if (response) {
-      toast.success(`${userSelected.name} fue eliminado correctamente`);
+  
+      setIsOpenDelete(false);
     }
-
-    setIsOpenDelete(false);
   };
   function openModalDelete(user: User) {
     setUserSelected(user);
@@ -71,7 +83,6 @@ const ShowUsers = ({ users, user }: Props) => {
     setUserSelected(user);
   }
   return (
-    <UserContext.Provider value={providerValue}>
       <AdmimDashboardLayout>
         <>
           <Head>
@@ -160,18 +171,12 @@ const ShowUsers = ({ users, user }: Props) => {
           />
         </>
       </AdmimDashboardLayout>
-    </UserContext.Provider>
   );
 };
 export async function getServerSideProps(context: any) {
   const { req } = context;
-  const session = await getSession({ req });
-  const cookies = parseCookies(context);
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
-  const email = userCookie.email;
-  const user = await getUserFromBack(email);
   const users: any = await getConfirmedUsers();
-  return { props: { users, user } };
+  return { props: { users } };
 }
 
 export default ShowUsers;
