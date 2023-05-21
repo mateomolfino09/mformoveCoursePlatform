@@ -1,10 +1,11 @@
 import imageLoader from '../../../../../imageLoader';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 function Token() {
@@ -12,6 +13,14 @@ function Token() {
   const [conEmail, setConEmail] = useState('');
   const router = useRouter();
   const { token } = router.query;
+
+  useEffect(() => {
+    const cookies: any = Cookies.get('userToken')
+  
+    if (cookies) {
+      router.push('/src/home');
+    }
+  }, [router]);
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();

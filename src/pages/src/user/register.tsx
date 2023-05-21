@@ -14,6 +14,7 @@ import { parseCookies } from 'nookies';
 import React, { MouseEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import Cookies from 'js-cookie';
 
 interface Inputs {
   email: string;
@@ -21,9 +22,6 @@ interface Inputs {
 }
 
 function Register() {
-  const { data: session } = useSession();
-  const cookies = parseCookies();
-
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [firstname, setFirstname] = useState('');
@@ -133,12 +131,11 @@ function Register() {
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (session) {
-      router.push('/src/home');
-    }
 
-    if (cookies?.user) {
+  useEffect(() => {
+    const cookies: any = Cookies.get('userToken')
+  
+    if (cookies) {
       router.push('/src/home');
     }
   }, [router]);
@@ -275,14 +272,5 @@ function Register() {
   );
 }
 
-export async function getServerSideProps(context: any) {
-  const session = await getSession(context);
-
-  return {
-    props: {
-      session
-    }
-  };
-}
 
 export default Register;

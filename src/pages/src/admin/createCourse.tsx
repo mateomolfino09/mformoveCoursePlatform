@@ -16,6 +16,8 @@ import { AiOutlineCheckCircle } from 'react-icons/ai';
 import { RxCrossCircled } from 'react-icons/rx';
 import { StylesConfig, components } from 'react-select';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../../hooks/useAuth';
+import Cookies from 'js-cookie';
 
 interface User {
   id: number;
@@ -25,39 +27,7 @@ interface User {
   password: string;
 }
 
-interface ProfileUser {
-  user: User | null;
-  loading: boolean;
-  error: any;
-}
-
-
-interface Props {
-  user: User;
-}
-
-const Input = (inputProps: any) => (
-  <components.Input {...inputProps} autoComplete='nope' />
-);
-
-const colourStyles: StylesConfig<any> = {
-  control: (styles) => ({
-    ...styles,
-    backgroundColor: '#333',
-    height: 52,
-    borderRadius: 6,
-    padding: 0,
-    border: 'none'
-  }),
-  option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    return { ...styles, color: '#808080' };
-  },
-  input: (styles) => ({ ...styles, backgroundColor: '', color: '#fff' }),
-  placeholder: (styles) => ({ ...styles, color: '#fff' }),
-  singleValue: (styles, { data }) => ({ ...styles, color: '#808080' })
-};
-
-const CreateCourse = ({ user }: Props) => {
+const CreateCourse = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [playlistId, setPlaylistId] = useState('');
@@ -77,15 +47,28 @@ const CreateCourse = ({ user }: Props) => {
   const [breakpointTitles, setBreakpointTitles] = useState<string[]>([]);
   const [showBreakpoints, setShowBreakpoints] = useState<boolean>(false);
   const [currencys, setCurrency] = useState<string>('$');
-  const [userCtx, setUserCtx] = useState<User>(user);
   const [loading, setLoading] = useState<boolean>(false);
   const [descriptionLength, setDescriptionLength] = useState<number>(
     description.length
   );
-  const providerValue = useMemo(
-    () => ({ userCtx, setUserCtx }),
-    [userCtx, setUserCtx]
-  );
+
+  const auth = useAuth()
+
+  useEffect(() => {
+
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies ) {
+      router.push('/src/user/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+    else if(auth.user.rol != 'Admin') router.push('/src/user/login');
+
+
+  }, [auth.user]);
 
   const { getRootProps, getInputProps }: any = useDropzone({
     onDrop: (acceptedFiles: any) => {
@@ -109,12 +92,6 @@ const CreateCourse = ({ user }: Props) => {
       className='cursor-pointer object-cover w-full h-full absolute'
     />
   ));
-
-  useEffect(() => {
-    if (user === null || user.rol != 'Admin') {
-      router.push('/src/user/login');
-    }
-  }, [session, router]);
 
   useEffect(() => {
     if (cantidadClases !== null && modules != null) {
@@ -206,7 +183,7 @@ const CreateCourse = ({ user }: Props) => {
 
     try {
       event.preventDefault();
-      const userEmail = user.email;
+      const userEmail = auth.user.email;
       const formData = new FormData();
 
       for (const file of files) {
@@ -274,7 +251,6 @@ const CreateCourse = ({ user }: Props) => {
   }
 
   return (
-    <UserContext.Provider value={providerValue}>
       <AdmimDashboardLayout>
         {loading ? (
           <div className='md:h-[100vh] w-full flex flex-col justify-center items-center'>
@@ -592,20 +568,8 @@ const CreateCourse = ({ user }: Props) => {
           </>
         )}
       </AdmimDashboardLayout>
-    </UserContext.Provider>
   );
 };
 
-export async function getServerSideProps(context: any) {
-  const session = await getSession(context);
-  const cookies = parseCookies(context);
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
-  const email = userCookie.email;
-  const user = await getUserFromBack(email);
-
-  return {
-    props: { user }
-  };
-}
 
 export default CreateCourse;

@@ -11,6 +11,9 @@ const nextConfig = {
     ],
     loader: 'custom',
     path: '/'
+  },
+  env: {
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET
   }
   // webpack: (config) => {
   //   config.experiments = {

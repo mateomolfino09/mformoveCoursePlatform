@@ -3,7 +3,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 
 interface Props {
-  user: User;
+  user: User | null;
   deleteUser: any;
   isOpen: any;
   setIsOpen: any;

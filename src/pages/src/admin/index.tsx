@@ -11,27 +11,35 @@ import { getSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useAuth } from '../../../hooks/useAuth';
+import Cookies from 'js-cookie';
 
 interface Props {
   user: User;
 }
 
-const Index = ({ user }: Props) => {
-  const [userCtx, setUserCtx] = useState<User>(user);
+const Index = () => {
   const router = useRouter();
+  const auth = useAuth()
 
-  const providerValue = useMemo(
-    () => ({ userCtx, setUserCtx }),
-    [userCtx, setUserCtx]
-  );
+  useEffect(() => {
 
-  if (user === null || user.rol != 'Admin') {
-    router.push('/src/user/login');
-  }
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies ) {
+      router.push('/src/user/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+    else if(auth.user.rol != 'Admin') router.push('/src/user/login');
+
+
+  }, [auth.user]);
 
   return (
-    <UserContext.Provider value={providerValue}>
       <AdmimDashboardLayout>
         <div className='bg-gray-700 w-full md:h-[100vh]'>
           <p className='text-white text-3xl my-12 font-bold'>
@@ -61,23 +69,8 @@ const Index = ({ user }: Props) => {
           <div className='grid col-1 bg-gray-500 h-96 shadow-sm' />
         </div>
       </AdmimDashboardLayout>
-    </UserContext.Provider>
   );
 };
 
-export async function getServerSideProps(context: any) {
-  const { req } = context;
-  const session = await getSession({ req });
-  // Get a cookie
-  const cookies = parseCookies(context);
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
-  const email = userCookie.email;
-
-  const user = await getUserFromBack(email);
-
-  return {
-    props: { user }
-  };
-}
 
 export default Index;

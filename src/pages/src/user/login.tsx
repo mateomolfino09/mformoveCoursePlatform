@@ -14,27 +14,17 @@ import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import React, { MouseEvent, use, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../../hooks/useAuth';
+import Cookies from 'js-cookie';
+import { serialize } from "cookie";
 
-interface ProfileUser {
-  user: User | null;
-  loading: boolean;
-  error: any;
-}
-
-interface Props {
-  email: String;
-  user: User;
-}
-
-const Login = ({ providers, session }: any) => {
-  const cookies = parseCookies();
-
+const Login = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [validateEmail, setValidateEmail] = useState(false);
   const [capsLock, setCapsLock] = useState<boolean>(false);
-
+  const auth = useAuth()
   const router = useRouter();
   // const dispatch = useDispatch()
 
@@ -57,48 +47,25 @@ const Login = ({ providers, session }: any) => {
   }
 
   useEffect(() => {
-    if (session) {
-      toast.success('Login exitoso!');
+    const cookies: any = Cookies.get('userToken')
+  
+    if (cookies) {
       router.push('/src/home');
     }
-
-    if (cookies?.user) {
-      router.push('/src/home');
-    }
-  }, [session, router, cookies?.user]);
+  }, [router]);
 
   const signinUser = async (e: any) => {
     e.preventDefault();
+    setLoading(true);
 
-    try {
-      setLoading(true);
+    auth.signIn(email, password).then((res: any) => {
+      if(res.type != 'error') {
+        toast.success(res.message);
+        router.push('/src/home');
+      } 
+      else toast.error(res.message);
+    })
 
-      const config = {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      };
-      console.log('aca');
-      const { data } = await axios.post(
-        '/api/user/login',
-        { email, password },
-        config
-      );
-      toast.success(data.message);
-      cookie.set('token', data?.token);
-      cookie.set('user', JSON.stringify(data?.user));
-
-      router.push('/src/home');
-    } catch (error: any) {
-      if (error?.response?.data?.validate === true) {
-        setValidateEmail(true);
-        toast.error(error.response?.data.message);
-      } else {
-        console.log(error);
-        toast.error(error.response?.data.message);
-        toast.error(error.response?.data.error);
-      }
-    }
 
     setLoading(false);
   };
@@ -211,7 +178,6 @@ const Login = ({ providers, session }: any) => {
                 Log In{' '}
               </button>
             </form>
-            <LoginButton provider={providers?.google} />
             <div className='flex items-start justify-between flex-row text-center'>
               <div className='text-[gray] text-xl md:text-sm font-normal'>
                 Eres nuevo en Video Stream?
@@ -292,26 +258,5 @@ const Login = ({ providers, session }: any) => {
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  (store) =>
-    async ({ req }) => {
-      const session = await getSession({ req });
-      const providers = await getProviders();
-      const cookies = parseCookies();
-
-      const user: User = cookies?.user
-        ? JSON.parse(cookies.user)
-        : session?.user;
-
-      await store.dispatch(loadUser(user?.email, user));
-
-      return {
-        props: {
-          providers,
-          session
-        }
-      };
-    }
-);
 
 export default Login;

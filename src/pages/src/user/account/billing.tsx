@@ -7,41 +7,42 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
+import Cookies from 'js-cookie';
+import { useAuth } from '../../../../hooks/useAuth';
 
 interface Props {
   bills: Bill[];
-  user: User;
 }
-const Billing = ({ bills, user }: Props) => {
+const Billing = ({ bills }: Props) => {
   const cookies = parseCookies();
   const { data: session } = useSession();
   const router = useRouter();
   let [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
-  const [userCtx, setUserCtx] = useState<User>(user);
 
-  const providerValue = useMemo(
-    () => ({ userCtx, setUserCtx }),
-    [userCtx, setUserCtx]
-  );
+  const auth = useAuth()
 
-  console.log(bills);
+  useEffect(() => {
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies) {
+      router.push('/src/user/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
 
-  //   useEffect(() => {
-  //         if (user === null || user.rol != "Admin") {
-  //           router.push("/src/user/login");
-  //         }
 
-  //   }, [session, router]);
+  }, [auth.user]);
 
   function openModal() {
     setIsOpen(true);
   }
 
   return (
-    <UserContext.Provider value={providerValue}>
       <>
         <Head>
           <title>Video Streaming</title>
@@ -101,22 +102,15 @@ const Billing = ({ bills, user }: Props) => {
           </table>
         </div>
       </>
-    </UserContext.Provider>
   );
 };
 export async function getServerSideProps(context: any) {
   const { req } = context;
-  const session = await getSession({ req });
-  const cookies = parseCookies(context);
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
-  const email = userCookie.email;
-  const user = await getUserFromBack(email);
-  const userId = user._id;
-  const bills: any = await getUserBills(userId);
+  const bills: any = await getUserBills(req);
 
   console.log(bills);
 
-  return { props: { bills, user } };
+  return { props: { bills } };
 }
 
 export default Billing;

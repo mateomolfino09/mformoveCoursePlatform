@@ -8,31 +8,38 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useAuth } from '../../../hooks/useAuth';
+import Cookies from 'js-cookie';
 
 interface Props {
   bills: Bill[];
-  user: User;
 }
-const ShowUsers = ({ bills, user }: Props) => {
+const ShowUsers = ({ bills }: Props) => {
   const { data: session } = useSession();
   const router = useRouter();
   let [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
-  const [userCtx, setUserCtx] = useState<User>(user);
 
-  const providerValue = useMemo(
-    () => ({ userCtx, setUserCtx }),
-    [userCtx, setUserCtx]
-  );
+
+  const auth = useAuth()
 
   useEffect(() => {
-    if (user === null || user.rol != 'Admin') {
+
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies ) {
       router.push('/src/user/login');
     }
-  }, [session, router]);
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+    else if(auth.user.rol != 'Admin') router.push('/src/user/login');
+
+
+  }, [auth.user]);
 
   return (
-    <UserContext.Provider value={providerValue}>
       <AdmimDashboardLayout>
         <>
           <Head>
@@ -75,7 +82,7 @@ const ShowUsers = ({ bills, user }: Props) => {
                       <tbody>
                         {bills?.map((bill: Bill) => (
                           <tr
-                            key={user._id}
+                            key={+bill.merchant_order_id}
                             ref={ref}
                             className='border-b dark:border-neutral-500'
                           >
@@ -113,18 +120,11 @@ const ShowUsers = ({ bills, user }: Props) => {
           </div>
         </>
       </AdmimDashboardLayout>
-    </UserContext.Provider>
   );
 };
 export async function getServerSideProps(context: any) {
-  const { params, query, req, res } = context;
-  const session = await getSession({ req });
-  const cookies = parseCookies(context);
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
-  const email = userCookie.email;
-  const user = await getUserFromBack(email);
   const bills: any = await getAllBills();
-  return { props: { bills, user } };
+  return { props: { bills } };
 }
 
 export default ShowUsers;

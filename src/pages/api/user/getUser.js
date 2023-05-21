@@ -8,7 +8,7 @@ const getUser = async (req, res) => {
     if (req.method === 'POST') {
       const { email } = req.body;
       const user = await User.findOne({ email: email }).lean().exec();
-      user.password = undefined;
+      user ? user.password = undefined : null;
       return res.status(200).send(user);
     }
   } catch (err) {

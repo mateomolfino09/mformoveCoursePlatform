@@ -16,6 +16,8 @@ import { parseCookies } from 'nookies';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Select, { StylesConfig } from 'react-select';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../../../hooks/useAuth';
+import Cookies from 'js-cookie';
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -33,16 +35,10 @@ const colourStyles: StylesConfig<any> = {
   singleValue: (styles, { data }) => ({ ...styles, color: '#808080' })
 };
 
-interface Props {
-  user: User;
-}
-
-const EditUser = ({ user }: Props) => {
-  const cookies = parseCookies();
+const EditUser = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const { id } = router.query;
-  const [userCtx, setUserCtx] = useState<User>(user);
   const [userDB, setUserDB] = useState<User>();
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
@@ -53,16 +49,24 @@ const EditUser = ({ user }: Props) => {
   const [courses, setCourses] = useState<CourseUser[]>([]);
   const [courseName, setCourseName] = useState<string[]>([]);
 
-  const providerValue = useMemo(
-    () => ({ userCtx, setUserCtx }),
-    [userCtx, setUserCtx]
-  );
+  const auth = useAuth()
 
   useEffect(() => {
-    if (user === null || user.rol != 'Admin') {
+
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies ) {
       router.push('/src/user/login');
     }
-  }, [session, router]);
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+    else if(auth.user.rol != 'Admin') router.push('/src/user/login');
+
+
+  }, [auth.user]);
+
 
   useEffect(() => {
     const getUserDB = async () => {
@@ -166,7 +170,6 @@ const EditUser = ({ user }: Props) => {
   }
 
   return (
-    <UserContext.Provider value={providerValue}>
       <AdmimDashboardLayout>
         {userDB ? (
           <div className='relative flex w-full flex-col bg-black md:items-center md:justify-center md:bg-transparent min-h-screen'>
@@ -308,21 +311,7 @@ const EditUser = ({ user }: Props) => {
           </div>
         )}
       </AdmimDashboardLayout>
-    </UserContext.Provider>
   );
 };
-
-export async function getServerSideProps(context: any) {
-  const session = await getSession(context);
-  const { params, query, req, res } = context;
-  const cookies = parseCookies(context);
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
-  const email = userCookie.email;
-  const user = await getUserFromBack(email);
-
-  return {
-    props: { user }
-  };
-}
 
 export default EditUser;

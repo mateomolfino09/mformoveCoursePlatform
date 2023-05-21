@@ -1,12 +1,20 @@
+import { verify } from 'jsonwebtoken';
 import connectDB from '../../../config/connectDB';
 import User from '../../../models/userModel';
 
 connectDB();
 
-export async function getUserFromBack(email) {
+export async function getUserFromBack(req) {
   try {
-    const user = await User.findOne({ email: email }).lean().exec();
-
+    const {token} = req.cookies;
+    let user = null
+  
+    if (token != null) {
+      user =  verify(token, process.env.NEXTAUTH_SECRET)
+      const userId = user.userId;
+      user = await User.findOne({ _id: userId }).lean().exec();
+    } 
+    // 
     if (!user) return null;
     user.password = undefined;
     return JSON.parse(JSON.stringify(user));

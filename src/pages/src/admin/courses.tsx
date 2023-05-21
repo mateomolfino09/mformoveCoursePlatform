@@ -12,36 +12,43 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useAuth } from '../../../hooks/useAuth';
+import Cookies from 'js-cookie';
 
 interface Props {
   courses: CoursesDB[];
   user: User;
 }
-const ShowUsers = ({ courses, user }: Props) => {
+const ShowUsers = ({ courses }: Props) => {
   const cookies = parseCookies();
   const { data: session } = useSession();
   const router = useRouter();
   let [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
-  const [userCtx, setUserCtx] = useState<User>(user);
-
-  const providerValue = useMemo(
-    () => ({ userCtx, setUserCtx }),
-    [userCtx, setUserCtx]
-  );
+  const auth = useAuth()
 
   useEffect(() => {
-    if (user === null || user.rol != 'Admin') {
+
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies ) {
       router.push('/src/user/login');
     }
-  }, [session, router]);
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+    else if(auth.user.rol != 'Admin') router.push('/src/user/login');
+
+
+  }, [auth.user]);
+
 
   function openModal() {
     setIsOpen(true);
   }
 
   return (
-    <UserContext.Provider value={providerValue}>
       <AdmimDashboardLayout>
         <>
           <Head>
@@ -81,7 +88,7 @@ const ShowUsers = ({ courses, user }: Props) => {
                       <tbody>
                         {courses?.map((course: CoursesDB) => (
                           <tr
-                            key={user._id}
+                            key={auth.user._id}
                             ref={ref}
                             className='border-b dark:border-neutral-500'
                           >
@@ -145,18 +152,11 @@ const ShowUsers = ({ courses, user }: Props) => {
           </div>
         </>
       </AdmimDashboardLayout>
-    </UserContext.Provider>
   );
 };
 export async function getServerSideProps(context: any) {
-  const { req } = context;
-  const session = await getSession({ req });
-  const cookies = parseCookies(context);
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
-  const email = userCookie.email;
-  const user = await getUserFromBack(email);
   const courses: any = await getCourses();
-  return { props: { courses, user } };
+  return { props: { courses } };
 }
 
 export default ShowUsers;

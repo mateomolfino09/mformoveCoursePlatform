@@ -30,6 +30,8 @@ import { AiOutlineUser } from 'react-icons/ai';
 import { RxCross2 } from 'react-icons/rx';
 import { useSelector } from 'react-redux';
 import { useSnapshot } from 'valtio';
+import { useAuth } from '../hooks/useAuth';
+import Cookies from 'js-cookie';
 
 const Header = ({
   scrollToList,
@@ -49,12 +51,10 @@ const Header = ({
     user: User;
   }
 
-  const cookies = parseCookies();
-  const { data: session } = useSession();
   const router = useRouter();
-  const [userState, setUserState] = useState<any>(null);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { userCtx, setUserCtx } = useContext(UserContext);
+  const auth = useAuth()
+  const userCtx = auth.user
   const [notificationList, setNotificationList] = useState<
     null | Notification[]
   >(null);
@@ -63,13 +63,24 @@ const Header = ({
   const animationIcon = useAnimation();
   const inputRef = useRef<any>(null);
 
-  const user: User = dbUser
-    ? dbUser
-    : cookies?.user
-    ? JSON.parse(cookies.user)
-    : session?.user
-    ? session?.user
-    : '';
+  useEffect(() => {
+
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies ) {
+      router.push('/src/user/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+    else if(auth.user.rol != 'Admin') router.push('/src/user/login');
+    else {
+      setNotificationList(auth.user.notifications.filter((x: Notification) => !x.read).slice(-5))
+    }
+
+
+  }, [auth.user]);
 
   const checkReadNotis = async () => {
     const config = {
@@ -77,9 +88,6 @@ const Header = ({
         'Content-Type': 'application/json'
       }
     };
-    const notifications = userCtx.notifications
-      .filter((x: Notification) => !x.read)
-      .slice(-5);
     const userId = userCtx?._id;
     try {
       const { data } = await axios.put(
@@ -87,8 +95,7 @@ const Header = ({
         { userId },
         config
       );
-      // setListCourse([...listCourse, course])
-      setUserCtx(data);
+      auth.setUserBack(data);
       setNotificationList(
         data.notifications.filter((x: Notification) => !x.read).slice(-5)
       );
@@ -97,13 +104,6 @@ const Header = ({
     }
   };
 
-  useEffect(() => {
-    userCtx !== null
-      ? setNotificationList(
-          userCtx?.notifications.filter((x: Notification) => !x.read).slice(-5)
-        )
-      : null;
-  }, [userCtx]);
 
   useEffect(() => {
     if (snap.searchBar == true) {
@@ -153,7 +153,6 @@ const Header = ({
   }, [snap.searchBar]);
 
   useEffect(() => {
-    session ? setUserState(session.user) : setUserState(user);
 
     const handleScroll = () => {
       if (window.scrollY > 0) {
@@ -293,7 +292,7 @@ const Header = ({
             </div>
           )}
         </m.div>
-        {user?.rol === 'Admin' ? (
+        {auth.user?.rol === 'Admin' ? (
           <>
             <Link href={'/src/admin'}>
               <Cog8ToothIcon className='h-6 w-6 inline cursor-pointer' />

@@ -5,9 +5,10 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { toast } from 'react-toastify';
+import Cookies from 'js-cookie';
 
 function Forget() {
   const [email, setEmail] = useState('');
@@ -19,6 +20,14 @@ function Forget() {
     process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY != undefined
       ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
       : '';
+
+  useEffect(() => {
+    const cookies: any = Cookies.get('userToken')
+  
+    if (cookies) {
+      router.push('/src/home');
+    }
+  }, [router]);
 
   const onChange = () => {
     if (recaptchaRef.current.getValue()) {

@@ -1,15 +1,20 @@
 import Course from '../../../models/courseModel';
 import User from '../../../models/userModel';
 import { CourseUser, CoursesDB, User as UserType } from '../../../../typings';
+import { verify } from 'jsonwebtoken';
 
 export async function updateActualCourseSS(
-  email: string,
+  req: any,
   courseId: string,
   actualChapter: number
 ) {
   // connectDB()
   try {
-    const user: any | null = await User.findOne({ email: email }).exec();
+    const { userToken } = req.cookies;
+
+    const data: any =  verify(userToken, process.env.NEXTAUTH_SECRET as string)
+
+    const user = await User.findOne({ _id: data.userId });
     const courseDB: CoursesDB | null = await Course.findOne({
       id: courseId
     }).exec();

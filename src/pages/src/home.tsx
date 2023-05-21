@@ -28,15 +28,15 @@ import { RefObject, useContext, useEffect, useRef, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { useSnapshot } from 'valtio';
+import { useAuth } from '../../hooks/useAuth';
+import { verify } from 'jsonwebtoken';
+import Cookies from 'js-cookie';
 
 interface Props {
-  randomImage: Images;
-  session: Session;
   coursesDB: CoursesDB[];
-  user: User;
 }
 
-const Home = ({ user, randomImage, coursesDB }: Props) => {
+const Home = ({ coursesDB }: Props) => {
   const [selectedCourse, setSelectedCourse] = useState<CoursesDB | null>(null);
   const [myCourses, setMyCourses] = useState<CoursesDB[]>([]);
   const [nuevoCourses, setNuevoCourses] = useState<CoursesDB[]>([]);
@@ -54,13 +54,27 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
   const { listCourse, setListCourse } = useContext(CourseListContext);
   const { courses, setCourses } = useContext(CoursesContext);
   const { userCtx, setUserCtx } = useContext(UserContext);
-  const [userDB, setUserDB] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null)
   const snap = useSnapshot(state);
+  const router = useRouter()
+
+  const auth = useAuth()
 
   useEffect(() => {
     setCourses([...coursesDB]);
-    setUserCtx(user);
-  }, []);
+
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies) {
+      router.push('/src/user/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+
+  }, [auth.user]);
+
 
   const course: CourseModal = useSelector(
     (state: State) => state.courseModalReducer
@@ -68,7 +82,6 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
   let { loading, error, activeModal, dbCourse, youtubeVideo } = course;
   const cookies = parseCookies();
   const { data: session } = useSession();
-  const router = useRouter();
 
   function scrollToList() {
     if (refToList?.current && window) {
@@ -137,13 +150,9 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
     setRefToModa(ref);
   }
 
-  function updateUserDB(user: User) {
-    setUserDB(user);
-  }
-
   useEffect(() => {
-    if (!user) {
-      router.push('/src/user/login');
+    if (!auth.user) {
+      // router.push('/src/auth.user/login');
     } else {
       const quantity = Math.round(coursesDB.length / 3);
       const dateCourses = [...coursesDB];
@@ -161,7 +170,7 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
         let listToSet: CoursesDB[] = [];
         let mycourselistToSet: CoursesDB[] = [];
 
-        user.courses.forEach((course: CourseUser) => {
+        auth.user.courses.forEach((course: CourseUser) => {
           let courseInCourseIndex = coursesDB.findIndex((x) => {
             return x._id === course.course;
           });
@@ -206,7 +215,7 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
       };
       manageUser();
     }
-  }, [router, session]);
+  }, [auth.user]);
 
   return (
     <div className='relative h-full bg-to-dark lg:h-full'>
@@ -220,13 +229,13 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
         scrollToModa={scrollToModa}
         scrollToNuevo={scrollToNuevo}
         scrollToMy={scrollToMy}
-        dbUser={user}
+        dbUser={auth.user}
       />
       {snap.searchToggle ? (
         <></>
       ) : (
         <main className='relative lg:space-y-24'>
-          <Banner randomImage={randomImage} scrollToModa={scrollToModa} />
+          <Banner scrollToModa={scrollToModa} />
           <section className='!mt-0 bg-dark'>
             <Carousel
               title='Todos Los Cursos'
@@ -237,7 +246,7 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
               actualCourseIndex={0}
               setRef={setRefToModaSend}
               isClass={false}
-              user={user}
+              user={auth.user}
               courseIndex={0}
             />
             <Carousel
@@ -249,7 +258,7 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
               actualCourseIndex={0}
               setRef={setRefToNuevoSend}
               isClass={false}
-              user={user}
+              user={auth.user}
               courseIndex={0}
             />
             <Carousel
@@ -261,7 +270,7 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
               actualCourseIndex={0}
               setRef={setRefToListSend}
               isClass={false}
-              user={user}
+              user={auth.user}
               courseIndex={0}
             />
             <Carousel
@@ -273,7 +282,7 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
               actualCourseIndex={0}
               setRef={setRefMySend}
               isClass={false}
-              user={user}
+              user={auth.user}
               courseIndex={0}
             />
           </section>
@@ -284,8 +293,7 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
       {activeModal && (
         <Modal
           courseDB={selectedCourse}
-          user={user}
-          updateUserDB={updateUserDB}
+          user={auth.user}
         />
       )}
     </div>
@@ -295,19 +303,12 @@ const Home = ({ user, randomImage, coursesDB }: Props) => {
 export const getServerSideProps: GetServerSideProps =
   wrapper.getServerSideProps((store) => async (ctx) => {
     const { req } = ctx;
-    const session = await getSession({ req });
+
     const coursesDB: any = await getCourses();
-    // Get a cookie
-    const cookies = parseCookies(ctx);
-    const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
-    const email = userCookie?.email;
-    let user = null;
-    if (email != null) user = await getUserFromBack(email);
 
     return {
       props: {
         coursesDB,
-        user
       }
     };
   });

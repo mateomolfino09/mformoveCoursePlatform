@@ -2,6 +2,7 @@ import connectDB from '../../../config/connectDB';
 import Users from '../../../models/userModel';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { serialize } from 'cookie';
 
 connectDB();
 
@@ -35,16 +36,16 @@ const login = async (req, res) => {
           { userId: user._id },
           process.env.NEXTAUTH_SECRET,
           {
-            expiresIn: '7d'
+            expiresIn: '30d'
           }
         );
 
-        const { email, _id, name } = user;
+        user.token = `${token}`
+        await user.save()
 
         res.status(201).json({
-          token,
-          user: { email, _id, name },
-          message: 'Login exitoso!'
+          login: true,
+          token
         });
       }
 
