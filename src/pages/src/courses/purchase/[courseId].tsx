@@ -19,6 +19,8 @@ import { parseCookies } from 'nookies';
 import React, { RefObject, useEffect, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { useSnapshot } from 'valtio';
+import Cookies from 'js-cookie';
+import { useAuth } from '../../../../hooks/useAuth';
 
 interface Props {
   course: CoursesDB;
@@ -27,26 +29,42 @@ interface Props {
   user: User | null;
 }
 
-function Course({ course, user }: Props) {
+function Course({ course }: Props) {
   const courseDB = course;
   const [courseUser, setCourseUser] = useState<CourseUser | null>(null);
   const [hasWindow, setHasWindow] = useState(false);
   const router = useRouter();
+  const auth = useAuth()
   const snap = useSnapshot(state);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setHasWindow(true);
     }
-    if (!user) {
+
+  }, [router]);
+
+
+  useEffect(() => {
+
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies) {
       router.push('/src/user/login');
-    } else {
-      let courseActual = user.courses.find(
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+    else {
+      let courseActual = auth.user.courses.find(
         (course: CourseUser) => course.course === courseDB._id
       );
+
       setCourseUser(courseActual ? courseActual : null);
     }
-  }, [router]);
+
+  }, [auth.user]);
 
   return (
     <section>
@@ -68,8 +86,8 @@ function Course({ course, user }: Props) {
         </div>
         <div className='w-full h-full flex'>
           <div className='w-full h-full relative'>
-            <PaymentGateway user={user} course={course} />
-            <Customizer user={user} course={course} />
+            <PaymentGateway user={auth.user} course={course} />
+            <Customizer user={auth.user} course={course} />
           </div>
         </div>
       </main>
@@ -83,16 +101,11 @@ function Course({ course, user }: Props) {
 export async function getServerSideProps(context: any) {
   connectDB();
   const { params, req } = context;
-  const session = await getSession({ req });
-  const cookies = parseCookies(context);
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
-  const email = userCookie?.email;
   const { courseId } = params;
   const course = await getCourseById(courseId);
-  const user = await getUserFromBack(email);
 
   return {
-    props: { course, user }
+    props: { course }
   };
 }
 

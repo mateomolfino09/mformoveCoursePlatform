@@ -14,12 +14,10 @@ import { FaPlay } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 interface Props {
-  randomImage: Images | null;
   scrollToModa: any;
 }
 
-function Banner({ randomImage, scrollToModa }: Props) {
-  const [image, setImage] = useState<Images | null>(randomImage);
+function Banner({ scrollToModa }: Props) {
   // const srcImg: string = image?.urls.regular != null ? image?.urls.regular : ''
   const dispatch = useAppDispatch();
   const { courses, setCourses } = useContext(CoursesContext);
@@ -36,7 +34,7 @@ function Banner({ randomImage, scrollToModa }: Props) {
           <Image
             src='/images/bgHome.jpg'
             // src={srcImg}
-            alt={image?.alt_description || 'image'}
+            alt={'image'}
             fill={true}
             loader={imageLoader}
             className='object-cover'

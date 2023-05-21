@@ -8,15 +8,33 @@ import { AnimatePresence } from 'framer-motion';
 import { getSession } from 'next-auth/react';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BiVolumeFull, BiVolumeMute } from 'react-icons/bi';
 import { useSnapshot } from 'valtio';
+import { useAuth } from '../hooks/useAuth';
+import { verify } from 'jsonwebtoken';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/router';
 
-interface Props {
-  user: User | null;
-}
+const Index = () => {
+  const auth = useAuth()
+  const router = useRouter()
 
-const Index = ({ user }: Props) => {
+  useEffect(() => {
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies) {
+      router.push('/src/user/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+
+
+  }, [auth.user]);
+  
+
 
   return (
     <AnimatePresence>
@@ -26,7 +44,7 @@ const Index = ({ user }: Props) => {
           <meta name='description' content='Stream Video App' />
           <link rel='icon' href='/favicon.ico' />
         </Head>
-        <IndexHeader user={user} />
+        <IndexHeader user={auth.user} />
         <main className='relative pl-4 lg:space-y-24 lg:pl-16'>
           <Banner />
         </main>
@@ -49,20 +67,5 @@ const Index = ({ user }: Props) => {
   );
 };
 
-export async function getServerSideProps(context: any) {
-  const { req } = context;
-  const session = await getSession({ req });
-  // Get a cookie
-  const cookies = parseCookies(context);
-  const userCookie = cookies?.user ? JSON.parse(cookies.user) : session?.user;
-  const email = userCookie?.email;
-  let user = null;
-
-  if (email != null) user = await getUserFromBack(email);
-
-  return {
-    props: { user }
-  };
-}
 
 export default Index;
