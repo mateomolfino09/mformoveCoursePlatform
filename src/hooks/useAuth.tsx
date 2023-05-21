@@ -19,7 +19,7 @@ export const useAuth = () => {
 
 function useProvideAuth() {
 	const [user, setUser] = useState<User | null>(null);
-	const [error, setError]=useState();
+	const [error, setError]=useState<String | null>(null);
 
 	const fetchUser = async () => {
 		try {
@@ -39,23 +39,37 @@ function useProvideAuth() {
 
 
 	const signIn = async (email: string, password: string) => {
-		const options = {
-			headers: {
-				accept: '*/*',
-				'Content-Type': 'application/json',
+		try {
+			setError(null)
+			const options = {
+				headers: {
+					accept: '*/*',
+					'Content-Type': 'application/json',
+				}
 			}
+			const { data: login } = await axios.post(endpoints.auth.login, { email, password }, options);
+	
+			//get profile
+			if(login.login) {
+				const token = login.token;
+				Cookie.set('userToken', token, { expires: 5})
+				axios.defaults.headers.Authorization = ` Bearer ${token}`;
+				const { data: user } = await axios.get(endpoints.auth.profile);
+				setUser(user)
+				return {message:'Login Exitoso', type: 'success'}
+				
+			}
+			
+		} catch (error: any) {
+			setError(error.response.data.message)
+			return {message:error.response.data.message, type: 'error'} 
+			// setError()
 		}
-		const { data: login } = await axios.post(endpoints.auth.login, { email, password }, options);
+	};
 
-		//get profile
-		if(login.login) {
-			const token = login.token;
-			Cookie.set('userToken', token, { expires: 5})
-			axios.defaults.headers.Authorization = ` Bearer ${token}`;
-			const { data: user } = await axios.get(endpoints.auth.profile);
-			setUser(user)
-
-		}
+	const signOut = () => {
+		Cookie.remove('userToken');
+		setUser(null);
 	};
 
 	const setUserBack = (user: User) => {
@@ -67,6 +81,7 @@ function useProvideAuth() {
 		error,
 		setError,
 		signIn,
+		signOut,
 		fetchUser,
 		setUserBack
 	  };

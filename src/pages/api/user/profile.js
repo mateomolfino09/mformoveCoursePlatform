@@ -8,11 +8,7 @@ const profile = async (req, res) => {
   try {
       const { userToken } = req.cookies;
 
-      console.log(userToken)
-
       const data =  verify(userToken, process.env.NEXTAUTH_SECRET)
-
-      console.log(data)
 
       const user = await User.findOne({ _id: data.userId });
 

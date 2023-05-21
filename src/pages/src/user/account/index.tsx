@@ -50,12 +50,11 @@ function Account() {
 
   }, [auth.user]);
 
-  const logoutHandler = async () => {
-    if (session) signOut();
-    cookie.remove('token');
-    cookie.remove('user');
+  const logoutHandler = async (e: any) => {
+    e.preventDefault();
 
-    router.push('/src/user/login');
+    auth.signOut()
+    router.push('/src/user/login')
   };
 
   const cantCourses = auth.user?.courses.filter(
@@ -129,7 +128,7 @@ function Account() {
           <h4 className='text-lg text-[gray]'>Ajustes</h4>
           <p
             className='col-span-3 cursor-pointer text-blue-500 hover:underline'
-            onClick={() => logoutHandler()}
+            onClick={(e) => logoutHandler(e)}
           >
             Salir de todos los dispositivos
           </p>

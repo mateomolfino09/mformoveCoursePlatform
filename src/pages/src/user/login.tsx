@@ -56,26 +56,16 @@ const Login = () => {
 
   const signinUser = async (e: any) => {
     e.preventDefault();
+    setLoading(true);
 
-    try {
-      setLoading(true);
-
-      auth.signIn(email, password)
-      .then((res: any) => {
-        toast.success('Login Exitoso');
+    auth.signIn(email, password).then((res: any) => {
+      if(res.type != 'error') {
+        toast.success(res.message);
         router.push('/src/home');
-      })
+      } 
+      else toast.error(res.message);
+    })
 
-    } catch (error: any) {
-      if (error?.response?.data?.validate === true) {
-        setValidateEmail(true);
-        toast.error(error.response?.data.message);
-      } else {
-        console.log(error);
-        toast.error(error.response?.data.message);
-        toast.error(error.response?.data.error);
-      }
-    }
 
     setLoading(false);
   };
