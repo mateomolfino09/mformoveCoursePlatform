@@ -37,6 +37,62 @@ function useProvideAuth() {
 		}
 	  };
 
+	const addCourseToList = async (courseId: string, userId: string) => {
+		try {
+			const config = {
+				headers: {
+					accept: '*/*',
+					'Content-Type': 'application/json',
+				}
+			}
+			const { data } = await axios.put(
+				'/api/user/course/listCourse',
+				{ courseId, userId },
+				config
+			);
+			console.log(data)
+			setUser(data);
+		} catch (error) {
+		}
+	  };
+	const deleteCourseFromList = async (courseId: string, userId: string) => {
+		try {
+			const config = {
+				headers: {
+					accept: '*/*',
+					'Content-Type': 'application/json',
+				}
+			}
+			const { data } = await axios.put(
+				'/api/user/course/dislistCourse',
+				{ courseId, userId },
+				config
+			  );
+			console.log(data)
+			setUser(data);
+		} catch (error) {
+		}
+	  };
+
+	  const saveClassTime = async (actualTime: string, courseId: string, classId: string) => {
+		try {
+			const config = {
+				headers: {
+					accept: '*/*',
+					'Content-Type': 'application/json',
+				}
+			}
+			let { data } = await axios.post(
+				'/api/class/saveTime',
+				{ actualTime, courseId, classId },
+				config
+			  );
+			console.log(data.user)
+			setUser(data.user);
+		} catch (error) {
+		}
+	  };
+
 
 	const signIn = async (email: string, password: string) => {
 		try {
@@ -83,6 +139,9 @@ function useProvideAuth() {
 		signIn,
 		signOut,
 		fetchUser,
+		addCourseToList,
+		deleteCourseFromList,
+		saveClassTime,
 		setUserBack
 	  };
 }

@@ -2,7 +2,6 @@ import { ClassesDB, CourseUser, User } from '../../typings';
 import PlayerControls from './PlayerControls';
 import { Container, Grid, Paper, Typography } from '@mui/material';
 import axios from 'axios';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import React, {
@@ -53,7 +52,6 @@ function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
   });
 
   const cookies = parseCookies();
-  const { data: session } = useSession();
 
   const [timeDisplayFormat, setTimeDisplayFormat] = React.useState('normal');
   const [bookmarks, setBookmarks] = useState<any>([]);

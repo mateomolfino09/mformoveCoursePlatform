@@ -1,5 +1,5 @@
 import { CoursesContext } from '../hooks/coursesContext';
-import { loadCourse } from '../redux/courseModal/courseModalAction';
+import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import { CourseModal } from '../redux/courseModal/courseModalTypes';
 import { State } from '../redux/reducers';
 import { Courses, CoursesDB, Item, Ricks, User } from '../../typings';
@@ -17,7 +17,7 @@ import {
   useRef,
   useState
 } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../redux/hooks';
 
 interface Props {
   title: string | null;
@@ -47,10 +47,10 @@ function Row({
   const rowRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const [isMoved, setIsMoved] = useState(false);
-  const course: CourseModal = useSelector(
-    (state: State) => state.courseModalReducer
+  const course: CourseModal = useAppSelector(
+    (state: any) => state.courseModalReducer
   );
-  let { loading, error, activeModal, dbCourse } = course;
+  let { activeModal } = course;
   const [overflow, setOverflow] = useState('hidden');
   const { courses, setCourses } = useContext(CoursesContext);
 

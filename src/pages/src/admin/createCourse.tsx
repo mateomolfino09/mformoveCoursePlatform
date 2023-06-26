@@ -5,7 +5,6 @@ import requests from '../../../utils/requests';
 import { getUserFromBack } from '../../api/user/getUserFromBack';
 import { ArrowUpTrayIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
-import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -36,7 +35,6 @@ const CreateCourse = () => {
   );
   const [password, setPassword] = useState('');
   const cookies = parseCookies();
-  const { data: session } = useSession();
   const router = useRouter();
   const [files, setFiles] = useState<any>([]);
   const [price, setPrice] = useState<number | null>(null);
@@ -252,6 +250,11 @@ const CreateCourse = () => {
 
   return (
       <AdmimDashboardLayout>
+      <Head>
+        <title>Video Streaming</title>
+        <meta name='description' content='Stream Video App' />
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
         {loading ? (
           <div className='md:h-[100vh] w-full flex flex-col justify-center items-center'>
             <LoadingSpinner />

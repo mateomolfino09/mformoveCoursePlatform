@@ -30,11 +30,19 @@ const createQuestion = async (req, res) => {
         admin.notifications.push({
           title: `Te han preguntado en el curso ${clase.course.name}`,
           message: `Respondele a ${user.name} cuando puedas.`,
-          link: `src/courses/${clase.course.id}/${clase.id}`,
+          link: `/src/courses/questions/${newQuestion.id}`,
           status: 'green'
         });
         await admin.save();
       });
+      const noti = {
+        title: 'Pregunta creada con éxito',
+        message: `Se ha creado tu pregunta nro ${newQuestion.id}`,
+        link: `/src/courses/questions/${newQuestion.id}`,
+        status: 'green'
+      };
+      user.notifications.push(noti);
+      await user.save()
 
       res.status(200).json({
         message: 'Pregunta enviada correctamente',

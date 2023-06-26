@@ -1,8 +1,6 @@
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import LoginButton from '../../../components/LoginButton';
 import imageLoader from '../../../../imageLoader';
-import { wrapper } from '../../../redux/store';
-import { loadUser } from '../../../redux/user/userAction';
 import { User } from '../../../../typings';
 import axios from 'axios';
 import cookie from 'js-cookie';
@@ -26,7 +24,6 @@ const Login = () => {
   const [capsLock, setCapsLock] = useState<boolean>(false);
   const auth = useAuth()
   const router = useRouter();
-  // const dispatch = useDispatch()
 
   useEffect(() => {
     if (typeof window != 'undefined' && document != undefined) {

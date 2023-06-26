@@ -1,10 +1,8 @@
 import Membership from '../../../../components/Membership';
-import { useAppDispatch } from '../../../../hooks/useTypeSelector';
 import { State } from '../../../../redux/reducers';
 import { CourseUser, User } from '../../../../../typings';
 import axios from 'axios';
 import cookie from 'js-cookie';
-import { signOut, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -12,7 +10,6 @@ import { parseCookies } from 'nookies';
 import React, { useEffect, useState } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
 import { FaHistory } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
 import { useAuth } from '../../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 
@@ -32,7 +29,6 @@ const monthNames = [
 ];
 
 function Account() {
-  const { data: session } = useSession();
   const router = useRouter();
   const auth = useAuth()
 

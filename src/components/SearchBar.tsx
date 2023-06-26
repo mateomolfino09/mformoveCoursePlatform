@@ -6,6 +6,9 @@ import Carousel from './Carousel';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import React, { useContext, useEffect, useState } from 'react';
 import { snapshot, useSnapshot } from 'valtio';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/router';
+import { useAuth } from '../hooks/useAuth';
 
 interface Props {
   setSelectedCourse: any;
@@ -14,9 +17,10 @@ interface Props {
 const SearchBar = ({ setSelectedCourse }: Props) => {
   const snap = useSnapshot(state);
   const { courses, setCourses } = useContext(CoursesContext);
-  const { userCtx, setUserCtx } = useContext(UserContext);
   const [coursesSearch, setCoursesSearch] = useState<CoursesDB[]>(courses);
   const animation = useAnimation();
+  const auth = useAuth()
+  const router = useRouter()
 
   useEffect(() => {
     if (snap.searchInput != '') {
@@ -28,6 +32,20 @@ const SearchBar = ({ setSelectedCourse }: Props) => {
       setCoursesSearch(courses);
     }
   }, [snap.searchInput]);
+
+
+  useEffect(() => {
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies) {
+      router.push('/src/user/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+
+  }, [auth.user]);
 
   useEffect(() => {
     animation.start({
@@ -67,7 +85,7 @@ const SearchBar = ({ setSelectedCourse }: Props) => {
                 actualCourseIndex={0}
                 setRef={null}
                 isClass={false}
-                user={userCtx}
+                user={auth.user}
                 courseIndex={0}
               />
             </section>

@@ -8,7 +8,6 @@ import { UserContext } from '../../../../hooks/userContext';
 import { CourseUser, User } from '../../../../../typings';
 import { getUserFromBack } from '../../../api/user/getUserFromBack';
 import axios from 'axios';
-import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -36,7 +35,6 @@ const colourStyles: StylesConfig<any> = {
 };
 
 const EditUser = () => {
-  const { data: session } = useSession();
   const router = useRouter();
   const { id } = router.query;
   const [userDB, setUserDB] = useState<User>();
@@ -94,7 +92,7 @@ const EditUser = () => {
       }
     };
     getUserDB();
-  }, [router, session]);
+  }, [router]);
   useEffect(() => {
     const getCourses = async () => {
       try {

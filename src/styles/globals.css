@@ -116,6 +116,17 @@
     @apply bg-[#333];
   }
 
+  .content-author::before {
+    content: "";
+    width: 16px;
+    height: 30px;
+    border-left: 1px solid #40587c;
+    border-bottom: 1px solid #40587c;
+    border-bottom-left-radius: 8px;
+    position: absolute;
+    bottom: 50%;
+  }
+
   ::-webkit-scrollbar-thumb {
     border-radius: 8px;
     background: #c2c9d2;

@@ -1,5 +1,5 @@
 import { CoursesContext } from '../hooks/coursesContext';
-import { loadCourse } from '../redux/courseModal/courseModalAction';
+import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import { CourseModal } from '../redux/courseModal/courseModalTypes';
 import { State } from '../redux/reducers';
 import { Courses, CoursesDB, Item, Ricks, User } from '../../typings';
@@ -18,7 +18,6 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { useSelector } from 'react-redux';
 
 interface Props {
   title: string | null;
@@ -49,9 +48,6 @@ function Carousel({
   const scrollRowRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const [isMoved, setIsMoved] = useState(false);
-  const course: CourseModal = useSelector(
-    (state: State) => state.courseModalReducer
-  );
   const { courses, setCourses } = useContext(CoursesContext);
   const theWidth = rowRef.current?.scrollWidth
     ? -(rowRef.current?.scrollWidth - rowRef.current?.offsetWidth)

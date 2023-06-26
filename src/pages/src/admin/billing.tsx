@@ -3,7 +3,6 @@ import { UserContext } from '../../../hooks/userContext';
 import { Bill, User } from '../../../../typings';
 import { getAllBills } from '../../api/admin/getAllBills';
 import { getUserFromBack } from '../../api/user/getUserFromBack';
-import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
@@ -15,7 +14,6 @@ interface Props {
   bills: Bill[];
 }
 const ShowUsers = ({ bills }: Props) => {
-  const { data: session } = useSession();
   const router = useRouter();
   let [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
