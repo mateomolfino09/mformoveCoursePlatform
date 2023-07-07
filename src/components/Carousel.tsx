@@ -1,6 +1,5 @@
 import { CoursesContext } from '../hooks/coursesContext';
 import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
-import { State } from '../redux/reducers';
 import { Courses, CoursesDB, Item, Ricks, User } from '../../typings';
 import CarouselThumbnail from './CarouselThumbnail';
 import CourseThumbnail from './CourseThumbnail';

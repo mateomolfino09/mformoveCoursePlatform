@@ -2,7 +2,6 @@ import { CourseListContext } from '../hooks/courseListContext';
 import { useAppDispatch,  useAppSelector} from '../redux/hooks';
 import { UserContext } from '../hooks/userContext';
 import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
-import { State } from '../redux/reducers';
 import { Courses, CoursesDB, Item, User } from '../../typings';
 import requests from '../utils/requests';
 import Row from './Row';

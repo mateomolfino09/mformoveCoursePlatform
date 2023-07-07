@@ -1,5 +1,4 @@
 import Membership from '../../../../components/Membership';
-import { State } from '../../../../redux/reducers';
 import { CourseUser, User } from '../../../../../typings';
 import axios from 'axios';
 import cookie from 'js-cookie';

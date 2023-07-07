@@ -1,5 +1,4 @@
 import { UserContext } from '../hooks/userContext';
-import { State } from '../redux/reducers';
 import { Notification, User } from '../../typings';
 import state from '../valtio';
 import { Menu, Popover, Transition } from '@headlessui/react';

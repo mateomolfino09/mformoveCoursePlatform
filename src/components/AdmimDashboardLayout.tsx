@@ -1,4 +1,3 @@
-import { State } from '../redux/reducers';
 import { User } from '../../typings';
 import AdminDashboardSideBar from './AdminDashboardSideBar';
 import AdminDashboardTopBar from './AdminDashboardTopBar';
