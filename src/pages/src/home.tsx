@@ -6,7 +6,6 @@ import SearchBar from '../../components/SearchBar';
 import { CourseListContext } from '../../hooks/courseListContext';
 import { CoursesContext } from '../../hooks/coursesContext';
 import { UserContext } from '../../hooks/userContext';
-import { State } from '../../redux/reducers';
 import {
   CourseUser,
   CoursesDB,
