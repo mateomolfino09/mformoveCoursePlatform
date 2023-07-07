@@ -1,10 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {
-    CourseModal,
-  } from '../courseModal/courseModalTypes';
-    
 
-const initialState: CourseModal = {
+const initialState: any = {
     dbCourse: null,
     dbCourses: null,
     youtubeVideo: null,

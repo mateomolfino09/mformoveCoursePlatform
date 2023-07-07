@@ -1,14 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
 import courseModalReducer from './features/courseModalSlice';
 import { courseModalApi } from "./services/courseModalApi";
+import { classApi } from "./services/classApi";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 
 export const store = configureStore({
   reducer: {
     courseModalReducer,
-    [courseModalApi.reducerPath]: courseModalApi.reducer
+    [courseModalApi.reducerPath]: courseModalApi.reducer,
+    [classApi.reducerPath]: classApi.reducer
+
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat([courseModalApi.middleware])
+  middleware: (getDefaultMiddleware: any) => getDefaultMiddleware().concat([courseModalApi.middleware , classApi.middleware])
 })
 
 setupListeners(store.dispatch)

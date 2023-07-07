@@ -2,7 +2,6 @@ import { CourseListContext } from '../hooks/courseListContext';
 import { useAppDispatch,  useAppSelector} from '../redux/hooks';
 import { UserContext } from '../hooks/userContext';
 import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
-import { CourseModal } from '../redux/courseModal/courseModalTypes';
 import { State } from '../redux/reducers';
 import { Courses, CoursesDB, Item, User } from '../../typings';
 import requests from '../utils/requests';
@@ -132,7 +131,7 @@ function Modal({ courseDB, user }: Props) {
       auth.deleteCourseFromList(courseId, userId)
   };
   
-  const course: CourseModal = useAppSelector(
+  const course: any = useAppSelector(
     (state: any) => state.courseModalReducer
   );
   let { activeModal } = course;

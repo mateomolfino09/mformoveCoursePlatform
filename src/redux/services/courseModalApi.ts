@@ -1,6 +1,5 @@
 import requests from "../../utils/requests";
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { CourseModal } from "../courseModal/courseModalTypes";
 
 export const courseModalApi = createApi({
   reducerPath: 'courseModalApi',
@@ -8,10 +7,10 @@ export const courseModalApi = createApi({
     baseUrl: requests.fetchYT
   }),
   endpoints: (builder) => ({
-    loadCourse: builder.query<CourseModal, null>({
+    loadCourse: builder.query<any, null>({
       query: () => 'courseModal'
     }),
-    loadCourses: builder.query<CourseModal[], null>({
+    loadCourses: builder.query<any[], null>({
       query: () => 'coursesModal'
     })
   })

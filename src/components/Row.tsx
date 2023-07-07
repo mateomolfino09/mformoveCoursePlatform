@@ -1,6 +1,5 @@
 import { CoursesContext } from '../hooks/coursesContext';
 import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
-import { CourseModal } from '../redux/courseModal/courseModalTypes';
 import { State } from '../redux/reducers';
 import { Courses, CoursesDB, Item, Ricks, User } from '../../typings';
 import CourseThumbnail from './CourseThumbnail';
@@ -47,7 +46,7 @@ function Row({
   const rowRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const [isMoved, setIsMoved] = useState(false);
-  const course: CourseModal = useAppSelector(
+  const course: any = useAppSelector(
     (state: any) => state.courseModalReducer
   );
   let { activeModal } = course;

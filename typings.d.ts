@@ -244,6 +244,7 @@ export interface ClassesDB {
   totalTime: number;
   course: CoursesDB;
   atachedFiles: [Archive]
+  links: [Link]
 }
 
 export interface Answer {
@@ -277,8 +278,14 @@ export interface Bill {
 
 export interface Archive {
   id: Number
-  document_url: String
-  public_id: String
-  name: String
+  document_url: string
+  public_id: string
+  name: string,
+  format: string
+}
+
+export interface Link {
+  id: number
+  link_url: string
 }
 

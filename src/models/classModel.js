@@ -17,10 +17,24 @@ const fileSchema = new mongoose.Schema(
     },
     name: {
       type: String
+    },
+    format: {
+      type: String
     }
   }
-  
+)
 
+const linkSchema = new mongoose.Schema(
+  {
+    id: {
+      type: Number,
+      required: true    
+    },
+    link_url: {
+      type: String,
+      required: true
+    },
+  }
 )
 
 const classSchema = new mongoose.Schema(
@@ -60,6 +74,9 @@ const classSchema = new mongoose.Schema(
     },
     atachedFiles: [
       fileSchema
+    ],
+    links: [
+      linkSchema
     ]
   },
   { timestamps: true }

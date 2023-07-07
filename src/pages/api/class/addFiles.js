@@ -8,24 +8,26 @@ connectDB();
 
 const addFiles = async (req, res) => {
   const { dataFiles, userId, claseId } = req.body;
+  const MAX_FILES = 5
   try { 
       if (req.method === 'PUT') {
           const user = await User.findOne({ _id: userId });
-          const clase = await Class.findOne({ id: claseId });
+          const clase = await Class.findOne({ _id: claseId });
           
           if(user.rol != 'Admin') return res.status(422).json({ error: 'Usted no puede agregar archivos' });
-          if(clase?.atachedFiles?.length >= 5) return res.status(422).json({ error: 'No puedes agregar mas recursos' });
+          if(clase?.atachedFiles?.length >= MAX_FILES || clase?.atachedFiles?.length + dataFiles.length >= MAX_FILES) 
+            return res.status(422).json({ error: `No puedes agregar más de ${MAX_FILES} archivos`});
           
           const lastId = clase?.atachedFiles?.length ? clase?.atachedFiles?.length : 0;
-          console.log(clase.atachedFiles)
           !clase.atachedFiles ? clase.atachedFiles = [] : null;
 
           dataFiles.forEach((file, index) => {
              clase.atachedFiles.push({
-                id: lastId + index,
+                id: lastId + index + 1,
                 name: file.original_filename,
                 public_id: file.public_id,
-                document_url: file.secure_url
+                document_url: file.secure_url,
+                format: file.format,
              })
           });
           

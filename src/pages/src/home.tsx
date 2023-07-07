@@ -6,7 +6,6 @@ import SearchBar from '../../components/SearchBar';
 import { CourseListContext } from '../../hooks/courseListContext';
 import { CoursesContext } from '../../hooks/coursesContext';
 import { UserContext } from '../../hooks/userContext';
-import { CourseModal } from '../../redux/courseModal/courseModalTypes';
 import { State } from '../../redux/reducers';
 import {
   CourseUser,
@@ -73,7 +72,7 @@ const Home = ({ coursesDB }: Props) => {
   }, [auth.user]);
 
 
-  const course: CourseModal = useAppSelector(
+  const course: any = useAppSelector(
     (state: any) => state.courseModalReducer
   );
   let { activeModal } = course;
