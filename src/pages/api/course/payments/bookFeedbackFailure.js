@@ -44,7 +44,7 @@ const bookFeedbackFailure = async (req, res) => {
         title: 'Pago fallido',
         message:
           'Debes concretar el pago antes de comenzar a disfrutar del curso',
-        link: `src/courses/purchase/${course.id}`,
+        link: `/src/courses/purchase/${course.id}`,
         status: 'red'
       };
       user.notifications.push(noti);
@@ -52,7 +52,7 @@ const bookFeedbackFailure = async (req, res) => {
         admin.notifications.push({
           title: 'Pago fallido',
           message: `Pago fallido de ${user.name}`,
-          link: `src/courses/${course.id}/1`,
+          link: `/src/courses/${course.id}/1`,
           status: 'red'
         });
         await admin.save();

@@ -1,16 +1,12 @@
-import { useAppDispatch } from '../hooks/useTypeSelector';
-import { State } from '../redux/reducers';
-import { loadUser } from '../redux/user/userAction';
 import { User } from '../../typings';
 import AdminDashboardSideBar from './AdminDashboardSideBar';
 import AdminDashboardTopBar from './AdminDashboardTopBar';
 import { Transition } from '@headlessui/react';
 import axios from 'axios';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import React, { Fragment, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useAuth } from '../hooks/useAuth';
 
 interface Props {
   children: any;
@@ -20,20 +16,8 @@ const AdmimDashboardLayout = ({ children }: Props) => {
   const [showNav, setShowNav] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const cookies = parseCookies();
-  const { data: session } = useSession();
   const router = useRouter();
-
-  const dispatch = useAppDispatch();
-  const profile = useSelector((state: State) => state.profile);
-  const { loading, error, dbUser } = profile;
-
-  const user: User = dbUser
-    ? dbUser
-    : cookies?.user
-    ? JSON.parse(cookies.user)
-    : session?.user
-    ? session?.user
-    : '';
+  const auth = useAuth()
 
   function handleResize() {
     if (innerWidth <= 640) {
@@ -60,7 +44,7 @@ const AdmimDashboardLayout = ({ children }: Props) => {
       <AdminDashboardTopBar
         showNav={showNav}
         setShowNav={setShowNav}
-        dbUser={dbUser}
+        dbUser={auth.user}
       />
       <Transition
         as={Fragment}

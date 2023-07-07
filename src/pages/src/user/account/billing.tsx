@@ -2,7 +2,6 @@ import { UserContext } from '../../../../hooks/userContext';
 import { Bill, User } from '../../../../../typings';
 import { getUserBills } from '../../../api/user/bills/getUserBills';
 import { getUserFromBack } from '../../../api/user/getUserFromBack';
-import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -17,7 +16,6 @@ interface Props {
 }
 const Billing = ({ bills }: Props) => {
   const cookies = parseCookies();
-  const { data: session } = useSession();
   const router = useRouter();
   let [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);

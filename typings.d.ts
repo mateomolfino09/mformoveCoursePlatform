@@ -1,5 +1,3 @@
-import { User } from './src/redux/user/userTypes';
-
 export interface Urls {
   raw: string;
   full: string;
@@ -245,6 +243,8 @@ export interface ClassesDB {
   likes: number;
   totalTime: number;
   course: CoursesDB;
+  atachedFiles: [Archive]
+  links: [Link]
 }
 
 export interface Answer {
@@ -275,3 +275,17 @@ export interface Bill {
   course: CoursesDB;
   user: User;
 }
+
+export interface Archive {
+  id: Number
+  document_url: string
+  public_id: string
+  name: string,
+  format: string
+}
+
+export interface Link {
+  id: number
+  link_url: string
+}
+

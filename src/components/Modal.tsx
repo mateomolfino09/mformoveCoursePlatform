@@ -1,9 +1,7 @@
 import { CourseListContext } from '../hooks/courseListContext';
-import { useAppDispatch } from '../hooks/useTypeSelector';
+import { useAppDispatch,  useAppSelector} from '../redux/hooks';
 import { UserContext } from '../hooks/userContext';
-import { closeCourse } from '../redux/courseModal/courseModalAction';
-import { CourseModal } from '../redux/courseModal/courseModalTypes';
-import { State } from '../redux/reducers';
+import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import { Courses, CoursesDB, Item, User } from '../../typings';
 import requests from '../utils/requests';
 import Row from './Row';
@@ -45,8 +43,11 @@ import { HiHandThumbUp, HiOutlineHandThumbUp } from 'react-icons/hi2';
 import { MdAdd, MdOutlineClose, MdRemove } from 'react-icons/md';
 import { TbLockOpenOff } from 'react-icons/tb';
 import ReactPlayer from 'react-player/lazy';
-import { useSelector } from 'react-redux';
 import { toast as toaster } from 'react-toastify';
+import { useAuth } from '../hooks/useAuth';
+import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
+import {useLoadCourseQuery} from '../redux/services/courseModalApi'
 
 interface Props {
   courseDB: CoursesDB | null;
@@ -93,52 +94,44 @@ function Modal({ courseDB, user }: Props) {
   const [actualCourseIndex, setActualCourseIndex] = useState<number>(0);
   const [courseIndex, setCourseIndex] = useState<number>(0);
   const { listCourse, setListCourse } = useContext(CourseListContext);
-  const { userCtx, setUserCtx } = useContext(UserContext);
+  const auth = useAuth()
+  const router = useRouter()
+
+  const {data, error, isLoading, isFetching } = useLoadCourseQuery(null)
+
+  useEffect(() => {
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies) {
+      router.push('/src/user/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+
+  }, [auth.user]);
 
   const addCourseToList = async () => {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
     const courseId = courseDB?.id;
     const userId = user?._id;
-    try {
-      notify('Agregado a la Lista', true, false);
-      const { data } = await axios.put(
-        '/api/user/course/listCourse',
-        { courseId, userId },
-        config
-      );
-      setListCourse([...listCourse, courseDB]);
-      setUserCtx(data);
-    } catch (error) {
-      console.log(error);
-    }
+    notify('Agregado a la Lista', true, false);
+    auth.addCourseToList(courseId, userId)
+    setListCourse([...listCourse, courseDB]);
   };
+
   const removeCourseToList = async () => {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
     const courseId = courseDB?.id;
     const userId = user?._id;
-    try {
       notify('Eliminado de la Lista', false, false);
       setListCourse([
         ...listCourse.filter((value: CoursesDB) => value.id != courseDB?.id)
       ]);
-      const { data } = await axios.put(
-        '/api/user/course/dislistCourse',
-        { courseId, userId },
-        config
-      );
-      setUserCtx(data);
-    } catch (error) {}
+      auth.deleteCourseFromList(courseId, userId)
   };
-  const course: CourseModal = useSelector(
-    (state: State) => state.courseModalReducer
+  
+  const course: any = useAppSelector(
+    (state: any) => state.courseModalReducer
   );
   let { activeModal } = course;
   const dispatch = useAppDispatch();
@@ -191,15 +184,15 @@ function Modal({ courseDB, user }: Props) {
       }
     };
     getCourseInfo();
-    indexCourse != undefined && userCtx.courses[indexCourse].like
+    indexCourse != undefined && auth.user.courses[indexCourse].like
       ? setLike(true)
       : null;
-    indexCourse != undefined && userCtx.courses[indexCourse].inList
+    indexCourse != undefined && auth.user.courses[indexCourse].inList
       ? setList(true)
       : null;
   }, []);
 
-  useEffect(() => {}, [userCtx]);
+  useEffect(() => {}, [auth.user]);
 
   const handleClose = () => {
     dispatch(closeCourse());
@@ -266,8 +259,8 @@ function Modal({ courseDB, user }: Props) {
           />
           <div className='absolute bottom-10 flex w-full items-center justify-between px-10'>
             <div className='flex space-x-2'>
-              {!userCtx?.courses[
-                userCtx?.courses.findIndex((x: any) => {
+              {!auth.user?.courses[
+                auth.user?.courses.findIndex((x: any) => {
                   return x.course.valueOf() === courseDB?._id.valueOf();
                 })
               ].purchased ? (
@@ -283,7 +276,7 @@ function Modal({ courseDB, user }: Props) {
                   <Link
                     href={
                       indexCourse != undefined
-                        ? `/src/courses/${courseDB?.id}/${userCtx?.courses[indexCourse].actualChapter}`
+                        ? `/src/courses/${courseDB?.id}/${auth.user?.courses[indexCourse].actualChapter}`
                         : `/src/courses/${courseDB?.id}/1`
                     }
                   >
@@ -296,7 +289,7 @@ function Modal({ courseDB, user }: Props) {
                 </>
               )}
               <div className='cursor-pointer w-8 h-8 bg-transparent border-white  border rounded-full flex justify-center items-center transition  ml-2'>
-                {!userCtx?.courses[courseIndex].inList ? (
+                {!auth.user?.courses[courseIndex].inList ? (
                   <MdAdd
                     className=' text-white w-6 h-6'
                     onClick={() => addCourseToList()}
@@ -338,7 +331,7 @@ function Modal({ courseDB, user }: Props) {
               <div className='flex h-4 items-center justify-center rounded border border-white/40 px-1.5 text-xs '>
                 HD
               </div>
-              {!userCtx?.courses[courseIndex].purchased && (
+              {!auth.user?.courses[courseIndex].purchased && (
                 <div className='flex h-4 items-center justify-center rounded border border-white/40 px-1.5 text-xs '>
                   <TbLockOpenOff />
                 </div>

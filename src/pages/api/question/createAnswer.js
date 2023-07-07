@@ -10,8 +10,11 @@ const createAnswer = async (req, res) => {
       const { answer, questionId, userId } = req.body;
 
       //Existe?
-      let question = await Question.findOne({ id: questionId });
+      let question = await Question.findOne({ id: questionId }).populate('user');
       let user = await Users.findOne({ id: userId });
+      let creator = question.user._id;
+      let creatorUser = await Users.findOne({ creator })
+      const adminUsers = await Users.find({ rol: 'Admin' });
 
       const answerObj = {
         answer: answer,
@@ -22,7 +25,30 @@ const createAnswer = async (req, res) => {
 
       question.hasAnswer = true;
 
-      console.log(question.answers, question);
+      const noti = {
+        title: 'Respuesta creada con éxito',
+        message: `Has respondido a la pregunta ${questionId}`,
+        link: `/src/courses/questions/${questionId}`,
+        status: 'green'
+      };
+      user.notifications.push(noti);
+
+      const creatorNoti = {
+        title: `Tienes una nueva respuesta de ${user.name}`,
+        message: `Respondele lo antes posible`,
+        link: `/src/courses/questions/${questionId}`,
+        status: 'yellow'
+      }
+
+      creatorUser.notifications.push(creatorNoti)
+
+      adminUsers.forEach(async (admin) => {
+        admin.notifications.push(creatorNoti);
+        await admin.save();
+      });
+
+
+      await user.save()
 
       await question.save();
 

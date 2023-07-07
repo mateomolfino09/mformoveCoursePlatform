@@ -11,7 +11,6 @@ import requests from '../../../../utils/requests';
 import { getCourseById } from '../../../api/course/getCourseById';
 import { getUserFromBack } from '../../../api/user/getUserFromBack';
 import state from '../../../../valtio';
-import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';

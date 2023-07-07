@@ -60,6 +60,7 @@
     "nextjs-progressbar": "^0.0.16",
     "nodemailer": "^6.9.0",
     "nookies": "^2.5.2",
+    "openai": "^3.2.1",
     "react": "18.2.0",
     "react-canvas-confetti": "^1.3.0",
     "react-dom": "18.2.0",

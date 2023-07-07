@@ -1,7 +1,6 @@
-import {
-  User
-} from '../../../redux/user/userTypes';
+
 import axios from 'axios';
+import { User } from '../../../../typings';
 
 interface Props {
   user: User;

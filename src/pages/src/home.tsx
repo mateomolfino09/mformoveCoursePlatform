@@ -6,9 +6,6 @@ import SearchBar from '../../components/SearchBar';
 import { CourseListContext } from '../../hooks/courseListContext';
 import { CoursesContext } from '../../hooks/coursesContext';
 import { UserContext } from '../../hooks/userContext';
-import { CourseModal } from '../../redux/courseModal/courseModalTypes';
-import { State } from '../../redux/reducers';
-import { wrapper } from '../../redux/store';
 import {
   CourseUser,
   CoursesDB,
@@ -20,17 +17,17 @@ import { getCourses } from '../api/course/getCourses';
 import { getUserFromBack } from '../api/user/getUserFromBack';
 import { GetServerSideProps } from 'next';
 import { Session } from 'next-auth';
-import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { RefObject, useContext, useEffect, useRef, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { useSelector } from 'react-redux';
 import { useSnapshot } from 'valtio';
 import { useAuth } from '../../hooks/useAuth';
 import { verify } from 'jsonwebtoken';
 import Cookies from 'js-cookie';
+import connectDB from '../../config/connectDB';
+import { useAppSelector } from '../../redux/hooks';
 
 interface Props {
   coursesDB: CoursesDB[];
@@ -53,8 +50,6 @@ const Home = ({ coursesDB }: Props) => {
     useState<RefObject<HTMLDivElement> | null>(null);
   const { listCourse, setListCourse } = useContext(CourseListContext);
   const { courses, setCourses } = useContext(CoursesContext);
-  const { userCtx, setUserCtx } = useContext(UserContext);
-  const [user, setUser] = useState<User | null>(null)
   const snap = useSnapshot(state);
   const router = useRouter()
 
@@ -76,12 +71,11 @@ const Home = ({ coursesDB }: Props) => {
   }, [auth.user]);
 
 
-  const course: CourseModal = useSelector(
-    (state: State) => state.courseModalReducer
+  const course: any = useAppSelector(
+    (state: any) => state.courseModalReducer
   );
-  let { loading, error, activeModal, dbCourse, youtubeVideo } = course;
+  let { activeModal } = course;
   const cookies = parseCookies();
-  const { data: session } = useSession();
 
   function scrollToList() {
     if (refToList?.current && window) {
@@ -218,7 +212,7 @@ const Home = ({ coursesDB }: Props) => {
   }, [auth.user]);
 
   return (
-    <div className='relative h-full bg-to-dark lg:h-full'>
+    <div className='relative h-full bg-to-dark lg:h-full overflow-hidden'>
       <Head>
         <title>Video Streaming</title>
         <meta name='description' content='Stream Video App' />
@@ -300,17 +294,17 @@ const Home = ({ coursesDB }: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps =
-  wrapper.getServerSideProps((store) => async (ctx) => {
-    const { req } = ctx;
+export async function getServerSideProps(context: any) {
+  connectDB();
+  const coursesDB: any = await getCourses();
 
-    const coursesDB: any = await getCourses();
 
-    return {
-      props: {
-        coursesDB,
-      }
-    };
-  });
+  return {
+    props: {
+      coursesDB,
+    }
+  };
+}
+
 
 export default Home;

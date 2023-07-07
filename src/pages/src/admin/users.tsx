@@ -6,7 +6,6 @@ import { getConfirmedUsers } from '../../api/user/getConfirmedUsers';
 import { getUserFromBack } from '../../api/user/getUserFromBack';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
-import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -22,7 +21,6 @@ interface Props {
 }
 const ShowUsers = ({ users }: Props) => {
   const cookies = parseCookies();
-  const { data: session } = useSession();
   const router = useRouter();
   let [isOpenDelete, setIsOpenDelete] = useState(false);
   const ref = useRef(null);
