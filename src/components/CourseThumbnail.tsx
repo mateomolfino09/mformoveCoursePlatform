@@ -1,6 +1,5 @@
-import { useAppDispatch } from '../hooks/useTypeSelector';
 import imageLoader from '../../imageLoader';
-import { loadCourse } from '../redux/courseModal/courseModalAction';
+import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import { CoursesDB, Item, Ricks, User } from '../../typings';
 import {
   Button,
@@ -17,7 +16,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { Dispatch, SetStateAction } from 'react';
+import React from 'react';
 import { TbLockOpenOff } from 'react-icons/tb';
 
 function ValueLabelComponent(props: SliderValueLabelProps) {

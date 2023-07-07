@@ -7,7 +7,6 @@ import {
   PencilIcon,
   TrashIcon
 } from '@heroicons/react/24/solid';
-import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
@@ -21,7 +20,6 @@ interface Props {
 }
 const ShowUsers = ({ courses }: Props) => {
   const cookies = parseCookies();
-  const { data: session } = useSession();
   const router = useRouter();
   let [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);

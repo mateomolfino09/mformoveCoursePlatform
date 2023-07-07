@@ -1,8 +1,7 @@
 import { headContentAnimation } from '../config/motion';
 import { CoursesContext } from '../hooks/coursesContext';
-import { useAppDispatch } from '../hooks/useTypeSelector';
 import imageLoader from '../../imageLoader';
-import { loadCourse } from '../redux/courseModal/courseModalAction';
+import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import { Images } from '../../typings';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { AnimatePresence, motion as m } from 'framer-motion';
@@ -11,7 +10,7 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { BsPlayCircle } from 'react-icons/bs';
 import { FaPlay } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../redux/hooks'
 
 interface Props {
   scrollToModa: any;
@@ -20,7 +19,6 @@ interface Props {
 function Banner({ scrollToModa }: Props) {
   // const srcImg: string = image?.urls.regular != null ? image?.urls.regular : ''
   const dispatch = useAppDispatch();
-  const { courses, setCourses } = useContext(CoursesContext);
   const router = useRouter();
 
   const handleOpen = () => {

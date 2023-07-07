@@ -43,7 +43,7 @@ const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
     }
     else if(auth.user.rol != 'Admin') router.push('/src/user/login');
     else {
-      setNotificationList(auth.user.notifications.filter((x: Notification) => !x.read).slice(-5))
+      setNotificationList(auth.user.notifications.filter((x: Notification) => !x.read).slice(-5).reverse())
     }
 
 
@@ -68,7 +68,7 @@ const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
       // setListCourse([...listCourse, course])
       auth.setUserBack(data);
       setNotificationList(
-        data.notifications.filter((x: Notification) => !x.read).slice(-5)
+        data.notifications.filter((x: Notification) => !x.read).slice(-5).reverse()
       );
     } catch (error) {
       console.log(error);

@@ -26,7 +26,6 @@ import { ChevronRightIcon, FlagIcon } from '@heroicons/react/24/solid';
 import MuiModal from '@mui/material/Modal';
 import axios from 'axios';
 import { useAnimation } from 'framer-motion';
-import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
@@ -40,6 +39,9 @@ import { AiOutlineUser } from 'react-icons/ai';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 import ReactPlayer from 'react-player';
 import { useSnapshot } from 'valtio';
+import { useAuth } from '../../../../hooks/useAuth';
+import Cookies from 'js-cookie';
+import { error } from 'console';
 
 interface Props {
   clase: ClassesDB;
@@ -63,7 +65,6 @@ function Course({ clase, user, courseDB, questions }: Props) {
     null
   );
   const cookies = parseCookies();
-  const { data: session } = useSession();
   const router = useRouter();
   const MINUTE_MS = process.env.NEXT_PUBLIC_TIME_COURSE_SAVE
     ? +process.env.NEXT_PUBLIC_TIME_COURSE_SAVE
@@ -71,23 +72,22 @@ function Course({ clase, user, courseDB, questions }: Props) {
   const snap = useSnapshot(state);
   const animation = useAnimation();
 
+  const auth = useAuth()
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setHasWindow(true);
 
       setWindowWidth(window.innerWidth);
     }
+
+    
   }, []);
 
   const exitingFunction = async (actual = 0) => {
     const actualTime = actual == 0 ? time : actual;
     const idClass = router.query.classId;
     if (time != null && time != undefined) {
-      let userCookies = cookies?.user
-        ? JSON.parse(cookies.user)
-        : session?.user
-        ? session.user
-        : '';
       const courseId = courseDB.id;
       const classId =
         idClass != undefined
@@ -98,20 +98,7 @@ function Course({ clase, user, courseDB, questions }: Props) {
             : +idClass + 1
           : null;
 
-      const email = user?.email ? user?.email : userCookies.email;
-
-      try {
-        const config = {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        };
-        let { data } = await axios.post(
-          '/api/class/saveTime',
-          { actualTime, email, courseId, classId },
-          config
-        );
-      } catch (error) {}
+      auth.saveClassTime(actualTime, courseId, classId)
     }
   };
 
@@ -146,13 +133,12 @@ function Course({ clase, user, courseDB, questions }: Props) {
   };
 
   useEffect(() => {
+    
     const interval = setInterval(() => {
       exitingFunction(
         playerRef?.current ? playerRef.current.getCurrentTime() : 0
       );
     }, MINUTE_MS);
-
-    console.log(window.innerWidth);
 
     window.innerWidth > 768 ? (state.classHeaders = 'Recursos') : null;
 
@@ -185,16 +171,21 @@ function Course({ clase, user, courseDB, questions }: Props) {
 
   useEffect(() => {
     exitingFunction();
+
   }, [router]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setHasWindow(true);
-    }
-    if (!user) {
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies) {
       router.push('/src/user/login');
-    } else {
-      let courseActual = user.courses.find(
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+    else {
+      let courseActual = auth.user.courses.find(
         (course: CourseUser) => course.course === courseDB._id
       );
       setTime(courseActual?.classes[clase.id - 1].actualTime);
@@ -206,7 +197,12 @@ function Course({ clase, user, courseDB, questions }: Props) {
           : 0
       );
     }
-  }, [router]);
+
+    if (typeof window !== 'undefined') {
+      setHasWindow(true);
+    }
+
+  }, [router, auth.user]);
 
   return (
     <div className='relative h-full bg-gradient-to-b md:min-h-[100vh] bg-dark overflow-x-clip'>
@@ -251,7 +247,7 @@ function Course({ clase, user, courseDB, questions }: Props) {
         </div>
         {windowWidth > 1024 && (
           <div className='w-1/3 absolute right-0 hidden lg:block'>
-            <ClassQuestions user={user} clase={clase} questionsDB={questions} />
+            <ClassQuestions user={auth.user} clase={clase} questionsDB={questions} />
           </div>
         )}
         <CourseData
@@ -279,7 +275,7 @@ function Course({ clase, user, courseDB, questions }: Props) {
           {snap.classHeaders === 'Preguntas' && (
             <>
               <ClassQuestions
-                user={user}
+                user={auth.user}
                 clase={clase}
                 questionsDB={questions}
               />
@@ -366,7 +362,7 @@ export async function getServerSideProps(context: any) {
   const classUId = clase._id;
   const courseId = clase.course.id;
   const courseDB = await getCourseById(courseId);
-  const user = await updateActualCourseSS(req, id, classId);
+  const user: any = await updateActualCourseSS(req, id, classId);
   const questions = await getQuestionsFromClass(classUId);
 
   return {

@@ -3,7 +3,7 @@ import { CoursesContext } from '../hooks/coursesContext';
 import { useAppDispatch } from '../hooks/useTypeSelector';
 import { UserContext } from '../hooks/userContext';
 import imageLoader from '../../imageLoader';
-import { loadCourse } from '../redux/courseModal/courseModalAction';
+import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import { CourseUser, CoursesDB, Ricks, User } from '../../typings';
 import {
   ChevronDownIcon,
@@ -25,6 +25,9 @@ import { Toaster, toast } from 'react-hot-toast';
 import { AiOutlineCheckCircle, AiOutlineMinusCircle } from 'react-icons/ai';
 import { MdAdd, MdBlock, MdOutlineClose, MdRemove } from 'react-icons/md';
 import { TbLockOpenOff } from 'react-icons/tb';
+import { useAuth } from '../hooks/useAuth';
+import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
 
 interface Props {
   course: CoursesDB;
@@ -67,53 +70,37 @@ function Thumbnail({ course, setSelectedCourse, user, courseIndex }: Props) {
   const [courseUser, setCourseUser] = useState<CourseUser | null>(null);
   const [zIndex, setZIndex] = useState(0);
   const { listCourse, setListCourse } = useContext(CourseListContext);
-  const { userCtx, setUserCtx } = useContext(UserContext);
+  const auth = useAuth()
+  const router = useRouter()
+
 
   useEffect(() => {
-    setCourseUser(userCtx?.courses[courseIndex]);
-  }, [userCtx]);
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies) {
+      router.push('/src/user/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
 
+  }, [auth.user]);
   const addCourseToList = async () => {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
     const courseId = course?.id;
     const userId = user?._id;
-    try {
-      notify('Agregado a la Lista', true, false);
-      const { data } = await axios.put(
-        '/api/user/course/listCourse',
-        { courseId, userId },
-        config
-      );
-      setListCourse([...listCourse, course]);
-      setUserCtx(data);
-    } catch (error) {
-      console.log(error);
-    }
+    notify('Agregado a la Lista', true, false);
+    auth.addCourseToList(courseId, userId)
+    setListCourse([...listCourse, course]);
   };
   const removeCourseToList = async () => {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
     const courseId = course?.id;
     const userId = user?._id;
-    try {
-      notify('Eliminado de la Lista', false, false);
-      setListCourse([
-        ...listCourse.filter((value: CoursesDB) => value.id != course?.id)
-      ]);
-      const { data } = await axios.put(
-        '/api/user/course/dislistCourse',
-        { courseId, userId },
-        config
-      );
-      setUserCtx(data);
-    } catch (error) {}
+    notify('Eliminado de la Lista', false, false);
+    setListCourse([
+      ...listCourse.filter((value: CoursesDB) => value.id != course?.id)
+    ]);
+    auth.deleteCourseFromList(courseId, userId)
   };
 
   const handleOpen = () => {
@@ -184,7 +171,7 @@ function Thumbnail({ course, setSelectedCourse, user, courseIndex }: Props) {
                 />
               </div>
               <div className='cursor-pointer w-4 h-4 lg:w-6 lg:h-6 bg-transparent border-white  border rounded-full flex justify-center items-center transition  ml-2'>
-                {!userCtx?.courses[courseIndex].inList ? (
+                {!auth.user?.courses[courseIndex].inList ? (
                   <MdAdd
                     className=' text-white w-4 h-4 lg:w-4 lg:h-4'
                     onClick={() => addCourseToList()}

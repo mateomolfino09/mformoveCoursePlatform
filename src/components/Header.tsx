@@ -1,7 +1,5 @@
-import { useAppDispatch } from '../hooks/useTypeSelector';
 import { UserContext } from '../hooks/userContext';
 import { State } from '../redux/reducers';
-import { loadUser } from '../redux/user/userAction';
 import { Notification, User } from '../../typings';
 import state from '../valtio';
 import { Menu, Popover, Transition } from '@headlessui/react';
@@ -14,7 +12,6 @@ import { CheckIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import cookie from 'js-cookie';
-import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
@@ -28,7 +25,6 @@ import React, {
 } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
 import { RxCross2 } from 'react-icons/rx';
-import { useSelector } from 'react-redux';
 import { useSnapshot } from 'valtio';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from 'js-cookie';
@@ -51,10 +47,7 @@ const Header = ({
     user: User;
   }
 
-  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
-  const auth = useAuth()
-  const userCtx = auth.user
   const [notificationList, setNotificationList] = useState<
     null | Notification[]
   >(null);
@@ -62,6 +55,10 @@ const Header = ({
   const animationInput = useAnimation();
   const animationIcon = useAnimation();
   const inputRef = useRef<any>(null);
+  const auth = useAuth()
+  const router = useRouter()
+
+
 
   useEffect(() => {
 
@@ -76,7 +73,7 @@ const Header = ({
     }
     else if(auth.user.rol != 'Admin') router.push('/src/user/login');
     else {
-      setNotificationList(auth.user.notifications.filter((x: Notification) => !x.read).slice(-5))
+      setNotificationList(auth.user.notifications.filter((x: Notification) => !x.read).slice(-5).reverse())
     }
 
 
@@ -88,7 +85,7 @@ const Header = ({
         'Content-Type': 'application/json'
       }
     };
-    const userId = userCtx?._id;
+    const userId =  auth.user?._id;
     try {
       const { data } = await axios.put(
         '/api/user/notifications/checkAsRead',
@@ -97,7 +94,7 @@ const Header = ({
       );
       auth.setUserBack(data);
       setNotificationList(
-        data.notifications.filter((x: Notification) => !x.read).slice(-5)
+        data.notifications.filter((x: Notification) => !x.read).slice(-5).reverse()
       );
     } catch (error) {
       console.log(error);
@@ -328,7 +325,7 @@ const Header = ({
                 </div>
 
                 <div className='mt-4 grid gap-4 grid-cols-1 overflow-hidden'>
-                  {userCtx?.notifications &&
+                  { auth.user?.notifications &&
                   notificationList &&
                   notificationList.length > 0 ? (
                     <>

@@ -1,9 +1,9 @@
 import { CourseListContext } from '../hooks/courseListContext';
 import { CoursesContext } from '../hooks/coursesContext';
-import { useAppDispatch } from '../hooks/useTypeSelector';
+import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import { UserContext } from '../hooks/userContext';
 import imageLoader from '../../imageLoader';
-import { loadCourse } from '../redux/courseModal/courseModalAction';
 import { CourseUser, CoursesDB, Ricks, User } from '../../typings';
 import {
   ChevronDownIcon,
@@ -32,6 +32,9 @@ import { GiDiploma } from 'react-icons/gi';
 import { GoCreditCard } from 'react-icons/go';
 import { MdAdd, MdBlock, MdOutlineClose, MdRemove } from 'react-icons/md';
 import { TbLockOpenOff } from 'react-icons/tb';
+import { useAuth } from '../hooks/useAuth';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/router';
 
 interface Props {
   course: CoursesDB;
@@ -81,14 +84,26 @@ function CarouselThumbnail({
   const [courseUser, setCourseUser] = useState<CourseUser | null>(null);
   const [zIndex, setZIndex] = useState(0);
   const { listCourse, setListCourse } = useContext(CourseListContext);
-  const { userCtx, setUserCtx } = useContext(UserContext);
   const animation = useAnimation();
   const animationButton = useAnimation();
   const animationArrow = useAnimation();
+  const auth = useAuth()
+  const router = useRouter()
+
 
   useEffect(() => {
-    setCourseUser(userCtx?.courses[courseIndex]);
-  }, [userCtx]);
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies) {
+      router.push('/src/user/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+
+  }, [auth.user]);
+
 
   useEffect(() => {
     if (isOpen == course.id) {
@@ -170,18 +185,9 @@ function CarouselThumbnail({
     };
     const courseId = course?.id;
     const userId = user?._id;
-    try {
-      notify('Agregado a la Lista', true, false);
-      const { data } = await axios.put(
-        '/api/user/course/listCourse',
-        { courseId, userId },
-        config
-      );
-      setListCourse([...listCourse, course]);
-      setUserCtx(data);
-    } catch (error) {
-      console.log(error);
-    }
+    notify('Agregado a la Lista', true, false);
+    auth.addCourseToList(courseId, userId)
+    setListCourse([...listCourse, course]);
   };
   const removeCourseToList = async () => {
     const config = {
@@ -191,18 +197,11 @@ function CarouselThumbnail({
     };
     const courseId = course?.id;
     const userId = user?._id;
-    try {
-      notify('Eliminado de la Lista', false, false);
-      setListCourse([
-        ...listCourse.filter((value: CoursesDB) => value.id != course?.id)
-      ]);
-      const { data } = await axios.put(
-        '/api/user/course/dislistCourse',
-        { courseId, userId },
-        config
-      );
-      setUserCtx(data);
-    } catch (error) {}
+    auth.deleteCourseFromList(courseId, userId)
+    notify('Eliminado de la Lista', false, false);
+    setListCourse([
+      ...listCourse.filter((value: CoursesDB) => value.id != course?.id)
+    ]);
   };
 
   const handleOpen = () => {
@@ -247,7 +246,7 @@ function CarouselThumbnail({
                   <PlayIcon className=' w-6 h-6 z-[200]' onClick={handleOpen} />
                 </div>
                 <div className='cursor-pointer w-8 h-8 bg-transparent border-white  border rounded-full flex justify-center items-center transition  ml-2'>
-                  {userCtx && !userCtx?.courses[courseIndex]?.inList ? (
+                  {auth.user && !auth.user?.courses[courseIndex]?.inList ? (
                     <MdAdd
                       className=' text-white w-6 h-6'
                       onClick={() => addCourseToList()}

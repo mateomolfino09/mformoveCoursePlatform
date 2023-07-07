@@ -14,6 +14,7 @@ import { parseCookies } from 'nookies';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
+import Head from 'next/head';
 
 interface Props {
   user: User;
@@ -40,7 +41,13 @@ const Index = () => {
   }, [auth.user]);
 
   return (
+    
       <AdmimDashboardLayout>
+      <Head>
+        <title>Video Streaming</title>
+        <meta name='description' content='Stream Video App' />
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
         <div className='bg-gray-700 w-full md:h-[100vh]'>
           <p className='text-white text-3xl my-12 font-bold'>
             Bienvenido al Dashboard

@@ -5,7 +5,6 @@ import RegisterStepThree from '../../../components/RegisterStepThree';
 import RegisterStepTwo from '../../../components/RegisterStepTwo';
 import imageLoader from '../../../../imageLoader';
 import axios from 'axios';
-import { getSession, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';

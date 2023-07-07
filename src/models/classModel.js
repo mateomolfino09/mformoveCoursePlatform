@@ -1,6 +1,42 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
 
+const fileSchema = new mongoose.Schema(
+  {
+    id: {
+      type: Number,
+      required: true    
+    },
+    document_url: {
+      type: String,
+      required: true
+    },
+    public_id: {
+      type: String,
+      required: true
+    },
+    name: {
+      type: String
+    },
+    format: {
+      type: String
+    }
+  }
+)
+
+const linkSchema = new mongoose.Schema(
+  {
+    id: {
+      type: Number,
+      required: true    
+    },
+    link_url: {
+      type: String,
+      required: true
+    },
+  }
+)
+
 const classSchema = new mongoose.Schema(
   {
     id: {
@@ -35,7 +71,13 @@ const classSchema = new mongoose.Schema(
     course: {
       type: mongoose.Types.ObjectId,
       ref: 'Course'
-    }
+    },
+    atachedFiles: [
+      fileSchema
+    ],
+    links: [
+      linkSchema
+    ]
   },
   { timestamps: true }
 );
