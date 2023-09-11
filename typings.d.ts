@@ -289,3 +289,18 @@ export interface Link {
   link_url: string
 }
 
+export interface questionExam {
+  id: number,
+  question: string,
+  answers: [amswerSchema],
+  correctAnswerIndex: number
+}
+
+export interface Exam {
+  id: number,
+  quantityOfQuestions: number,
+  approvalMin: number,
+  class: ClassesDB
+  questions: [questionExam],
+}
+

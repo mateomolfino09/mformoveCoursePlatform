@@ -3,6 +3,8 @@ import Classes from '../../../models/classModel';
 import Courses from '../../../models/courseModel';
 import Users from '../../../models/userModel';
 import bcrypt from 'bcryptjs';
+import Exam from '../../../models/examModel'
+import { courseTypeConst } from '../../../constants/courseType';
 
 connectDB();
 
@@ -13,7 +15,9 @@ const createCourse = async (req, res) => {
         name,
         playlistId,
         imgUrl,
-        password,
+        diplomaUrl,
+        questions,
+        courseType,
         userEmail,
         description,
         price,
@@ -23,15 +27,8 @@ const createCourse = async (req, res) => {
         cantidadClases
       } = req.body;
 
-      //Existe?
-      let user = await Users.findOne({ email: userEmail });
+      let user = await Users.findOne({ email: userEmail }); 
       const users = await Users.find({});
-
-      const exists = await bcrypt.compare(password, user.password);
-
-      if (!exists) {
-        return res.status(404).json({ error: 'Credenciales incorrectas' });
-      }
 
       //Es Admin?
 
@@ -51,6 +48,8 @@ const createCourse = async (req, res) => {
         name: name,
         playlist_code: playlistId,
         image_url: imgUrl,
+        diploma_url: courseType != courseTypeConst[0] ? diplomaUrl : null,
+        course_type: courseType ,
         description: description,
         created_by: user,
         price: price,
@@ -62,6 +61,44 @@ const createCourse = async (req, res) => {
           titles: breakpointTitles
         }
       }).save();
+
+      if(courseType === courseTypeConst[2]) {
+        const lastExam = await Exam.find().sort({ _id: -1 }).limit(1);
+
+        const newExam = await new Exam({
+          id: JSON.stringify(lastExam) != '[]' ? lastExam[0].id + 1 : 1,
+          quantityOfQuestions: questions.length,
+          approvalMin: questions.length % 2 === 0 ? questions.length - 2 : questions.length - questions.length % 2,
+          courseId: newCourse.id,
+        })
+        
+        for (let index = 0; index < questions.length; index++) {
+          const arr = questions[0];
+          const answers = [{
+            id: 1,
+            answer: arr[1]
+          }, {            
+            id: 2,
+            answer: arr[2]
+          }, {
+            id: 3,
+            answer: arr[3]
+          }, {
+            id: 4,
+            answer: arr[4]
+          }]
+
+          const question = {
+            id: index,
+            question: arr[0],
+            answers: answers, 
+            correctAnswerIndex: arr[5]
+          }
+
+          newExam.questions.push(question)
+          await newExam.save();
+        }
+      }
 
       //Traigo clases de YT
 

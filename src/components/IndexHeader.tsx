@@ -32,7 +32,6 @@ const IndexHeader = ({ user }: Props) => {
       headerAnimation.start({
         y: 0,
         transition: {
-          type: 'just',
           damping: 5,
           stiffness: 40,
           restDelta: 0.001,

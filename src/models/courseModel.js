@@ -50,6 +50,13 @@ const courseSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    diploma_url: {
+      type: String
+    },
+    course_type: {
+      type: String,
+      required: true
+    },
     likes: {
       type: Number,
       default: () => 12
@@ -61,6 +68,9 @@ const courseSchema = new mongoose.Schema(
     currency: {
       type: String,
       default: () => '$'
+    },
+    course_type: {
+      type: String,
     },
     users: [
       {

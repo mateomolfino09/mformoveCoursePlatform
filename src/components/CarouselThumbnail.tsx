@@ -315,7 +315,7 @@ function CarouselThumbnail({
                     <FaHistory className='text-white group-hover/item:text-neutral-300 w-6 absolute -ml-6' />
                     <p className='text-xs md:text-sm relative left-1 font-light'>
                       {Math.floor(
-                        course.classes
+                        course?.classes
                           .map((c) => c.totalTime)
                           .reduce((prev, current) => prev + current) /
                           60 /
@@ -323,7 +323,7 @@ function CarouselThumbnail({
                       )}{' '}
                       hrs{' '}
                       {Math.floor(
-                        (course.classes
+                        (course?.classes
                           .map((c) => c.totalTime)
                           .reduce((prev, current) => prev + current) /
                           60) %
