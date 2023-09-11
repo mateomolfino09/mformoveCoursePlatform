@@ -44,22 +44,6 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
               </div>
             </div>
           </Link>
-          <Link href={'/src/admin/createCourse'}>
-            <div
-              className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-                router.pathname == '/src/admin/createCourse'
-                  ? 'bg-orange-100 text-orange-500'
-                  : 'text-gray-400 hover:bg-orange-100 hover:text-orange-500'
-              }`}
-            >
-              <div className='mr-2'>
-                <PlusCircleIcon className='h-5 w-5' />
-              </div>
-              <div>
-                <p>Crear Curso</p>
-              </div>
-            </div>
-          </Link>
           <Link href={'/src/admin/users'}>
             <div
               className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
@@ -79,7 +63,7 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
           <Link href={'/src/admin/courses'}>
             <div
               className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-                router.pathname == '/src/admin/courses'
+                router.pathname == '/src/admin/courses' || router.pathname == '/src/admin/courses/createCourse' || router.pathname == '/src/admin/courses/allCourses'
                   ? 'bg-orange-100 text-orange-500'
                   : 'text-gray-400 hover:bg-orange-100 hover:text-orange-500'
               }`}

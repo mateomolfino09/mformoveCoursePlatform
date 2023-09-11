@@ -1,8 +1,8 @@
-import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
-import { UserContext } from '../../../hooks/userContext';
-import { CoursesDB, User } from '../../../../typings';
-import { getCourses } from '../../api/course/getCourses';
-import { getUserFromBack } from '../../api/user/getUserFromBack';
+import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout';
+import { UserContext } from '../../../../hooks/userContext';
+import { CoursesDB, User } from '../../../../../typings';
+import { getCourses } from '../../../api/course/getCourses';
+import { getUserFromBack } from '../../../api/user/getUserFromBack';
 import {
   PencilIcon,
   TrashIcon
@@ -11,7 +11,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useAuth } from '../../../hooks/useAuth';
+import { useAuth } from '../../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 
 interface Props {
@@ -86,7 +86,7 @@ const ShowUsers = ({ courses }: Props) => {
                       <tbody>
                         {courses?.map((course: CoursesDB) => (
                           <tr
-                            key={auth.user._id}
+                            key={course._id}
                             ref={ref}
                             className='border-b dark:border-neutral-500'
                           >
