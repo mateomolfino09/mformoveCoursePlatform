@@ -1,4 +1,3 @@
-import { UserContext } from '../hooks/userContext';
 import { User } from '../../typings';
 import state from '../valtio';
 import { Menu, Popover, Transition } from '@headlessui/react';
@@ -12,7 +11,7 @@ import {
 } from '@heroicons/react/24/solid';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
 
@@ -70,7 +69,7 @@ const IndexHeader = ({ user }: Props) => {
                     <div className='w-24 bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black hover:scale-105'>
                       <button
                         className='p-1 cursor-pointer'
-                        onClick={() => router.push('/src/home')}
+                        onClick={() => router.push('/home')}
                       >
                         Entrar
                       </button>
@@ -79,7 +78,7 @@ const IndexHeader = ({ user }: Props) => {
                     <div className='w-24 bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black hover:scale-105'>
                       <button
                         className='p-1'
-                        onClick={() => router.push('/src/user/login')}
+                        onClick={() => router.push('/user/login')}
                       >
                         Login
                       </button>

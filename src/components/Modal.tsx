@@ -1,6 +1,4 @@
-import { CourseListContext } from '../hooks/courseListContext';
 import { useAppDispatch,  useAppSelector} from '../redux/hooks';
-import { UserContext } from '../hooks/userContext';
 import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import { Courses, CoursesDB, Item, User } from '../../typings';
 import requests from '../utils/requests';
@@ -45,9 +43,10 @@ import { TbLockOpenOff } from 'react-icons/tb';
 import ReactPlayer from 'react-player/lazy';
 import { toast as toaster } from 'react-toastify';
 import { useAuth } from '../hooks/useAuth';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import Cookies from 'js-cookie';
 import {useLoadCourseQuery} from '../redux/services/courseModalApi'
+import { useGlobalContext } from '../app/context/store';
 
 interface Props {
   courseDB: CoursesDB | null;
@@ -93,7 +92,7 @@ function Modal({ courseDB, user }: Props) {
   const [list, setList] = useState<boolean>(false);
   const [actualCourseIndex, setActualCourseIndex] = useState<number>(0);
   const [courseIndex, setCourseIndex] = useState<number>(0);
-  const { listCourse, setListCourse } = useContext(CourseListContext);
+  const { listCourse, setListCourse } = useGlobalContext();
   const auth = useAuth()
   const router = useRouter()
 
@@ -103,7 +102,7 @@ function Modal({ courseDB, user }: Props) {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
-      router.push('/src/user/login');
+      router.push('/user/login');
     }
     
     if(!auth.user) {
@@ -263,8 +262,8 @@ function Modal({ courseDB, user }: Props) {
                 auth.user?.courses.findIndex((x: any) => {
                   return x.course.valueOf() === courseDB?._id.valueOf();
                 })
-              ].purchased ? (
-                <Link href={`/src/courses/purchase/${courseDB?.id}`}>
+              ]?.purchased ? (
+                <Link href={`/courses/purchase/${courseDB?.id}`}>
                   <button className='flex items-center gap-x-2 rounded bg-white px-8 text-xl font-bold py-1 text-black transition hover:bg-[#e6e6e6]'>
                     {' '}
                     <AiOutlineShoppingCart className='h-7 w-7 text-black' />
@@ -276,8 +275,8 @@ function Modal({ courseDB, user }: Props) {
                   <Link
                     href={
                       indexCourse != undefined
-                        ? `/src/courses/${courseDB?.id}/${auth.user?.courses[indexCourse].actualChapter}`
-                        : `/src/courses/${courseDB?.id}/1`
+                        ? `/courses/${courseDB?.id}/${auth.user?.courses[indexCourse].actualChapter}`
+                        : `/courses/${courseDB?.id}/1`
                     }
                   >
                     <button className='flex items-center gap-x-2 rounded bg-white px-8 text-xl font-bold py-1 text-black transition hover:bg-[#e6e6e6]'>

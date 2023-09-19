@@ -1,7 +1,7 @@
 import { ClassesDB, CoursesDB } from '../../typings';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import React from 'react';
 
 interface Props {
@@ -26,8 +26,8 @@ const CourseData = ({
     setTime(playerRef?.current && playerRef.current.getCurrentTime());
     router.push(
       clase.id - 1 == 0
-        ? `/src/courses/${course.id}/${clase.id}`
-        : `/src/courses/${course.id}/${clase.id - 1}`
+        ? `/courses/${course.id}/${clase.id}`
+        : `/courses/${course.id}/${clase.id - 1}`
     );
   };
   const handleRight = () => {
@@ -35,8 +35,8 @@ const CourseData = ({
     setTime(playerRef?.current && playerRef.current.getCurrentTime());
     router.push(
       clase.id + 1 == course.classesQuantity
-        ? `/src/courses/${course.id}/1`
-        : `/src/courses/${course.id}/${clase.id + 1}`
+        ? `/courses/${course.id}/1`
+        : `/courses/${course.id}/${clase.id + 1}`
     );
   };
 

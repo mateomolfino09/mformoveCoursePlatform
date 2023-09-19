@@ -6,7 +6,7 @@ import {
 } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { BsHeart, BsBoxArrowUpRight } from 'react-icons/bs';

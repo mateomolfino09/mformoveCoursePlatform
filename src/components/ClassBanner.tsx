@@ -1,8 +1,8 @@
-import { CoursesContext } from '../hooks/coursesContext';
 import { ClassesDB, CoursesDB } from '../../typings';
 import { FlagIcon } from '@heroicons/react/24/solid';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react';
+import { useGlobalContext } from '../app/context/store';
 
 interface Props {
   clase: ClassesDB;
@@ -11,7 +11,7 @@ interface Props {
 
 const ClassBanner = ({ clase, course }: Props) => {
   const [module, setModule] = useState(false);
-  const { courses, setCourses } = useContext(CoursesContext);
+  const { courses, setCourses } = useGlobalContext();
   const router = useRouter();
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const ClassBanner = ({ clase, course }: Props) => {
   }, []);
 
   const handleRouteChange = () => {
-    router.push(`/src/courses/${course.id}/${clase.id}`);
+    router.push(`/courses/${course.id}/${clase.id}`);
   };
 
   return (

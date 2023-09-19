@@ -1,4 +1,3 @@
-import { UserContext } from '../hooks/userContext';
 import { Notification, User } from '../../typings';
 import state from '../valtio';
 import { Menu, Popover, Transition } from '@headlessui/react';
@@ -12,7 +11,7 @@ import axios from 'axios';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import cookie from 'js-cookie';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, {
   Fragment,
@@ -64,13 +63,13 @@ const Header = ({
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies ) {
-      router.push('/src/user/login');
+      router.push('/user/login');
     }
     
     if(!auth.user) {
       auth.fetchUser()
     }
-    else if(auth.user.rol != 'Admin') router.push('/src/user/login');
+    else if(auth.user.rol != 'Admin') router.push('/user/login');
     else {
       setNotificationList(auth.user.notifications.filter((x: Notification) => !x.read).slice(-5).reverse())
     }
@@ -219,7 +218,7 @@ const Header = ({
               Cursos
             </li>
           ) : (
-            <Link href={'/src/home'}>
+            <Link href={'/home'}>
               <li className='headerLink'>Cursos</li>
             </Link>
           )}
@@ -228,7 +227,7 @@ const Header = ({
               Nuevo
             </li>
           ) : (
-            <Link href={'/src/home'}>
+            <Link href={'/home'}>
               <li className='headerLink'>Nuevo</li>
             </Link>
           )}
@@ -237,11 +236,11 @@ const Header = ({
               Mi Lista
             </li>
           ) : (
-            <Link href={'/src/home'}>
+            <Link href={'/home'}>
               <li className='headerLink'>Mi Lista</li>
             </Link>
           )}
-          <Link href={'/src/user/account/myCourses'}>
+          <Link href={'/user/account/myCourses'}>
             <li className='headerLink cursor-pointer'>Mis Cursos</li>
           </Link>
         </ul>
@@ -290,12 +289,12 @@ const Header = ({
         </m.div>
         {auth.user?.rol === 'Admin' ? (
           <>
-            <Link href={'/src/admin'}>
+            <Link href={'/admin'}>
               <Cog8ToothIcon className='h-6 w-6 inline cursor-pointer' />
             </Link>
           </>
         ) : null}
-        <Link href={'/src/user/account/myCourses'}>
+        <Link href={'/user/account/myCourses'}>
           <li className='headerLink cursor-pointer list-none'>Mis Cursos</li>
         </Link>
         <Popover>

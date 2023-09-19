@@ -8,7 +8,7 @@ import state from '../valtio';
 import CustomButton from './CustomButton';
 import axios from 'axios';
 import { AnimatePresence, motion as m } from 'framer-motion';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
 

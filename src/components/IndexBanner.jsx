@@ -6,7 +6,7 @@ import { Video } from 'cloudinary-react';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
 
@@ -64,7 +64,7 @@ function Banner() {
           loader={imageLoader}
         />
       </div>
-      <Link href={'/src/home'}>
+      <Link href={'/home'}>
         <m.div
           initial={{ color: '#fff' }}
           animate={animation}
@@ -74,7 +74,7 @@ function Banner() {
           onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
           onClick={(e) => {
             e.currentTarget.style.color = '#fff';
-            router.push('/src/home');
+            router.push('/home');
           }}
           className='flex flex-col justify-end items-end !mb-4 -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
         >
@@ -104,7 +104,7 @@ function Banner() {
           </h1>
         </m.div>
       </Link>
-      <Link href={'/aboutUs'}>
+      <Link href={'/about'}>
         <m.div
           initial={{ color: '#fff' }}
           animate={animation}
@@ -114,7 +114,7 @@ function Banner() {
           onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
           onClick={(e) => {
             e.currentTarget.style.color = '#fff';
-            router.push('/aboutUs');
+            router.push('/about');
           }}
           className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
         >

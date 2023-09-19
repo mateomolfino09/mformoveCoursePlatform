@@ -181,7 +181,7 @@ const CreateCourseStepCero = ({setDataStepCero, step0ToStep1, nameOr, playlistId
         </button>
         <div className='text-[gray]'>
           Volver al Inicio
-          <Link href={'/src/home'}>
+          <Link href={'/home'}>
             <button
               type='button'
               className='text-white hover:underline ml-2'

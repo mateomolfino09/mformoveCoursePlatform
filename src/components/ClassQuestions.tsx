@@ -8,7 +8,7 @@ import {
 } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
@@ -364,7 +364,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
                                 </>
                               ))}
                               {quest.answers.length > 2 && (
-                                <Link href={`/src/courses/questions/${quest.id}`} target="_blank"> 
+                                <Link href={`/courses/questions/${quest.id}`} target="_blank"> 
                                   <div className='w-full h-auto flex space-x-2 justify-start items-center text-sky-400 group'>
                                     <BsBoxArrowUpRight className='h-4 w-4 group-hover:underline cursor-pointer'/>
                                     <p className='group-hover:underline text-sm cursor-pointer'>{quest.answers.length} RESPUESTAS</p>

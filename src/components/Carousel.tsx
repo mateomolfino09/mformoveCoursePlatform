@@ -1,4 +1,3 @@
-import { CoursesContext } from '../hooks/coursesContext';
 import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import { Courses, CoursesDB, Item, Ricks, User } from '../../typings';
 import CarouselThumbnail from './CarouselThumbnail';
@@ -16,6 +15,7 @@ import React, {
   useRef,
   useState
 } from 'react';
+import { useGlobalContext } from '../app/context/store';
 
 interface Props {
   title: string | null;
@@ -46,7 +46,7 @@ function Carousel({
   const scrollRowRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const [isMoved, setIsMoved] = useState(false);
-  const { courses, setCourses } = useContext(CoursesContext);
+  const { courses, setCourses } = useGlobalContext();
   const theWidth = rowRef.current?.scrollWidth
     ? -(rowRef.current?.scrollWidth - rowRef.current?.offsetWidth)
     : 0;

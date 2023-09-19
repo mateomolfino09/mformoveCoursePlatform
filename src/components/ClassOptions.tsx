@@ -2,7 +2,7 @@ import { ClassesDB, CoursesDB } from '../../typings';
 import state from '../valtio';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 import { useSnapshot } from 'valtio';
 

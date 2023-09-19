@@ -85,7 +85,7 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
             height={150}
           />
         </Link>
-        <Link href={'/src/user/login'}>
+        <Link href={'/user/login'}>
           <button
             type='button'
             className='text-white text-sm ml-2 bg-black/70 border border-white rounded-md transition duration-500 hover:bg-black  w-16 h-8 md:w-20 '

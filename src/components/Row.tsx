@@ -1,4 +1,3 @@
-import { CoursesContext } from '../hooks/coursesContext';
 import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import { Courses, CoursesDB, Item, Ricks, User } from '../../typings';
 import CourseThumbnail from './CourseThumbnail';
@@ -16,6 +15,7 @@ import {
   useState
 } from 'react';
 import { useAppSelector } from '../redux/hooks';
+import { useGlobalContext } from '../app/context/store';
 
 interface Props {
   title: string | null;
@@ -50,7 +50,7 @@ function Row({
   );
   let { activeModal } = course;
   const [overflow, setOverflow] = useState('hidden');
-  const { courses, setCourses } = useContext(CoursesContext);
+  const { courses, setCourses } = useGlobalContext();
 
   const handleClick = (direction: string) => {
     setIsMoved(true);

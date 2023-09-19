@@ -1,0 +1,7 @@
+use("test")
+
+db.users.deleteOne(
+    //query
+    {email: 'mateomolfino09@gmail.com'},
+    //change => operators
+ )

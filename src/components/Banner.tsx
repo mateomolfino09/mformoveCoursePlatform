@@ -1,12 +1,11 @@
 import { headContentAnimation } from '../config/motion';
-import { CoursesContext } from '../hooks/coursesContext';
 import imageLoader from '../../imageLoader';
 import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import { Images } from '../../typings';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { AnimatePresence, motion as m } from 'framer-motion';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { BsPlayCircle } from 'react-icons/bs';
 import { FaPlay } from 'react-icons/fa';
@@ -60,7 +59,7 @@ function Banner({ scrollToModa }: Props) {
             </button>
             <button
               className='bannerButton darkGray font-light'
-              onClick={() => router.push('/aboutUs')}
+              onClick={() => router.push('/about')}
             >
               <InformationCircleIcon className='h-6 w-6 md:h-7 md:w-7 ' />
               Más Info{' '}

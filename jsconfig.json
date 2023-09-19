@@ -1,25 +1,11 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
+    "baseUrl": "./src",
+    "include": ["src"],
     "paths": {
-      "@styles/*": ["styles/*"],
-      "@config/*": ["config/*"],
-      "@components/*": ["components/*"],
-      "@constants/*": [
-        "constants/*"
-      ],
-      "@hooks/*": [
-        "hooks/*"
-      ],
-      "@models/*": [
-        "models/*"
-      ],
-      "@valtio/*": [
-        "valtio/*"
-      ],
-      "@redux/*": [
-        "redux/*"
-      ],
+      "@config": ["./config/*"],
+      "@components/*":["./components/*"],
+      "@/*": ["./*"]
     }
   }
 }

@@ -1,3 +1,4 @@
+'use client'
 import React, {useState, useContext, createContext, useCallback} from "react";
 import Cookie from 'js-cookie'
 import axios from "axios";

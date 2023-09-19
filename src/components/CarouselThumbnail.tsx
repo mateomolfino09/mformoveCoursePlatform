@@ -1,8 +1,5 @@
-import { CourseListContext } from '../hooks/courseListContext';
-import { CoursesContext } from '../hooks/coursesContext';
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
-import { UserContext } from '../hooks/userContext';
 import imageLoader from '../../imageLoader';
 import { CourseUser, CoursesDB, Ricks, User } from '../../typings';
 import {
@@ -34,7 +31,8 @@ import { MdAdd, MdBlock, MdOutlineClose, MdRemove } from 'react-icons/md';
 import { TbLockOpenOff } from 'react-icons/tb';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from 'js-cookie';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
+import { useGlobalContext } from '../app/context/store';
 
 interface Props {
   course: CoursesDB;
@@ -83,7 +81,7 @@ function CarouselThumbnail({
   const dispatch = useAppDispatch();
   const [courseUser, setCourseUser] = useState<CourseUser | null>(null);
   const [zIndex, setZIndex] = useState(0);
-  const { listCourse, setListCourse } = useContext(CourseListContext);
+  const { listCourse, setListCourse } = useGlobalContext();
   const animation = useAnimation();
   const animationButton = useAnimation();
   const animationArrow = useAnimation();
@@ -95,7 +93,7 @@ function CarouselThumbnail({
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
-      router.push('/src/user/login');
+      router.push('/user/login');
     }
     
     if(!auth.user) {
@@ -284,7 +282,7 @@ function CarouselThumbnail({
               >
                 <div className='flex w-full h-auto flex-col '>
                   {!courseUser?.purchased && user?.rol !== 'Admin' ? (
-                    <Link href={`/src/courses/purchase/${course.id}`}>
+                    <Link href={`/courses/purchase/${course.id}`}>
                       <button
                         className='flex items-center gap-x-2 ml-2 rounded-md px-4 py-1 text-sm transition duration-500 hover:scale-105 md:py-1.5 md:px-6 md:text-base
          bg-white text-black font-light hover:bg-black hover:text-white hover:first:text-white'
@@ -302,7 +300,6 @@ function CarouselThumbnail({
                       Ver
                     </button>
                   )}
-                  {/* <p className='ml-2 mt-1'>Hola</p> */}
                 </div>
                 <div className='w-1/2 flex flex-col mr-2'>
                   <div className='w-full text-end mr-2 flex flex-row relative'>

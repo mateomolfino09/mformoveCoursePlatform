@@ -1,7 +1,4 @@
-import { CourseListContext } from '../hooks/courseListContext';
-import { CoursesContext } from '../hooks/coursesContext';
 import { useAppDispatch } from '../hooks/useTypeSelector';
-import { UserContext } from '../hooks/userContext';
 import imageLoader from '../../imageLoader';
 import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import { CourseUser, CoursesDB, Ricks, User } from '../../typings';
@@ -26,8 +23,9 @@ import { AiOutlineCheckCircle, AiOutlineMinusCircle } from 'react-icons/ai';
 import { MdAdd, MdBlock, MdOutlineClose, MdRemove } from 'react-icons/md';
 import { TbLockOpenOff } from 'react-icons/tb';
 import { useAuth } from '../hooks/useAuth';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import Cookies from 'js-cookie';
+import { useGlobalContext } from '../app/context/store';
 
 interface Props {
   course: CoursesDB;
@@ -69,7 +67,7 @@ function Thumbnail({ course, setSelectedCourse, user, courseIndex }: Props) {
   const dispatch = useAppDispatch();
   const [courseUser, setCourseUser] = useState<CourseUser | null>(null);
   const [zIndex, setZIndex] = useState(0);
-  const { listCourse, setListCourse } = useContext(CourseListContext);
+  const { listCourse, setListCourse } = useGlobalContext();
   const auth = useAuth()
   const router = useRouter()
 
@@ -78,7 +76,7 @@ function Thumbnail({ course, setSelectedCourse, user, courseIndex }: Props) {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
-      router.push('/src/user/login');
+      router.push('/user/login');
     }
     
     if(!auth.user) {

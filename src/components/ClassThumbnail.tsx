@@ -1,7 +1,6 @@
 import { ClassesDB, CoursesDB } from '../../typings';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import React from 'react';
 
 interface Props {

@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import React from 'react';
 import { TbLockOpenOff } from 'react-icons/tb';
 
@@ -84,9 +84,11 @@ function CourseThumbnail({
   user,
   courseIndex
 }: Props) {
-  const classes = user?.courses[courseIndex].classes;
+  const classes = user?.courses[courseIndex]?.classes;
   const email = user?.email;
   const router = useRouter();
+
+  console.log(classes)
 
   return (
     <>
@@ -110,7 +112,7 @@ function CourseThumbnail({
                 <>
                   <Link
                     href={{
-                      pathname: `/src/courses/${course?.id}/${index + 1}`
+                      pathname: `/courses/${course?.id}/${index + 1}`
                     }}
                   >
                     <Image
@@ -156,12 +158,12 @@ function CourseThumbnail({
                     max={1}
                     value={
                       classes && course
-                        ? classes[index].actualTime == 0
+                        ? classes[index]?.actualTime == 0
                           ? 0
                           : parseFloat(
                               (
-                                classes[index].actualTime /
-                                course?.classes[index].totalTime
+                                classes[index]?.actualTime ? classes[index]?.actualTime : 0 /
+                                course?.classes[index]?.totalTime ? course?.classes[index]?.totalTime : 1
                               ).toString()
                             )
                         : 0

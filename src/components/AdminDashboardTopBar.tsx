@@ -1,4 +1,3 @@
-import { UserContext } from '../hooks/userContext';
 import { Notification, User } from '../../typings';
 import { Menu, Popover, Transition } from '@headlessui/react';
 import { BellIcon, CheckIcon } from '@heroicons/react/24/outline';
@@ -15,7 +14,7 @@ import { Fragment, useContext, useEffect, useState } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from 'js-cookie';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface Props {
   showNav: any;
@@ -35,13 +34,13 @@ const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies ) {
-      router.push('/src/user/login');
+      router.push('/user/login');
     }
     
     if(!auth.user) {
       auth.fetchUser()
     }
-    else if(auth.user.rol != 'Admin') router.push('/src/user/login');
+    else if(auth.user.rol != 'Admin') router.push('/user/login');
     else {
       setNotificationList(auth.user.notifications.filter((x: Notification) => !x.read).slice(-5).reverse())
     }
@@ -187,7 +186,7 @@ const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
                 </Menu.Item>
                 <Menu.Item>
                   <Link
-                    href='/src/admin/billing'
+                    href='/admin/billing'
                     className='flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center'
                   >
                     <CreditCardIcon className='h-4 w-4 mr-2' />

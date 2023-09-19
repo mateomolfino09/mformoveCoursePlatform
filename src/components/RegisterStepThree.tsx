@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
@@ -38,7 +38,7 @@ const RegisterStepOne = ({ user, signUp, onChange, recaptchaRef }: Props) => {
       : '';
 
   const handleClick = () => {
-    router.push('/src/user/login');
+    router.push('/user/login');
   };
 
   return (

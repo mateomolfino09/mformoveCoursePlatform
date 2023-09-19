@@ -3,7 +3,7 @@ import { User } from '../../typings';
 import { LoadingSpinner } from './LoadingSpinner';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 interface Props {
@@ -19,7 +19,7 @@ function Membership({ user }: Props) {
       <div className='space-y-2 py-4'>
         <h4 className=''>Facturación</h4>
         <button
-          onClick={() => router.push('/src/user/account/billing')}
+          onClick={() => router.push('/user/account/billing')}
           //   disabled={isBillingLoading || !subscription}
           className='h-10 w-3/5 whitespace-nowrap bg-gray-300 py-2 text-sm font-medium text-black shadow-md hover:bg-gray-200 md:w-4/5'
           //   onClick={manageSubscription}
@@ -35,11 +35,11 @@ function Membership({ user }: Props) {
             <p className='text-[gray]'>Contraseña: ********</p>
           </div>
           <div className='md:text-right'>
-            <Link href={'/src/user/resetEmail'}>
+            <Link href={'/user/resetEmail'}>
               <p className='membershipLink'>Cambiar Email</p>
             </Link>
 
-            <Link href={'/src/user/forget'}>
+            <Link href={'/user/forget'}>
               <p className='membershipLink'>Cambiar Contraseña</p>
             </Link>
           </div>
@@ -57,7 +57,7 @@ function Membership({ user }: Props) {
             />
           </div>
           <div className='md:text-right'>
-            <Link href={'/src/user/account/billing'}>
+            <Link href={'/user/account/billing'}>
               <p className='membershipLink'>Detalles de Facturación</p>
             </Link>
           </div>

@@ -1,4 +1,3 @@
-import { CoursesContext } from '../hooks/coursesContext';
 import { ClassesDB, CoursesDB } from '../../typings';
 import ClassBanner from './ClassBanner';
 import {
@@ -7,8 +6,9 @@ import {
   FlagIcon
 } from '@heroicons/react/24/solid';
 import { motion as m, useAnimation } from 'framer-motion';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import React, { Ref, forwardRef, useContext, useEffect, useState } from 'react';
+import { useGlobalContext } from '../app/context/store';
 
 interface Props {
   courseDB: CoursesDB;
@@ -20,12 +20,12 @@ interface Props {
 const ClassBannerSideBar = forwardRef<HTMLInputElement, Props>(
   ({ courseDB, showNav, clase, setShowNav }: Props, ref) => {
     const [module, setModule] = useState(false);
-    const { courses, setCourses } = useContext(CoursesContext);
+    const { courses, setCourses } = useGlobalContext();
     const router = useRouter();
     const animation = useAnimation();
 
     const handleRouteChange = (clas: ClassesDB) => {
-      router.push(`/src/courses/${courseDB.id}/${clas.id}`);
+      router.push(`/courses/${courseDB.id}/${clas.id}`);
     };
 
     useEffect(() => {

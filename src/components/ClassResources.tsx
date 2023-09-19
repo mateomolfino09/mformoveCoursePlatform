@@ -4,7 +4,7 @@ import FileUploader from './FileUploader';
 import LinkUploader from './LinkUploader';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from 'js-cookie';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import { MdAdd, MdDelete, MdDownload, MdUpload } from 'react-icons/md';
 import { useAppSelector } from '../redux/hooks';
 import { useDeleteFileMutation, useDeleteLinkMutation, useGetClassQuery } from "../redux/services/classApi";
@@ -65,7 +65,7 @@ const ClassResources = ({ clase }: Props) => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
-      router.push('/src/user/login');
+      router.push('/user/login');
     }
     
     if(!auth.user) {

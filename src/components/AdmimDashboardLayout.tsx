@@ -3,7 +3,7 @@ import AdminDashboardSideBar from './AdminDashboardSideBar';
 import AdminDashboardTopBar from './AdminDashboardTopBar';
 import { Transition } from '@headlessui/react';
 import axios from 'axios';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, { Fragment, useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';

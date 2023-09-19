@@ -1,5 +1,3 @@
-import { CoursesContext } from '../hooks/coursesContext';
-import { UserContext } from '../hooks/userContext';
 import { CoursesDB } from '../../typings';
 import state from '../valtio';
 import Carousel from './Carousel';
@@ -7,8 +5,9 @@ import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import React, { useContext, useEffect, useState } from 'react';
 import { snapshot, useSnapshot } from 'valtio';
 import Cookies from 'js-cookie';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../hooks/useAuth';
+import { useGlobalContext } from '../app/context/store';
 
 interface Props {
   setSelectedCourse: any;
@@ -16,7 +15,7 @@ interface Props {
 
 const SearchBar = ({ setSelectedCourse }: Props) => {
   const snap = useSnapshot(state);
-  const { courses, setCourses } = useContext(CoursesContext);
+  const { courses, setCourses } = useGlobalContext();
   const [coursesSearch, setCoursesSearch] = useState<CoursesDB[]>(courses);
   const animation = useAnimation();
   const auth = useAuth()
@@ -38,7 +37,7 @@ const SearchBar = ({ setSelectedCourse }: Props) => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
-      router.push('/src/user/login');
+      router.push('/user/login');
     }
     
     if(!auth.user) {

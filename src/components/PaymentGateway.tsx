@@ -13,7 +13,7 @@ import { AnimatePresence, motion as m } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useSnapshot } from 'valtio';
@@ -77,7 +77,7 @@ const PaymentGateway = ({ user, course }: Props) => {
           <m.header className={``} {...slideAnimation('down')}>
             <m.div
               {...headContentAnimation}
-              onClick={() => handleRouteChange('/src/home')}
+              onClick={() => handleRouteChange('/home')}
             >
               <img
                 alt='Logo Video Stream'
@@ -137,7 +137,7 @@ const PaymentGateway = ({ user, course }: Props) => {
                   {user?.courses[course.id - 1].purchased ? (
                     <>
                       <Link
-                        href={`/src/courses/${course.id}/${
+                        href={`/courses/${course.id}/${
                           user.courses[course.id - 1].actualChapter
                         }`}
                         target='_blank'

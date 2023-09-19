@@ -2,7 +2,7 @@ import { ClassesDB, CourseUser, User } from '../../typings';
 import PlayerControls from './PlayerControls';
 import { Container, Grid, Paper, Typography } from '@mui/material';
 import axios from 'axios';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, {
   HtmlHTMLAttributes,
