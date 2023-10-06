@@ -55,7 +55,7 @@ const Home = ({ coursesDB }: Props) => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
-      router.push('/user/login');
+      router.push('/login');
     }
     
     if(!auth.user) {
@@ -140,7 +140,7 @@ const Home = ({ coursesDB }: Props) => {
 
   useEffect(() => {
     if (!auth.user) {
-      // router.push('/src/auth.user/login');
+      router.push('/login');
     } else {
       const quantity = Math.round(coursesDB.length / 3);
       const dateCourses = [...coursesDB];
@@ -158,7 +158,7 @@ const Home = ({ coursesDB }: Props) => {
         let listToSet: CoursesDB[] = [];
         let mycourselistToSet: CoursesDB[] = [];
 
-        auth.user.courses.forEach((course: CourseUser) => {
+        auth.user?.courses?.forEach((course: CourseUser) => {
           let courseInCourseIndex = coursesDB.findIndex((x) => {
             return x._id === course.course;
           });

@@ -38,7 +38,7 @@ const RegisterStepOne = ({ user, signUp, onChange, recaptchaRef }: Props) => {
       : '';
 
   const handleClick = () => {
-    router.push('/user/login');
+    router.push('/login');
   };
 
   return (

@@ -23,7 +23,7 @@ const MyCourses = ({ courses }: Props) => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
-      router.push('/user/login');
+      router.push('/login');
     }
     
     if(!auth.user) {
@@ -53,7 +53,7 @@ const MyCourses = ({ courses }: Props) => {
               className='cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-80 hover:opacity-100'
             />
           </Link>
-          <Link href='/user/account'>
+          <Link href='/account'>
             <AiOutlineUser className='h-6 w-6 cursor-pointer' />
           </Link>
         </header>

@@ -46,14 +46,14 @@ function CoursePurchase({ course }: Props) {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
-      router.push('/user/login');
+      router.push('/login');
     }
     
     if(!auth.user) {
       auth.fetchUser()
     }
     else {
-      let courseActual = auth.user.courses.find(
+      let courseActual = auth?.user?.courses.find(
         (course: CourseUser) => course.course === courseDB._id
       );
 

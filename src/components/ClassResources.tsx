@@ -65,7 +65,7 @@ const ClassResources = ({ clase }: Props) => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
-      router.push('/user/login');
+      router.push('/login');
     }
     
     if(!auth.user) {

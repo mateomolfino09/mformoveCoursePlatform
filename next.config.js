@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    serverActions: true
+  },
   swcMinify: true,
   images: {
     domains: [
@@ -15,13 +18,6 @@ const nextConfig = {
   env: {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET
   }
-  // webpack: (config) => {
-  //   config.experiments = {
-  //     topLevelAwait: true,
-  //     layers: true
-  //   }
-  //   return config
-  // }
 };
 
 module.exports = nextConfig;

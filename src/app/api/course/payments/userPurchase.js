@@ -22,14 +22,7 @@ const userPurchase = async (req, res) => {
       const { host } = req.headers;
 
       let preference = {
-        // payer_email : req.body.payer_email,
         payer_email: 'test_user_517283893@testuser.com',
-        // items: [
-        //   {
-        //     title: req.body.description,
-        //     unit_price: Number(req.body.price),
-        //     quantity: 1,
-        //   }
         items: [
           {
             title: course.name,

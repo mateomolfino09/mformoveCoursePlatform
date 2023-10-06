@@ -78,7 +78,7 @@ const IndexHeader = ({ user }: Props) => {
                     <div className='w-24 bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black hover:scale-105'>
                       <button
                         className='p-1'
-                        onClick={() => router.push('/user/login')}
+                        onClick={() => router.push('/login')}
                       >
                         Login
                       </button>

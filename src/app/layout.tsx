@@ -7,8 +7,9 @@ import Providers from '../redux/providers';
 import { GlobalContextProvider } from './context/store';
 
 export const metadata = {
-  title: 'mformove',
+  title: 'Mformove',
   description: 'Bienvenido a mformove!',
+  keywords: "movimiento, fitness, yoga, meditacion, calistenia, workout, training"
 }
 
 export default function RootLayout({

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import endpoints from '../services/api';
 
 interface Props {
   setEmail: (email: string) => void;
@@ -42,21 +43,27 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
     setLoading(true);
 
     try {
-      const config = {
+      const res = await fetch(endpoints.auth.verifyEmail(email), {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
-        }
-      };
-      let { data } = await axios.post(
-        '/api/user/email/verifyEmail',
-        { email },
-        config
-      );
+          'Content-Type': 'application/json',
+        },
+      })
+
+      const data = await res.json()
+
+      if(data.error) {
+        toast.error(data.error)
+        setLoading(false);
+        return
+      } 
 
       setEmail(email);
       step0ToStep1();
     } catch (error: any) {
-      toast.error(error.response.data.message);
+      const data = await error.json()
+
+      toast.error(data.response.data.message);
     }
 
     setLoading(false);
@@ -85,7 +92,7 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
             height={150}
           />
         </Link>
-        <Link href={'/user/login'}>
+        <Link href={'/login'}>
           <button
             type='button'
             className='text-white text-sm ml-2 bg-black/70 border border-white rounded-md transition duration-500 hover:bg-black  w-16 h-8 md:w-20 '

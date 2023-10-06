@@ -47,6 +47,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Cookies from 'js-cookie';
 import {useLoadCourseQuery} from '../redux/services/courseModalApi'
 import { useGlobalContext } from '../app/context/store';
+import endpoints from '../services/api';
 
 interface Props {
   courseDB: CoursesDB | null;
@@ -102,7 +103,7 @@ function Modal({ courseDB, user }: Props) {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
-      router.push('/user/login');
+      router.push('/login');
     }
     
     if(!auth.user) {
@@ -208,18 +209,26 @@ function Modal({ courseDB, user }: Props) {
 
     if (!like) {
       setLike(true);
-      const { data } = await axios.put(
-        '/api/user/course/likeCourse',
-        { courseId, userId },
-        config
-      );
+
+      const res = await fetch(endpoints.course.likeCourse, {
+				method: 'PUT',
+				headers: {  
+				  'Content-Type': 'application/json',
+				   accept: '*/*',
+				},
+				body: JSON.stringify({ courseId, userId }),
+			  })
+
     } else {
       setLike(false);
-      const { data } = await axios.put(
-        '/api/user/course/dislikeCourse',
-        { courseId, userId },
-        config
-      );
+      const res = await fetch(endpoints.course.dislikeCourse, {
+				method: 'PUT',
+				headers: {  
+				  'Content-Type': 'application/json',
+				   accept: '*/*',
+				},
+				body: JSON.stringify({ courseId, userId }),
+			  })
       toaster.success(data.message);
     }
   };

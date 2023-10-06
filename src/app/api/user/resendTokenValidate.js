@@ -31,7 +31,7 @@ const resendTokenValidate = async (req, res) => {
       await user.save();
 
       const { origin } = absoluteUrl(req);
-      const link = `${origin}/user/email/${token}`;
+      const link = `${origin}/email/${token}`;
       const title = `<h1>Confirma tu email</h1>`;
       const message = `
         <div>     

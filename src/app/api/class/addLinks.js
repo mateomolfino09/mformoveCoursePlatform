@@ -18,14 +18,9 @@ const addLinks = async (req, res) => {
           if(clase?.links?.length >= MAX_LINKS || clase?.links?.length + links.length >= MAX_LINKS) 
             return res.status(422).json({ error: `No puedes agregar más de ${MAX_LINKS} links`});
 
-            console.log('Hola')
-
-          
+         
           const lastId = clase?.links?.length ? clase?.links?.length : 0;
           !clase.links ? clase.links = [] : null;
-
-          console.log(lastId, links)
-
 
           links.forEach((link, index) => {
              clase.links.push({
@@ -33,11 +28,9 @@ const addLinks = async (req, res) => {
                 link_url: link
              })
           });
-
           
           await clase.save()
           
-          console.log(clase.links) 
           return res.status(200).send({ clase });
 
 

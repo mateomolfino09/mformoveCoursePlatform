@@ -13,7 +13,7 @@ const authOptions = {
     })
   ],
   pages: {
-    signIn: '/user/login'
+    signIn: '/login'
   }
 };
 

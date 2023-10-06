@@ -9,11 +9,13 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../hooks/useAuth';
 
 function Forget() {
   const [email, setEmail] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const router = useRouter();
+  const auth = useAuth()
 
   useEffect(() => {
     const cookies: any = Cookies.get('userToken')
@@ -26,19 +28,9 @@ function Forget() {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     try {
-      const config = {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      };
-
-      const { data } = await axios.post(
-        `/api/user/changeEmail`,
-        { email },
-        config
-      );
+      const data = auth.resetMailSend(email)
       toast.success(data.message);
-      router.push('/user/login');
+      router.push('/login');
     } catch (error: any) {
       toast.error(error?.response?.data?.error);
     }
@@ -117,7 +109,7 @@ function Forget() {
             <div className='text-[gray] text-xl md:text-sm'>
               Eres nuevo en Video Stream?
               <br />
-              <Link href={'/user/register'}>
+              <Link href={'/register'}>
                 <button type='button' className='text-white hover:underline'>
                   Crea tu cuenta ahora!
                 </button>

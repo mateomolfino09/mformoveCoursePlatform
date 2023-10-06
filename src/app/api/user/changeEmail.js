@@ -26,7 +26,7 @@ const changeEmail = async (req, res) => {
       await user.save();
 
       const { origin } = absoluteUrl(req);
-      const link = `${origin}/user/resetEmail/${token}`;
+      const link = `${origin}/resetEmail/${token}`;
       const title = `<h1 style="color:black">Restablece tu email</h1>`;
       const message = `
       <div>     

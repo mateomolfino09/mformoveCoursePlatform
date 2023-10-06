@@ -25,12 +25,19 @@ function useProvideAuth() {
 	const fetchUser = async () => {
 		try {
 		  const token = Cookie.get('userToken');	
+
+		  Cookie.set('userToken', token ? token : '', { expires: 5})
 	
 		  if (token) {
-			axios.defaults.headers.Authorization = `Bearer ${token}`;
-			const { data: user } = await axios.get(endpoints.auth.profile);
-	
-			setUser(user);
+			const res = await fetch(endpoints.auth.profile, {
+				method: 'GET',
+				headers: {  
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				})
+			const user = await res.json()
+			setUser(user.user)
 			return user
 		  }
 		} catch (error) {
@@ -40,87 +47,96 @@ function useProvideAuth() {
 
 	const addCourseToList = async (courseId: string, userId: string) => {
 		try {
-			const config = {
-				headers: {
-					accept: '*/*',
-					'Content-Type': 'application/json',
-				}
-			}
-			const { data } = await axios.put(
-				'/api/user/course/listCourse',
-				{ courseId, userId },
-				config
-			);
+			const res = await fetch(endpoints.course.listCourse, {
+				method: 'PUT',
+				headers: {  
+				  'Content-Type': 'application/json',
+				   accept: '*/*',
+				},
+				body: JSON.stringify({ courseId, userId }),
+			  })
+
+			const data = await res.json();
 			console.log(data)
-			setUser(data);
+			setUser(data.user);
 		} catch (error) {
 		}
 	  };
 	const deleteCourseFromList = async (courseId: string, userId: string) => {
 		try {
-			const config = {
-				headers: {
-					accept: '*/*',
-					'Content-Type': 'application/json',
-				}
-			}
-			const { data } = await axios.put(
-				'/api/user/course/dislistCourse',
-				{ courseId, userId },
-				config
-			  );
-			console.log(data)
-			setUser(data);
+			const res = await fetch(endpoints.course.dislistCourse, {
+				method: 'PUT',
+				headers: {  
+				  'Content-Type': 'application/json',
+				   accept: '*/*',
+				},
+				body: JSON.stringify({ courseId, userId }),
+			  })
+
+			const data = await res.json();
+			
+			setUser(data.user);
 		} catch (error) {
 		}
 	  };
 
 	  const saveClassTime = async (actualTime: string, courseId: string, classId: string) => {
 		try {
-			const config = {
-				headers: {
-					accept: '*/*',
-					'Content-Type': 'application/json',
-				}
-			}
-			let { data } = await axios.post(
-				'/api/class/saveTime',
-				{ actualTime, courseId, classId },
-				config
-			  );
+			const res = await fetch(endpoints.course.class.saveTime, {
+				method: 'POST',
+				headers: {  
+				  'Content-Type': 'application/json',
+				   accept: '*/*',
+				},
+				body: JSON.stringify({ actualTime, courseId, classId }),
+			  })
+
+			const data = await res.json();
+
 			console.log(data.user)
 			setUser(data.user);
 		} catch (error) {
 		}
 	  };
 
-
 	const signIn = async (email: string, password: string) => {
 		try {
 			setError(null)
-			const options = {
-				headers: {
-					accept: '*/*',
-					'Content-Type': 'application/json',
-				}
-			}
-			const { data: login } = await axios.post(endpoints.auth.login, { email, password }, options);
-	
+			const res = await fetch(endpoints.auth.login, {
+				method: 'POST',
+				headers: {  
+				  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ email, password }),
+			  })
+
+			const data = await res.json()
+
+			const { login, token, message, error } = data
+			
 			//get profile
-			if(login.login) {
-				const token = login.token;
+			if(login) {
 				Cookie.set('userToken', token, { expires: 5})
-				axios.defaults.headers.Authorization = ` Bearer ${token}`;
-				const { data: user } = await axios.get(endpoints.auth.profile);
-				setUser(user)
+				const res = await fetch(endpoints.auth.profile, {
+					method: 'GET',
+					headers: {  
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					},
+					})
+
+
+				const user = await res.json()
+				setUser(user.user)
 				return {message:'Login Exitoso', type: 'success'}
 				
 			}
+			else if(message) return {message: message, type: 'error'} 
+			else return {message: error, type: 'error'};
 			
 		} catch (error: any) {
 			setError(error.response.data.message)
-			return {message:error.response.data.message, type: 'error'} 
-			// setError()
+			return {message: error.response.data.message, type: 'error'} 
 		}
 	};
 
@@ -133,6 +149,84 @@ function useProvideAuth() {
 		setUser(user)
 	}
 
+	const resetPassword = async (pass: string, conPass: string, token: string) => {
+		console.log(pass, conPass)
+		try {	
+			const res = await fetch(endpoints.auth.resetPassword(token), {
+				method: 'PUT',
+				headers: {  
+				  'Content-Type': 'application/json',
+				  'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify({ password: pass, conPassword: conPass }),
+			  })
+
+			const data = await res.json()
+			signOut()
+			setUser(null)
+			return data
+		} catch (error) {
+		  setUser(null);
+		}
+	  };
+	
+	  const forgetPasswordSend = async (email: string, captcha: string) => {
+		try {	
+			console.log(email, captcha)
+			const res = await fetch(endpoints.auth.resetPasswordSend, {
+				method: 'POST',
+				headers: {  
+				  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ email, captcha }),
+			  })
+
+			const data = await res.json()
+			console.log(data)
+			return data
+		} catch (error) {
+		  setUser(null);
+		}
+	  };
+
+	  const resetMailSend = async (email: string) => {
+		try {	
+			const res = await fetch(endpoints.auth.resetMailSend, {
+				method: 'POST',
+				headers: {  
+				  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ email }),
+			  })
+
+			const data = await res.json()
+			console.log(data)
+			return data
+		} catch (error) {
+		  setUser(null);
+		}
+	  };
+
+	const resetMail = async (email: string, token: string) => {
+		try {	
+			const res = await fetch(endpoints.auth.resetMail(token), {
+				method: 'PUT',
+				headers: {  
+				  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ email }),
+			  })
+
+			const data = await res.json()
+			console.log(data)
+			signOut()
+			setUser(null)
+			return data
+		} catch (error) {
+		  setUser(null);
+		}
+	  };
+
 	return {
 		user,
 		error,
@@ -143,6 +237,10 @@ function useProvideAuth() {
 		addCourseToList,
 		deleteCourseFromList,
 		saveClassTime,
-		setUserBack
+		setUserBack,
+		resetPassword,
+		resetMail,
+		resetMailSend,
+		forgetPasswordSend
 	  };
 }

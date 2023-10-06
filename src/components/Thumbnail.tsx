@@ -76,7 +76,7 @@ function Thumbnail({ course, setSelectedCourse, user, courseIndex }: Props) {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
-      router.push('/user/login');
+      router.push('/login');
     }
     
     if(!auth.user) {

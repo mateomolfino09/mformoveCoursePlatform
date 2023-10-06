@@ -23,9 +23,9 @@ const Index = () => {
   useEffect(() => {
     const cookies: any = Cookies.get('userToken')
     
-    if (!cookies) {
-      router.push('/user/login');
-    }
+    // if (!cookies) {
+    //   router.push('/login');
+    // }
     
     if(!auth.user) {
       auth.fetchUser()

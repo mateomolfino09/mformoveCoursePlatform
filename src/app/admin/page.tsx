@@ -26,13 +26,13 @@ const Index = () => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies ) {
-      router.push('/user/login');
+      router.push('/login');
     }
     
     if(!auth.user) {
       auth.fetchUser()
     }
-    else if(auth.user.rol != 'Admin') router.push('/user/login');
+    else if(auth.user.rol != 'Admin') router.push('/login');
 
 
   }, [auth.user]);

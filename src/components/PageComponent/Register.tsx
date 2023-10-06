@@ -15,6 +15,7 @@ import React, { MouseEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
+import endpoints from '../../services/api';
 
 interface Inputs {
   email: string;
@@ -108,19 +109,20 @@ function Register() {
         }, 4000);
         return;
       }
-      const config = {
+
+      const res = await fetch(endpoints.auth.register, {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
-        }
-      };
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, firstname, lastname, gender, country, captcha }),
+      })
 
-      const { data } = await axios.post(
-        '/api/user/register',
-        { email, password, firstname, lastname, gender, country, captcha },
-        config
-      );
+      const data = await res.json()
 
-      if (data?.message) {
+      console.log(data )
+
+      if (res.ok) {
         setRegistered(true);
         setState({ ...state, stepThree: false });
       }
@@ -256,7 +258,7 @@ function Register() {
                   Verifica tu casilla de correos para poder confirmar tu cuenta!
                 </p>
               </label>
-              <Link href={'/user/login'}>
+              <Link href={'/login'}>
                 <button
                   type='button'
                   className='text-white underline cursor-pointer'

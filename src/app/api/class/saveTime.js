@@ -26,7 +26,6 @@ const saveTime = async (req, res) => {
         (course) => course.course.valueOf() == coursecourse
       );
       user.courses[index].classes[classId - 1].actualTime = actualTime;
-      console.log(user.courses[index].classes[classId - 1])
       await user.save();
       return res.status(200).send({ user });
     } else {

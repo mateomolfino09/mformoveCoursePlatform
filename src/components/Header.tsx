@@ -63,15 +63,13 @@ const Header = ({
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies ) {
-      router.push('/user/login');
+      router.push('/login');
     }
-    
     if(!auth.user) {
       auth.fetchUser()
     }
-    else if(auth.user.rol != 'Admin') router.push('/user/login');
     else {
-      setNotificationList(auth.user.notifications.filter((x: Notification) => !x.read).slice(-5).reverse())
+      setNotificationList(auth.user?.notifications?.filter((x: Notification) => !x.read).slice(-5).reverse())
     }
 
 
@@ -240,7 +238,7 @@ const Header = ({
               <li className='headerLink'>Mi Lista</li>
             </Link>
           )}
-          <Link href={'/user/account/myCourses'}>
+          <Link href={'/account/myCourses'}>
             <li className='headerLink cursor-pointer'>Mis Cursos</li>
           </Link>
         </ul>
@@ -294,7 +292,7 @@ const Header = ({
             </Link>
           </>
         ) : null}
-        <Link href={'/user/account/myCourses'}>
+        <Link href={'/account/myCourses'}>
           <li className='headerLink cursor-pointer list-none'>Mis Cursos</li>
         </Link>
         <Popover>
@@ -377,7 +375,7 @@ const Header = ({
           </Transition>
         </Popover>
         {/* <Link href="/account"> */}
-        <Link href={'user/account'}>
+        <Link href={'/account'}>
           <AiOutlineUser className='h-6 w-6 cursor-pointer' />
         </Link>
 

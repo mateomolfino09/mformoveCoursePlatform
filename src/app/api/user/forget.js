@@ -36,7 +36,7 @@ const forget = async (req, res) => {
       await user.save();
 
       const { origin } = absoluteUrl(req);
-      const link = `${origin}/user/reset/${token}`;
+      const link = `${origin}/reset/${token}`;
       const title = `<h1>Restablece tu contraseña</h1>`;
 
       const message = `
