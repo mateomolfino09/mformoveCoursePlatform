@@ -3,22 +3,28 @@ import Link from 'next/link';
 import React, { useState } from 'react'
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
+import { useAppSelector } from '../redux/hooks';
+import { AppDispatch } from '../redux/store';
+import { useDispatch } from 'react-redux';
+import { addStepOne } from '../redux/features/createCoursesSlice';
 
 interface Props {
-    setDataStepCero: any
     step0ToStep1: any
-    nameOr: any
-    playlistIdOr: any
-    filesOr: any[]
+
 }
 
-const CreateCourseStepCero = ({setDataStepCero, step0ToStep1, nameOr, playlistIdOr, filesOr}: Props) => {
-    const [name, setName] = useState(nameOr);
-    const [playlistId, setPlaylistId] = useState(playlistIdOr);
-    const [files, setFiles] = useState<any>([...filesOr]);
+const CreateCourseStepCero = ({ step0ToStep1}: Props) => {
     const [image, setImage] = useState<string | ArrayBuffer | null | undefined>(
         null
       );
+    const dispatch = useDispatch<AppDispatch>()
+    const createCourse = useAppSelector(
+    (state) => state.createCourseReducer.value
+    );
+    const { name: nameOr, playlist_code: playlistIdOr, files: filesOr } = createCourse
+    const [name, setName] = useState(nameOr);
+    const [playlistId, setPlaylistId] = useState(playlistIdOr);
+    const [files, setFiles] = useState<any>(filesOr ? [...filesOr] : null);
 
     const { getRootProps, getInputProps }: any = useDropzone({
         onDrop: (acceptedFiles: any) => {
@@ -34,7 +40,7 @@ const CreateCourseStepCero = ({setDataStepCero, step0ToStep1, nameOr, playlistId
         accept: { 'image/*': [] }
       });
 
-      const images = files.map((file: any) => (
+      const images = files?.map((file: any) => (
         <img
           src={file.preview}
           key={file.name}
@@ -68,7 +74,7 @@ const CreateCourseStepCero = ({setDataStepCero, step0ToStep1, nameOr, playlistId
         return;
       }
       else {
-        setDataStepCero(name, playlistId, files)
+        dispatch(addStepOne({ name, playlist_code: playlistId, files }))
         step0ToStep1()
       }
     }
@@ -114,7 +120,7 @@ const CreateCourseStepCero = ({setDataStepCero, step0ToStep1, nameOr, playlistId
           </label>
           <p>Selecciona la Portada para el curso</p>
 
-          {files.length != 0 ? (
+          {files?.length != 0 ? (
                         <>
                     
                           <div
@@ -156,7 +162,7 @@ const CreateCourseStepCero = ({setDataStepCero, step0ToStep1, nameOr, playlistId
                 </label>
             </div>
             )}
-            {files.length > 0 && (
+            {files?.length > 0 && (
             <div className='w-full my-0 relative bottom-4'>
                 <p
                 className={`${

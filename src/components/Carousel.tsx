@@ -42,6 +42,7 @@ function Carousel({
   user,
   courseIndex
 }: Props) {
+  console.log(coursesDB)
   const rowRef = useRef<HTMLDivElement>(null);
   const scrollRowRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);

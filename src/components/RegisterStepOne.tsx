@@ -8,6 +8,9 @@ import React, { useEffect, useState } from 'react';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import Select, { StylesConfig } from 'react-select';
 import { toast } from 'react-toastify';
+import { AppDispatch } from '../redux/store';
+import { useDispatch } from 'react-redux';
+import { addStepOne } from '../redux/features/register'
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -36,6 +39,7 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
   const [gender, setGender] = useState('');
   const [country, setCountry] = useState('');
   const [capsLock, setCapsLock] = useState<boolean>(false);
+  const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
     if (typeof window != 'undefined' && document != undefined) {
@@ -69,6 +73,7 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
       );
     } else {
       setData(firstname, lastname, gender, country);
+      dispatch(addStepOne({ firstname, lastname, gender, country }))
       step1ToStep2();
     }
   };

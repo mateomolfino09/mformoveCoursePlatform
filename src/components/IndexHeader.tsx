@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
+import endpoints from '../services/api';
 
 interface Props {
   user: User | null;
@@ -76,12 +77,14 @@ const IndexHeader = ({ user }: Props) => {
                     </div>
                   ) : (
                     <div className='w-24 bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black hover:scale-105'>
-                      <button
-                        className='p-1'
-                        onClick={() => router.push('/login')}
-                      >
-                        Login
-                      </button>
+                      <Link href={'login'}>
+                        <button
+                          className='p-1'
+                        >
+                          Login
+                        </button>
+                      
+                      </Link>
                     </div>
                   )}
                 </Menu.Button>

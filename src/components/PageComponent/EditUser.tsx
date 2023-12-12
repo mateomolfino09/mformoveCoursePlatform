@@ -16,6 +16,7 @@ import Select, { StylesConfig } from 'react-select';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../hooks/useAuth';
 import Cookies from 'js-cookie';
+import endpoints from '../../services/api';
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -33,17 +34,20 @@ const colourStyles: StylesConfig<any> = {
   singleValue: (styles, { data }) => ({ ...styles, color: '#808080' })
 };
 
-const EditUser = () => {
+interface Props {
+  user: User
+}
+
+const EditUser = ({ user }: Props) => {
   const router = useRouter();
-  const query = useSearchParams()
-  const id = query?.get('id');
-  const [userDB, setUserDB] = useState<User>();
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [email, setEmail] = useState('');
-  const [gender, setGender] = useState('');
-  const [country, setCountry] = useState('');
-  const [rol, setRol] = useState('');
+  const id = user._id
+  const [userDB, setUserDB] = useState<User>(user);
+  const [firstname, setFirstname] = useState(user.name.substring(0, user.name.indexOf(' ')));
+  const [lastname, setLastname] = useState(user.name.substring(user.name.indexOf(' ')));
+  const [email, setEmail] = useState(user.email);
+  const [gender, setGender] = useState(user.gender);
+  const [country, setCountry] = useState(user.country);
+  const [rol, setRol] = useState(user.rol);
   const [courses, setCourses] = useState<CourseUser[]>([]);
   const [courseName, setCourseName] = useState<string[]>([]);
 
@@ -65,34 +69,6 @@ const EditUser = () => {
 
   }, [auth.user]);
 
-
-  useEffect(() => {
-    const getUserDB = async () => {
-      try {
-        const config = {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        };
-        const userId = id;
-        const { data } = await axios.get(`/api/user/${userId}`, config);
-        const completeName = data.name.split(' ');
-        const name = completeName[0];
-        const last = completeName.slice(1).join(' ');
-        setFirstname(name);
-        setLastname(last);
-        setEmail(data.email);
-        setGender(data.gender);
-        setCountry(data.country);
-        setRol(data.rol);
-        setCourses(data.courses);
-        setUserDB(data);
-      } catch (error: any) {
-        console.log(error.message);
-      }
-    };
-    getUserDB();
-  }, [router]);
   useEffect(() => {
     const getCourses = async () => {
       try {
@@ -115,29 +91,32 @@ const EditUser = () => {
     };
     getCourses();
   }, [courses]);
+  
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     try {
       if (userDB) {
-        const config = {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        };
-        const response = await axios.patch(
-          `/api/user/update/${userDB._id}`,
-          {
+        const res = await fetch(endpoints.user.update(user._id.toString()), {
+          method: 'PUT',
+          headers: {  
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
             firstname,
             lastname,
             email,
             gender,
             country,
             rol,
-            courses
-          },
-          config
-        );
-        if (response) {
+            id
+          }),
+          })
+  
+        const data = await res.json()
+        await auth.fetchUser()
+        console.log(data)
+
+        if (data) {
           router.push('/admin/users');
           toast.success(
             `${firstname + ' ' + lastname} fue editado correctamente`

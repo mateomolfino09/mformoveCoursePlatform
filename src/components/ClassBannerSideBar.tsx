@@ -59,7 +59,7 @@ const ClassBannerSideBar = forwardRef<HTMLInputElement, Props>(
       >
         {courseDB.classes.map((clas: ClassesDB) => (
           <div className='flex flex-col bg-dark-soft' key={clas.id}>
-            {courseDB.modules.breakPoints.includes(clas.id) && (
+            {courseDB.modules.breakPoints.includes(clas.id as never) && (
               <>
                 {clas.id === 1 && (
                   <div className='flex items-center font-bold text-base'>
@@ -94,7 +94,7 @@ const ClassBannerSideBar = forwardRef<HTMLInputElement, Props>(
                     <p>
                       {
                         courseDB.modules.titles[
-                          courseDB.modules.breakPoints.indexOf(clas.id)
+                          courseDB.modules.breakPoints.indexOf(clas.id as never)
                         ]
                       }
                     </p>

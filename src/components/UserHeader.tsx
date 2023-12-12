@@ -16,7 +16,7 @@ const UserHeader = () => {
       />
     </Link>
     <Link href='/account'>
-      <AiOutlineUser className='h-6 w-6 cursor-pointer text-gray-400' />
+      <AiOutlineUser className='md:h-6 md:w-6 h-5 w-5 cursor-pointer text-white transition duration-500 hover:scale-105 lg:opacity-80 hover:opacity-100' />
     </Link>
   </motion.header>
   )

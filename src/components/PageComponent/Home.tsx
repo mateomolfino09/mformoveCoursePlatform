@@ -206,7 +206,7 @@ const Home = ({ coursesDB }: Props) => {
   }, [auth.user]);
 
   return (
-    <div className='relative h-full bg-to-dark lg:h-full overflow-hidden'>
+    <div className='relative bg-to-dark lg:h-full overflow-hidden min-w-[90vw] min-h-screen overflow-x-hidden'>
       <Head>
         <title>Video Streaming</title>
         <meta name='description' content='Stream Video App' />

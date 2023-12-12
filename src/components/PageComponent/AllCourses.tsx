@@ -11,6 +11,9 @@ import { parseCookies } from 'nookies';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import Cookies from 'js-cookie';
+import DeleteCourse from '../DeleteCourse';
+import endpoints from '../../services/api';
+import { toast } from 'react-toastify';
 
 interface Props {
   courses: CoursesDB[];
@@ -21,6 +24,9 @@ const AllCourses = ({ courses }: Props) => {
   let [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
   const auth = useAuth()
+  const [courseSelected, setCourseSelected] = useState<CoursesDB | null>(null);
+  let [isOpenDelete, setIsOpenDelete] = useState(false);
+  const [elementos, setElementos] = useState<CoursesDB[]>([]);
 
   useEffect(() => {
 
@@ -38,9 +44,53 @@ const AllCourses = ({ courses }: Props) => {
 
   }, [auth.user]);
 
+  useEffect(() => {
+    setElementos(courses);
+  }, []);
+
 
   function openModal() {
     setIsOpen(true);
+  }
+
+  const deleteCourse = async () => {
+    if(courseSelected) {
+
+      const courseId = courseSelected?._id;
+
+      const res = await fetch(endpoints.course.delete(courseId.toString()), {
+        method: 'DELETE',
+        headers: {  
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          courseId
+        }),
+        })
+
+      const data = await res.json()
+      await auth.fetchUser()
+      const updatedCourses = courses.filter(
+        (course: CoursesDB) => course._id !== courseSelected._id
+      );
+      console.log(data)
+      setElementos(updatedCourses);
+      if (data.success) {
+        toast.success(`${courseSelected.name} fue eliminado correctamente`);
+      }
+  
+      setIsOpenDelete(false);
+    }
+     
+  };
+
+  function openModalDelete(course: CoursesDB) {
+    setCourseSelected(course);
+    setIsOpenDelete(true);
+  }
+
+  function openEdit(course: CoursesDB) {
+    setCourseSelected(course);
   }
 
   return (
@@ -81,7 +131,7 @@ const AllCourses = ({ courses }: Props) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {courses?.map((course: CoursesDB) => (
+                        {elementos?.map((course: CoursesDB) => (
                           <tr
                             key={course._id}
                             ref={ref}
@@ -129,10 +179,10 @@ const AllCourses = ({ courses }: Props) => {
                             <td className='whitespace-nowrap px-6 py-4'>
                               <div className='flex item-center justify-center border-solid border-transparent border border-collapse text-base'>
                                 <div className='w-6 mr-2 transform hover:text-blue-500 hover:scale-110 cursor-pointer'>
-                                  <PencilIcon />
+                                  <PencilIcon onClick={() => openEdit(course)}/>
                                 </div>
                                 <div className='w-6 mr-2 transform hover:text-red-500 hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse '>
-                                  <TrashIcon />
+                                  <TrashIcon onClick={() => openModalDelete(course)}/>
                                 </div>
                               </div>
                             </td>
@@ -145,6 +195,12 @@ const AllCourses = ({ courses }: Props) => {
               </div>
             </div>
           </div>
+          <DeleteCourse
+            isOpen={isOpenDelete}
+            setIsOpen={setIsOpenDelete}
+            course={courseSelected}
+            deleteCourse={deleteCourse}
+          />
         </>
       </AdmimDashboardLayout>
   );

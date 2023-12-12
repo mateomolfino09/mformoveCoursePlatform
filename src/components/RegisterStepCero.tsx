@@ -6,7 +6,9 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import endpoints from '../services/api';
-
+import { addEmail } from '../redux/features/register'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../redux/store';
 interface Props {
   setEmail: (email: string) => void;
   step0ToStep1: any;
@@ -16,6 +18,7 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
   const [email, setEmailStep] = useState('');
   const [loading, setLoading] = useState(false);
   const [capsLock, setCapsLock] = useState<boolean>(false);
+  const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
     if (typeof window != 'undefined' && document != undefined) {
@@ -57,6 +60,8 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
         setLoading(false);
         return
       } 
+
+      dispatch(addEmail(email))
 
       setEmail(email);
       step0ToStep1();

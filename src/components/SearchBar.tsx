@@ -23,9 +23,11 @@ const SearchBar = ({ setSelectedCourse }: Props) => {
 
   useEffect(() => {
     if (snap.searchInput != '') {
+      console.log(courses, snap.searchInput)
       const coursestToSearch = courses.filter((c: CoursesDB) =>
         c.name.toLowerCase().includes(snap.searchInput.toLowerCase())
       );
+      console.log(coursestToSearch)
       setCoursesSearch(coursestToSearch);
     } else {
       setCoursesSearch(courses);
@@ -87,6 +89,7 @@ const SearchBar = ({ setSelectedCourse }: Props) => {
                 user={auth.user}
                 courseIndex={0}
               />
+              
             </section>
           ) : (
             <div className='h-screen w-full flex justify-center items-center '>

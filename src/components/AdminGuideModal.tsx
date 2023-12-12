@@ -54,11 +54,11 @@ const AdminGuideModal = ({ title, textArr, visible, handleVisiblity }: Props) =>
         <h3 className='text-black w-full text-center mt-2 text-xl'>{title}</h3>
         <div className='px-2 text-black mt-4' >
             {textArr.map((txt: string) => (
-                <>
+                <div key={txt}>
                     <p className='mb-2'>
                         {txt}   
                     </p> 
-                </>
+                </div>
             ))}
         </div>
     </m.div>

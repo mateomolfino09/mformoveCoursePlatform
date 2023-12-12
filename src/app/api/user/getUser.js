@@ -3,17 +3,13 @@ import User from '../../../models/userModel';
 
 connectDB();
 
-const getUser = async (req, res) => {
+export async function getUser(id) {
   try {
-    if (req.method === 'POST') {
-      const { email } = req.body;
-      const user = await User.findOne({ email: email }).lean().exec();
-      user ? user.password = undefined : null;
-      return res.status(200).send(user);
-    }
+    const res = await User.findOne({ id: id });
+
+    const user = JSON.parse(JSON.stringify(res));
+    return user;
   } catch (err) {
     console.log(err);
   }
-};
-
-export default getUser;
+}

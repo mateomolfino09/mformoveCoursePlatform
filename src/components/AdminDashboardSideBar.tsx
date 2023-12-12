@@ -93,6 +93,22 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
               </div>
             </div>
           </Link>
+          <Link href={'/admin/emailmarketing'}>
+            <div
+              className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+                pathname == '/admin/emailmarketing'
+                  ? 'bg-orange-100 text-orange-500'
+                  : 'text-gray-400 hover:bg-orange-100 hover:text-orange-500'
+              }`}
+            >
+              <div className='mr-2'>
+                <HomeIcon className='h-5 w-5' />
+              </div>
+              <div>
+                <p>Email Marketing</p>
+              </div>
+            </div>
+          </Link>
         </div>
       </div>
     );

@@ -191,8 +191,8 @@ export interface CourseUser {
 
 export interface Modules {
   quantity: number;
-  breakPoints: [number];
-  titles: [string];
+  breakPoints: [number] | [];
+  titles: [string] | [];
 }
 
 export interface User {
@@ -292,7 +292,7 @@ export interface Link {
 export interface questionExam {
   id: number,
   question: string,
-  answers: [amswerSchema],
+  answers: [],
   correctAnswerIndex: number
 }
 
@@ -300,7 +300,7 @@ export interface Exam {
   id: number,
   quantityOfQuestions: number,
   approvalMin: number,
-  class: ClassesDB
+  class: ClassesDB | null
   questions: [questionExam],
 }
 

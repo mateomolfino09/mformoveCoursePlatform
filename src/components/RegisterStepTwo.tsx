@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import Select, { StylesConfig } from 'react-select';
 import { toast } from 'react-toastify';
+import { AppDispatch } from '../redux/store';
+import { useDispatch } from 'react-redux';
+import { addStepTwo } from '../redux/features/register'
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -27,6 +30,8 @@ interface Props {
 const RegisterStepOne = ({ step2ToStep3, setData }: Props) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const dispatch = useDispatch<AppDispatch>()
+
 
   const handleClick = () => {
     if (password != confirmPassword) {
@@ -34,6 +39,7 @@ const RegisterStepOne = ({ step2ToStep3, setData }: Props) => {
     } else if (password.length < 8) {
       toast.error('La contraseña debe contener almenos 8 caracteres');
     } else {
+      dispatch(addStepTwo({ password, confirmPassword }))
       setData(password, confirmPassword);
       step2ToStep3();
     }

@@ -100,7 +100,7 @@ const ClassResources = ({ clase }: Props) => {
                   <h3 className='text-lg lg:text-xl mb-8'>Lecturas recomendadas </h3>
                 </div>           
                   {claseRedux?.atachedFiles.map((file: Archive, index:number) => (
-                      <div className='group flex items-center my-3 justify-between py-4 px-5 rounded-md text-white cursor-pointer hover:bg-white/5 border-b border-[#24385b] border-solid transition duration-200'>
+                      <div key={index.toString()} className='group flex items-center my-3 justify-between py-4 px-5 rounded-md text-white cursor-pointer hover:bg-white/5 border-b border-[#24385b] border-solid transition duration-200'>
                           <AiFillFileImage className='text-white/30 group-hover:text-[#1475cf] group-hover:scale-105 transition duration-200'/>
                           <span>{file.name}.{file.format}</span>
                           <div className='flex space-x-2'>
@@ -126,7 +126,7 @@ const ClassResources = ({ clase }: Props) => {
                   <h3 className='text-lg lg:text-xl mb-8 mt-8'>Links relacionados </h3>
                 </div>           
                   {claseRedux?.links.map((link: Linke, index:number) => (
-                      <div>                     
+                      <div key={index}>                     
                         <div className='group flex items-center my-3 justify-between py-4 px-5 rounded-md text-white cursor-pointer hover:bg-white/5 border-b border-[#24385b] border-solid transition duration-200'>
                           <AiOutlineLink color='' className='text-white/30 group-hover:text-[#1475cf] group-hover:scale-105 transition duration-200'/>
                           <Link 

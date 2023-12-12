@@ -157,16 +157,17 @@ function Modal({ courseDB, user }: Props) {
 
     const getCourseInfo = async () => {
       try {
-        const config = {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        };
-        let { data } = await axios.post(
-          '/api/course/getCourseInfo',
-          { youtubeURL },
-          config
-        );
+        const res = await fetch('/api/course/getCourseInfo', {
+          method: 'POST',
+          headers: {  
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ youtubeURL }),
+          })
+  
+        let data = await res.json()
+         data = data.data
+          
         courseInCourseIndex != null
           ? setUrl(
               user?.courses[courseInCourseIndex].actualChapter

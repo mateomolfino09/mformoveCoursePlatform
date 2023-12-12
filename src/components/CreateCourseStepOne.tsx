@@ -8,37 +8,32 @@ import { AiOutlineCheckCircle, AiOutlineMinusCircle } from 'react-icons/ai';
 import { MdOutlineClose } from 'react-icons/md';
 import { RxCrossCircled } from 'react-icons/rx';
 import AdminGuideModal from './AdminGuideModal';
+import { useAppSelector } from '../redux/hooks';
+import { AppDispatch } from '../redux/store';
+import { useDispatch } from 'react-redux';
+import { addStepTwo } from '../redux/features/createCoursesSlice';
 
 interface Props {
-    setDataStepOne: any
     step1ToStep2: any
     step1ToStep0: any
-    descriptionReg: any, 
-    descriptionLengthReg: any,
-    priceReg: any, 
-    modulesReg: any,
-    cantidadClasesReg: any, 
-    moduleNumbersReg: any, 
-    classesNumbersReg: any, 
-    breakpointTitlesReg: any, 
-    currencysReg: any,
-    showBreakpointsReg: any
 }
 
-const CreateCourseStepOne = ({setDataStepOne, step1ToStep2, step1ToStep0, descriptionReg, 
-    descriptionLengthReg,
-    priceReg, 
-    modulesReg,
-    cantidadClasesReg, 
-    moduleNumbersReg, 
-    classesNumbersReg, 
-    breakpointTitlesReg, 
-    showBreakpointsReg,
-    currencysReg }: Props) => {
+const CreateCourseStepOne = ({step1ToStep2, step1ToStep0, 
+     }: Props) => {
+    const dispatch = useDispatch<AppDispatch>()
+    const createCourse = useAppSelector(
+    (state) => state.createCourseReducer.value
+    );
+    const { classesQuantity: cantidadClasesReg, modules: modulesReg, modulesNumbers: moduleNumbersReg, descriptionLength: descriptionLengthReg, description: descriptionReg,
+        price: priceReg, 
+        classesNumbers: classesNumbersReg, 
+        breakpointTitles: breakpointTitlesReg, 
+        showBreakpoints: showBreakpointsReg, } = createCourse
+
     const [description, setDescription] = useState(descriptionReg);
     const [descriptionLength, setDescriptionLength] = useState<number>(
-        descriptionLengthReg
-      );
+        descriptionLengthReg ? descriptionLengthReg : 0
+        );
     const [visibleModuleHelper, setVisibilityModuleHelper] = useState(false)
     const [price, setPrice] = useState<number | null>(priceReg);
     const [start, setStart] = useState<boolean>(true);
@@ -48,10 +43,11 @@ const CreateCourseStepOne = ({setDataStepOne, step1ToStep2, step1ToStep0, descri
     const [classesNumbers, setClassesNumbers] = useState<number[]>([...classesNumbersReg]);
     const [breakpointTitles, setBreakpointTitles] = useState<string[]>([...breakpointTitlesReg]);
     const [showBreakpoints, setShowBreakpoints] = useState<boolean>(showBreakpointsReg);
-    const [currencys, setCurrency] = useState<string>('$');
+    const [currencys, setCurrency] = useState<string>('USD');
 
     const handleSubmit = (e: any) => {
         e.preventDefault()
+        console.log(moduleNumbers)
         if (description.length < 30) {
             t.error('La descripción del curso debe tener almenos 30 caracteres');
             return;
@@ -64,9 +60,6 @@ const CreateCourseStepOne = ({setDataStepOne, step1ToStep2, step1ToStep0, descri
           } else if (modules == null) {
             t.error('Debe indicar la cantidad de módulos');
             return;
-          } else if (modules == null) {
-            t.error('Debe indicar la cantidad de módulos');
-            return;
           } else if (moduleNumbers.length != modules) {
             t.error('Debe indicar los breakpoints de los módulos');
             return;
@@ -74,13 +67,12 @@ const CreateCourseStepOne = ({setDataStepOne, step1ToStep2, step1ToStep0, descri
             t.error('Debe indicar los títulos de los módulos');
             return;
           }
-      
-        setDataStepOne(description, descriptionLength, price, modules, cantidadClases, moduleNumbers, classesNumbers, breakpointTitles, currencys)
+          dispatch(addStepTwo({ description, descriptionLength, price, modules, classesQuantity: cantidadClases, modulesNumbers: moduleNumbers, classesNumbers, breakpointTitles, currency: currencys }))
         step1ToStep2()
     }
 
     const handleBack = () => {
-        setDataStepOne(description, descriptionLength, price, modules, cantidadClases, moduleNumbers, classesNumbers, breakpointTitles, currencys)
+        dispatch(addStepTwo({ description, descriptionLength, price, modules, cantidadClases, modulesNumbers: moduleNumbers, classesNumbers, breakpointTitles, currency: currencys }))
         step1ToStep0()
     }
 
@@ -378,15 +370,10 @@ const CreateCourseStepOne = ({setDataStepOne, step1ToStep2, step1ToStep0, descri
                                     className='input'
                                     key={'price'}
                                     autoComplete='off'
-                                    value={'$'}
+                                    value={'US$'}
                                     readOnly
                                 />
                                 </label>
-
-
-
-
-
                 </div>
                 <button
                 onClick={(e) => handleSubmit(e)}

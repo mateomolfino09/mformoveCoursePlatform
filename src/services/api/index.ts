@@ -9,9 +9,10 @@ const endpoints = {
     resetMailSend: `/api/user/auth/resetEmail`,
     resetPassword: (token: string) =>  `/api/user/auth/reset/${token}`,
     resetPasswordSend: `/api/user/auth/forget`,
-
-
-
+  },
+  user: {
+    update: (id: string) => `/api/user/update/${id}`,
+    delete: (userId: string) => `/api/user/delete/${userId}`
   },
   course: {
     class: {
@@ -20,7 +21,14 @@ const endpoints = {
     dislistCourse: '/api/user/course/dislist',
     likeCourse: '/api/user/course/like',
     dislikeCourse: '/api/user/course/dislike',
-    listCourse: '/api/user/course/list'
+    listCourse: '/api/user/course/list', 
+    createCourse: '/api/course/createCourse',
+    delete: (courseId: string) => `/api/course/delete/${courseId}`
+
+
+  },
+  admin: {
+    emailMarketing: '/api/admin/emailMarketing'
   }
 
 };

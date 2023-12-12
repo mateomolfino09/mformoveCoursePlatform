@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../hooks/useAuth';
 import Cookies from 'js-cookie';
+import endpoints from '../../services/api';
 
 interface Props {
   users: any;
@@ -51,24 +52,30 @@ const ShowUsers = ({ users }: Props) => {
     if(userSelected) {
 
       const userId = userSelected?._id;
-  
-      const config = {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      };
-  
-      const response = await axios.delete(`/api/user/delete/${userId}`, config);
+
+      const res = await fetch(endpoints.user.delete(userId.toString()), {
+        method: 'DELETE',
+        headers: {  
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          userId
+        }),
+        })
+
+      const data = await res.json()
+      await auth.fetchUser()
       const updatedUsers = users.filter(
         (person: User) => person._id !== userSelected._id
       );
       setElementos(updatedUsers);
-      if (response) {
+      if (data.success) {
         toast.success(`${userSelected.name} fue eliminado correctamente`);
       }
   
       setIsOpenDelete(false);
     }
+     
   };
   function openModalDelete(user: User) {
     setUserSelected(user);
@@ -112,10 +119,10 @@ const ShowUsers = ({ users }: Props) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {elementos?.map((user: any) => (
+                        {elementos?.map((user: any, index: number) => (
                           <tr
                             className='border-b dark:border-neutral-500'
-                            key={user.id}
+                            key={index}
                           >
                             <td className='whitespace-nowrap px-6 py-4 font-medium'>
                               {user.name}

@@ -1,10 +1,12 @@
 import nodemailer from 'nodemailer';
 
 interface Options {
-  from: String | undefined;
-  to: String;
-  subject: String;
-  text: String;
+  to: string;
+  subject: string;
+  title: string
+  content: string
+  name: string
+  message: string
 }
 
 const CONTACT_MESSAGE_FIELDS: any = {

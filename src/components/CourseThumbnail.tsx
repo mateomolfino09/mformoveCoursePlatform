@@ -88,8 +88,6 @@ function CourseThumbnail({
   const email = user?.email;
   const router = useRouter();
 
-  console.log(classes)
-
   return (
     <>
       {items?.map((item: Item, index: number) => (

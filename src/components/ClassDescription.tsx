@@ -17,16 +17,17 @@ const ClassDescription = ({ clase, youtubeURL, courseDB }: Props) => {
   useEffect(() => {
     const getClassInfo = async () => {
       try {
-        const config = {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        };
-        let { data } = await axios.post(
-          '/api/course/getCourseInfo',
-          { youtubeURL },
-          config
-        );
+        const res = await fetch('/api/course/getCourseInfo', {
+          method: 'POST',
+          headers: {  
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ youtubeURL }),
+          })
+  
+        let data = await res.json()
+        data = data.data
+
         setUrl(
           `https://www.youtube.com/embed/${
             data.items[clase.id - 1].snippet.resourceId.videoId

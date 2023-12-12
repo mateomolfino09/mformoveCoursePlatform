@@ -16,7 +16,6 @@ interface Props {
 
 function EmailVerification({ token }: Props) {
     const router = useRouter()
-  console.log(token)
 
   useEffect(() => {
     const cookies: any = Cookies.get('userToken')
@@ -56,20 +55,15 @@ function EmailVerification({ token }: Props) {
 
   return (
     <div className='relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent'>
-      <Head>
-        <title>Video Streaming</title>
-        <meta name='description' content='Stream Video App' />
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
       <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
-        <Image
-          src='/images/bgIndex2.jpg'
-          layout='fill'
-          className='-z-10 !hidden opacity-60 sm:!inline'
-          objectFit='cover'
-          alt='icon image'
-          loader={imageLoader}
-        />
+      <Image
+        src={'/images/image00013.jpeg'}
+        layout='fill'
+        className={`bg-image`} 
+        objectFit='cover'
+        alt='icon image'
+        loader={imageLoader}
+          />
         {/* Logo position */}
         <img
           src='/images/logo.png'
@@ -78,7 +72,7 @@ function EmailVerification({ token }: Props) {
           height={150}
           alt={'icon img'}
         />
-        <div className='relative mt-24 space-y-8 rounded bg-black/75 py-10 px-6 md:mt-0 md:max-w-lg md:px-14'>
+        <div className='relative mt-48 space-y-8 rounded py-10 px-6 md:mt-0 md:max-w-lg md:px-14'>
           <h1 className='text-4xl font-semibold'>Enhorabuena!</h1>
           <div className='space-y-4'>
             <label className='inline-block w-full'>

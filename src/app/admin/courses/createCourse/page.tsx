@@ -1,4 +1,4 @@
-import CreateCourse from "../../../../components/PageComponent/CreateCourse";
+import CreateCourse from "../../../../components/PageComponent/CreateCourse/CreateCourse";
 
    
 export default async function Page() {

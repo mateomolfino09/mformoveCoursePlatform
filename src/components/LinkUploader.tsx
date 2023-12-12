@@ -85,7 +85,7 @@ const LinkUploader = ({ clase, handleAdd }: Props) => {
             <ul className='mt-4 flex flex-col items-center list-disc'>
             {links.length > 0 && links.map((lin: string, index: number) => (
                 <>
-                    <div className='flex space-x-2 justify-center items-center'>
+                    <div className='flex space-x-2 justify-center items-center' key={index}>
                         <li className='font-bold list-inside w-full'>{lin}</li> <TrashIcon onClick={() => handleLinkRemove(index)} className='h-4 w-4'/>                
                     </div>
                     

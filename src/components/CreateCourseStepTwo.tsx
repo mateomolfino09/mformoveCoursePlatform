@@ -5,28 +5,41 @@ import { useDropzone } from 'react-dropzone';
 import AddQuestionModal from './AddQuestionModal';
 import { courseTypeConst } from '../constants/courseType';
 import { toast } from 'react-toastify';
+import { useAppSelector } from '../redux/hooks';
+import { AppDispatch } from '../redux/store';
+import { useDispatch } from 'react-redux';
+import { addStepThree } from '../redux/features/createCoursesSlice';
 
 interface Props {
-  setDataStepTwo: any
   step2ToStep1: any
-  courseTypeReg: any
   createCourse: any
 
 }
 
-const CreateCourseStepTwo = ({setDataStepTwo, step2ToStep1, courseTypeReg, createCourse }: Props) => {
+const CreateCourseStepTwo = ({step2ToStep1, createCourse }: Props) => {
     const [image, setImage] = useState<string | ArrayBuffer | null | undefined>(
         null
       );
-    const [courseType, setCourseType] = useState<string>(
-      courseTypeReg
+      const dispatch = useDispatch<AppDispatch>()
+      const createCourseSlice = useAppSelector(
+        (state) => state.createCourseReducer.value
+        );
+        const { courseType: courseTypeReg} = createCourseSlice
+    const [courseType, setCourseType] = useState<string | null>(
+      courseTypeReg 
       );
     const [openModal, setOpenModal] = useState<boolean>(false);
     const [diploma, setDiploma] = useState<any>([]);
     const [questions, setQuestions] = useState<any>(null);
 
+    const createCourseReducer = useAppSelector(
+      (state) => state.createCourseReducer.value
+    );
+    
+  console.log(createCourseReducer)
     useEffect(() => {
-    }, [questions])
+      dispatch(addStepThree({ questions, diploma, courseType }))
+    }, [questions, diploma, courseType])
 
 
     function handleOnChange(changeEvent: any) {
@@ -62,7 +75,7 @@ const CreateCourseStepTwo = ({setDataStepTwo, step2ToStep1, courseTypeReg, creat
 
 
     const handleBack = () => {
-      setDataStepTwo(courseType, diploma, questions)
+      dispatch(addStepThree({ questions, diploma, courseType }))
       step2ToStep1()
   }
 
@@ -72,12 +85,12 @@ const CreateCourseStepTwo = ({setDataStepTwo, step2ToStep1, courseTypeReg, creat
       console.log(courseType)
       
       if(courseType === courseTypeConst[0]) {
-        setDataStepTwo(courseType, null, null)
+        dispatch(addStepThree({ questions: null, diploma: null, courseType }))
       }
       else if(courseType === courseTypeConst[1]) {
         diploma.length === 0 
         ? toast.error('Debe elegir un diploma para el curso')
-        : setDataStepTwo(courseType, diploma, null)
+        : dispatch(addStepThree({ questions: null, diploma, courseType }))
 
 
       }
@@ -85,13 +98,14 @@ const CreateCourseStepTwo = ({setDataStepTwo, step2ToStep1, courseTypeReg, creat
         console.log(questions)
         diploma.length === 0 
         ? toast.error('Debe elegir un diploma para el curso')
-        : questions ? setDataStepTwo(courseType, diploma, questions)
+        : questions ? dispatch(addStepThree({ questions, diploma, courseType }))
         : toast.error('Debe seleccionar las preguntas para el curso') 
       }
       else {
         toast.error('Hubo un error al guardar los datos.')
       }
-      createCourse(e, courseType, diploma, questions)
+
+      createCourse(e)
     }
 
 
@@ -155,7 +169,7 @@ const CreateCourseStepTwo = ({setDataStepTwo, step2ToStep1, courseTypeReg, creat
                   <input type="checkbox" id="react-option" value={0} className="hidden peer" onClick={handleOnChange} name={'lang'} />
                   <label htmlFor="react-option" className="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-900 dark:hover:bg-gray-800 md:h-48 lg:h-36">                           
                       <div className="block">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="mb-2 text-gray-400 w-7 h-7">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="mb-2 text-gray-400 w-7 h-7">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
                     </svg>
 
@@ -168,7 +182,7 @@ const CreateCourseStepTwo = ({setDataStepTwo, step2ToStep1, courseTypeReg, creat
                   <input type="checkbox" id="flowbite-option" value={1} className="hidden peer " onClick={handleOnChange} name={'lang'}/>
                   <label htmlFor="flowbite-option" className="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-900 dark:hover:bg-gray-800 md:h-48 lg:h-36">
                       <div className="block">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="mb-2 text-gray-400 w-7 h-7">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="mb-2 text-gray-400 w-7 h-7">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
                           </svg>
   
@@ -181,7 +195,7 @@ const CreateCourseStepTwo = ({setDataStepTwo, step2ToStep1, courseTypeReg, creat
                   <input type="checkbox" id="angular-option" value={2} className="hidden peer" onClick={handleOnChange} name={'lang'}/>
                   <label htmlFor="angular-option" className="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-900 dark:hover:bg-gray-800 md:h-48 lg:h-36">
                       <div className="block">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="mb-2 text-gray-400 w-7 h-7">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="mb-2 text-gray-400 w-7 h-7">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                       </svg>
 
