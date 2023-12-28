@@ -1,5 +1,7 @@
+import filterClass from "./features/filterClass"; 
 import { configureStore } from "@reduxjs/toolkit";
 import courseModalReducer from './features/courseModalSlice';
+import classesModalReducer from './features/createClassSlice';
 import createCourseReducer from './features/createCoursesSlice';
 import { courseModalApi } from "./services/courseModalApi";
 import { classApi } from "./services/classApi";
@@ -9,8 +11,10 @@ import registerReducer from './features/register'
 export const store = configureStore({
   reducer: {
     courseModalReducer,
+    classesModalReducer,
     registerReducer,
     createCourseReducer,
+    filterClass,
     [courseModalApi.reducerPath]: courseModalApi.reducer,
     [classApi.reducerPath]: classApi.reducer
 

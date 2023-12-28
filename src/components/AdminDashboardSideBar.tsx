@@ -1,3 +1,4 @@
+import { BookOpenIcon } from '@heroicons/react/24/outline';
 import {
   CreditCardIcon,
   HomeIcon,
@@ -74,6 +75,22 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
               </div>
               <div>
                 <p>Cursos</p>
+              </div>
+            </div>
+          </Link>
+          <Link href={'/admin/classes'}>
+            <div
+              className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+                pathname == '/admin/classes' || pathname == '/admin/classes/createClass' || pathname == '/admin/classes/allClasses' || pathname == '/admin/classes/createClassType'
+                  ? 'bg-orange-100 text-orange-500'
+                  : 'text-gray-400 hover:bg-orange-100 hover:text-orange-500'
+              }`}
+            >
+              <div className='mr-2'>
+                <BookOpenIcon className='h-5 w-5' />
+              </div>
+              <div>
+                <p>Clases</p>
               </div>
             </div>
           </Link>

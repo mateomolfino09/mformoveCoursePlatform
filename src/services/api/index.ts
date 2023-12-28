@@ -27,6 +27,12 @@ const endpoints = {
 
 
   },
+  individualClass: {
+    delete: (classId: string) => `/api/individualClass/delete/${classId}`,
+    search: (text: string) => `/api/individualClass/search?text=${text}`
+
+
+  },
   admin: {
     emailMarketing: '/api/admin/emailMarketing'
   }

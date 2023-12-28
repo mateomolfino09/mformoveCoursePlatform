@@ -304,3 +304,40 @@ export interface Exam {
   questions: [questionExam],
 }
 
+export interface ValuesFilters {
+  id: number;
+  value: string
+  label: string
+  description: string
+}
+
+export interface ClassTypes {
+  _id: string;
+  id: number;
+  name: string;
+  description: string;
+  created_at: Date;
+  updated_at: Date;
+  values: [ValuesFilters]
+}
+
+export interface IndividualClass {
+  _id: string;
+  id: number;
+  name: string;
+  description: string;
+  createdAt: Date;
+  image_url: string;
+  level: number;
+  totalTime: number;
+  seconds: number;
+  minutes: number;
+  hours: number;
+  type: string;
+  isFree: boolean
+  image_base_link: string
+  image_mini_base_link: string
+  html: string
+  link: string
+  
+}

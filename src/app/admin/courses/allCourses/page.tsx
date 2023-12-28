@@ -3,7 +3,6 @@ import {
   } from '../../../../../typings';
   import { getCourses } from '../../../api/course/getCourses';
   import connectDB from '../../../../config/connectDB';
-  import Home from '../../../../components/PageComponent/Home';
 import AllCourses from '../../../../components/PageComponent/AllCourses';
   
   

@@ -266,14 +266,22 @@
   }
 
   .carousel {
-    @apply cursor-grab overflow-hidden mb-32;
+    @apply cursor-grab overflow-hidden mb-12;
   }
 
   .thumbnailItem {
     @apply w-[20rem] h-[20rem] md:h-[25rem] md:w-[23rem];
   }
 
+  .thumbnailClassesItem {
+    @apply w-[20rem] md:w-[23rem] h-full;
+  }
+
   .thumbnailContainer {
+    @apply min-w-[20rem] md:min-w-[23rem] mx-4 rounded-xl flex justify-start items-center flex-col;
+  }
+
+  .thumbnailClassContainer {
     @apply min-w-[20rem] md:min-w-[23rem] mx-4 rounded-xl flex justify-start items-center flex-col;
   }
 
@@ -307,6 +315,12 @@
       #555555 77%,
       #555555 90%
     );
+    position: absolute;
+    width: 100%;
+    z-index: 100;
+  }
+
+  .thumb-class-color {
     position: absolute;
     width: 100%;
     z-index: 100;

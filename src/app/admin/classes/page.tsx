@@ -1,23 +1,20 @@
 'use client'
-import AdmimDashboardLayout from '../../components/AdmimDashboardLayout';
-import { User } from '../../../typings';
+import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
+import { User } from '../../../../typings';
 import {
-  CreditCardIcon,
+  PlusCircleIcon,
   TableCellsIcon,
-  AtSymbolIcon,
-  UserIcon
 } from '@heroicons/react/24/solid';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
+import { TbToolsKitchen } from 'react-icons/tb';
+import { BsTools } from 'react-icons/bs';
 
-interface Props {
-  user: User;
-}
 
 const Index = () => {
   const router = useRouter();
@@ -49,44 +46,26 @@ const Index = () => {
       </Head>
         <div className='bg-gray-700 w-full md:h-[100vh]'>
           <p className='text-white text-3xl my-12 font-bold'>
-            Bienvenido al Dashboard
+            Bienvenido al Dashboard de Cursos
           </p>
 
           <div className='grid lg:grid-cols-3 gap-5 mb-16'>
-            <Link href={'/admin/users'}>
+            <Link href={'/admin/classes/createClass'}>
               <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
-                <UserIcon className='w-24' />
-                <p>Usuarios</p>
+                <PlusCircleIcon className='w-24' />
+                <p>Crear Clase</p>
               </div>
             </Link>
-            <Link href={'/admin/courses'}>
+            <Link href={'/admin/classes/createClassType'}>
               <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
-                <TableCellsIcon className='w-24' />
-                <p>Cursos</p>
+                <BsTools className='w-20 h-20 pb-2' />
+                <p className='-mb-4'>Crear Filtro de Clase</p>
               </div>
             </Link>
-            <Link href={'/admin/billing'}>
-              <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
-                <CreditCardIcon className='w-24' />
-                <p>Facturación</p>
-              </div>
-            </Link>
-          </div>
-          <div className='grid lg:grid-cols-3 gap-5 mb-16'>
-            <Link href={'/admin/emailmarketing'}>
-              <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
-                <AtSymbolIcon className='w-24' />
-                <p>Email Marketing</p>
-              </div>
-            </Link>
-            <Link href={'/admin/classes'}>
+            <Link href={'/admin/classes/allClasses'}>
               <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
                 <BookOpenIcon className='w-24' />
                 <p>Clases</p>
-              </div>
-            </Link>
-            <Link href={'#'}>
-              <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
               </div>
             </Link>
           </div>

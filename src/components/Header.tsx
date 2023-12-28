@@ -208,18 +208,12 @@ const Header = ({
         </Link>
 
         <ul className='hidden space-x-4 md:flex'>
-          <li className='headerLink' onClick={scrollToHome}>
+          <li className='headerLink' onClick={() => router.push('/home')}>
             Home
           </li>
-          {scrollToModa !== null ? (
-            <li onClick={scrollToModa} className='headerLink'>
-              Cursos
-            </li>
-          ) : (
-            <Link href={'/home'}>
-              <li className='headerLink'>Cursos</li>
-            </Link>
-          )}
+
+          <li className='headerLink' onClick={() => router.push('/courses')}>Cursos</li>
+
           {scrollToNuevo !== null ? (
             <li onClick={scrollToNuevo} className='headerLink'>
               Nuevo
@@ -307,7 +301,7 @@ const Header = ({
             leaveFrom='transform scale-100'
             leaveTo='transform scale-95'
           >
-            <Popover.Panel className='absolute -right-16 sm:right-4 z-50 mt-2 bg-white shadow-sm rounded max-w-xs sm:max-w-sm w-screen'>
+            <Popover.Panel className='absolute -right-16 sm:right-4 z-[250] mt-2 bg-white shadow-sm rounded max-w-xs sm:max-w-sm w-screen'>
               <div className='relative p-3'>
                 <div className='flex justify-between items-center w-full'>
                   <p className='text-gray-700 font-medium'>Notificaciones</p>

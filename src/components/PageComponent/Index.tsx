@@ -15,6 +15,9 @@ import { useAuth } from '../../hooks/useAuth';
 import { verify } from 'jsonwebtoken';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
+import { FaHamburger } from 'react-icons/fa';
+import { GiHamburger } from 'react-icons/gi';
+import MainSideBar from '../MainSideBar';
 
 const Index = () => {
   const auth = useAuth()
@@ -38,32 +41,41 @@ const Index = () => {
 
   return (
     <AnimatePresence>
-      <div className='h-screen bg-gradient-to-b lg:h-[100vh]'>
-        <Head>
-          <title>Video Streaming</title>
-          <meta name='description' content='Stream Video App' />
-          <link rel='icon' href='/favicon.ico' />
-        </Head>
-        <IndexHeader user={auth.user} />
-        <main className='relative pl-4 lg:space-y-24 lg:pl-16'>
-          <Banner />
-        </main>
-        <VolumeModal />
-        <div className='absolute right-0 bottom-0 h-12 w-12'>
-          {!state.volumeIndex ? (
-            <BiVolumeMute
-              className='h-6 w-6 text-white opacity-50 cursor-pointer hover:opacity-100 transition duration-500'
-              onClick={() => (state.volumeIndex = true)}
-            />
-          ) : (
-            <BiVolumeFull
-              className='h-6 w-6 text-white opacity-50 cursor-pointer hover:opacity-100 transition duration-500'
-              onClick={() => (state.volumeIndex = false)}
-            />
-          )}
+        <div className='h-screen bg-gradient-to-b lg:h-[100vh] overflow-hidden'>
+        <MainSideBar where={"index"}>
+          <Head>
+            <title>MforMove Platform</title>
+            <meta name='description' content='Stream Video App' />
+            <link rel='icon' href='/favicon.ico' />
+          </Head>
+          {/* <IndexHeader user={auth.user} /> */}
+          <main className='relative pl-4 lg:space-y-24 lg:pl-16'>
+            <Banner />
+          </main>
+            <div className='absolute min-w-[100vw] top-1/2 flex justify-center items-center' >
+            <button className='w-48 h-12 md:w-56 md:h-14 md:text-lg rounded-3xl border-white hover:bg-white hover:text-black border text-base font-thin' onClick={() => router.push('/home')}>
+              Practicar Conmigo 
+              </button>
+          </div>
+          <VolumeModal />
+          <div className='absolute right-0 bottom-0 h-12 w-12'>
+            {!state.volumeIndex ? (
+              <BiVolumeMute
+                className='h-6 w-6 text-white opacity-50 cursor-pointer hover:opacity-100 transition duration-500'
+                onClick={() => (state.volumeIndex = true)}
+              />
+            ) : (
+              <BiVolumeFull
+                className='h-6 w-6 text-white opacity-50 cursor-pointer hover:opacity-100 transition duration-500'
+                onClick={() => (state.volumeIndex = false)}
+              />
+            )}
+          </div>
+        </MainSideBar>
         </div>
-      </div>
-    </AnimatePresence>
+        
+      </AnimatePresence>
+
   );
 };
 

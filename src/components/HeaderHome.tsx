@@ -9,7 +9,7 @@ import {
   CreditCardIcon,
   PencilIcon
 } from '@heroicons/react/24/solid';
-import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
+import { AnimatePresence, motion as m, useAnimation, useScroll } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { Fragment, useContext, useEffect, useState } from 'react';
@@ -20,42 +20,29 @@ import { CiMenuFries } from "react-icons/ci";
 interface Props {
   user: User | null;
   toggleNav: any
-  where: any
 }
-const IndexHeader = ({ user, toggleNav, where }: Props) => {
-  console.log(where)
+const HeaderHome = ({ user, toggleNav }: Props) => {
   const router = useRouter();
   const headerAnimation = useAnimation();
+  const [scrolled, setScrolled] = useState(false);
 
   const [domLoaded, setDomLoaded] = useState(false);
   const snap = useSnapshot(state);
+  const scroll = useScroll()
 
   useEffect(() => {
-    console.log('hola')
     setDomLoaded(true);
-    if (!snap.volumeModal) {
-      where === "home" ?
       headerAnimation.start({
-        y: 100,
+        y: 10,
         transition: {
           damping: 5,
-          stiffness: 40,
-          restDelta: 0.001,
-          duration: 1
-        }
-      }) :      
-      headerAnimation.start({
-        y: 0,
-        transition: {
-          damping: 5,
-          stiffness: 40,
+          stiffness: 20,
           restDelta: 0.001,
           duration: 1
         }
       }) ;
-    }
-    [snap.volumeModal];
-  });
+    [];
+  })
 
   return (
     <>
@@ -63,10 +50,9 @@ const IndexHeader = ({ user, toggleNav, where }: Props) => {
         <m.div
           initial={{
             y: -100,
-            opacity: 1
           }}
           animate={headerAnimation}
-          className={`bg-transparent fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""}`}
+          className={`${scrolled ? 'bg-black' : 'bg-transparent'} fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] z-[250]`}
         >
           <div className='pl-4 md:pl-16'>
             <img
@@ -92,4 +78,4 @@ const IndexHeader = ({ user, toggleNav, where }: Props) => {
   );
 };
 
-export default IndexHeader;
+export default HeaderHome;
