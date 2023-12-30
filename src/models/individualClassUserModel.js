@@ -26,5 +26,5 @@ const individualClassUserSawClass = new mongoose.Schema(
   { timestamps: true }
 );
 
-let Dataset = mongoose.models.ClassFilters || mongoose.model('ClassFilters', individualClassUserSawClass);
+let Dataset = mongoose.models.IndividualClassUser || mongoose.model('IndividualClassUser', individualClassUserSawClass);
 export default Dataset;

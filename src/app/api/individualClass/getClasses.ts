@@ -5,9 +5,12 @@ import ClassFilters from '../../../models/classFiltersModel';
 
 connectDB();
 
-export async function getClasses() {
+export async function getClasses(search: string = "") {
   try {
-    const res = await IndividualClass.find({});
+    let res;
+    search != "" 
+    ? res = await IndividualClass.find({name: { $regex: search, $options: 'i' }})
+    : res = await IndividualClass.find({})
     console.log(res)
     const classes = JSON.parse(JSON.stringify(res));
     return classes;

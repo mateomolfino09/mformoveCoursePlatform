@@ -71,7 +71,7 @@ const notify = (message: String, agregado: boolean, like: boolean) =>
     { id: 'unique-notification', position: 'top-center' }
   );
 
-function CarouselClassesThumbnail({
+function CarouselSearchClassesThumbnail({
   courseIndex,
   isOpen,
   setIsOpen,
@@ -106,17 +106,13 @@ function CarouselClassesThumbnail({
 
   return (
     <AnimatePresence>
-        <div className='flex flex-col space-y-0'>
+        <div className='flex flex-col space-y-0 mb-8' style={{flex: '1 0 21%'}}>
             <m.div
-                className={`thumbnailClassContainer relative 
-                h-[17rem] md:h-[19rem] transition-all duration-500
+                className={`max-w-[15rem] md:max-w-[20rem] mx-4 rounded-xl flex justify-start items-center flex-col relative 
+                h-[12rem] md:h-[16rem] transition-all duration-500
                 } overflow-hidden `}
             >
-                <div
-                className={`thumb-class-color rounded-lg min-w-[20rem] min-h-[17rem] md:min-h-[19rem] md:min-w-[23rem]
-                overflow-hidden`}
-                />
-                <div className='thumbnailClassesItem relative'>
+                <div className='w-[15rem] md:w-[23rem] h-full relative'>
                 <Image
                     src={c.image_base_link}
                     className='object-cover rounded-lg'
@@ -132,8 +128,8 @@ function CarouselClassesThumbnail({
 
                 </div>
                 <div className='flex flex-col justify-center items-start mt-1 w-full px-1 py-1'>
-                    <h3 className='font-light text-xl mb-1'>{c.name}</h3>
-                    <div className='flex justify-start space-x-8 items-center w-full'>
+                    <h3 className='font-light text-sm mb-1'>{c.name}</h3>
+                    <div className='flex justify-start text-sm  space-x-8 items-center w-full'>
                         <p className="after:content-[''] after:mr-2 after:bg-white after:w-1 after:h-1 after:absolute after:bottom-3 after:left-[3.5rem] after:translate-y-[-50%]  after:rounded-full after:">{c.minutes} min</p>
                         <p className="after:content-[''] after:mr-2 after:bg-white after:w-1 after:h-1 after:absolute after:bottom-3 after:left-[7.3rem] after:translate-y-[-50%]  after:rounded-full after:">{c.type?.toUpperCase()}</p>
                         <p className="after:content-[''] after:mr-2 ">Nivel {c.level}</p>
@@ -147,4 +143,4 @@ function CarouselClassesThumbnail({
   );
 }
 
-export default CarouselClassesThumbnail;
+export default CarouselSearchClassesThumbnail;

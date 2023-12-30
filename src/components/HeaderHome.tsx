@@ -16,6 +16,7 @@ import { Fragment, useContext, useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
 import endpoints from '../services/api';
 import { CiMenuFries } from "react-icons/ci";
+import { useAppSelector } from '../redux/hooks';
 
 interface Props {
   user: User | null;
@@ -24,21 +25,21 @@ interface Props {
 const HeaderHome = ({ user, toggleNav }: Props) => {
   const router = useRouter();
   const headerAnimation = useAnimation();
-  const [scrolled, setScrolled] = useState(false);
-
   const [domLoaded, setDomLoaded] = useState(false);
   const snap = useSnapshot(state);
-  const scroll = useScroll()
+  const headerScroll = useAppSelector(
+    (state: any) => state.headerHomeReducer.value.scrollHeader
+    );
 
   useEffect(() => {
     setDomLoaded(true);
       headerAnimation.start({
-        y: 10,
+        y: 0,
         transition: {
           damping: 5,
           stiffness: 20,
           restDelta: 0.001,
-          duration: 1
+          duration: 0.1
         }
       }) ;
     [];
@@ -52,7 +53,7 @@ const HeaderHome = ({ user, toggleNav }: Props) => {
             y: -100,
           }}
           animate={headerAnimation}
-          className={`${scrolled ? 'bg-black' : 'bg-transparent'} fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] z-[250]`}
+          className={`${headerScroll ? 'bg-black fixed' : 'bg-transparent absolute'}  w-full h-16 flex justify-between items-center transition-all duration-500 z-[250]`}
         >
           <div className='pl-4 md:pl-16'>
             <img
@@ -60,7 +61,7 @@ const HeaderHome = ({ user, toggleNav }: Props) => {
               src='/images/logoWhite.png'
               width={120}
               height={120}
-              className='cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-100'
+              className={`${headerScroll ? 'max-w-[80px]' : 'min-w-[100px]'} cursor-pointer object-contain transition-all duration-100 hover:scale-105 opacity-100`}
             />
           </div>
           <div className='flex items-center pr-4 md:pr-16'>

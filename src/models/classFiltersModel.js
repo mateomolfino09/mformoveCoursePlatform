@@ -5,15 +5,12 @@ import validator from 'validator';
 const valuesSchema = new mongoose.Schema({
   id: {
     type: Number,
-    required: true
   },
   value: {
     type: String,
-    required: true
   },
   label: {
     type: String,
-    required: true
   },
     description: {
       type: String,
@@ -37,6 +34,13 @@ const classFiltersSchema = new mongoose.Schema(
       default: () => Date.now()
     },
     description: {
+      type: String,
+    },
+    type: {
+      type: String,
+      default: () => 'multiple'
+     },
+    question: {
       type: String,
     },
     values: [valuesSchema ]

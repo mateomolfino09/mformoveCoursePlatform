@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { motion as m, useAnimation } from 'framer-motion'
 import { IndividualClass } from '../../typings'
 import SearchClassThumbnail from './SearchClassThumbnail'
+import { useAppSelector } from '../redux/hooks'
 
 interface Props {
     active: boolean
@@ -10,6 +11,9 @@ interface Props {
 
 const SearchClass = ({ active, searchClasses }: Props) => {
     const animation = useAnimation()
+    const filters = useAppSelector(
+        (state) => state.filterClass.value
+        );
 
     useEffect(() => {
         if(active) {
@@ -49,9 +53,9 @@ const SearchClass = ({ active, searchClasses }: Props) => {
                 </>
 
             ))}
-            {searchClasses && searchClasses.length < 5 && (
+            {searchClasses && searchClasses.length >= 5 && (
                 <>
-                 <a className='text-xs mt-6 pb-2 pt-2 font-light underline cursor-pointer' href="#">Ver todos</a>
+                 <a className='text-xs mt-6 pb-2 pt-2 font-light underline cursor-pointer' href={`/home/${filters.searchInput}`}>Ver todos</a>
                 </>
             )}
 

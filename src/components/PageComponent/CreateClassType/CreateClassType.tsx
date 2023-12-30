@@ -40,6 +40,7 @@ const CreateClassType = () => {
   const cookies = parseCookies();
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
+  const [type, setType] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const auth = useAuth();
   const { register, handleSubmit, formState, getValues, watch } = useForm();
@@ -60,7 +61,7 @@ const CreateClassType = () => {
 
   async function onSubmit(data: any) {
     console.log(data);
-    const { name, description } = data;
+    const { name, description, question } = data;
     setLoading(true);
     if (name.length < 3) {
       toast.error(
@@ -69,7 +70,7 @@ const CreateClassType = () => {
       setLoading(false);
       return;
     }
-    if(values.length < 2) {
+    if(values.length < 2 && !type) {
       toast.error(
         'Debes agregar al menos 2 valores'
       );
@@ -86,16 +87,23 @@ const CreateClassType = () => {
         }
       };
 
-      const { data } = await axios.post(
-        '/api/individualClass/filters/create',
-        {
-          name,
-          description,
-          values,
-          userEmail
-        },
-        config
-      );
+      const typeSend = type ? 'two' : 'multiple'
+
+      console.log(typeSend)
+
+
+      // const { data } = await axios.post(
+      //   '/api/individualClass/filters/create',
+      //   {
+      //     name,
+      //     description,
+      //     values,
+      //     userEmail,
+      //     type: typeSend,
+      //     question
+      //   },
+      //   config
+      // );
 
       auth.fetchUser();
 
@@ -143,6 +151,20 @@ const CreateClassType = () => {
                   />
                 </label>
                 <label className='flex flex-col space-y-3 w-full'>
+                  <p>Elige el tipo de filtro</p>
+                  <div className="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                      <input 
+                      {...register('type')} 
+                      onChange={(e) => e.target.checked ? setType(true) : setType(false)}
+                      id="bordered-checkbox-1" 
+                      type="checkbox" 
+                      value="" 
+                      name="bordered-checkbox" 
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                      <label htmlFor="bordered-checkbox-1" className="w-full py-4 ml-4 text-gray-900 dark:text-gray-300">¿Quieres un filtro SI/NO?</label>
+                  </div>
+                </label>
+                <label className='flex flex-col space-y-3 w-full'>
                   <p>Introduce una descripción</p>
                   <label className='inline-block w-full'>
                     <textarea
@@ -152,46 +174,63 @@ const CreateClassType = () => {
                     />
                   </label>
                 </label>
-                <label className='flex flex-col space-y-3 w-full'>
-                  <p>Agrega valores al filtro</p>
+                {type ? (
+                  <>
+                               <label className='flex flex-col space-y-3 w-full'>
+                    <p>Agrega pregunta</p>
 
-                  <input
-                    type='text'
-                    placeholder='Nuevo Valor'
-                    className='input'
-                    onChange={(e: any) => setCurrentValue(e.target.value)}
-                  />
-                  <input
-                    type='text'
-                    placeholder='Nueva Etiqueta'
-                    className='input'
-                    onChange={(e: any) => setCurrentValueLabel(e.target.value)}
-                  />
-
-                    <textarea
-                      placeholder='Descripción'
+                    <input
+                      type='text'
+                      placeholder='Pregunta'
                       className='input'
-                      onChange={(e: any) => setCurrentValueDescription(e.target.value)}
-                      />
-                  <button
-                    className='w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold'
-                    type='button'
-                    onClick={() => {
-                      if(values.filter((x: any) => x.value === currentValue).length > 0) {
-                        toast.error("No puedes agregar el mismo valor");
+                      {...register('question')}
+                    />
+                  </label>
+                  </>
+                ) : (
+                 <>
+                  <label className='flex flex-col space-y-3 w-full'>
+                    <p>Agrega valores al filtro</p>
+
+                    <input
+                      type='text'
+                      placeholder='Nuevo Valor'
+                      className='input'
+                      onChange={(e: any) => setCurrentValue(e.target.value)}
+                    />
+                    <input
+                      type='text'
+                      placeholder='Nueva Etiqueta'
+                      className='input'
+                      onChange={(e: any) => setCurrentValueLabel(e.target.value)}
+                    />
+
+                      <textarea
+                        placeholder='Descripción'
+                        className='input'
+                        onChange={(e: any) => setCurrentValueDescription(e.target.value)}
+                        />
+                    <button
+                      className='w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold'
+                      type='button'
+                      onClick={() => {
+                        if(values.filter((x: any) => x.value === currentValue).length > 0) {
+                          toast.error("No puedes agregar el mismo valor");
+                        }
+                        else setValues([...values, {
+                          value: currentValue,
+                          label: currentValueLabel,
+                          description: currentValueDescription
+                        }])
                       }
-                      else setValues([...values, {
-                        value: currentValue,
-                        label: currentValueLabel,
-                        description: currentValueDescription
-                      }])
-                    }
-                       
-                      }
-                  >
-                    Agregar
-                  </button>
-                </label>
+                        
+                        }
+                    >
+                      Agregar
+                    </button>
+                  </label>
+                 </> 
+                )}
               </div>
               <div className='flex justify-start w-full items-center flex-shrink flex-wrap space-y-3' >
                 {values.map((v: any) => (

@@ -101,8 +101,12 @@ const individualClassSchema = new mongoose.Schema(
     link: {
       type: String,
       required: true
-    }
-
+    },
+    new: {
+      type: Boolean,
+      required: true,
+      default: () => true
+    },
     // atachedFiles: [
     //   fileSchema
     // ],

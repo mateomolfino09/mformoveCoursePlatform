@@ -15,6 +15,9 @@ export async function POST(req) {
         description,
         values,
         userEmail,
+        type,
+        question
+
       } = await req.json();
 
       let user = await Users.findOne({ email: userEmail }); 
@@ -34,25 +37,36 @@ export async function POST(req) {
 
       console.log(lastFilter)
 
-      let valuesToAdd = [];
+      if(type === 'multiple') {
+        let valuesToAdd = [];
+        values.forEach((val, i) => {
+          valuesToAdd.push({
+            value: val.value,
+            id: i + 1,
+            description: val.description,
+            label: val.label
+          })
+        });
+    
+        const newFilter = await new ClassFilters({
+          id: JSON.stringify(lastFilter) != '[]' ? lastFilter[0].id + 1 : 1,
+          name,
+          description,
+          values: valuesToAdd,
+          type
+        }).save();
+      }
+      else {
+        const newFilter = await new ClassFilters({
+          id: JSON.stringify(lastFilter) != '[]' ? lastFilter[0].id + 1 : 1,
+          name,
+          description,
+          type,
+          question
+        }).save();
+      }
 
-      values.forEach((val, i) => {
-        valuesToAdd.push({
-          value: val.value,
-          id: i + 1,
-          description: val.description,
-          label: val.label
-        })
-      });
 
-      console.log(valuesToAdd )
-
-      const newFilter = await new ClassFilters({
-        id: JSON.stringify(lastFilter) != '[]' ? lastFilter[0].id + 1 : 1,
-        name,
-        description,
-        values: valuesToAdd
-      }).save();
 
       return NextResponse.json({ message: 'Filtro para clase individual creada con éxito'}, { status: 200 })
     }

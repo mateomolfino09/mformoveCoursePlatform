@@ -77,6 +77,7 @@ const [searchClasses, setSearchClasses] = useState<null | IndividualClass[]>(nul
   }, [filters.search]);
 
   const handleSearchActivation = () => {
+    console.log(filters.search)
     dispatch(toggleSearch(!filters.search))
   };
 

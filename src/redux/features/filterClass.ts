@@ -1,16 +1,24 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { m } from "framer-motion";
+import { ClassTypes } from "../../../typings";
 
 type InitialState = {
     value: FilterState;
 }
 
 type FilterState = {
+    [key: string]: any; // Index signature allowing any string keys
     classType: string
     search: boolean
     searchToggle: boolean
     searchInput: string
     filterNav: boolean
+    filters: [ClassTypes] | null
+    largo: [string] | null
+    nivel: [string] | null
+    ordenar: [string] | null
+    seen: boolean | null
+    individualClasses: any | null
 }
 
 
@@ -20,7 +28,14 @@ const initialState: InitialState = {
         search: false,
         searchToggle: false,
         searchInput: '',
-        filterNav: false
+        filterNav: false,
+        filters: null,
+        individualClasses: null,
+        largo: null,
+        nivel: null,
+        ordenar: null,
+        seen: null,
+
     },
 
 } 
@@ -34,6 +49,14 @@ export const filterClassSlice = createSlice({
                 value: {
                     ...state.value,
                     classType: action.payload
+                }
+            }
+        },
+        setIndividualClasses: (state: any, action: PayloadAction<any>) => {
+            return {
+                value: {
+                    ...state.value,
+                    individualClasses: action.payload
                 }
             }
         },
@@ -69,6 +92,80 @@ export const filterClassSlice = createSlice({
                 }
             }
         },
+        setFilters: (state: any, action: PayloadAction<ClassTypes[]>) => {
+            return {
+                value: {
+                    ...state.value,
+                    filters: action.payload
+                }
+            }
+        },
+        setLargo: (state: any, action: PayloadAction<string>) => {
+            return {
+                value: {
+                    ...state.value,
+                    largo: state.value.largo ? [...state.value.largo, action.payload] : [action.payload]
+                }
+            }
+        },
+        deleteLargo: (state: any, action: PayloadAction<number>) => {
+            return {
+                value: {
+                    ...state.value,
+                    largo: [...state.value.largo.slice(0, action.payload), ...state.value.largo.slice(action.payload + 1)]
+                }
+            }
+        },
+        setLevel: (state: any, action: PayloadAction<string>) => {
+            return {
+                value: {
+                    ...state.value,
+                    nivel: state.value.nivel ? [...state.value.nivel, action.payload] : [action.payload]
+                }
+            }
+        },
+        deleteLevel: (state: any, action: PayloadAction<number>) => {
+            return {
+                value: {
+                    ...state.value,
+                    nivel: [...state.value.nivel.slice(0, action.payload), ...state.value.nivel.slice(action.payload + 1)]
+                }
+            }
+        },
+        setOrder: (state: any, action: PayloadAction<string>) => {
+            return {
+                value: {
+                    ...state.value,
+                    ordenar: state.value.ordenar ? [...state.value.ordenar, action.payload] : [action.payload]
+                }
+            }
+        },
+        deleteOrder: (state: any, action: PayloadAction<number>) => {
+            return {
+                value: {
+                    ...state.value,
+                    ordenar: [...state.value.ordenar.slice(0, action.payload), ...state.value.ordenar.slice(action.payload + 1)]
+                }
+            }
+        },
+        setSeen: (state: any, action: PayloadAction<boolean>) => {
+            return {
+                value: {
+                    ...state.value,
+                    seen: action.payload
+                }
+            }
+        },
+        clearDataFilters: (state: any) => {
+            return {
+                value: {
+                    ...state.value,
+                    largo: null,
+                    nivel: null,
+                    ordenar: null,
+                    seen: null,
+                }
+            }        },
         clearData: () => {
             return initialState
         }
@@ -76,5 +173,22 @@ export const filterClassSlice = createSlice({
 
 })
 
-export const { setClassType ,clearData, toggleSearch, changeInput, toggleSearchGo, toggleNav } = filterClassSlice.actions;
+export const { 
+    setClassType ,
+    clearData, 
+    toggleSearch, 
+    changeInput,
+    toggleSearchGo, 
+    toggleNav, 
+    setFilters,
+    deleteLargo,
+    deleteLevel,
+    deleteOrder,
+    setLargo,
+    setLevel,
+    setOrder,
+    setSeen,
+    setIndividualClasses,
+    clearDataFilters
+} = filterClassSlice.actions;
 export default filterClassSlice.reducer;

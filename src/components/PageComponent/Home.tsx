@@ -30,6 +30,10 @@ import ClassesFilters from '../ClassesFilters';
 import { m } from 'framer-motion';
 import FilterNavWrapper from '../FilterNavWrapper';
 import CarouselClasses from '../CarouselClasses';
+import { useAppDispatch } from '../../hooks/useTypeSelector';
+import { toggleScroll } from '../../redux/features/headerHomeSlice';
+import { setFilters, setIndividualClasses } from '../../redux/features/filterClass';
+import { LoadingSpinner } from '../LoadingSpinner';
 
 interface Props {
   classesDB: IndividualClass[];
@@ -39,13 +43,15 @@ interface Props {
 const Home = ({ classesDB, filters }: Props) => {
   const [typedClasses, setClasses] = useState<any | null>(null);
   const [isMember, setIsMember] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedClass, setSelectedClass] = useState<IndividualClass | null>(null);
-  const snap = useSnapshot(state);
   const router = useRouter()
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const ref = React.createRef<any>();
-
+  const dispatch = useAppDispatch()
+  const filterClassSlice = useAppSelector(
+    (state) => state.filterClass.value
+    );
   const auth = useAuth()
+
   useEffect(() => {
     const cookies: any = Cookies.get('userToken')
     
@@ -55,6 +61,8 @@ const Home = ({ classesDB, filters }: Props) => {
     else {
       setIsMember(true)
     }
+    
+    filters != null && dispatch(setFilters(filters))
 
     const groupedData = classesDB?.reduce((acc: any , obj) => {
       const groupKey = obj.type;
@@ -80,17 +88,79 @@ const Home = ({ classesDB, filters }: Props) => {
 
     console.log(arrayOfObjects)
 
+    dispatch(setIndividualClasses(arrayOfObjects))
     setClasses(arrayOfObjects)
-
-    
-
 
   }, [auth?.user]);
 
+
+  useEffect(() => {
+
+    const ic = filterClassSlice.individualClasses
+    let newArr: any = []
+    setLoading(true)
+    
+    ic?.forEach((iCGroup: any) => {
+      let classesFilter: IndividualClass[] = []
+      classesFilter = [...iCGroup.items.filter((iC: IndividualClass) => {
+        let lengthCondition = true
+        if(filterClassSlice.largo && filterClassSlice.largo?.length > 0) {
+          filterClassSlice.largo.forEach(l => {
+            lengthCondition ? lengthCondition = iC.minutes <= +l : false
+          });
+        } 
+
+        let levelCondition = false
+
+        if(filterClassSlice.nivel && filterClassSlice.nivel?.length > 0) {
+          filterClassSlice.nivel.forEach(n => {
+            !levelCondition ? levelCondition = iC.level == +n : true
+          });
+        }
+        else {
+          levelCondition = true
+        }
+
+        let orderCondition = true
+
+        if(filterClassSlice.ordenar && filterClassSlice.ordenar?.length > 0) {
+          filterClassSlice.ordenar.forEach(n => {
+            if(n == "nuevo") {
+              orderCondition ? orderCondition = iC.new : false
+            }
+            
+          });
+        }
+        else {
+          orderCondition = true
+        }
+
+        let seenCondition = true 
+          if(filterClassSlice.seen) {
+            seenCondition = auth.user?.classesSeen?.includes(iC._id)
+          }
+        
+        return levelCondition && lengthCondition && seenCondition && orderCondition
+      })];
+      classesFilter.length > 0 && newArr.push({ group: iCGroup.group , items: classesFilter })
+      
+    });
+
+    setClasses(newArr)
+    setLoading(false)
+  }, [filterClassSlice.largo, filterClassSlice.nivel, filterClassSlice.ordenar, filterClassSlice.seen])
+  
+
   return (
     <div className='relative bg-to-dark lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
-    onScroll={(e: any) => setScrollPosition(e.target.scrollTop)}
-    ref={ref}
+    onScroll={(e: any) => {
+      if(e.target.scrollTop === 0) {
+        dispatch(toggleScroll(false))
+      }
+      else {
+        dispatch(toggleScroll(true))
+      }
+    } }
     >
       <MainSideBar where={'home'}>
       <FilterNavWrapper>
@@ -105,14 +175,13 @@ const Home = ({ classesDB, filters }: Props) => {
             <ClassesFilters filtersDB={filters}/>
           </section>
           <section>
-            { typedClasses?.map((t: any) => (
-                <CarouselClasses classesDB={t.items} title={filters[0].values.find(x => x.value === t.group)?.label} description={filters[0].values.find(x => x.value === t.group)?.description} setSelectedClass={setSelectedClass}/>
-            ))}
-            {/* {typedClasses typedClasses?.map((t) => (
-              <CarouselClasses classesDB={t} title={filters[0].values.find(x => x.value === t[0].type)?.label}/>
-            ))} */}
-
-          {/* <CarouselClasses classesDB={} title={''} /> */}
+            {typedClasses && !loading ? typedClasses?.map((t: any) => (
+              <>
+              <CarouselClasses key={t.group} classesDB={t.items} title={filters[0].values.find(x => x.value === t.group)?.label} description={filters[0].values.find(x => x.value === t.group)?.description} setSelectedClass={setSelectedClass}/>              
+              </>
+            )) : (
+              <LoadingSpinner />
+            )}
           </section>
         </main>
       

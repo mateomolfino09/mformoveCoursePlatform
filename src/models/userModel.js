@@ -112,7 +112,11 @@ const userSchema = new mongoose.Schema(
     resetToken: { type: String },
     update: { type: String },
     validEmail: { type: String, default: 'not' },
-    emailToken: { type: String }
+    emailToken: { type: String },
+    classesSeen: [{
+      type: mongoose.Types.ObjectId,
+      ref: 'IndividualClassUser'
+    }]
   },
   { timestamps: true }
 );

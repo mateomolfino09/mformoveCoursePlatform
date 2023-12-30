@@ -209,6 +209,7 @@ export interface User {
   courses: CourseUser[];
   admin: AdminUser;
   notifications: Notification[];
+  classesSeen: IndividualClass[];
 }
 
 export interface CoursesDB {
@@ -318,6 +319,7 @@ export interface ClassTypes {
   description: string;
   created_at: Date;
   updated_at: Date;
+  type: string 
   values: [ValuesFilters]
 }
 
@@ -339,5 +341,6 @@ export interface IndividualClass {
   image_mini_base_link: string
   html: string
   link: string
+  new: boolean
   
 }

@@ -63,7 +63,9 @@ export async function POST(req) {
 
       }).save();
 
-      console.log(newClass)
+      let notNewClass = await IndividualClass.findOne().skip(9).exec();
+      notNewClass.new = false
+      await notNewClass.save()
 
       return NextResponse.json({ message: 'Clase individual creada con éxito'}, { status: 200 })
     }

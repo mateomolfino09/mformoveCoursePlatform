@@ -53,9 +53,12 @@ const Index = () => {
             <Banner />
           </main>
             <div className='absolute min-w-[100vw] top-1/2 flex justify-center items-center' >
-            <button className='w-48 h-12 md:w-56 md:h-14 md:text-lg rounded-3xl border-white hover:bg-white hover:text-black border text-base font-thin' onClick={() => router.push('/home')}>
-              Practicar Conmigo 
-              </button>
+                <button className='w-48 h-12 md:w-56 md:h-14 md:text-lg rounded-3xl border-white hover:bg-white hover:text-black border text-base font-thin' >
+                  <a href="/home">
+                  Practicar Conmigo 
+                  </a>
+                </button>
+
           </div>
           <VolumeModal />
           <div className='absolute right-0 bottom-0 h-12 w-12'>

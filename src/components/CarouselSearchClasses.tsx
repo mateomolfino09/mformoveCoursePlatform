@@ -19,6 +19,7 @@ import { useGlobalContext } from '../app/context/store';
 import { useAuth } from '../hooks/useAuth';
 import { useAppSelector } from '../redux/hooks';
 import CarouselClassesThumbnail from './CarouselClassesThumbnail';
+import CarouselSearchClassesThumbnail from './CarouselSearchClassesThumbnail';
 
 interface Props {
   title: string | null | undefined;
@@ -27,13 +28,12 @@ interface Props {
   description: string | undefined
 }
 
-function CarouselClasses({
+function CarouselSearchClasses({
   title,
   classesDB,
   setSelectedClass,
   description
 }: Props) {
-  console.log(classesDB)
   const rowRef = useRef<HTMLDivElement>(null);
   const scrollRowRef = useRef<HTMLDivElement>(null);
   const theWidth = rowRef.current?.scrollWidth
@@ -72,41 +72,24 @@ function CarouselClasses({
   
   return (
     <m.div
-      className={`group carousel mt-12 px-9 w-full relative ${filtersSelector.classType !== 'all' && classesDB && filtersSelector.classType !== classesDB[0].type.toLowerCase() && 'hidden' }`}
+      className={`group carousel mt-12 px-9 w-full relative h-full ${filtersSelector.classType !== 'all' && classesDB && filtersSelector.classType !== classesDB[0].type.toLowerCase() && 'hidden' }`}
       ref={rowRef}
     >
       <h2 className='w-56 ml-4 relative text-2xl font-normal text-[#E5E5E5] transition duration-200 hover:text-white lg:text-2xl mb-4'>
         {title}
       </h2>
-      <ChevronLeftIcon
-        className={`absolute left-2 z-[250] h-9 ${
-          title === 'Mis Cursos' ? 'bottom-64' : 'bottom-32'
-        } opacity-0 transition hover:scale-125 group-hover:opacity-100 ${
-          classesDB?.length && classesDB?.length == 0 ? 'hidden' : ''
-        }`}
-        onClick={() => handleClick('left')}
-      />
-
       <m.div
-        className='inner-carousel overflow-y-hidden scrollbar-hide overflow-x-scroll relative mb-12'
+        className='flex flex-row flex-wrap justify-start overflow-y-hidden scrollbar-hide overflow-x-scroll relative mb-12'
         ref={scrollRowRef}
       >
         {classesDB?.map((c: IndividualClass, index) => (
           <React.Fragment key={index}>
-            <CarouselClassesThumbnail c={c} courseIndex={index} isOpen={isOpen} setIsOpen={setIsOpen} setSelectedClass={setSelectedClass}/>
+            <CarouselSearchClassesThumbnail c={c} courseIndex={index} isOpen={isOpen} setIsOpen={setIsOpen} setSelectedClass={setSelectedClass}/>
           </React.Fragment>
         ))}
       </m.div>
-      <ChevronRightIcon
-        className={`absolute right-0 z-[250]  h-9 ${
-          title === 'Mis Cursos' ? 'bottom-64' : 'bottom-32'
-        } transition hover:scale-125 ${
-            classesDB?.length && classesDB?.length < 1 ? 'hidden' : ''
-        }`}
-        onClick={() => handleClick('right')}
-      />
     </m.div>
   );
 }
 
-export default CarouselClasses;
+export default CarouselSearchClasses;
