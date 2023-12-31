@@ -53,7 +53,7 @@ const HeaderHome = ({ user, toggleNav }: Props) => {
             y: -100,
           }}
           animate={headerAnimation}
-          className={`${headerScroll ? 'bg-black fixed' : 'bg-transparent absolute'}  w-full h-16 flex justify-between items-center transition-all duration-500 z-[250]`}
+          className={`${headerScroll ? 'bg-black fixed' : 'bg-transparent fixed'}  w-full h-16 flex justify-between items-center transition-all duration-500 z-[250]`}
         >
           <div className='pl-4 md:pl-16'>
             <img
@@ -61,13 +61,14 @@ const HeaderHome = ({ user, toggleNav }: Props) => {
               src='/images/logoWhite.png'
               width={120}
               height={120}
-              className={`${headerScroll ? 'max-w-[80px]' : 'min-w-[100px]'} cursor-pointer object-contain transition-all duration-100 hover:scale-105 opacity-100`}
+              className={`${headerScroll ? 'max-w-[80px]' : 'min-w-[100px] mt-1'} cursor-pointer object-contain transition-all duration-100 hover:scale-105 opacity-100`}
+              onClick={() => router.push('/home')}
             />
           </div>
-          <div className='flex items-center pr-4 md:pr-16'>
+          <div className={`${!headerScroll && 'mt-1'} flex items-center pr-4 md:pr-16`}>
             <Menu as='div' className='relative inline-block text-left'>
               <div>
-                <Menu.Button className='inline-flex w-full justify-center items-center'>
+                <Menu.Button className={'inline-flex w-full justify-center items-center'}>
                       <CiMenuFries className='h-6 w-6' onClick={toggleNav}/>                  
                 </Menu.Button>
               </div>

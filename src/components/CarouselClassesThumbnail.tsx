@@ -38,10 +38,6 @@ import { HiOutlineLockClosed } from 'react-icons/hi2';
 
 interface Props {
   c: IndividualClass;
-  setSelectedClass: Dispatch<SetStateAction<IndividualClass | null>> | null;
-  courseIndex: number;
-  isOpen: number;
-  setIsOpen: any;
 }
 
 const notify = (message: String, agregado: boolean, like: boolean) =>
@@ -72,10 +68,6 @@ const notify = (message: String, agregado: boolean, like: boolean) =>
   );
 
 function CarouselClassesThumbnail({
-  courseIndex,
-  isOpen,
-  setIsOpen,
-  setSelectedClass,
   c
 }: Props) {
   const dispatch = useAppDispatch();
@@ -106,7 +98,7 @@ function CarouselClassesThumbnail({
 
   return (
     <AnimatePresence>
-        <div className='flex flex-col space-y-0'>
+        <div className='flex flex-col space-y-0' onClick={() => router.push(`/classes/${c.id}`)}>
             <m.div
                 className={`thumbnailClassContainer relative 
                 h-[17rem] md:h-[19rem] transition-all duration-500

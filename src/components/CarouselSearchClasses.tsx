@@ -79,14 +79,17 @@ function CarouselSearchClasses({
         {title}
       </h2>
       <m.div
-        className='flex flex-row flex-wrap justify-start overflow-y-hidden scrollbar-hide overflow-x-scroll relative mb-12'
+        className='flex flex-row flex-wrap justify-center md:justify-start overflow-y-hidden scrollbar-hide overflow-x-scroll relative mb-12'
         ref={scrollRowRef}
       >
         {classesDB?.map((c: IndividualClass, index) => (
           <React.Fragment key={index}>
-            <CarouselSearchClassesThumbnail c={c} courseIndex={index} isOpen={isOpen} setIsOpen={setIsOpen} setSelectedClass={setSelectedClass}/>
+            <CarouselSearchClassesThumbnail c={c}/>
           </React.Fragment>
         ))}
+        {classesDB?.length === 0 && (
+          <>Clases pronto...</>
+        )}
       </m.div>
     </m.div>
   );

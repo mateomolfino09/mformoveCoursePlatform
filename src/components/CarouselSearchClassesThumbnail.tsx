@@ -38,10 +38,6 @@ import { HiOutlineLockClosed } from 'react-icons/hi2';
 
 interface Props {
   c: IndividualClass;
-  setSelectedClass: Dispatch<SetStateAction<IndividualClass | null>> | null;
-  courseIndex: number;
-  isOpen: number;
-  setIsOpen: any;
 }
 
 const notify = (message: String, agregado: boolean, like: boolean) =>
@@ -72,10 +68,6 @@ const notify = (message: String, agregado: boolean, like: boolean) =>
   );
 
 function CarouselSearchClassesThumbnail({
-  courseIndex,
-  isOpen,
-  setIsOpen,
-  setSelectedClass,
   c
 }: Props) {
   const dispatch = useAppDispatch();
@@ -106,13 +98,13 @@ function CarouselSearchClassesThumbnail({
 
   return (
     <AnimatePresence>
-        <div className='flex flex-col space-y-0 mb-8' style={{flex: '1 0 21%'}}>
+        <div className='flex flex-col max-w-[19rem] md:mr-3 lg:mr-4 md:max-w-[19rem] lg:max-w-[21rem] h-[15rem] md:h-[16rem] lg:h-[17rem] justify-center items-center space-y-0 mb-8' style={{flex: '1 0 21%'}} onClick={() => router.push(`/classes/${c.id}`)}>
             <m.div
-                className={`max-w-[15rem] md:max-w-[20rem] mx-4 rounded-xl flex justify-start items-center flex-col relative 
-                h-[12rem] md:h-[16rem] transition-all duration-500
+                className={`max-w-[19rem] md:max-w-[19rem] lg:max-w-[21rem] mx-4 rounded-xl flex justify-center md:justify-start items-center flex-col relative 
+                h-[15rem] md:h-[16rem] lg:h-[17rem] transition-all duration-500
                 } overflow-hidden `}
             >
-                <div className='w-[15rem] md:w-[23rem] h-full relative'>
+                <div className='w-[19rem] md:w-[19rem] lg:max-w-[21rem] h-full relative'>
                 <Image
                     src={c.image_base_link}
                     className='object-cover rounded-lg'

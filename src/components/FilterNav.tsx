@@ -38,7 +38,8 @@ const FilterNav = ({ showNav }: Props) => {
         (state) => state.filterClass.value
         );
       const { filters } = filterClassSlice;
-
+        const path = usePathname()
+        console.log(path)
       const snap = useSnapshot(state);
 
       useEffect(() => {
