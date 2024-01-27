@@ -207,7 +207,7 @@ export default function PlayerControls({
 
       <div
         className={`${
-          fullScreen ? '!mt-96' : '!mt-0'
+          fullScreen ? '!mt-0' : '!mt-0'
         } absolute top-0 h-full flex flex-row items-center justify-center  w-full flex-wrap box-border `}
       >
         <button
@@ -285,7 +285,7 @@ export default function PlayerControls({
               min={0}
               max={100}
               size='small'
-              defaultValue={volume / 100}
+              defaultValue={75}
               color='primary'
               className='!w-[20%] !text-[white] !hidden md:!block'
               onChange={onVolumeChange}

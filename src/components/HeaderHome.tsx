@@ -30,6 +30,7 @@ const HeaderHome = ({ user, toggleNav }: Props) => {
   const headerScroll = useAppSelector(
     (state: any) => state.headerHomeReducer.value.scrollHeader
     );
+  const pathname = usePathname()
 
   useEffect(() => {
     setDomLoaded(true);
@@ -56,14 +57,16 @@ const HeaderHome = ({ user, toggleNav }: Props) => {
           className={`${headerScroll ? 'bg-black fixed' : 'bg-transparent fixed'}  w-full h-16 flex justify-between items-center transition-all duration-500 z-[250]`}
         >
           <div className='pl-4 md:pl-16'>
-            <img
-              alt='icon image'
-              src='/images/logoWhite.png'
-              width={120}
-              height={120}
-              className={`${headerScroll ? 'max-w-[80px]' : 'min-w-[100px] mt-1'} cursor-pointer object-contain transition-all duration-100 hover:scale-105 opacity-100`}
-              onClick={() => router.push('/home')}
-            />
+            <a href={pathname != '/home' ? '/home' : `/`}>
+              <img
+                alt='icon image'
+                src='/images/logoWhite.png'
+                width={120}
+                height={120}
+                className={`${headerScroll ? 'max-w-[80px]' : 'min-w-[100px] mt-1'} cursor-pointer object-contain transition-all duration-100 hover:scale-105 opacity-100`}
+              />
+            
+            </a>
           </div>
           <div className={`${!headerScroll && 'mt-1'} flex items-center pr-4 md:pr-16`}>
             <Menu as='div' className='relative inline-block text-left'>

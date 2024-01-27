@@ -34,6 +34,7 @@ import { useAppDispatch } from '../../hooks/useTypeSelector';
 import { toggleScroll } from '../../redux/features/headerHomeSlice';
 import { setFilters, setIndividualClasses } from '../../redux/features/filterClass';
 import { LoadingSpinner } from '../LoadingSpinner';
+import Footer from '../Footer';
 
 interface Props {
   classesDB: IndividualClass[];
@@ -41,6 +42,8 @@ interface Props {
 }
 
 const Home = ({ classesDB, filters }: Props) => {
+  console.log(classesDB, filters)
+  const [reload, setReload] = useState<boolean>(false)
   const [typedClasses, setClasses] = useState<any | null>(null);
   const [isMember, setIsMember] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -58,9 +61,7 @@ const Home = ({ classesDB, filters }: Props) => {
     if(!auth.user) {
       auth.fetchUser()
     } 
-    else {
-      setIsMember(true)
-    }
+    setReload(true)
     
     filters != null && dispatch(setFilters(filters))
 
@@ -91,7 +92,7 @@ const Home = ({ classesDB, filters }: Props) => {
     dispatch(setIndividualClasses(arrayOfObjects))
     setClasses(arrayOfObjects)
 
-  }, [auth?.user]);
+  }, [reload]);
 
 
   useEffect(() => {
@@ -99,6 +100,8 @@ const Home = ({ classesDB, filters }: Props) => {
     const ic = filterClassSlice.individualClasses
     let newArr: any = []
     setLoading(true)
+
+    console.log(ic)
     
     ic?.forEach((iCGroup: any) => {
       let classesFilter: IndividualClass[] = []
@@ -137,7 +140,10 @@ const Home = ({ classesDB, filters }: Props) => {
 
         let seenCondition = true 
           if(filterClassSlice.seen) {
-            seenCondition = auth.user?.classesSeen?.includes(iC._id)
+            if(auth.user) {
+              seenCondition = auth.user?.classesSeen?.includes(iC._id)
+            }
+            else seenCondition = false
           }
         
         return levelCondition && lengthCondition && seenCondition && orderCondition
@@ -145,6 +151,8 @@ const Home = ({ classesDB, filters }: Props) => {
       classesFilter.length > 0 && newArr.push({ group: iCGroup.group , items: classesFilter })
       
     });
+
+    console.log(newArr)
 
     setClasses(newArr)
     setLoading(false)
@@ -183,6 +191,14 @@ const Home = ({ classesDB, filters }: Props) => {
               <LoadingSpinner />
             )}
           </section>
+          {typedClasses && !loading ? (
+              <>
+              <Footer />
+              </>
+            ) : (
+              <LoadingSpinner />
+            )}
+          
         </main>
       
       <Toaster />

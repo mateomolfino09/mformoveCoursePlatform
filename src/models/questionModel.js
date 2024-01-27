@@ -36,6 +36,10 @@ const questionSchema = new mongoose.Schema(
     class: {
       type: mongoose.Types.ObjectId,
       ref: 'Class'
+    },
+    individualClass: {
+      type: mongoose.Types.ObjectId,
+      ref: 'IndividualClass'
     }
   },
   { timestamps: true }

@@ -31,9 +31,7 @@ const IndexHeader = ({ user, toggleNav, where }: Props) => {
   const snap = useSnapshot(state);
 
   useEffect(() => {
-    console.log('hola')
     setDomLoaded(true);
-    if (!snap.volumeModal) {
       where === "home" ?
       headerAnimation.start({
         y: 100,
@@ -53,8 +51,7 @@ const IndexHeader = ({ user, toggleNav, where }: Props) => {
           duration: 1
         }
       }) ;
-    }
-    [snap.volumeModal];
+    [];
   });
 
   return (

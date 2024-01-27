@@ -46,7 +46,7 @@ function Profile() {
     <div className='main-container'>
       <main className='sub-main-container'>
         <div className='title-container'>
-          <h1 className='title'>Perfil</h1>
+          <h1 className='title text-black font-light'>Perfil</h1>
         </div>
 
         <Membership user={auth.user} />

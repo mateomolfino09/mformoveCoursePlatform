@@ -24,14 +24,15 @@ const endpoints = {
     listCourse: '/api/user/course/list', 
     createCourse: '/api/course/createCourse',
     delete: (courseId: string) => `/api/course/delete/${courseId}`
-
-
   },
   individualClass: {
     delete: (classId: string) => `/api/individualClass/delete/${classId}`,
     search: (text: string) => `/api/individualClass/search?text=${text}`
-
-
+  },
+  payments: {
+    deletePlan: (id: string) => `/api/payments/deletePlan/${id}`,
+    createPlan: `/api/payments/createPlan`,
+    editPlan: `/api/payments/editPlan`,
   },
   admin: {
     emailMarketing: '/api/admin/emailMarketing'

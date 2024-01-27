@@ -11,7 +11,6 @@ export async function getClasses(search: string = "") {
     search != "" 
     ? res = await IndividualClass.find({name: { $regex: search, $options: 'i' }})
     : res = await IndividualClass.find({})
-    console.log(res)
     const classes = JSON.parse(JSON.stringify(res));
     return classes;
   } catch (err) {

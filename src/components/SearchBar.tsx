@@ -38,10 +38,6 @@ const SearchBar = ({ setSelectedCourse }: Props) => {
   useEffect(() => {
     const cookies: any = Cookies.get('userToken')
     
-    if (!cookies) {
-      router.push('/login');
-    }
-    
     if(!auth.user) {
       auth.fetchUser()
     }

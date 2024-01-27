@@ -210,6 +210,7 @@ export interface User {
   admin: AdminUser;
   notifications: Notification[];
   classesSeen: IndividualClass[];
+  isMember: boolean
 }
 
 export interface CoursesDB {
@@ -341,6 +342,62 @@ export interface IndividualClass {
   image_mini_base_link: string
   html: string
   link: string
+  linkId: string
   new: boolean
-  
+  links: [Link]
+  atachedFiles: [Archive]
+
+}
+
+export interface Payment {
+  amount: number
+  currency: string
+  country: string
+  order_id: string
+  payer: Payer
+  description: string
+  success_url: string
+  back_url: string
+  notification_url: string
+  expiration_type: string
+  expiration_value: number
+
+}
+
+export interface Payer {
+  id: string
+  name: string
+  email: string
+  phone: string
+  document_type: string
+  user_reference: string
+  address: Address
+}
+
+export interface Address {
+  state: string
+  city: string
+  zip_code: string
+  full_address: string
+}
+
+export interface Plan {
+  id: string
+  _id: string;
+  merchant_id: string
+  name: string
+  description: string
+  amount: number
+  currency: string
+  country: string
+  frequency_type: string
+  frequency_value: number
+  frequency_label: string
+  active: boolean
+  plan_token: string
+  back_url: string
+  notification_url: string
+  success_url: string
+  error_url: string
+  createdAt: string;
 }

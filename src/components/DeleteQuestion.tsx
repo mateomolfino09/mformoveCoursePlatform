@@ -58,7 +58,7 @@ const DeleteQuestion = ({ question, deleteQuestion, isOpen, setIsOpen }: Props) 
                   <div className='mt-4'>
                     <button
                       type='button'
-                      className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-4 mt-4 mb-4'
+                      className='bg-[#a38951] text-white font-bold py-2 px-4 rounded mr-4 mt-4 mb-4'
                       onClick={() => handleSubmit()}
                     >
                       Eliminar

@@ -6,6 +6,7 @@ import headerHomeReducer from './features/headerHomeSlice';
 import createCourseReducer from './features/createCoursesSlice';
 import { courseModalApi } from "./services/courseModalApi";
 import { classApi } from "./services/classApi";
+import { individualClassApi } from "./services/individualClassApi";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import registerReducer from './features/register'
 
@@ -18,10 +19,11 @@ export const store = configureStore({
     filterClass,
     headerHomeReducer,
     [courseModalApi.reducerPath]: courseModalApi.reducer,
-    [classApi.reducerPath]: classApi.reducer
+    [classApi.reducerPath]: classApi.reducer,
+    [individualClassApi.reducerPath]: individualClassApi.reducer
 
   },
-  middleware: (getDefaultMiddleware: any) => getDefaultMiddleware().concat([courseModalApi.middleware , classApi.middleware])
+  middleware: (getDefaultMiddleware: any) => getDefaultMiddleware().concat([courseModalApi.middleware , classApi.middleware, individualClassApi.middleware])
 })
 
 setupListeners(store.dispatch)

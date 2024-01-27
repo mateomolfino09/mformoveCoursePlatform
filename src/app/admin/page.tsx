@@ -5,7 +5,8 @@ import {
   CreditCardIcon,
   TableCellsIcon,
   AtSymbolIcon,
-  UserIcon
+  UserIcon,
+  BuildingStorefrontIcon
 } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
@@ -85,10 +86,16 @@ const Index = () => {
                 <p>Clases</p>
               </div>
             </Link>
-            <Link href={'#'}>
+            <Link href={'/admin/memberships'}>
               <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
+                <BuildingStorefrontIcon className='w-24' />
+                <p>Memberships</p>
               </div>
             </Link>
+            {/* <Link href={'#'}>
+              <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
+              </div>
+            </Link> */}
           </div>
           <div className='grid col-1 bg-gray-500 h-96 shadow-sm' />
         </div>

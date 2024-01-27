@@ -10,6 +10,7 @@ import { parseCookies } from 'nookies';
 import React, { Fragment, useEffect, useState } from 'react';
 import MainSideBarDash from './MainSideBarDash';
 import HeaderHome from './HeaderHome';
+import Footer from './Footer';
 
 interface Props {
   children: any;
@@ -62,8 +63,18 @@ const MainSideBar = ({ children, where }: Props) => {
           <>
           </>
         )}
-       
           {children}
+          {/* {where === "home" ? (
+        
+            <>
+            </>
+            ) : (
+              <Footer/>
+
+
+          )} */}
+
+        
     </div>
   )
 }

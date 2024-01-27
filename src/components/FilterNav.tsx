@@ -117,7 +117,7 @@ const FilterNav = ({ showNav }: Props) => {
                 <IoCloseOutline className='text-white md:text-black w-10 h-10'/>
                 </div>
                 <div className='mt-28 flex items-center justify-start flex-col w-full'>
-                  {auth.user && filters?.filter(x => x.type === 'multiple').map((f, i) => (
+                  {filters?.filter(x => x.type === 'multiple').map((f, i) => (
                     <>
                     <div key={i} className={`${i === 0 && 'hidden'} w-full px-6 flex flex-col justify-center items-start`} >
                       <hr className={`${i == 1 ? 'border-[0.5px] border-solid border-white/75 md:border-black/75 w-full my-3' : 'hidden'}`}/>

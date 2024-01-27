@@ -227,8 +227,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
             className='group bg-white text-black hover:text-white hover:border-white border hover:bg-black transition-all duration-200  px-2 py-0.5 rounded-md flex mt-1 '
             onClick={createQuestion}
           >
-            <CursorArrowRaysIcon className='h-6 w-6' />
-            <span>PUBLICAR</span>
+            <span>Publicar</span>
           </button>
         </div>
       </div>

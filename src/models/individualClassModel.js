@@ -107,12 +107,12 @@ const individualClassSchema = new mongoose.Schema(
       required: true,
       default: () => true
     },
-    // atachedFiles: [
-    //   fileSchema
-    // ],
-    // links: [
-    //   linkSchema
-    // ]
+    links: [
+      linkSchema
+    ],
+    atachedFiles: [
+      fileSchema
+    ],
   },
   { timestamps: true }
 );

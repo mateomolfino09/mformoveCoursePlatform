@@ -35,7 +35,6 @@ function CarouselClasses({
   setSelectedClass,
   description
 }: Props) {
-  console.log(classesDB)
   const rowRef = useRef<HTMLDivElement>(null);
   const scrollRowRef = useRef<HTMLDivElement>(null);
   const theWidth = rowRef.current?.scrollWidth

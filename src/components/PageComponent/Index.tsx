@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import { FaHamburger } from 'react-icons/fa';
 import { GiHamburger } from 'react-icons/gi';
 import MainSideBar from '../MainSideBar';
+import Footer from '../Footer';
 
 const Index = () => {
   const auth = useAuth()
@@ -52,7 +53,7 @@ const Index = () => {
           <main className='relative pl-4 lg:space-y-24 lg:pl-16'>
             <Banner />
           </main>
-            <div className='absolute min-w-[100vw] top-1/2 flex justify-center items-center' >
+            <div className='absolute w-full top-1/2 flex justify-center items-center' >
                 <button className='w-48 h-12 md:w-56 md:h-14 md:text-lg rounded-3xl border-white hover:bg-white hover:text-black border text-base font-thin' >
                   <a href="/home">
                   Practicar Conmigo 
@@ -60,20 +61,10 @@ const Index = () => {
                 </button>
 
           </div>
-          <VolumeModal />
           <div className='absolute right-0 bottom-0 h-12 w-12'>
-            {!state.volumeIndex ? (
-              <BiVolumeMute
-                className='h-6 w-6 text-white opacity-50 cursor-pointer hover:opacity-100 transition duration-500'
-                onClick={() => (state.volumeIndex = true)}
-              />
-            ) : (
-              <BiVolumeFull
-                className='h-6 w-6 text-white opacity-50 cursor-pointer hover:opacity-100 transition duration-500'
-                onClick={() => (state.volumeIndex = false)}
-              />
-            )}
           </div>
+          <Footer />
+
         </MainSideBar>
         </div>
         

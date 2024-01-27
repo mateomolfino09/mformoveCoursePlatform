@@ -22,20 +22,10 @@ import React, {
 } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import { AiOutlineCheckCircle, AiOutlineMinusCircle } from 'react-icons/ai';
-import { BiAddToQueue } from 'react-icons/bi';
-import { BsPlayCircle } from 'react-icons/bs';
-import { FaHistory, FaPlay } from 'react-icons/fa';
-import { GiDiploma } from 'react-icons/gi';
-import { GoCreditCard } from 'react-icons/go';
 import { MdAdd, MdBlock, MdOutlineClose, MdRemove } from 'react-icons/md';
-import { TbLockOpenOff } from 'react-icons/tb';
 import { useAuth } from '../hooks/useAuth';
-import Cookies from 'js-cookie';
-import { useRouter } from 'next/navigation';
-import { useGlobalContext } from '../app/context/store';
-import { IoLockClosedOutline } from "react-icons/io5";
 import { HiOutlineLockClosed } from 'react-icons/hi2';
-
+import { CiLock } from 'react-icons/ci';
 interface Props {
   c: IndividualClass;
 }
@@ -70,42 +60,20 @@ const notify = (message: String, agregado: boolean, like: boolean) =>
 function CarouselClassesThumbnail({
   c
 }: Props) {
-  const dispatch = useAppDispatch();
-  const [courseUser, setCourseUser] = useState<CourseUser | null>(null);
-  const [zIndex, setZIndex] = useState(0);
-  const { listCourse, setListCourse } = useGlobalContext();
-  const animation = useAnimation();
-  const animationButton = useAnimation();
-  const animationArrow = useAnimation();
   const auth = useAuth()
-  const router = useRouter()
-
-  const user = auth.user
-
-
-  useEffect(() => {
-    const cookies: any = Cookies.get('userToken')
-    
-    if (!cookies) {
-      router.push('/login');
-    }
-    
-    if(!auth.user) {
-      auth.fetchUser()
-    }
-
-  }, [auth.user]);
 
   return (
     <AnimatePresence>
-        <div className='flex flex-col space-y-0' onClick={() => router.push(`/classes/${c.id}`)}>
+        <Link href={`/classes/${c.id}`}>
+
+        <div className='flex flex-col space-y-0'>
             <m.div
                 className={`thumbnailClassContainer relative 
                 h-[17rem] md:h-[19rem] transition-all duration-500
                 } overflow-hidden `}
             >
                 <div
-                className={`thumb-class-color rounded-lg min-w-[20rem] min-h-[17rem] md:min-h-[19rem] md:min-w-[23rem]
+                className={`thumb-class-color group rounded-lg min-w-[20rem] min-h-[17rem] md:min-h-[19rem] md:min-w-[23rem]
                 overflow-hidden`}
                 />
                 <div className='thumbnailClassesItem relative'>
@@ -117,8 +85,8 @@ function CarouselClassesThumbnail({
                     fill={true}    
                     />
                 </div>
-                <div className={`absolute w-full h-full ${false ? 'bg-black/50 flex justify-center items-center' : 'hidden' } `}>
-                    <HiOutlineLockClosed className='h-16 w-16 font-light'/>
+                <div className={`absolute w-full h-full ${!auth?.user || (!auth?.user?.isMember && auth.user.rol !== "Admin")  ? 'hover:bg-black/50 justify-center items-center' : '' } hidden hover:flex`}>
+                    <CiLock className='h-14 text-xs w-14 font-light'/>
                 </div>
                 <div className={`w-full h-2 bg-white rounded-lg mt-1`}>
 
@@ -135,6 +103,7 @@ function CarouselClassesThumbnail({
                 </div>
             </m.div>
         </div>
+        </ Link>
     </AnimatePresence>
   );
 }

@@ -105,6 +105,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    isMember: {
+      type: Boolean,
+      default: () => false
+    },
     courses: [courseUser],
     notifications: [notification],
     admin: adminUser,

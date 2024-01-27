@@ -75,10 +75,6 @@ function Thumbnail({ course, setSelectedCourse, user, courseIndex }: Props) {
   useEffect(() => {
     const cookies: any = Cookies.get('userToken')
     
-    if (!cookies) {
-      router.push('/login');
-    }
-    
     if(!auth.user) {
       auth.fetchUser()
     }

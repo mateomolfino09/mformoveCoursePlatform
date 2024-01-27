@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
+import Footer from './Footer';
 
 function Banner() {
   const dispatch = useAppDispatch();
@@ -44,8 +45,8 @@ function Banner() {
 
   return (
     <>
-    <div className='flex flex-col space-y-2 py-16 md:space-y-4 h-[75vh] lg:h-[90vh] justify-end lg:items-end mr-12 lg:mr-24'>
-      <div className='absolute top-0 left-0 h-[100vh] w-screen -z-10'>
+    <div className='flex flex-col space-y-2 py-16 md:space-y-4 min-h-[100vh] justify-end lg:items-end mr-12 lg:mr-24  overflow-hidden'>
+      <div className='absolute top-0 left-0 h-[100vh] w-full -z-10 overflow-hidden'>
         {/* <video src={'/video/videoTest3.mp4'} autoPlay loop muted={!snap.volumeIndex} className='object-cover h-full w-full'>
 
         </video> */}
@@ -56,7 +57,7 @@ function Banner() {
           loop
           muted={!snap.volumeIndex}
           controls={false}
-          className='object-cover h-full w-full hidden md:block'
+          className='object-cover h-full w-full hidden md:block overflow-hidden'
         />
         <Image
           src={'/images/bgIndex2.jpg'}
