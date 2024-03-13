@@ -62,9 +62,25 @@ function CarouselClassesThumbnail({
 }: Props) {
   const auth = useAuth()
 
+  const ComponentToRender = ({ children }: any) => (
+    <>
+      {auth.user ? (
+        <>
+        <Link href={`/classes/${c.id}`}>
+            {children}
+          </Link>
+        </>
+      ) : (
+        <>
+            {children}
+        </>
+      )}
+    </>
+  )
+
   return (
     <AnimatePresence>
-        <Link href={`/classes/${c.id}`}>
+        <ComponentToRender>
 
         <div className='flex flex-col space-y-0'>
             <m.div
@@ -88,7 +104,7 @@ function CarouselClassesThumbnail({
                 <div className={`absolute w-full h-full ${!auth?.user || (!auth?.user?.isMember && auth.user.rol !== "Admin")  ? 'hover:bg-black/50 justify-center items-center' : '' } hidden hover:flex`}>
                     <CiLock className='h-14 text-xs w-14 font-light'/>
                 </div>
-                <div className={`w-full h-2 bg-white rounded-lg mt-1`}>
+                <div className={`${auth?.user && auth.user?.classesSeen?.includes(c._id) ? "h-2 bg-white" : " bg-white/80 h-1"} w-full rounded-lg mt-1`}>
 
                 </div>
                 <div className='flex flex-col justify-center items-start mt-1 w-full px-1 py-1'>
@@ -103,7 +119,8 @@ function CarouselClassesThumbnail({
                 </div>
             </m.div>
         </div>
-        </ Link>
+        
+        </ComponentToRender>
     </AnimatePresence>
   );
 }

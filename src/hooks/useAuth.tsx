@@ -37,6 +37,16 @@ function useProvideAuth() {
 				},
 				})
 			const user = await res.json()
+
+			const membershipRes = await fetch(endpoints.auth.profile, {
+				method: 'GET',
+				headers: {  
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				})
+			const membership = await membershipRes.json()
+
 			setUser(user.user)
 			return user
 		  }
@@ -227,6 +237,27 @@ function useProvideAuth() {
 		}
 	  };
 
+
+
+	  const newSub = async (idUser: string) => {
+		try {	
+			const res = await fetch(endpoints.payments.createSub, {
+				method: 'PUT',
+				headers: {  
+				  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ idUser }),
+			  })
+
+			const data = await res.json()
+			console.log(data)
+			setUser(data)
+			return data
+		} catch (error) {
+		  setUser(null);
+		}
+	  };
+
 	return {
 		user,
 		error,
@@ -241,6 +272,7 @@ function useProvideAuth() {
 		resetPassword,
 		resetMail,
 		resetMailSend,
-		forgetPasswordSend
+		forgetPasswordSend,
+		newSub
 	  };
 }

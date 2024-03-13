@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 
 interface Props {
   user: User | null;
@@ -28,6 +29,7 @@ const monthNames = [
 function Membership({ user }: Props) {
   const [isBillingLoading, setBillingLoading] = useState(false);
   const router = useRouter();
+  const auth = useAuth();
 
   return (
     <div className='mt-6 grid grid-cols-1 gap-x-4 border px-4 md:grid-cols-4 md:border-x-0 md:border-t md:border-b-0 md:px-0'>
@@ -35,7 +37,7 @@ function Membership({ user }: Props) {
         <button
           onClick={() => router.push('/account/billing')}
           //   disabled={isBillingLoading || !subscription}
-          className='block min-w-fit px-3 h-10 !bg-chill-black text-center text-light-white py-2 rounded-2xl hover:bg-chill-black hover:-translate-y-1 transition-all duration-500
+          className='block min-w-fit px-5 h-10 !bg-black text-center font-light text-white py-2 rounded-full hover:bg-black hover:-translate-y-1 transition-all duration-500
         '
           //   onClick={manageSubscription}
         >
@@ -46,28 +48,24 @@ function Membership({ user }: Props) {
       <div className='col-span-3'>
         <div className='flex flex-col justify-between border-b border-white/10 py-4 md:flex-row'>
           <div>
-            <p className='font-medium'>{user?.email}</p>
+            <p className='font-medium'>{auth.user?.email}</p>
             <p className='text-[gray]'>Contraseña: ********</p>
             <p className='font-medium mt-2'>
               Usuario creado el{' '}
-              {user?.createdAt &&
-                new Date(user?.createdAt).getDate().toString()}{' '}
+              {auth.user?.createdAt &&
+                new Date(auth.user?.createdAt).getDate().toString()}{' '}
               de{' '}
-              {user?.createdAt &&
-                monthNames[new Date(user?.createdAt).getMonth()]}{' '}
+              {auth.user?.createdAt &&
+                monthNames[new Date(auth.user?.createdAt).getMonth()]}{' '}
               del{' '}
-              {user?.createdAt &&
-                new Date(user?.createdAt).getFullYear().toString()}{' '}
+              {auth.user?.createdAt &&
+                new Date(auth.user?.createdAt).getFullYear().toString()}{' '}
             </p>
           </div>
           <div className='md:text-right'>
-            <Link href={'/resetEmail'}>
-              <p className='membershipLink'>Cambiar Email</p>
-            </Link>
-
-            <Link href={'/forget'}>
-              <p className='membershipLink'>Cambiar Contraseña</p>
-            </Link>
+              <a href='/resetEmail'><p className='membershipLink '>Cambiar Email</p></a>
+    
+            <a href='/forget'><p className='membershipLink '>Cambiar Contraseña</p></a>
           </div>
 
         </div>
@@ -75,7 +73,7 @@ function Membership({ user }: Props) {
         <div className='flex flex-col justify-between pt-4 pb-4 md:flex-row md:pb-0'>
           <div>
             <Image
-              src='/images/mplogo.png'
+              src='/images/dlocal.svg'
               alt={'image'}
               loader={imageLoader}
               className='rounded-md h-auto  w-12'

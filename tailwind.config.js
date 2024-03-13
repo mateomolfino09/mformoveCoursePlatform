@@ -15,7 +15,7 @@ module.exports = {
           'linear-gradient(to bottom,rgba(20,20,20,0) 0,rgba(20,20,20,.15) 15%,rgba(20,20,20,.35) 29%,rgba(20,20,20,.58) 44%,#141414 68%,#141414 100%);'
       },
       colors: {
-        'light-cream': '#F6F5ED',
+        'light-cream': '#FFFDFD',
         'rich-black': '#01161E',
         'chill-black': '#293132',
         'light-white': '#FFFDFD',

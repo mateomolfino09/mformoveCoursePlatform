@@ -3,6 +3,8 @@ import connectDB from '../../../../config/connectDB';
 import Plan from '../../../../models/planModel';
 import { NextResponse } from 'next/server';
 import dLocalApi from '../dlocalTest';
+import absoluteUrl from 'next-absolute-url';
+
 
 connectDB();
 
@@ -11,6 +13,10 @@ export async function POST(req) {
         name, description, currency, amount, frequency_type
         } = await req.json();  
   try { 
+      const { origin } = absoluteUrl(req);
+
+      console.log(origin)
+
       if (req.method === 'POST') {
 
         const response = await dLocalApi.post('/subscription/plan', {
@@ -19,9 +25,10 @@ export async function POST(req) {
             description,
             amount,
             frequency_type,
-            success_url: "localhost:3000/success",
-            error_url: "localhost:3000/error",
-            back_url: "localhost:3000/back"
+            frequency_value: 1,
+            success_url: `${origin}/payment/success`,
+            error_url: `${origin}/payment/error`,
+            back_url: `${origin}/payment/back`
           });  
             
           const data = response.data;
@@ -49,6 +56,8 @@ export async function POST(req) {
             free_trial_days: data?.free_trial_days,
     
           }).save();
+
+          console.log(data)
 
         return NextResponse.json({ success: true, newPlan: newPlan, message: "Plan creado con éxito" }, { status: 200 })
 

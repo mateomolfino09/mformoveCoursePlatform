@@ -24,7 +24,7 @@ const CreatePlanStepOne = ({ handleSubmit}: Props) => {
       );
     const dispatch = useDispatch<AppDispatch>()
     const createClassReducer = useAppSelector(
-        (state) => state.classesModalReducer.value
+        (state: any) => state.classesModalReducer.value
         );
     const { name: nameOr, typeId: typeIdOr, files: filesOr } = createClassReducer
     const [name, setName] = useState(nameOr);
@@ -110,7 +110,7 @@ const CreatePlanStepOne = ({ handleSubmit}: Props) => {
             />
           </label>
           <div className='space-y-4'>
-                <p>Elige el nivel de la clase</p>
+                <p>Elige el tipo de plan</p>
           <Select
                 options={planFrequencys}
                 styles={colourStyles}

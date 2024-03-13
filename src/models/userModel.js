@@ -30,6 +30,61 @@ const classUser = new mongoose.Schema({
   }
 });
 
+const subscriptionSchema = new mongoose.Schema(
+  {
+    id: {
+      type: String,
+    },
+    planId: {
+        type: String,
+
+    },
+    country: {
+      type: String,
+    },
+    subscription_token: {
+      type: String,
+    },
+    status: {
+      type: String,
+    },
+    payment_method_code: {
+      type: String,
+    },
+    client_id: {
+      type: String,
+    },
+    created_at: {
+      type: Date,
+      immutable: true,
+    },
+    client_first_name: {
+      type: String,
+    },
+    client_last_name: {
+      type: String,
+
+    },
+    client_document_type: {
+      type: String,
+
+    },
+    client_document: {
+      type: String,
+
+    },
+    client_email: {
+      type: String,
+
+    },
+    active: {
+      type: Boolean,
+      default: () => false
+    },
+  },
+);
+
+
 const notification = new mongoose.Schema({
   title: {
     type: String,
@@ -120,7 +175,9 @@ const userSchema = new mongoose.Schema(
     classesSeen: [{
       type: mongoose.Types.ObjectId,
       ref: 'IndividualClassUser'
-    }]
+    }],
+    subscription: subscriptionSchema
+
   },
   { timestamps: true }
 );

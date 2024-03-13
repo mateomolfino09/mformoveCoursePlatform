@@ -9,6 +9,7 @@ const endpoints = {
     resetMailSend: `/api/user/auth/resetEmail`,
     resetPassword: (token: string) =>  `/api/user/auth/reset/${token}`,
     resetPasswordSend: `/api/user/auth/forget`,
+
   },
   user: {
     update: (id: string) => `/api/user/update/${id}`,
@@ -33,6 +34,7 @@ const endpoints = {
     deletePlan: (id: string) => `/api/payments/deletePlan/${id}`,
     createPlan: `/api/payments/createPlan`,
     editPlan: `/api/payments/editPlan`,
+    createSub: `/api/payments/createSubscription`,
   },
   admin: {
     emailMarketing: '/api/admin/emailMarketing'

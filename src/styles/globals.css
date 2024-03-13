@@ -81,7 +81,7 @@
   }
 
   .membershipLink {
-    @apply cursor-pointer text-blue-500 hover:underline;
+    @apply cursor-pointer text-blue-500 hover:underline font-light; 
   }
 
   .bg-light-red {

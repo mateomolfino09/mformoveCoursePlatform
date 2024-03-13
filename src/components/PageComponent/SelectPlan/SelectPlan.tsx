@@ -44,7 +44,7 @@ const SelectPlan = ({ plans }: Props ) => {
   return (
     <MainSideBar where={''}>
 
-        <div className='h-auto w-full bg-[#131212] items-center justify-center relative flex flex-col mt-24 pb-12'>
+        <div className='h-auto w-full bg-[#131212] items-center justify-center relative flex flex-col pt-16 pb-12'>
             <SelectYourPlan plans={plans} select={"select"}/>   
         </div>
         <Footer />

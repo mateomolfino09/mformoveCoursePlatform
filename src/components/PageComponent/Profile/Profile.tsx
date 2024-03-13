@@ -6,16 +6,19 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
-import React, { useEffect, useState } from 'react';
+import React, { AnchorHTMLAttributes, useEffect, useRef, useState } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
 import { FaHistory } from 'react-icons/fa';
 import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import './profileStyle.css';
+import Footer from '../../Footer';
+import FooterProfile from './FooterProfile';
 
 function Profile() {
   const router = useRouter();
   const auth = useAuth()
+  const aRef = useRef<any>(null)
 
   useEffect(() => {
     const cookies: any = Cookies.get('userToken')
@@ -33,9 +36,9 @@ function Profile() {
 
   const logoutHandler = async (e: any) => {
     e.preventDefault();
-
     auth.signOut()
-    router.push('/login')
+
+    aRef?.current?.click()
   };
 
   const cantCourses = auth.user?.courses?.filter(
@@ -43,10 +46,10 @@ function Profile() {
   ).length;
 
   return (
-    <div className='main-container'>
-      <main className='sub-main-container'>
+    <div className='main-container '>
+      <main className='sub-main-container h-screen'>
         <div className='title-container'>
-          <h1 className='title text-black font-light'>Perfil</h1>
+          <h1 className='title text-black font-light'>Mi Cuenta</h1>
         </div>
 
         <Membership user={auth.user} />
@@ -72,7 +75,10 @@ function Profile() {
             Salir de todos los dispositivos
           </p>
         </div>
+        <a href="/login" ref={aRef} className='hidden'>Salir</a>
       </main>
+      <hr className='w-full border-[0.5px] border-solid border-black'/>
+      <FooterProfile />
     </div>
   );
 }
