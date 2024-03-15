@@ -191,7 +191,7 @@ export interface CourseUser {
 
 export interface Modules {
   quantity: number;
-  breakPoints: [number] | [];
+  breakPoints: [number];
   titles: [string] | [];
 }
 
