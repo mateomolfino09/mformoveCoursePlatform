@@ -6,4 +6,4 @@ import ResetForm from '../../../components/PageComponent/ResetEmail/ResetForm';
     );
   };
   
-  
+   
