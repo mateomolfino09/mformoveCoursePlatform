@@ -15,25 +15,25 @@ export async function POST(req) {
         } = await req.json();  
   try { 
       if (req.method === 'PUT') {
-        const plans = await Plan.find({}).lean().exec();
-        const user = await User.find({ _id: idUser }).lean().exec();
+        let plans = await Plan.find({}).lean().exec();
+        let user = await User.find({ _id: idUser }).lean().exec();
 
-        const subsFromAPI = []
+        let subsFromAPI = []
 
         plans.forEach(async p => {
-            const response = await dLocalApi.get(`/subscription/plan/${p.id}/subscription/all`);  
-            const data = response.data;
+            let response = await dLocalApi.get(`/subscription/plan/${p.id}/subscription/all`);  
+            let data = response.data;
             subsFromAPI = [...subsFromAPI, ...data]
         });
 
-        // const subToAdd = subsFromAPI.filter((subFromApi) => subs.findIndex((v) => v.id == subFromApi.id) == -1)
-        const subToAdd = subsFromAPI.reduce((max, current) => {
+        // let subToAdd = subsFromAPI.filter((subFromApi) => subs.findIndex((v) => v.id == subFromApi.id) == -1)
+        let subToAdd = subsFromAPI.reduce((max, current) => {
             return current.created_at > max.created_at ? current : max;
         }, subsFromAPI[0]); 
 
         console.log(subToAdd)
 
-        const newSub = {
+        let newSub = {
         id: subToAdd?.id,
         subscription_token: subToAdd.subscription_token,
         status: subToAdd?.status,
