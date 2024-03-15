@@ -7,6 +7,8 @@ export const metadata = {
   keywords: "movimiento, fitness, yoga, meditacion, calistenia, workout, training"
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function RootLayout({
   children,
 }: {
