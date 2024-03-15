@@ -13,7 +13,7 @@ export async function PUT(req) {
   try { 
       if (req.method === 'PUT') {
 
-          const planToChange = await Plan.find({ id: id })
+          let planToChange = await Plan.find({ id: id })
           .lean()
           .exec();
 

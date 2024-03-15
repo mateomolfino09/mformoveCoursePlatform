@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import connectDB from '../../../../config/connectDB';
-import Courses from '../../../../models/courseModel';
-import Users from '../../../../models/userModel';
+import connectDB from '../../../../../config/connectDB';
+import Courses from '../../../../../models/courseModel';
+import Users from '../../../../../models/userModel';
 
 connectDB();
 
