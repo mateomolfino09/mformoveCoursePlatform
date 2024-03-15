@@ -33,5 +33,3 @@ export async function PUT(req) {
     return NextResponse.json({ error: 'Algo salio mal'}, { status: 401 })
 }
 };
-
-export default likeCourse;
