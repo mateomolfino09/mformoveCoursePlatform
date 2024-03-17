@@ -40,7 +40,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
 
 
   useEffect(() => {
-    setQuestions([...questionsDB.reverse()])
+    setQuestions([...questionsDB?.reverse()])
   }, [questionsDB])
 
   useEffect(() => {
@@ -240,7 +240,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
             </>
           ) : (
             <>
-              {questions.reverse().map((quest: Question) => (
+              {questions?.reverse().map((quest: Question) => (
                 <div
                   className=' w-full h-auto p-1  my-4 ml-2 bg-dark-soft rounded-md'
                   key={quest.id}
