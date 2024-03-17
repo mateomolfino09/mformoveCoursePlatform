@@ -15,7 +15,7 @@ import { useAuth } from '../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
-
+import { GrWorkshop } from "react-icons/gr";
 interface Props {
   user: User;
 }
@@ -89,6 +89,12 @@ const Index = () => {
             <Link href={'/admin/memberships'}>
               <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
                 <BuildingStorefrontIcon className='w-24' />
+                <p>Memberships</p>
+              </div>
+            </Link>
+            <Link href={'/admin/workshops/createWorkshop'}>
+              <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
+                <GrWorkshop  className='w-24' />
                 <p>Memberships</p>
               </div>
             </Link>
