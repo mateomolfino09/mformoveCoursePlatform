@@ -170,28 +170,16 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
   }, [showNav]);
 
   useEffect(() => {
-    // exitingFunction();
-
-  }, [router]);
-
-  useEffect(() => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
       router.push('/login');
     }
     
-    if(!auth.user) {
-      auth.fetchUser()
+    if(!auth.user || !auth.user.subscription) {
+      router.push('/home');
     }
-    else {
-    //   handleLoad(
-    //     courseActual ? courseActual?.classes[clase.id - 1].actualTime : 0,
-    //     playerRef?.current?.getDuration()
-    //       ? playerRef?.current?.getDuration()
-    //       : 0
-    //   );
-    }
+
 
     if (typeof window !== 'undefined') {
       setHasWindow(true);

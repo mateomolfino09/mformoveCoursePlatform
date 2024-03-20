@@ -35,6 +35,9 @@ import { toggleScroll } from '../../redux/features/headerHomeSlice';
 import { setFilters, setIndividualClasses } from '../../redux/features/filterClass';
 import { LoadingSpinner } from '../LoadingSpinner';
 import Footer from '../Footer';
+import AddQuestionModal from '../AddQuestionModal';
+import GetMembershipModal from '../GetMembershipModal';
+import { setOpenModal } from '../../redux/features/filterClass';
 
 interface Props {
   classesDB: IndividualClass[];
@@ -42,18 +45,25 @@ interface Props {
 }
 
 const Home = ({ classesDB, filters }: Props) => {
-  console.log(classesDB, filters)
   const [reload, setReload] = useState<boolean>(false)
   const [typedClasses, setClasses] = useState<any | null>(null);
   const [isMember, setIsMember] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedClass, setSelectedClass] = useState<IndividualClass | null>(null);
   const router = useRouter()
+
+  
   const dispatch = useAppDispatch()
   const filterClassSlice = useAppSelector(
     (state) => state.filterClass.value
     );
+
+  const openModal = filterClassSlice.openModal
   const auth = useAuth()
+
+  const handleModal = () => {
+    dispatch(setOpenModal(!openModal))
+  }
 
   useEffect(() => {
     const cookies: any = Cookies.get('userToken')
@@ -79,6 +89,7 @@ const Home = ({ classesDB, filters }: Props) => {
       return acc
     
     }, {});
+
 
     const arrayOfObjects = Object.entries(groupedData).map(([group, groupArray]) => {
       return {
@@ -201,6 +212,7 @@ const Home = ({ classesDB, filters }: Props) => {
           
         </main>
       
+      <GetMembershipModal handleVisiblity={handleModal} visible={openModal}/>
       <Toaster />
       </FilterNavWrapper>
       </MainSideBar>

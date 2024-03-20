@@ -4,6 +4,10 @@ import { CheckmarkIcon } from 'react-hot-toast'
 import { Plan } from '../../../../typings'
 import Select, { StylesConfig } from 'react-select';
 import Link from 'next/link';
+import { useAuth } from '../../../hooks/useAuth';
+import Cookies from 'js-cookie';
+import endpoints from '../../../services/api';
+import { toast } from 'react-toastify';
 
 interface Props {
     plans: Plan[]
@@ -12,6 +16,7 @@ interface Props {
 
 const SelectYourPlan = ({ plans, select = "" }: Props) => {
     const [planSelected, setPlanSelected] = useState<Plan | null | undefined>(plans[0])
+    const auth = useAuth()
     const planSelect = plans.map((p: Plan) => {
         return {
             value: p.frequency_value,
@@ -20,6 +25,27 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
     }
     ) 
     const [planSelectedValue, setPlanSelectedValue] = useState<string>(planSelect[0].label)
+
+    const handleClick = async () => {
+        if(!auth.user) {
+            toast.error('Usuario no encontrado')
+            return
+        }
+        const email = auth.user.email
+        const res = await fetch(endpoints.payments.createPaymentToken, {
+            method: 'POST',
+            headers: {  
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email }),
+          })
+
+        const data = await res.json()
+
+        const { token } = data
+        console.log(token)
+        Cookies.set('userPaymentToken', token ? token : '', { expires: 5})
+    }
 
     const colourStyles: StylesConfig<any> = {
         control: (styles) => ({
@@ -73,13 +99,20 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
             }}
         />
     </div>
-    {select === "select" ? (
-        <a target="_blank" href={`https://checkout-sbx.dlocalgo.com/validate/subscription/${planSelected?.plan_token}`} rel="noopener noreferrer">
+    {!auth.user && (
+        <a href={`/login`} rel="noopener noreferrer">
+        <div className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-96 group cursor-pointer '>
+            <button className='w-full text-base md:text-lg'>Continuar </button>
+        </div>     
+        </a>
+    )}
+    {select === "select" && auth.user ? (
+        <a target="_blank" href={`https://checkout-sbx.dlocalgo.com/validate/subscription/${planSelected?.plan_token}`} rel="noopener noreferrer" onClick={handleClick}>
         <div className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-96 group cursor-pointer '>
             <button className='w-full text-base md:text-lg'>Continuar </button>
         </div>     </a>
     ) : (
-    <Link href={'select-plan'}>
+    <Link href={'select-plan'} className={`${!auth.user && "hidden"}`}>
         <div className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-96 group cursor-pointer '>
             <button className='w-full text-base md:text-lg'>Continuar </button>
         </div>

@@ -9,29 +9,37 @@ import absoluteUrl from 'next-absolute-url';
 
 connectDB();
 
-export async function POST(req) {
+export async function PUT(req) {
     const {
         idUser, 
         } = await req.json();  
   try { 
       if (req.method === 'PUT') {
         let plans = await Plan.find({}).lean().exec();
-        let user = await User.find({ _id: idUser }).lean().exec();
+        const user = await User.findOne({ idUser });
+
+        if(!user) {
+            return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
+
+        }
+
+        if(user.subscription) {
+            return NextResponse.json({ error: 'Ya estas subscripto' }, { status: 401 })
+
+        }
 
         let subsFromAPI = []
 
-        plans.forEach(async p => {
+        for (const p of plans) {
             let response = await dLocalApi.get(`/subscription/plan/${p.id}/subscription/all`);  
-            let data = response.data;
+            let data = response.data.data;
             subsFromAPI = [...subsFromAPI, ...data]
-        });
+          }
 
         // let subToAdd = subsFromAPI.filter((subFromApi) => subs.findIndex((v) => v.id == subFromApi.id) == -1)
         let subToAdd = subsFromAPI.reduce((max, current) => {
             return current.created_at > max.created_at ? current : max;
         }, subsFromAPI[0]); 
-
-        console.log(subToAdd)
 
         let newSub = {
         id: subToAdd?.id,
@@ -47,10 +55,10 @@ export async function POST(req) {
         client_email: subToAdd?.client_email,
         created_at: subToAdd?.created_at,
         active: subToAdd?.active,
-        user: user._id
         }
 
         user.subscription = newSub
+        await user.save()
 
         return NextResponse.json({ success: true, user: user, message: "Subscriptor creado con éxito" }, { status: 200 })
 
