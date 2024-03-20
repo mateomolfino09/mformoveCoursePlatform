@@ -26,6 +26,7 @@ import { MdAdd, MdBlock, MdOutlineClose, MdRemove } from 'react-icons/md';
 import { useAuth } from '../hooks/useAuth';
 import { HiOutlineLockClosed } from 'react-icons/hi2';
 import { CiLock } from 'react-icons/ci';
+import { setOpenModal } from '../redux/features/filterClass';
 interface Props {
   c: IndividualClass;
 }
@@ -61,19 +62,24 @@ function CarouselClassesThumbnail({
   c
 }: Props) {
   const auth = useAuth()
+  const dispatch = useAppDispatch()
+  const filterClassSlice = useAppSelector(
+    (state) => state.filterClass.value
+    );
+  
 
   const ComponentToRender = ({ children }: any) => (
     <>
-      {auth.user ? (
+      {auth.user && auth.user.subscription ? (
         <>
         <Link href={`/classes/${c.id}`}>
             {children}
           </Link>
         </>
       ) : (
-        <>
+        <div onClick={() => dispatch(setOpenModal(!filterClassSlice.openModal))}>
             {children}
-        </>
+        </div>
       )}
     </>
   )

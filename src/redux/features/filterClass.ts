@@ -19,6 +19,7 @@ type FilterState = {
     ordenar: [string] | null
     seen: boolean | null
     individualClasses: any | null
+    openModal: boolean
 }
 
 
@@ -35,6 +36,7 @@ const initialState: InitialState = {
         nivel: null,
         ordenar: null,
         seen: null,
+        openModal: false
 
     },
 
@@ -156,6 +158,14 @@ export const filterClassSlice = createSlice({
                 }
             }
         },
+        setOpenModal: (state: any, action: PayloadAction<boolean>) => {
+            return {
+                value: {
+                    ...state.value,
+                    openModal: action.payload
+                }
+            }
+        },
         clearDataFilters: (state: any) => {
             return {
                 value: {
@@ -188,6 +198,7 @@ export const {
     setLevel,
     setOrder,
     setSeen,
+    setOpenModal,
     setIndividualClasses,
     clearDataFilters
 } = filterClassSlice.actions;

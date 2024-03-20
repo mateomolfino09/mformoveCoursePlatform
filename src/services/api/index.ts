@@ -35,6 +35,7 @@ const endpoints = {
     createPlan: `/api/payments/createPlan`,
     editPlan: `/api/payments/editPlan`,
     createSub: `/api/payments/createSubscription`,
+    createPaymentToken: `/api/payments/createPaymentToken`
   },
   admin: {
     emailMarketing: '/api/admin/emailMarketing'
