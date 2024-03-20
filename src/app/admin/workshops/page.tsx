@@ -1,0 +1,62 @@
+'use client';
+
+import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
+import CreateWorkshop from '../../../components/PageComponent/Workshops/CreateWorkShop';
+import { PlusCircleIcon, TableCellsIcon } from '@heroicons/react/24/outline';
+import { Link, useRouter } from 'next13-progressbar';
+import { useAuth } from '../../../hooks/useAuth';
+import { useEffect } from 'react';
+import Cookies from 'js-cookie';
+
+const Index = () => {
+  const router = useRouter();
+  const auth = useAuth()
+
+  useEffect(() => {
+
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies ) {
+      router.push('/login');
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+    else if(auth.user.rol != 'Admin') router.push('/login');
+
+
+  }, [auth.user]);
+  return (
+    <AdmimDashboardLayout>
+    <div className='bg-gray-700 w-full md:h-[100vh]'>
+      <p className='text-white text-3xl my-12 font-bold'>
+        Bienvenido al Dashboard de WorkShops
+      </p>
+      <div className='grid lg:grid-cols-3 gap-5 mb-16'>
+        <Link href={'/admin/workshops/createWorkshop'}>
+          <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
+            <PlusCircleIcon className='w-24' />
+            <p>Crear WorkShop</p>
+          </div>
+        </Link>
+        <Link href={'/admin/home'}>
+          <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
+            <TableCellsIcon className='w-24' />
+            <p>WorkShops</p>
+          </div>
+        </Link>
+        <Link href={'/admin/billing'}>
+          <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
+            <p></p>
+          </div>
+        </Link>
+      </div>
+      <div className='grid col-1 bg-gray-500 h-96 shadow-sm' />
+    </div>
+    </AdmimDashboardLayout> 
+  );
+}
+
+export default Index;
+

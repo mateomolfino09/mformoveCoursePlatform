@@ -1,10 +1,10 @@
-import CreatePlan from "../../../../components/PageComponent/AdminMembership/CreatePlan";
-import CreateWorkshop from "../../../../components/PageComponent/Workshops/CreateWorkshop";
+import CreateWorkshop from "../../../../components/PageComponent/Workshops/CreateWorkShop";
+
 
    
 export default async function Page() {
 
 return (
-    <CreateWorkshop/>
+    <CreateWorkshop />
 );
 };

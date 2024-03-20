@@ -1,103 +1,108 @@
-'use client';
 
-import Link from 'next/link';
-import React, { useState } from 'react';
+'use client'
+import { useAuth } from '../../../hooks/useAuth';
+import { useAppDispatch } from '../../../hooks/useTypeSelector';
+import { clearData } from '../../../redux/features/filterClass';
+import AdmimDashboardLayout from '../../AdmimDashboardLayout';
+import { LoadingSpinner } from '../../LoadingSpinner';
+import CreateWorkshopStep1 from './CreateWorkshopStep1';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next13-progressbar';
+import { parseCookies } from 'nookies';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 const CreateWorkshop = () => {
-  const [name, setName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [paymentLink, setPaymentLink] = useState<string>('');
-  const [imageUrl, setImageUrl] = useState<string>('');
-  const [classesQuantity, setClassesQuantity] = useState<number>(0);
-  const [courseType, setCourseType] = useState<string>('');
-  const [diplomaUrl, setDiplomaUrl] = useState<string>('');
-  const [price, setPrice] = useState<number>(10);
-  const [currency, setCurrency] = useState<string>('$');
+  const [state, setState] = useState({
+    stepCero: true,
+    stepOne: false,
+    stepTwo: false,
+    stepThree: false
+  });
+
+  const cookies = parseCookies();
+  const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+
+  const { stepCero } = state;
+
+  const auth = useAuth();
+
+  useEffect(() => {
+    const cookies: any = Cookies.get('userToken');
+
+    if (!cookies) {
+      router.push('/login');
+    }
+
+    if (!auth.user) {
+      auth.fetchUser();
+    } else if (auth.user.rol != 'Admin') router.push('/login');
+  }, [auth.user]);
+
+  async function handleSubmit(
+    name: string,
+    description: string,
+    currency: string = 'USD',
+    amount: number,
+    frequency_type: string
+  ) {
+    setLoading(true);
+
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      };
+
+      console.log(name, description, currency, amount, frequency_type);
+
+      const { data } = await axios.post(
+        '/api/payments/createPlan',
+        {
+          name,
+          description,
+          currency,
+          amount,
+          frequency_type
+        },
+        config
+      );
+
+      auth.fetchUser();
+
+      toast.success(data.message);
+      router.push('/admin/memberships');
+      dispatch(clearData());
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.response.data.error);
+    }
+    setLoading(false);
+  }
 
   return (
-    <div>
-      <h1>Crea tu WorkShop</h1>
-      <form>
-        <div>
-          <label className='flex flex-col space-y-3 w-full'>
-            <p>Elige un nombre para el workshop</p>
-
-            <input
-              type='nombre'
-              placeholder='Nombre'
-              value={name}
-              className='input'
-              onChange={(e) => setName(e.target.value)}
-            />
-          </label>
-          
+    <AdmimDashboardLayout>
+      {loading ? (
+        <div className='md:h-[100vh] w-full flex flex-col justify-center items-center'>
+          <LoadingSpinner />
+          <p className='font-light text-xs text-[gray] mt-4'>
+            Esto puede demorar unos segundos...
+          </p>
         </div>
-        <div>
-          <label className='flex flex-col space-y-3 w-full'>
-            <p>Escribe una descripcion del workshop</p>
-
-            <input
-              type='description'
-              placeholder='Descripcion'
-              value={description}
-              className='input'
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </label>
-        </div>
-        <div>
-          <Link href={'/admin/workshops/createWorkshop'}>LINK DE PAGO</Link>
-          {/* LINK DE PAGO */}
-        </div>
-        <div>
-          <img
-            src={
-              'https://img.freepik.com/foto-gratis/vista-posterior-mujer-haciendo-yoga-al-aire-libre_23-2148769551.jpg'
-            }
-          />
-        </div>
-        <div>
-          <label className='flex flex-col space-y-3 w-full'>
-            <p>Cantidad de clases del workshop</p>
-
-            <input
-              type='classesQuantity'
-              placeholder='Cantidad de clases'
-              value={classesQuantity}
-              className='input'
-              min={0}
-              onChange={(e) => setClassesQuantity(parseInt(e.target.value))}
-            />
-          </label>
-        </div>
-        <div>
-          <label className='flex flex-col space-y-3 w-full'>
-            <p>Cantidad de clases del workshop</p>
-
-            <input
-              type='courseType'
-              placeholder='Tipo de curso'
-              value={courseType}
-              className='input'
-              onChange={(e) => setCourseType(e.target.value)}
-            />
-          </label>
-        </div>
-        <div>
-          <label className='flex flex-col space-y-3 w-full'>
-            <p>Cantidad de clases del workshop</p>
-
-            <input
-              type='price'
-              placeholder='Precio'
-              value={price}
-              className='input'
-              onChange={(e) => setPrice(parseInt(e.target.value))}
-            />
-          </label>
-        </div>
-      </form>
-    </div>
+      ) : (
+        <>
+          {stepCero && (
+            <>
+              <CreateWorkshopStep1 handleSubmit={handleSubmit} />
+            </>
+          )}
+        </>
+      )}
+    </AdmimDashboardLayout>
   );
 };
 

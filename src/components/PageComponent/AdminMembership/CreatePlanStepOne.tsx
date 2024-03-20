@@ -1,3 +1,4 @@
+'use client'
 import { ClassTypes } from '../../../../typings';
 import { planFrequencys } from '../../../constants/planFrequency';
 import { addStepOne } from '../../../redux/features/createClassSlice';
