@@ -40,7 +40,7 @@ const Index = () => {
             <p>Crear WorkShop</p>
           </div>
         </Link>
-        <Link href={'/admin/home'}>
+        <Link href={'/home'}>
           <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
             <TableCellsIcon className='w-24' />
             <p>WorkShops</p>
