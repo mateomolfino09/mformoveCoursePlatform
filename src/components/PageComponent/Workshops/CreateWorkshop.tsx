@@ -59,18 +59,21 @@ const CreateWorkshop = () => {
       };
 
       console.log(name, description, currency, amount, frequency_type);
-
+      const userEmail = auth.user.email;
       const { data } = await axios.post(
-        '/api/payments/createPlan',
+        '/api/workShop/createWorkshop',
         {
           name,
           description,
           currency,
           amount,
-          frequency_type
+          frequency_type,
+          userEmail
         },
         config
       );
+
+
 
       auth.fetchUser();
 

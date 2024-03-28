@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 const fileSchema = new mongoose.Schema({
   id: {
     type: Number,
@@ -98,13 +100,13 @@ const workShopSchema = new mongoose.Schema(
       type: String,
       default: () => '$'
     },
+    classes:[classSchema],
     users: [
       {
         type: mongoose.Types.ObjectId,
         ref: 'User'
       }
     ],
-    classes: [classesSchema],
     created_by: {
       type: mongoose.Types.ObjectId,
       ref: 'User'
@@ -112,3 +114,6 @@ const workShopSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+let Dataset = mongoose.models.WorkShop || mongoose.model('WorkShop', workShopSchema);
+export default Dataset;
