@@ -240,6 +240,7 @@ function useProvideAuth() {
 
 
 	  const newSub = async (idUser: string) => {
+		console.log(idUser)
 		try {	
 			const res = await fetch(endpoints.payments.createSub, {
 				method: 'PUT',
@@ -250,11 +251,10 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json()
-			console.log(data)
 			setUser(data)
 			return data
 		} catch (error) {
-		  setUser(null);
+			return error
 		}
 	  };
 
