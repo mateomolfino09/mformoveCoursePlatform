@@ -211,6 +211,7 @@ export interface User {
   notifications: Notification[];
   classesSeen: IndividualClass[];
   isMember: boolean
+  subscription: any
 }
 
 export interface CoursesDB {
