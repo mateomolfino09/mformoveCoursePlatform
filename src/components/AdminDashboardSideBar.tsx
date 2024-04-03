@@ -22,7 +22,7 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
             <picture>
               <img
                 alt='icon image'
-                src='/images/logo.png'
+                src='/images/mformove_dark.png'
                 className='cursor-pointer object-contain w-32 h-auto transition duration-500 hover:scale-105'
               />
             </picture>

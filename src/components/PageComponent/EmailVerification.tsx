@@ -45,11 +45,13 @@ function EmailVerification({ token }: Props) {
 			  })
 
         const data = await res.json()
+        if(data.message) toast.success(data.message);
+        else toast.error(data.error);
 
-      toast.success(data.message);
+      
     } catch (error: any) {
         const data = await error.json()
-        toast.error(data.response.data.message);
+        toast.error(data.response.data.error);
     }
   };
 

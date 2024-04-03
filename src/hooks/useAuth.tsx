@@ -182,7 +182,6 @@ function useProvideAuth() {
 	
 	  const forgetPasswordSend = async (email: string, captcha: string) => {
 		try {	
-			console.log(email, captcha)
 			const res = await fetch(endpoints.auth.resetPasswordSend, {
 				method: 'POST',
 				headers: {  
@@ -240,6 +239,7 @@ function useProvideAuth() {
 
 
 	  const newSub = async (idUser: string) => {
+		if(!idUser) return
 		console.log(idUser)
 		try {	
 			const res = await fetch(endpoints.payments.createSub, {
@@ -258,6 +258,26 @@ function useProvideAuth() {
 		}
 	  };
 
+	  const cancelSub = async (planId: string, subscriptionId: string, id: string) => {
+		try {
+			console.log(planId, subscriptionId)
+			const res = await fetch(endpoints.payments.cancelSubscription(subscriptionId), {
+				method: 'PUT',
+				headers: {  
+				  'Content-Type': 'application/json',
+				   accept: '*/*',
+				},
+				body: JSON.stringify({ subscriptionId, planId, id }),
+			  })
+
+			const data = await res.json();
+			
+			setUser(data.user);
+			return data
+		} catch (error) {
+		}
+	  };
+
 	return {
 		user,
 		error,
@@ -273,6 +293,7 @@ function useProvideAuth() {
 		resetMail,
 		resetMailSend,
 		forgetPasswordSend,
-		newSub
+		newSub,
+		cancelSub
 	  };
 }

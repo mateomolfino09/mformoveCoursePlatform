@@ -5,6 +5,7 @@ import ToasterProvider from '../hooks/toastProvider';
 import ProgressBarProvider from '../hooks/progressBar';
 import Providers from '../redux/providers';
 import { GlobalContextProvider } from './context/store';
+import GoogleCaptchaWrapper from '../hooks/RecaptchaProvider';
 
 export const metadata = {
   title: 'MForMove',

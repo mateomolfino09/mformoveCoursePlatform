@@ -22,6 +22,8 @@ import RegisterStepTwo from './RegisterStepTwo';
 import RegisterStepThree from './RegisterStepThree';
 import { motion as m, useAnimation } from 'framer-motion';
 import './registerStyle.css';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+import ResendEmail from './ResendEmail';
 
 interface Inputs {
   email: string;
@@ -33,16 +35,21 @@ function Register() {
   const dispatch = useDispatch<AppDispatch>()
   const animationstepcero = useAnimation();
   const animationstepone = useAnimation();
+  const animationresend = useAnimation();
+
   const animationsteptwo = useAnimation();
   const animationstepthree = useAnimation();
+
+  const { executeRecaptcha } = useGoogleReCaptcha()
 
   const [state, setState] = useState({
     stepCero: true,
     stepOne: false,
     stepTwo: false,
-    stepThree: false
+    stepThree: false,
+    resend: false
   });
-  const { stepCero, stepOne, stepTwo, stepThree } = state;
+  const { stepCero, stepOne, stepTwo, stepThree, resend } = state;
   const [registered, setRegistered] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const router = useRouter();
@@ -104,6 +111,19 @@ function Register() {
             }
           });
     }
+    if(resend) {
+      animationresend.start({
+        x: 0,
+        display: 'flex',
+        zIndex: 500,
+        transition: {
+          delay: 0.05,
+          ease: 'linear',
+          duration: 0.33,
+          stiffness: 0
+        }
+      });
+    }
   }, [state]);
 
   const clearData = () => {
@@ -119,23 +139,40 @@ function Register() {
   const step0ToStep1 = () => {
     setState({ ...state, stepCero: false, stepOne: true });
   };
+
+  const step0ToResend = () => {
+    setState({ ...state, stepCero: false, resend: true });
+  };
+
+  const step1ToStep0 = () => {
+    setState({ ...state, stepCero: true, stepOne: false });
+  };
   const step2ToStep3 = () => {
     setState({ ...state, stepTwo: false, stepThree: true });
   };
+
+  const step3ToStep2 = () => {
+    setState({ ...state, stepTwo: true, stepThree: false });
+  };
+
   const step1ToStep2 = () => {
     setState({ ...state, stepOne: false, stepTwo: true });
   };
+  const step2ToStep1 = () => {
+    setState({ ...state, stepTwo: false, stepOne: true });
+  };
 
 
-  const signupUser = async (e: MouseEvent<HTMLButtonElement>) => {
-    const { email, password, confirmPassword, firstname, lastname, gender, country } = register
-    console.log( email, password, confirmPassword, firstname, lastname, gender, country )
+  const signupUser = async (e: MouseEvent<HTMLButtonElement>, password: string, confirmPassword: string) => {
+    const { email, firstname, lastname, gender, country } = register
+    console.log(password, confirmPassword)
     try {
       e.preventDefault();
       setLoading(true);
 
       const captcha = captchaToken;
-      if (!captcha) {
+
+      if (!executeRecaptcha) {
         toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde');
         setLoading(false);
         setTimeout(() => {
@@ -143,6 +180,9 @@ function Register() {
         }, 4000);
         return;
       }
+
+      const gRecaptchaObj = await executeRecaptcha("inquirySubmit")
+
 
       if (password !== confirmPassword) {
         toast.error('Las contraseñas no coinciden');
@@ -158,7 +198,7 @@ function Register() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, firstname, lastname, gender, country, captcha }),
+        body: JSON.stringify({ email, password, firstname, lastname, gender, country, captcha, gRecaptchaToken: gRecaptchaObj }),
       })
 
       const data = await res.json()
@@ -168,6 +208,53 @@ function Register() {
       if (res.ok) {
         setRegistered(true);
         setState({ ...state, stepThree: false });
+        toast.success('¡Es hora de verificar tu cuenta!')
+      }
+      else if(data?.error) {
+        toast.error(data.error);
+      }
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error?.response?.data?.error); 
+    }
+    setLoading(false);
+  };
+
+  const resendEmail = async (e: MouseEvent<HTMLButtonElement>) => {
+    const { email } = register
+    try {
+      e.preventDefault();
+      setLoading(true);
+
+      const captcha = captchaToken;
+
+      if (!executeRecaptcha) {
+        toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde');
+        setLoading(false);
+        setTimeout(() => {
+          window.location.reload();
+        }, 4000);
+        return;
+      }
+
+      const gRecaptchaObj = await executeRecaptcha("inquirySubmit")
+
+      const res = await fetch(endpoints.auth.resend, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, gRecaptchaToken: gRecaptchaObj }),
+      })
+
+      const data = await res.json()
+
+      console.log(data)
+
+      if (res.ok) {
+        setRegistered(true);
+        setState({ ...state, stepThree: false });
+        toast.success('¡Es hora de verificar tu cuenta!')
       }
       else if(data?.error) {
         toast.error(data.error);
@@ -223,11 +310,25 @@ function Register() {
           {stepCero && (
             <RegisterStepCero
               step0ToStep1={step0ToStep1}
+              step0ToResend={step0ToResend}
             />
           )}
           {!stepCero && (
             <>
-            
+                {resend && (
+                <m.div
+                initial={{ x: 1200 }}
+                animate={animationresend}
+                >
+                   <ResendEmail
+                  resendEmail={resendEmail}
+                  onChange={onChange}
+                  recaptchaRef={recaptchaRef}
+                  step3ToStep2={step3ToStep2}
+                />
+                </m.div>
+
+              )}
               {stepOne && (
                 <m.div
                 initial={{ x: 1200 }}
@@ -235,6 +336,7 @@ function Register() {
                 >
                    <RegisterStepOne
                   step1ToStep2={step1ToStep2}
+                  step1ToStep0={step1ToStep0}
                 />
                 </m.div>
 
@@ -246,6 +348,8 @@ function Register() {
                 >
                 <RegisterStepTwo
                   step2ToStep3={step2ToStep3}
+                  step2ToStep1={step2ToStep1}
+                  signUp={signupUser}
                 />
                 </m.div>
 
@@ -259,6 +363,7 @@ function Register() {
                   signUp={signupUser}
                   onChange={onChange}
                   recaptchaRef={recaptchaRef}
+                  step3ToStep2={step3ToStep2}
                 />
                 </m.div>
 
@@ -288,14 +393,12 @@ function Register() {
                   Verifica tu casilla de correos para poder confirmar tu cuenta!
                 </p>
               </label>
-              <Link href={'/login'}>
                 <button
                   type='button'
                   className='text-white underline cursor-pointer'
                 >
-                  Volver al Inicio
+                  <a href="/login">Volver al Inicio</a>
                 </button>
-              </Link>
             </div>
           </div>
         </div>

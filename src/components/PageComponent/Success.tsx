@@ -43,10 +43,6 @@ const Success = ({ course }: Props) => {
 
   }, [auth.user]);
 
-  const handleSubscription = () => {
-    
-  }
-
   return (
     <div className='relative flex h-screen w-screen flex-col bg-transparent md:items-center md:justify-center'>
       <Head>
@@ -105,7 +101,11 @@ const Success = ({ course }: Props) => {
               <button
                 className='p-1 text-center'
                 onClick={() =>
-                  handleSubscription()                
+                  router.push(
+                    `/courses/${course.id}/${
+                      auth.user.courses[course.id - 1].actualChapter
+                    }`
+                  )
                 }
               >
                 Empezar

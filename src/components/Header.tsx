@@ -200,9 +200,9 @@ const Header = ({
         <Link href={'/'}>
           <img
             alt='icon image'
-            src='/images/logoWhite.png'
-            width={100}
-            height={100}
+            src='/images/MFORMOVE_v2.negro03.png'
+            width={180}
+            height={180}
             className='cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-90 hover:opacity-100'
           />
         </Link>

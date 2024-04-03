@@ -119,12 +119,6 @@ const RegisterStepOne = ({ user, signUp, onChange, recaptchaRef }: Props) => {
           />
         </div>
       </div>
-      <ReCAPTCHA
-        onChange={onChange}
-        ref={recaptchaRef}
-        sitekey={key}
-        className='mt-8 mb-6 my-auto flex justify-center'
-      />
       <div className='flex flex-row items-center justify-evenly relative space-x-8 rounded px-8 md:w-full mb-10'>
         <button
           onClick={() => handleClick()}

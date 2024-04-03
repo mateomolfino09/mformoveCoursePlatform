@@ -14,10 +14,10 @@ const ProfileHeader = () => {
     <motion.header className={`bg-rich-black `} initial={{ opacity: 0 }} transition={{ duration: 0.8, ease: 'linear' }} animate={{ opacity: 1 }}>
     <Link href='/home'>
       <img
-        src='/images/logoWhite.png'
-        width={120}
-        height={120}
-        className='cursor-pointer object-contain transition duration-500 hover:scale-105 lg:opacity-80 hover:opacity-100'
+        src='/images/MFORMOVE_blanco03.png'
+        width={180}
+        height={180}
+        className='cursor-pointer object-contain transition py-2 duration-500 hover:scale-105 lg:opacity-80 hover:opacity-100'
       />
     </Link>
     <a href="/login"> <AiOutlineLogout onClick={(e) => auth.signOut()} className='md:h-6 md:w-6 h-5 w-5 cursor-pointer text-white transition duration-500 hover:scale-105 lg:opacity-80 hover:opacity-100' /> </a>

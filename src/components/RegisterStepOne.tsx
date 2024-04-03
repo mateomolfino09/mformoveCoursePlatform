@@ -93,7 +93,7 @@ const RegisterStepOne = ({ step1ToStep2, setData }: Props) => {
       {/* Logo position */}
       <div className='flex flex-col items-center justify-center relative mt-20 sm:mt-24 space-y-4 rounded py-12 '>
         <AiOutlineCheckCircle className='text-dark-gold w-12 h-12' />
-        <p className='font-extralight text-black text-base'>PASO 1 DE 3</p>
+        <p className='font-extralight text-black text-base'>PASO 1 DE 2</p>
         <h1 className='font-extrabold text-4xl text-center text-black'>
           Completa tu Nombre, Apellidos, Pais y Género
         </h1>

@@ -4,7 +4,7 @@ import { sendEmail } from '../../../../../helpers/sendEmail';
 import User from '../../../../../models/userModel';
 import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
-import validateCaptcha from '../../validateCaptcha'
+import {validateRecaptcha} from '../../../recaptcha/validate';
 
 connectDB();
 
@@ -13,16 +13,18 @@ export async function POST(req) {
     if (req.method === 'POST') {
         const { email, captcha } = await req.json();
 
+        const secretKey = process.env.RECAPTCHA_SECRET_SITE_KEY
+
+        const formData = `secret=${secretKey}&response=${captcha}`;
+        const validCaptcha =await validateRecaptcha(formData)
+
       const user = await User.findOne({ email });
 
       if (!user) {
         return NextResponse.json({ error: 'No hemos encontrado ningún usuario con ese email'}, { status: 404 })
       }
-
-      const validCaptcha = await validateCaptcha(captcha);
-
-      if (!validCaptcha) {
-        return NextResponse.json({ error: 'Captcha Invalido'}, { status: 422 })
+      if (!validCaptcha.success) {
+        return NextResponse.json({ error: 'Unprocessable request, Invalid captcha code.'}, { status: 422 })
       }
 
       const token = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
