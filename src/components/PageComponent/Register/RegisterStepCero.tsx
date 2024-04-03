@@ -6,20 +6,28 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import endpoints from '../../../services/api';
-import { addEmail } from '../../../redux/features/register'
+import { addEmail, addStepOne, addStepTwo } from '../../../redux/features/register'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../redux/store';
 import './registerStyle.css';
+import { useAppSelector } from '../../../redux/hooks';
 
 interface Props {
   step0ToStep1: any;
+  step0ToResend: any
 }
 
-const RegisterStepCero = ({ step0ToStep1 }: Props) => {
-  const [email, setEmailStep] = useState('');
+const RegisterStepCero = ({ step0ToStep1, step0ToResend }: Props) => {
   const [loading, setLoading] = useState(false);
   const [capsLock, setCapsLock] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>()
+
+  const register = useAppSelector(
+    (state) => state.registerReducer.value
+  );
+
+  const [email, setEmailStep] = useState(register.email);
+
 
   useEffect(() => {
     if (typeof window != 'undefined' && document != undefined) {
@@ -55,6 +63,13 @@ const RegisterStepCero = ({ step0ToStep1 }: Props) => {
       })
 
       const data = await res.json()
+
+      if(data.resend) {
+        let user = data.user;
+        console.log(user)
+        dispatch(addEmail(user.email))
+        step0ToResend()
+      }
 
       if(data.error) {
         toast.error(data.error)

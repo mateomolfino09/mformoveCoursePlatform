@@ -12,6 +12,8 @@ import { AppDispatch } from '../../../redux/store';
 import { useDispatch } from 'react-redux';
 import { addStepOne } from '../../../redux/features/register'
 import './registerStyle.css';
+import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { useAppSelector } from '../../../redux/hooks';
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -31,13 +33,19 @@ const colourStyles: StylesConfig<any> = {
 
 interface Props {
   step1ToStep2: any;
+  step1ToStep0: any;
 }
 
-const RegisterStepOne = ({ step1ToStep2 }: Props) => {
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [gender, setGender] = useState('');
-  const [country, setCountry] = useState('');
+const RegisterStepOne = ({ step1ToStep2, step1ToStep0 }: Props) => {
+
+  const register = useAppSelector(
+    (state) => state.registerReducer.value
+  );
+
+  const [firstname, setFirstname] = useState(register.firstname);
+  const [lastname, setLastname] = useState(register.lastname);
+  const [gender, setGender] = useState(register.gender);
+  const [country, setCountry] = useState(register.country);
   const [capsLock, setCapsLock] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>()
 
@@ -77,6 +85,11 @@ const RegisterStepOne = ({ step1ToStep2 }: Props) => {
     }
   };
 
+  const handleClickBack = () => {
+      dispatch(addStepOne({ firstname, lastname, gender, country }))
+      step1ToStep0();
+  };
+
   const keyDownHandler = (event: any) => {
     if (event.key === 'Enter') {
       event.preventDefault();
@@ -89,7 +102,7 @@ const RegisterStepOne = ({ step1ToStep2 }: Props) => {
     <div>
       <div className='stepone-container'>
         <AiOutlineCheckCircle className='check-icon' />
-        <p className='step'>PASO 1 DE 3</p>
+        <p className='step'>PASO 1 DE 2</p>
         <h1 className='title-step-one'>
           Completa tu Nombre, Apellidos, Pais y Género
         </h1>
@@ -144,13 +157,18 @@ const RegisterStepOne = ({ step1ToStep2 }: Props) => {
             onKeyDown={keyDownHandler}
           />
         </div>
-        <div className='space-x-4 flex' />
-        <button
-          onClick={() => handleClick()}
-          className='siguiente-btn'
-        >
-          Siguiente!{' '}
-        </button>
+        <div className='space-x-4 flex ' />
+        <div className='w-full flex justify-center items-center space-x-4 mt-3'>
+        <div onClick={() =>  handleClickBack()} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
+                  <p className='text-white group-hover:text-black'>Volver</p>
+
+              </div>
+        <div onClick={() =>  handleClick()} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
+                  <p className='text-white group-hover:text-black'>Siguiente</p>
+                  <ArrowRightIcon className='w-4 group-hover:text-black ml-2 group-hover:translate-x-1 transition-all duration-500'/>
+
+              </div>
+        </div>
       </div>
     </div>
   );

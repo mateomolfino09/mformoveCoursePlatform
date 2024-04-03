@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import connectDB from '../../../../../config/connectDB';
-import { sendEmail } from '../../../../../helpers/sendEmail';
-import Users from '../../../../../models/userModel';
-import validateCaptcha from '../../validateCaptcha';
-import {validateRecaptcha} from '../../../recaptcha/validate';
+import connectDB from '../../../../../../config/connectDB';
+import { sendEmail } from '../../../../../../helpers/sendEmail';
+import Users from '../../../../../../models/userModel';
+import {validateRecaptcha} from '../../../../recaptcha/validate';
 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -16,14 +15,13 @@ connectDB();
 export async function POST(request) {
   try {
     if (request.method === 'POST') {
-      const { email, password, firstname, lastname, gender, country, captcha, gRecaptchaToken } =
+      const { email, gRecaptchaToken } =
       await request.json();
+      console.log(email)
       const secretKey = process.env.RECAPTCHA_SECRET_SITE_KEY
 
       const formData = `secret=${secretKey}&response=${gRecaptchaToken}`;
       const validCaptcha =await validateRecaptcha(formData)
-
-      console.log(validCaptcha)
 
       // const validCaptcha = await validateCaptcha(captcha);
 
@@ -32,30 +30,18 @@ export async function POST(request) {
       }
 
       const user = await Users.findOne({ email: email });
-      if (user) {
-        return NextResponse.json({ error: 'Este usuario ya fue registrado'}, { status: 422 })
-      }
-
-      const HashedPassword = await bcrypt.hash(password, 12);
-      const newUser = await new Users({
-        email: email,
-        password: HashedPassword,
-        name: `${firstname} ${lastname}`,
-        gender: gender,
-        country: country
-      }).save();
 
       const token = jwt.sign(
-        { _id: newUser._id },
+        { _id: user._id },
         process.env.NEXTAUTH_SECRET,
         {
           expiresIn: '30d'
         }
       );
 
-      newUser.emailToken = token;
+      user.emailToken = token;
 
-      await newUser.save();
+      await user.save();
 
       const { origin } = absoluteUrl(request);
       const link = `${origin}/email/${token}`;
@@ -74,15 +60,15 @@ export async function POST(request) {
 
       let resp = sendEmail({
         title: title,
-        name: `Hola, ${newUser.name}:`,
+        name: `Hola, ${user.name}:`,
         content:
           'Confirma tu email para poder empezar a disfrutar de Video Stream.',
         message: message,
-        to: `Video Stream te envió este mensaje a [${newUser.email}] como parte de tu membresía.`,
+        to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
         subject: 'Confirmar Mail'
       });
 
-      return NextResponse.json({ message: `Email enviado a ${newUser.email}, porfavor chequea tu correo.`}, { status: 200 })
+      return NextResponse.json({ message: `Email enviado a ${user.email}, porfavor chequea tu correo.`}, { status: 200 })
     }
   } catch (error) {
     console.log(error)

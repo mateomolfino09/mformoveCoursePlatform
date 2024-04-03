@@ -70,7 +70,7 @@ function CarouselClassesThumbnail({
 
   const ComponentToRender = ({ children }: any) => (
     <>
-      {auth.user && auth.user.subscription ? (
+      {auth.user && auth?.user?.subscription?.active ? (
         <>
         <Link href={`/classes/${c.id}`}>
             {children}

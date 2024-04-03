@@ -9,10 +9,10 @@ const UserHeader = () => {
     <motion.header className={`lg:bg-transparent bg-rich-black `} initial={{ opacity: 0 }} transition={{ duration: 1.2, ease: 'linear' }} animate={{ opacity: 1 }}>
     <Link href='/'>
       <img
-        src='/images/logoWhite.png'
-        width={120}
-        height={120}
-        className='cursor-pointer object-contain transition duration-500 hover:scale-105 lg:opacity-80 hover:opacity-100'
+        src='/images/MFORMOVE_blanco03.png'
+        width={180}
+        height={180}
+        className='cursor-pointer pt-2 object-contain transition duration-500 hover:scale-105 lg:opacity-80 hover:opacity-100'
       />
     </Link>
     <Link href='/account'>

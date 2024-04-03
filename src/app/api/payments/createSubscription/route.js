@@ -16,14 +16,15 @@ export async function PUT(req) {
   try { 
       if (req.method === 'PUT') {
         let plans = await Plan.find({}).lean().exec();
-        const user = await User.findOne({ idUser });
+        //Me trae por defecto cuando Id es undefined
+        const user = await User.findOne({ _id: idUser });
 
         if(!user) {
             return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
 
         }
 
-        if(user.subscription) {
+        if(user?.subscription?.active) {
             return NextResponse.json({ error: 'Ya estas subscripto' }, { status: 401 })
 
         }
@@ -41,8 +42,11 @@ export async function PUT(req) {
             return current.created_at > max.created_at ? current : max;
         }, subsFromAPI[0]); 
 
+        console.log(subToAdd)
+
         let newSub = {
         id: subToAdd?.id,
+        planId: subToAdd.plan.id,
         subscription_token: subToAdd.subscription_token,
         status: subToAdd?.status,
         payment_method_code: subToAdd?.payment_method_code,

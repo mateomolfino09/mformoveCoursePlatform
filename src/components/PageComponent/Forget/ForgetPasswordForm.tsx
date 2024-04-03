@@ -9,9 +9,10 @@ import ErrorComponent from '../../AlertComponent';
 import Image from 'next/image';
 import imageLoader from '../../../../imageLoader';
 import './forgetStyle.css';
-import ReCAPTCHA from 'react-google-recaptcha';
 import { alertTypes } from '../../../constants/alertTypes';
 import AlertComponent from '../../AlertComponent';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+import { toast } from 'react-toastify';
 
 function ForgetForm() {
   const [message, setMessage] = useState<any>([])
@@ -25,6 +26,7 @@ function ForgetForm() {
       ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
       : '';
       const [capsLock, setCapsLock] = useState<boolean>(false);
+      const { executeRecaptcha } = useGoogleReCaptcha()
 
       useEffect(() => {
         if (typeof window != 'undefined' && document != undefined) {
@@ -70,20 +72,25 @@ function ForgetForm() {
     setLoading(true);
     const captcha = captchaToken;
 
-    if (!captcha) {
+    const email = data.get('email') as string
+
+    if (!executeRecaptcha) {
       setMessage((current: any) => [...current, {
         message: 'Error de CAPTCHA, vuelva a intentarlo mas tarde',
         type: alertTypes.error.type
       }]);
+      toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde');
+      setLoading(false);
       setTimeout(() => {
         window.location.reload();
       }, 4000);
       return;
     }
-    const email = data.get('email') as string
+
+    const gRecaptchaObj = await executeRecaptcha("inquirySubmit")
     
     try {
-      const data = await auth.forgetPasswordSend(email, captcha)
+      const data = await auth.forgetPasswordSend(email, gRecaptchaObj)
 
       if(data?.error) {
         setMessage((current: any) => [...current, {
@@ -142,11 +149,6 @@ function ForgetForm() {
             >
               Bloq Mayús Activado
             </p>
-              <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={key}
-                  onChange={onChange}
-                />
             <div className='relative'>
               <button type="submit" className="forget-btn">Recuperar </button>
               {loading && <MiniLoadingSpinner />}
