@@ -3,6 +3,7 @@
 import { useAuth } from '../../../hooks/useAuth';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
 import { clearData } from '../../../redux/features/filterClass';
+import requests from '../../../utils/requests';
 import AdmimDashboardLayout from '../../AdmimDashboardLayout';
 import { LoadingSpinner } from '../../LoadingSpinner';
 import CreateWorkshopStep1 from './CreateWorkshopStep1';
@@ -45,9 +46,12 @@ const CreateWorkshop = () => {
   async function handleSubmit(
     name: string,
     description: string,
+    workShopVimeoId:string,
     currency: string = 'USD',
-    amount: number,
-    frequency_type: string
+    price: number,
+    portraitImageArray:any,
+    diplomaImageArray:any,
+    diploma:any,
   ) {
     setLoading(true);
 
@@ -58,22 +62,70 @@ const CreateWorkshop = () => {
         }
       };
 
-      console.log(name, description, currency, amount, frequency_type);
+      //console.log(name, description, currency, price , workShopVimeoId);
+      console.log(portraitImageArray, diplomaImageArray );
+      const formData = new FormData();
+
+      for (const file of portraitImageArray) {
+        formData.append('file', file);
+      }
+
+      formData.append('upload_preset', 'my_uploads');
+
+      if (portraitImageArray[0].size / 1000000 > 10) {
+        toast.error('Formato Incorrecto');
+        return;
+      }
+      
+      const portraitData = await fetch(requests.fetchCloudinary, {
+        method: 'POST',
+        body: formData
+      }).then((r) => r.json());
+
+      
+
+      const formData2 = new FormData();
+
+      for (const file of diplomaImageArray) {
+        formData2.append('file', file);
+      }
+
+      formData2.append('upload_preset', 'my_uploads');
+
+      if (portraitImageArray[0].size / 1000000 > 10) {
+        toast.error('Formato Incorrecto');
+        return;
+      }
+      
+      const diplomaData = await fetch(requests.fetchCloudinary, {
+        method: 'POST',
+        body: formData2
+      }).then((r) => r.json());
+
+
+      const portraitUrl = portraitData.public_id;
+      const diplomaUrl = diplomaData.public_id;
+
+
+
+      
+
       const userEmail = auth.user.email;
+
       const { data } = await axios.post(
         '/api/workShop/createWorkshop',
         {
           name,
           description,
+          workShopVimeoId,
           currency,
-          amount,
-          frequency_type,
-          userEmail
+          price,
+          userEmail,
+          portraitUrl,
+          diplomaUrl
         },
         config
       );
-
-
 
       auth.fetchUser();
 

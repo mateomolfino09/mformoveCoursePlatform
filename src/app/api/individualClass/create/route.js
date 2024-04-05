@@ -29,7 +29,7 @@ export async function POST(req) {
 
       //Es Admin?
 
-      if (user.rol !== 'Admin' || user?.admin.coursesAvailable <= 0) {
+      if (user.rol !== 'Admin' || user?.admin?.coursesAvailable <= 0) {
         return NextResponse.json({error: 'Este usuario no tiene permisos para crear un curso'}, { status: 422 })
 
       }

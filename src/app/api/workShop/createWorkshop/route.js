@@ -3,22 +3,32 @@ import { courseTypeConst } from '../../../../constants/courseType';
 import Classes from '../../../../models/classModel';
 import Courses from '../../../../models/courseModel';
 import Exam from '../../../../models/examModel';
+import IndividualClass from '../../../../models/individualClassModel';
 import Users from '../../../../models/userModel';
-import WorkShops from '../../../../models/workshopModel';
+import WorkShop from '../../../../models/workshopModel';
+import getVimeoShowCase from '../getVimeoShowCase';
 import bcrypt from 'bcryptjs';
 import { NextResponse } from 'next/server';
-import getVimeoShowCase from '../getVimeoShowCase';
-import IndividualClass from '../../../../models/individualClassModel'
+
 connectDB();
 
 export async function POST(req) {
   try {
     if (req.method === 'POST') {
-      const { name, description, currency, amount, frequency_type, userEmail } =
-        await req.json();
+      const {
+        name,
+        description,
+        workShopVimeoId,
+        currency,
+        price,
+        amount,
+        userEmail,
+        portraitUrl,
+        diplomaUrl
+      } = await req.json();
 
       let user = await Users.findOne({ email: userEmail });
-      
+
       console.log(user);
 
       //Es Admin?
@@ -30,81 +40,63 @@ export async function POST(req) {
       }
       //user?.admin?.active = true;
 
-
-
-      const vimeoShowCase = await getVimeoShowCase("")
+      const vimeoShowCase = await getVimeoShowCase(workShopVimeoId);
 
       //const initial = await fetch(youtubeURL);
       //const data = await initial.json();
 
-
-      var arregloDeClases = [];
-      vimeoShowCase?.data?.forEach( async (video) => {
-
-
-      
+      var classesArray = [];
+      vimeoShowCase?.data?.forEach(async (video, index) => {
         //const lastClass = await IndividualClass.find().sort({ _id: -1 }).limit(1);
-      
+
         //Por cada video creo una clase
         const newClass = {
-          id:1,// JSON.stringify(lastClass) != '[]' ? lastClass[0].id + 1 : 1,
-          name:video?.name,
-          image_url:video?.uri,
+          id: index, // JSON.stringify(lastClass) != '[]' ? lastClass[0].id + 1 : 1,
+          name: video?.name,
+          image_url: video?.uri,
           description,
           totalTime: video.duration.toString(),
-          module:1,
-          //atachedFiles : [],
+          module: 1,
+          atachedFiles : [],
           link: video.link,
-        }
+          class_code: index
+        };
 
-        arregloDeClases.push(newClass);
-
+        classesArray.push(newClass);
       });
-      
-  // UNA VEZ Q TENGO LOS VIDEOS EN UN ARREGLO,M SE LOS MANDO COMO PARAMETRO PARA EL GUARDADO
-      newWorkShop();
 
-      const newWorkShop = async (
-        name = '',
-        playlistId = '',
-        imgUrl = '',
-        courseType = courseTypeConst[0],
-        diplomaUrl = null,
-        description = '',
-        user,
-        price = 10,
-        currencys = '$',
-        cantidadClases = 0,
-        moduleNumbers = [],
-        breakpointTitles = []
-      ) => {
-        const lastWorkShop = await WorkShops.find().sort({ id: -1 }).limit(1); // Assuming unique IDs
+      // UNA VEZ Q TENGO LOS VIDEOS EN UN ARREGLO,M SE LOS MANDO COMO PARAMETRO PARA EL GUARDADO
+      
+
+      const newWorkShop = async () => {
+        const lastWorkShop = await WorkShop.find().sort({ id: -1 }).limit(1); // Assuming unique IDs
 
         const id =
           JSON.stringify(lastWorkShop) !== '[]' ? lastWorkShop[0].id + 1 : 1;
 
-        const newWorkshop = new WorkShops({
+        const newWorkshop = await new WorkShop({
           id,
-          name:name,
-          playlist_code: playlistId,
-          image_url: imgUrl,
-          diploma_url: courseType !== courseTypeConst[0] ? diplomaUrl : null,
-          description:description,
+          name: name,
+          playlist_code: 1,
+          image_url: portraitUrl,
+          diploma_url: diplomaUrl,
+          description: description,
           created_by: user,
           price,
+          vimeoShowCaseId: parseInt(workShopVimeoId, 10),
           currency: currency,
-          classesQuantity: cantidadClases,
-          modules: {
-            quantity: moduleNumbers.length,
-            breakPoints: moduleNumbers,
-            titles: breakpointTitles
-          }
-        });
+          classes:classesArray,
+          classesQuantity: classesArray.length,
+          // modules: {
+          //   quantity: moduleNumbers.length,
+          //   breakPoints: moduleNumbers,
+          //   titles: breakpointTitles
+          // }
+        }).save();
 
-        return await newWorkshop.save();
+        return NextResponse.json({ message: ' Workshop creado con éxito'}, { status: 200 })
       };
-
-
+      await newWorkShop();
       //Traigo clases de YT
 
       return NextResponse.json(

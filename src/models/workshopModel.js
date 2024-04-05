@@ -70,7 +70,8 @@ const workShopSchema = new mongoose.Schema(
     },
     paymentLink: {
       type: String,
-      required: true
+      default: () => "",
+     // required: true
     },
     createdAt: {
       type: Date,
@@ -79,14 +80,17 @@ const workShopSchema = new mongoose.Schema(
     },
     classesQuantity: {
       type: Number,
+      default: () => "",
       required: true
     },
     image_url: {
       type: String,
-      required: true
+      default: () => "",
+     // required: true
     },
     diploma_url: {
-      type: String
+      type: String,
+      default: () => ""
     },
     likes: {
       type: Number,
@@ -96,6 +100,12 @@ const workShopSchema = new mongoose.Schema(
       type: Number,
       default: () => 10
     },
+
+    vimeoShowCaseId: {
+      type: Number,
+      default: () => 10
+    },
+
     currency: {
       type: String,
       default: () => '$'

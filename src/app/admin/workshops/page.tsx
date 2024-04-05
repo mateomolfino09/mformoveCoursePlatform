@@ -1,7 +1,7 @@
 'use client';
 
 import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
-import CreateWorkshop from '../../../components/PageComponent/Workshops/CreateWorkShop';
+//import CreateWorkshop from '../../../components/PageComponent/Workshops/CreateWorkShop';
 import { PlusCircleIcon, TableCellsIcon } from '@heroicons/react/24/outline';
 import { Link, useRouter } from 'next13-progressbar';
 import { useAuth } from '../../../hooks/useAuth';
@@ -40,7 +40,7 @@ const Index = () => {
             <p>Crear WorkShop</p>
           </div>
         </Link>
-        <Link href={'/home'}>
+        <Link href={'/admin/workshops/allWorkShops'}>
           <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
             <TableCellsIcon className='w-24' />
             <p>WorkShops</p>

@@ -20,6 +20,7 @@ const CreateWorkshopStep1 = ({ handleSubmit }: Props) => {
   const [description, setDescription] = useState<string>('');
   const [descriptionLength, setDescriptionLength] = useState<number>(0);
   const [price, setPrice] = useState<number>(10);
+  const [workShopVimeoId, setWorkShopVimeoId] = useState<string>('');
   const [currency, setCurrency] = useState<string>('$');
   const [paymentLink, setPaymentLink] = useState<string>('');
   const [imageUrl, setImageUrl] = useState<string>('');
@@ -54,39 +55,64 @@ const CreateWorkshopStep1 = ({ handleSubmit }: Props) => {
       toast.error('Debe poner un precio');
       return;
     } else {
-      handleSubmit(name, description, 'USD', price);
+      handleSubmit(name, description, workShopVimeoId, 'USD', price, portraitImageArray, diplomaImageArray);
     }
   };
 
   const [files, setFiles] = useState<any>([] ? [] : null);
-  const [image, setImage] = useState<string | ArrayBuffer | null | undefined>(
-    null
-  );
-  function handleOnChange(changeEvent: any) {
+  const [portraitImageArray, setPortraitImage] = useState<any>([] ? [] : null);
+  const [diplomaImageArray, setDiplomaImage] = useState<any>([] ? [] : null);
+
+  
+  function handleOnChangePortraitPicture(changeEvent: any) {
     const reader = new FileReader();
-
+    
     reader.onload = function (onLoadEvent) {
-      setImage(onLoadEvent.target?.result);
+      setPortraitImage(onLoadEvent.target?.result);
     };
-
+    
     reader.readAsDataURL(changeEvent.target.files[0]);
   }
+  
+    function handleOnChangeDiplomaPicture(changeEvent: any) {
+      const reader = new FileReader();
+  
+      reader.onload = function (onLoadEvent) {
+        setDiplomaImage(onLoadEvent.target?.result);
+      };
+  
+      reader.readAsDataURL(changeEvent.target.files[0]);
+    }
 
-  const { getRootProps, getInputProps }: any = useDropzone({
-    onDrop: (acceptedFiles: any) => {
-      setFiles(
-        acceptedFiles.map((file: any) =>
-          Object.assign(file, {
-            preview: URL.createObjectURL(file)
-          })
-        )
-      );
-    },
-    multiple: false,
-    accept: { 'image/*': [] }
-  });
 
-  const images = files?.map((file: any) => (
+    const { getRootProps, getInputProps }: any = useDropzone({
+      onDrop: (acceptedFiles: any) => {
+        setPortraitImage(
+          acceptedFiles.map((file: any) =>
+            Object.assign(file, {
+              preview: URL.createObjectURL(file)
+            })
+          )
+        );
+      },
+      multiple: false,
+      accept: { 'image/*': [] }
+
+    });  const { getRootProps : diplomaRootProps , getInputProps :diplomaInputprops }: any = useDropzone({
+      onDrop: (acceptedFiles: any) => {
+        setDiplomaImage(
+          acceptedFiles.map((file: any) =>
+            Object.assign(file, {
+              preview: URL.createObjectURL(file)
+            })
+          )
+        );
+      },
+      multiple: false,
+      accept: { 'image/*': [] }
+    });
+
+  const portraitImageShow = portraitImageArray?.map((file: any) => (
     <img
       src={file.preview}
       key={file.name}
@@ -94,6 +120,16 @@ const CreateWorkshopStep1 = ({ handleSubmit }: Props) => {
       className='cursor-pointer object-cover w-full h-full absolute'
     />
   ));
+
+  const diplomaImageShow = diplomaImageArray?.map((file: any) => (
+    <img
+      src={file.preview}
+      key={file.name}
+      alt='image'
+      className='cursor-pointer object-cover w-full h-full absolute'
+    />
+  ));
+
 
   return (
       <div className='relative flex w-full min-h-screen flex-col bg-transparent md:items-center md:justify-center md:bg-transparent'>
@@ -120,6 +156,15 @@ const CreateWorkshopStep1 = ({ handleSubmit }: Props) => {
                   value={name}
                   className='input'
                   onChange={(e) => setName(e.target.value)}
+                />
+
+                <p>Inserta Id de workshop</p>
+                <input
+                  type='number'
+                  placeholder='Numero WorkShop'
+                  value={workShopVimeoId ? workShopVimeoId : undefined}
+                  className='input'
+                  onChange={(e) => setWorkShopVimeoId(e.target.value)}
                 />
               </label>
 
@@ -181,13 +226,13 @@ const CreateWorkshopStep1 = ({ handleSubmit }: Props) => {
               </div>
             </div>
             <p>Selecciona la Portada para el WorkShop</p>
-            {files?.length != 0 ? (
+            {portraitImageArray.length > 0 ? (
               <>
                 <div
                   className='grid place-items-center input h-80 border-dashed border-2 border-white/80 relative'
                   {...getRootProps()}
                 >
-                  <label className='w-full' onChange={handleOnChange}>
+                  <label className='w-full' onChange={handleOnChangePortraitPicture}>
                     <input
                       name='file'
                       placeholder='File'
@@ -196,7 +241,7 @@ const CreateWorkshopStep1 = ({ handleSubmit }: Props) => {
                     <DocumentIcon className='flex justify-center items-center h-12 w-12 my-0 mx-auto text-white/60 mb-8' />
                     {/* {files.map((f: File) => <p className="flex justify-center items-center my-2 mx-auto text-white/80">{f.name}</p> )} */}
                   </label>
-                  {images}
+                  {portraitImageShow}
                 </div>
               </>
             ) : (
@@ -204,7 +249,7 @@ const CreateWorkshopStep1 = ({ handleSubmit }: Props) => {
                 className='grid place-items-center input h-80 border-dashed border-2 border-white/80 !mt-3'
                 {...getRootProps()}
               >
-                <label className='w-full' onChange={handleOnChange}>
+                <label className='w-full' onChange={handleOnChangePortraitPicture}>
                   <input name='file' placeholder='File' {...getInputProps()} />
                   <ArrowUpTrayIcon className='flex justify-center items-center h-12 w-12 my-0 mx-auto text-white/60' />
                   <label className='flex justify-center items-center mx-auto text-white/60 mt-8'>
@@ -219,31 +264,31 @@ const CreateWorkshopStep1 = ({ handleSubmit }: Props) => {
 
             {/* ------------------------------------------------- */}
             <p>Selecciona el Diploma para el WorkShop</p>
-            {files?.length != 0 ? (
+            {diplomaImageArray.length ? (
               <>
                 <div
                   className='grid place-items-center input h-80 border-dashed border-2 border-white/80 relative'
-                  {...getRootProps()}
+                  {...diplomaRootProps()}
                 >
-                  <label className='w-full' onChange={handleOnChange}>
+                  <label className='w-full' onChange={handleOnChangeDiplomaPicture}>
                     <input
                       name='file'
                       placeholder='File'
-                      {...getInputProps()}
+                      {...diplomaInputprops()}
                     />
                     <DocumentIcon className='flex justify-center items-center h-12 w-12 my-0 mx-auto text-white/60 mb-8' />
                     {/* {files.map((f: File) => <p className="flex justify-center items-center my-2 mx-auto text-white/80">{f.name}</p> )} */}
                   </label>
-                  {images}
+                  {diplomaImageShow}
                 </div>
               </>
             ) : (
               <div
                 className='grid place-items-center input h-80 border-dashed border-2 border-white/80 !mt-3'
-                {...getRootProps()}
+                {...diplomaRootProps()}
               >
-                <label className='w-full' onChange={handleOnChange}>
-                  <input name='file' placeholder='File' {...getInputProps()} />
+                <label className='w-full' onChange={handleOnChangeDiplomaPicture}>
+                  <input name='file' placeholder='File' {...diplomaInputprops()} />
                   <ArrowUpTrayIcon className='flex justify-center items-center h-12 w-12 my-0 mx-auto text-white/60' />
                   <label className='flex justify-center items-center mx-auto text-white/60 mt-8'>
                     <p>Max Size: 10MB</p>
