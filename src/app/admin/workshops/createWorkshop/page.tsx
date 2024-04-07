@@ -1,4 +1,4 @@
-import CreateWorkshop from "../../../../components/PageComponent/Workshops/CreateWorkShop";
+import CreateWorkshop from "../../../../components/PageComponent/Workshops/CreateWorkshop";
 
 
    
