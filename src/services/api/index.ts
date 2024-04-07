@@ -41,7 +41,10 @@ const endpoints = {
   },
   admin: {
     emailMarketing: '/api/admin/emailMarketing'
-  }
+  },
+  workShop: {
+    delete: (workShopId: string) => `/api/workShop/delete/${workShopId}`
+  },
 
 };
 

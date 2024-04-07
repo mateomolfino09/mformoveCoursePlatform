@@ -402,3 +402,25 @@ export interface Plan {
   error_url: string
   createdAt: string;
 }
+
+
+export interface WorkShopDB {
+  _id: string;
+  id: number;
+  createdAt: string;
+  // udpatedAt: string;
+  description: string;
+  image_url: string;
+  name: string;
+  dbLikes: string;
+  likes: number;
+  users: User[];
+  classes: ClassesDB[];
+  price: number;
+  currency: string;
+  created_by: User;
+  index: number;
+  classesQuantity: number;
+  isOpen: boolean;
+  modules: Modules;
+}
