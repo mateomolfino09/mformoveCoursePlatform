@@ -1,25 +1,26 @@
-'use client'
-import AdmimDashboardLayout from '../../AdmimDashboardLayout';
-import { LoadingSpinner } from '../../LoadingSpinner';
+'use client';
+
+import { courseTypeConst } from '../../../constants/courseType';
+import { useAuth } from '../../../hooks/useAuth';
+import { useAppDispatch } from '../../../hooks/useTypeSelector';
+import { clearData } from '../../../redux/features/createCoursesSlice';
+import { useAppSelector } from '../../../redux/hooks';
 import requests from '../../../utils/requests';
+import AdmimDashboardLayout from '../../AdmimDashboardLayout';
+import CreateCourseStepCero from '../../CreateCourseStepCero';
+import CreateCourseStepOne from '../../CreateCourseStepOne';
+import CreateCourseStepTwo from '../../CreateCourseStepTwo';
+import { LoadingSpinner } from '../../LoadingSpinner';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import Head from 'next/head';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
-import { useAuth } from '../../../hooks/useAuth';
-import Cookies from 'js-cookie';
-import CreateCourseStepOne from '../../CreateCourseStepOne';
-import CreateCourseStepCero from '../../CreateCourseStepCero';
-import CreateCourseStepTwo from '../../CreateCourseStepTwo';
-import { courseTypeConst } from '../../../constants/courseType';
-import { useAppSelector } from '../../../redux/hooks';
-import { useAppDispatch } from '../../../hooks/useTypeSelector';
-import { clearData } from '../../../redux/features/createCoursesSlice';
 
-interface User {  
+interface User {
   id: number;
   name: string;
   rol: string;
@@ -38,21 +39,34 @@ const CreateCourse = () => {
   const cookies = parseCookies();
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const createCourseReducer = useAppSelector(
     (state) => state.createCourseReducer.value
-    );
-    const { classesQuantity: cantidadClases, modules, modulesNumbers: moduleNumbers, descriptionLength, description,
-      price, 
-      classesNumbers, 
-      breakpointTitles, 
-      showBreakpoints, courseType, diploma, questions, playlist_code: playlistId, name, currency: currencys, files } = createCourseReducer
+  );
+  const {
+    classesQuantity: cantidadClases,
+    modules,
+    modulesNumbers: moduleNumbers,
+    descriptionLength,
+    description,
+    price,
+    classesNumbers,
+    breakpointTitles,
+    showBreakpoints,
+    courseType,
+    diploma,
+    questions,
+    playlist_code: playlistId,
+    name,
+    currency: currencys,
+    files
+  } = createCourseReducer;
 
-  console.log(createCourseReducer)
+  console.log(createCourseReducer);
 
   const { stepCero, stepOne, stepTwo, stepThree } = state;
 
-  const auth = useAuth()
+  const auth = useAuth();
 
   const step0ToStep1 = () => {
     setState({ ...state, stepCero: false, stepOne: true });
@@ -73,27 +87,23 @@ const CreateCourse = () => {
   const step2ToStep1 = () => {
     setState({ ...state, stepOne: true, stepTwo: false });
   };
-    
-    useEffect(() => {
-      
-      const cookies: any = Cookies.get('userToken')
 
-      console.log(auth)
-      
-      if (!cookies ) {
-        router.push('/login');
-      }
-    
-    if(!auth.user) {
-      auth.fetchUser()
+  useEffect(() => {
+    const cookies: any = Cookies.get('userToken');
+
+    console.log(auth);
+
+    if (!cookies) {
+      router.push('/login');
     }
-    else if(auth.user.rol != 'Admin') router.push('/login');
 
-
+    if (!auth.user) {
+      auth.fetchUser();
+    } else if (auth.user.rol != 'Admin') router.push('/login');
   }, [auth.user]);
 
   async function handleSubmit(event: any) {
-    console.log(courseType)
+    console.log(courseType);
     event.preventDefault();
     setLoading(true);
     if (name.length < 5) {
@@ -136,7 +146,10 @@ const CreateCourse = () => {
       toast.error('Debe indicar los títulos de los módulos');
       setLoading(false);
       return;
-    } else if (courseType !== courseTypeConst[0] && (!diploma || diploma.length === 0)) {
+    } else if (
+      courseType !== courseTypeConst[0] &&
+      (!diploma || diploma.length === 0)
+    ) {
       toast.error('Debe agregar un diploma');
       setLoading(false);
       return;
@@ -154,9 +167,9 @@ const CreateCourse = () => {
         formData.append('file', file);
       }
 
-      let diplomaUrl = null
+      let diplomaUrl = null;
 
-      if(courseType !== courseTypeConst[0]) {
+      if (courseType !== courseTypeConst[0]) {
         for (const dip of diploma) {
           formDataDiploma.append('file', dip);
         }
@@ -173,7 +186,6 @@ const CreateCourse = () => {
         }).then((r) => r.json());
 
         diplomaUrl = diplomaData?.public_id;
-
       }
 
       formData.append('upload_preset', 'my_uploads');
@@ -195,8 +207,7 @@ const CreateCourse = () => {
         headers: {
           'Content-Type': 'application/json'
         }
-      };  
-
+      };
 
       const { data } = await axios.post(
         '/api/course/createCourse',
@@ -218,48 +229,50 @@ const CreateCourse = () => {
         config
       );
 
-      auth.fetchUser()
+      auth.fetchUser();
 
       toast.success(data.message);
-      router.push('/admin/courses')
-          dispatch(clearData())
-
+      router.push('/admin/courses');
+      dispatch(clearData());
     } catch (error: any) {
-      console.log(error)
+      console.log(error);
       toast.error(error.response.data.error);
     }
     setLoading(false);
   }
 
-
   return (
-      <AdmimDashboardLayout>
-        {loading ? (
-          <div className='md:h-[100vh] w-full flex flex-col justify-center items-center'>
-            <LoadingSpinner />
-            <p className='font-light text-xs text-[gray] mt-4'>
-              Esto puede demorar unos segundos...
-            </p>
-          </div>
-        ) : (
-          <>
-            {stepCero && (
-              <>
-                <CreateCourseStepCero step0ToStep1={step0ToStep1}/>
-              </>
-            )                             
-            }
-            {stepOne && (
-              <CreateCourseStepOne step1ToStep2={step1ToStep2} step1ToStep0={step1ToStep0}/>
-            )}
-            {stepTwo && (
-              <CreateCourseStepTwo step2ToStep1={step2ToStep1} createCourse={handleSubmit}/>
-            )}
-          </>
-        )}
-      </AdmimDashboardLayout>
+    <AdmimDashboardLayout>
+      {loading ? (
+        <div className='md:h-[100vh] w-full flex flex-col justify-center items-center'>
+          <LoadingSpinner />
+          <p className='font-light text-xs text-[gray] mt-4'>
+            Esto puede demorar unos segundos...
+          </p>
+        </div>
+      ) : (
+        <>
+          {stepCero && (
+            <>
+              <CreateCourseStepCero step0ToStep1={step0ToStep1} />
+            </>
+          )}
+          {stepOne && (
+            <CreateCourseStepOne
+              step1ToStep2={step1ToStep2}
+              step1ToStep0={step1ToStep0}
+            />
+          )}
+          {stepTwo && (
+            <CreateCourseStepTwo
+              step2ToStep1={step2ToStep1}
+              createCourse={handleSubmit}
+            />
+          )}
+        </>
+      )}
+    </AdmimDashboardLayout>
   );
 };
-
 
 export default CreateCourse;
