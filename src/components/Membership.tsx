@@ -6,9 +6,11 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { toast } from 'react-toastify';
 
 interface Props {
   user: User | null;
+  handleVisibility: any
 }
 
 const monthNames = [
@@ -26,10 +28,13 @@ const monthNames = [
   'Diciembre'
 ];
 
-function Membership({ user }: Props) {
+function Membership({ user, handleVisibility }: Props) {
   const [isBillingLoading, setBillingLoading] = useState(false);
   const router = useRouter();
   const auth = useAuth();
+
+  console
+
 
   return (
     <div className='mt-6 grid grid-cols-1 gap-x-4 border px-4 md:grid-cols-4 md:border-x-0 md:border-t md:border-b-0 md:px-0'>
@@ -85,6 +90,7 @@ function Membership({ user }: Props) {
             <Link href={'/account/billing'}>
               <p className='membershipLink'>Detalles de Facturación</p>
             </Link>
+              <p className={`membershipLink ${!auth?.user?.subscription?.active ? 'hidden' : ''}`} onClick={handleVisibility}>Cancelar Subscripción</p>
           </div>
         </div>
       </div>

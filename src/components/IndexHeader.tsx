@@ -23,7 +23,6 @@ interface Props {
   where: any
 }
 const IndexHeader = ({ user, toggleNav, where }: Props) => {
-  console.log(where)
   const router = useRouter();
   const headerAnimation = useAnimation();
 
@@ -68,9 +67,9 @@ const IndexHeader = ({ user, toggleNav, where }: Props) => {
           <div className='pl-4 md:pl-16'>
             <img
               alt='icon image'
-              src='/images/logoWhite.png'
-              width={120}
-              height={120}
+              src='/images/MFORMOVE_blanco03.png'
+              width={180}
+              height={180}
               className='cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-100'
             />
           </div>

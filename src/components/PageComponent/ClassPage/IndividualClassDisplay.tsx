@@ -176,7 +176,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
       router.push('/login');
     }
     
-    if(!auth.user || !auth.user.subscription) {
+    if(!auth.user || !auth?.user?.subscription?.active) {
       router.push('/home');
     }
 

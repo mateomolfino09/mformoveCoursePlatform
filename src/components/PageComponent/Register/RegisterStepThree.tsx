@@ -1,10 +1,12 @@
 import { useRouter, usePathname } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import Select, { StylesConfig } from 'react-select';
 import { useAppSelector } from '../../../redux/hooks';
 import './registerStyle.css';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -26,15 +28,19 @@ interface Props {
   signUp: any;
   onChange: any;
   recaptchaRef: any;
+  step3ToStep2: any
 }
 
-const RegisterStepThree = ({ signUp, onChange, recaptchaRef }: Props) => {
+const RegisterStepThree = ({ signUp, onChange, recaptchaRef, step3ToStep2 }: Props) => {
   const router = useRouter();
   const user = useAppSelector(
     (state) => state.registerReducer.value
   );
 
-  console.log(user)
+  useEffect(() => {
+    console.log(recaptchaRef)
+    recaptchaRef.re
+  }, [])
   
 
   const key =
@@ -42,9 +48,16 @@ const RegisterStepThree = ({ signUp, onChange, recaptchaRef }: Props) => {
       ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
       : '';
 
-  const handleClick = () => {
-    router.push('/login');
+  const handleClickBack = () => {
+    step3ToStep2();
   };
+
+  function onChangeCaptcha(value: any) {
+    //custom fetch and at the end do a reset
+   if (recaptchaRef && recaptchaRef.current && recaptchaRef.current.reset) {
+        recaptchaRef.current.reset()
+    }
+}
 
   return (
     <div>
@@ -122,26 +135,16 @@ const RegisterStepThree = ({ signUp, onChange, recaptchaRef }: Props) => {
           />
         </div>
       </div>
-      <ReCAPTCHA
-        onChange={onChange}
-        ref={recaptchaRef}
-        sitekey={key}
-        className='mt-8 mb-6 my-auto relative flex justify-center'
-      />
-      <div className='flex flex-row items-center justify-evenly relative space-x-8 rounded px-8 md:w-full mb-10'>
-        <button
-          onClick={() => handleClick()}
-          className='siguiente-btn'
-        >
-          Volver{' '}
-        </button>
+      <div className='w-full flex justify-center items-center space-x-4 mt-3 pb-12'>
+      <div onClick={() =>  handleClickBack()} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
+                <p className='text-white group-hover:text-black'>Volver</p>
 
-        <button
-          onClick={(e) => signUp(e)}
-          className='siguiente-btn'
-        >
-          Crear Cuenta{' '}
-        </button>
+        </div>
+        <div onClick={(e) => signUp(e)} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
+            <p className='text-white group-hover:text-black'>Crear Cuenta</p>
+            <ArrowRightIcon className='w-4 group-hover:text-black ml-2 group-hover:translate-x-1 transition-all duration-500'/>
+
+            </div>
       </div>
     </div>
   );

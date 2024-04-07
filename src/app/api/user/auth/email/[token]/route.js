@@ -1,6 +1,9 @@
 import connectDB from '../../../../../../config/connectDB';
 import User from '../../../../../../models/userModel';
 import Course from '../../../../../../models/courseModel';
+import Class from '../../../../../../models/classModel';
+import IndividualClass from '../../../../../../models/individualClassModel';
+
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 
@@ -71,12 +74,12 @@ export async function PUT(req, { params }) {
         await user.save();
         return NextResponse.json({ message: 'Cuenta verificada con éxito'}, { status: 200 })
       } else if (user && user.validEmail == 'yes') {
-        return NextResponse.json({ message: 'Esta cuenta ya fue verificada'}, { status: 401 })
+        return NextResponse.json({ error: 'Esta cuenta ya fue verificada'}, { status: 401 })
       } else
-      return NextResponse.json({ message: 'Hubo un error al verificar su cuenta'}, { status: 500 })
+      return NextResponse.json({ error: 'Hubo un error al verificar su cuenta'}, { status: 500 })
     }
   } catch (error) {
     console.log(error);
-    return NextResponse.json({ message: 'Hubo un error al verificar su cuenta'}, { status: 500 })
+    return NextResponse.json({ error: 'Hubo un error al verificar su cuenta'}, { status: 500 })
   }
 };

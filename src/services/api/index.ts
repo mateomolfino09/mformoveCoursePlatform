@@ -5,6 +5,7 @@ const endpoints = {
     verifyEmail: (email: string) => `/api/user/auth/email/verifyEmail/${email}`,
     email: (token: string) => `/api/user/auth/email/${token}`,
     register: '/api/user/auth/register',
+    resend: '/api/user/auth/register/resendEmail',
     resetMail: (token: string) =>  `/api/user/auth/resetEmail/${token}`,
     resetMailSend: `/api/user/auth/resetEmail`,
     resetPassword: (token: string) =>  `/api/user/auth/reset/${token}`,
@@ -35,7 +36,8 @@ const endpoints = {
     createPlan: `/api/payments/createPlan`,
     editPlan: `/api/payments/editPlan`,
     createSub: `/api/payments/createSubscription`,
-    createPaymentToken: `/api/payments/createPaymentToken`
+    createPaymentToken: `/api/payments/createPaymentToken`,
+    cancelSubscription: (id:string) => `/api/payments/cancelSubscription/${id}`
   },
   admin: {
     emailMarketing: '/api/admin/emailMarketing'

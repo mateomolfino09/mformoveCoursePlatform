@@ -14,11 +14,17 @@ import Cookies from 'js-cookie';
 import './profileStyle.css';
 import Footer from '../../Footer';
 import FooterProfile from './FooterProfile';
+import UnsubscribeModal from './UnsubscribeModal';
 
 function Profile() {
   const router = useRouter();
   const auth = useAuth()
   const aRef = useRef<any>(null)
+  const [visible, setVisible] = useState<boolean>(false)
+
+  const handleVisibility = () => {
+    setVisible(!visible)
+  }
 
   useEffect(() => {
     const cookies: any = Cookies.get('userToken')
@@ -52,7 +58,7 @@ function Profile() {
           <h1 className='title text-black font-light'>Mi Cuenta</h1>
         </div>
 
-        <Membership user={auth.user} />
+        <Membership user={auth.user} handleVisibility={handleVisibility}/>
         <div className='second-container'>
           <h4 className='second-title '>Detalles del Plan</h4>
           <div className='col-span-2 font-medium'>
@@ -79,6 +85,7 @@ function Profile() {
       </main>
       <hr className='w-full border-[0.5px] border-solid border-black'/>
       <FooterProfile />
+      <UnsubscribeModal handleVisiblity={handleVisibility} visible={visible}/>
     </div>
   );
 }

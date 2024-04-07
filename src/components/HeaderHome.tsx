@@ -54,16 +54,16 @@ const HeaderHome = ({ user, toggleNav }: Props) => {
             y: -100,
           }}
           animate={headerAnimation}
-          className={`${headerScroll ? 'bg-black fixed' : 'bg-transparent fixed'}  w-full h-16 flex justify-between items-center transition-all duration-500 z-[250]`}
+          className={`${headerScroll ? 'bg-black/80 fixed' : 'bg-transparent fixed'}  w-full h-16 flex justify-between items-center transition-all duration-500 z-[250]`}
         >
           <div className='pl-4 md:pl-16'>
             <a href={pathname != '/home' ? '/home' : `/`}>
               <img
                 alt='icon image'
-                src='/images/logoWhite.png'
-                width={120}
-                height={120}
-                className={`${headerScroll ? 'max-w-[80px]' : 'min-w-[100px] mt-1'} cursor-pointer object-contain transition-all duration-100 hover:scale-105 opacity-100`}
+                src='/images/MFORMOVE_blanco03.png'
+                width={180}
+                height={180}
+                className={`${headerScroll ? 'max-w-[120px]' : 'min-w-[100px] mt-1'} cursor-pointer object-contain transition-all duration-100 hover:scale-105 opacity-100`}
               />
             
             </a>

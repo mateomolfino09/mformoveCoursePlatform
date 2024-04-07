@@ -25,13 +25,16 @@ interface Props {}
 const Success = () => {
   const dispatch = useAppDispatch();
   const auth = useAuth();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const router =  useRouter()
   const [user,setUser] = useState<User | null>(null)
 
   useEffect(() => {
-    console.log(user)
+    console.log(auth.user)
     if(!user?.subscription) handleSub()
+    else if(!auth.user) {
+      auth.fetchUser()
+    }
     else {
       setLoading(false)
       Cookies.remove('userPaymentToken')
@@ -43,16 +46,20 @@ const Success = () => {
     const paymentToken = Cookies.get('userPaymentToken')
     
     if (!paymentToken ) {
-      toast.success(`No tienes token de subscripcion, te redireccionaremos al inicio...`);
-      setTimeout(() => {
-        router.push('/home');
-      }, 3000)
+      toast.error(`No tienes token de subscripcion, te redireccionaremos al inicio...`);
+      router.push('/home');
+      return
     }
     try {
-      const data = await auth.newSub(auth.user._id);
+      const user = auth.user
+      if(!user) {
+        auth.fetchUser()
+        return
+      }
+      const data = await auth.newSub(user._id);
       if (data.error) {
         toast.error(`${data.error}`);
-        router.push('/')
+        router.push('/home')
       }
       else {
         setUser(data.user)
@@ -89,20 +96,20 @@ const Success = () => {
 
   return (
     <MainSideBar where={''}>
-      <div className='h-[100vh] w-full bg-transparent items-center justify-center relative flex overflow-x-hidden'>
+      <div className='h-[100vh]  w-full bg-transparent items-center justify-center relative flex overflow-x-hidden'>
         <div className='absolute top-0 left-0 h-full w-screen -z-10'>
           <Image
-            src='/images/membershipbg.jpg'
+            src='/images/image00006.jpeg'
             // src={srcImg}
             alt={'image'}
             fill={true}
             loader={imageLoader}
-            className='object-cover'
+            className='object-cover opacity-50 '
           />
         </div>
         <m.div
-          initial={{ x: '150%' }}
-          animate={{ x: '0%' }}
+          initial={{ y: '-150%' }}
+          animate={{ y: '0%' }}
           transition={{ duration: 0.9, ease: 'easeOut' }}
           exit={{ opacity: 1 }}
           className='w-96 relative lg:w-[28rem] md:left-32 lg:left-1/4 bottom-24'
@@ -132,7 +139,6 @@ const Success = () => {
           )}
         </m.div>
       </div>
-      <div className='h-auto w-full bg-[#131212] items-center justify-center relative flex flex-col pb-12'></div>
       <Footer />
     </MainSideBar>
   );
