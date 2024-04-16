@@ -404,7 +404,7 @@ export interface Plan {
 }
 
 
-export interface WorkShopDB {
+export interface ProductDB {
   _id: string;
   id: number;
   createdAt: string;

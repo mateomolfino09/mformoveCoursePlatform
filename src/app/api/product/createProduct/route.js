@@ -5,8 +5,8 @@ import Courses from '../../../../models/courseModel';
 import Exam from '../../../../models/examModel';
 import IndividualClass from '../../../../models/individualClassModel';
 import Users from '../../../../models/userModel';
-import WorkShop from '../../../../models/workshopModel';
-import getVimeoShowCase from '../getVimeoShowCase';
+import Product from '../../../../models/productModel';
+import getVimeoShowCase from '../../product/getVimeoShowCase';
 import bcrypt from 'bcryptjs';
 import { NextResponse } from 'next/server';
 
@@ -18,13 +18,14 @@ export async function POST(req) {
       const {
         name,
         description,
-        workShopVimeoId,
+        productVimeoId,
         currency,
         price,
         amount,
         userEmail,
         portraitUrl,
-        diplomaUrl
+        diplomaUrl,
+        productType
       } = await req.json();
 
       let user = await Users.findOne({ email: userEmail });
@@ -34,13 +35,13 @@ export async function POST(req) {
       //Es Admin?
       if (user.rol !== 'Admin' || user?.admin?.coursesAvailable <= 0) {
         return NextResponse.json(
-          { error: 'Este usuario no tiene permisos para crear un workshop' },
+          { error: 'Este usuario no tiene permisos para crear un producto' },
           { status: 422 }
         );
       }
       //user?.admin?.active = true;
 
-      const vimeoShowCase = await getVimeoShowCase(workShopVimeoId);
+      const vimeoShowCase = await getVimeoShowCase(productVimeoId);
 
       //const initial = await fetch(youtubeURL);
       //const data = await initial.json();
@@ -54,7 +55,7 @@ export async function POST(req) {
           id: index, // JSON.stringify(lastClass) != '[]' ? lastClass[0].id + 1 : 1,
           name: video?.name,
           image_url: video?.uri,
-          description,
+          description:"",
           totalTime: video.duration.toString(),
           module: 1,
           atachedFiles : [],
@@ -68,13 +69,13 @@ export async function POST(req) {
       // UNA VEZ Q TENGO LOS VIDEOS EN UN ARREGLO,M SE LOS MANDO COMO PARAMETRO PARA EL GUARDADO
       
 
-      const newWorkShop = async () => {
-        const lastWorkShop = await WorkShop.find().sort({ id: -1 }).limit(1); // Assuming unique IDs
+      const newProduct = async () => {
+        const lastProduct = await Product.find().sort({ id: -1 }).limit(1); // Assuming unique IDs
 
         const id =
-          JSON.stringify(lastWorkShop) !== '[]' ? lastWorkShop[0].id + 1 : 1;
+          JSON.stringify(lastProduct) !== '[]' ? lastProduct[0].id + 1 : 1;
 
-        const newWorkshop = await new WorkShop({
+        const newProduct = await new Product({
           id,
           name: name,
           playlist_code: 1,
@@ -83,10 +84,11 @@ export async function POST(req) {
           description: description,
           created_by: user,
           price,
-          vimeoShowCaseId: parseInt(workShopVimeoId, 10),
+          vimeoShowCaseId: parseInt(productVimeoId, 10),
           currency: currency,
           classes:classesArray,
           classesQuantity: classesArray.length,
+          productType:productType
           // modules: {
           //   quantity: moduleNumbers.length,
           //   breakPoints: moduleNumbers,
@@ -94,13 +96,13 @@ export async function POST(req) {
           // }
         }).save();
 
-        return NextResponse.json({ message: ' Workshop creado con éxito'}, { status: 200 })
+        return newProduct;
       };
-      await newWorkShop();
+      const product = await newProduct();
       //Traigo clases de YT
 
       return NextResponse.json(
-        { message: 'Workshop creado con éxito' },
+        { message: 'Producto creado con éxito' , product: product},
         { status: 200 }
       );
     }
