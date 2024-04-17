@@ -53,7 +53,18 @@ const classSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const workShopSchema = new mongoose.Schema(
+const moduleSchema = mongoose.Schema({
+  id: {
+    type: Number,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
+}, { timestamps: true })
+
+const productSchema = new mongoose.Schema(
   {
     id: {
       type: Number,
@@ -85,8 +96,7 @@ const workShopSchema = new mongoose.Schema(
     },
     image_url: {
       type: String,
-      default: () => "",
-     // required: true
+      default: () => ""
     },
     diploma_url: {
       type: String,
@@ -111,6 +121,7 @@ const workShopSchema = new mongoose.Schema(
       default: () => '$'
     },
     classes:[classSchema],
+    modules:[moduleSchema],
     users: [
       {
         type: mongoose.Types.ObjectId,
@@ -120,10 +131,15 @@ const workShopSchema = new mongoose.Schema(
     created_by: {
       type: mongoose.Types.ObjectId,
       ref: 'User'
+    },
+    productType:{
+      type: String,
+      //required:true
     }
+
   },
   { timestamps: true }
 );
 
-let Dataset = mongoose.models.WorkShop || mongoose.model('WorkShop', workShopSchema);
+let Dataset = mongoose.models.Product || mongoose.model('Product', productSchema);
 export default Dataset;
