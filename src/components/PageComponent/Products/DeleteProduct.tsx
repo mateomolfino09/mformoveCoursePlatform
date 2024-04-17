@@ -1,21 +1,21 @@
 
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
-import { WorkShopDB } from '../../../../typings';
+import { ProductDB } from '../../../../typings';
 
 interface Props {
-    workShop: WorkShopDB | null;
-    deleteWorkShop: any;
+    product: ProductDB | null;
+    deleteProduct: any;
   isOpen: any;
   setIsOpen: any;
 }
-const DeleteWorkShop = ({ workShop, deleteWorkShop, isOpen, setIsOpen }: Props) => {
+const DeleteProduct = ({ product, deleteProduct, isOpen, setIsOpen }: Props) => {
   function closeModal() {
     setIsOpen(false);
   }
 
   async function handleSubmit() {
-    deleteWorkShop();
+    deleteProduct();
     setIsOpen(false);
   }
   return (
@@ -50,10 +50,10 @@ const DeleteWorkShop = ({ workShop, deleteWorkShop, isOpen, setIsOpen }: Props) 
                     as='h3'
                     className='text-lg font-medium leading-6 text-white-900'
                   >
-                    Eliminar Curso
+                    Eliminar Producto
                   </Dialog.Title>
                   <div className='mt-2'>
-                    <p>Estas a punto de eliminar un workshop.</p>
+                    <p>Estas a punto de eliminar un producto.</p>
                   </div>
 
                   <div className='mt-4'>
@@ -75,4 +75,4 @@ const DeleteWorkShop = ({ workShop, deleteWorkShop, isOpen, setIsOpen }: Props) 
   );
 };
 
-export default DeleteWorkShop;
+export default DeleteProduct;

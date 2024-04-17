@@ -1,12 +1,13 @@
+'use client';
 
-'use client'
 import { useAuth } from '../../../hooks/useAuth';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
 import { clearData } from '../../../redux/features/filterClass';
 import requests from '../../../utils/requests';
 import AdmimDashboardLayout from '../../AdmimDashboardLayout';
 import { LoadingSpinner } from '../../LoadingSpinner';
-import CreateWorkshopStep1 from './CreateWorkshopStep1';
+import CreateProductStep2 from './CreateProductStep2';
+import CreateProductStep1 from './CreateProductStep1';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next13-progressbar';
@@ -14,7 +15,7 @@ import { parseCookies } from 'nookies';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-const CreateWorkshop = () => {
+const CreateProduct = () => {
   const [state, setState] = useState({
     stepCero: true,
     stepOne: false,
@@ -27,7 +28,13 @@ const CreateWorkshop = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
-  const { stepCero } = state;
+  const { stepCero, stepOne, stepTwo, stepThree } = state;
+
+  const step0ToStep1 = () => {
+    setState({ ...state, stepCero: false, stepOne: true });
+  };
+
+  const [productCreado, setProductCreado] = useState({})
 
   const auth = useAuth();
 
@@ -46,12 +53,13 @@ const CreateWorkshop = () => {
   async function handleSubmit(
     name: string,
     description: string,
-    workShopVimeoId:string,
+    productVimeoId: string,
     currency: string = 'USD',
     price: number,
-    portraitImageArray:any,
-    diplomaImageArray:any,
-    diploma:any,
+    portraitImageArray: any,
+    diplomaImageArray: any,
+    diploma: any,
+    productType: string
   ) {
     setLoading(true);
 
@@ -62,8 +70,8 @@ const CreateWorkshop = () => {
         }
       };
 
-      //console.log(name, description, currency, price , workShopVimeoId);
-      console.log(portraitImageArray, diplomaImageArray );
+      //console.log(name, description, currency, price , productVimeoId);
+      console.log(portraitImageArray, diplomaImageArray);
       const formData = new FormData();
 
       for (const file of portraitImageArray) {
@@ -76,13 +84,11 @@ const CreateWorkshop = () => {
         toast.error('Formato Incorrecto');
         return;
       }
-      
+
       const portraitData = await fetch(requests.fetchCloudinary, {
         method: 'POST',
         body: formData
       }).then((r) => r.json());
-
-      
 
       const formData2 = new FormData();
 
@@ -96,47 +102,43 @@ const CreateWorkshop = () => {
         toast.error('Formato Incorrecto');
         return;
       }
-      
+
       const diplomaData = await fetch(requests.fetchCloudinary, {
         method: 'POST',
         body: formData2
       }).then((r) => r.json());
 
-
       const portraitUrl = portraitData.public_id;
       const diplomaUrl = diplomaData.public_id;
-
-
-
-      
 
       const userEmail = auth.user.email;
 
       const { data } = await axios.post(
-        '/api/workShop/createWorkshop',
+        '/api/product/createProduct',
         {
           name,
           description,
-          workShopVimeoId,
+          productVimeoId,
           currency,
           price,
           userEmail,
           portraitUrl,
-          diplomaUrl
+          diplomaUrl,
+          productType
         },
         config
       );
-
+      setProductCreado(data.product);
       auth.fetchUser();
 
       toast.success(data.message);
-      router.push('/admin/memberships');
-      dispatch(clearData());
+      //dispatch(clearData());
     } catch (error: any) {
       console.log(error);
       toast.error(error.response.data.error);
     }
     setLoading(false);
+    step0ToStep1();
   }
 
   return (
@@ -150,15 +152,12 @@ const CreateWorkshop = () => {
         </div>
       ) : (
         <>
-          {stepCero && (
-            <>
-              <CreateWorkshopStep1 handleSubmit={handleSubmit} />
-            </>
-          )}
+          {stepCero && <CreateProductStep1 handleSubmit={handleSubmit} />}
+          {stepOne && <CreateProductStep2  productCreado={productCreado} />}
         </>
       )}
     </AdmimDashboardLayout>
   );
 };
 
-export default CreateWorkshop;
+export default CreateProduct;

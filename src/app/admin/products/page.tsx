@@ -1,7 +1,6 @@
 'use client';
 
 import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
-//import CreateWorkshop from '../../../components/PageComponent/Workshops/CreateWorkShop';
 import { PlusCircleIcon, TableCellsIcon } from '@heroicons/react/24/outline';
 import { Link, useRouter } from 'next13-progressbar';
 import { useAuth } from '../../../hooks/useAuth';
@@ -32,13 +31,13 @@ const Index = () => {
     <AdmimDashboardLayout>
     <div className='bg-gray-700 w-full md:h-[100vh]'>
       <p className='text-white text-3xl my-12 font-bold'>
-        Bienvenido al Dashboard de WorkShops
+        Bienvenido al Dashboard de Productos
       </p>
       <div className='grid lg:grid-cols-3 gap-5 mb-16'>
-        <Link href={'/admin/workshops/createWorkshop'}>
+        <Link href={'/admin/products/createProduct'}>
           <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
             <PlusCircleIcon className='w-24' />
-            <p>Crear WorkShop</p>
+            <p>Crear Producto</p>
           </div>
         </Link>
         <Link href={'/admin/workshops/createFilters'}>
@@ -50,7 +49,7 @@ const Index = () => {
         <Link href={'/admin/workshops/allWorkShops'}>
           <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
             <TableCellsIcon className='w-24' />
-            <p>WorkShops</p>
+            <p>Productos</p>
           </div>
         </Link>
       </div>
