@@ -1,3 +1,4 @@
+'use client'
 import IndexHeader from './IndexHeader'
 import { useAuth } from '../hooks/useAuth'
 import { User } from '../../typings';
