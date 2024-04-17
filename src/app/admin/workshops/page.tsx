@@ -7,6 +7,7 @@ import { Link, useRouter } from 'next13-progressbar';
 import { useAuth } from '../../../hooks/useAuth';
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
+import { BsTools } from 'react-icons/bs';
 
 const Index = () => {
   const router = useRouter();
@@ -40,15 +41,16 @@ const Index = () => {
             <p>Crear WorkShop</p>
           </div>
         </Link>
+        <Link href={'/admin/workshops/createFilters'}>
+              <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
+                <BsTools className='w-20 h-20 pb-2' />
+                <p className='-mb-4'>Crear Filtro de Producto</p>
+              </div>
+            </Link>
         <Link href={'/admin/workshops/allWorkShops'}>
           <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
             <TableCellsIcon className='w-24' />
             <p>WorkShops</p>
-          </div>
-        </Link>
-        <Link href={'/admin/billing'}>
-          <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
-            <p></p>
           </div>
         </Link>
       </div>
