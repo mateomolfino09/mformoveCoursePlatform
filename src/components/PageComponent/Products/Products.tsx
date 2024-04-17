@@ -1,5 +1,5 @@
 import React from 'react'
-import { ClassTypes, WorkShopDB } from '../../../../typings'
+import { ClassTypes, ProductDB} from '../../../../typings'
 import MainSideBar from '../../MainSideBar'
 import Head from 'next/head'
 import Footer from '../../Footer'
@@ -8,7 +8,7 @@ import ProductsFilters from '../ProductFiltersBoard'
 import FilterNavWrapper from '../../FilterNavProductWrapper'
 
 interface Props {
-    products: WorkShopDB[]
+    products: ProductDB[]
     filters: ClassTypes[]
 }
 

@@ -2,10 +2,10 @@
 import Image from 'next/image'
 import React from 'react'
 import imageLoader from '../../../../imageLoader'
-import { WorkShopDB } from '../../../../typings'
+import { ProductDB } from '../../../../typings'
 
 interface Props {
-    products: WorkShopDB[]
+    products: ProductDB[]
 }
 
 const ProductCarousel = ({ products }: Props) => {
