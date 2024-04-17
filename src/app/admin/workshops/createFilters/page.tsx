@@ -1,4 +1,4 @@
-import ProductsFilters from "../../../../components/PageComponent/Workshops/ProductsFilters";
+import ProductsFilters from "../../../../components/PageComponent/Products/ProductsFilters";
 
    
 export default async function Page() {
