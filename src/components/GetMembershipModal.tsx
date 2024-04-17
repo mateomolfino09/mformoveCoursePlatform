@@ -85,7 +85,7 @@ const GetMembershipModal
             </div>
             <div className='flex flex-col justify-center text-center items-center pb-4 px-12 mt-4 text-lg space-y-2'>
             <li className='mr-2 text-sm'>Clases todas las semanas </li>
-                <li className='mr-2 text-sm'>Workshops con hasta 50% de descuento </li>
+                <li className='mr-2 text-sm'>Productos con hasta 50% de descuento </li>
             <div className='flex justify-center text-center items-center px-12 text-lg'>
                 <li className='mr-2 text-sm'>Ofrecemos pagos seguros con </li>
                 <Image

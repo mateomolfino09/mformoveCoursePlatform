@@ -3,25 +3,25 @@
 import Head from 'next/head';
 import AdmimDashboardLayout from '../../AdmimDashboardLayout';
 import React, { useEffect, useRef, useState } from 'react';
-import { WorkShopDB } from '../../../../typings';
+import { ProductDB } from '../../../../typings';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Cookies from 'js-cookie';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../../../hooks/useAuth';
-import DeleteWorkShop from './DeleteWorkShop';
+import DeleteProduct from './DeleteProduct';
 import { toast } from 'react-toastify';
 import endpoints from '../../../services/api';
 
 interface Props {
-    workShops: WorkShopDB[];
+    products: ProductDB[];
   }
 
-const AllWorkShops = ({ workShops }: Props) => {
+const AllProducts = ({ products }: Props) => {
 
     let [isOpenDelete, setIsOpenDelete] = useState(false);
-    const [elementos, setElementos] = useState<WorkShopDB[]>([]);
+    const [elementos, setElementos] = useState<ProductDB[]>([]);
     const ref = useRef(null);
-    const [workShopSelected, setWorkShopSelected] = useState<WorkShopDB | null>(null);
+    const [productSelected, setProductSelected] = useState<ProductDB | null>(null);
     const router = useRouter();
     const auth = useAuth();
     let [isOpen, setIsOpen] = useState(false);
@@ -37,7 +37,7 @@ const AllWorkShops = ({ workShops }: Props) => {
       }, [auth.user]);
 
       useEffect(() => {
-        setElementos(workShops);
+        setElementos(products);
       }, []);
 
 
@@ -47,43 +47,43 @@ const AllWorkShops = ({ workShops }: Props) => {
       function openModal() {
         setIsOpen(true);
       }
-    function openModalDelete(workShop: WorkShopDB) {
-        setWorkShopSelected(workShop);
+    function openModalDelete(product: ProductDB) {
+        setProductSelected(product);
         setIsOpenDelete(true);
       }
     
-      function openEdit(workShop: WorkShopDB) {
-        setWorkShopSelected(workShop);
+      function openEdit(product: ProductDB) {
+        setProductSelected(product);
       }
 
 
 
 
 
-      const deleteWorkShop = async () => {
-        if(workShopSelected) {
+      const deleteProduct = async () => {
+        if(productSelected) {
     
-          const workShopId = workShopSelected?._id;
+          const productId = productSelected?._id;
     
-          const res = await fetch(endpoints.workShop.delete(workShopId.toString()), {
+          const res = await fetch(endpoints.product.delete(productId.toString()), {
             method: 'DELETE',
             headers: {  
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({ 
-               workShopId
+               productId
             }),
             })
     
           const data = await res.json()
           await auth.fetchUser()
-          const updatedWorkShops = workShops.filter(
-            (workShop: WorkShopDB) => workShop._id !== workShopSelected._id
+          const updatedProducts = products.filter(
+            (product: ProductDB) => product._id !== productSelected._id
           );
           console.log(data)
-          setElementos(updatedWorkShops);
+          setElementos(updatedProducts);
           if (data.success) {
-            toast.success(`${workShopSelected.name} fue eliminado correctamente`);
+            toast.success(`${productSelected.name} fue eliminado correctamente`);
           }
       
           setIsOpenDelete(false);
@@ -110,7 +110,7 @@ const AllWorkShops = ({ workShops }: Props) => {
             <div className='overflow-x-auto sm:-mx-6 lg:-mx-8'>
               <div className='inline-block min-w-full py-2 sm:px-6 lg:px-8'>
                 <div className='overflow-hidden'>
-                  <h1 className='text-2xl mt-4 mb-4'>WorkShops</h1>
+                  <h1 className='text-2xl mt-4 mb-4'>Productos</h1>
                   <table className='min-w-full text-left text-sm font-light'>
                     <thead className='border-b font-medium dark:border-neutral-500'>
                       <tr>
@@ -135,21 +135,21 @@ const AllWorkShops = ({ workShops }: Props) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {elementos?.map((workShop: WorkShopDB) => (
+                      {elementos?.map((product: ProductDB) => (
                         <tr
-                          key={workShop._id}
+                          key={product._id}
                           ref={ref}
                           className='border-b dark:border-neutral-500'
                         >
                           <td className='whitespace-nowrap px-6 py-4 font-medium'>
-                            {workShop.name}
+                            {product.name}
                           </td>
                           <td className='whitespace-nowrap px-6 py-4'>
-                            {workShop.classes.length}
+                            {product.classes.length}
                           </td>
                           <td className='whitespace-nowrap px-6 py-4'>
                             {Math.floor(
-                              workShop.classes
+                              product.classes
                                 .map((c) => c.totalTime)
                                 .reduce((prev, current) => prev + current) /
                                 60 /
@@ -157,7 +157,7 @@ const AllWorkShops = ({ workShops }: Props) => {
                             )}{' '}
                             hrs{' '}
                             {Math.floor(
-                              (workShop.classes
+                              (product.classes
                                 .map((c) => c.totalTime)
                                 .reduce((prev, current) => prev + current) /
                                 60) %
@@ -165,28 +165,28 @@ const AllWorkShops = ({ workShops }: Props) => {
                             )}{' '}
                             min{' '}
                             {Math.round(
-                              workShop.classes
+                              product.classes
                                 .map((c) => c.totalTime)
                                 .reduce((prev, current) => prev + current) % 60
                             )}{' '}
                             seg
                           </td>
                           <td className='whitespace-nowrap px-6 py-4'>
-                            {workShop.currency} {workShop.price}
+                            {product.currency} {product.price}
                           </td>
                           <td className='whitespace-nowrap px-6 py-4'>
-                            {new Date(workShop.createdAt).toLocaleDateString(
+                            {new Date(product.createdAt).toLocaleDateString(
                               'es-ES'
                             )}
                           </td>
                           <td className='whitespace-nowrap px-6 py-4'>
                             <div className='flex item-center justify-center border-solid border-transparent border border-collapse text-base'>
                               <div className='w-6 mr-2 transform hover:text-blue-500 hover:scale-110 cursor-pointer'>
-                                <PencilIcon onClick={() => openEdit(workShop)} />
+                                <PencilIcon onClick={() => openEdit(product)} />
                               </div>
                               <div className='w-6 mr-2 transform hover:text-red-500 hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse '>
                                 <TrashIcon
-                                  onClick={() => openModalDelete(workShop)}
+                                  onClick={() => openModalDelete(product)}
                                 />
                               </div>
                             </div>
@@ -200,14 +200,14 @@ const AllWorkShops = ({ workShops }: Props) => {
             </div>
           </div>
         </div>
-        <DeleteWorkShop
+        <DeleteProduct
             isOpen={isOpenDelete}
             setIsOpen={setIsOpenDelete}
-            workShop={workShopSelected}
-            deleteWorkShop={deleteWorkShop}
+            product={productSelected}
+            deleteProduct={deleteProduct}
           />
     </AdmimDashboardLayout>
   );
 };
 
-export default AllWorkShops;
+export default AllProducts;

@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const getVimeoShowCase = async (workShopVimeoId: number) => {
+const getVimeoShowCase = async (productVimeoId: number) => {
   const accessToken = process.env.VIMEO_ACCESS_TOKEN;
   try {
     //https://api.vimeo.com/videos/894646154/pictures/1768946000`
-    const response = await axios.get(`https://api.vimeo.com/me/albums/${workShopVimeoId}/videos`, {
+    const response = await axios.get(`https://api.vimeo.com/me/albums/${productVimeoId}/videos`, {
         headers: {
             Authorization: `Bearer ${accessToken}`,
           },

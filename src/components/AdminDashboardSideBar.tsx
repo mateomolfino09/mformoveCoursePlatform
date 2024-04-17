@@ -142,10 +142,10 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
               </div>
             </div>
           </Link>
-          <Link href={'/admin/workshops'}>
+          <Link href={'/admin/products'}>
             <div
               className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-                pathname == '/admin/workshops' || pathname == '/admin/workshops/createWorkshop'  || pathname == '/admin/workshops/allWorkShops' 
+                pathname == '/admin/products' || pathname == '/admin/products/createProducts'  || pathname == '/admin/products/allProducts' 
                   ? 'bg-orange-100 text-orange-500'
                   : 'text-gray-400 hover:bg-orange-100 hover:text-orange-500'
               }`}
@@ -154,7 +154,7 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
                 <BuildingStorefrontIcon className='h-5 w-5' />
               </div>
               <div>
-                <p>Workshops</p>
+                <p>Productos</p>
               </div>
             </div>
           </Link>
