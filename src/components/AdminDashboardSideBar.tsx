@@ -145,7 +145,7 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
           <Link href={'/admin/products'}>
             <div
               className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-                pathname == '/admin/products' || pathname == '/admin/products/createProducts'  || pathname == '/admin/products/allProducts' 
+                pathname == '/admin/products' || pathname == '/admin/products/createProduct'  || pathname == '/admin/products/allProducts' || pathname == '/admin/products/createFilters'
                   ? 'bg-orange-100 text-orange-500'
                   : 'text-gray-400 hover:bg-orange-100 hover:text-orange-500'
               }`}

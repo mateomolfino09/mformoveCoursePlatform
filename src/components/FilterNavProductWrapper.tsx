@@ -1,16 +1,16 @@
 "use client"
 import { useAuth } from '../hooks/useAuth'
 import React, { Fragment, useEffect, useState } from 'react';
-import FilterNav from './FilterProductNav';
 import { useAppDispatch } from '../hooks/useTypeSelector';
 import { toggleNav } from '../redux/features/filterProduct';
 import { useAppSelector } from '../redux/hooks';
+import FilterProductNav from './FilterProductNav';
 
 interface Props {
   children: any;
 }
 
-const FilterNavWrapper = ({ children }: Props) => {  
+const FilterNavProductWrapper = ({ children }: Props) => {  
   const auth = useAuth()
   const [isMobile, setIsMobile] = useState(false);
   const dispatch = useAppDispatch();
@@ -39,7 +39,7 @@ const FilterNavWrapper = ({ children }: Props) => {
   return (
     <div className='absolute w-full h-full '>
         {filters.filterNav ? (
-          <FilterNav showNav={filters.filterNav} />
+          <FilterProductNav showNav={filters.filterNav} />
         ) : (
           <>
           </>
@@ -49,5 +49,5 @@ const FilterNavWrapper = ({ children }: Props) => {
   )
 }
 
-export default FilterNavWrapper;
+export default FilterNavProductWrapper;
 

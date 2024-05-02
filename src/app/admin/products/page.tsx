@@ -40,13 +40,13 @@ const Index = () => {
             <p>Crear Producto</p>
           </div>
         </Link>
-        <Link href={'/admin/workshops/createFilters'}>
+        <Link href={'/admin/products/createFilters'}>
               <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
                 <BsTools className='w-20 h-20 pb-2' />
                 <p className='-mb-4'>Crear Filtro de Producto</p>
               </div>
             </Link>
-        <Link href={'/admin/workshops/allWorkShops'}>
+        <Link href={'/admin/products/allWorkShops'}>
           <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
             <TableCellsIcon className='w-24' />
             <p>Productos</p>
