@@ -46,7 +46,7 @@ const Index = () => {
                 <p className='-mb-4'>Crear Filtro de Producto</p>
               </div>
             </Link>
-        <Link href={'/admin/products/allWorkShops'}>
+        <Link href={'/admin/products/allProducts'}>
           <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
             <TableCellsIcon className='w-24' />
             <p>Productos</p>

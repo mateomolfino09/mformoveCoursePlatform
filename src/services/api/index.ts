@@ -43,7 +43,8 @@ const endpoints = {
     emailMarketing: '/api/admin/emailMarketing'
   },
   product: {
-    delete: (productId: string) => `/api/product/delete/${productId}`
+    delete: (productId: string) => `/api/product/delete/${productId}`,
+    getOne: (productId: string) => `/api/product/viewProduct/${productId}`
   },
 
 };

@@ -10,6 +10,7 @@ import { classApi } from "./services/classApi";
 import { individualClassApi } from "./services/individualClassApi";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import registerReducer from './features/register'
+import productIdReducer from "./features/productId"
 
 export const store = configureStore({
   reducer: {
@@ -22,7 +23,8 @@ export const store = configureStore({
     headerHomeReducer,
     [courseModalApi.reducerPath]: courseModalApi.reducer,
     [classApi.reducerPath]: classApi.reducer,
-    [individualClassApi.reducerPath]: individualClassApi.reducer
+    [individualClassApi.reducerPath]: individualClassApi.reducer,
+    productIdReducer
 
   },
   middleware: (getDefaultMiddleware: any) => getDefaultMiddleware().concat([courseModalApi.middleware , classApi.middleware, individualClassApi.middleware])

@@ -26,7 +26,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   const [imageUrl, setImageUrl] = useState<string>('');
   const [courseType, setCourseType] = useState<string>('');
   const [diplomaUrl, setDiplomaUrl] = useState<string>('');
-
+  const [productType, setProductType] = useState<string>('curso');
   const colourStyles: StylesConfig<any> = {
     control: (styles) => ({
       ...styles,
@@ -42,6 +42,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     placeholder: (styles) => ({ ...styles, color: '#fff' }),
     singleValue: (styles, { data }) => ({ ...styles, color: '#808080' })
   };
+
   const handleSubmitLocal = (e: any) => {
     e.preventDefault();
     if (name.length < 5) {
@@ -58,15 +59,16 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
         name,
         description,
         productVimeoId,
+        productType,
         'USD',
         price,
         portraitImageArray,
-        diplomaImageArray,
-        productType
+        diplomaImageArray
+        
       );
     }
   };
-  const [productType, setProductType] = useState<any>()
+
   const [files, setFiles] = useState<any>([] ? [] : null);
   const [portraitImageArray, setPortraitImage] = useState<any>([] ? [] : null);
   const [diplomaImageArray, setDiplomaImage] = useState<any>([] ? [] : null);
@@ -176,7 +178,12 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
               />
             </label>
 
-            <select className='input' onChange={(e)=>setProductType(e.target.value)}>
+            <select
+              className='input'
+              onChange={(e) => 
+                setProductType(e.target.value)
+              }
+            >
               <option id='1' value='curso'>
                 Curso
               </option>
