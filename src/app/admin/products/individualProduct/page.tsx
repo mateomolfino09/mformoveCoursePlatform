@@ -5,6 +5,7 @@ import endpoints from '../../../../services/api';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
+
 export default function Page() {
   const productId = useSelector(
     (state: any) => state.productIdReducer.productId
