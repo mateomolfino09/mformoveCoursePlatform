@@ -28,7 +28,7 @@ const IndividualProduct = ({ product }) => {
         </div>
       </main>
       <footer className="product-footer">
-        <p>&copy; 2024 Nombre del Sitio. Todos los derechos reservados.</p>
+        <p>&copy; 2024 MForMove. Todos los derechos reservados.</p>
       </footer>
     </div>
   );
