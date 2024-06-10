@@ -10,7 +10,12 @@ import { classApi } from "./services/classApi";
 import { individualClassApi } from "./services/individualClassApi";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import registerReducer from './features/register'
+<<<<<<< Updated upstream
 
+=======
+import productIdReducer from "./features/productId"
+import oneTymePaymentReducer from "./features/oneTimePayment"
+>>>>>>> Stashed changes
 export const store = configureStore({
   reducer: {
     courseModalReducer,
@@ -22,8 +27,14 @@ export const store = configureStore({
     headerHomeReducer,
     [courseModalApi.reducerPath]: courseModalApi.reducer,
     [classApi.reducerPath]: classApi.reducer,
+<<<<<<< Updated upstream
     [individualClassApi.reducerPath]: individualClassApi.reducer
 
+=======
+    [individualClassApi.reducerPath]: individualClassApi.reducer,
+    productIdReducer,
+    oneTymePaymentReducer
+>>>>>>> Stashed changes
   },
   middleware: (getDefaultMiddleware: any) => getDefaultMiddleware().concat([courseModalApi.middleware , classApi.middleware, individualClassApi.middleware])
 })
