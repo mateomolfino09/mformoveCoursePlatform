@@ -10,8 +10,9 @@ import { classApi } from "./services/classApi";
 import { individualClassApi } from "./services/individualClassApi";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import registerReducer from './features/register'
-import productIdReducer from "./features/productId"
 
+import productIdReducer from "./features/productId"
+import oneTymePaymentReducer from "./features/oneTimePayment"
 export const store = configureStore({
   reducer: {
     courseModalReducer,
@@ -23,9 +24,11 @@ export const store = configureStore({
     headerHomeReducer,
     [courseModalApi.reducerPath]: courseModalApi.reducer,
     [classApi.reducerPath]: classApi.reducer,
-    [individualClassApi.reducerPath]: individualClassApi.reducer,
-    productIdReducer
 
+    [individualClassApi.reducerPath]: individualClassApi.reducer,
+    productIdReducer,
+
+    oneTymePaymentReducer
   },
   middleware: (getDefaultMiddleware: any) => getDefaultMiddleware().concat([courseModalApi.middleware , classApi.middleware, individualClassApi.middleware])
 })
