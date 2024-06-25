@@ -63,7 +63,6 @@ const IndividualProduct = ({ product }: Props) => {
         config
       );
 
-      debugger;
       Cookies.set('userPaymentToken', token ? token : '', { expires: 5 });
       auth.fetchUser();
 

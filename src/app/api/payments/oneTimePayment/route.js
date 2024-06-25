@@ -29,7 +29,8 @@ export async function POST(req) {
               description: description,
               success_url: `${origin}/oneTimePaymentSucces`,
               back_url: `${origin}/payment/back`,
-              notification_url: 'https://example.com/notifications'
+              notification_url: 'https://example.com/notifications',
+              error_url:'https://www.youtube.com/watch?v=pfbQwKZTL-o&ab_channel=davus'
             }
           );
           

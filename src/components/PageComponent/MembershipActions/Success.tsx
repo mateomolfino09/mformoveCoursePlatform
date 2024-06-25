@@ -42,7 +42,6 @@ const Success = () => {
   }, [auth.user])
 
   const handleSub = async () => {
-    debugger;
     setLoading(true);
     const paymentToken = Cookies.get('userPaymentToken')
     

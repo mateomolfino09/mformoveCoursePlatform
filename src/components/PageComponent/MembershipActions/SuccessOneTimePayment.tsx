@@ -30,7 +30,6 @@ const SuccessOneTimePayment = () => {
   useEffect(() => {
     console.log(auth.user);
     if (!user?.subscription) {
-      debugger;
       handleMembership();
     } else if (!auth.user) {
       auth.fetchUser();
@@ -51,7 +50,6 @@ const SuccessOneTimePayment = () => {
     }
 
     const fetchMembership = async () => {
-      debugger;
       try {
         const user = auth.user;
         if (!user) {
@@ -97,52 +95,51 @@ const SuccessOneTimePayment = () => {
   }, []);
 
   return (
-    <div>HOLAAAAAAAAAAAAAAAAAA</div>
-    // <MainSideBar where={''}>
-    //   <div className='h-[100vh]  w-full bg-transparent items-center justify-center relative flex overflow-x-hidden'>
-    //     <div className='absolute top-0 left-0 h-full w-screen -z-10'>
-    //       <Image
-    //         src='/images/image00006.jpeg'
-    //         alt={'image'}
-    //         fill={true}
-    //         loader={imageLoader}
-    //         className='object-cover opacity-50 '
-    //       />
-    //     </div>
-    //     <m.div
-    //       initial={{ y: '-150%' }}
-    //       animate={{ y: '0%' }}
-    //       transition={{ duration: 0.9, ease: 'easeOut' }}
-    //       exit={{ opacity: 1 }}
-    //       className='w-96 relative lg:w-[28rem] md:left-32 lg:left-1/4 bottom-24'
-    //     >
-    //       <div className='flex'>
-    //         <h1 className='text-4xl md:text-5xl font-light mb-6'>
-    //           Bienvenido a la Membresía de MforMove
-    //         </h1>
-    //         <AiFillCheckCircle className='h-32 w-32 text-green-500' />
-    //       </div>
-    //       <p className='text-base md:text-lg font-light'>
-    //         Elevate your Practice: Rooted in Science, Cultivated with
-    //         Mindfulness. Uniting Yoga, Movement, Breathwork, and Skill-Based
-    //         Training with Dylan Werner
-    //       </p>
-    //       {loading ? (
-    //         <>
-    //           <LoadingSpinner />
-    //         </>
-    //       ) : (
-    //         <div className='flex px-24 py-3 mt-6 border-white border rounded-full justify-center items-center w-full group cursor-pointer hover:bg-white hover:text-black'>
-    //           <button className='w-full' onClick={() => router.push('/')}>
-    //             Empezar{' '}
-    //           </button>
-    //           <ArrowRightIcon className='w-4 h-4 relative left-4' />
-    //         </div>
-    //       )}
-    //     </m.div>
-    //   </div>
-    //   <Footer />
-    // </MainSideBar>
+     <MainSideBar where={''}>
+       <div className='h-[100vh]  w-full bg-transparent items-center justify-center relative flex overflow-x-hidden'>
+         <div className='absolute top-0 left-0 h-full w-screen -z-10'>
+           <Image
+             src='/images/image00006.jpeg'
+             alt={'image'}
+             fill={true}
+             loader={imageLoader}
+             className='object-cover opacity-50 '
+           />
+         </div>
+         <m.div
+           initial={{ y: '-150%' }}
+           animate={{ y: '0%' }}
+           transition={{ duration: 0.9, ease: 'easeOut' }}
+           exit={{ opacity: 1 }}
+           className='w-96 relative lg:w-[28rem] md:left-32 lg:left-1/4 bottom-24'
+         >
+           <div className='flex'>
+             <h1 className='text-4xl md:text-5xl font-light mb-6'>
+               Bienvenido a la Membresía de MforMove
+             </h1>
+             <AiFillCheckCircle className='h-32 w-32 text-green-500' />
+           </div>
+           <p className='text-base md:text-lg font-light'>
+             Elevate your Practice: Rooted in Science, Cultivated with
+             Mindfulness. Uniting Yoga, Movement, Breathwork, and Skill-Based
+             Training with Dylan Werner
+           </p>
+           {loading ? (
+             <>
+               <LoadingSpinner />
+             </>
+           ) : (
+             <div className='flex px-24 py-3 mt-6 border-white border rounded-full justify-center items-center w-full group cursor-pointer hover:bg-white hover:text-black'>
+               <button className='w-full' onClick={() => router.push('/')}>
+                 Empezar{' '}
+               </button>
+               <ArrowRightIcon className='w-4 h-4 relative left-4' />
+             </div>
+           )}
+         </m.div>
+       </div>
+       <Footer />
+     </MainSideBar>
   );
 };
 

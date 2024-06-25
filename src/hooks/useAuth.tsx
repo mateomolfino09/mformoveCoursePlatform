@@ -283,7 +283,6 @@ function useProvideAuth() {
 		if(!idUser) return
 		console.log(idUser)
 		try {	
-			debugger;
 			const res = await fetch(endpoints.payments.createMembership, {
 				method: 'PUT',
 				headers: {  

@@ -14,9 +14,7 @@ export async function PUT(req) {
         productId
         } = await req.json();  
   try { 
-        debugger;
       if (req.method === 'PUT') {
-          debugger;
         const user = await User.findOne({ _id: idUser });
         let product = await Product.findOne({_id: user?.memberShip?.productId});
         //Me trae por defecto cuando Id es undefined
