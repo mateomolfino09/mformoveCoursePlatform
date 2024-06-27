@@ -15,7 +15,7 @@ interface Props {
     showNav: boolean
 }
 
-const FilterNav = ({ showNav }: Props) => {  
+const FilterProductNav = ({ showNav }: Props) => {  
       const router = useRouter();
       const pathname = usePathname();
       const animation = useAnimation();
@@ -192,5 +192,5 @@ const FilterNav = ({ showNav }: Props) => {
       );
     }
   
-  export default FilterNav;
+  export default FilterProductNav;
   

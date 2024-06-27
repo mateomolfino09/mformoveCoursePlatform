@@ -1,3 +1,4 @@
+
 const endpoints = {
   auth: {
     login: `/api/user/auth/login`,
@@ -14,7 +15,10 @@ const endpoints = {
   },
   user: {
     update: (id: string) => `/api/user/update/${id}`,
-    delete: (userId: string) => `/api/user/delete/${userId}`
+    delete: (userId: string) => `/api/user/delete/${userId}`,
+    
+    //addUserToken : (userId: string, membershipToken:string,productId:string)=> `/api/user/memberships/${userId}/${membershipToken}/${productId}`,
+    addUserToken : `/api/user/memberships/asignMembershipToken`
   },
   course: {
     class: {
@@ -36,6 +40,7 @@ const endpoints = {
     createPlan: `/api/payments/createPlan`,
     editPlan: `/api/payments/editPlan`,
     createSub: `/api/payments/createSubscription`,
+    createMembership: `/api/payments/oneTimePayment/createMembership`,
     createPaymentToken: `/api/payments/createPaymentToken`,
     cancelSubscription: (id:string) => `/api/payments/cancelSubscription/${id}`
   },
@@ -43,7 +48,8 @@ const endpoints = {
     emailMarketing: '/api/admin/emailMarketing'
   },
   product: {
-    delete: (productId: string) => `/api/product/delete/${productId}`
+    delete: (productId: string) => `/api/product/delete/${productId}`,
+    getOne: (productId: string) => `/api/product/viewProduct/${productId}`
   },
 
 };

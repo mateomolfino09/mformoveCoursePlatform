@@ -423,4 +423,5 @@ export interface ProductDB {
   classesQuantity: number;
   isOpen: boolean;
   modules: Modules;
+  productType: string
 }

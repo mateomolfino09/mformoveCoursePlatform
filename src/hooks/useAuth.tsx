@@ -278,6 +278,27 @@ function useProvideAuth() {
 		}
 	  };
 
+
+	  const newMembership = async (idUser: string, paymentToken:string) => {
+		if(!idUser) return
+		console.log(idUser)
+		try {	
+			const res = await fetch(endpoints.payments.createMembership, {
+				method: 'PUT',
+				headers: {  
+				  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ idUser, paymentToken }),
+			  })
+
+			const data = await res.json()
+			setUser(data)
+			return data
+		} catch (error) {
+			return error
+		}
+	  };
+
 	return {
 		user,
 		error,
@@ -294,6 +315,7 @@ function useProvideAuth() {
 		resetMailSend,
 		forgetPasswordSend,
 		newSub,
-		cancelSub
+		cancelSub,
+		newMembership
 	  };
 }
