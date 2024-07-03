@@ -180,8 +180,8 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: 'IndividualClassUser'
     }],
-    subscription: subscriptionSchema
-
+    subscription: subscriptionSchema,
+    memberShip: { token: String, productId: String },
   },
   { timestamps: true }
 );

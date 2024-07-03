@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -83,6 +84,7 @@ const CreateProductStep2 = ({ productCreado }: Props) => {
     console.log(modules);
   }, [modules]);
 
+  const router = useRouter()
   async function handleAddModules() {
     try {
       const config = {
@@ -100,7 +102,7 @@ const CreateProductStep2 = ({ productCreado }: Props) => {
         },
         config
       );
-
+      router.push('/admin')
       console.log(data)
 
     } catch (error: any) {

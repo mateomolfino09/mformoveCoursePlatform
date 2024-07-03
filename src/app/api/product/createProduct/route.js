@@ -99,7 +99,6 @@ export async function POST(req) {
         return newProduct;
       };
       const product = await newProduct();
-      //Traigo clases de YT
 
       return NextResponse.json(
         { message: 'Producto creado con éxito' , product: product},

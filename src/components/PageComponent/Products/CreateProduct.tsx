@@ -54,12 +54,13 @@ const CreateProduct = () => {
     name: string,
     description: string,
     productVimeoId: string,
+    productType: string,
     currency: string = 'USD',
     price: number,
     portraitImageArray: any,
-    diplomaImageArray: any,
-    diploma: any,
-    productType: string
+    diplomaImageArray: any
+    
+   
   ) {
     setLoading(true);
 
@@ -138,7 +139,9 @@ const CreateProduct = () => {
       toast.error(error.response.data.error);
     }
     setLoading(false);
-    step0ToStep1();
+    //if(productType == "workshop"){
+      step0ToStep1();
+    //}
   }
 
   return (

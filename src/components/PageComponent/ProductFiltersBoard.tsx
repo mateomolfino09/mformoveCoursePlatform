@@ -2,7 +2,7 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { useAppDispatch } from '../../hooks/useTypeSelector';
 import { useRouter } from 'next/navigation';
-import { changeInput, setType, toggleNav, toggleSearch, toggleSearchGo } from '../../redux/features/filterProduct';
+import { changeInput, setFilters, setType, toggleNav, toggleSearch, toggleSearchGo } from '../../redux/features/filterProduct';
 import { useAppSelector } from '../../redux/hooks';
 import { motion as m, useAnimation } from 'framer-motion';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
@@ -13,6 +13,8 @@ import endpoints from '../../services/api';
 import { toast } from 'react-toastify';
 import SearchClass from '../SearchClass';
 import { Transition } from '@headlessui/react';
+import Cookies from 'js-cookie';
+import { useAuth } from '../../hooks/useAuth';
 
 interface Props {
   filtersDB: ClassTypes[];
@@ -27,12 +29,23 @@ const ProductsFilters = ({ filtersDB }: Props) => {
 const productType= filters.productType
 const animationInput = useAnimation();
 const animationIcon = useAnimation();
+const auth = useAuth()
 const inputRef = useRef<any>(null);
 const [searchClasses, setSearchClasses] = useState<null | IndividualClass[]>(null)
 
   const handleChange = ( value: string ) => {
     dispatch(setType(value));
   };
+
+  useEffect(() => {
+    const cookies: any = Cookies.get('userToken')
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }     
+    filters != null && dispatch(setFilters(filtersDB))
+
+    }, []);
 
   useEffect(() => {
     if (filters.search) {
@@ -133,7 +146,7 @@ const [searchClasses, setSearchClasses] = useState<null | IndividualClass[]>(nul
             <span className={`${productType === "all" ? "bg-white rounded-full text-black " : ""} cursor-pointer p-3 md:mr-0 mr-1 h-7 text-center flex justify-center  items-center md:text-base font-thin text-sm hover:bg-white hover:rounded-full hover:text-black`} onClick={() => handleChange('all')}>
                 <p className=''>All</p>
             </span>
-            {filtersDB[0].values.map((f: ValuesFilters) => (
+            {filtersDB[1].values.map((f: ValuesFilters) => (
               <>
                   <span key={f.id} onClick={() => handleChange(f.value)} className={`${productType === f.value ? "bg-white rounded-full text-black " : ""} cursor-pointer p-3 md:mr-0 mr-1 font-thin text-sm md:text-base h-7 text-center flex justify-center items-center hover:bg-white hover:rounded-full hover:text-black`}>
                   <p className=''>{f.label}</p>

@@ -5,12 +5,12 @@ import { getProducts } from '../api/product/getProducts';
   
   export default async function Page() {
 
-    const workshops = await getProducts()
+    const products = await getProducts()
     const filters = await getProductFilters();
 
   
     return (
-      <Products products={workshops} filters={filters}/>
+      <Products products={products} filters={filters}/>
     );
   };
   

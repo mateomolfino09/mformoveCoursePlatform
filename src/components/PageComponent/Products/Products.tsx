@@ -5,7 +5,7 @@ import Head from 'next/head'
 import Footer from '../../Footer'
 import ProductCarousel from './ProductCarousel'
 import ProductsFilters from '../ProductFiltersBoard'
-import FilterNavWrapper from '../../FilterNavProductWrapper'
+import FilterNavProductWrapper from '../../FilterNavProductWrapper'
 
 interface Props {
     products: ProductDB[]
@@ -16,7 +16,7 @@ const Products = ({ products, filters }: Props) => {
   return (
     <div className='relative bg-to-dark lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
     >    <MainSideBar where={'home'}>
-      <FilterNavWrapper>
+      <FilterNavProductWrapper>
 
         <Head>
         <title>Video Streaming</title>
@@ -30,7 +30,7 @@ const Products = ({ products, filters }: Props) => {
             <ProductCarousel products={products}/>
         </main>
         <Footer />
-        </FilterNavWrapper>
+        </FilterNavProductWrapper>
 
     </MainSideBar>
 

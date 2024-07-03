@@ -91,7 +91,7 @@ const ProductsFilters = () => {
 
 
       const { data } = await axios.post(
-        '/api/workShop/filters/create',
+        '/api/product/filters/create',
         {
           name,
           description,
@@ -106,7 +106,7 @@ const ProductsFilters = () => {
       auth.fetchUser();
 
       toast.success(data.message);
-      router.push('/admin/workshops')
+      router.push('/admin/products')
     } catch (error: any) {
       console.log(error);
       toast.error(error.response.data.error);
