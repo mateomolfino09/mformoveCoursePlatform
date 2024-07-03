@@ -11,7 +11,7 @@ export default function Page() {
     (state: any) => state.productIdReducer.productId
   );
 
-  const [product, setProduct] = useState();
+  const [product, setProduct] = useState<any>();
 
   const fetchProduct = async () => {
     try {
