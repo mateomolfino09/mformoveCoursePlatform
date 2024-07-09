@@ -27,6 +27,15 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   const [courseType, setCourseType] = useState<string>('');
   const [diplomaUrl, setDiplomaUrl] = useState<string>('');
   const [productType, setProductType] = useState<string>('curso');
+
+  /* --------------------------CAMPOS NUEVOS--------------------------- */
+  const [releaseDate, setReleaseDate] = useState<Date | null>(null);
+  const [isFree, setIsFree] = useState<boolean>(true);
+  const [inPerson, setInPerson] = useState<boolean>(true);
+  const [isMasterClass, setIsMasterClass] = useState<boolean>(true);
+
+
+
   const colourStyles: StylesConfig<any> = {
     control: (styles) => ({
       ...styles,
@@ -63,8 +72,10 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
         'USD',
         price,
         portraitImageArray,
-        diplomaImageArray
-        
+        diplomaImageArray,
+        releaseDate,
+        isFree,
+        inPerson
       );
     }
   };
@@ -141,6 +152,8 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     />
   ));
 
+
+
   return (
     <div className='relative flex w-full min-h-screen flex-col bg-transparent md:items-center md:justify-center md:bg-transparent'>
       <div
@@ -180,9 +193,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
 
             <select
               className='input'
-              onChange={(e) => 
-                setProductType(e.target.value)
-              }
+              onChange={(e) => setProductType(e.target.value)}
             >
               <option id='1' value='curso'>
                 Curso
@@ -285,7 +296,6 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
               </label>
             </div>
           )}
-
           {/* ------------------------------------------------- */}
           <p>Selecciona el Diploma para el Producto</p>
           {diplomaImageArray.length ? (
@@ -330,6 +340,63 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
               </label>
             </div>
           )}
+          {/* --------------------------CAMPOS NUEVOS--------------------------- */}
+          Seleccione día de releases
+          <input
+            type='date'
+            id='start'
+            name='releaseDate'
+            value={releaseDate ? releaseDate.toISOString().split('T')[0] : ''}
+            className='input'
+            onChange={(e) => setReleaseDate(new Date(e.target.value))}
+          />
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span>Gratis?</span>
+              <input
+                className='input'
+                type='checkbox'
+                checked={isFree}
+                onChange={(e) => setIsFree(e.target.checked)}
+                style={{ marginLeft: '8px' }}
+              />
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginTop: '8px'
+              }}
+            >
+              <span>Presencial?</span>
+              <input
+                className='input'
+                type='checkbox'
+                checked={inPerson}
+                onChange={(e) => setInPerson(e.target.checked)}
+                style={{ marginLeft: '8px' }}
+              />
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginTop: '8px'
+              }}
+            >
+              <span>MasterClass?</span>
+              <input
+                className='input'
+                type='checkbox'
+                checked={isMasterClass}
+                onChange={(e) => setIsMasterClass(e.target.checked)}
+                style={{ marginLeft: '8px' }}
+              />
+            </div>
+
+
+          </div>
           <button
             onClick={(e) => handleSubmitLocal(e)}
             className='w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold'

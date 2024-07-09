@@ -135,7 +135,27 @@ const productSchema = new mongoose.Schema(
     productType:{
       type: String,
       //required:true
+    },
+    //--------------------------CAMPOS NUEVOS---------------------------
+
+    releaseDate:{
+      type: Date,
+      immutable: true,
+      default: () => Date.now()
+    },
+    isFree:{
+      type:Boolean,
+      default:true
+    },
+    inPerson:{
+      type:Boolean,
+      default:true
+    },
+    isMasterClass:{
+      type:Boolean,
+      default:true
     }
+
 
   },
   { timestamps: true }

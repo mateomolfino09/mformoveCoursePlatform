@@ -4,8 +4,8 @@ import Classes from '../../../../models/classModel';
 import Courses from '../../../../models/courseModel';
 import Exam from '../../../../models/examModel';
 import IndividualClass from '../../../../models/individualClassModel';
-import Users from '../../../../models/userModel';
 import Product from '../../../../models/productModel';
+import Users from '../../../../models/userModel';
 import getVimeoShowCase from '../../product/getVimeoShowCase';
 import bcrypt from 'bcryptjs';
 import { NextResponse } from 'next/server';
@@ -25,7 +25,11 @@ export async function POST(req) {
         userEmail,
         portraitUrl,
         diplomaUrl,
-        productType
+        productType,
+        releaseDate,
+        isFree,
+        inPerson,
+        isMasterClass
       } = await req.json();
 
       let user = await Users.findOne({ email: userEmail });
@@ -55,10 +59,10 @@ export async function POST(req) {
           id: index, // JSON.stringify(lastClass) != '[]' ? lastClass[0].id + 1 : 1,
           name: video?.name,
           image_url: video?.uri,
-          description:"",
+          description: '',
           totalTime: video.duration.toString(),
           module: 1,
-          atachedFiles : [],
+          atachedFiles: [],
           link: video.link,
           class_code: index
         };
@@ -67,7 +71,6 @@ export async function POST(req) {
       });
 
       // UNA VEZ Q TENGO LOS VIDEOS EN UN ARREGLO,M SE LOS MANDO COMO PARAMETRO PARA EL GUARDADO
-      
 
       const newProduct = async () => {
         const lastProduct = await Product.find().sort({ id: -1 }).limit(1); // Assuming unique IDs
@@ -86,9 +89,13 @@ export async function POST(req) {
           price,
           vimeoShowCaseId: parseInt(productVimeoId, 10),
           currency: currency,
-          classes:classesArray,
+          classes: classesArray,
           classesQuantity: classesArray.length,
-          productType:productType
+          productType: productType,
+          releaseDate:releaseDate,
+          isFree:isFree,
+          inPerson:inPerson,
+          isMasterClass:isMasterClass
           // modules: {
           //   quantity: moduleNumbers.length,
           //   breakPoints: moduleNumbers,
@@ -101,7 +108,7 @@ export async function POST(req) {
       const product = await newProduct();
 
       return NextResponse.json(
-        { message: 'Producto creado con éxito' , product: product},
+        { message: 'Producto creado con éxito', product: product },
         { status: 200 }
       );
     }

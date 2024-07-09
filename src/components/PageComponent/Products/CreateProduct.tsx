@@ -6,8 +6,8 @@ import { clearData } from '../../../redux/features/filterClass';
 import requests from '../../../utils/requests';
 import AdmimDashboardLayout from '../../AdmimDashboardLayout';
 import { LoadingSpinner } from '../../LoadingSpinner';
-import CreateProductStep2 from './CreateProductStep2';
 import CreateProductStep1 from './CreateProductStep1';
+import CreateProductStep2 from './CreateProductStep2';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next13-progressbar';
@@ -34,7 +34,7 @@ const CreateProduct = () => {
     setState({ ...state, stepCero: false, stepOne: true });
   };
 
-  const [productCreado, setProductCreado] = useState({})
+  const [productCreado, setProductCreado] = useState({});
 
   const auth = useAuth();
 
@@ -58,9 +58,11 @@ const CreateProduct = () => {
     currency: string = 'USD',
     price: number,
     portraitImageArray: any,
-    diplomaImageArray: any
-    
-   
+    diplomaImageArray: any,
+    releaseDate: Date,
+    isFree: boolean,
+    inPerson: boolean,
+    isMasterClass:boolean
   ) {
     setLoading(true);
 
@@ -125,7 +127,11 @@ const CreateProduct = () => {
           userEmail,
           portraitUrl,
           diplomaUrl,
-          productType
+          productType,
+          releaseDate,
+          isFree,
+          inPerson,
+          isMasterClass
         },
         config
       );
@@ -140,7 +146,7 @@ const CreateProduct = () => {
     }
     setLoading(false);
     //if(productType == "workshop"){
-      step0ToStep1();
+    step0ToStep1();
     //}
   }
 
@@ -156,7 +162,7 @@ const CreateProduct = () => {
       ) : (
         <>
           {stepCero && <CreateProductStep1 handleSubmit={handleSubmit} />}
-          {stepOne && <CreateProductStep2  productCreado={productCreado} />}
+          {stepOne && <CreateProductStep2 productCreado={productCreado} />}
         </>
       )}
     </AdmimDashboardLayout>
