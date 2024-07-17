@@ -34,8 +34,6 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   const [inPerson, setInPerson] = useState<boolean>(true);
   const [isMasterClass, setIsMasterClass] = useState<boolean>(true);
 
-
-
   const colourStyles: StylesConfig<any> = {
     control: (styles) => ({
       ...styles,
@@ -151,8 +149,6 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       className='cursor-pointer object-cover w-full h-full absolute'
     />
   ));
-
-
 
   return (
     <div className='relative flex w-full min-h-screen flex-col bg-transparent md:items-center md:justify-center md:bg-transparent'>
@@ -351,30 +347,39 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
             onChange={(e) => setReleaseDate(new Date(e.target.value))}
           />
           <div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <span>Gratis?</span>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%'
+              }}
+            >
+              <span>Gratis</span>
               <input
                 className='input'
                 type='checkbox'
                 checked={isFree}
                 onChange={(e) => setIsFree(e.target.checked)}
-                style={{ marginLeft: '8px' }}
+                style={{ width: '20px', height: '20px' }}
               />
             </div>
+
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginTop: '8px'
+                justifyContent: 'space-between',
+                width: '100%'
               }}
             >
-              <span>Presencial?</span>
+              <span>Presencial</span>
               <input
                 className='input'
                 type='checkbox'
                 checked={inPerson}
                 onChange={(e) => setInPerson(e.target.checked)}
-                style={{ marginLeft: '8px' }}
+                style={{ marginLeft: '8px', width: '20px', height: '20px' }}
               />
             </div>
 
@@ -382,20 +387,19 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginTop: '8px'
+                justifyContent: 'space-between',
+                width: '100%'
               }}
             >
-              <span>MasterClass?</span>
+              <span>MasterClass</span>
               <input
                 className='input'
                 type='checkbox'
                 checked={isMasterClass}
                 onChange={(e) => setIsMasterClass(e.target.checked)}
-                style={{ marginLeft: '8px' }}
+                style={{ marginLeft: '8px', width: '20px', height: '20px' }}
               />
             </div>
-
-
           </div>
           <button
             onClick={(e) => handleSubmitLocal(e)}
