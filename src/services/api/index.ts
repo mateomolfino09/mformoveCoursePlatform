@@ -51,6 +51,10 @@ const endpoints = {
     delete: (productId: string) => `/api/product/delete/${productId}`,
     getOne: (productId: string) => `/api/product/viewProduct/${productId}`
   },
+  freeProduct: {
+    delete: (productId: string) => `/api/product/delete/${productId}`,
+    getOne: (productId: string) => `/api/product/viewProduct/${productId}`
+  },
 
 };
 

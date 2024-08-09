@@ -39,7 +39,7 @@
     "src/components/IndexBanner.jsx",
     "src/components/Jodit.jsx",
     ".next/types/**/*.ts"
-, "src/app/api/user/email/verifyEmail/route.js"  ],
+, "src/app/api/user/email/verifyEmail/route.js", "src/components/MainSideBarProducts/FreeProductBanner.jsx"  ],
   "exclude": [
     "node_modules"
   ]

@@ -9,6 +9,9 @@ module.exports = {
     
   ],
   theme: {
+    fontFamily: {
+      boldFont: ["var(--font-boldfont)"]
+    },
     extend: {
       backgroundImage: {
         'gradient-to-b':

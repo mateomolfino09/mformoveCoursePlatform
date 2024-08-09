@@ -19,7 +19,7 @@ const auth = useAuth()
                                 aria-describedby="inputGroup-sizing-default" />
                 <ArrowRightIcon className='w-5 h-5 group-hover:translate-x-2 transition-all' />
             </div>
-            <p className='text-xs md:text-sm'>Susbribite hoy para todas las actualizaciones y promociones</p>
+            <p className='text-xs md:text-sm'>Subscribete hoy para todas las actualizaciones y promociones</p>
         </div>
         <div className='text-white flex flex-col space-y-12 pt-12 !mx-0 px-6 overflow-x-hidden'>
             <div className='flex w-full flex-col md:pl-0 space-y-4 md:space-y-0 md:flex-row md:space-x-5'>

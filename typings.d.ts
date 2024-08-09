@@ -425,3 +425,15 @@ export interface ProductDB {
   modules: Modules;
   productType: string
 }
+
+export interface FreeProduct {
+  _id: string;
+  id: number;
+  createdAt: string;
+  // udpatedAt: string;
+  description: string;
+  image_url: string;
+  name: string;
+  created_by: User;
+  vimeoId: number
+}
