@@ -1,9 +1,13 @@
+import { Montserrat } from 'next/font/google';
 import localFont from "next/font/local";
 
 const BoldFont = localFont({
-  src: [{ path: "../assets/fonts/the_bold_font/THE BOLD FONT - FREE VERSION - 2023.ttf" }],
+  src: [{ path: "../assets/fonts/the_bold_font/THE BOLD FONT - FREE VERSION - 2023.otf" }],
   variable: "--font-boldfont",
 });
+
+const MontserratFont = Montserrat({ subsets: ["latin"], variable: '--font-montserrat'})
+
 
 
 // const ClashDisplay = localFont({
@@ -42,4 +46,4 @@ const BoldFont = localFont({
 //   variable: "--font-clash-display",
 // });
 
-export { BoldFont };
+export { BoldFont, MontserratFont };

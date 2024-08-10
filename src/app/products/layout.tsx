@@ -1,5 +1,5 @@
 import React from "react"
-import { BoldFont } from "../../utils/customFonts"
+import { BoldFont, MontserratFont } from "../../utils/customFonts"
 
 export const dynamic = 'force-dynamic'
 
@@ -10,7 +10,7 @@ export default function RootLayout({
 }) {
 
   return (
-    <section className={`${BoldFont.variable}`}>
+    <section className={`${BoldFont.variable} ${MontserratFont.variable}`}>
         {children}
     </section>
   )
