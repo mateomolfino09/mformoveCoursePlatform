@@ -10,7 +10,8 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
-      boldFont: ["var(--font-boldfont)"]
+      boldFont: ["var(--font-boldfont)"],
+      montserrat: ["var(--font-montserrat)"]
     },
     extend: {
       backgroundImage: {
