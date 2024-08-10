@@ -2,7 +2,7 @@ import { Montserrat } from 'next/font/google';
 import localFont from "next/font/local";
 
 const BoldFont = localFont({
-  src: [{ path: "../assets/fonts/the_bold_font/THE BOLD FONT - FREE VERSION - 2023.otf" }],
+  src: [{ path: "../assets/fonts/the_bold_font/THE BOLD FONT - FREE VERSION - 2023.ttf" }],
   variable: "--font-boldfont",
 });
 

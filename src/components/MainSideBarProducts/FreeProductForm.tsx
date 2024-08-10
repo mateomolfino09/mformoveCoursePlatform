@@ -6,40 +6,35 @@ import { BiRightArrow } from 'react-icons/bi'
 import { BsInstagram, BsMailbox } from 'react-icons/bs'
 import { MdMail, MdMailOutline } from 'react-icons/md'
 import { useAuth } from '../../hooks/useAuth'
+import { ProductDB } from '../../../typings'
 
-const FreeProductForm = () => {
+interface Props {
+    product: ProductDB
+}
+
+const FreeProductForm = ({ product }: Props) => {
 const auth = useAuth()
 
   return (
     <>
-     <section className="max-w-4xl p-6 mx-auto bg-white rounded-md shadow-md dark:bg-gray-800 mt-20">
-        <h2 className="text-lg font-semibold text-gray-700 capitalize dark:text-white">Obtener guía gratuita</h2>
+     <section className="max-w-4xl p-6 mx-auto bg-white shadow-md dark:bg-white">
+        <h2 className="text-2xl mt-4 text-center font-semibold text-black capitalize dark:text-[#141414] font-boldFont">Obtener guía gratuita</h2>
         
-        <form>
+        <form className='font-montserrat '>
             <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
                 <div>
-                    <label className="text-gray-700 dark:text-gray-200" htmlFor="username">Username</label>
-                    <input id="username" type="text" className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring" />
+                    <label className="text-black font-montserrat  dark:text-[#141414]" htmlFor="name">Nombre</label>
+                    <input id="name" type="text" className="block w-full px-4 py-2 mt-2 text-black bg-white border border-gray-300 rounded-md dark:bg-white dark:text-gray-300 dark:border-gray-600 focus:border-[#141414] dark:focus:border-[#141414] focus:outline-none focus:ring" />
                 </div>
     
                 <div>
-                    <label className="text-gray-700 dark:text-gray-200" htmlFor="emailAddress">Email Address</label>
-                    <input id="emailAddress" type="email" className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring" />
-                </div>
-    
-                <div>
-                    <label className="text-gray-700 dark:text-gray-200" htmlFor="password">Password</label>
-                    <input id="password" type="password" className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring" />
-                </div>
-    
-                <div>
-                    <label className="text-gray-700 dark:text-gray-200" htmlFor="passwordConfirmation">Password Confirmation</label>
-                    <input id="passwordConfirmation" type="password" className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring" />
+                    <label className="text-black font-montserrat dark:text-[#141414]" htmlFor="emailAddress">Email</label>
+                    <input id="emailAddress" type="email" className="block w-full px-4 py-2 mt-2 text-black bg-white border border-gray-300 rounded-md dark:bg-white dark:text-gray-300 dark:border-gray-600 focus:border-[#141414] dark:focus:border-[#141414] focus:outline-none focus:ring" />
                 </div>
             </div>
     
-            <div className="flex justify-end mt-6">
-                <button className="px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600">Save</button>
+            <div className="flex justify-center mt-6">
+                <button className=" leading-5 text-black transition-colors duration-200 transform bg-white border border-black px-16 py-3 rounded-full text-center hover:bg-white focus:outline-none focus:bg-white font-bold font-montserrat ">Obtener Gratis</button>
             </div>
         </form>
     </section>

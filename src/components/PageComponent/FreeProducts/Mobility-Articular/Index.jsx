@@ -50,9 +50,9 @@ const Index = ({ product }) => {
                     mass: 0.1,
                   },
                 }}
-                className="px-16 py-6 mt-12 rounded-full relative radial-gradient"
+                className="px-12 py-5 mt-12 rounded-full relative radial-gradient"
               >
-                <span className="text-white tracking-wide font-semibold h-full w-full block relative linear-mask font-montserrat text-2xl ">
+                <span className="text-white tracking-wide font-semibold h-full w-full block relative linear-mask font-montserrat text-xl ">
                   Obtener Gratis...
                 </span>
       <span className="block absolute inset-0 rounded-full p-px linear-overlay" />
@@ -63,8 +63,7 @@ const Index = ({ product }) => {
       </div>
       <div className='absolute right-0 bottom-0 h-12 w-12'>
       </div>
-      <FreeProductDescription product={product}/>
-      <FreeProductForm />
+      <FreeProductForm product={product}/>
       <Footer />
 
     </FreeProductsSideBar>
