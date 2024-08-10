@@ -12,7 +12,7 @@ const FreeProductTitle = ({product}: Props) => {
             {product.name}
         </h1>
         <h2 className='font-boldFont bg-gradient-to-r from-[#ece8d5] via-[#ffec8e] to-[#9b8b3b] inline-block text-transparent bg-clip-text text-xl lg:text-3xl mb-4'>(Por Mateo Molfino)</h2>
-        <p className='text-base md:text-lg mt-2 text-white font-montserrat'>{product.description}</p>
+        <p className='text-sm md:text-base lg:text-lg mt-1 text-white font-montserrat'>{product.description}</p>
 
     </div>
   )

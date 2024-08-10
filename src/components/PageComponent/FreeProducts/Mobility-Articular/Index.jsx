@@ -50,7 +50,7 @@ const Index = ({ product }) => {
                     mass: 0.1,
                   },
                 }}
-                className="px-12 py-5 mt-12 rounded-full relative radial-gradient"
+                className="px-12 py-5 mt-4 rounded-full relative radial-gradient"
               >
                 <span className="text-white tracking-wide font-semibold h-full w-full block relative linear-mask font-montserrat text-xl ">
                   Obtener Gratis...
