@@ -18,7 +18,7 @@ const auth = useAuth()
   return (
     <>
      <section className="max-w-4xl p-6 mx-auto bg-white shadow-md dark:bg-white">
-        <h2 className="text-2xl mt-4 text-center font-semibold text-black capitalize dark:text-[#141414] font-boldFont">Obtener guía gratuita</h2>
+        <h2 className="text-3xl md:text-4xl mt-4 text-center font-semibold text-black capitalize dark:text-[#141414] font-boldFont">Obtener guía gratuita</h2>
         
         <form className='font-montserrat '>
             <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
