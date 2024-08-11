@@ -33,9 +33,10 @@ const [run, setRun] = useState(false);
 
 useEffect(() => {
   const { innerWidth: width, innerHeight: height } = window;
+  console.log(height, width)
   setDimensions({
     width,
-    height,
+    height: height * 2,
   });
 }, []);
 
@@ -130,7 +131,10 @@ const onSubmit = async (data) => {
   }
   return (
     <>
-    {showConfetti && (
+
+     <section className="max-w-4xl p-6 py-12 pb-20 mx-auto bg-light-cream shadow-md dark:bg-light-cream" ref={rowRef}>
+     <h1 className="text-chill-black font-montserrat font-bold text-sm mb-1">Casi casi...</h1>
+     {showConfetti && (
     <Confetti
       width={dimensions.width}
       height={dimensions.height}
@@ -139,9 +143,6 @@ const onSubmit = async (data) => {
       onConfettiComplete={() => setShowConfetti(false)}
     />
     )}
-     <section className="max-w-4xl p-6 py-12 pb-20 mx-auto bg-light-cream shadow-md dark:bg-light-cream" ref={rowRef}>
-     <h1 className="text-chill-black font-montserrat font-bold text-sm mb-1">Casi casi...</h1>
-
      <h1 className="text-chill-black font-montserrat font-bold text-2xl mb-1">Subscribite a mi Newsletter y obtené la guía</h1>
      <p className="text-sm font-normal font-montserrat text-gray-600 mb-8">Te doy la bienvenida a mi metodología de movimiento :)</p>
         
