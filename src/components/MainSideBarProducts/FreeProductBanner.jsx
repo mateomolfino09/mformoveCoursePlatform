@@ -60,9 +60,10 @@ function FreeProductBanner() {
           className='object-cover h-full w-full hidden md:block overflow-hidden'
         />
         <Image
-          src={'/images/bgIndex2.jpg'}
+          src={'/images/image00029.jpeg'}
           className='object-cover h-full w-full md:hidden opacity-40'
           fill
+          alt='imagen de Mateo'
           loader={imageLoader}
         />
       </div>

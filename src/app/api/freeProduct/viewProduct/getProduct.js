@@ -3,9 +3,9 @@ import FreeProduct from '../../../../models/freeProductModel';
 
 connectDB();
 
-export async function getProductById(id) {
+export async function getProductByName(name) {
   try {
-    let res = await FreeProduct.findOne({id: id})
+    let res = await FreeProduct.findOne({url: name})
     console.log(res, 'product')
     const product = JSON.parse(JSON.stringify(res));
     return product;

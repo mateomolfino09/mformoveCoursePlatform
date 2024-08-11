@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import MainSideBar from '../../../MainSideBar';
 import Head from 'next/head';
 import Banner from '../../../IndexBanner';
@@ -11,9 +11,33 @@ import FreeProductForm from '../../../MainSideBarProducts/FreeProductForm';
 import FreeProductDescription from '../../../MainSideBarProducts/FreeProductDescription';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import '../../../MainSideBarProducts/freeProductStyle.css'
+import FreeProductWhoAreWe from '../../../MainSideBarProducts/FreeProductWhoAreWe';
 
 
 const Index = ({ product }) => {
+  const [refToForm, setRefToForm] = useState(
+    null
+  );
+
+  function scrollToForm() {
+    if (refToForm?.current && window) {
+      const yOffset = -90;
+      const y =
+        refToForm?.current.getBoundingClientRect().top +
+        window.pageYOffset +
+        yOffset;
+
+      window.scrollTo({ top: y, behavior: 'smooth' });
+      // return refToModa?.current.scrollIntoView({behavior: 'smooth'})
+    }
+  }
+
+  function setRefToFormSend(ref) {
+    setRefToForm(ref);
+  }
+
+  
+
 
   return (
     <AnimatePresence>
@@ -31,7 +55,7 @@ const Index = ({ product }) => {
         <div className='absolute w-full top-[20%] flex justify-center items-center' >
         <div className='flex flex-col justify-center items-center'>
           <FreeProductTitle product={product}/>
-              <m.button
+              <m.button onClick={scrollToForm}
                 initial={{ "--x": "100%", scale: 1 }}
                 animate={{ "--x": "-100%" }}
                 whileTap={{ scale: 0.97 }}
@@ -50,12 +74,12 @@ const Index = ({ product }) => {
                     mass: 0.1,
                   },
                 }}
-                className="px-12 py-5 mt-4 rounded-full relative radial-gradient"
+                className="px-8 py-3 mt-6 rounded-md relative radial-gradient"
               >
                 <span className="text-white tracking-wide font-semibold h-full w-full block relative linear-mask font-montserrat text-xl ">
                   Obtener Gratis...
                 </span>
-      <span className="block absolute inset-0 rounded-full p-px linear-overlay" />
+      <span className="block absolute inset-0 rounded-md p-px linear-overlay" />
     </m.button>
         </div>
 
@@ -63,7 +87,8 @@ const Index = ({ product }) => {
       </div>
       <div className='absolute right-0 bottom-0 h-12 w-12'>
       </div>
-      <FreeProductForm product={product}/>
+      <FreeProductForm product={product} setRef={setRefToFormSend}/>
+      <FreeProductWhoAreWe />
       <Footer />
 
     </FreeProductsSideBar>
