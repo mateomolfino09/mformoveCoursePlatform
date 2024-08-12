@@ -10,7 +10,7 @@ import './page.css';
 interface Props {
 }
 
-const Index: React.FC<Props> = () => {
+const LandingPage: React.FC<Props> = () => {
 
   return (
     <>
@@ -136,4 +136,4 @@ const Index: React.FC<Props> = () => {
   );
 };
 
-export default Index;
+export default LandingPage;
