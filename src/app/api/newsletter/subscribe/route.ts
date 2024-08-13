@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import NewsletterUser from '../../../../models/newsletterUser';
 
 export async function POST(req: Request, res: NextApiResponse) {
-  const { email,name } = await req.json();
+  const { email } = await req.json();
   if (!email) {
     return res.status(400).json({ error: "Email is required" });
   }
@@ -26,8 +26,8 @@ export async function POST(req: Request, res: NextApiResponse) {
       body: JSON.stringify({
         email_address: email,
         merge_fields: {
-            FNAME: name,
-            LNAME: "$user_lname"
+            FNAME: "",
+            LNAME: ""
           },
         status: "subscribed",
       }),

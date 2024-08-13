@@ -19,6 +19,10 @@ const freeProductSchema = new mongoose.Schema(
       required: true,
       minLength: 20
     },
+    benefits: [{
+      type: String,
+      minLength: 20
+    }],
     createdAt: {
       type: Date,
       immutable: true,

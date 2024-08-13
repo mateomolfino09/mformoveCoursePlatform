@@ -13,6 +13,7 @@ import Confetti from "react-confetti";
 import { IoCarOutline } from 'react-icons/io5'
 
 const FreeProductForm = ({ product, setRef }) => {
+  console.log(product)
 const auth = useAuth()
 const { register, handleSubmit, formState: { errors,  } } = useForm()
 const rowRef = useRef(null);
@@ -95,19 +96,10 @@ function validateEmail(email) {
 const onSubmit = async (data) => {
   console.log(data)
   let email = data.email;
-  let name = data.name;
-
   if(!validateEmail(email)) {
     setMessage(
       "Error. Ingresa un email válido"
     )
-    return
-  }
-
-  if(!name || name.length < 3) {
-    setMessage(
-      "Error. Ingresa un nombre válido"
-    );
     return
   }
 
@@ -128,7 +120,6 @@ const onSubmit = async (data) => {
         },
         body: JSON.stringify({
           email: email,
-          name: name
         }),
       });
       const datas = await response.json();
@@ -196,30 +187,38 @@ const onSubmit = async (data) => {
       onConfettiComplete={() => setShowConfetti(false)}
     />
     )}
-     <m.h1 animate={formAnimation} className="text-chill-black font-montserrat font-bold text-2xl md:text-3xl mb-1">Subscribite a mi Newsletter y obtené la guía</m.h1>
-     <m.p animate={formAnimation} className="text-sm md:text-base font-normal font-montserrat text-gray-600 mb-8">Te doy la bienvenida a mi metodología de movimiento :)</m.p>
+     <m.h1 animate={formAnimation} className="text-chill-black font-montserrat font-bold text-2xl md:text-3xl mb-3">¡Apurate! GRATIS Solo Por Un Tiempo Limitado</m.h1>
+     <ul className='w-full list-disc mb-2	px-3'>
+      {product.benefits.map(b => 
+          <>
+            <li className='capitalize text-sm md:text-base font-montserrat text-black'>{b}</li>
+          </>
+      ) }
+     </ul>
+
+     <m.p animate={formAnimation} className="text-xs md:text-sm font-normal font-montserrat text-gray-600 mb-2 mt-4">Te doy la bienvenida a mi metodología de movimiento :)</m.p>
       <>
         <form
              className='font-montserrat' onSubmit={handleSubmit(onSubmit)}>
-            <m.div animate={formAnimation} className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
-                <div className='border-b-black border-b-[1px] flex md:w-full w-80  group mb-2'>
+            <m.div animate={formAnimation} className="grid grid-cols-1 gap-6 mt-2">
+                {/* <div className='border-b-black border-b-[1px] flex md:w-full w-80  group mb-2'>
                     <input {...register('name')}  placeholder='Nombre' id="name" type="text" className="relative m-0 block w-[1px] min-w-0 flex-auto rounded-r  bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3]  focus:text-neutral-700 focus:outline-none focus:border-none  dark:placeholder:text-neutral-500/80 dark:placeholder:font-light"
                                     aria-label="Sizing example input"
                                     aria-describedby="inputGroup-sizing-default" />
-                </div>
+                </div> */}
                 <div className='border-b-black border-b-[1px] flex md:w-full w-80  group mb-2'>
                     <input {...register('email')} placeholder='Email' type="email" className="relative m-0 block w-[1px] min-w-0 flex-auto rounded-r  bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3]  focus:text-neutral-700 focus:outline-none focus:border-none  dark:placeholder:text-neutral-500/80 dark:placeholder:font-light"
                     aria-label="Sizing example input"
                     aria-describedby="inputGroup-sizing-default" />
                 </div>
 
-                <div className="flex items-center mb-4">
+                <div className="flex items-center mb-1">
                   <input id="checkbox-1" aria-describedby="checkbox-1" onChange={checkHandler} type="checkbox" className="bg-gray-50 border-gray-300 focus:ring-3 focus:ring-blue-300 h-4 w-4 rounded" checked={checked} />
-                  <label htmlFor="checkbox-1" className="text-sm ml-3 font-medium text-gray-900">He leído y acepto los  <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" alt="terminos y condiciones" rel='noopener noreferrer' className="text-blue-600 hover:underline">Términos y Condiciones</a></label>
+                  <label htmlFor="checkbox-1" className="text-sm ml-3 capitalize font-medium text-gray-900">He leído y acepto los  <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" alt="terminos y condiciones" rel='noopener noreferrer' className="text-blue-600 hover:underline">Términos y Condiciones</a></label>
                 </div>
             </m.div>
     
-            <m.div animate={formAnimation} className="flex justify-center mt-6">
+            <m.div animate={formAnimation} className="flex justify-center mt-4">
             <m.button
                 initial={{ "--x": "100%", scale: 1 }}
                 animate={{ "--x": "-100%" }}
@@ -239,12 +238,16 @@ const onSubmit = async (data) => {
                     mass: 0.1,
                   },
                 }}
-                className="px-5 py-2 md:px-6 md:py-3 mt-6 rounded-full relative radial-gradient"
+                className="px-7 py-3 md:px-8 md:py-4 rounded-full relative radial-gradient"
                 disabled={buttonDisabled}
               >
-                <span className="text-white tracking-wide font-semibold h-full w-full block relative linear-mask font-montserrat text-base md:text-lg">
-                  Obtener Gratis...
-                </span>
+                <div className='h-full w-full flex flex-col relative linear-mask'>
+                  <span className="text-white capitalize tracking-wide font-semibold font-montserrat text-base md:text-lg">
+                    Obtener acceso GRATUITO ya
+                  </span>
+                  <span className='text-white tracking-wide font-semibold font-montserrat text-xs md:text-sm capitalize'>Si si, dame el programa</span>
+                </div>
+
       <span className="block absolute inset-0 rounded-full p-px linear-overlay" />
     </m.button>
             </m.div>
