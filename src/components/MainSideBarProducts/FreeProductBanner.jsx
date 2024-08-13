@@ -51,21 +51,12 @@ function FreeProductBanner({ product }) {
         {/* <video src={'/video/videoTest3.mp4'} autoPlay loop muted={!snap.volumeIndex} className='object-cover h-full w-full'>
 
         </video> */}
-        <Video
-          cloudName={process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
-          publicId='pexels-tima-miroshnichenko-6068292-3840x2160-25fps_znl04z'
-          autoPlay
-          loop
-          muted={!snap.volumeIndex}
-          controls={false}
-          className='object-cover h-full w-full hidden md:block overflow-hidden'
-        />
         <CldImage
             src={product?.image_url}
             preserveTransformations
             width={1000}
             height={1000}
-            className={`object-cover h-full w-full md:hidden opacity-40`}
+            className={`object-cover h-full w-full opacity-40`}
             alt={product?.name}
             loader={imageLoader}
           />

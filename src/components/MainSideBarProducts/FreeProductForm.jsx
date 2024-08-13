@@ -184,8 +184,9 @@ const onSubmit = async (data) => {
   return (
     <>
 
-     <section className="max-w-4xl overflow-hidden relative md:rounded-lg p-6 py-12 pb-20 mx-auto bg-light-cream shadow-md dark:bg-light-cream" ref={rowRef}>
-     <m.h1 animate={formAnimation} className="text-chill-black font-montserrat font-bold text-sm md:text-base mb-1">Casi casi...</m.h1>
+     <section className="w-full bg-[#141414]" ref={rowRef}>
+      <div className='max-w-4xl overflow-hidden relative md:rounded-lg p-6 py-12 pb-20 mx-auto bg-light-cream shadow-md dark:bg-light-cream'>
+      <m.h1 animate={formAnimation} className="text-chill-black font-montserrat font-bold text-sm md:text-base mb-1">Casi casi...</m.h1>
      {showConfetti && (
     <Confetti
       width={dimensions.width}
@@ -208,13 +209,13 @@ const onSubmit = async (data) => {
                 </div>
                 <div className='border-b-black border-b-[1px] flex md:w-full w-80  group mb-2'>
                     <input {...register('email')} placeholder='Email' type="email" className="relative m-0 block w-[1px] min-w-0 flex-auto rounded-r  bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3]  focus:text-neutral-700 focus:outline-none focus:border-none  dark:placeholder:text-neutral-500/80 dark:placeholder:font-light"
-                                    aria-label="Sizing example input"
-                                    aria-describedby="inputGroup-sizing-default" />
+                    aria-label="Sizing example input"
+                    aria-describedby="inputGroup-sizing-default" />
                 </div>
 
                 <div className="flex items-center mb-4">
                   <input id="checkbox-1" aria-describedby="checkbox-1" onChange={checkHandler} type="checkbox" className="bg-gray-50 border-gray-300 focus:ring-3 focus:ring-blue-300 h-4 w-4 rounded" checked={checked} />
-                  <label htmlFor="checkbox-1" className="text-sm ml-3 font-medium text-gray-900">He leído y acepto los  <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" alt="terminos y condiciones" rel='noopener noreferrer' className="text-blue-600 hover:underline">términos y condiciones</a></label>
+                  <label htmlFor="checkbox-1" className="text-sm ml-3 font-medium text-gray-900">He leído y acepto los  <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" alt="terminos y condiciones" rel='noopener noreferrer' className="text-blue-600 hover:underline">Términos y Condiciones</a></label>
                 </div>
             </m.div>
     
@@ -281,6 +282,8 @@ const onSubmit = async (data) => {
           </m.div>
       </>
    
+      </div>
+
 
     </section>
     </>
