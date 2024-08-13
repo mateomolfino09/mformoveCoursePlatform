@@ -212,9 +212,9 @@ const onSubmit = async (data) => {
                                     aria-describedby="inputGroup-sizing-default" />
                 </div>
 
-                <div class="flex items-center mb-4">
-                  <input id="checkbox-1" aria-describedby="checkbox-1" onChange={checkHandler} type="checkbox" class="bg-gray-50 border-gray-300 focus:ring-3 focus:ring-blue-300 h-4 w-4 rounded" checked={checked} />
-                  <label for="checkbox-1" class="text-sm ml-3 font-medium text-gray-900">He leído y acepto los  <a href="#" hrefLang="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" class="text-blue-600 hover:underline">términos y condiciones</a></label>
+                <div className="flex items-center mb-4">
+                  <input id="checkbox-1" aria-describedby="checkbox-1" onChange={checkHandler} type="checkbox" className="bg-gray-50 border-gray-300 focus:ring-3 focus:ring-blue-300 h-4 w-4 rounded" checked={checked} />
+                  <label htmlFor="checkbox-1" className="text-sm ml-3 font-medium text-gray-900">He leído y acepto los  <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" alt="terminos y condiciones" rel='noopener noreferrer' className="text-blue-600 hover:underline">términos y condiciones</a></label>
                 </div>
             </m.div>
     
