@@ -433,6 +433,7 @@ export interface FreeProduct {
   // udpatedAt: string;
   description: string;
   image_url: string;
+  url: string;
   name: string;
   created_by: User;
   vimeoId: number

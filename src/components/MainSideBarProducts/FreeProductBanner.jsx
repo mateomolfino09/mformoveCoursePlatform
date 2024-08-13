@@ -10,8 +10,9 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
 import Footer from '../Footer';
+import { CldImage } from 'next-cloudinary';
 
-function FreeProductBanner() {
+function FreeProductBanner({ product }) {
   const dispatch = useAppDispatch();
   const animation = useAnimation();
   const snap = useSnapshot(state);
@@ -59,13 +60,15 @@ function FreeProductBanner() {
           controls={false}
           className='object-cover h-full w-full hidden md:block overflow-hidden'
         />
-        <Image
-          src={'/images/image00029.jpeg'}
-          className='object-cover h-full w-full md:hidden opacity-40'
-          fill
-          alt='imagen de Mateo'
-          loader={imageLoader}
-        />
+        <CldImage
+            src={product?.image_url}
+            preserveTransformations
+            width={1000}
+            height={1000}
+            className={`object-cover h-full w-full md:hidden opacity-40`}
+            alt={product?.name}
+            loader={imageLoader}
+          />
       </div>
     </div>
 

@@ -24,24 +24,24 @@ const auth = useAuth()
         </div>
         <div className='text-black flex flex-col space-y-12 pt-12 !mx-0 px-6 overflow-x-hidden'>
             <div className='flex w-full flex-col md:pl-0 space-y-4 md:space-y-0 md:flex-row md:space-x-5'>
-                <Link href={'/home'}>
+                {/* <Link href={'/home'}> */}
                     <h4 className='font-light text-sm md:text-base w-full'>Home page</h4>
-                </Link>
-                <Link href={'/membership'}>
+                {/* </Link> */}
+                {/* <Link href={'/membership'}> */}
                     <h4 className='font-light text-sm md:text-base'>Memberships</h4>
-                </Link>
-                <Link href={'/aboutUs'}>
+                {/* </Link> */}
+                {/* <Link href={'/aboutUs'}> */}
                     <h4 className='font-light text-sm md:text-base'>Sobre Nosotros</h4>
-                </Link>
+                {/* </Link> */}
                 {auth.user ? (
 
-                <Link href={'/account'}>
+                // <Link href={'/account'}>
                     <h4 className='font-light text-sm md:text-base'>Mi Cuenta</h4>
-                </Link>
+                // </Link>
                 ) : (
-                <Link href={'/login'}>
+                // <Link href={'/login'}>
                 <h4 className='font-light text-sm md:text-base'>Log In</h4>
-                </Link>
+                // </Link>
                 )}
             </div>
             <div className='flex w-full flex-row md:justify-center justify-start space-x-6 md:pl-0'>

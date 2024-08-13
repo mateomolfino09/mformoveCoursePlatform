@@ -50,7 +50,7 @@ const Index = ({ product }) => {
       </Head>
       {/* <IndexHeader user={auth.user} /> */}
       <main className='relative pl-4 lg:space-y-24 lg:pl-16'>
-        <FreeProductBanner />
+        <FreeProductBanner product={product}/>
       </main>
         <div className='absolute w-full top-[20%] flex justify-center items-center' >
         <div className='flex flex-col justify-center items-center'>
