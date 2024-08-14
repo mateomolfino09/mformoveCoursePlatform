@@ -20,7 +20,6 @@ interface Props {
 
 const MainSideBar = ({ children, where }: Props) => {  
   const auth = useAuth()
-  console.log(where)
   const [showNav, setShowNav] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const cookies = parseCookies();

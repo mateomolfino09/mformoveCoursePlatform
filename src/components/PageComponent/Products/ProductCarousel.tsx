@@ -211,7 +211,7 @@ const ProductCarousel = ({ products }: Props) => {
 
   return (
     <div className='flex flex-col space-y-3 py-16 justify-end lg:items-end pr-4 lg:mr-24 overflow-hidden'>
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16'>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 lg:gap-12'>
         {filteredProducts.map((item: ProductDB) => (
           <>
 

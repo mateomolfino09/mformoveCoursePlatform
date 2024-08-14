@@ -23,7 +23,7 @@ const Products = ({ products, filters }: Props) => {
         <meta name='description' content='Stream Video App' />
         <link rel='icon' href='/favicon.ico' />
         </Head>
-        <main className='relative pl-4 lg:space-y-12 space-y-5 lg:pl-16 mt-32'>
+        <main className='relative pl-4 lg:space-y-12 space-y-5 md:pl-20 lg:pl-28 mt-32'>
             <section className='!mt-0 px-2'>
                 {/* <ProductsFilters filtersDB={filters}/> */}
                 <h1 className='text-white text-3xl md:text-4xl mb-2 font-semibold capitalize font-montserrat'>Mis Cursos</h1>
