@@ -412,6 +412,7 @@ export interface ProductDB {
   description: string;
   image_url: string;
   name: string;
+  phraseName: string;
   dbLikes: string;
   likes: number;
   users: User[];

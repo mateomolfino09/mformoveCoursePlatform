@@ -69,7 +69,7 @@ const MainSideBarDash = ({ showNav }: Props) => {
   return (
     <div className='fixed   w-full h-full bg-black z-[200]'>
       <div className='w-full h-full relative top-40 md:top-28 right-12 flex flex-col space-y-4 md:space-y-4 justify-start lg:items-end mr-12 lg:mr-24'>
-        {(!auth.user || !auth?.user?.subscription?.active) && (
+        {/* {(!auth.user || !auth?.user?.subscription?.active) && (
           <Link href={'/membership'}>
             <m.div
               initial={{ color: '#fff', x: 700 }}
@@ -91,7 +91,7 @@ const MainSideBarDash = ({ showNav }: Props) => {
               </h1>
             </m.div>
           </Link>
-        )}
+        )} */}
         {auth.user && auth?.user?.subscription?.active && (
           <Link href={'/home'}>
             <m.div

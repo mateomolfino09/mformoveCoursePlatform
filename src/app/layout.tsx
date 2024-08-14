@@ -6,12 +6,14 @@ import ProgressBarProvider from '../hooks/progressBar';
 import Providers from '../redux/providers';
 import { GlobalContextProvider } from './context/store';
 import GoogleCaptchaWrapper from '../hooks/RecaptchaProvider';
+import { BoldFont, MontserratFont } from "../utils/customFonts"
 
 export const metadata = {
   title: 'MForMove',
   description: 'Bienvenido a mformove!',
   keywords: "movimiento, fitness, yoga, meditacion, calistenia, workout, training"
 }
+
 
 export default function RootLayout({
   children,
@@ -21,7 +23,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body>
+      <body className={`${BoldFont.variable} ${MontserratFont.variable}`}>
       <ProviderAuth>
           <Providers>
           <GlobalContextProvider>

@@ -24,7 +24,9 @@ module.exports = {
         'chill-black': '#293132',
         'light-white': '#FFFDFD',
         'soft-error': '#AA6373',
-        'soft-success': '#519872'
+        'soft-success': '#519872',
+        'soft-black': '#141414'
+
       }
     }
   },

@@ -16,6 +16,7 @@ import {  setProductId } from '../../../redux/features/productId';
 import { redirect } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
+import ProductCard from './ProductCard';
 
 interface Props {
   products: ProductDB[];
@@ -209,14 +210,14 @@ const ProductCarousel = ({ products }: Props) => {
 
 
   return (
-    <div className='flex flex-col space-y-3 py-16 justify-end lg:items-end mr-12 lg:mr-24 overflow-hidden'>
-      <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
-     
+    <div className='flex flex-col space-y-3 py-16 justify-end lg:items-end pr-4 lg:mr-24 overflow-hidden'>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16'>
         {filteredProducts.map((item: ProductDB) => (
-        
           <>
+
+            <ProductCard product={item}/>
           
-            <div
+            {/* <div
               key={item._id}
               style={styleCard}
               className={`bg-white p-4 rounded-lg shadow-md p-0`}
@@ -242,7 +243,6 @@ const ProductCarousel = ({ products }: Props) => {
                 </div>
                 <div className='text-sm text-gray-600 text-wrap'>
                   {' '}
-                  {/* Added the 'text-sm' class here */}
                   <p>{item.description}</p>
                 </div>
                 <div className='flex justify-between items-center mt-4'>
@@ -257,11 +257,11 @@ const ProductCarousel = ({ products }: Props) => {
                     className='text-blue-500 hover:underline'
                   >
                     Payment Link
-                  </a> */}
+                  </a> 
                   <p   className='text-blue-500 hover:underline'>Payment Link</p>
                 </div>
               </div>
-            </div>
+            </div> */}
           </>
           
         ))}
