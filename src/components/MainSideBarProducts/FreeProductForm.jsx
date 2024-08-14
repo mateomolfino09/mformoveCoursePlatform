@@ -11,6 +11,7 @@ import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import './freeProductStyle.css'
 import Confetti from "react-confetti";
 import { IoCarOutline } from 'react-icons/io5'
+import Timer2 from './FreeProductCountDown'
 
 const FreeProductForm = ({ product, setRef }) => {
   console.log(product)
@@ -199,7 +200,7 @@ const onSubmit = async (data) => {
      <m.p animate={formAnimation} className="text-xs md:text-sm font-normal font-montserrat text-gray-600 mb-2 mt-4">Te doy la bienvenida a mi metodología de movimiento :)</m.p>
       <>
         <form
-             className='font-montserrat' onSubmit={handleSubmit(onSubmit)}>
+             className='font-montserrat pb-5' onSubmit={handleSubmit(onSubmit)}>
             <m.div animate={formAnimation} className="grid grid-cols-1 gap-6 mt-2">
                 {/* <div className='border-b-black border-b-[1px] flex md:w-full w-80  group mb-2'>
                     <input {...register('name')}  placeholder='Nombre' id="name" type="text" className="relative m-0 block w-[1px] min-w-0 flex-auto rounded-r  bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3]  focus:text-neutral-700 focus:outline-none focus:border-none  dark:placeholder:text-neutral-500/80 dark:placeholder:font-light"
@@ -283,8 +284,9 @@ const onSubmit = async (data) => {
                 </div>
             </div>
           </m.div>
+          <Timer2 />
       </>
-   
+            
       </div>
 
 
