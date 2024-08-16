@@ -42,7 +42,7 @@ const IndividualProduct = ({ product }: Props) => {
         {
           name: 'Ejemplo 2 ',
           description:
-            'Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2  ',
+            'Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo',
           currency: 'USD',
           amount: 10,
           frequency_type: 'MONTHLY'
