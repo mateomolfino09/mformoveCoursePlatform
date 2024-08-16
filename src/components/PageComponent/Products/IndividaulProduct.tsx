@@ -18,6 +18,9 @@ import { toast } from 'react-toastify';
 import MainSideBar from '../../MainSideBar';
 import Footer from '../../Footer';
 import { AcademicCapIcon } from '@heroicons/react/24/solid';
+import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
+import '../../MainSideBarProducts/freeProductStyle.css'
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
 interface Props {
   product: ProductDB;
@@ -104,11 +107,17 @@ const IndividualProduct = ({ product }: Props) => {
             <div className='flex w-full lg:bg-gray-300/50 lg:p-6 lg:rounded-md flex-col lg:space-y-4'>
             <button
               onClick={(e) => handleSubmit()}
-              className='w-full hidden md:block bg-black border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold'
+              className='w-full hidden md:block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
             >
-              Comprar Ahora{' '} ({product.price} {product.currency})
+              <div className="absolute inset-0 w-0 bg-[#13E096] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
+              <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Comprar Ahora{' '} ({product.price} {product.currency})
+              </span>
             </button>
-              <p className='text-black text-lg md:text-lg font-normal'>{product.longDescription}</p>
+              <p className='text-black text-lg  md:text-lg font-normal'>{product.longDescription}</p>
+            </div>
+            <div className='w-full hidden lg:flex lg:bg-gray-300/50 lg:p-6 lg:rounded-md items-center justify-between'>
+              <p className='text-black text-lg  font-bold md:text-xl'>Preguntas Frecuentes</p>
+              <ArrowRightIcon className='w-8 h-8 text-black'/>
             </div>
 
           </div>
@@ -132,10 +141,10 @@ const IndividualProduct = ({ product }: Props) => {
       </main>
       <Footer />
       </MainSideBar>
-      <div className='bottom-0 md:hidden flex justify-center items-end mb-4 text-center fixed w-full h-24 px-3'>
+      <div className='bottom-0 md:hidden flex justify-center items-end mb-4 text-center fixed w-full h-24 px-3' style={{background: 'linear-gradient(180deg,hsla(0,0%,100%,0),#fff 25.91%)'}}>
       <button
           onClick={(e) => handleSubmit()}
-          className='w-full bg-black border border-white rounded-md transition duration-500 text-xl font-light hover:bg-black py-4 font-semibold'
+          className='w-full bg-black border border-white rounded-md transition duration-500 text-xl font-light hover:bg-black py-4 shadow-2xl shadow-white'
         >
           Comprar Ahora{' '}
         </button>
