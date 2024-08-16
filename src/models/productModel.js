@@ -83,6 +83,11 @@ const productSchema = new mongoose.Schema(
       required: true,
       minLength: 20
     },
+    longDescription: {
+      type: String,
+      required: true,
+      minLength: 20
+    },
     paymentLink: {
       type: String,
       default: () => "",
@@ -101,6 +106,10 @@ const productSchema = new mongoose.Schema(
     image_url: {
       type: String,
       default: () => ""
+    },
+    url: {
+      type: String,
+      required: true
     },
     diploma_url: {
       type: String,

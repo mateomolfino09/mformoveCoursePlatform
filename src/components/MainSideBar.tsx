@@ -12,6 +12,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import MainSideBarDash from './MainSideBarDash';
 import HeaderHome from './HeaderHome';
 import Footer from './Footer';
+import ProductHeader from './PageComponent/Products/HeaderProduct';
 
 interface Props {
   children: any;
@@ -51,30 +52,22 @@ const MainSideBar = ({ children, where }: Props) => {
   }, []);
   return (
     <div className='absolute w-full h-full '>
-      {where === "home" ? (
-        
+      {where === "home" && (
         <HeaderHome user={auth.user} toggleNav={toggleNav} />
-        ) : (
-        <IndexHeader user={auth.user} toggleNav={toggleNav} where={where} />
-
       )}
-        {showNav ? (
-          <MainSideBarDash showNav={showNav} />
-        ) : (
-          <>
-          </>
-        )}
-          {children}
-          {/* {where === "home" ? (
-        
-            <>
-            </>
-            ) : (
-              <Footer/>
-
-
-          )} */}
-
+      {where === "index" && ( 
+      <IndexHeader user={auth.user} toggleNav={toggleNav} where={where} />
+      )}
+      {where === "product" && ( 
+      <ProductHeader user={auth.user} toggleNav={toggleNav} />
+      )}
+      {showNav ? (
+        <MainSideBarDash showNav={showNav} />
+      ) : (
+        <>
+        </>
+      )}
+        {children}
         
     </div>
   )
@@ -87,6 +80,5 @@ export default MainSideBar
 interface Props {
   children: any;
 }
-
 
 

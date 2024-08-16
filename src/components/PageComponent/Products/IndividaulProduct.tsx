@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 
 import React, { useState } from 'react';
@@ -15,6 +15,9 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import MainSideBar from '../../MainSideBar';
+import Footer from '../../Footer';
+import { AcademicCapIcon } from '@heroicons/react/24/solid';
 
 interface Props {
   product: ProductDB;
@@ -80,14 +83,16 @@ const IndividualProduct = ({ product }: Props) => {
   }
 
   return (
-    <div className='product-page'>
-      <header className='product-header'>
-        <h1>MForMove</h1>
-      </header>
-      <main className='product-main'>
-        <div className='product-details'>
-          <div className='product-name-image'>
-            <h2 className='titulo'>{product?.name}</h2>
+    <div className='relative bg-to-dark font-montserrat lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden scrollbar-thin'>
+    <MainSideBar where={'product'}>
+    <main className='pt-32 bg-white'>
+        <div className='product-details flex flex-col space-y-12 lg:flex-row'>
+          <div className='product-name-image lg:w-1/2 flex flex-col space-y-4 px-5 lg:pl-24'>
+            <div className='w-full lg:pr-12 flex justify-between items-center'>
+              <h2 className='text-black text-4xl md:text-5xl font-bold lg:pr-4'>{product?.name}</h2>
+              <AcademicCapIcon className='h-8 w-8 hidden lg:block text-black'/>
+            </div>
+            <p className='text-black lg:pr-12 text-lg md:text-lg font-normal'>{product.description}</p>
             <div className='product-image'>
               <img
                 src={
@@ -96,23 +101,45 @@ const IndividualProduct = ({ product }: Props) => {
                 alt={product?.name}
               />
             </div>
+            <div className='flex w-full lg:bg-gray-300/50 lg:p-6 lg:rounded-md flex-col lg:space-y-4'>
+            <button
+              onClick={(e) => handleSubmit()}
+              className='w-full hidden md:block bg-black border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold'
+            >
+              Comprar Ahora{' '} ({product.price} {product.currency})
+            </button>
+              <p className='text-black text-lg md:text-lg font-normal'>{product.longDescription}</p>
+            </div>
+
           </div>
-          <p>{product?.description}</p>
-          <p>Precio: {product?.price}</p>
-          <p>Cantidad de clases: {product?.classesQuantity}</p>
+          <div className='product-name-image lg:w-1/2 flex flex-col space-y-4 px-5'>
+            <h2 className='text-black text-3xl md:text-4xl font-bold'>Contenido del Curso</h2>
+            <p className='text-black text-lg md:text-lg font-normal'>{product.description}</p>
+            <div className='product-image'>
+              <img
+                src={
+                  'https://img.freepik.com/foto-gratis/vista-posterior-mujer-haciendo-yoga-al-aire-libre_23-2148769551.jpg'
+                }
+                alt={product?.name}
+              />
+            </div>
+            <p className='text-black text-lg md:text-lg font-normal'>{product.longDescription}</p>
+          </div>
         </div>
 
 
-        <button
-          onClick={(e) => handleSubmit()}
-          className='w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold'
-        >
-          Subscribirse{' '}
-        </button>
+
       </main>
-      <footer className='product-footer'>
-        <p>&copy; 2024 MForMove. Todos los derechos reservados.</p>
-      </footer>
+      <Footer />
+      </MainSideBar>
+      <div className='bottom-0 md:hidden flex justify-center items-end mb-4 text-center fixed w-full h-24 px-3'>
+      <button
+          onClick={(e) => handleSubmit()}
+          className='w-full bg-black border border-white rounded-md transition duration-500 text-xl font-light hover:bg-black py-4 font-semibold'
+        >
+          Comprar Ahora{' '}
+        </button>
+      </div>
     </div>
   );
 };

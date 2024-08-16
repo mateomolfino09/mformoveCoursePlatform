@@ -410,9 +410,13 @@ export interface ProductDB {
   createdAt: string;
   // udpatedAt: string;
   description: string;
+  longDescription: string;
+
   image_url: string;
+  url: string;
   name: string;
   phraseName: string;
+  
   dbLikes: string;
   likes: number;
   users: User[];
