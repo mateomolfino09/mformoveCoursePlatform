@@ -135,11 +135,15 @@ const IndividualProduct = ({ product }: Props) => {
 
           </div>
           <div className='product-name-image lg:w-1/2 flex flex-col space-y-4 px-5'>
-          {modulesQuantity.map((classes: [ClassesProduct]) => (
-            <Module classes={classes} product={product} index={classes[0].module}/>
-          ))}
+          <div className='w-full flex flex-col justify-center space-y-10'>
+          <h2 className='text-black text-3xl md:text-4xl font-bold'>Contenido del Curso</h2>
+            {modulesQuantity.map((classes: [ClassesProduct]) => (
+              <Module classes={classes} product={product} index={classes[0].module}/>
+            ))}
+          </div>
+
           
-            <h2 className='text-black text-3xl md:text-4xl font-bold'>Contenido del Curso</h2>
+
             <p className='text-black text-lg md:text-lg font-normal'>{product.description}</p>
             <div className='product-image'>
               <img
