@@ -195,6 +195,13 @@ export interface Modules {
   titles: [string] | [];
 }
 
+
+export interface ProductModules {
+  name: string;
+  id: number;
+  description: string
+}
+
 export interface User {
   id: number;
   _id: number;
@@ -403,6 +410,20 @@ export interface Plan {
   createdAt: string;
 }
 
+export interface ClassesProduct {
+  _id: string;
+  id: number;
+  name: string;
+  createdAt: string;
+  class_code: string;
+  image_url: string;
+  module: number
+  likes: number;
+  totalTime: number;
+  course: CoursesDB;
+  atachedFiles: [Archive]
+  link: Link
+}
 
 export interface ProductDB {
   _id: string;
@@ -420,14 +441,14 @@ export interface ProductDB {
   dbLikes: string;
   likes: number;
   users: User[];
-  classes: ClassesDB[];
+  classes: ClassesProduct[];
   price: number;
   currency: string;
   created_by: User;
   index: number;
   classesQuantity: number;
   isOpen: boolean;
-  modules: Modules;
+  modules: ProductModules[];
   productType: string
 }
 

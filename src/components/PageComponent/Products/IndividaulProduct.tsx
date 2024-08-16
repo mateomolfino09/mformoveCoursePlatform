@@ -1,9 +1,9 @@
 'use client'
 
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './IndividualProduct.css';
-import { ProductDB } from '../../../../typings';
+import { ClassesProduct, ProductDB } from '../../../../typings';
 import { useAuth } from '../../../hooks/useAuth';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
 import {
@@ -21,6 +21,7 @@ import { AcademicCapIcon } from '@heroicons/react/24/solid';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import '../../MainSideBarProducts/freeProductStyle.css'
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import Module from './Module';
 
 interface Props {
   product: ProductDB;
@@ -29,6 +30,8 @@ interface Props {
 const IndividualProduct = ({ product }: Props) => {
   const auth = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
+  const [modulesQuantity, setModulesQuantity] = useState<any>([]);
+
   const dispatch = useAppDispatch();
   const router = useRouter();
   async function handleSubmit() {
@@ -85,6 +88,16 @@ const IndividualProduct = ({ product }: Props) => {
     setLoading(false);
   }
 
+  useEffect(() => {
+    let modules: any = [];
+    for (let index = 1; index <= product.classes[product.classes.length - 1].module; index++) {
+      modules.push(product.classes.filter(x => x.module === index))
+    }
+    console.log(modules)
+    setModulesQuantity(modules)
+    
+  }, [])
+
   return (
     <div className='relative bg-to-dark font-montserrat lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden scrollbar-thin'>
     <MainSideBar where={'product'}>
@@ -122,6 +135,10 @@ const IndividualProduct = ({ product }: Props) => {
 
           </div>
           <div className='product-name-image lg:w-1/2 flex flex-col space-y-4 px-5'>
+          {modulesQuantity.map((classes: [ClassesProduct]) => (
+            <Module classes={classes} product={product} index={classes[0].module}/>
+          ))}
+          
             <h2 className='text-black text-3xl md:text-4xl font-bold'>Contenido del Curso</h2>
             <p className='text-black text-lg md:text-lg font-normal'>{product.description}</p>
             <div className='product-image'>
@@ -146,7 +163,7 @@ const IndividualProduct = ({ product }: Props) => {
           onClick={(e) => handleSubmit()}
           className='w-full bg-black border border-white rounded-md transition duration-500 text-xl font-light hover:bg-black py-4 shadow-2xl shadow-white'
         >
-          Comprar Ahora{' '}
+          Comprar Ahora{' '} ({product.price} {product.currency})
         </button>
       </div>
     </div>

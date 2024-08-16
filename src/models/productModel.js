@@ -62,6 +62,10 @@ const moduleSchema = mongoose.Schema({
     type: String,
     required: true
   },
+  description: {
+    type: String,
+    required: true
+  }
 }, { timestamps: true })
 
 const productSchema = new mongoose.Schema(
