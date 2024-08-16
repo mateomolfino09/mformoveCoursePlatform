@@ -1,5 +1,7 @@
 import React from 'react'
 import { ClassesDB, ClassesProduct, ProductDB } from '../../../../typings'
+import Image from 'next/image'
+import imageLoader from '../../../../imageLoader'
 
 interface Props {
     classes: ClassesProduct[]
@@ -18,18 +20,22 @@ const Module = ({ classes, product, index }: Props) => {
         </div>
         <div className='bg-gray-200/50 rounded-b-xl w-full'>
             {classes.map(clase => (
-                <div key={clase.id} className='border-b-[1px] border-b-black rounded-b-xl'>
-                    <div className='w-full flex h-16 py-3'>
-                        <div className='image w-1/2'>
+                <div key={clase.id} className=' flex flex-col items-center justify-center'>
+                    <div className='w-full justify-center items-center flex h-16 py-3'>
+                        <div className='image w-full'>
+                            <Image src={clase.image_url} width={50} height={50} alt={clase.name} loader={imageLoader}/>
 
                         </div>
-                        <div className='w-1/2'>
+                        <div className='w-full'>
                             <p className='text-black text-sm'>{clase.name}</p>
-                            <div className='w-12 h-5 flex justify-center items-center bg-white rounded-l-full rounded-r-full'>
-                                <span className='text-black text-sm'>{clase.totalTime} min</span>
+                            <div className='w-24 h-5 flex justify-center items-center bg-white rounded-l-full rounded-r-full'>
+                                <span className='text-black font-bold text-sm'>{Math.floor((clase.totalTime /
+                                60 )%
+                                60)} min</span>
                             </div>
                         </div>
                     </div>
+                    <hr className={`${classes[classes.length - 1]._id == clase._id ? 'hidden' : ''} w-[90%] border-[0.5px] px-4 border-gray-300/50`}/>
                 </div>
             ))}
         </div>

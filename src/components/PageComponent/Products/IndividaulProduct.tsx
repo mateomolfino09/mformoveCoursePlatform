@@ -141,24 +141,8 @@ const IndividualProduct = ({ product }: Props) => {
               <Module classes={classes} product={product} index={classes[0].module}/>
             ))}
           </div>
-
-          
-
-            <p className='text-black text-lg md:text-lg font-normal'>{product.description}</p>
-            <div className='product-image'>
-              <img
-                src={
-                  'https://img.freepik.com/foto-gratis/vista-posterior-mujer-haciendo-yoga-al-aire-libre_23-2148769551.jpg'
-                }
-                alt={product?.name}
-              />
-            </div>
-            <p className='text-black text-lg md:text-lg font-normal'>{product.longDescription}</p>
           </div>
         </div>
-
-
-
       </main>
       <Footer />
       </MainSideBar>
