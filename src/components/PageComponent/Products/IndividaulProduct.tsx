@@ -38,6 +38,7 @@ const IndividualProduct = ({ product }: Props) => {
   );
   const [play, setPlay] = useState<boolean>(false);
   const [hasWindow, setHasWindow] = useState(false);
+  const [activateFrequent, setActivateFrequent] = useState(false);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -147,13 +148,30 @@ const IndividualProduct = ({ product }: Props) => {
             </button>
               <p className='text-black text-lg  md:text-lg font-normal'>{product.longDescription}</p>
             </div>
-            <div className='w-full hidden lg:flex lg:bg-gray-300/50 lg:p-6 lg:rounded-md items-center justify-between'>
-              <p className='text-black text-lg  font-bold md:text-xl'>Preguntas Frecuentes</p>
-              <ArrowRightIcon className='w-8 h-8 text-black'/>
+            <div className='w-full hidden lg:flex lg:flex-col lg:bg-gray-300/50 lg:p-6 cursor-pointer rounded-md' onClick={() => setActivateFrequent(!activateFrequent)}>
+              <div className='flex lg:rounded-md mb-4 items-center justify-between'>
+                <p className='text-black text-lg  font-bold md:text-xl'>Preguntas Frecuentes</p>
+                <div>
+                  <ArrowRightIcon className={`w-8 h-8 text-black transition-all`}/>
+                </div>
+              </div>
+              <div className={`w-full text-black ${activateFrequent ? 'flex flex-col space-y-6' : 'hidden'} transition-all duration-500`}>
+                {product.frequentQuestions.map((fq) => (
+                  <div key={fq.id}>
+                    <h3 className='text-xl font-semibold'>{fq.question}</h3>
+                    <p className='text-base'>{fq.answer}</p>
+                  </div> 
+                ))}
+                {/* {product.frequentQuestions.map((x) => (
+                  <>
+                  
+                  </>
+                )} */}
+              </div>
             </div>
 
           </div>
-          <div className='product-name-image lg:w-1/2 flex flex-col space-y-4 px-5'>
+          <div className='product-name-image md:px-16 px-5 lg:w-1/2 flex flex-col space-y-4'>
           <div className='w-full flex flex-col justify-center space-y-10'>
           <h2 className='text-black text-3xl md:text-4xl font-bold'>Contenido del Curso</h2>
             {modulesQuantity.map((classes: [ClassesProduct]) => (
@@ -162,6 +180,29 @@ const IndividualProduct = ({ product }: Props) => {
           </div>
           </div>
         </div>
+        <div className='w-full flex justify-center items-center cursor-pointer rounded-md md:hidden' onClick={() => setActivateFrequent(!activateFrequent)}>
+          <div className='w-[90%] mt-12 flex flex-col p-6 cursor-pointer rounded-md bg-gray-300/50'>
+              <div className='flex rounded-md mb-4 items-center justify-between'>
+                <p className='text-black text-lg  font-bold md:text-xl'>Preguntas Frecuentes</p>
+                <div>
+                  <ArrowRightIcon className={`w-8 h-8 text-black transition-all`}/>
+                </div>
+              </div>
+              <div className={`w-full text-black ${activateFrequent ? 'flex flex-col space-y-6' : 'hidden'} transition-all duration-500`}>
+                {product.frequentQuestions.map((fq) => (
+                  <div key={fq.id}>
+                    <h3 className='text-xl font-semibold'>{fq.question}</h3>
+                    <p className='text-base'>{fq.answer}</p>
+                  </div> 
+                ))}
+                {/* {product.frequentQuestions.map((x) => (
+                  <>
+                  
+                  </>
+                )} */}
+              </div>
+          </div>
+            </div>
       </main>
       <Footer />
       </MainSideBar>

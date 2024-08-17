@@ -21,6 +21,21 @@ const fileSchema = new mongoose.Schema({
   }
 });
 
+const frequentQuestion = new mongoose.Schema({
+  id: {
+    type: Number,
+    required: true
+  },
+  question: {
+    type: String,
+    required: true
+  },
+  answer: {
+    type: String,
+    required: true
+  },
+});
+
 const classSchema = new mongoose.Schema(
   {
     id: {
@@ -100,6 +115,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    frequentQuestions : [frequentQuestion],
     paymentLink: {
       type: String,
       default: () => "",

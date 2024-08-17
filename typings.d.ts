@@ -426,6 +426,12 @@ export interface ClassesProduct {
   link: Link
 }
 
+export interface FrequentQuestion {
+  id: number;
+  question: string;
+  answer: string;
+}
+
 export interface ProductDB {
   _id: string;
   id: number;
@@ -440,6 +446,8 @@ export interface ProductDB {
   url: string;
   name: string;
   phraseName: string;
+
+  frequentQuestions: FrequentQuestion[]
   
   dbLikes: string;
   likes: number;
