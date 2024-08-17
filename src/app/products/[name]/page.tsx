@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { getProductByName } from "../../api/product/getProductByName";
 import { FreeProduct, ProductDB } from '../../../../typings';
 import IndividaulProduct from '../../../components/PageComponent/Products/IndividaulProduct';
+import getVimeoVideo from '../../api/individualClass/getVimeoVideo';
 
 
 export default async function Page({ params }: { params: { name: string }}) {

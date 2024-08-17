@@ -192,7 +192,7 @@ export default function PlayerControls({
   return (
     <div
       ref={ref}
-      className={`absolute -top-[80px] md:top-0 left-0 right-0 bottom-0 flex-col space-y-0 justify-between z-[1] ${
+      className={`absolute -top-[10px] md:top-0 left-0 right-0 bottom-0 flex-col space-y-0 justify-between z-[1] ${
         fullScreen || isToShow ? 'bg-transparent' : 'bg-black/20'
       }  w-full flex-wrap box-border`}
     >
@@ -243,7 +243,7 @@ export default function PlayerControls({
       <div
         className={`${
           fullScreen ? (!playing && !isToShow ? 'md:!mt-64' : 'md:!mt-[450px]') : ''
-        } absolute bottom-0 flex flex-row justify-between items-center p-4 w-full flex-wrap box-border`}
+        } absolute hidden bottom-[-10px] md:bottom-10 lg:bottom-6 flex flex-row justify-between items-center p-4 w-full flex-wrap box-border`}
       >
         <div className='w-full'>
           <PrettoSlider

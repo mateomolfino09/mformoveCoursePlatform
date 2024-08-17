@@ -196,7 +196,7 @@ function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
         <div
           ref={playerContainerRef}
           onMouseMove={handleMouseMove}
-          className='w-full min-h-[30rem] lg:min-h-[60vh] !pl-0 !pr-0 relative lg:border border-3 border-solid border-black'
+          className={`w-full min-h-[30rem] lg:min-h-[60vh] !pl-0 !pr-0 relative lg:border border-3 border-solid border-black `}
         >
            <ReactPlayer
             ref={playerRef}
@@ -240,6 +240,7 @@ function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
             onBookmark={addBookmark}
             setPlayerRef={setControlRef}
             title={clase?.name != null ? clase.name : ''}
+            isToShow={false}
           /> 
         </div>
       </Container>

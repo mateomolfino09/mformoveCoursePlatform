@@ -1,4 +1,4 @@
-import { ClassesDB, CourseUser, User } from '../../typings';
+import { ClassesDB, CourseUser, User } from '../../../../typings';
 import PlayerControls from './PlayerControls';
 import { Container, Grid, Paper, Typography } from '@mui/material';
 import axios from 'axios';
@@ -195,14 +195,14 @@ function Youtube({ url, img, title, setPlayerRef, play, isToShow }: Props) {
         <div
           ref={playerContainerRef}
           onMouseMove={handleMouseMove}
-          className={`w-full min-h-[30rem] lg:min-h-[60vh] !pl-0 !pr-0 relative  ${isToShow ? '' : 'lg:border border-3 border-solid border-black'}`}
+          className={`w-full min-h-[15rem] md:min-h-[30rem] sm:min-h-[20rem] rounded-md lg:min-h-[40vh] !pl-0 !pr-0 relative  ${isToShow ? '' : 'lg:border border-3 border-solid border-black'}`}
         >
           <ReactPlayer
             ref={playerRef}
             url={url?.toString()}
             width='100%'
             height='100%'
-            style={{ position: 'absolute', top: '0', left: '0 ' }}
+            style={{ position: 'absolute', top: '0', left: '0 ', borderRadius: '100px' }}
             playing={playing}
             muted={muted}
             volume={volume}

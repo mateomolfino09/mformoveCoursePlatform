@@ -1,7 +1,7 @@
 'use client'
 
 
-import React, { useEffect, useState } from 'react';
+import React, { RefObject, useEffect, useState } from 'react';
 import './IndividualProduct.css';
 import { ClassesProduct, ProductDB } from '../../../../typings';
 import { useAuth } from '../../../hooks/useAuth';
@@ -22,6 +22,8 @@ import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import '../../MainSideBarProducts/freeProductStyle.css'
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Module from './Module';
+import VideoPlayer from './VideoPlayer';
+import ReactPlayer from 'react-player';
 
 interface Props {
   product: ProductDB;
@@ -31,6 +33,11 @@ const IndividualProduct = ({ product }: Props) => {
   const auth = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
   const [modulesQuantity, setModulesQuantity] = useState<any>([]);
+  const [playerRef, setPlayerRef] = useState<RefObject<ReactPlayer> | null>(
+    null
+  );
+  const [play, setPlay] = useState<boolean>(false);
+  const [hasWindow, setHasWindow] = useState(false);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -89,6 +96,12 @@ const IndividualProduct = ({ product }: Props) => {
   }
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setHasWindow(true);
+    }
+  }, []);
+
+  useEffect(() => {
     let modules: any = [];
     for (let index = 1; index <= product.classes[product.classes.length - 1].module; index++) {
       modules.push(product.classes.filter(x => x.module === index))
@@ -110,12 +123,18 @@ const IndividualProduct = ({ product }: Props) => {
             </div>
             <p className='text-black lg:pr-12 text-lg md:text-lg font-normal'>{product.description}</p>
             <div className='product-image'>
-              <img
-                src={
-                  'https://img.freepik.com/foto-gratis/vista-posterior-mujer-haciendo-yoga-al-aire-libre_23-2148769551.jpg'
-                }
-                alt={product?.name}
-              />
+            {hasWindow && (
+                <>
+            <VideoPlayer
+                    url={product.intro_video_url}
+                    title={product.name}
+                    img={product.image_url}
+                    setPlayerRef={(val: any) => setPlayerRef(val)}
+                    play={play}
+                    isToShow={true}
+                    />
+                </>
+            )}
             </div>
             <div className='flex w-full lg:bg-gray-300/50 lg:p-6 lg:rounded-md flex-col lg:space-y-4'>
             <button

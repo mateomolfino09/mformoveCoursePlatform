@@ -39,6 +39,10 @@ const classSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    video_url: {
+      type: String,
+      required: true
+    },
     totalTime: {
       type: Number,
       default: () => 0
@@ -91,6 +95,10 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
       minLength: 20
+    },
+    intro_video_url: {
+      type: String,
+      required: true
     },
     paymentLink: {
       type: String,

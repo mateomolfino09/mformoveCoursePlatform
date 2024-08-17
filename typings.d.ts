@@ -417,6 +417,7 @@ export interface ClassesProduct {
   createdAt: string;
   class_code: string;
   image_url: string;
+  video_url: string;
   module: number
   likes: number;
   totalTime: number;
@@ -434,6 +435,8 @@ export interface ProductDB {
   longDescription: string;
 
   image_url: string;
+  intro_video_url: string
+
   url: string;
   name: string;
   phraseName: string;
