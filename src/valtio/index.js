@@ -12,7 +12,8 @@ const state = proxy({
   searchBar: false,
   searchToggle: false,
   searchInput: '',
-  classHeaders: 'Temario'
+  classHeaders: 'Temario',
+  loginForm: false
 });
 
 export default state;

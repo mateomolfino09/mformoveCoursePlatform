@@ -24,6 +24,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import Module from './Module';
 import VideoPlayer from './VideoPlayer';
 import ReactPlayer from 'react-player';
+import state from '../../../valtio';
 
 interface Props {
   product: ProductDB;
@@ -42,7 +43,24 @@ const IndividualProduct = ({ product }: Props) => {
 
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  const checkLogin = () => {
+    if(!auth.user) {
+      state.loginForm = true;
+      return false;
+    }
+    else {
+      state.loginForm = false;
+      return true
+    }
+  }
+
   async function handleSubmit() {
+
+    const pass = checkLogin();
+
+    if(!pass) return
+
     setLoading(true);
     try {
       const config = {
@@ -118,7 +136,7 @@ const IndividualProduct = ({ product }: Props) => {
     <main className='pt-32 bg-white'>
         <div className='product-details flex flex-col space-y-12 lg:flex-row'>
           <div className='product-name-image lg:w-1/2 flex flex-col space-y-4 px-5 lg:pl-24'>
-          <div onClick={() => router.push('products')} className='flex w-32 justify-start items-center space-x-2'>
+          <div onClick={() => router.push('/products')} className='flex w-32 justify-start items-center space-x-2'>
                 <ArrowLeftIcon className='font-bold w-5 h-5 text-black hidden md:block'/>
                 <p className='text-black text-sm font-bold'>Volver</p>
               </div>

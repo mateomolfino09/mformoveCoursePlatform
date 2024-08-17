@@ -13,6 +13,10 @@ import MainSideBarDash from './MainSideBarDash';
 import HeaderHome from './HeaderHome';
 import Footer from './Footer';
 import ProductHeader from './PageComponent/Products/HeaderProduct';
+import LoginForm from './PageComponent/Login/LoginForm';
+import { useSnapshot } from 'valtio';
+import state from '../valtio';
+import LoginModal from './PageComponent/Login/LoginModal';
 
 interface Props {
   children: any;
@@ -26,30 +30,21 @@ const MainSideBar = ({ children, where }: Props) => {
   const cookies = parseCookies();
   const router = useRouter();
   const childRef = React.createRef();
-  
-  function handleResize() {
-    if (innerWidth <= 640) {
-      setShowNav(false);
-      setIsMobile(true);
-    } else {
-      setShowNav(true);
-      setIsMobile(false);
-    }
-  }
+  const snap = useSnapshot(state);
 
   const toggleNav = () => {
     setShowNav(!showNav)
   }
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      addEventListener('resize', handleResize);
-    }
+  // useEffect(() => {
+  //   if (typeof window !== 'undefined') {
+  //     addEventListener('resize', handleResize);
+  //   }
 
-    return () => {
-      removeEventListener('resize', handleResize);
-    };
-  }, []);
+  //   return () => {
+  //     removeEventListener('resize', handleResize);
+  //   };
+  // }, []);
   return (
     <div className='absolute w-full h-full '>
       {where === "home" && (
@@ -63,6 +58,12 @@ const MainSideBar = ({ children, where }: Props) => {
       )}
       {showNav ? (
         <MainSideBarDash showNav={showNav} />
+      ) : (
+        <>
+        </>
+      )}
+      {snap.loginForm ? (
+        <LoginModal />
       ) : (
         <>
         </>
