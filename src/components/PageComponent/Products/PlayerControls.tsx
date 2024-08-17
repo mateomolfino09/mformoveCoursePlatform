@@ -243,9 +243,9 @@ export default function PlayerControls({
       <div
         className={`${
           fullScreen ? (!playing && !isToShow ? 'md:!mt-64' : 'md:!mt-[450px]') : ''
-        } absolute hidden bottom-[-10px] md:bottom-10 lg:bottom-6 flex flex-row justify-between items-center p-4 w-full flex-wrap box-border`}
+        } absolute flex lg:flex md:flex bottom-[-2px] md:bottom-0 lg:bottom-6 flex-row justify-between items-center p-4 w-full flex-wrap box-border md:px-7 lg:px-2`}
       >
-        <div className='w-full'>
+        <div className='w-full h-7 '>
           <PrettoSlider
             min={0}
             max={100}

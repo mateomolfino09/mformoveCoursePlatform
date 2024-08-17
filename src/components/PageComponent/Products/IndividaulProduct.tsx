@@ -122,7 +122,7 @@ const IndividualProduct = ({ product }: Props) => {
               <AcademicCapIcon className='h-8 w-8 hidden lg:block text-black'/>
             </div>
             <p className='text-black lg:pr-12 text-lg md:text-lg font-normal'>{product.description}</p>
-            <div className='product-image'>
+            <div className='product-image md:py-8'>
             {hasWindow && (
                 <>
             <VideoPlayer
@@ -136,7 +136,7 @@ const IndividualProduct = ({ product }: Props) => {
                 </>
             )}
             </div>
-            <div className='flex w-full lg:bg-gray-300/50 lg:p-6 lg:rounded-md flex-col lg:space-y-4'>
+            <div className='flex w-full lg:bg-gray-300/50 lg:p-6 lg:rounded-md flex-col lg:space-y-4 md:space-y-4'>
             <button
               onClick={(e) => handleSubmit()}
               className='w-full hidden md:block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'

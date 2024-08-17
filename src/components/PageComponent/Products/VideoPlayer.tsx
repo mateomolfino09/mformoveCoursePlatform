@@ -195,7 +195,7 @@ function Youtube({ url, img, title, setPlayerRef, play, isToShow }: Props) {
         <div
           ref={playerContainerRef}
           onMouseMove={handleMouseMove}
-          className={`w-full min-h-[15rem] md:min-h-[30rem] sm:min-h-[20rem] rounded-md lg:min-h-[40vh] !pl-0 !pr-0 relative  ${isToShow ? '' : 'lg:border border-3 border-solid border-black'}`}
+          className={`w-full min-h-[15rem] md:min-h-[30rem] sm:min-h-[20rem] rounded-md lg:min-h-[60vh] !pl-0 !pr-0 relative  ${isToShow ? '' : 'lg:border border-3 border-solid border-black'}`}
         >
           <ReactPlayer
             ref={playerRef}
