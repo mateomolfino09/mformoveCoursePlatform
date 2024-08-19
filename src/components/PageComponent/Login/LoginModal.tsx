@@ -23,6 +23,7 @@ import { IoCloseCircle } from 'react-icons/io5';
 import endpoints from '../../../services/api';
 import { toast } from 'react-toastify';
 import { LoadingSpinner } from '../../LoadingSpinner';
+import { alertTypes } from '../../../constants/alertTypes';
 
 
 
@@ -75,7 +76,7 @@ const LoginModal = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, firstname: name, lastname: name, gender: "", country: "" }),
+        body: JSON.stringify({ email, name, gender: "", country: "" }),
       })
 
       const data = await res.json()
@@ -93,6 +94,21 @@ const LoginModal = () => {
       toast.error(error?.response?.data?.error); 
     }
     setLoading(false);
+  };
+
+  const signinUser = async (email: string, password: string) => {
+    
+    setLoading(true);
+
+    auth.signIn(email, password).then((res: any) => {
+      if(res.type != 'error') {
+        router.push('/home');
+      } 
+      else {
+        setErrorMessage(res.message);
+        setLoading(false);
+      } 
+    })
   };
 
 
@@ -120,13 +136,13 @@ const LoginModal = () => {
     });
   }, []);
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     console.log(data)
     const { name, email, password } = data;
     if(loginForm) {
-      
+      await signinUser(email, password)
     }
-    signupUser(name, email);
+    await signupUser(name, email);
   }
 
   //   flex flex-col space-y-2 py-16 md:space-y-4 h-[75vh] lg:h-[90vh] justify-end lg:items-end mr-12 lg:mr-24
@@ -248,18 +264,18 @@ const LoginModal = () => {
               ) : (
                 <>
                 <form className=" shadow-md rounded px-8 pb-8" onSubmit={handleSubmit(onSubmit)}>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-                      Nombre
-                    </label>
-                    <input className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errorMessage ? 'border-red-500' : ''}`} id="name" type="text" placeholder="fulano" {...register('name', { required: true })} />
-                  </div>
                   <div className="mb-0">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
                       Email
                     </label>
                     <input className={`shadow appearance-none border ${errorMessage ? 'border-red-500' : ''} rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline`} id="email" type="email" placeholder="example@gmail.com" {...register('email', { required: true })} />
                     <p className={`text-red-500 text-xs italic ${errorMessage ? 'block' : 'hidden'}`}>{errorMessage}</p>
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+                      Contraseña
+                    </label>
+                    <input className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errorMessage ? 'border-red-500' : ''}`} type="password" id="password" placeholder="••••••••" {...register('password', { required: true })} />
                   </div>
                   <div className="flex items-center w-ull justify-end relative -top-2 mb-3 text-xs">
                     <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">

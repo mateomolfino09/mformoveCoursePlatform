@@ -16,7 +16,7 @@ connectDB();
 export async function POST(request) {
   try {
     if (request.method === 'POST') {
-      const { email, firstname, lastname, gender, country } =
+      const { email, name, gender, country } =
       await request.json();
       // const validCaptcha = await validateCaptcha(captcha);
 
@@ -26,13 +26,13 @@ export async function POST(request) {
       }
        
       const password = generatePassword(16);
-      console.log(password)
+      console.log(password, email, name, gender, country)
       const HashedPassword = await bcrypt.hash(password, 12);
 
       const newUser = await new Users({
         email: email,
         password: HashedPassword,
-        name: `${firstname} ${lastname}`,
+        name: name,
         gender: gender,
         country: country
       });
@@ -40,7 +40,6 @@ export async function POST(request) {
       newUser.validEmail = 'yes';
       newUser.emailToken = undefined;
       newUser.courses = [];
-      let userClass = [];
 
       newUser.notifications.push({
         title: 'Usuario creado',
@@ -66,6 +65,33 @@ export async function POST(request) {
       });
 
       await newUser.save();
+
+      //SUBSCRIBO A MAILCHIMP PLATFORM
+
+      const MailchimpKey = process.env.MAILCHIMP_API_KEY;
+      const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
+      const MailchimpAudience = process.env.MAILCHIMP_PLATFORM_AUDIENCE_ID;
+  
+      console.log(MailchimpKey,MailchimpServer,  MailchimpAudience)
+    
+      const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpAudience}/members`;
+    
+      const response = await fetch(customUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `apikey ${MailchimpKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email_address: email,
+          merge_fields: {
+              NAME: name,
+              PASSWORD: password
+            },
+          status: "subscribed",
+        }),
+      });
+  
 
       return NextResponse.json({ message: `Te registraste con éxito.`, newUser }, { status: 200 })
     }
