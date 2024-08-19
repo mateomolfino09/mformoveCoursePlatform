@@ -150,6 +150,47 @@ function useProvideAuth() {
 		}
 	};
 
+	const quickSignIn = async (email: string, password: string) => {
+		try {
+			setError(null)
+			const res = await fetch(endpoints.auth.login, {
+				method: 'POST',
+				headers: {  
+				  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ email, password }),
+			  })
+
+			const data = await res.json()
+
+			const { login, token, message, error } = data
+			
+			//get profile
+			if(login) {
+				Cookie.set('userToken', token, { expires: 5})
+				const res = await fetch(endpoints.auth.profile, {
+					method: 'GET',
+					headers: {  
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					},
+					})
+
+
+				const user = await res.json()
+				setUser(user.user)
+				return {message:'Login Exitoso', type: 'success'}
+				
+			}
+			else if(message) return {message: message, type: 'error'} 
+			else return {message: error, type: 'error'};
+			
+		} catch (error: any) {
+			setError(error.response.data.message)
+			return {message: error.response.data.message, type: 'error'} 
+		}
+	};
+
 	const signOut = () => {
 		Cookie.remove('userToken');
 		setUser(null);

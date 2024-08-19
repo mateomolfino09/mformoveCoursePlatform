@@ -20,6 +20,9 @@ import { HiComputerDesktop } from "react-icons/hi2";
 import { useForm } from 'react-hook-form';
 import { CldImage } from 'next-cloudinary';
 import { IoCloseCircle } from 'react-icons/io5';
+import endpoints from '../../../services/api';
+import { toast } from 'react-toastify';
+import { LoadingSpinner } from '../../LoadingSpinner';
 
 
 
@@ -36,6 +39,7 @@ const LoginModal = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [checked, setChecked] = useState(false);
   const [loginForm, setLoginForm] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { register, handleSubmit, formState: { errors,  } } = useForm()
 
@@ -60,6 +64,37 @@ const LoginModal = () => {
   const validateForm = () => {
 
   }
+
+  const signupUser = async (name: string, email: string) => {
+    // const { email, firstname, lastname, gender, country } = register
+    try {
+      setLoading(true);
+
+      const res = await fetch(endpoints.auth.register, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, firstname: name, lastname: name, gender: "", country: "" }),
+      })
+
+      const data = await res.json()
+
+      console.log(data)
+
+      if (res.ok) {
+        toast.success('¡Es hora de verificar tu cuenta!')
+      }
+      else if(data?.error) {
+        toast.error(data.error);
+      }
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error?.response?.data?.error); 
+    }
+    setLoading(false);
+  };
+
 
   const snap = useSnapshot(state);
 
@@ -87,6 +122,11 @@ const LoginModal = () => {
 
   const onSubmit = (data: any) => {
     console.log(data)
+    const { name, email, password } = data;
+    if(loginForm) {
+      
+    }
+    signupUser(name, email);
   }
 
   //   flex flex-col space-y-2 py-16 md:space-y-4 h-[75vh] lg:h-[90vh] justify-end lg:items-end mr-12 lg:mr-24
@@ -139,41 +179,50 @@ const LoginModal = () => {
                 </div>
 
               </div>
-              <form className=" shadow-md rounded px-8 pb-8" onSubmit={handleSubmit(onSubmit)}>
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-                    Nombre
-                  </label>
-                  <input className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errorMessage ? 'border-red-500' : ''}`} id="name" type="text" placeholder="fulano" {...register('name', { required: true })} />
-                </div>
-                <div className="mb-6">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-                    Email
-                  </label>
-                  <input className={`shadow appearance-none border ${errorMessage ? 'border-red-500' : ''} rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline`} id="email" type="email" placeholder="example@gmail.com" {...register('email', { required: true })} />
-                  <p className={`text-red-500 text-xs italic ${errorMessage ? 'block' : 'hidden'}`}>{errorMessage}</p>
-                </div>
-                <div className="flex items-center justify-between h-12">
-                <button
-                type='submit'
-                  className='w-full block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
-                >
-                  <div className="absolute inset-0 w-0 bg-[#13E096] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
-                  <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Registrarme{' '}
-                  </span>
-                </button>
-                </div>
-                <div className="flex items-center mb-1 mt-3">
-                      <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">Al subscribirte estas de acuerdo con nuestras
-                      <a target='_blank' href="/privacy" rel='noopener noreferrer' className="text-blue-600 hover:underline"> Políticas de Privacidad </a>
-                      y 
-                      <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" rel='noopener noreferrer' className="text-blue-600 hover:underline"> Términos y Condiciones</a></label>
+              {loading ? (
+                <>
+                  <LoadingSpinner />
+                </>
+              ) : (
+                <>
+                  <form className=" shadow-md rounded px-8 pb-8" onSubmit={handleSubmit(onSubmit)}>
+                    <div className="mb-4">
+                      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+                        Nombre
+                      </label>
+                      <input className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errorMessage ? 'border-red-500' : ''}`} id="name" type="text" placeholder="fulano" {...register('name', { required: true })} />
+                    </div>
+                    <div className="mb-6">
+                      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                        Email
+                      </label>
+                      <input className={`shadow appearance-none border ${errorMessage ? 'border-red-500' : ''} rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline`} id="email" type="email" placeholder="example@gmail.com" {...register('email', { required: true })} />
+                      <p className={`text-red-500 text-xs italic ${errorMessage ? 'block' : 'hidden'}`}>{errorMessage}</p>
+                    </div>
+                    <div className="flex items-center justify-between h-12">
+                    <button
+                    type='submit'
+                      className='w-full block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
+                    >
+                      <div className="absolute inset-0 w-0 bg-[#13E096] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
+                      <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Registrarme{' '}
+                      </span>
+                    </button>
                     </div>
                     <div className="flex items-center mb-1 mt-3">
-                      <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">¿Ya tenés una cuenta?
-                      <p onClick={() => setLoginForm(true)} className="text-blue-600 underline hover:underline"> Apreta Acá</p></label>
-                    </div>
-            </form>
+                          <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">Al subscribirte estas de acuerdo con nuestras
+                          <a target='_blank' href="/privacy" rel='noopener noreferrer' className="text-blue-600 hover:underline"> Políticas de Privacidad </a>
+                          y 
+                          <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" rel='noopener noreferrer' className="text-blue-600 hover:underline"> Términos y Condiciones</a></label>
+                        </div>
+                        <div className="flex items-center mb-1 mt-3">
+                          <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">¿Ya tenés una cuenta?
+                          <p onClick={() => setLoginForm(true)} className="text-blue-600 underline hover:underline"> Apreta Acá</p></label>
+                        </div>
+                </form>
+                
+                </>
+              )}
             
             </div>
 
@@ -194,39 +243,45 @@ const LoginModal = () => {
                 </div>
 
               </div>
-              <form className=" shadow-md rounded px-8 pb-8" onSubmit={handleSubmit(onSubmit)}>
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-                    Nombre
-                  </label>
-                  <input className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errorMessage ? 'border-red-500' : ''}`} id="name" type="text" placeholder="fulano" {...register('name', { required: true })} />
-                </div>
-                <div className="mb-0">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-                    Email
-                  </label>
-                  <input className={`shadow appearance-none border ${errorMessage ? 'border-red-500' : ''} rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline`} id="email" type="email" placeholder="example@gmail.com" {...register('email', { required: true })} />
-                  <p className={`text-red-500 text-xs italic ${errorMessage ? 'block' : 'hidden'}`}>{errorMessage}</p>
-                </div>
-                <div className="flex items-center w-ull justify-end relative -top-2 mb-3 text-xs">
-                  <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">
-                  <p onClick={() => setLoginForm(false)} className="text-blue-600 hover:underline"> Olvidé mi Contraseña</p></label>
-                </div>
-                <div className="flex items-center justify-between h-12">
-                <button
-                type='submit'
-                  className='w-full block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
-                >
-                  <div className="absolute inset-0 w-0 bg-[#13E096] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
-                  <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Ingresar{' '}
-                  </span>
-                </button>
-                </div>
-                <div className="flex items-center mb-1 mt-3">
-                  <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">¿No tenés una cuenta?
-                  <p onClick={() => setLoginForm(false)} className="text-blue-600 underline"> Apreta Acá</p></label>
-                </div>
-            </form>
+              {loading ? (
+                <LoadingSpinner />
+              ) : (
+                <>
+                <form className=" shadow-md rounded px-8 pb-8" onSubmit={handleSubmit(onSubmit)}>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+                      Nombre
+                    </label>
+                    <input className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errorMessage ? 'border-red-500' : ''}`} id="name" type="text" placeholder="fulano" {...register('name', { required: true })} />
+                  </div>
+                  <div className="mb-0">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                      Email
+                    </label>
+                    <input className={`shadow appearance-none border ${errorMessage ? 'border-red-500' : ''} rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline`} id="email" type="email" placeholder="example@gmail.com" {...register('email', { required: true })} />
+                    <p className={`text-red-500 text-xs italic ${errorMessage ? 'block' : 'hidden'}`}>{errorMessage}</p>
+                  </div>
+                  <div className="flex items-center w-ull justify-end relative -top-2 mb-3 text-xs">
+                    <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">
+                    <p onClick={() => setLoginForm(false)} className="text-blue-600 hover:underline"> Olvidé mi Contraseña</p></label>
+                  </div>
+                  <div className="flex items-center justify-between h-12">
+                  <button
+                  type='submit'
+                    className='w-full block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
+                  >
+                    <div className="absolute inset-0 w-0 bg-[#13E096] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
+                    <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Ingresar{' '}
+                    </span>
+                  </button>
+                  </div>
+                  <div className="flex items-center mb-1 mt-3">
+                    <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">¿No tenés una cuenta?
+                    <p onClick={() => setLoginForm(false)} className="text-blue-600 underline"> Apreta Acá</p></label>
+                  </div>
+              </form>
+                </>
+              )}
             
             </div>
 
