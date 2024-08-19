@@ -38,7 +38,6 @@ const LoginModal = () => {
   const animationPhones = useAnimation();
   const auth = useAuth();
   const [errorMessage, setErrorMessage] = useState(null);
-  const [checked, setChecked] = useState(false);
   const [loginForm, setLoginForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -58,20 +57,12 @@ const LoginModal = () => {
     };
   }, []); //
 
-  const checkHandler = () => {
-    setChecked(!checked)
-  }
-
-  const validateForm = () => {
-
-  }
-
   const signupUser = async (name: string, email: string) => {
     // const { email, firstname, lastname, gender, country } = register
     try {
       setLoading(true);
 
-      const res = await fetch(endpoints.auth.register, {
+      const res = await fetch(endpoints.auth.easyRegister, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -80,17 +71,28 @@ const LoginModal = () => {
       })
 
       const data = await res.json()
+      console.log(data)
+      const { token } = data;
 
       console.log(data)
 
+      //login
+
       if (res.ok) {
-        toast.success('¡Es hora de verificar tu cuenta!')
+        await auth.signInPostRegister(token).then((res: any) => {
+          toast.success('¡Cuenta creada con éxito!')
+          setLoading(false);
+          state.loginForm = false
+        })
       }
       else if(data?.error) {
+        setErrorMessage(data?.error)
         toast.error(data.error);
       }
+
     } catch (error: any) {
       console.log(error);
+      setErrorMessage(error?.response?.data?.error)
       toast.error(error?.response?.data?.error); 
     }
     setLoading(false);
@@ -100,9 +102,10 @@ const LoginModal = () => {
     
     setLoading(true);
 
-    auth.signIn(email, password).then((res: any) => {
+    await auth.signIn(email, password).then((res: any) => {
       if(res.type != 'error') {
-        router.push('/home');
+        toast.success('¡Login Exitoso!')
+        state.loginForm = false
       } 
       else {
         setErrorMessage(res.message);
@@ -142,7 +145,8 @@ const LoginModal = () => {
     if(loginForm) {
       await signinUser(email, password)
     }
-    await signupUser(name, email);
+    else await signupUser(name, email);
+
   }
 
   //   flex flex-col space-y-2 py-16 md:space-y-4 h-[75vh] lg:h-[90vh] justify-end lg:items-end mr-12 lg:mr-24

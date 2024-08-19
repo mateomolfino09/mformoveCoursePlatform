@@ -91,9 +91,24 @@ export async function POST(request) {
           status: "subscribed",
         }),
       });
-  
+      
+      console.log(newUser)
 
-      return NextResponse.json({ message: `Te registraste con éxito.`, newUser }, { status: 200 })
+      const token = jwt.sign(
+        { userId: newUser._id },
+        process.env.NEXTAUTH_SECRET,
+        {
+          expiresIn: '30d'
+        }
+      );
+
+      newUser.token = `${token}`
+      await newUser.save()
+
+      newUser.password = null;
+
+
+      return NextResponse.json({ message: `Te registraste con éxito.`, newUser, token }, { status: 200 })
     }
   } catch (error) {
     console.log(error)

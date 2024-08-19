@@ -150,6 +150,29 @@ function useProvideAuth() {
 		}
 	};
 
+	const signInPostRegister = async (token: string) => {
+		try {
+			setError(null)	
+			Cookie.set('userToken', token, { expires: 5})
+			const res = await fetch(endpoints.auth.profile, {
+				method: 'GET',
+				headers: {  
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				})
+
+
+			const user = await res.json()
+			setUser(user.user)
+			return {message:'Login Exitoso', type: 'success'}
+							
+		} catch (error: any) {
+			setError(error.response.data.message)
+			return {message: error.response.data.message, type: 'error'} 
+		}
+	};
+
 	const quickSignIn = async (email: string, password: string) => {
 		try {
 			setError(null)
@@ -345,6 +368,7 @@ function useProvideAuth() {
 		error,
 		setError,
 		signIn,
+		signInPostRegister,
 		signOut,
 		fetchUser,
 		addCourseToList,
