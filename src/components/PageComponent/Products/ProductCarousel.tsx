@@ -73,8 +73,6 @@ const ProductCarousel = ({ products }: Props) => {
       }
     );
 
-    console.log(arrayOfObjects);
-
     dispatch(setProducts(arrayOfObjects));
     setProductsCar(arrayOfObjects);
   }, [reload]);
@@ -83,8 +81,6 @@ const ProductCarousel = ({ products }: Props) => {
     const ic = filterProductSlice.individualClasses;
     let newArr: any = [];
     setLoading(true);
-
-    console.log(ic);
 
     ic?.forEach((iCGroup: any) => {
       let classesFilter: ProductDB[] = [];
@@ -145,8 +141,6 @@ const ProductCarousel = ({ products }: Props) => {
         newArr.push({ group: iCGroup.group, items: classesFilter });
     });
 
-    console.log(newArr);
-
     // setClasses(newArr)
     setLoading(false);
   }, [
@@ -184,29 +178,6 @@ const ProductCarousel = ({ products }: Props) => {
 
 
   },[productType])
-
- 
-  const showProductPage = async (productId: string): Promise<void> => {
-    try {
-      const response = await fetch(endpoints.product.getOne(productId.toString()), {
-        method: 'GET',
-      });
-      
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-  
-      const data = await response.json();
-      console.log(data.product);
-    } catch (error) {
-      console.error(error);
-    }
-
-    dispatch(setProductId(productId.toString()))
-    router.push('/admin/products/individualProduct')
-  };
-
-
 
 
   return (

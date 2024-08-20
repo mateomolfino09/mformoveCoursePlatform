@@ -25,6 +25,8 @@ import Module from './Module';
 import VideoPlayer from './VideoPlayer';
 import ReactPlayer from 'react-player';
 import state from '../../../valtio';
+import { LoadingSpinner } from '../../LoadingSpinner';
+import { MiniLoadingSpinner } from './MiniSpinner';
 
 interface Props {
   product: ProductDB;
@@ -43,6 +45,19 @@ const IndividualProduct = ({ product }: Props) => {
 
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  useEffect(() => {
+    const cookies: any = Cookies.get('userToken')
+    
+    if (!cookies) {
+    }
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+
+  }, [auth.user]);
+
 
   const checkLogin = () => {
     if(!auth.user) {
@@ -77,7 +92,8 @@ const IndividualProduct = ({ product }: Props) => {
             'Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo',
           currency: 'USD',
           amount: 10,
-          frequency_type: 'MONTHLY'
+          frequency_type: 'MONTHLY',
+          back_url: `/products/${product.url}`
         },
         config
       );
@@ -100,8 +116,6 @@ const IndividualProduct = ({ product }: Props) => {
 
       Cookies.set('userPaymentToken', token ? token : '', { expires: 5 });
       auth.fetchUser();
-
-      toast.success(data.message);
       const redirectPaymentLink = data?.response?.redirect_url;
       if (res.status == 200) {
         router.push(redirectPaymentLink);
@@ -165,9 +179,20 @@ const IndividualProduct = ({ product }: Props) => {
               onClick={(e) => handleSubmit()}
               className='w-full hidden md:block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
             >
-              <div className="absolute inset-0 w-0 bg-[#13E096] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
-              <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Comprar Ahora{' '} ({product.price} {product.currency})
-              </span>
+          
+              {loading ? (
+                <div className='w-full h-5 flex justify-center items-center'>
+                  <MiniLoadingSpinner />
+
+                </div>
+              ) : (
+                <>
+                  <div className="absolute inset-0 w-0 bg-[#13E096] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
+                  <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Comprar Ahora{' '} ({product.price} {product.currency})
+                  </span> 
+   
+                </>
+              )}
             </button>
               <p className='text-black text-lg  md:text-lg font-normal'>{product.longDescription}</p>
             </div>

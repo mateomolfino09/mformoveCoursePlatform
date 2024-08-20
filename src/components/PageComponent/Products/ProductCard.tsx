@@ -3,7 +3,6 @@ import { ProductDB } from '../../../../typings'
 import Image from 'next/image'
 import { CldImage } from 'next-cloudinary'
 import { AcademicCapIcon } from '@heroicons/react/24/solid'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation';
 
 interface Props {
