@@ -262,6 +262,24 @@ function useProvideAuth() {
 		}
 	  };
 
+	  const forgetPasswordSendNoCaptcha = async (email: string) => {
+		try {	
+			const res = await fetch(endpoints.auth.resetPasswordSendNoCaptcha, {
+				method: 'POST',
+				headers: {  
+				  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ email }),
+			  })
+
+			const data = await res.json()
+			console.log(data)
+			return data
+		} catch (error) {
+		  setUser(null);
+		}
+	  };
+
 	  const resetMailSend = async (email: string) => {
 		try {	
 			const res = await fetch(endpoints.auth.resetMailSend, {
@@ -379,6 +397,7 @@ function useProvideAuth() {
 		resetMail,
 		resetMailSend,
 		forgetPasswordSend,
+		forgetPasswordSendNoCaptcha,
 		newSub,
 		cancelSub,
 		newMembership
