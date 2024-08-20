@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import mailchimp from '@mailchimp/mailchimp_transactional';
 
 interface Options {
   to: string;
@@ -8,6 +9,8 @@ interface Options {
   name: string
   message: string
 }
+
+const mailchimpClient = mailchimp(process.env.MAILCHIMP_TRANSACTIONAL_API_KEY ? process.env.MAILCHIMP_TRANSACTIONAL_API_KEY : "");
 
 const CONTACT_MESSAGE_FIELDS: any = {
   title: '',
@@ -37,27 +40,36 @@ const generateEmailContent = (data: any) => {
 
 export const sendEmail = async (options: Options) => {
   const email = process.env.EMAIL_FROM;
-  const pass = process.env.EMAIL_SERVER_PASSWORD;
+  const name = process.env.EMAIL_SERVER_PASSWORD;
   const mailOptions: any = {
-    from: process.env.EMAIL_FROM,
+    from_email: process.env.EMAIL_FROM,
+    from_name: process.env.EMAIL_FROM_NAME,
     to: options.to,
     ...generateEmailContent(options),
     subject: options.subject
   };
 
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: email,
-      pass
-    }
+  const response = await mailchimpClient.messages.send({
+    message: {
+      ...mailOptions,
+    },
   });
 
-  transporter.sendMail(mailOptions, function (err, info) {
-    if (err) {
-      console.log('error', err);
-    } else {
-      console.log('info', info);
-    }
-  });
+  console.log(response)
+
+  // const transporter = nodemailer.createTransport({
+  //   service: 'gmail',
+  //   auth: {
+  //     user: email,
+  //     pass
+  //   }
+  // });
+
+  // transporter.sendMail(mailOptions, function (err, info) {
+  //   if (err) {
+  //     console.log('error', err);
+  //   } else {
+  //     console.log('info', info);
+  //   }
+  // });
 };

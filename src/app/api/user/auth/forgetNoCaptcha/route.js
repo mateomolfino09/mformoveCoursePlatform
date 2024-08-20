@@ -5,8 +5,11 @@ import User from '../../../../../models/userModel';
 import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
 import {validateRecaptcha} from '../../../recaptcha/validate';
+import mailchimp from '@mailchimp/mailchimp_transactional';
+import Mailgen from 'mailgen'
 
 connectDB();
+const mailchimpClient = mailchimp(process.env.MAILCHIMP_TRANSACTIONAL_API_KEY);
 
 export async function POST(req) {
     try {
@@ -18,6 +21,17 @@ export async function POST(req) {
       if (!user) {
         return NextResponse.json({ error: 'No hemos encontrado ningún usuario con ese email'}, { status: 404 })
       }
+
+      const intro = "Resetear contraseña" || '';
+      const content = "Restablezcamos tu contraseña para que puedas seguir disfrutando de MForMove" || '';
+
+      const emailObj = {
+        body: {
+            name: user.name || 'Customer',
+            intro,
+            outro: content,
+        },
+      };
 
       const token = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
         expiresIn: '30d'
@@ -50,6 +64,9 @@ export async function POST(req) {
         to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
         subject: 'Resetear contraseña'
       });
+
+
+      console.log(resp)
 
       return NextResponse.json({ message: `Se ha enviado un mail a ${user.email}, revisa tu correo porfavor.`}, { status: 200 })
     }

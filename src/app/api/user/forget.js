@@ -6,6 +6,8 @@ import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
 
 connectDB();
+const mailchimpClient = mailchimp(process.env.MAILCHIMP_TRANSACTIONAL_API_KEY);
+
 
 const forget = async (req, res) => {
   try {
@@ -50,15 +52,31 @@ const forget = async (req, res) => {
        <hr style="height:2px;background-color:#221f1f;border:none">       
       </div> `;
 
-      let resp = sendEmail({
-        title: title,
-        name: `Hola, ${user.name}:`,
-        content:
-          'Restablezcamos tu contraseña para que puedas seguir disfrutando Video Stream.',
-        message: message,
-        to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
-        subject: 'Resetear contraseña'
+      const response = await mailchimpClient.messages.send({
+        message: {
+          from_email: 'noreply@mateomove.com', // Replace with your sender email
+          subject: 'Resetear contraseña',
+          text: message,
+          to: [
+            {
+              email: 'noreply@mateomove.com',
+              type: 'to',
+            },
+          ],
+        },
       });
+
+      console.log(response)
+
+      // let resp = sendEmail({
+      //   title: title,
+      //   name: `Hola, ${user.name}:`,
+      //   content:
+      //     'Restablezcamos tu contraseña para que puedas seguir disfrutando Video Stream.',
+      //   message: message,
+      //   to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
+      //   subject: 'Resetear contraseña'
+      // });
 
       return res.status(200).json({
         message: `Se ha enviado un mail a ${user.email}, revisa tu correo porfavor.`
