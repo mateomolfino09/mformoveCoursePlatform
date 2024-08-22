@@ -47,7 +47,7 @@ function LoginForm() {
 
     auth.signIn(email, password).then((res: any) => {
       if(res.type != 'error') {
-        router.push('/home');
+        router.push('/products');
       } 
       else {
         setMessage((current: any) => [...current, {

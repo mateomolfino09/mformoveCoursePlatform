@@ -1,4 +1,5 @@
-import React from 'react'
+'use client'
+import React, { useEffect } from 'react'
 import { ClassTypes, ProductDB} from '../../../../typings'
 import MainSideBar from '../../MainSideBar'
 import Head from 'next/head'
@@ -6,6 +7,9 @@ import Footer from '../../Footer'
 import ProductCarousel from './ProductCarousel'
 import ProductsFilters from '../ProductFiltersBoard'
 import FilterNavProductWrapper from '../../FilterNavProductWrapper'
+import Cookies from 'js-cookie'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '../../../hooks/useAuth'
 
 interface Props {
     products: ProductDB[]
@@ -13,6 +17,18 @@ interface Props {
 }
 
 const Products = ({ products, filters }: Props) => {
+
+  const router = useRouter()
+  const auth = useAuth()
+
+  useEffect(() => {
+    
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+
+  }, [auth.user]);
+
   return (
     <div className='relative bg-to-dark lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
     >    

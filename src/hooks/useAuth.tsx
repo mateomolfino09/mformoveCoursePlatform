@@ -67,7 +67,6 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json();
-			console.log(data)
 			setUser(data.user);
 		} catch (error) {
 		}
@@ -103,7 +102,6 @@ function useProvideAuth() {
 
 			const data = await res.json();
 
-			console.log(data.user)
 			setUser(data.user);
 		} catch (error) {
 		}
@@ -134,6 +132,8 @@ function useProvideAuth() {
 						'Authorization': `Bearer ${token}`
 					},
 					})
+
+				
 
 
 				const user = await res.json()
@@ -224,7 +224,6 @@ function useProvideAuth() {
 	}
 
 	const resetPassword = async (pass: string, conPass: string, token: string) => {
-		console.log(pass, conPass)
 		try {	
 			const res = await fetch(endpoints.auth.resetPassword(token), {
 				method: 'PUT',
@@ -255,7 +254,6 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json()
-			console.log(data)
 			return data
 		} catch (error) {
 		  setUser(null);
@@ -273,7 +271,6 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json()
-			console.log(data)
 			return data
 		} catch (error) {
 		  setUser(null);
@@ -291,7 +288,6 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json()
-			console.log(data)
 			return data
 		} catch (error) {
 		  setUser(null);
@@ -309,7 +305,6 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json()
-			console.log(data)
 			signOut()
 			setUser(null)
 			return data
@@ -322,7 +317,6 @@ function useProvideAuth() {
 
 	  const newSub = async (idUser: string) => {
 		if(!idUser) return
-		console.log(idUser)
 		try {	
 			const res = await fetch(endpoints.payments.createSub, {
 				method: 'PUT',
@@ -342,7 +336,6 @@ function useProvideAuth() {
 
 	  const cancelSub = async (planId: string, subscriptionId: string, id: string) => {
 		try {
-			console.log(planId, subscriptionId)
 			const res = await fetch(endpoints.payments.cancelSubscription(subscriptionId), {
 				method: 'PUT',
 				headers: {  
@@ -363,7 +356,6 @@ function useProvideAuth() {
 
 	  const newMembership = async (idUser: string, paymentToken:string) => {
 		if(!idUser) return
-		console.log(idUser)
 		try {	
 			const res = await fetch(endpoints.payments.createMembership, {
 				method: 'PUT',
