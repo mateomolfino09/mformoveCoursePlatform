@@ -43,6 +43,8 @@ const endpoints = {
     editPlan: `/api/payments/editPlan`,
     createSub: `/api/payments/createSubscription`,
     createMembership: `/api/payments/oneTimePayment/createMembership`,
+    createProductUser: `/api/payments/oneTimePayment/createProductUser`,
+
     createPaymentToken: `/api/payments/createPaymentToken`,
     cancelSubscription: (id:string) => `/api/payments/cancelSubscription/${id}`
   },

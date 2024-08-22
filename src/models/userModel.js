@@ -180,6 +180,7 @@ const userSchema = new mongoose.Schema(
     }],
     subscription: subscriptionSchema,
     memberShip: { token: String, productId: String },
+    productToken: { token: String, productId: String },
   },
   { timestamps: true }
 );

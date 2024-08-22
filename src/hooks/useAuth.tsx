@@ -366,8 +366,27 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json()
-			setUser(data)
+			setUser(data.user)
 			return data
+		} catch (error) {
+			return error
+		}
+	  };
+
+	  const newProductUser = async (idUser: string, paymentToken:string, productId: string) => {
+		if(!idUser) return
+		try {	
+			const res = await fetch(endpoints.payments.createProductUser, {
+				method: 'PUT',
+				headers: {  
+				  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ idUser, paymentToken, productId }),
+			  })
+
+			const data = await res.json()
+			setUser(data.user)
+			return data;
 		} catch (error) {
 			return error
 		}
@@ -392,6 +411,7 @@ function useProvideAuth() {
 		forgetPasswordSendNoCaptcha,
 		newSub,
 		cancelSub,
-		newMembership
+		newMembership,
+		newProductUser
 	  };
 }

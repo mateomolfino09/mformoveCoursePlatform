@@ -87,13 +87,12 @@ const IndividualProduct = ({ product }: Props) => {
       const { data } = await axios.post(
         '/api/payments/oneTimePayment',
         {
-          name: 'Ejemplo 2 ',
-          description:
-            'Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo 2 Ejemplo',
+          name: product.name,
+          description:product.phraseName,
           currency: 'USD',
-          amount: 10,
-          frequency_type: 'MONTHLY',
-          back_url: `/products/${product.url}`
+          amount: product.price,
+          back_url: `/products/${product.url}`,
+          success_url: `/products/${product.url}/success-payment`
         },
         config
       );
@@ -101,11 +100,15 @@ const IndividualProduct = ({ product }: Props) => {
       dispatch(setOnePaymentToken(token));
      
 
-      const userId = '65f6ea07aa3f6e1ac4464579';
+      const userId = auth?.user._id;
       const productId = product?._id;
 
+      if(!userId || !productId) {
+        toast.error('El usuario o producto tienen un error. Comunicate con soporte.')
+      }
+
       const res = await axios.put(
-        '/api/user/memberships/asignMembershipToken',
+        '/api/user/product/assignToken',
         {
           userId,
           token,

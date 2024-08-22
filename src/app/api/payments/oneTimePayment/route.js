@@ -9,7 +9,7 @@ import dLocalApi from '../dlocalTest';
 connectDB();
 
 export async function POST(req) {
-  const { name, description, currency, amount, frequency_type, back_url } =
+  const { name, description, currency, amount, back_url, success_url } =
     await req.json();
 
   try {
@@ -23,11 +23,10 @@ export async function POST(req) {
             {
               name:name,
               currency: currency,
-              amount: 10,
-              country: 'UY',
+              amount: +amount,
               order_id: Math.floor(Math.random() * 500),//incrementar manualmente
               description: description,
-              success_url: `${origin}/oneTimePaymentSucces`,
+              success_url: `${origin}${success_url}`,
               back_url: `${origin}${back_url}`,
               notification_url: 'https://example.com/notifications',
               error_url:'https://www.youtube.com/watch?v=pfbQwKZTL-o&ab_channel=davus'
