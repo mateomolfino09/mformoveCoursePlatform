@@ -35,7 +35,10 @@ export async function POST(req: NextRequest) {
               name: `Hola, ${user.name}:`,
               content: contenido,
               message: message,
-              to: `MForMove te envió este mensaje a [${user.email}] como parte de tu membresía.`,
+              to: [{
+                email: user.email,
+                name: user.name
+              }], 
               subject: subject,
             });
         })

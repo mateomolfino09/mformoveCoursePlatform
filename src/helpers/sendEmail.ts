@@ -17,7 +17,6 @@ const CONTACT_MESSAGE_FIELDS: any = {
   name: '',
   content: '',
   message: '',
-  to: '',
   subject: 'Asunto:'
 };
 

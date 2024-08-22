@@ -55,7 +55,10 @@ export async function POST(req) {
         content:
           'Restablezcamos tu contraseña para que puedas seguir disfrutando Video Stream.',
         message: message,
-        to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
+        to: [{
+          email: user.email,
+          name: user.name
+        }],        
         subject: 'Resetear contraseña'
       });
 

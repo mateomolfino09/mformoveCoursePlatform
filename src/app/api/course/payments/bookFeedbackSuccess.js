@@ -102,7 +102,10 @@ const bookFeedbackSuccess = async (req, res) => {
         name: `Hola, ${user.name}:`,
         content: `Has adquirido el Curso "${course.name}" con número de órden ${merchant_order_id} e Id de Pago ${payment_id}`,
         message: message,
-        to: `Lavis te envió este mensaje a [${user.email}] como parte de tu membresía.`,
+        to: [{
+          email: user.email,
+          name: user.name
+        }], 
         subject: `Órden nro ${merchant_order_id}`
       });
 

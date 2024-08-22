@@ -145,7 +145,7 @@ const IndividualProduct = ({ product }: Props) => {
   }, [])
 
   return (
-    <div className='relative bg-to-dark font-montserrat lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden scrollbar-thin'>
+    <div className='relative bg-to-dark font-montserrat lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'>
     <MainSideBar where={'product'}>
     <main className='pt-32 bg-white'>
         <div className='product-details flex flex-col space-y-12 lg:flex-row'>

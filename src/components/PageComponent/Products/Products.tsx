@@ -14,9 +14,9 @@ interface Props {
 
 const Products = ({ products, filters }: Props) => {
   return (
-    <div className='scrollbar-thin relative bg-to-dark lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
+    <div className='relative bg-to-dark lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
     >    
-    <MainSideBar where={'home'}>
+    <MainSideBar where={'productsHome'}>
       <FilterNavProductWrapper>
         <Head>
         <title>Video Streaming</title>

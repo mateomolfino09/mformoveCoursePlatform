@@ -42,7 +42,7 @@ const Index = () => {
 
   return (
     <AnimatePresence>
-        <div className='h-screen bg-gradient-to-b lg:h-[100vh] overflow-hidden'>
+        <div className='h-screen bg-gradient-to-b lg:h-[100vh] overflow-hidden font-montserrat'>
         <MainSideBar where={"index"}>
           <Head>
             <title>MforMove Platform</title>

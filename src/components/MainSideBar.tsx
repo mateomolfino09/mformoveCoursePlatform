@@ -47,7 +47,7 @@ const MainSideBar = ({ children, where }: Props) => {
   // }, []);
   return (
     <div className='absolute w-full h-full '>
-      {where === "home" && (
+      {where === "home" || where === "productsHome" && (
         <HeaderHome user={auth.user} toggleNav={toggleNav} />
       )}
       {where === "index" && ( 
@@ -57,7 +57,7 @@ const MainSideBar = ({ children, where }: Props) => {
       <ProductHeader user={auth.user} toggleNav={toggleNav} />
       )}
       {showNav ? (
-        <MainSideBarDash showNav={showNav} />
+        <MainSideBarDash showNav={showNav} where={where} toggleNav={toggleNav}/>
       ) : (
         <>
         </>

@@ -10,7 +10,7 @@ const FooterProfile = () => {
 const auth = useAuth()
 
   return (
-    <div className='bg-rich-black w-full h-auto md:h-72 flex flex-col md:flex-row justify-start md:justify-between scrollbar-hide space-x-12 overflow-hidden relative bottom-0'>
+    <div className='bg-soft-black w-full h-auto md:h-72 flex flex-col md:flex-row justify-start md:justify-between scrollbar-hide space-x-12 overflow-hidden relative bottom-0'>
         <div className='text-white flex flex-col md:flex-col pt-12 pl-8 '>
             <h3 className='text-base md:text-lg mb-2'>Newsletter: </h3>
             <div className='border-b-white border-b-[1px] flex md:w-full w-80  group mb-2'>
@@ -34,9 +34,9 @@ const auth = useAuth()
                 </Link>
                 {auth.user ? (
 
-                <Link href={'/account'}>
+                <a href={'/account'}>
                     <h4 className='font-light text-sm md:text-base'>Mi Cuenta</h4>
-                </Link>
+                </a>
                 ) : (
                 <Link href={'/login'}>
                 <h4 className='font-light text-sm md:text-base'>Log In</h4>

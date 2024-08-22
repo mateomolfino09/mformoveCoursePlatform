@@ -16,9 +16,11 @@ import { useSnapshot } from 'valtio';
 
 interface Props {
   showNav: boolean;
+  where: any
+  toggleNav: any
 }
 
-const MainSideBarDash = ({ showNav }: Props) => {
+const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const animation = useAnimation();
@@ -155,7 +157,7 @@ const MainSideBarDash = ({ showNav }: Props) => {
             </h1>
           </m.div>
         </Link>
-        {!auth.user ? (
+        {!auth.user && where != "products" && where != "productsHome" ? (
           <Link href={'/login'}>
             <m.div
               initial={{ color: '#fff', x: 700 }}
@@ -178,27 +180,51 @@ const MainSideBarDash = ({ showNav }: Props) => {
           </Link>
         ) : (
           <>
-            <Link href={'/account'}>
-              <m.div
-                initial={{ color: '#fff', x: 700 }}
-                animate={+windowWidth < 768 ? animationPhones : animation}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = '#fff';
-                }}
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = '#d1cfcf6e')
-                }
-                onClick={(e) => {
-                  e.currentTarget.style.color = '#fff';
-                }}
-                className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
-              >
-                <h2 className='font-light lg:text-xl'>Perfil</h2>
-                <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
-                  Mi Cuenta
-                </h1>
+            {where == "products" || where == "productsHome" ? (
+              <>
+                <m.div
+                  initial={{ color: '#fff', x: 700 }}
+                  animate={+windowWidth < 768 ? animationPhones : animation}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = '#fff';
+                  }}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
+                  onClick={(e) => {
+                    e.currentTarget.style.color = '#fff';
+                    toggleNav()
+                    state.loginForm = true
+                  }}
+                  className='flex flex-col justify-end items-end  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+                >
+                  <h2 className='font-light lg:text-xl'>Login</h2>
+                  <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
+                    Ingresar al sitio
+                  </h1>
               </m.div>
-            </Link>
+              </>
+            ) : (
+              <a href={'/account'}>
+                <m.div
+                  initial={{ color: '#fff', x: 700 }}
+                  animate={+windowWidth < 768 ? animationPhones : animation}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = '#fff';
+                  }}
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = '#d1cfcf6e')
+                  }
+                  onClick={(e) => {
+                    e.currentTarget.style.color = '#fff';
+                  }}
+                  className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+                >
+                  <h2 className='font-light lg:text-xl'>Perfil</h2>
+                  <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
+                    Mi Cuenta
+                  </h1>
+                </m.div>
+              </a>
+            )}
           </>
         )}
 

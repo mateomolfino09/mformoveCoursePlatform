@@ -11,7 +11,7 @@ interface Props {
 
 const Privacy = () => {
   return (
-    <div className='scrollbar-thin relative bg-white lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
+    <div className='relative bg-white lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
     >    
     <MainSideBar where={'product'}>
       <FilterNavProductWrapper>
