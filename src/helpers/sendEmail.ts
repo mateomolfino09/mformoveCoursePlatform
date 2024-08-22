@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import mailchimp from '@mailchimp/mailchimp_transactional';
 
 interface Options {
-  to: string;
+  to: any;
   subject: string;
   title: string
   content: string
@@ -40,10 +40,11 @@ const generateEmailContent = (data: any) => {
 
 export const sendEmail = async (options: Options) => {
   const email = process.env.EMAIL_FROM;
-  const name = process.env.EMAIL_SERVER_PASSWORD;
+  const name = process.env.EMAIL_FROM_NAME;
+  console.log(email, name)
   const mailOptions: any = {
-    from_email: process.env.EMAIL_FROM,
-    from_name: process.env.EMAIL_FROM_NAME,
+    from_email: email,
+    from_name: name,
     to: options.to,
     ...generateEmailContent(options),
     subject: options.subject

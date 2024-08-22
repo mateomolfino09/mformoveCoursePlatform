@@ -51,7 +51,7 @@ export async function POST(req) {
         <a style="color:white; text-decoration: none; font-weight:700; font-size:14px" href="${link}">Restablecer contraseña</a>
        </button>
        </div>
-       <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de Video Stream.</p>
+       <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de MForMove.</p>
        <hr style="height:2px;background-color:#221f1f;border:none">       
       </div> `;
 
@@ -59,9 +59,12 @@ export async function POST(req) {
         title: title,
         name: `Hola, ${user.name}:`,
         content:
-          'Restablezcamos tu contraseña para que puedas seguir disfrutando Video Stream.',
+          'Restablezcamos tu contraseña para que puedas seguir disfrutando de MForMove.',
         message: message,
-        to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
+        to: [{
+          email: user.email,
+          name: user.name
+        }],
         subject: 'Resetear contraseña'
       });
 
