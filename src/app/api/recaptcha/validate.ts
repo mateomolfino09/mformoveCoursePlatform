@@ -2,7 +2,6 @@ import axios from 'axios';
 import { NextResponse } from 'next/server';
 
 export async function validateRecaptcha(formData: string) {
-    console.log('hola')
     let res
     try {
         res = await axios.post(

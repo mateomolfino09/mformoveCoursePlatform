@@ -52,7 +52,7 @@ function Profile() {
   ).length;
 
   return (
-    <div className='main-container '>
+    <div className='main-container font-montserrat'>
       <main className='sub-main-container h-screen'>
         <div className='title-container'>
           <h1 className='title text-black font-light'>Mi Cuenta</h1>

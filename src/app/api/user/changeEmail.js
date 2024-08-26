@@ -45,7 +45,10 @@ const changeEmail = async (req, res) => {
         content:
           'Restablezcamos tu email para que puedas seguir disfrutando de Video Stream.',
         message: message,
-        to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
+        to: [{
+          email: user.email,
+          name: user.name
+        }], 
         subject: 'Resetear Email'
       });
 

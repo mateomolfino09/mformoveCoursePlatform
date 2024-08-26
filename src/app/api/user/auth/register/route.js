@@ -78,7 +78,10 @@ export async function POST(request) {
         content:
           'Confirma tu email para poder empezar a disfrutar de Video Stream.',
         message: message,
-        to: `Video Stream te envió este mensaje a [${newUser.email}] como parte de tu membresía.`,
+        to: [{
+          email: newUser.email,
+          name: newUser.name
+        }], 
         subject: 'Confirmar Mail'
       });
 

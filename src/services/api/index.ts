@@ -5,12 +5,14 @@ const endpoints = {
     profile: `/api/user/auth/profile`,
     verifyEmail: (email: string) => `/api/user/auth/email/verifyEmail/${email}`,
     email: (token: string) => `/api/user/auth/email/${token}`,
+    easyRegister: '/api/user/auth/easyRegister',
     register: '/api/user/auth/register',
     resend: '/api/user/auth/register/resendEmail',
     resetMail: (token: string) =>  `/api/user/auth/resetEmail/${token}`,
     resetMailSend: `/api/user/auth/resetEmail`,
     resetPassword: (token: string) =>  `/api/user/auth/reset/${token}`,
     resetPasswordSend: `/api/user/auth/forget`,
+    resetPasswordSendNoCaptcha: `/api/user/auth/forgetNoCaptcha`,
 
   },
   user: {
@@ -41,6 +43,8 @@ const endpoints = {
     editPlan: `/api/payments/editPlan`,
     createSub: `/api/payments/createSubscription`,
     createMembership: `/api/payments/oneTimePayment/createMembership`,
+    createProductUser: `/api/payments/oneTimePayment/createProductUser`,
+
     createPaymentToken: `/api/payments/createPaymentToken`,
     cancelSubscription: (id:string) => `/api/payments/cancelSubscription/${id}`
   },
@@ -48,6 +52,10 @@ const endpoints = {
     emailMarketing: '/api/admin/emailMarketing'
   },
   product: {
+    delete: (productId: string) => `/api/product/delete/${productId}`,
+    getOne: (productId: string) => `/api/product/viewProduct/${productId}`
+  },
+  freeProduct: {
     delete: (productId: string) => `/api/product/delete/${productId}`,
     getOne: (productId: string) => `/api/product/viewProduct/${productId}`
   },

@@ -93,7 +93,10 @@ const bookFeedbackPending = async (req, res) => {
         name: `Hola, ${user.name}:`,
         content: `El pago del curso "${course.name}" está pendiente.`,
         message: message,
-        to: `Lavis te envió este mensaje a [${user.email}] como parte de tu membresía.`,
+        to: [{
+          email: user.email,
+          name: user.name
+        }], 
         subject: `Órden nro ${merchant_order_id}`
       });
 

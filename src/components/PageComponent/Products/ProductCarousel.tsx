@@ -16,6 +16,7 @@ import {  setProductId } from '../../../redux/features/productId';
 import { redirect } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
+import ProductCard from './ProductCard';
 
 interface Props {
   products: ProductDB[];
@@ -72,8 +73,6 @@ const ProductCarousel = ({ products }: Props) => {
       }
     );
 
-    console.log(arrayOfObjects);
-
     dispatch(setProducts(arrayOfObjects));
     setProductsCar(arrayOfObjects);
   }, [reload]);
@@ -82,8 +81,6 @@ const ProductCarousel = ({ products }: Props) => {
     const ic = filterProductSlice.individualClasses;
     let newArr: any = [];
     setLoading(true);
-
-    console.log(ic);
 
     ic?.forEach((iCGroup: any) => {
       let classesFilter: ProductDB[] = [];
@@ -144,8 +141,6 @@ const ProductCarousel = ({ products }: Props) => {
         newArr.push({ group: iCGroup.group, items: classesFilter });
     });
 
-    console.log(newArr);
-
     // setClasses(newArr)
     setLoading(false);
   }, [
@@ -184,85 +179,16 @@ const ProductCarousel = ({ products }: Props) => {
 
   },[productType])
 
- 
-  const showProductPage = async (productId: string): Promise<void> => {
-    try {
-      const response = await fetch(endpoints.product.getOne(productId.toString()), {
-        method: 'GET',
-      });
-      
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-  
-      const data = await response.json();
-      console.log(data.product);
-    } catch (error) {
-      console.error(error);
-    }
-
-    dispatch(setProductId(productId.toString()))
-    router.push('/admin/products/individualProduct')
-  };
-
-
-
 
   return (
-    <div className='flex flex-col space-y-3 py-16 justify-end lg:items-end mr-12 lg:mr-24 overflow-hidden'>
-      <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
-     
+    <div className='flex flex-col space-y-3 py-16 justify-end lg:items-end pr-4 lg:mr-24 overflow-hidden'>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 lg:gap-12 ml-4 md:ml-20 lg:ml-28'>
         {filteredProducts.map((item: ProductDB) => (
-        
-          <>
+          <div key={item._id}>
+
+            <ProductCard product={item}/>
           
-            <div
-              key={item._id}
-              style={styleCard}
-              className={`bg-white p-4 rounded-lg shadow-md p-0`}
-              onClick={()=>showProductPage( item._id)}
-            >
-              <center>
-                <img
-                  src={
-                    'https://img.freepik.com/foto-gratis/vista-posterior-mujer-haciendo-yoga-al-aire-libre_23-2148769551.jpg'
-                  }
-                  alt={item.name}
-                 // loader={imageLoader}
-                  width={"100%"}
-                  height={"200px"}
-                  style={styleImage}
-                />
-              </center>
-              <div className='p-4'>
-                <div>
-                  <p className='text-lg font-bold mb-2 text-gray-600 mt-3'>
-                    {item.name}
-                  </p>
-                </div>
-                <div className='text-sm text-gray-600 text-wrap'>
-                  {' '}
-                  {/* Added the 'text-sm' class here */}
-                  <p>{item.description}</p>
-                </div>
-                <div className='flex justify-between items-center mt-4'>
-                  <p className='text-sm text-gray-600'>
-                    Price: {item.price} {item.currency}
-                  </p>
-                  <p className='text-sm text-gray-600'>Likes: {item.likes}</p>
-                </div>
-                <div className='mt-4'>
-                 {/*  <a
-                    href={item?.paymentLink}
-                    className='text-blue-500 hover:underline'
-                  >
-                    Payment Link
-                  </a> */}
-                  <p   className='text-blue-500 hover:underline'>Payment Link</p>
-                </div>
-              </div>
-            </div>
-          </>
+          </div>
           
         ))}
       </div>

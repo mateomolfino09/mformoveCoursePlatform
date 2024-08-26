@@ -11,7 +11,7 @@ const ProfileHeader = () => {
   const router = useRouter();
 
   return (
-    <motion.header className={`bg-rich-black `} initial={{ opacity: 0 }} transition={{ duration: 0.8, ease: 'linear' }} animate={{ opacity: 1 }}>
+    <motion.header className={`bg-soft-black `} initial={{ opacity: 0 }} transition={{ duration: 0.8, ease: 'linear' }} animate={{ opacity: 1 }}>
     <Link href='/home'>
       <img
         src='/images/MFORMOVE_blanco03.png'

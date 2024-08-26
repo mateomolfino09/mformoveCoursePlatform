@@ -228,11 +228,11 @@ function Course({ clase, user, courseDB, questions }: Props) {
               <div className='w-full h-full lg:w-2/3'>
                 <VideoPlayer
                   url={`https://www.youtube.com/embed/${clase.class_code}?controls=1`}
-                  clase={clase}
+                  title={clase.name ?? clase.name}
                   img={courseDB.image_url}
-                  courseUser={courseUser}
                   setPlayerRef={(val: any) => setPlayerRef(val)}
                   play={play}
+                  isToShow={false}
                 />
               </div>
             </>

@@ -9,7 +9,6 @@ import { toggleScroll } from '../../../redux/features/headerHomeSlice';
 import Footer from '../../Footer';
 import { LoadingSpinner } from '../../LoadingSpinner';
 import MainSideBar from '../../MainSideBar';
-import MainSideBarDash from '../../MainSideBarDash';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { motion as m } from 'framer-motion';
 import Image from 'next/image';

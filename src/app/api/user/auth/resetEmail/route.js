@@ -46,7 +46,10 @@ export async function POST(req) {
         content:
           'Restablezcamos tu email para que puedas seguir disfrutando de Video Stream.',
         message: message,
-        to: `Video Stream te envió este mensaje a [${user.email}] como parte de tu membresía.`,
+        to: [{
+          email: user.email,
+          name: user.name
+        }], 
         subject: 'Resetear Email'
       });
       return NextResponse.json({ message: `Email enviado a ${user.email}, porfavor checkea tu email`}, { status: 200 })

@@ -67,7 +67,6 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json();
-			console.log(data)
 			setUser(data.user);
 		} catch (error) {
 		}
@@ -103,13 +102,78 @@ function useProvideAuth() {
 
 			const data = await res.json();
 
-			console.log(data.user)
 			setUser(data.user);
 		} catch (error) {
 		}
 	  };
 
 	const signIn = async (email: string, password: string) => {
+		try {
+			setError(null)
+			const res = await fetch(endpoints.auth.login, {
+				method: 'POST',
+				headers: {  
+				  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ email, password }),
+			  })
+
+			const data = await res.json()
+
+			const { login, token, message, error } = data
+			
+			//get profile
+			if(login) {
+				Cookie.set('userToken', token, { expires: 5})
+				const res = await fetch(endpoints.auth.profile, {
+					method: 'GET',
+					headers: {  
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					},
+					})
+
+				
+
+
+				const user = await res.json()
+				setUser(user.user)
+				return {message:'Login Exitoso', type: 'success'}
+				
+			}
+			else if(message) return {message: message, type: 'error'} 
+			else return {message: error, type: 'error'};
+			
+		} catch (error: any) {
+			setError(error.response.data.message)
+			return {message: error.response.data.message, type: 'error'} 
+		}
+	};
+
+	const signInPostRegister = async (token: string) => {
+		try {
+			setError(null)	
+			Cookie.set('userToken', token, { expires: 5})
+			const res = await fetch(endpoints.auth.profile, {
+				method: 'GET',
+				headers: {  
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				})
+
+
+			const user = await res.json()
+			setUser(user.user)
+			return {message:'Login Exitoso', type: 'success'}
+							
+		} catch (error: any) {
+			setError(error.response.data.message)
+			return {message: error.response.data.message, type: 'error'} 
+		}
+	};
+
+	const quickSignIn = async (email: string, password: string) => {
 		try {
 			setError(null)
 			const res = await fetch(endpoints.auth.login, {
@@ -160,7 +224,6 @@ function useProvideAuth() {
 	}
 
 	const resetPassword = async (pass: string, conPass: string, token: string) => {
-		console.log(pass, conPass)
 		try {	
 			const res = await fetch(endpoints.auth.resetPassword(token), {
 				method: 'PUT',
@@ -191,7 +254,23 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json()
-			console.log(data)
+			return data
+		} catch (error) {
+		  setUser(null);
+		}
+	  };
+
+	  const forgetPasswordSendNoCaptcha = async (email: string) => {
+		try {	
+			const res = await fetch(endpoints.auth.resetPasswordSendNoCaptcha, {
+				method: 'POST',
+				headers: {  
+				  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ email }),
+			  })
+
+			const data = await res.json()
 			return data
 		} catch (error) {
 		  setUser(null);
@@ -209,7 +288,6 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json()
-			console.log(data)
 			return data
 		} catch (error) {
 		  setUser(null);
@@ -227,7 +305,6 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json()
-			console.log(data)
 			signOut()
 			setUser(null)
 			return data
@@ -240,7 +317,6 @@ function useProvideAuth() {
 
 	  const newSub = async (idUser: string) => {
 		if(!idUser) return
-		console.log(idUser)
 		try {	
 			const res = await fetch(endpoints.payments.createSub, {
 				method: 'PUT',
@@ -260,7 +336,6 @@ function useProvideAuth() {
 
 	  const cancelSub = async (planId: string, subscriptionId: string, id: string) => {
 		try {
-			console.log(planId, subscriptionId)
 			const res = await fetch(endpoints.payments.cancelSubscription(subscriptionId), {
 				method: 'PUT',
 				headers: {  
@@ -281,7 +356,6 @@ function useProvideAuth() {
 
 	  const newMembership = async (idUser: string, paymentToken:string) => {
 		if(!idUser) return
-		console.log(idUser)
 		try {	
 			const res = await fetch(endpoints.payments.createMembership, {
 				method: 'PUT',
@@ -292,8 +366,27 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json()
-			setUser(data)
+			setUser(data.user)
 			return data
+		} catch (error) {
+			return error
+		}
+	  };
+
+	  const newProductUser = async (idUser: string, paymentToken:string, productId: string) => {
+		if(!idUser) return
+		try {	
+			const res = await fetch(endpoints.payments.createProductUser, {
+				method: 'PUT',
+				headers: {  
+				  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ idUser, paymentToken, productId }),
+			  })
+
+			const data = await res.json()
+			setUser(data.user)
+			return data;
 		} catch (error) {
 			return error
 		}
@@ -304,6 +397,7 @@ function useProvideAuth() {
 		error,
 		setError,
 		signIn,
+		signInPostRegister,
 		signOut,
 		fetchUser,
 		addCourseToList,
@@ -314,8 +408,10 @@ function useProvideAuth() {
 		resetMail,
 		resetMailSend,
 		forgetPasswordSend,
+		forgetPasswordSendNoCaptcha,
 		newSub,
 		cancelSub,
-		newMembership
+		newMembership,
+		newProductUser
 	  };
 }

@@ -141,6 +141,7 @@ interface Props {
   onBookmark: any;
   setPlayerRef: any;
   title: string;
+  isToShow: boolean
 }
 
 export default function PlayerControls({
@@ -165,7 +166,8 @@ export default function PlayerControls({
   totalDuration,
   onBookmark,
   setPlayerRef,
-  title
+  title,
+  isToShow
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
@@ -190,8 +192,8 @@ export default function PlayerControls({
   return (
     <div
       ref={ref}
-      className={`absolute -top-[80px] md:top-0 left-0 right-0 bottom-0 flex-col space-y-48 justify-between z-[1] ${
-        fullScreen ? 'bg-transparent' : 'bg-black/20'
+      className={`absolute -top-[80px] md:top-0 left-0 right-0 bottom-0 flex-col space-y-0 justify-between z-[1] ${
+        fullScreen || isToShow ? 'bg-transparent' : 'bg-black/20'
       }  w-full flex-wrap box-border`}
     >
       <div
@@ -240,7 +242,7 @@ export default function PlayerControls({
       </div>
       <div
         className={`${
-          fullScreen ? (!playing ? 'md:!mt-64' : 'md:!mt-[450px]') : ''
+          fullScreen ? (!playing && !isToShow ? 'md:!mt-64' : 'md:!mt-[450px]') : ''
         } absolute bottom-0 flex flex-row justify-between items-center p-4 w-full flex-wrap box-border`}
       >
         <div className='w-full'>

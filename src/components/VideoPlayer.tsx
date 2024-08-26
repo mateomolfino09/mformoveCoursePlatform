@@ -17,10 +17,10 @@ import screenfull from 'screenfull';
 interface Props {
   url: string | null;
   img: string;
-  courseUser: CourseUser | null;
-  clase: ClassesDB | null;
+  title: string | null;
   setPlayerRef: any;
   play: boolean;
+  isToShow: boolean
 }
 
 const format = (seconds: any) => {
@@ -39,7 +39,7 @@ const format = (seconds: any) => {
 
 let count = 0;
 
-function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
+function Youtube({ url, img, title, setPlayerRef, play, isToShow }: Props) {
   const router = useRouter();
   const [state, setState] = useState({
     playing: true,
@@ -195,7 +195,7 @@ function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
         <div
           ref={playerContainerRef}
           onMouseMove={handleMouseMove}
-          className='w-full min-h-[30rem] lg:min-h-[60vh] !pl-0 !pr-0 relative lg:border border-3 border-solid border-black'
+          className={`w-full min-h-[30rem] lg:min-h-[60vh] !pl-0 !pr-0 relative  ${isToShow ? '' : 'lg:border border-3 border-solid border-black'}`}
         >
           <ReactPlayer
             ref={playerRef}
@@ -238,7 +238,8 @@ function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
             totalDuration={totalDuration}
             onBookmark={addBookmark}
             setPlayerRef={setControlRef}
-            title={clase?.name != null ? clase.name : ''}
+            title={title != null ? title : ''}
+            isToShow={isToShow}
           />
         </div>
       </Container>

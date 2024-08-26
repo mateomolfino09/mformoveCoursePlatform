@@ -25,7 +25,10 @@ export const prepareEmail = async (titulo, link, action, user, contenido, subjec
     name: `Hola, ${user.name}:`,
     content: contenido,
     message: message,
-    to: `MForMove te envió este mensaje a [${user.email}] como parte de tu membresía.`,
+    to: [{
+      email: user.email,
+      name: user.name
+    }], 
     subject: subject,
     });
 

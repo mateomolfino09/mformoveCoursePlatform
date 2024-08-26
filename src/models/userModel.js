@@ -149,11 +149,9 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      required: true
     },
     country: {
       type: String,
-      required: true
     },
     rol: {
       type: String,
@@ -182,6 +180,7 @@ const userSchema = new mongoose.Schema(
     }],
     subscription: subscriptionSchema,
     memberShip: { token: String, productId: String },
+    productToken: { token: String, productId: String },
   },
   { timestamps: true }
 );

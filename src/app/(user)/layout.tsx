@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
 
   return (
-    <section>
+    <section className="font-montserrat">
         <UserHeader />
         {children}
     </section>

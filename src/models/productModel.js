@@ -21,6 +21,21 @@ const fileSchema = new mongoose.Schema({
   }
 });
 
+const frequentQuestion = new mongoose.Schema({
+  id: {
+    type: Number,
+    required: true
+  },
+  question: {
+    type: String,
+    required: true
+  },
+  answer: {
+    type: String,
+    required: true
+  },
+});
+
 const classSchema = new mongoose.Schema(
   {
     id: {
@@ -36,6 +51,10 @@ const classSchema = new mongoose.Schema(
       required: true
     },
     image_url: {
+      type: String,
+      required: true
+    },
+    video_url: {
       type: String,
       required: true
     },
@@ -62,6 +81,10 @@ const moduleSchema = mongoose.Schema({
     type: String,
     required: true
   },
+  description: {
+    type: String,
+    required: true
+  }
 }, { timestamps: true })
 
 const productSchema = new mongoose.Schema(
@@ -74,11 +97,25 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    phraseName: {
+      type: String,
+      required: true
+    },
     description: {
       type: String,
       required: true,
       minLength: 20
     },
+    longDescription: {
+      type: String,
+      required: true,
+      minLength: 20
+    },
+    intro_video_url: {
+      type: String,
+      required: true
+    },
+    frequentQuestions : [frequentQuestion],
     paymentLink: {
       type: String,
       default: () => "",
@@ -97,6 +134,10 @@ const productSchema = new mongoose.Schema(
     image_url: {
       type: String,
       default: () => ""
+    },
+    url: {
+      type: String,
+      required: true
     },
     diploma_url: {
       type: String,
