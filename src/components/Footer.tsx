@@ -113,10 +113,10 @@ const onSubmit = async (data: any) => {
                 <div style={{flex: '1 1 0px;'}} className='md:w-1/4 w-full'>
                     <h4 className='font-light text-sm md:text-base md:text-center' >Memberships</h4>
                 </div>
-                <div style={{flex: '1 1 0px;'}} className='md:w-1/4 w-full'>
+                {/* <div style={{flex: '1 1 0px;'}} className='md:w-1/4 w-full'>
                     <h4 className='font-light text-sm md:text-base md:text-center' >Sobre Nosotros</h4>
 
-                </div>
+                </div> */}
      
                 {/* </Link> */}
                 {/* <Link href={'/membership'}> */}
@@ -141,7 +141,9 @@ const onSubmit = async (data: any) => {
             </div>
             <div className='flex w-full flex-row md:justify-center justify-start space-x-6 md:pl-0'>
                 <BsInstagram className='md:w-6 md:h-6 w-5 h-5 cursor-pointer' onClick={() => router.push('https://www.instagram.com/mformove_/')}/>
-                <MdMailOutline className='md:w-7 md:h-7 w-6 h-6'/>
+                    <a href="mailto:info@mateomove.com?subject=Contacto%20Here&body=Tu mensaje aqui.">
+                        <MdMailOutline className='md:w-7 md:h-7 w-6 h-6'/>
+                    </a>
             </div>
         </div>
         <div className='text-black flex items-start justify-start flex-col md:pl-0 space-y-2 !mx-6 mb-8 mt-12 md:pt-12 md:pr-4 overflow-x-hidden'>

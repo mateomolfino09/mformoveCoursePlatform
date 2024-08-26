@@ -137,7 +137,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             </h1>
           </m.div>
         </Link>
-        <Link href={'/about'}>
+        {/* <Link href={'/about'}>
           <m.div
             initial={{ color: '#fff', x: 700 }}
             animate={+windowWidth < 768 ? animationPhones : animation}
@@ -156,7 +156,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
               Mateo Molfino
             </h1>
           </m.div>
-        </Link>
+        </Link> */}
         {!auth.user && (where != "products" || where != "productsHome") ? (
           <Link href={'/login'}>
             <m.div
