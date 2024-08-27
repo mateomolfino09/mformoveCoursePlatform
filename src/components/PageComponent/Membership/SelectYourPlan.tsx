@@ -104,8 +104,15 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
 
   return (
     <div className='w-full px-3 mt-24 mb-9 lg:right-1/4 md:right-32 flex flex-col lg:pl-36 lg:py-8'>
-    <h1 className='text-4xl md:text-5xl font-light mb-12 px'>Potencia tu practica conmigo</h1>
-    <div className='flex flex-col space-y-4'>
+        <div className='flex md:space-y-1 flex-col mb-12 items-start pl-2 justify-start'>
+            <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Practica conmigo,</h1>
+            <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Aprende mi métodología,</h1>
+            <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Potencia tu Entrenamiento.</h1>
+        </div>
+
+
+
+    <div className='flex flex-col space-y-4 capitalize'>
 
         {planSelectedValue == "Membresía Gratis" ? (
             <>
@@ -117,15 +124,11 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
             </div>
             <div className='flex space-x-2'>
                 <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
-                <p className='text-base font-light'>Asesoramiento Personal</p>
+                <p className='text-base font-light'>Info sobre mi metodología para incorporar en tu Entrenamiento</p>
             </div>
-            <div className='flex space-x-2'>
+            <div className='flex space-x-2 mb-2'>
                 <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
-                <p className='text-base font-light'>Información GRATIS para tu Entrenamiento</p>
-            </div>
-            <div className='flex space-x-2'>
-                <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
-                <p className='text-base font-light'>Contenido Gratis para la Comunidad de Movers</p>
+                <p className='text-base font-light'>Contenido Exclusivo y Gratuito para la Comunidad de MForMovers</p>
             </div>
             </>
         ) : (
@@ -134,7 +137,7 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
                   <div>
                         <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
                     </div>
-                    <p className='text-base font-light'>Rutina de Flexibilidad + Follow Along</p>
+                    <p className='text-base font-light'>Rutina de Flexibilidad</p>
                 </div>
                 <div className='flex space-x-2'>
               <div>
@@ -152,13 +155,13 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
                   <div>
                         <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
                     </div>
-                    <p className='text-base font-light'>Información EXCLUSIVA para tu Entrenamiento</p>
+                    <p className='text-base font-light'>Info EXCLUSIVA sobre mi metodología para incorporar en tu Entrenamiento</p>
                 </div>
                 <div className='flex space-x-2'>
                     <div>
                         <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
                     </div>
-                    <p className='text-base font-light'>Contenido Exclusivo para la Comunidad de Movers</p>
+                    <p className='text-base font-light'>Contenido Exclusivo para la Comunidad de MForMovers</p>
                 </div>
             </>
         )}
@@ -169,7 +172,7 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
             options={planSelect}
             styles={colourStyles}
             placeholder={planSelectedValue || 'Nivel de clase'}
-            className='w-72 md:ml-3'
+            className='w-72 ml-3'
             value={planSelectedValue}
             onChange={(e) => {
                 setPlanSelected(plans.find(x => x.name === e.label))
@@ -197,7 +200,10 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
 
     )}
     {planSelectedValue == "Membresía Gratis" ? (
-        <></>
+            <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-2 mt-5 text-center text-xs md:text-sm font-light'>
+            <p>GRATIS </p>
+            <p>Oportunidad única...</p>
+            </div>
     ) : (
         <>
             <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-2 mt-5 text-center text-xs md:text-sm font-light'>
