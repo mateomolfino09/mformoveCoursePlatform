@@ -10,6 +10,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
 import Footer from './Footer';
+import { CldImage } from 'next-cloudinary';
 
 function Banner() {
   const dispatch = useAppDispatch();
@@ -59,12 +60,14 @@ function Banner() {
           controls={false}
           className='object-cover h-full w-full hidden md:block overflow-hidden'
         />
-        <Image
+        <CldImage layout='fill'
+          alt="" src={"my_uploads/image00014_uocc4d"} className="object-cover h-full w-full md:hidden opacity-40" />
+        {/* <Image
           src={'/images/bgIndex2.jpg'}
           className='object-cover h-full w-full md:hidden opacity-40'
           fill
           loader={imageLoader}
-        />
+        /> */}
       </div>
     </div>
 

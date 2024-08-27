@@ -65,7 +65,7 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
       };
 
   return (
-    <div className='md:w-96 w-full px-3 lg:w-[28rem] mt-24 mb-9 lg:right-1/4 md:right-32'>
+    <div className='w-full px-3 mt-24 mb-9 lg:right-1/4 md:right-32 flex flex-col lg:pl-36 lg:py-8'>
     <h1 className='text-4xl md:text-5xl font-light mb-12 px'>Selecciona tu plan</h1>
     <div className='flex flex-col space-y-4'>
         <div className='flex space-x-2'>
