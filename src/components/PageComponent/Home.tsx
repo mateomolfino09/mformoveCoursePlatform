@@ -181,7 +181,7 @@ const Home = ({ classesDB, filters }: Props) => {
       }
     } }
     >
-      <MainSideBar where={'home'}>
+      <MainSideBar where={'index'}>
       <FilterNavWrapper>
 
       <Head>

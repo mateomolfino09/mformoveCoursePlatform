@@ -41,14 +41,15 @@ const SelectPlan = ({ plans }: Props ) => {
       }, []);
 
   return (
-    <MainSideBar where={''}>
+    <div className='relative bg-to-dark lg:h-full min-h-screen overflow-scroll overflow-x-hidden'  
+    >          
+    <MainSideBar where={'index'}>
+              <SelectYourPlan plans={plans} select={"select"}/>   
+          <Footer />
+          
+      </MainSideBar>
 
-        <div className='h-auto w-full bg-[#131212] items-center justify-center relative flex flex-col pt-16 pb-12'>
-            <SelectYourPlan plans={plans} select={"select"}/>   
-        </div>
-        <Footer />
-        
-    </MainSideBar>
+    </div>
   )
 }
 
