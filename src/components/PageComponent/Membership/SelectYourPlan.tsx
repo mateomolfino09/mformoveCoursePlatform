@@ -1,5 +1,5 @@
-import { ArrowRightIcon, CheckIcon } from '@heroicons/react/24/outline'
-import React, { useState } from 'react'
+import { ArrowRightIcon, CheckCircleIcon, CheckIcon } from '@heroicons/react/24/outline'
+import React, { useEffect, useState } from 'react'
 import { CheckmarkIcon } from 'react-hot-toast'
 import { Plan } from '../../../../typings'
 import Select, { StylesConfig } from 'react-select';
@@ -8,6 +8,8 @@ import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import endpoints from '../../../services/api';
 import { toast } from 'react-toastify';
+import state from '../../../valtio';
+import { useRouter } from 'next/navigation';
 
 interface Props {
     plans: Plan[]
@@ -17,14 +19,32 @@ interface Props {
 const SelectYourPlan = ({ plans, select = "" }: Props) => {
     const [planSelected, setPlanSelected] = useState<Plan | null | undefined>(plans[0])
     const auth = useAuth()
-    const planSelect = plans.map((p: Plan) => {
-        return {
-            value: p.frequency_value,
-            label: p.frequency_label
-        }
-    }
-    ) 
-    const [planSelectedValue, setPlanSelectedValue] = useState<string>(planSelect[0].label)
+    const router = useRouter()
+    const planSelect = [
+        {
+            value: "Membresía Gratis",
+            label: "Membresía Gratis"
+        },
+        ...plans.map((p: Plan) => {
+            return {
+                value: p.name,
+                label: p.name
+            }
+        }) 
+    ]
+
+    useEffect(() => {
+        
+        if(!auth.user) {
+          auth.fetchUser()
+        }    
+    
+      }, []);
+
+    
+    const [planSelectedValue, setPlanSelectedValue] = useState<string>(planSelect[0].value)
+    console.log(planSelect, planSelectedValue)
+
 
     const handleClick = async () => {
         if(!auth.user) {
@@ -32,19 +52,37 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
             return
         }
         const email = auth.user.email
-        const res = await fetch(endpoints.payments.createPaymentToken, {
-            method: 'POST',
-            headers: {  
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email }),
-          })
 
-        const data = await res.json()
+        if(planSelectedValue != "Membresía Gratis") {
+            const res = await fetch(endpoints.payments.createPaymentToken, {
+                method: 'POST',
+                headers: {  
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+              })
+    
+            const data = await res.json()
+    
+            const { token } = data
+            console.log(token)
+            Cookies.set('userPaymentToken', token ? token : '', { expires: 5})
+            router.push(`https://checkout-sbx.dlocalgo.com/validate/subscription/${planSelected?.plan_token}`)
+        }
+        else {
+            const res = await fetch(endpoints.payments.createFreeMembership, {
+                method: 'POST',
+                headers: {  
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+              })
+    
+            const data = await res.json()
+    
+            const { message } = data
+        }
 
-        const { token } = data
-        console.log(token)
-        Cookies.set('userPaymentToken', token ? token : '', { expires: 5})
     }
 
     const colourStyles: StylesConfig<any> = {
@@ -66,24 +104,64 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
 
   return (
     <div className='w-full px-3 mt-24 mb-9 lg:right-1/4 md:right-32 flex flex-col lg:pl-36 lg:py-8'>
-    <h1 className='text-4xl md:text-5xl font-light mb-12 px'>Selecciona tu plan</h1>
+    <h1 className='text-4xl md:text-5xl font-light mb-12 px'>Potencia tu practica conmigo</h1>
     <div className='flex flex-col space-y-4'>
-        <div className='flex space-x-2'>
+
+        {planSelectedValue == "Membresía Gratis" ? (
+            <>
+            <div className='flex space-x-2'>
             <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
-            <p className='text-base font-light'>Unlimited Yoga, Breathwork, Meditation, and Movement classes</p>
-        </div>
-        <div className='flex space-x-2'>
-            <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
-            <p className='text-base font-light'>Clases nuevas todas las semanas</p>
-        </div>
-        <div className='flex space-x-2'>
-            <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
-            <p className='text-base font-light'>Clases para todos los niveles</p>
-        </div>
-        <div className='flex space-x-2'>
-            <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
-            <p className='text-base font-light'>Clases para todos los niveles</p>
-        </div>
+            {/* <CheckCircleIcon className='text-green-500/80 w-5 h-5 md:w-8 md:h-8 text-[#ae9359]'/> */}
+
+            <p className='text-base font-light'>Clases de Flexibilidad, Fuerza y Respiración Gratuitas</p>
+            </div>
+            <div className='flex space-x-2'>
+                <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
+                <p className='text-base font-light'>Asesoramiento Personal</p>
+            </div>
+            <div className='flex space-x-2'>
+                <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
+                <p className='text-base font-light'>Información GRATIS para tu Entrenamiento</p>
+            </div>
+            <div className='flex space-x-2'>
+                <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
+                <p className='text-base font-light'>Contenido Gratis para la Comunidad de Movers</p>
+            </div>
+            </>
+        ) : (
+            <>
+                <div className='flex space-x-2'>
+                  <div>
+                        <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
+                    </div>
+                    <p className='text-base font-light'>Rutina de Flexibilidad + Follow Along</p>
+                </div>
+                <div className='flex space-x-2'>
+              <div>
+                        <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
+                    </div>
+                <p className='text-base font-light'>Clases de Flexibilidad, Fuerza y Respiración Exclusivas</p>
+                </div>
+                <div className='flex space-x-2'>
+                  <div>
+                        <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
+                    </div>
+                    <p className='text-base font-light'>Asesoramiento Personal Semanal</p>
+                </div>
+                <div className='flex space-x-2'>
+                  <div>
+                        <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
+                    </div>
+                    <p className='text-base font-light'>Información EXCLUSIVA para tu Entrenamiento</p>
+                </div>
+                <div className='flex space-x-2'>
+                    <div>
+                        <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
+                    </div>
+                    <p className='text-base font-light'>Contenido Exclusivo para la Comunidad de Movers</p>
+                </div>
+            </>
+        )}
     </div>
     <div className=' right-0 mt-4
     '>
@@ -91,26 +169,25 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
             options={planSelect}
             styles={colourStyles}
             placeholder={planSelectedValue || 'Nivel de clase'}
-            className='w-full sm:w-full'
+            className='w-72 md:ml-3'
             value={planSelectedValue}
             onChange={(e) => {
-                setPlanSelected(plans.find(x => x.frequency_label === e.label))
-                setPlanSelectedValue(e.label)
+                setPlanSelected(plans.find(x => x.name === e.label))
+                setPlanSelectedValue(e.value)
             }}
         />
     </div>
-    {!auth.user && (
-        <a href={`/login`} rel="noopener noreferrer">
-        <div className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '>
+    {!auth.user && (    
+        <div onClick={() => state.loginForm = true} className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '>
             <button className='w-full text-base md:text-lg'>Continuar </button>
         </div>     
-        </a>
     )}
     {select === "select" && auth.user ? (
-        <a target="_blank" href={`https://checkout-sbx.dlocalgo.com/validate/subscription/${planSelected?.plan_token}`} rel="noopener noreferrer" onClick={handleClick}>
-        <div className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '>
+        // <a target="_blank" href={`https://checkout-sbx.dlocalgo.com/validate/subscription/${planSelected?.plan_token}`} rel="noopener noreferrer" >
+        <div onClick={handleClick} className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '>
             <button className='w-full text-base md:text-lg'>Continuar </button>
-        </div>     </a>
+        </div>     
+        // </a>
     ) : (
     <Link href={'select-plan'} className={`${!auth.user && "hidden"}`}>
         <div className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '>
@@ -119,11 +196,17 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
     </Link>
 
     )}
-    <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-2 mt-5 text-center text-xs md:text-sm font-light'>
-        <p>$0.00 debido hoy.</p>
-        <p>7 dias gratis (para miembros nuevos) luego {planSelected?.amount} {planSelected?.currency} facturado {planSelected?.frequency_label} {planSelected?.frequency_label === "Anual" && `(ahorra ${12 * (plans.find(x => x.frequency_label != planSelected?.frequency_label)?.amount ?? 0) - planSelected?.amount } ${planSelected?.currency})`} </p>
-        <p>Enviamos recordatorio antes de facturar para evitar pagos no deseados.</p>
-    </div>
+    {planSelectedValue == "Membresía Gratis" ? (
+        <></>
+    ) : (
+        <>
+            <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-2 mt-5 text-center text-xs md:text-sm font-light'>
+                <p>{planSelected?.amount} {planSelected?.currency} facturado {planSelected?.frequency_label} {planSelected?.frequency_label === "Anual" && `(ahorra ${12 * (plans.find(x => x.frequency_label != planSelected?.frequency_label)?.amount ?? 0) - planSelected?.amount } ${planSelected?.currency})`} </p>
+                <p>Enviamos recordatorio antes de facturar para evitar pagos no deseados.</p>
+            </div>
+        </>
+    )}
+
   </div>
   
   )
