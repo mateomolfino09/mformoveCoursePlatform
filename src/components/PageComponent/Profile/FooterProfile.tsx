@@ -5,6 +5,7 @@ import { BiRightArrow } from 'react-icons/bi'
 import { BsInstagram, BsMailbox } from 'react-icons/bs'
 import { MdMail, MdMailOutline } from 'react-icons/md'
 import { useAuth } from '../../../hooks/useAuth'
+import state from '../../../valtio'
 
 const FooterProfile = () => {
 const auth = useAuth()
@@ -22,25 +23,44 @@ const auth = useAuth()
             <p className='text-xs md:text-sm'>Subscribete hoy para todas las actualizaciones y promociones</p>
         </div>
         <div className='text-white flex flex-col space-y-12 pt-12 !mx-0 px-6 overflow-x-hidden'>
-            <div className='flex w-full flex-col md:pl-0 space-y-4 md:space-y-0 md:flex-row md:space-x-5'>
-                <Link href={'/home'}>
-                    <h4 className='font-light text-sm md:text-base w-full'>Home page</h4>
+        <div className='flex w-full flex-col md:pl-0 space-y-4 md:space-y-0 md:flex-row md:space-x-5'>
+                {/* <Link href={'/home'}> */}
+                  <div style={{flex: '1 1 0px;'}} className='md:w-1/3 w-full cursor-pointer'>
+                <Link href={'/'}>
+                      <h4 className='font-light text-sm md:text-base w-full md:text-center' >Home</h4>
                 </Link>
-                <Link href={'/membership'}>
-                    <h4 className='font-light text-sm md:text-base'>Memberships</h4>
-                </Link>
-                <Link href={'/aboutUs'}>
-                    <h4 className='font-light text-sm md:text-base'>Sobre Nosotros</h4>
-                </Link>
-                {auth.user ? (
+                  </div>
 
-                <a href={'/account'}>
-                    <h4 className='font-light text-sm md:text-base'>Mi Cuenta</h4>
-                </a>
-                ) : (
-                <Link href={'/login'}>
-                <h4 className='font-light text-sm md:text-base'>Log In</h4>
+                  <div style={{flex: '1 1 0px;'}} className='cursor-pointer md:w-1/3 w-full'>
+                <Link href={'/select-plan'}>
+                      <h4 className='font-light text-sm md:text-base md:text-center' >Memberships</h4>
                 </Link>
+                  </div>
+
+                {/* <div style={{flex: '1 1 0px;'}} className='md:w-1/3 w-full'>
+                    <h4 className='font-light text-sm md:text-base md:text-center' >Sobre Nosotros</h4>
+
+                </div> */}
+     
+                {/* </Link> */}
+                {/* <Link href={'/membership'}> */}
+                {/* </Link> */}
+                {/* <Link href={'/aboutUs'}> */}
+                {/* </Link> */}
+                {auth.user ? (
+                    <div style={{flex: '1 1 0px;'}} className='md:w-1/3 w-full'>
+                <Link href={'/account'}>
+                    <h4 className='font-light text-sm md:text-base md:text-center cursor-pointer' >Mi Cuenta</h4>
+
+                </Link>
+                    </div>
+                ) : (
+                    <div style={{flex: '1 1 0px;'}} onClick={() => state.loginForm = true} className='md:w-1/3 w-full'>
+                        <h4 className='font-light text-sm md:text-base md:text-center cursor-pointer' >Log In</h4>
+
+                    </div>
+                // <Link href={'/login'}>
+                // </Link>
                 )}
             </div>
             <div className='flex w-full flex-row md:justify-center justify-start space-x-6 md:pl-0'>

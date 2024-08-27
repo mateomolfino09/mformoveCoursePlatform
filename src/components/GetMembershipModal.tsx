@@ -67,9 +67,9 @@ const GetMembershipModal
       }, [errors])
 
   return (
-    <div className={` w-full h-full z-[120] bg-black/50 top-0 ${visible ? 'absolute' : 'hidden'}`}>
+    <div className={` w-full h-full z-[120] bg-black/50 top-0 ${visible ? 'fixed md:absolute' : 'hidden'}`}>
         <m.div initial={{ x: '80%', y:'-50%', opacity: 0, zIndex: '125'}}
-        animate={animation} className={`absolute dark:bg-neutral-800 w-2/3 lg:w-1/2 max-h-96 pb-2 z-10 left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] rounded-md shadow-2xl overflow-x-hidden !scrollbar-thin px-2`}>
+        animate={animation} className={`absolute dark:bg-neutral-800 w-full md:w-2/3 lg:w-1/2 max-h-96 pb-2 z-10 left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] rounded-md shadow-2xl overflow-x-hidden !scrollbar-thin px-2`}>
         <button
         onClick={handleVisiblity}
         className='modalButton !text-white fixed overflow-y-scroll overflow-x-hidden -right-2 !z-40 h-9 w-9 border-none'
