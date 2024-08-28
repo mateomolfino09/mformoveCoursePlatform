@@ -245,7 +245,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             >
               <h2 className='font-light lg:text-xl'>Admin</h2>
               <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
-                Ingresar al Dashboard
+                Dashboard
               </h1>
             </m.div>
           </>

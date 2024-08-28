@@ -88,6 +88,24 @@ const subscriptionSchema = new mongoose.Schema(
   },
 );
 
+const freeSubscriptionSchema = new mongoose.Schema(
+  {
+    email: {
+        type: String,
+
+    },
+    createdAt: {
+      type: Date,
+      immutable: true,
+      default: () => Date.now()
+    },
+    active: {
+      type: Boolean,
+      default: () => true
+    },
+  },
+);
+
 
 const notification = new mongoose.Schema({
   title: {
@@ -179,6 +197,7 @@ const userSchema = new mongoose.Schema(
       ref: 'IndividualClassUser'
     }],
     subscription: subscriptionSchema,
+    freeSubscription: freeSubscriptionSchema,
     memberShip: { token: String, productId: String },
     productToken: { token: String, productId: String },
   },

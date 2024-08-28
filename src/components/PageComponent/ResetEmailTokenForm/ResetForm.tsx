@@ -119,7 +119,7 @@ function ResetEmailForm({ token }: Props) {
           <h1 className="title">MForMove Platform</h1>
           <p className="text">Moverse es el medio para reconocerse</p>
           <div className="about-us-btn-container">
-            <a href="#" className="about-us-btn">Sobre Nosotros</a>
+          <a href="/select-plan" className="about-us-btn !py-3 rounded-full !px-3">Membresias</a>          
           </div>
         </div>
       </div>

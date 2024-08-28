@@ -10,6 +10,9 @@ import endpoints from '../../../services/api';
 import { toast } from 'react-toastify';
 import state from '../../../valtio';
 import { useRouter } from 'next/navigation';
+import { CldImage } from 'next-cloudinary';
+import imageLoader from '../../../../imageLoader';
+import { MiniLoadingSpinner } from '../Products/MiniSpinner';
 
 interface Props {
     plans: Plan[]
@@ -18,6 +21,8 @@ interface Props {
 
 const SelectYourPlan = ({ plans, select = "" }: Props) => {
     const [planSelected, setPlanSelected] = useState<Plan | null | undefined>(plans[0])
+    const [loading, setLoading] = useState<boolean>(false)
+
     const auth = useAuth()
     const router = useRouter()
     const planSelect = [
@@ -39,11 +44,11 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
           auth.fetchUser()
         }    
     
-      }, []);
+      }, [auth.user]);
+    
 
     
     const [planSelectedValue, setPlanSelectedValue] = useState<string>(planSelect[0].value)
-    console.log(planSelect, planSelectedValue)
 
 
     const handleClick = async () => {
@@ -52,36 +57,53 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
             return
         }
         const email = auth.user.email
+        
 
-        if(planSelectedValue != "Membresía Gratis") {
-            const res = await fetch(endpoints.payments.createPaymentToken, {
-                method: 'POST',
-                headers: {  
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email }),
-              })
-    
-            const data = await res.json()
-    
-            const { token } = data
-            console.log(token)
-            Cookies.set('userPaymentToken', token ? token : '', { expires: 5})
-            router.push(`https://checkout-sbx.dlocalgo.com/validate/subscription/${planSelected?.plan_token}`)
+        setLoading(true)
+
+        try {
+            if(planSelectedValue != "Membresía Gratis") {
+                const res = await fetch(endpoints.payments.createPaymentToken, {
+                    method: 'POST',
+                    headers: {  
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                  })
+        
+                const data = await res.json()
+                setLoading(false)
+
+        
+                const { token } = data
+                Cookies.set('userPaymentToken', token ? token : '', { expires: 5})
+                router.push(`https://checkout-sbx.dlocalgo.com/validate/subscription/${planSelected?.plan_token}`)
+            }
+            else {
+                console.log(email)
+                const res = await fetch(endpoints.payments.createFreeSubscription, {
+                    method: 'PUT',
+                    headers: {  
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                  })
+        
+                const data = await res.json()
+                setLoading(false)
+        
+                const { message, user, success } = data
+
+                if(success)
+                toast.success(message)
+                else
+                toast.error(message)
+            }
+        } catch (error: any) {
+            console.log(error)
+            toast.error(error.message)
         }
-        else {
-            const res = await fetch(endpoints.payments.createFreeMembership, {
-                method: 'POST',
-                headers: {  
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email }),
-              })
-    
-            const data = await res.json()
-    
-            const { message } = data
-        }
+        setLoading(false)
 
     }
 
@@ -103,14 +125,12 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
       };
 
   return (
-    <div className='w-full px-3 mt-24 mb-9 lg:right-1/4 md:right-32 flex flex-col lg:pl-36 lg:py-8'>
+    <div className='w-full px-3 mt-24 lg:right-1/4 md:right-32 flex flex-col lg:pl-36'>
         <div className='flex md:space-y-1 flex-col mb-12 items-start pl-2 justify-start'>
             <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Practica conmigo,</h1>
             <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Aprende mi métodología,</h1>
             <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Potencia tu Entrenamiento.</h1>
         </div>
-
-
 
     <div className='flex flex-col space-y-4 capitalize'>
 
@@ -188,7 +208,13 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
     {select === "select" && auth.user ? (
         // <a target="_blank" href={`https://checkout-sbx.dlocalgo.com/validate/subscription/${planSelected?.plan_token}`} rel="noopener noreferrer" >
         <div onClick={handleClick} className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '>
-            <button className='w-full text-base md:text-lg'>Continuar </button>
+            {loading ? (
+                <>
+                    <MiniLoadingSpinner/>
+                </>
+            ) : (
+                <button className='w-full text-base md:text-lg'>Continuar </button>
+            )}
         </div>     
         // </a>
     ) : (
@@ -212,7 +238,22 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
             </div>
         </>
     )}
+        <div className='flex flex-col space-y-2 py-16 md:space-y-4 justify-end lg:items-end mr-12 lg:mr-24  overflow-hidden'>
+        <div className='absolute top-0 left-0 h-[100vh] w-full -z-10 overflow-hidden'>
+            {/* <video src={'/video/videoTest3.mp4'} autoPlay loop muted={!snap.volumeIndex} className='object-cover h-full w-full'>
 
+            </video> */}
+            <CldImage
+                src={"my_uploads/image00029_mtsdpo"}
+                preserveTransformations
+                width={1000}
+                height={1000}
+                className={`object-cover h-full w-full opacity-40`}
+                alt={"Rutina Imagen"}
+                loader={imageLoader}
+            />
+        </div>
+        </div>
   </div>
   
   )

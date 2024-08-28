@@ -202,6 +202,12 @@ export interface ProductModules {
   description: string
 }
 
+export interface FreeSubscription {
+  email: string;
+  createdAt: string;
+  active: boolean;
+}
+
 export interface User {
   id: number;
   _id: number;
@@ -219,6 +225,7 @@ export interface User {
   classesSeen: IndividualClass[];
   isMember: boolean
   subscription: any
+  freeSubscription: FreeSubscription;
 }
 
 export interface CoursesDB {
