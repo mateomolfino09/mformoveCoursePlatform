@@ -71,8 +71,8 @@ function LoginForm() {
             className='image-gradient'
           />
         <div className="left-container">
-          <h1 className="title">MForMove Platform</h1>
-          <p className="text">Moverse es el medio para reconocerse</p>
+          <h1 className="title font-boldFont">MForMove Platform</h1>
+          <p className="text !mt-0">Moverse es el medio para reconocerse</p>
           <div className="about-us-btn-container">
           <a href="/select-plan" className="about-us-btn !py-3 rounded-full !px-3">Membresias</a>          
           </div>
@@ -81,7 +81,7 @@ function LoginForm() {
       <div className="right-container">
         <div className="right-card-container">
           <form className="form-container" action={signinUser}>
-            <h1 className="sub-title">Sign In</h1>
+            <h1 className="sub-title font-boldFont">Sign In</h1>
             <p className="sub-p">Te damos la bienvenida al mundo del movimiento :)</p>
             <div className="input-container mb-8">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
