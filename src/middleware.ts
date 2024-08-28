@@ -10,8 +10,8 @@ export async function middleware(request: NextRequest) {
             return NextResponse.redirect(new URL('/login', request.url))
         }
 
-        if (request.nextUrl.pathname === '/home') {
-            return NextResponse.redirect(new URL('/products', request.url));
+        if (request.nextUrl.pathname === '/products') {
+            return NextResponse.redirect(new URL('/select-plan', request.url));
           }
 
         const { payload } = await jwtVerify(jwt, new TextEncoder().encode(process.env.NEXTAUTH_SECRET as string))
@@ -25,5 +25,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/account/:path*', '/admin/:path*']
+    matcher: ['/account/:path*', '/admin/:path*', '/products/:path*']
 }

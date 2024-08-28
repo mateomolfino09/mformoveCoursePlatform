@@ -11,60 +11,66 @@ connectDB();
 
 export async function PUT(req) {
     const {
-        idUser, 
+        email, 
         } = await req.json();  
   try { 
       if (req.method === 'PUT') {
-        let plans = await Plan.find({}).lean().exec();
         //Me trae por defecto cuando Id es undefined
-        const user = await User.findOne({ _id: idUser });
+        const user = await User.findOne({ email: email });
 
         if(!user) {
-            return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
+            return NextResponse.json({ message: 'Usuario no encontrado' }, { status: 404 })
 
         }
 
-        if(user?.subscription?.active) {
-            return NextResponse.json({ error: 'Ya estas subscripto' }, { status: 401 })
-
+        if(user?.subscription?.active || user?.freeSubscription?.active) {
+            return NextResponse.json({ message: 'Ya estas subscripto' }, { status: 401 })
         }
 
-        let subsFromAPI = []
+        const MailchimpKey = process.env.MAILCHIMP_API_KEY;
+        const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
+        const MailchimpAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;
+          
+        const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpAudience}/members`;
+      
+        const response = await fetch(customUrl, {
+          method: "POST",
+          headers: {
+            Authorization: `apikey ${MailchimpKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email_address: email,
+            merge_fields: {
+                FNAME: "",
+                LNAME: ""
+              },
+            status: "subscribed",
+            vip: false,
+            tags: ["Member"]
+          }),
+        });
+      
+        const received = await response.json();
+        console.log(received)
 
-        for (const p of plans) {
-            let response = await dLocalApi.get(`/subscription/plan/${p.id}/subscription/all`);  
-            let data = response.data.data;
-            subsFromAPI = [...subsFromAPI, ...data]
-          }
+        if(received.status == "subscribed") {
+            let newSub = {
+                email: user?.email,
+                active: true,
+            }
+    
+            user.freeSubscription = newSub
+            await user.save()
+            user.password = null;
 
-        // let subToAdd = subsFromAPI.filter((subFromApi) => subs.findIndex((v) => v.id == subFromApi.id) == -1)
-        let subToAdd = subsFromAPI.reduce((max, current) => {
-            return current.created_at > max.created_at ? current : max;
-        }, subsFromAPI[0]); 
-
-        console.log(subToAdd)
-
-        let newSub = {
-        id: subToAdd?.id,
-        planId: subToAdd.plan.id,
-        subscription_token: subToAdd.subscription_token,
-        status: subToAdd?.status,
-        payment_method_code: subToAdd?.payment_method_code,
-        client_id: subToAdd?.client_id,
-        success_url:subToAdd?.success_url,
-        client_first_name: subToAdd?.client_first_name,
-        client_last_name: subToAdd?.client_last_name,
-        client_document_type: subToAdd?.client_document_type,
-        client_document: subToAdd?.client_document,
-        client_email: subToAdd?.client_email,
-        created_at: subToAdd?.created_at,
-        active: subToAdd?.active,
+    
+            return NextResponse.json({ success: true, user: user, message: "Subscriptor creado con éxito. Chequea tu email :)" }, { status: 200 })
+        }
+        else {
+            return NextResponse.json({ success: false, user: user, message: received.detail }, { status: 400 })
         }
 
-        user.subscription = newSub
-        await user.save()
-
-        return NextResponse.json({ success: true, user: user, message: "Subscriptor creado con éxito" }, { status: 200 })
 
 
     } else {

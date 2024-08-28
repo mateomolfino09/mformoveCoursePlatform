@@ -102,10 +102,10 @@ function testCapsLock(event: any) {
             className='image-gradient'
           />
         <div className="left-container">
-          <h1 className="title">MForMove Platform</h1>
-          <p className="text">Moverse es el medio para reconocerse</p>
+        <h1 className="title font-boldFont">MForMove Platform</h1>
+        <p className="text !mt-0">Moverse es el medio para reconocerse</p>
           <div className="about-us-btn-container">
-            <a href="#" className="about-us-btn">Sobre Nosotros</a>
+          <a href="/select-plan" className="about-us-btn !py-3 rounded-full !px-3">Membresias</a>          
           </div>
         </div>
       </div>
