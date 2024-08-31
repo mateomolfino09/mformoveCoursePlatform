@@ -315,7 +315,7 @@ function useProvideAuth() {
 
 
 
-	  const newSub = async (idUser: string) => {
+	  const newSub = async (idUser: string, planId: string) => {
 		if(!idUser) return
 		try {	
 			const res = await fetch(endpoints.payments.createSub, {
@@ -323,7 +323,7 @@ function useProvideAuth() {
 				headers: {  
 				  'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ idUser }),
+				body: JSON.stringify({ idUser, planId }),
 			  })
 
 			const data = await res.json()

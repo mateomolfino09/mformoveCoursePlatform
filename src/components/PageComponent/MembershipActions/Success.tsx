@@ -37,16 +37,21 @@ const Success = () => {
     else {
       setLoading(false)
       Cookies.remove('userPaymentToken')
+      Cookies.remove('planToken')
+
     }
   }, [auth.user])
 
   const handleSub = async () => {
     setLoading(true);
     const paymentToken = Cookies.get('userPaymentToken')
-    
+    const planId = Cookies.get('planToken')
+
+    console.log(planId)
+
     if (!paymentToken ) {
       toast.error(`No tienes token de subscripcion, te redireccionaremos al inicio...`);
-      router.push('/home');
+      router.push('/select-plan');
       return
     }
     try {
@@ -55,13 +60,14 @@ const Success = () => {
         auth.fetchUser()
         return
       }
-      const data = await auth.newSub(user._id);
+      const data = await auth.newSub(user._id, planId);
       if (data.error) {
         toast.error(`${data.error}`);
-        router.push('/home')
+        // router.push('/select-plan');
       }
       else {
         setUser(data.user)
+        await auth.fetchUser()
         toast.success(`Subscriptor creado con éxito`);
       }
     } catch (error) {
@@ -120,9 +126,7 @@ const Success = () => {
             <AiFillCheckCircle className='h-32 w-32 text-green-500' />
           </div>
           <p className='text-base md:text-lg font-light'>
-            Elevate your Practice: Rooted in Science, Cultivated with
-            Mindfulness. Uniting Yoga, Movement, Breathwork, and Skill-Based
-            Training with Dylan Werner
+            Eleva tu práctica: enraizada en la ciencia, cultivada con conciencia plena. Uniendo yoga, movimiento, trabajo de respiración y entrenamiento basado en habilidades con Mateo Molfino.
           </p>
           {loading ? (
             <>
