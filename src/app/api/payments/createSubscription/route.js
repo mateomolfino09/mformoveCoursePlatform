@@ -48,20 +48,26 @@ export async function PUT(req) {
 
         const hashedEmail = generateMd5(user.email)
 
-            const res = await mailchimp.lists.setListMember(
-                process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID,
-                hashedEmail,
-                {
-                    email_address: user.email,
-                    merge_fields: {
-                        FNAME: "",
-                        LNAME: ""
-                        },
-                    status_if_new: "subscribed",
-                    tags: ["Vip"],
-                    vip: true
-                }
-              );
+        const res = await mailchimp.lists.setListMember(
+            process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID,
+            hashedEmail,
+            {
+                email_address: user.email,
+                merge_fields: {
+                    FNAME: "",
+                    LNAME: ""
+                    },
+                status_if_new: "subscribed",
+                tags: ["VIP"],
+                vip: true
+            }
+            );
+
+            const resmtag = await mailchimp.lists.updateListMemberTags(
+            process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID,
+            hashedEmail,
+            { tags: [{ name: "VIP", status: "active" }] },{ tags: [{ name: "Member", status: "active" }] }
+            );
 
             let newSub = {
                 id: subToAdd?.id,

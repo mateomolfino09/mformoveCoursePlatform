@@ -6,9 +6,14 @@ import { serialize } from 'cookie';
 import { NextResponse } from 'next/server';
 import connectDB from '../../../../config/connectDB';
 import dLocalApi from '../dlocalTest';
+import mailchimp from "@mailchimp/mailchimp_marketing";
 
 export async function POST(req) {
     connectDB();
+    mailchimp.setConfig({
+      apiKey: process.env.MAILCHIMP_API_KEY,
+      server: process.env.MAILCHIMP_API_SERVER,
+    });
     const { email, planId } = await req.json();
     try {
       if (req.method === 'POST') {
@@ -39,6 +44,26 @@ export async function POST(req) {
               planId,
               subscriptionId
               });  
+
+            const resm = await mailchimp.lists.updateListMember(
+              process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID,
+              hashedEmail,
+              {
+                  email_address: user.email,
+                  merge_fields: {
+                      FNAME: "",
+                      LNAME: ""
+                      },
+                  vip: false
+              }
+            );
+
+            const resmtag = await mailchimp.lists.updateListMemberTags(
+              process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID,
+              hashedEmail,
+              { tags: [{ name: "VIP", status: "inactive" }] },{ tags: [{ name: "Member", status: "active" }] }
+            );
+
             await user.save()
           }
 
