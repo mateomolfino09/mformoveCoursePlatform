@@ -68,15 +68,21 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
                     headers: {  
                       'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ email }),
+                    body: JSON.stringify({ email, planId: planSelected?.id }),
                   })
         
                 const data = await res.json()
                 setLoading(false)
 
+                if(!data.success) {
+                    toast.error(data.message)
+                    return
+                }
         
-                const { token } = data
+                const { token, planToken } = data
                 Cookies.set('userPaymentToken', token ? token : '', { expires: 5})
+                Cookies.set('planToken', planToken ? planToken : '', { expires: 5})
+
                 router.push(`https://checkout-sbx.dlocalgo.com/validate/subscription/${planSelected?.plan_token}`)
             }
             else {

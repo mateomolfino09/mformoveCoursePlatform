@@ -44,7 +44,7 @@ const SuccessOneTimePayment = () => {
 
     if (!paymentToken) {
       toast.error(`No tienes token de membresia, te redireccionaremos al inicio...`);
-      router.push('/home');
+      router.push('/select-plan');
       return;
     }
 
@@ -58,7 +58,7 @@ const SuccessOneTimePayment = () => {
         const data = await auth.newMembership(user._id, paymentToken);
         if (data.error) {
           toast.error(`${data.error}`);
-          router.push('/home');
+          router.push('/select-plan');
         } else {
           setUser(data.user);
           toast.success(`Membership creada con éxito`);
@@ -119,9 +119,7 @@ const SuccessOneTimePayment = () => {
              <AiFillCheckCircle className='h-32 w-32 text-green-500' />
            </div>
            <p className='text-base md:text-lg font-light'>
-             Elevate your Practice: Rooted in Science, Cultivated with
-             Mindfulness. Uniting Yoga, Movement, Breathwork, and Skill-Based
-             Training with Dylan Werner
+            Eleva tu práctica: enraizada en la ciencia, cultivada con conciencia plena. Uniendo yoga, movimiento, trabajo de respiración y entrenamiento basado en habilidades con Mateo Molfino.
            </p>
            {loading ? (
              <>
