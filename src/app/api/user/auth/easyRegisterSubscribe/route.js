@@ -145,7 +145,7 @@ export async function POST(request) {
             },
           status: "subscribed",
           vip: false,
-          tags: ["rutina"]
+          tags: ["RUTINA"]
         }),
       });
       
