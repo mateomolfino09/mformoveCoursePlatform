@@ -144,6 +144,8 @@ export async function POST(request) {
               PASSWORD: password
             },
           status: "subscribed",
+          vip: false,
+          tags: ["rutina"]
         }),
       });
       
