@@ -18,14 +18,16 @@ export async function POST(request) {
     if (request.method === 'POST') {
       const { email, name, gender, country } =
       await request.json();
-      // const validCaptcha = await validateCaptcha(captcha);
+      const MailchimpKey = process.env.MAILCHIMP_API_KEY;
+      const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
+      const MailchimpAudience = process.env.MAILCHIMP_PLATFORM_AUDIENCE_ID;
+      const MailchimpNewsletterAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;
+      const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpAudience}/members`;
+      const customNewsletterUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpNewsletterAudience}/members`;
 
       const user = await Users.findOne({ email: email });
-      if (user) {
 
-        const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpAudience}/members`;
-        const customNewsletterUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpNewsletterAudience}/members`;
-      
+      if (user) {
         const response = await fetch(customUrl, {
           method: "POST",
           headers: {
@@ -51,10 +53,12 @@ export async function POST(request) {
           body: JSON.stringify({
             email_address: email,
             merge_fields: {
-                NAME: name,
-                PASSWORD: password
+                FNAME: name,
+                LNAME: ""
               },
             status: "subscribed",
+            vip: false,
+            tags: ["RUTINA"]
           }),
         });
 
@@ -103,17 +107,7 @@ export async function POST(request) {
 
       await newUser.save();
 
-      //SUBSCRIBO A MAILCHIMP PLATFORM
-
-      const MailchimpKey = process.env.MAILCHIMP_API_KEY;
-      const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
-      const MailchimpAudience = process.env.MAILCHIMP_PLATFORM_AUDIENCE_ID;
-      const MailchimpNewsletterAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;
-
-      console.log(MailchimpKey,MailchimpServer,  MailchimpAudience)
-    
-      const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpAudience}/members`;
-      const customNewsletterUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpNewsletterAudience}/members`;
+      //SUBSCRIBO A MAILCHIMP PLATFORa    
     
       const response = await fetch(customUrl, {
         method: "POST",
@@ -140,10 +134,12 @@ export async function POST(request) {
         body: JSON.stringify({
           email_address: email,
           merge_fields: {
-              NAME: name,
-              PASSWORD: password
+              FNAME: name,
+              LNAME: ""
             },
           status: "subscribed",
+          vip: false,
+          tags: ["RUTINA"]
         }),
       });
       
