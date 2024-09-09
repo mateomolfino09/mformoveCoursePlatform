@@ -5,6 +5,8 @@ import { getPlans } from '../api/payments/getPlans';
   export default async function Page() {
 
     const plans = await getPlans()
+    let origin;
+
     if (process.env.NODE_ENV === 'development') {
       origin = "https://checkout-sbx.dlocalgo.com"
     } else {
