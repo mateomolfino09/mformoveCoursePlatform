@@ -8,7 +8,6 @@ if (process.env.NODE_ENV === 'development') {
   API_BASE_URL = "https://api.dlocalgo.com/v1"
 }
 
-
 const dLocalApi = axios.create({
   baseURL: API_BASE_URL,
   headers: {
