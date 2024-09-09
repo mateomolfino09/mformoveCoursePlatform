@@ -83,7 +83,13 @@ const bookFeedbackSuccess = async (req, res) => {
         currency: course.currency
       }).save();
 
-      const { origin } = absoluteUrl(req);
+      let origin;
+
+      if (process.env.NODE_ENV === 'development') {
+        origin = "http://localhost:3000"
+      } else {
+        origin = "https://www.mateomove.com"
+      }
       const link = `${origin}/home`;
       const title = `<h1 style="color:black">¡Compra Realizada con éxito!</h1>`;
       const message = `

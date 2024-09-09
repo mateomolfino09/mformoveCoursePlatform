@@ -37,8 +37,13 @@ const forget = async (req, res) => {
       user.resetToken = token;
       await user.save();
 
-      const { origin } = absoluteUrl(req);
-      const link = `${origin}/reset/${token}`;
+      let origin;
+
+      if (process.env.NODE_ENV === 'development') {
+        origin = "http://localhost:3000"
+      } else {
+        origin = "https://www.mateomove.com"
+      }      const link = `${origin}/reset/${token}`;
       const title = `<h1>Restablece tu contraseña</h1>`;
 
       const message = `
