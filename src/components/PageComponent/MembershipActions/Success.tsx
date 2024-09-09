@@ -27,10 +27,11 @@ const Success = () => {
   const [loading, setLoading] = useState(false);
   const router =  useRouter()
   const [user,setUser] = useState<User | null>(null)
+  const [created,setCreated] = useState<boolean | null>(false)
 
   useEffect(() => {
     console.log(auth.user)
-    if(!user?.subscription) handleSub()
+    if(!user?.subscription && !created) handleSub()
     else if(!auth.user) {
       auth.fetchUser()
     }
@@ -61,7 +62,7 @@ const Success = () => {
         return
       }
       const data = await auth.newSub(user._id, planId);
-      if (data.error) {
+      if (data.error && !created) {
         toast.error(`${data.error}`);
         // router.push('/select-plan');
       }
@@ -69,6 +70,7 @@ const Success = () => {
         setUser(data.user)
         await auth.fetchUser()
         toast.success(`Subscriptor creado con éxito`);
+        setCreated(true)
       }
     } catch (error) {
       console.log(error);
