@@ -57,8 +57,13 @@ export async function POST(request) {
 
       await newUser.save();
 
-      const { origin } = absoluteUrl(request);
-      const link = `${origin}/email/${token}`;
+      let origin;
+
+      if (process.env.NODE_ENV === 'development') {
+        origin = "http://localhost:3000"
+      } else {
+        origin = "https://www.mateomove.com"
+      }      const link = `${origin}/email/${token}`;
       const title = `<h1>Confirma tu email</h1>`;
 
       const message = `
