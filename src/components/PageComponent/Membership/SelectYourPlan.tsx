@@ -17,9 +17,10 @@ import { MiniLoadingSpinner } from '../Products/MiniSpinner';
 interface Props {
     plans: Plan[]
     select: string
+    origin: string
 }
 
-const SelectYourPlan = ({ plans, select = "" }: Props) => {
+const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
     const [planSelected, setPlanSelected] = useState<Plan | null | undefined>(plans[0])
     const [loading, setLoading] = useState<boolean>(false)
 
@@ -83,7 +84,7 @@ const SelectYourPlan = ({ plans, select = "" }: Props) => {
                 Cookies.set('userPaymentToken', token ? token : '', { expires: 5})
                 Cookies.set('planToken', planToken ? planToken : '', { expires: 5})
 
-                router.push(`https://checkout-sbx.dlocalgo.com/validate/subscription/${planSelected?.plan_token}`)
+                router.push(`${origin}/validate/subscription/${planSelected?.plan_token}`)
             }
             else {
                 console.log(email)

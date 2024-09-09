@@ -14,9 +14,10 @@ import Footer from '../../Footer'
 
 interface Props {
     plans: Plan[]
+    origin: string
 }
 
-const Membership = ({ plans }: Props ) => {
+const Membership = ({ plans, origin }: Props ) => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -68,7 +69,7 @@ const Membership = ({ plans }: Props ) => {
 
         </div>
         <div className='h-auto w-full bg-[#131212] items-center justify-center relative flex flex-col pb-12'>
-            <SelectYourPlan plans={plans} select=''/>   
+            <SelectYourPlan plans={plans} select='' origin={origin}/>   
         </div>
         <Footer />
         

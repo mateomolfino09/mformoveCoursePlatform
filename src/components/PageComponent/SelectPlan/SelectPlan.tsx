@@ -16,9 +16,10 @@ import { useAuth } from '../../../hooks/useAuth'
 
 interface Props {
     plans: Plan[]
+    origin: string
 }
 
-const SelectPlan = ({ plans }: Props ) => {
+const SelectPlan = ({ plans, origin }: Props ) => {
     const dispatch = useAppDispatch()
     const auth = useAuth();
 
@@ -55,7 +56,7 @@ const SelectPlan = ({ plans }: Props ) => {
     <div className='relative bg-to-dark lg:h-full min-h-screen overflow-scroll overflow-x-hidden'  
     >          
     <MainSideBar where={'index'}>
-              <SelectYourPlan plans={plans} select={"select"}/>   
+              <SelectYourPlan plans={plans} select={"select"} origin={origin}/>   
               <FreeProductWhoAreWe />
           <Footer />
           
