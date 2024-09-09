@@ -13,7 +13,14 @@ export async function POST(req) {
         name, description, currency, amount, frequency_type
         } = await req.json();  
   try { 
-      const { origin } = absoluteUrl(req);
+
+    let origin;
+
+    if (process.env.NODE_ENV === 'development') {
+      origin = "http://localhost:3000"
+    } else {
+      origin = "https://www.mateomove.com"
+    }
 
       console.log(origin)
 
