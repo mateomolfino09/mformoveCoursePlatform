@@ -176,9 +176,9 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
       router.push('/login');
     }
     
-    if(!auth.user || !auth?.user?.subscription?.active) {
-      router.push('/home');
-    }
+    // if(!auth.user || !auth?.user?.subscription?.active) {
+    //   router.push('/home');
+    // }
 
 
     if (typeof window !== 'undefined') {

@@ -162,7 +162,7 @@ const IndividualProduct = ({ product }: Props) => {
               <h2 className='text-black text-4xl md:text-5xl font-bold lg:pr-4'>{product?.name}</h2>
               <AcademicCapIcon className='h-8 w-8 hidden lg:block text-black'/>
             </div>
-            <p className='text-black lg:pr-12 text-lg md:text-lg font-normal'>{product.description}</p>
+            <p className='text-black lg:pr-12 text-lg md:text-lg font-normal'>{product?.description}</p>
             <div className='product-image md:py-8'>
             {hasWindow && (
                 <>
@@ -191,7 +191,7 @@ const IndividualProduct = ({ product }: Props) => {
               ) : (
                 <>
                   <div className="absolute inset-0 w-0 bg-[#13E096] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
-                  <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Comprar Ahora{' '} ({product.price} {product.currency})
+                  <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Comprar Ahora{' '} ({product?.price} {product?.currency})
                   </span> 
    
                 </>
