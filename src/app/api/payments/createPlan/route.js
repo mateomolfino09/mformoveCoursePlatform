@@ -4,6 +4,7 @@ import Plan from '../../../../models/planModel';
 import { NextResponse } from 'next/server';
 import dLocalApi from '../dlocalTest';
 import absoluteUrl from 'next-absolute-url';
+import { getCurrentURL } from '../../assets/getCurrentURL';
 
 
 connectDB();
@@ -14,13 +15,7 @@ export async function POST(req) {
         } = await req.json();  
   try { 
 
-    let origin;
-
-    if (process.env.NODE_ENV === 'development') {
-      origin = "http://localhost:3000"
-    } else {
-      origin = "https://www.mateomove.com"
-    }
+    let origin = getCurrentURL();
 
       console.log(origin)
 

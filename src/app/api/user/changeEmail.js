@@ -3,6 +3,7 @@ import { sendEmail } from '../../../helpers/sendEmail';
 import User from '../../../models/userModel';
 import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
+import { getCurrentURL } from '../assets/getCurrentURL';
 
 connectDB();
 
@@ -25,13 +26,9 @@ const changeEmail = async (req, res) => {
       user.resetToken = token;
       await user.save();
 
-      let origin;
+      let origin = getCurrentURL();
 
-      if (process.env.NODE_ENV === 'development') {
-        origin = "http://localhost:3000"
-      } else {
-        origin = "https://www.mateomove.com"
-      }      const link = `${origin}/resetEmail/${token}`;
+      const link = `${origin}/resetEmail/${token}`;
       const title = `<h1 style="color:black">Restablece tu email</h1>`;
       const message = `
       <div>     

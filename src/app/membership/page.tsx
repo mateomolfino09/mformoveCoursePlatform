@@ -11,7 +11,7 @@ import { getPlans } from '../api/payments/getPlans';
 
     const plans = await getPlans()
     let origin;
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV != 'production') {
       origin = "https://checkout-sbx.dlocalgo.com"
     } else {
       origin = "https://checkout.dlocalgo.com"

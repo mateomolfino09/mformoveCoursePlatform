@@ -7,6 +7,7 @@ import absoluteUrl from 'next-absolute-url';
 import {validateRecaptcha} from '../../../recaptcha/validate';
 import mailchimp from '@mailchimp/mailchimp_transactional';
 import Mailgen from 'mailgen'
+import { getCurrentURL } from '../../../assets/getCurrentURL';
 
 connectDB();
 const mailchimpClient = mailchimp(process.env.MAILCHIMP_TRANSACTIONAL_API_KEY);
@@ -40,13 +41,7 @@ export async function POST(req) {
       user.resetToken = token;
       await user.save();
 
-      let origin;
-
-      if (process.env.NODE_ENV === 'development') {
-        origin = "http://localhost:3000"
-      } else {
-        origin = "https://www.mateomove.com"
-      }
+      let origin = getCurrentURL();
       
       const link = `${origin}/reset/${token}`;
       console.log(link)

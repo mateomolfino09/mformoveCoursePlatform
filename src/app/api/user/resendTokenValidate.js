@@ -3,6 +3,7 @@ import { sendEmail } from '../../../helpers/sendEmail';
 import Users from '../../../models/userModel';
 import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
+import { getCurrentURL } from '../assets/getCurrentURL';
 
 connectDB();
 
@@ -30,13 +31,8 @@ const resendTokenValidate = async (req, res) => {
 
       await user.save();
 
-      let origin;
-
-      if (process.env.NODE_ENV === 'development') {
-        origin = "http://localhost:3000"
-      } else {
-        origin = "https://www.mateomove.com"
-      }      const link = `${origin}/email/${token}`;
+      let origin = getCurrentURL();
+      const link = `${origin}/email/${token}`;
       const title = `<h1>Confirma tu email</h1>`;
       const message = `
         <div>     
