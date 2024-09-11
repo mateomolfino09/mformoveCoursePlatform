@@ -10,6 +10,7 @@ import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
 import { serialize } from 'cookie';
 import axios from 'axios';
+import { getCurrentURL } from '../../../assets/getCurrentURL';
 
 connectDB();
 
@@ -57,13 +58,8 @@ export async function POST(request) {
 
       await newUser.save();
 
-      let origin;
-
-      if (process.env.NODE_ENV === 'development') {
-        origin = "http://localhost:3000"
-      } else {
-        origin = "https://www.mateomove.com"
-      }      const link = `${origin}/email/${token}`;
+      let origin = getCurrentURL();
+        const link = `${origin}/email/${token}`;
       const title = `<h1>Confirma tu email</h1>`;
 
       const message = `

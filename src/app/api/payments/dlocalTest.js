@@ -2,7 +2,7 @@ import axios from 'axios';
 
 let API_BASE_URL;
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV != 'production') {
   API_BASE_URL = 'https://api-sbx.dlocalgo.com/v1';
 } else {
   API_BASE_URL = "https://api.dlocalgo.com/v1"
