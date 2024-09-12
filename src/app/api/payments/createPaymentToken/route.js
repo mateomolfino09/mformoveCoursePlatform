@@ -95,7 +95,7 @@ export async function POST(req) {
         return NextResponse.json({ message: 'Error inesperado, vuelva a intentar', type: 'error'}, { status: 401 })
       }
     } catch (error) {
-      console.log(error)
+        console.log(error)
         return NextResponse.json({ message: 'Error inesperado, vuelva a intentar', type: 'error'}, { status: 500 })
     }
   };
