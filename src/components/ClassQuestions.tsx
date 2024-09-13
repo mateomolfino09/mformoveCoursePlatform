@@ -248,7 +248,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
                   <div className='flex justify-start items-center space-x-2 '>
                     <UserCircleIcon className='h-8' />
                     <div className='flex flex-col'>
-                      <p className='text-sm'> {quest.user.name}</p>
+                      <p className='text-sm'> {quest?.user?.name}</p>
                       <p className='text-xs text-gray-400'>
                         {' '}
                         {handleDateReturn(new Date(quest.createdAt))}
@@ -262,7 +262,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
                         <p className='text-xs pb-1'>0</p>
                       </div>
                       <p className='text-xs justify-start items-start '> {quest.question}</p>
-                      {(user?.rol === 'Admin' || user?._id === quest.user._id) && (
+                      {(user?.rol === 'Admin' || user?._id === quest?.user?._id) && (
                         <>
                         <div className='flex item-center justify-center border-solid border-transparent border border-collapse text-base !ml-12'>
                           <div className='w-4 mr-2 transform hover:text-blue-500 hover:scale-110 cursor-pointer'>

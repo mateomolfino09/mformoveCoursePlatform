@@ -5,6 +5,7 @@ import { verify } from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
 import { NextResponse } from 'next/server';
 import dLocalApi from '../dlocalTest';
+import { getCurrentURL } from '../../assets/getCurrentURL'
 
 connectDB();
 
@@ -13,8 +14,7 @@ export async function POST(req) {
     await req.json();
 
   try {
-    const { origin } = absoluteUrl(req);
-
+    let origin = getCurrentURL();
     console.log(`${origin}${back_url}`);
 
     if (req.method === 'POST') {

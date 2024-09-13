@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://api-sbx.dlocalgo.com/v1'; // Replace with the actual base URL
+let API_BASE_URL;
+
+if (process.env.NODE_ENV != 'production') {
+  API_BASE_URL = 'https://api-sbx.dlocalgo.com/v1';
+} else {
+  API_BASE_URL = "https://api.dlocalgo.com/v1"
+}
 
 const dLocalApi = axios.create({
   baseURL: API_BASE_URL,

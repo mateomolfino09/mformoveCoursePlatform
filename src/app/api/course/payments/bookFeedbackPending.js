@@ -4,6 +4,7 @@ import Bill from '../../../../models/billModel';
 import Course from '../../../../models/courseModel';
 import User from '../../../../models/userModel';
 import absoluteUrl from 'next-absolute-url';
+import { getCurrentURL } from '../../assets/getCurrentURL';
 
 const mercadopago = require('mercadopago');
 
@@ -74,7 +75,7 @@ const bookFeedbackPending = async (req, res) => {
         currency: course.currency
       }).save();
 
-      const { origin } = absoluteUrl(req);
+      let origin = getCurrentURL();
       const link = `${origin}/home`;
       const title = `<h1 style="color:black">Pago pendiente.</h1>`;
       const message = `

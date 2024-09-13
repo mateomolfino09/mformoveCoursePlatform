@@ -99,7 +99,7 @@ function CarouselClasses({
         </div>
       </div>
       <ChevronLeftIcon
-        className={`absolute left-2 z-[250] h-9 ${
+        className={`absolute left-2 z-[110] h-9 ${
           title === 'Mis Cursos' ? 'bottom-64' : 'bottom-32'
         } opacity-0 transition hover:scale-125 group-hover:opacity-100 ${
           classesDB?.length && classesDB?.length == 0 ? 'hidden' : ''
@@ -118,7 +118,7 @@ function CarouselClasses({
         ))}
       </m.div>
       <ChevronRightIcon
-        className={`absolute right-0 z-[250]  h-9 ${
+        className={`absolute right-0 z-[110]  h-9 ${
           title === 'Mis Cursos' ? 'bottom-64' : 'bottom-32'
         } transition hover:scale-125 ${
             classesDB?.length && classesDB?.length < 1 ? 'hidden' : ''

@@ -27,6 +27,7 @@ import { useAuth } from '../hooks/useAuth';
 import { HiOutlineLockClosed } from 'react-icons/hi2';
 import { CiLock } from 'react-icons/ci';
 import { setOpenModal } from '../redux/features/filterClass';
+import state from '../valtio';
 interface Props {
   c: IndividualClass;
 }
@@ -66,9 +67,20 @@ function CarouselClassesThumbnail({
   const filterClassSlice = useAppSelector(
     (state) => state.filterClass.value
     );
+
+    const checkLogin = () => {
+      if(!auth.user) {
+        state.loginForm = true;
+        return false;
+      }
+      else {
+        state.loginForm = false;
+        return true
+      }
+    }
   
 
-  const ComponentToRender = ({ children }: any) => (
+  const ComponentToRender = ({ children }: any) =>  (
     <>
       {auth.user && auth?.user?.subscription?.active ? (
         <>
@@ -77,7 +89,9 @@ function CarouselClassesThumbnail({
           </Link>
         </>
       ) : (
-        <div onClick={() => dispatch(setOpenModal(!filterClassSlice.openModal))}>
+        <div onClick={() => {
+          checkLogin() ? dispatch(setOpenModal(!filterClassSlice.openModal)) : null;
+        }}>
             {children}
         </div>
       )}

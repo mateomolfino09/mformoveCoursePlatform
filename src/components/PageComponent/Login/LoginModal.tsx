@@ -192,7 +192,7 @@ const LoginModal = () => {
                   <IoCloseCircle className='w-8 h-8 absolute -right-3 -top-8 text-black cursor-pointer' onClick={() => state.loginForm = false}/>
                 </div>
                 <div className='mt-12 w-full h-full flex flex-col justify-start space-y-1 capitalize'>
-                  <div className='flex justify-start space-x-4 items-center h-20 w-96'>
+                  <div className='flex justify-start space-x-4 items-center h-20 w-full'>
                     <div>
                     <CiUnlock className='text-[#7912FD] w-8 h-8' style={{flex: '0 1 18%'}}/>
 
@@ -202,7 +202,7 @@ const LoginModal = () => {
                       <p className='text-sm font-medium'>Obtene acceso Instantáneo a la plataforma de MForMove</p>
                     </div>
                   </div>
-                  <div className='flex justify-start space-x-4 items-center h-20 w-96 '>
+                  <div className='flex justify-start space-x-4 items-center h-20 w-full '>
                     <div>
                       <CiBookmarkCheck style={{flex: '0 1 18%'}} className='text-[#7912FD] w-8 h-8'/>
                     </div>
@@ -212,7 +212,7 @@ const LoginModal = () => {
                     </div>
                     
                   </div>
-                  <div className='flex justify-start space-x-4 items-center h-20 w-96'>
+                  <div className='flex justify-start space-x-4 items-center h-20 w-full'>
                     <div>
                       <CiMobile4 className='text-[#7912FD] w-8 h-8' style={{flex: '0 1 18%'}}/>
 

@@ -3,6 +3,7 @@ import { sendEmail } from '../../../helpers/sendEmail';
 import User from '../../../models/userModel';
 import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
+import { getCurrentURL } from '../assets/getCurrentURL';
 
 connectDB();
 
@@ -25,7 +26,8 @@ const changeEmail = async (req, res) => {
       user.resetToken = token;
       await user.save();
 
-      const { origin } = absoluteUrl(req);
+      let origin = getCurrentURL();
+
       const link = `${origin}/resetEmail/${token}`;
       const title = `<h1 style="color:black">Restablece tu email</h1>`;
       const message = `

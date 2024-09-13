@@ -7,6 +7,7 @@ import absoluteUrl from 'next-absolute-url';
 import {validateRecaptcha} from '../../../recaptcha/validate';
 import mailchimp from '@mailchimp/mailchimp_transactional';
 import Mailgen from 'mailgen'
+import { getCurrentURL } from '../../../assets/getCurrentURL';
 
 connectDB();
 const mailchimpClient = mailchimp(process.env.MAILCHIMP_TRANSACTIONAL_API_KEY);
@@ -40,7 +41,8 @@ export async function POST(req) {
       user.resetToken = token;
       await user.save();
 
-      const { origin } = absoluteUrl(req);
+      let origin = getCurrentURL();
+      
       const link = `${origin}/reset/${token}`;
       console.log(link)
       const title = `<h1>Restablece tu contraseña</h1>`;

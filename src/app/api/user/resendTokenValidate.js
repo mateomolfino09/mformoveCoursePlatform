@@ -3,6 +3,7 @@ import { sendEmail } from '../../../helpers/sendEmail';
 import Users from '../../../models/userModel';
 import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
+import { getCurrentURL } from '../assets/getCurrentURL';
 
 connectDB();
 
@@ -30,7 +31,7 @@ const resendTokenValidate = async (req, res) => {
 
       await user.save();
 
-      const { origin } = absoluteUrl(req);
+      let origin = getCurrentURL();
       const link = `${origin}/email/${token}`;
       const title = `<h1>Confirma tu email</h1>`;
       const message = `

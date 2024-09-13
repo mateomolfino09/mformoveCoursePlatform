@@ -3,23 +3,20 @@ import Plan from '../../../../models/planModel';
 import dLocalApi from '../dlocalTest';
 import { verify } from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
-import { NextResponse } from 'next/server';
+import { getCurrentURL } from '../../assets/getCurrentURL';
+
 
 connectDB();
 
 export async function POST(req) {
-  const { name, description, currency, amount, frequency_type } = await req.json();
-  try {
-    let origin;
-    //const { origin } = absoluteUrl(req);
-    
-    if (process.env.NODE_ENV === 'development') {
-      origin = 'http://localhost:3000';
-    } else {
-      origin = 'https://www.mateomove.com';
-    }
+    const {
+        name, description, currency, amount, frequency_type
+        } = await req.json();  
+  try { 
 
-    console.log(origin);
+    let origin = getCurrentURL();
+
+      console.log(origin)
 
     if (req.method === 'POST') {
       const response = await dLocalApi.post('/subscription/plan', {

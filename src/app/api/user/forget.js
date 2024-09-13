@@ -4,6 +4,7 @@ import User from '../../../models/userModel';
 import validateCaptcha from './validateCaptcha';
 import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
+import { getCurrentURL } from '../assets/getCurrentURL';
 
 connectDB();
 const mailchimpClient = mailchimp(process.env.MAILCHIMP_TRANSACTIONAL_API_KEY);
@@ -37,8 +38,8 @@ const forget = async (req, res) => {
       user.resetToken = token;
       await user.save();
 
-      const { origin } = absoluteUrl(req);
-      const link = `${origin}/reset/${token}`;
+      let origin = getCurrentURL(); 
+         const link = `${origin}/reset/${token}`;
       const title = `<h1>Restablece tu contraseña</h1>`;
 
       const message = `

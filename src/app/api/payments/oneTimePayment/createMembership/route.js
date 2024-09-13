@@ -35,6 +35,7 @@ export async function PUT(req) {
 
         await user.save()
         await product.save()
+        user.password = null
 
         return NextResponse.json({ success: true, user: user, message: "Subscriptor creado con éxito" }, { status: 200 })
 

@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify'
 import { MiniLoadingSpinner } from './PageComponent/Products/MiniSpinner'
+import state from '../valtio'
 
 const Footer = () => {
 const auth = useAuth()
@@ -82,7 +83,7 @@ const onSubmit = async (data: any) => {
     }
 
   return (
-    <div className='bg-white w-full h-auto md:h-72 flex flex-col md:flex-row justify-start md:justify-between scrollbar-hide space-x-12 overflow-hidden relative bottom-0'>
+    <div className='bg-white w-full h-auto md:h-72 flex flex-col md:flex-row justify-start md:justify-between scrollbar-hide space-x-12 md:space-x-2 overflow-hidden relative bottom-0'>
         <div className='text-black flex flex-col md:flex-col pt-12 pl-8 '>
             <h3 className='text-base md:text-lg mb-2'>Newsletter: </h3>
             <form onSubmit={handleSubmit(onSubmit)} className='border-b-black border-b-[1px] flex md:w-full w-80  group mb-2'>
@@ -104,16 +105,22 @@ const onSubmit = async (data: any) => {
             </form>
             <p className='text-xs md:text-sm'>Subscribete hoy para todas las actualizaciones y promociones</p>
         </div>
-        <div className='text-black flex flex-col space-y-12 pt-12 !mx-0 px-6 overflow-x-hidden'>
+        <div className='text-black md:w-[30%] flex flex-col space-y-12 pt-12 !mx-0 px-6 overflow-x-hidden'>
             <div className='flex w-full flex-col md:pl-0 space-y-4 md:space-y-0 md:flex-row md:space-x-5'>
                 {/* <Link href={'/home'}> */}
-                <div style={{flex: '1 1 0px;'}} className='md:w-1/4 w-full flex justify-center items-center'>
-                    <h4 className='font-light text-sm md:text-base w-full md:text-center' >Home page</h4>
-                </div>
-                <div style={{flex: '1 1 0px;'}} className='md:w-1/4 w-full'>
-                    <h4 className='font-light text-sm md:text-base md:text-center' >Memberships</h4>
-                </div>
-                {/* <div style={{flex: '1 1 0px;'}} className='md:w-1/4 w-full'>
+                  <div style={{flex: '1 1 0px;'}} className='md:w-1/3 w-full cursor-pointer'>
+                <Link href={'/'}>
+                      <h4 className='font-light text-sm md:text-base w-full md:text-center' >Home</h4>
+                </Link>
+                  </div>
+
+                  <div style={{flex: '1 1 0px;'}} className='cursor-pointer md:w-1/3 w-full'>
+                <Link href={'/select-plan'}>
+                      <h4 className='font-light text-sm md:text-base md:text-center' >Memberships</h4>
+                </Link>
+                  </div>
+
+                {/* <div style={{flex: '1 1 0px;'}} className='md:w-1/3 w-full'>
                     <h4 className='font-light text-sm md:text-base md:text-center' >Sobre Nosotros</h4>
 
                 </div> */}
@@ -124,15 +131,15 @@ const onSubmit = async (data: any) => {
                 {/* <Link href={'/aboutUs'}> */}
                 {/* </Link> */}
                 {auth.user ? (
-                    <div style={{flex: '1 1 0px;'}} className='md:w-1/4 w-full'>
-                    <h4 className='font-light text-sm md:text-base md:text-center' >Mi Cuenta</h4>
+                    <div style={{flex: '1 1 0px;'}} className='md:w-1/3 w-full'>
+                <Link href={'/account'}>
+                    <h4 className='font-light text-sm md:text-base md:text-center cursor-pointer' >Mi Cuenta</h4>
 
+                </Link>
                     </div>
-                // <Link href={'/account'}>
-                // </Link>
                 ) : (
-                    <div style={{flex: '1 1 0px;'}} className='md:w-1/4 w-full'>
-                        <h4 className='font-light text-sm md:text-base md:text-center' >Log In</h4>
+                    <div style={{flex: '1 1 0px;'}} onClick={() => state.loginForm = true} className='md:w-1/3 w-full'>
+                        <h4 className='font-light text-sm md:text-base md:text-center cursor-pointer' >Log In</h4>
 
                     </div>
                 // <Link href={'/login'}>

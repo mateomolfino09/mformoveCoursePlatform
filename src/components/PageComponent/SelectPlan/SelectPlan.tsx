@@ -11,13 +11,25 @@ import Link from 'next/link'
 import { useAppDispatch } from '../../../hooks/useTypeSelector'
 import { toggleScroll } from '../../../redux/features/headerHomeSlice'
 import Footer from '../../Footer'
+import FreeProductWhoAreWe from '../../MainSideBarProducts/FreeProductWhoAreWe'
+import { useAuth } from '../../../hooks/useAuth'
 
 interface Props {
     plans: Plan[]
+    origin: string
 }
 
-const SelectPlan = ({ plans }: Props ) => {
+const SelectPlan = ({ plans, origin }: Props ) => {
     const dispatch = useAppDispatch()
+    const auth = useAuth();
+
+    useEffect(() => {
+      
+      if(!auth.user) {
+        auth.fetchUser()
+      }    
+  
+    }, [auth.user]);
 
     useEffect(() => {
         // Function to handle scroll event
@@ -41,14 +53,16 @@ const SelectPlan = ({ plans }: Props ) => {
       }, []);
 
   return (
-    <MainSideBar where={''}>
+    <div className='relative bg-to-dark lg:h-full min-h-screen overflow-scroll overflow-x-hidden'  
+    >          
+    <MainSideBar where={'index'}>
+              <SelectYourPlan plans={plans} select={"select"} origin={origin}/>   
+              <FreeProductWhoAreWe />
+          <Footer />
+          
+      </MainSideBar>
 
-        <div className='h-auto w-full bg-[#131212] items-center justify-center relative flex flex-col pt-16 pb-12'>
-            <SelectYourPlan plans={plans} select={"select"}/>   
-        </div>
-        <Footer />
-        
-    </MainSideBar>
+    </div>
   )
 }
 

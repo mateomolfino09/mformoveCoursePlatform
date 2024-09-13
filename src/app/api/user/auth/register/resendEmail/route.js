@@ -9,6 +9,7 @@ import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
 import { serialize } from 'cookie';
 import axios from 'axios';
+import { getCurrentURL } from '../../../../assets/getCurrentURL';
 
 connectDB();
 
@@ -43,8 +44,9 @@ export async function POST(request) {
 
       await user.save();
 
-      const { origin } = absoluteUrl(request);
-      const link = `${origin}/email/${token}`;
+      let origin = getCurrentURL();
+      
+          const link = `${origin}/email/${token}`;
       const title = `<h1>Confirma tu email</h1>`;
 
       const message = `
