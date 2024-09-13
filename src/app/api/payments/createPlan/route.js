@@ -4,7 +4,7 @@ import dLocalApi from '../dlocalTest';
 import { verify } from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
 import { getCurrentURL } from '../../assets/getCurrentURL';
-
+import { NextResponse } from 'next/server';
 
 connectDB();
 
