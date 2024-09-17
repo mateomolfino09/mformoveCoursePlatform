@@ -239,7 +239,7 @@ const LoginModal = () => {
                       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
                         Nombre
                       </label>
-                      <input className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errorMessage ? 'border-red-500' : ''}`} id="name" type="text" placeholder="fulano" {...register('name', { required: true })} />
+                      <input className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errorMessage ? 'border-red-500' : ''}`} id="name" type="text" placeholder="nombre" {...register('name', { required: true })} />
                     </div>
                     <div className="mb-6">
                       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
