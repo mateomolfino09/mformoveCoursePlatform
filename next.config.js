@@ -19,7 +19,7 @@ const nextConfig = {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET
   },
   // Habilitar source maps en producción
-  productionBrowserSourceMaps: true
+  //productionBrowserSourceMaps: true
 };
 
 module.exports = nextConfig;
