@@ -117,7 +117,8 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             </m.div>
           </Link>
         )}
-        <Link href={'/products'}>
+        {/* <Link href={'/products'}> */}
+        <Link href={'/select-plan'}>
           <m.div
             initial={{ color: '#fff', x: 700 }}
             animate={+windowWidth < 768 ? animationPhones : animation}
