@@ -127,7 +127,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
             onClick={(e) => {
               e.currentTarget.style.color = '#fff';
-              router.push('/');
+              router.push('/select-plan');
             }}
             className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
           >

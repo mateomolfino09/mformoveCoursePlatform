@@ -135,7 +135,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
     <div className='w-full px-3 mt-24 lg:right-1/4 md:right-32 flex flex-col lg:pl-36'>
         <div className='flex md:space-y-1 flex-col mb-12 items-start pl-2 justify-start'>
             <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Practica conmigo,</h1>
-            <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Aprende mi métodología,</h1>
+            <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Aprende mi metodología,</h1>
             <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Potencia tu Entrenamiento.</h1>
         </div>
 
