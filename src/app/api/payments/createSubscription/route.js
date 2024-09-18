@@ -66,7 +66,7 @@ export async function PUT(req) {
             const resmtag = await mailchimp.lists.updateListMemberTags(
             process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID,
             hashedEmail,
-            { tags: [{ name: "VIP", status: "active" }] },{ tags: [{ name: "Member", status: "active" }] }
+            { tags: [{ name: "VIP", status: "active" }] }
             );
 
             let newSub = {

@@ -47,7 +47,7 @@ export async function PUT(req) {
               },
             status: "subscribed",
             vip: false,
-            tags: ["Member"]
+            tags: ["RUTINA"]
           }),
         });
       
