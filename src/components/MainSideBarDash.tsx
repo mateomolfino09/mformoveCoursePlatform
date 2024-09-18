@@ -117,30 +117,22 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             </m.div>
           </Link>
         )}
-        <m.div
-          initial={{ color: '#fff', x: 700 }}
-          animate={+windowWidth < 768 ? animationPhones : animation}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#fff';
-          }}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
-        >
-          <button
+        <Link href={'/select-plan'}>
+          <m.div
+            initial={{ color: '#fff', x: 700 }}
+            animate={+windowWidth < 768 ? animationPhones : animation}
             onMouseEnter={(e) => {
               e.currentTarget.style.color = '#fff';
             }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = '#d1cfcf6e';
-            }}
-            onClick={() => router.push('/select-plan')}
-            className='flex flex-col justify-end items-end  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
+            className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
           >
-            <h2 className='font-light lg:text-xl'>Productos</h2>
+            <h2 className='font-light lg:text-xl'>Membresía</h2>
             <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
-              <a href='/products'>Aprender en línea</a>
+              Aprender en línea
             </h1>
-          </button>
-        </m.div>
+          </m.div>
+        </Link>
         {/* <Link href={'/about'}>
           <m.div
             initial={{ color: '#fff', x: 700 }}
