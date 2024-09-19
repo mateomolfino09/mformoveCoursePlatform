@@ -61,7 +61,7 @@ export async function POST(req) {
             const resmtag = await mailchimp.lists.updateListMemberTags(
               process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID,
               hashedEmail,
-              { tags: [{ name: "VIP", status: "inactive" }] },{ tags: [{ name: "Member", status: "active" }] }
+              { tags: [{ name: "VIP", status: "inactive" }] }
             );
 
             await user.save()

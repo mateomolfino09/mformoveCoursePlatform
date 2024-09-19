@@ -186,7 +186,7 @@ export async function POST(req) {
             const resmtag = await mailchimp.lists.updateListMemberTags(
             MailchimpNewsletterAudience,
             hashedEmail,
-            { tags: [{ name: "VIP", status: "active" }] },{ tags: [{ name: "Member", status: "active" }] }
+            { tags: [{ name: "VIP", status: "active" }] }
             );
 
             const res2 = await mailchimp.lists.setListMember(
@@ -208,7 +208,7 @@ export async function POST(req) {
             const resmtag2 = await mailchimp.lists.updateListMemberTags(
                 MailchimpAudience,
             hashedEmail,
-            { tags: [{ name: "VIP", status: "active" }] },{ tags: [{ name: "Member", status: "active" }] }
+            { tags: [{ name: "VIP", status: "active" }] }
             );
 
             let newSub = {
