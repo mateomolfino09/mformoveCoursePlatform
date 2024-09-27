@@ -125,7 +125,7 @@ const LoginModal = () => {
     setLoading(true);
     
     try {
-      const data = await auth.forgetPasswordSendNoCaptcha(email)
+      const data = await auth.resetPasswordSendMailchamp(email)
 
       if(data?.error) {
         setErrorMessage(data.error);

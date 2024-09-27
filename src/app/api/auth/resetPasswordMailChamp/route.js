@@ -6,12 +6,11 @@ import { getCurrentURL } from '../../assets/getCurrentURL';
 import mailchimp from '@mailchimp/mailchimp_transactional';
 
 connectDB();
-debugger;
+
 const mailchimpClient = mailchimp(process.env.MAILCHIMP_TRANSACTIONAL_API_KEY);
-debugger;
+
 export async function POST(req) {
   try {
-    debugger;
     const { email } = await req.json();
 
     const user = await User.findOne({ email });
