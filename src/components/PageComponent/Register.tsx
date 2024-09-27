@@ -91,15 +91,16 @@ function Register() {
       e.preventDefault();
       setLoading(true);
 
-      const captcha = captchaToken;
-      if (!captcha) {
-        toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde');
-        setLoading(false);
-        setTimeout(() => {
-          window.location.reload();
-        }, 4000);
-        return;
-      }
+       const captcha = null;
+      // const captcha = captchaToken;
+      // if (!captcha) {
+      //   toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde');
+      //   setLoading(false);
+      //   setTimeout(() => {
+      //     window.location.reload();
+      //   }, 4000);
+      //   return;
+      // }
 
       if (password !== conPassword) {
         toast.error('Las contraseñas no coinciden');

@@ -277,6 +277,26 @@ function useProvideAuth() {
 		}
 	  };
 
+
+
+	  const resetPasswordSendMailchamp = async (email: string) => {
+		try {	
+			const res = await fetch('/api/auth/resetPasswordMailChamp', {
+				method: 'POST',
+				headers: {
+				  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ email }),
+			  });
+		  
+			  const data = await res.json();
+			  return data;
+		} catch (error) {
+		  setUser(null);
+		}
+	  };
+
+
 	  const resetMailSend = async (email: string) => {
 		try {	
 			const res = await fetch(endpoints.auth.resetMailSend, {
@@ -409,6 +429,7 @@ function useProvideAuth() {
 		resetMailSend,
 		forgetPasswordSend,
 		forgetPasswordSendNoCaptcha,
+		resetPasswordSendMailchamp,
 		newSub,
 		cancelSub,
 		newMembership,
