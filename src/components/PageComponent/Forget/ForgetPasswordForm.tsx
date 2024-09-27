@@ -90,8 +90,9 @@ function ForgetForm() {
     const gRecaptchaObj = await executeRecaptcha("inquirySubmit")
     
     try {
-      const data = await auth.forgetPasswordSend(email, gRecaptchaObj)
-
+      //const data = await auth.forgetPasswordSendNoCaptcha(email)
+      const data = await auth.resetPasswordSendMailchamp(email)
+      
       if(data?.error) {
         setMessage((current: any) => [...current, {
           message: data.error,
