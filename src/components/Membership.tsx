@@ -39,7 +39,7 @@ function Membership({ user, handleVisibility }: Props) {
   return (
     <div className='mt-6 grid grid-cols-1 gap-x-4 border px-4 md:grid-cols-4 md:border-x-0 md:border-t md:border-b-0 md:px-0'>
       <div className='space-y-2 py-4'>
-        <button
+        {/* <button
           onClick={() => router.push('/account/billing')}
           //   disabled={isBillingLoading || !subscription}
           className='block min-w-fit px-5 h-10 !bg-black text-center font-light text-white py-2 rounded-full hover:bg-black hover:-translate-y-1 transition-all duration-500
@@ -47,7 +47,7 @@ function Membership({ user, handleVisibility }: Props) {
           //   onClick={manageSubscription}
         >
           {isBillingLoading ? <LoadingSpinner /> : 'Facturación'}
-        </button>
+        </button> */}
       </div>
 
       <div className='col-span-3'>
@@ -87,9 +87,9 @@ function Membership({ user, handleVisibility }: Props) {
             />
           </div>
           <div className='md:text-right'>
-            <Link href={'/account/billing'}>
+            {/* <Link href={'/account/billing'}>
               <p className='membershipLink'>Detalles de Facturación</p>
-            </Link>
+            </Link> */}
               <p className={`membershipLink ${!auth?.user?.subscription?.active ? 'hidden' : ''}`} onClick={handleVisibility}>Cancelar Subscripción</p>
           </div>
         </div>
