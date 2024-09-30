@@ -94,7 +94,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             </m.div>
           </Link>
         )} */}
-        {auth.user && auth?.user?.subscription?.active && (
+        {/* {auth.user && auth?.user?.subscription?.active && (
           <Link href={'/home'}>
             <m.div
               initial={{ color: '#fff', x: 700 }}
@@ -116,7 +116,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
               </h1>
             </m.div>
           </Link>
-        )}
+        )} */}
         <Link href={'/select-plan'}>
           <m.div
             initial={{ color: '#fff', x: 700 }}
