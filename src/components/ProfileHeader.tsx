@@ -12,7 +12,7 @@ const ProfileHeader = () => {
 
   return (
     <motion.header className={`bg-black w-full h-14 py-1 `} initial={{ opacity: 0 }} transition={{ duration: 0.8, ease: 'linear' }} animate={{ opacity: 1 }}>
-    <Link href='/home'>
+    <Link href='/select-plan'>
       <img
         src='/images/MFORMOVE_blanco03.png'
         width={180}
