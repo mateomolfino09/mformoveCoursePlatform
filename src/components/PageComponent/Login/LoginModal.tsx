@@ -125,7 +125,7 @@ const LoginModal = () => {
     setLoading(true);
     
     try {
-      const data = await auth.forgetPasswordSendNoCaptcha(email)
+      const data = await auth.resetPasswordSendMailchamp(email)
 
       if(data?.error) {
         setErrorMessage(data.error);
@@ -266,7 +266,7 @@ const LoginModal = () => {
                         </div>
                         <div className="flex items-center mb-1 mt-3">
                           <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">¿Ya tenés una cuenta?
-                          <p onClick={() => setLoginForm(true)} className="text-blue-600 underline hover:underline"> Apreta Acá</p></label>
+                          <p onClick={() => setLoginForm(true)} className="text-blue-600 underline hover:underline"> Click aquí</p></label>
                         </div>
                 </form>
                 
@@ -418,7 +418,7 @@ const LoginModal = () => {
                   </div>
                   <div className="flex items-center mb-1 mt-3">
                     <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">¿No tenés una cuenta?
-                    <p onClick={() => setLoginForm(false)} className="text-blue-600 underline cursor-pointer"> Apreta Acá</p></label>
+                    <p onClick={() => setLoginForm(false)} className="text-blue-600 underline cursor-pointer"> Click aquí</p></label>
                   </div>
               </form>
                 </>

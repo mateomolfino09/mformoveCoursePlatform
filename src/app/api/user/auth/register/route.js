@@ -22,15 +22,15 @@ export async function POST(request) {
       const secretKey = process.env.RECAPTCHA_SECRET_SITE_KEY
 
       const formData = `secret=${secretKey}&response=${gRecaptchaToken}`;
-      const validCaptcha =await validateRecaptcha(formData)
+      //const validCaptcha =await validateRecaptcha(formData)
 
-      console.log(validCaptcha)
+     // console.log(validCaptcha)
 
       // const validCaptcha = await validateCaptcha(captcha);
 
-      if (!validCaptcha.success) {
-        return NextResponse.json({ error: 'Unprocessable request, Invalid captcha code.'}, { status: 422 })
-      }
+      // if (!validCaptcha.success) {
+      //   return NextResponse.json({ error: 'Unprocessable request, Invalid captcha code.'}, { status: 422 })
+      // }
 
       const user = await Users.findOne({ email: email });
       if (user) {

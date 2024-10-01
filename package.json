@@ -54,6 +54,8 @@
     "js-cookie": "^3.0.1",
     "jsonwebtoken": "^9.0.0",
     "maath": "^0.5.3",
+    "mailchimp": "^1.2.1",
+    "mailchimp-api-v3": "^1.15.0",
     "mailgen": "^2.0.28",
     "mercadopago": "^1.5.15",
     "mongodb": "^4.13.0",

@@ -13,7 +13,7 @@ const endpoints = {
     resetPassword: (token: string) =>  `/api/user/auth/reset/${token}`,
     resetPasswordSend: `/api/user/auth/forget`,
     resetPasswordSendNoCaptcha: `/api/user/auth/forgetNoCaptcha`,
-
+    resetPasswordSendMailchamp: `/api/auth/resetPasswordMailChamp`,
   },
   user: {
     update: (id: string) => `/api/user/update/${id}`,
