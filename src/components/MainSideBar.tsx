@@ -1,3 +1,5 @@
+"use client"; // Mark this as a Client Component
+
 import IndexHeader from './IndexHeader';
 import HeaderHome from './HeaderHome';
 import ProductHeader from './PageComponent/Products/HeaderProduct';
@@ -38,7 +40,6 @@ const MainSideBar = ({ children, where }: Props) => {
       {children}
     </div>
   );
-  
 };
 
 export default MainSideBar;
