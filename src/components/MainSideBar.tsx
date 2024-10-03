@@ -15,15 +15,17 @@ import React, { useState } from 'react';
 interface Props {
   children: any;
   where: any;
+  setActivo: any;
 }
 
-const MainSideBar = ({ children, where }: Props) => {
+const MainSideBar = ({ children, where, setActivo }: Props) => {
   const auth = useAuth();
   const [showNav, setShowNav] = useState(false);
   const snap = useSnapshot(state);
 
   const toggleNav = () => {
     setShowNav(!showNav);
+    setActivo(!showNav);
   };
 
   return (

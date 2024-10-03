@@ -44,7 +44,7 @@ function ResetForm({ token }: Props) {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-      message.some((mes: any) => mes.type === alertTypes.success.type) && router.push('/login');
+      message.some((mes: any) => mes.type === alertTypes.success.type) && router.push('/select-plan');
     }, 3000)
     setTimeout(() => {
       const copy = [...message]
