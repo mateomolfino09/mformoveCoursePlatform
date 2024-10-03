@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ClassTypes, ProductDB} from '../../../typings'
 import MainSideBar from '../MainSideBar'
 import Head from 'next/head'
@@ -8,12 +8,15 @@ import FilterNavProductWrapper from '../FilterNavProductWrapper'
 interface Props {
 
 }
-
 const Privacy = () => {
+  
+  const [activo, setActivo] = useState(false);
+
+
   return (
     <div className='relative bg-white lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
     >    
-    <MainSideBar where={'product'}>
+    <MainSideBar where={'product'} setActivo={(estado: any) => setActivo(estado)}>
       <FilterNavProductWrapper>
         <Head>
         <title>Video Streaming</title>

@@ -109,9 +109,10 @@ const SuccessProductPayment = ({ product }: Props) => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+  const [activo, setActivo] = useState(false);
 
   return (
-     <MainSideBar where={''}>
+     <MainSideBar where={''}setActivo={(estado: any) => setActivo(estado)}>
        <div className='h-[100vh]  w-full bg-transparent items-center justify-center relative flex overflow-x-hidden'>
          <div className='absolute top-0 left-0 h-full w-screen -z-10'>
            <Image

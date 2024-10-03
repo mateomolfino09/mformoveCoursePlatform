@@ -39,11 +39,11 @@ const Index = () => {
   }, [auth.user]);
   
 
-
+  const [activo, setActivo] = useState(false);
   return (
     <AnimatePresence>
         <div className='h-screen bg-gradient-to-b lg:h-[100vh] overflow-hidden font-montserrat'>
-        <MainSideBar where={"index"}>
+        <MainSideBar where={"index"} setActivo={(estado: any) => setActivo(estado)}> 
           <Head>
             <title>MforMove Platform</title>
             <meta name='description' content='Stream Video App' />
