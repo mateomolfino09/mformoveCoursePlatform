@@ -1,3 +1,4 @@
+'use-client'
 import React, { useState } from 'react'
 import { ClassTypes, ProductDB} from '../../../typings'
 import MainSideBar from '../MainSideBar'
