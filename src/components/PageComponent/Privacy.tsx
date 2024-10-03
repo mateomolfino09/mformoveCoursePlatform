@@ -1,31 +1,31 @@
-import React from 'react'
-import { ClassTypes, ProductDB} from '../../../typings'
-import MainSideBar from '../MainSideBar'
-import Head from 'next/head'
-import Footer from '../Footer'
-import FilterNavProductWrapper from '../FilterNavProductWrapper'
+'use client';
+import React, { useState } from 'react';
+import { ClassTypes, ProductDB } from '../../../typings';
+import MainSideBar from '../MainSideBar';
+import Head from 'next/head';
+import Footer from '../Footer';
+import FilterNavProductWrapper from '../FilterNavProductWrapper';
+interface Props {}
+const Privacy: React.FC<Props> = () => {
+  const [activo, setActivo] = useState(false);
 
-interface Props {
-
-}
-
-const Privacy = () => {
   return (
-    <div className='relative bg-white lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
-    >    
-    <MainSideBar where={'product'}>
-      <FilterNavProductWrapper>
-        <Head>
+    <div className='relative bg-white lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'>
+      <Head>
         <title>Video Streaming</title>
         <meta name='description' content='Stream Video App' />
         <link rel='icon' href='/favicon.ico' />
-        </Head>
-        <main className='relative lg:space-y-12 space-y-5 mt-32'>
+      </Head>
+      
+      <MainSideBar where={'product'} setActivo={(estado: boolean) => setActivo(estado)}>
+        <FilterNavProductWrapper>
+          <main className='relative lg:space-y-12 space-y-5 mt-32'>
             <section className='!mt-0 lg:pr-64 pl-4 md:pl-20 lg:pl-28'>
-                {/* <PrivacyFilters filtersDB={filters}/> */}
-                <h1 className='text-black text-3xl md:text-4xl mb-2 font-semibold capitalize font-montserrat md:mb-8'>Políticas de Privacidad</h1>
-               <div className='w-full h-full flex-col space-y-4 text-black text-base'>
-               <p>Consideramos que el consentimiento, la privacidad de los datos y la transparencia son una prioridad. Poner en tus manos, como usuario, el poder de controlar la información personal que almacenamos es un pilar importante para construir un servicio y comunidad como MforMove. Aquí tienes algunos de nuestros principios de privacidad:</p>
+              <h1 className='text-black text-3xl md:text-4xl mb-2 font-semibold capitalize font-montserrat md:mb-8'>
+                Políticas de Privacidad
+              </h1>
+              <div className='w-full h-full flex-col space-y-4 text-black text-base'>
+                <p>Consideramos que el consentimiento, la privacidad de los datos y la transparencia son una prioridad. Poner en tus manos, como usuario, el poder de controlar la información personal que almacenamos es un pilar importante para construir un servicio y comunidad como MforMove. Aquí tienes algunos de nuestros principios de privacidad:</p>
 
                 <p>La información que subes o publicas en MforMove puede ser vista por otros, dependiendo de tu configuración de privacidad.</p>
                 <p>Agregamos y desidentificamos cierta información sobre nuestros miembros para usarla con fines comerciales.</p>
@@ -73,14 +73,14 @@ const Privacy = () => {
                 <p>¿Qué hace MforMove con la información recopilada en este sitio web?</p>
                 <p>Información personal: podemos utilizar tu información personal para los fines descritos en esta política y/o el aviso de privacidad para servicios específicos. Dichos fines incluyen, entre otros:</p>
                 <ul>
-                <li>Proporcionar nuestros productos y servicios a los usuarios, incluida la visualización de contenido y publicidad personalizados;</li>
-                <li>Compartir información con nuestros socios comerciales que realizan servicios básicos (como alojamiento, facturación, almacenamiento de datos, seguridad y servicios de informes) relacionados con la operación del sitio web y el servicio;</li>
-                <li>Recopilar y procesar información sobre tu ubicación actual para proporcionar productos y servicios basados en la ubicación y otros contenidos;</li>
-                <li>Verificar tu identidad;</li>
-                <li>Dar seguimiento a las transacciones iniciadas en el sitio web;</li>
-                <li>Auditoría, investigación y análisis para mantener, proteger y mejorar nuestros servicios;</li>
-                <li>Garantizar el funcionamiento técnico de nuestra red; y</li>
-                <li>Desarrollar nuevos servicios.</li>
+                  <li>Proporcionar nuestros productos y servicios a los usuarios, incluida la visualización de contenido y publicidad personalizados;</li>
+                  <li>Compartir información con nuestros socios comerciales que realizan servicios básicos (como alojamiento, facturación, almacenamiento de datos, seguridad y servicios de informes) relacionados con la operación del sitio web y el servicio;</li>
+                  <li>Recopilar y procesar información sobre tu ubicación actual para proporcionar productos y servicios basados en la ubicación y otros contenidos;</li>
+                  <li>Verificar tu identidad;</li>
+                  <li>Dar seguimiento a las transacciones iniciadas en el sitio web;</li>
+                  <li>Auditoría, investigación y análisis para mantener, proteger y mejorar nuestros servicios;</li>
+                  <li>Garantizar el funcionamiento técnico de nuestra red; y</li>
+                  <li>Desarrollar nuevos servicios.</li>
                 </ul>
                 <p>MforMove procesa información personal en sus servidores de todo el mundo. En algunos casos, procesamos información personal en un servidor fuera de tu país. Proporcionamos información personal y no personal a nuestras subsidiarias, empresas afiliadas u otros terceros de confianza o personas para el propósito de procesar información personal en nuestro nombre. Exigimos que estas partes acepten procesar dicha información personal de acuerdo con nuestras instrucciones y cumpliendo con las medidas de confidencialidad y seguridad apropiadas.</p>
 
@@ -90,9 +90,7 @@ const Privacy = () => {
 
                 <p>Si proponemos utilizar información personal para cualquier propósito que no sea el descrito en esta política y/o en los avisos de servicio específicos, y lo rechazas, es posible que MforMove no pueda proporcionarte su servicio.</p>
 
-                <p>Mantenimiento de la información personal: puedes acceder a tu información contenida en la base de datos de MforMove siguiendo las instrucciones en nuestra página de Protección de Datos y Seguridad. Si crees que alguna de tu información es incorrecta o necesita actualizarse, por favor infórmanos en la dirección de correo electrónico help@MforMove.com. MforMove
-                </p>
-                <p>Mantenemos procedimientos para que revises la información que recolectamos sobre ti. Obtén más información en nuestra página de Protección de Datos y Seguridad.</p>
+                <p>Mantenimiento de la información personal: puedes acceder a tu información contenida en la base de datos de MforMove siguiendo las instrucciones en nuestra página de Protección de Datos y Seguridad. Si crees que alguna de tu información es incorrecta o necesita actualizarse, por favor infórmanos en la dirección de correo electrónico help@MforMove.com. MforMove mantiene procedimientos para que revises la información que recolectamos sobre ti. Obtén más información en nuestra página de Protección de Datos y Seguridad.</p>
 
                 <p>Tomamos medidas de seguridad adecuadas para proteger contra el acceso no autorizado, la alteración, divulgación o destrucción de datos. Esto incluye revisiones internas de nuestras prácticas de recolección, almacenamiento y procesamiento de datos, así como medidas de seguridad físicas para evitar el acceso no autorizado a los sistemas donde almacenamos datos personales.</p>
 
@@ -138,17 +136,14 @@ const Privacy = () => {
                 <p>Tu consentimiento</p>
                 <p>Al utilizar nuestro sitio web, consientes la recopilación y uso de información por parte de MForMove tal como se establece en esta política. Si decidimos cambiar nuestra política, publicaremos esos cambios en esta página para que siempre estés al tanto de qué información recopilamos, cómo la usamos y bajo qué circunstancias limitadas la divulgamos. El acceso continuo o el uso del sitio web constituirá tu aceptación expresa de cualquier modificación a esta política.</p>
 
-               </div>
+              </div>
             </section>
-        </main>
-        <Footer />
+          </main>
+          <Footer />
         </FilterNavProductWrapper>
-
-    </MainSideBar>
-
+      </MainSideBar>
     </div>
+  );
+};
 
-  )
-}
-
-export default Privacy
+export default Privacy;

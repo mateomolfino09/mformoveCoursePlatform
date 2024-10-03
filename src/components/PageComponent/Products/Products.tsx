@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ClassTypes, ProductDB} from '../../../../typings'
 import MainSideBar from '../../MainSideBar'
 import Head from 'next/head'
@@ -28,11 +28,12 @@ const Products = ({ products, filters }: Props) => {
     }
 
   }, [auth.user]);
+  const [activo, setActivo] = useState(false);
 
   return (
     <div className='relative bg-to-dark lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
     >    
-    <MainSideBar where={'productsHome'}>
+    <MainSideBar where={'productsHome'}setActivo={(estado: any) => setActivo(estado)}>
       <FilterNavProductWrapper>
         <Head>
         <title>Video Streaming</title>
