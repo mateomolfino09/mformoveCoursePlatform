@@ -169,7 +169,7 @@ const Home = ({ classesDB, filters }: Props) => {
     setLoading(false)
   }, [filterClassSlice.largo, filterClassSlice.nivel, filterClassSlice.ordenar, filterClassSlice.seen])
   
-  const [activo, setActivo] = useState(false);
+
   return (
     <div className='relative bg-to-dark lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
     onScroll={(e: any) => {
@@ -181,7 +181,7 @@ const Home = ({ classesDB, filters }: Props) => {
       }
     } }
     >
-      <MainSideBar where={'index'} setActivo={(estado: any) => setActivo(estado)}>
+      <MainSideBar where={'index'}>
       <FilterNavWrapper>
 
       <Head>
