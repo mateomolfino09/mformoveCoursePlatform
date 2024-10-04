@@ -62,7 +62,7 @@ const HomeSearch = ({ classesDB, search }: Props) => {
     }
 
   }, [auth?.user]);
-  const [activo, setActivo] = useState(false);
+  
 
   return (
     <div className='relative bg-to-dark lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
@@ -75,7 +75,7 @@ const HomeSearch = ({ classesDB, search }: Props) => {
       }
     } }
     >
-      <MainSideBar where={'home'}setActivo={(estado: any) => setActivo(estado)}>
+      <MainSideBar where={'home'}>
       <Head>
         <title>Video Streaming</title>
         <meta name='description' content='Stream Video App' />

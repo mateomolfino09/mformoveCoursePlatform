@@ -39,7 +39,7 @@ const Billing = ({ bills }: Props) => {
   function openModal() {
     setIsOpen(true);
   }
-  const [activo, setActivo] = useState(false);
+
   return (
       <>
         <Head>
@@ -47,9 +47,7 @@ const Billing = ({ bills }: Props) => {
           <meta name='description' content='Stream Video App' />
           <link rel='icon' href='/favicon.ico' />
         </Head>
-        <MainSideBar where={'home'}
-        setActivo={(estado: any) => setActivo(estado)}
-        >
+        <MainSideBar where={'home'}>
           <div className='w-full px-4 py-4 lg:px-10 lg:py-6 min-h-screen mt-24 font-montserrat'>
             <h1 className='text-2xl mb-8'>Detalles Facturación</h1>
             <table className='min-w-full text-sm  '>

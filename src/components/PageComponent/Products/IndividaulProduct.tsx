@@ -146,11 +146,10 @@ const IndividualProduct = ({ product }: Props) => {
     setModulesQuantity(modules)
     
   }, [])
-  const [activo, setActivo] = useState(false);
 
   return (
     <div className='relative bg-to-dark font-montserrat lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'>
-    <MainSideBar where={'product'} setActivo={(estado: any) => setActivo(estado)}>
+    <MainSideBar where={'product'}>
     <main className='pt-32 bg-white'>
         <div className='product-details flex flex-col space-y-12 lg:flex-row'>
           <div className='product-name-image cursor-pointer lg:w-1/2 flex flex-col space-y-4 px-5 lg:pl-24'>

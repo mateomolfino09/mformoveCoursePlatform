@@ -207,9 +207,9 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-  const [activo, setActivo] = useState(false);
+
   return (
-    <MainSideBar where={'home'}setActivo={(estado: any) => setActivo(estado)}>
+    <MainSideBar where={'home'}>
         <div className='relative h-full bg-dark overflow-x-clip'>
         <main
             className={`relative flex flex-col bg-dark md:pl-11 md:top-16 lg:top-20 ${

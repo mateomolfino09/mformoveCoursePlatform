@@ -104,7 +104,7 @@ const ClassesCategory = ({ classesDB, filters, filter  }: Props) => {
     setLoading(false)
   }, [filterClassSlice.largo, filterClassSlice.nivel, filterClassSlice.ordenar, filterClassSlice.seen])
   
-  const [activo, setActivo] = useState(false);
+
   return (
     <FilterNavWrapper>
     <div className='relative bg-to-dark lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
@@ -117,7 +117,7 @@ const ClassesCategory = ({ classesDB, filters, filter  }: Props) => {
       }
     } }
     >
-      <MainSideBar where={'home'} setActivo={(estado: any) => setActivo(estado)}>
+      <MainSideBar where={'home'}>
       <Head>
         <title>Video Streaming</title>
         <meta name='description' content='Stream Video App' />
