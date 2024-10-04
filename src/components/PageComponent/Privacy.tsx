@@ -13,7 +13,7 @@ const Privacy = () => {
   return (
     <div className='relative bg-white lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
     >    
-    <MainSideBar where={'product'}>
+    <MainSideBar where={'product '} >
       <FilterNavProductWrapper>
         <Head>
         <title>Video Streaming</title>
