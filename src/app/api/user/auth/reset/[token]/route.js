@@ -39,7 +39,10 @@ export async function PUT(req, { params }) {
           status: 'green'
         });
         await user.save();
-        return NextResponse.json({ message: 'Se ha actualizado tu contraseña con éxito!'}, { status: 200 })
+        return NextResponse.json({ 
+          message: 'Se ha actualizado tu contraseña con éxito!', 
+          user: user 
+        }, { status: 200 });
       }
     }
   } catch (error) {
