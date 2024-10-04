@@ -33,15 +33,31 @@ export async function POST(req) {
     const link = `${origin}/reset/${token}`;
 
     const message = `
-      <div>     
-        <div>
-          <button style="background-color:black; border:none;border-radius: 4px;width:100%; padding:14px 0px; margin-bottom:15px">
-            <a style="color:white; text-decoration: none; font-weight:700; font-size:14px" href="${link}">Restablecer contraseña</a>
-          </button>
-        </div>
-        <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de MForMove.</p>
-        <hr style="height:2px;background-color:#221f1f;border:none">       
-      </div> `;
+  <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+      <h2 style="color: #333333; text-align: center;">Restablecer Contraseña</h2>
+      <p style="font-size: 16px; color: #666666; text-align: center;">
+        Has solicitado restablecer tu contraseña. Haz clic en el botón de abajo para proceder:
+      </p>
+      <div style="text-align: center; margin: 20px 0;">
+        <a href="${link}" style="background-color: #000000; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 4px; font-size: 16px; font-weight: bold; display: inline-block;">
+          Restablecer Contraseña
+        </a>
+      </div>
+      <p style="font-size: 14px; color: #999999; text-align: center;">
+        Si no solicitaste este cambio, puedes ignorar este correo.
+      </p>
+      <p style="font-size: 14px; color: #999999; text-align: center; margin-top: 30px;">
+        El equipo de MForMove
+      </p>
+      <hr style="border: none; border-top: 1px solid #eeeeee; margin: 20px 0;">
+      <p style="font-size: 12px; color: #999999; text-align: center;">
+        © 2024 MForMove. Todos los derechos reservados.
+      </p>
+    </div>
+  </div>
+`;
+
 
     // Utiliza mailchimpClient para enviar el correo
     const response = await mailchimpClient.messages.send({
