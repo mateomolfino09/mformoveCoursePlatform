@@ -235,8 +235,9 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json()
-			signOut()
-			setUser(null)
+			debugger;
+			// signOut()
+			setUser(data.user)
 			return data
 		} catch (error) {
 		  setUser(null);
