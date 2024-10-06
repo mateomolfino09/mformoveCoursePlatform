@@ -11,13 +11,13 @@ export async function POST(req: Request, res: NextApiResponse) {
   try {
     const MailchimpKey = process.env.MAILCHIMP_API_KEY;
     const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
-    const MailchimpAudience = process.env.MAILCHIMP_AUDIENCE_ID;
+    const MailchimpAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;
 
     console.log(MailchimpKey,MailchimpServer,  MailchimpAudience)
   
     const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpAudience}/members`;
   
-    const response = await fetch(customUrl, {
+    const responseNews = await fetch(customUrl, {
       method: "POST",
       headers: {
         Authorization: `apikey ${MailchimpKey}`,
@@ -27,9 +27,11 @@ export async function POST(req: Request, res: NextApiResponse) {
         email_address: email,
         merge_fields: {
             FNAME: "",
-            LNAME: ""
+            LNAME: "",
           },
         status: "subscribed",
+        vip: false,
+        tags: ["RUTINA"]
       }),
     });
 
@@ -44,7 +46,7 @@ export async function POST(req: Request, res: NextApiResponse) {
 
     // console.log(newSub)
   
-    const received = await response.json();
+    const received = await responseNews.json();
     console.log(received)
 
     return NextResponse.json(received);
