@@ -20,30 +20,13 @@ export async function POST(request) {
       await request.json();
       const MailchimpKey = process.env.MAILCHIMP_API_KEY;
       const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
-      const MailchimpAudience = process.env.MAILCHIMP_PLATFORM_AUDIENCE_ID;
       const MailchimpNewsletterAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;
-      const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpAudience}/members`;
       const customNewsletterUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpNewsletterAudience}/members`;
 
       const user = await Users.findOne({ email: email });
 
       if (user) {
-        const response = await fetch(customUrl, {
-          method: "POST",
-          headers: {
-            Authorization: `apikey ${MailchimpKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email_address: email,
-            merge_fields: {
-                NAME: name,
-                PASSWORD: password
-              },
-            status: "subscribed",
-          }),
-        });
-  
+
         const responseNews = await fetch(customNewsletterUrl, {
           method: "POST",
           headers: {
@@ -54,11 +37,12 @@ export async function POST(request) {
             email_address: email,
             merge_fields: {
                 FNAME: name,
-                LNAME: ""
+                LNAME: "",
+                PASSWORD: password
               },
             status: "subscribed",
             vip: false,
-            tags: ["RUTINA"]
+            tags: ["RUTINA", "PLATAFORMA"]
           }),
         });
 
@@ -108,22 +92,6 @@ export async function POST(request) {
       await newUser.save();
 
       //SUBSCRIBO A MAILCHIMP PLATFORa    
-    
-      const response = await fetch(customUrl, {
-        method: "POST",
-        headers: {
-          Authorization: `apikey ${MailchimpKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email_address: email,
-          merge_fields: {
-              NAME: name,
-              PASSWORD: password
-            },
-          status: "subscribed",
-        }),
-      });
 
       const responseNews = await fetch(customNewsletterUrl, {
         method: "POST",
@@ -135,11 +103,12 @@ export async function POST(request) {
           email_address: email,
           merge_fields: {
               FNAME: name,
-              LNAME: ""
+              LNAME: "",
+              PASSWORD: password
             },
           status: "subscribed",
           vip: false,
-          tags: ["RUTINA"]
+          tags: ["RUTINA", "PLATAFORMA"]
         }),
       });
       

@@ -37,7 +37,6 @@ export async function POST(req) {
         let isTLH = isToday(when) || isToday(update)
 
         if(isTLH) {
-            const MailchimpKey = process.env.MAILCHIMP_API_KEY;
             const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
             const MailchimpAudience = process.env.MAILCHIMP_PLATFORM_AUDIENCE_ID;
             const MailchimpNewsletterAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;
@@ -61,30 +60,15 @@ export async function POST(req) {
                       email_address: email,
                       merge_fields: {
                           FNAME: "",
-                          LNAME: ""
+                          LNAME: "",
+                          PASSWORD: user.password
                           },
                       status_if_new: "subscribed",
                       status: "subscribed",
-                      tags: ["VIP", "RUTINA"],
+                      tags: ["VIP", "RUTINA", "PLATAFORMA"],
                       vip: true
                   }
                   );
-
-                  const res2 = await mailchimp.lists.setListMember(
-                    MailchimpAudience,
-                    hashedEmail,
-                    {
-                        email_address: email,
-                        merge_fields: {
-                            NAME: name,
-                            PASSWORD: user.password
-                          },
-                        status_if_new: "subscribed",
-                        status: "subscribed",
-                        tags: ["VIP"],
-                        vip: true
-                    }
-                );
               }
               else {
                 //CASO SUBSCRIPTO
@@ -92,12 +76,6 @@ export async function POST(req) {
                 MailchimpNewsletterAudience,
                 hashedEmail,
                 { tags: [{ name: "VIP", status: "active" }]}
-                );
-    
-                const resmtag2 = await mailchimp.lists.updateListMemberTags(
-                    MailchimpAudience,
-                hashedEmail,
-                { tags: [{ name: "VIP", status: "active" }] }
                 );
               }
 
@@ -174,39 +152,18 @@ export async function POST(req) {
                 email_address: email,
                 merge_fields: {
                     FNAME: "",
-                    LNAME: ""
+                    LNAME: "",
+                    PASSWORD: password
                     },
                 status_if_new: "subscribed",
                 status: "subscribed",
-                tags: ["VIP", "RUTINA"],
+                tags: ["VIP", "RUTINA", "PLATAFORMA"],
                 vip: true
             }
             );
 
             const resmtag = await mailchimp.lists.updateListMemberTags(
             MailchimpNewsletterAudience,
-            hashedEmail,
-            { tags: [{ name: "VIP", status: "active" }] }
-            );
-
-            const res2 = await mailchimp.lists.setListMember(
-                MailchimpAudience,
-                hashedEmail,
-            {
-                email_address: email,
-                merge_fields: {
-                    NAME: name,
-                    PASSWORD: password
-                  },
-                status_if_new: "subscribed",
-                status: "subscribed",
-                tags: ["VIP"],
-                vip: true
-            }
-            );
-
-            const resmtag2 = await mailchimp.lists.updateListMemberTags(
-                MailchimpAudience,
             hashedEmail,
             { tags: [{ name: "VIP", status: "active" }] }
             );

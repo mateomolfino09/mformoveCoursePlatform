@@ -70,10 +70,8 @@ export async function POST(request) {
 
       const MailchimpKey = process.env.MAILCHIMP_API_KEY;
       const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
-      const MailchimpAudience = process.env.MAILCHIMP_PLATFORM_AUDIENCE_ID;
-  
-      console.log(MailchimpKey,MailchimpServer,  MailchimpAudience)
-    
+      const MailchimpAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;
+      
       const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpAudience}/members`;
     
       const response = await fetch(customUrl, {
@@ -85,9 +83,11 @@ export async function POST(request) {
         body: JSON.stringify({
           email_address: email,
           merge_fields: {
-              NAME: name,
+              FNAME: name,
+              LNAME: "",
               PASSWORD: password
             },
+          tags: ["PLATAFORMA"],
           status: "subscribed",
         }),
       });
