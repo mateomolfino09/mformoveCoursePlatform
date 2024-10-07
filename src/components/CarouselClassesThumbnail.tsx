@@ -28,6 +28,7 @@ import { HiOutlineLockClosed } from 'react-icons/hi2';
 import { CiLock } from 'react-icons/ci';
 import { setOpenModal } from '../redux/features/filterClass';
 import state from '../valtio';
+import { useRouter } from 'next/navigation';
 interface Props {
   c: IndividualClass;
 }
@@ -64,6 +65,7 @@ function CarouselClassesThumbnail({
 }: Props) {
   const auth = useAuth()
   const dispatch = useAppDispatch()
+  const router = useRouter()
   const filterClassSlice = useAppSelector(
     (state) => state.filterClass.value
     );
@@ -82,7 +84,7 @@ function CarouselClassesThumbnail({
 
   const ComponentToRender = ({ children }: any) =>  (
     <>
-      {auth.user && auth?.user?.subscription?.active ? (
+      {auth.user && (auth?.user?.subscription?.active || auth?.user?.rol === "Admin") ? (
         <>
         <Link href={`/classes/${c.id}`}>
             {children}
@@ -90,7 +92,7 @@ function CarouselClassesThumbnail({
         </>
       ) : (
         <div onClick={() => {
-          checkLogin() ? dispatch(setOpenModal(!filterClassSlice.openModal)) : null;
+          checkLogin() ? router.push('/select-plan') : null;
         }}>
             {children}
         </div>

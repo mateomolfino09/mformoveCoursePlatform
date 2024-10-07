@@ -38,6 +38,7 @@ import Footer from '../Footer';
 import AddQuestionModal from '../AddQuestionModal';
 import GetMembershipModal from '../GetMembershipModal';
 import { setOpenModal } from '../../redux/features/filterClass';
+import GetMembershipModal2 from '../GetMembershipModal2';
 
 interface Props {
   classesDB: IndividualClass[];
@@ -212,7 +213,7 @@ const Home = ({ classesDB, filters }: Props) => {
           
         </main>
       
-      <GetMembershipModal handleVisiblity={handleModal} visible={openModal}/>
+      {/* <GetMembershipModal2 handleVisiblity={handleModal} visible={openModal}/> */}
       <Toaster />
       </FilterNavWrapper>
       </MainSideBar>

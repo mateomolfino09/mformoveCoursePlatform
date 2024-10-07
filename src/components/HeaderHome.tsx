@@ -31,7 +31,25 @@ const HeaderHome = ({ user, toggleNav }: Props) => {
     (state: any) => state.headerHomeReducer.value.scrollHeader
     );
   const pathname = usePathname()
-  console.log('hola')
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+
+    const handleScroll = () => {
+      console.log(window.scrollY > 0)
+      if (window.scrollY > 0) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [router]);
 
   useEffect(() => {
     setDomLoaded(true);
@@ -55,7 +73,7 @@ const HeaderHome = ({ user, toggleNav }: Props) => {
             y: -100,
           }}
           animate={headerAnimation}
-          className={`${headerScroll ? 'bg-black/80 fixed' : 'bg-transparent fixed'}  w-full h-16 flex justify-between items-center transition-all duration-500 z-[250]`}
+          className={`${headerScroll ? 'bg-black/80 fixed' : 'bg-transparent fixed'} ${isScrolled && 'bg-[#141414]'}  w-full h-16 flex justify-between items-center transition-all duration-500 z-[250]`}
         >
           <div className='pl-4 md:pl-16'>
             <a href={pathname != '/home' ? '/home' : `/`}>

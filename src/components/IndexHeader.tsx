@@ -16,6 +16,8 @@ import { Fragment, useContext, useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
 import endpoints from '../services/api';
 import { CiMenuFries } from "react-icons/ci";
+import { useAppSelector } from '../redux/hooks';
+import { throttle } from 'lodash';
 
 interface Props {
   user: User | null;
@@ -25,9 +27,38 @@ interface Props {
 const IndexHeader = ({ user, toggleNav, where }: Props) => {
   const router = useRouter();
   const headerAnimation = useAnimation();
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const [domLoaded, setDomLoaded] = useState(false);
   const snap = useSnapshot(state);
+  const headerScroll = useAppSelector(
+    (state: any) => state.headerHomeReducer.value.scrollHeader
+    );
+
+  useEffect(() => {
+
+    const handleScroll = () => {
+      let isScrolled = 0;
+
+      throttle(() => {
+        isScrolled = (window.scrollY);
+
+        if (isScrolled > 0) {
+          setIsScrolled(true);
+        } else {
+          setIsScrolled(false);
+        }
+      }, 100); // Throttle the function to run once every 100ms
+
+
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [router]);
 
   useEffect(() => {
     setDomLoaded(true);
@@ -62,7 +93,7 @@ const IndexHeader = ({ user, toggleNav, where }: Props) => {
             opacity: 1
           }}
           animate={headerAnimation}
-          className={`bg-transparent fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""}`}
+          className={`bg-transparent fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${isScrolled || headerScroll && 'bg-[#141414]'}`}
         >
           <div className='pl-4 md:pl-16'>
             <img

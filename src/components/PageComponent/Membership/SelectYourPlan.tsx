@@ -27,16 +27,18 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
     const auth = useAuth()
     const router = useRouter()
     const planSelect = [
-        {
-            value: "Membresía Gratis",
-            label: "Membresía Gratis"
-        },
         ...plans.map((p: Plan) => {
             return {
                 value: p.name,
                 label: p.name
             }
-        }) 
+        }), 
+        {
+            value: "Membresía Gratis",
+            label: "Membresía Gratis"
+        }
+
+    
     ]
 
     useEffect(() => {
@@ -135,7 +137,6 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
     <div className='w-full px-3 mt-24 lg:right-1/4 md:right-32 flex flex-col lg:pl-36'>
         <div className='flex md:space-y-1 flex-col mb-12 items-start pl-2 justify-start'>
             <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Practica conmigo,</h1>
-            <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Aprende mi metodología,</h1>
             <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Potencia tu Entrenamiento.</h1>
         </div>
 
@@ -147,7 +148,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
             <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
             {/* <CheckCircleIcon className='text-green-500/80 w-5 h-5 md:w-8 md:h-8 text-[#ae9359]'/> */}
 
-            <p className='text-base font-light'>Clases de Flexibilidad, Fuerza y Respiración Gratuitas</p>
+            <p className='text-base font-light'>Contenido de Flexibilidad, Fuerza y Respiración Gratuitas</p>
             </div>
             <div className='flex space-x-2'>
                 <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
@@ -161,28 +162,22 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
         ) : (
             <>
                 <div className='flex space-x-2'>
-                  <div>
-                        <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
-                    </div>
-                    <p className='text-base font-light'>Rutina de Flexibilidad</p>
-                </div>
-                <div className='flex space-x-2'>
               <div>
                         <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
                     </div>
-                <p className='text-base font-light'>Clases de Flexibilidad, Fuerza y Respiración Exclusivas</p>
+                <p className='text-base font-light'>Clases de Flexibilidad, Fuerza y Respiración Ilimitadas</p>
                 </div>
-                <div className='flex space-x-2'>
+                {/* <div className='flex space-x-2'>
                   <div>
                         <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
                     </div>
                     <p className='text-base font-light'>Asesoramiento Personal Semanal</p>
-                </div>
+                </div> */}
                 <div className='flex space-x-2'>
                   <div>
                         <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
                     </div>
-                    <p className='text-base font-light'>Info EXCLUSIVA sobre mi metodología para incorporar en tu Entrenamiento</p>
+                    <p className='text-base font-light'>Clases Nuevas Para Todos Los Niveles, Todas Las Semanas</p>
                 </div>
                 <div className='flex space-x-2'>
                     <div>
@@ -190,10 +185,17 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
                     </div>
                     <p className='text-base font-light'>Contenido Exclusivo para la Comunidad de MForMovers</p>
                 </div>
+                <div className='flex space-x-2'>
+                  <div>
+                        <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
+                    </div>
+                    <p className='text-base font-light'>7 Días Prueba Gratuita (Para Miembros Nuevos)
+                    </p>
+                </div>
             </>
         )}
     </div>
-    <div className=' right-0 mt-4
+    <div className=' right-0 mt-10
     '>
         <Select
             options={planSelect}
@@ -239,8 +241,9 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
             </div>
     ) : (
         <>
-            <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-2 mt-5 text-center text-xs md:text-sm font-light'>
-                <p>{planSelected?.amount} {planSelected?.currency} facturado {planSelected?.frequency_label} {planSelected?.frequency_label === "Anual" && `(ahorra ${12 * (plans.find(x => x.frequency_label != planSelected?.frequency_label)?.amount ?? 0) - planSelected?.amount } ${planSelected?.currency})`} </p>
+            <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-4 mt-5 text-center text-xs md:text-sm font-light'>
+                <p>0 {planSelected?.currency} facturado hoy.</p>
+                <p>7 días gratis (para miembros nuevos) luego {planSelected?.amount} {planSelected?.currency} facturado {planSelected?.frequency_label} {planSelected?.frequency_label === "Anual" && `(ahorra ${12 * (plans.find(x => x.frequency_label != planSelected?.frequency_label)?.amount ?? 0) - planSelected?.amount } ${planSelected?.currency})`} </p>
                 <p>Enviamos recordatorio antes de facturar para evitar pagos no deseados.</p>
             </div>
         </>
