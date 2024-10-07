@@ -38,19 +38,14 @@ const IndexHeader = ({ user, toggleNav, where }: Props) => {
   useEffect(() => {
 
     const handleScroll = () => {
-      let isScrolled = 0;
+      let scroll = 0;
+      scroll = (window.scrollY);
 
-      throttle(() => {
-        isScrolled = (window.scrollY);
-
-        if (isScrolled > 0) {
-          setIsScrolled(true);
-        } else {
-          setIsScrolled(false);
-        }
-      }, 100); // Throttle the function to run once every 100ms
-
-
+    if (scroll > 0) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -93,7 +88,7 @@ const IndexHeader = ({ user, toggleNav, where }: Props) => {
             opacity: 1
           }}
           animate={headerAnimation}
-          className={`bg-transparent fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${isScrolled || headerScroll && 'bg-[#141414]'}`}
+          className={`bg-transparent fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${(isScrolled || headerScroll) && 'bg-[#141414]'}`}
         >
           <div className='pl-4 md:pl-16'>
             <img

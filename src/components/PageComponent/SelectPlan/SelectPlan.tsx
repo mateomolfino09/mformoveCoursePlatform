@@ -37,16 +37,14 @@ const SelectPlan = ({ plans, origin }: Props ) => {
     const handleScroll = (event: any) => {
       let isScrolled = 0
 
-      throttle((event) => {
-        isScrolled = (event.target.scrollTop);
+      isScrolled = (event.target.scrollTop);
 
-        if(isScrolled === 0) {
-          dispatch(toggleScroll(false))
-        }
-        else {
-          dispatch(toggleScroll(true))
-        }
-      }, 100); // Throttle the function to run once every 100ms
+      if(isScrolled === 0) {
+        dispatch(toggleScroll(false))
+      }
+      else {
+        dispatch(toggleScroll(true))
+      }
     };
 
     // useEffect(() => {
@@ -64,7 +62,7 @@ const SelectPlan = ({ plans, origin }: Props ) => {
     <div className='relative bg-to-dark lg:h-full min-h-screen overflow-scroll overflow-x-hidden' onScroll={(event:any) => handleScroll(event)}
     >          
     <MainSideBar where={'index'}>
-              <SelectYourPlan plans={plans} select={"select"} origin={origin}/>   
+          <SelectYourPlan plans={plans} select={"select"} origin={origin}/>   
               <FreeProductWhoAreWe />
           <Footer />
           
