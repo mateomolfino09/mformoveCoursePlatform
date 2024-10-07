@@ -128,7 +128,7 @@ const Success = () => {
             <LoadingSpinner />
           ) : (
             <div className='flex px-24 py-3 mt-6 border-white border rounded-full justify-center items-center w-full group cursor-pointer hover:bg-white hover:text-black'>
-              <button className='w-full' onClick={() => router.push('/')}>
+              <button className='w-full' onClick={() => router.push('/home')}>
                 Empezar{' '}
               </button>
               <ArrowRightIcon className='w-4 h-4 relative left-4' />
