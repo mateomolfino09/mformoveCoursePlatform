@@ -190,7 +190,7 @@ const IndividualProduct = ({ product }: Props) => {
                 </div>
               ) : (
                 <>
-                  <div className="absolute inset-0 w-0 bg-[#13E096] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
+                  <div className="absolute inset-0 w-0 bg-[#a38951] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
                   <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Comprar Ahora{' '} ({product.price} {product.currency})
                   </span> 
    
