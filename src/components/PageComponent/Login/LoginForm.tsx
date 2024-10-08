@@ -47,7 +47,8 @@ function LoginForm() {
 
     auth.signIn(email, password).then((res: any) => {
       if(res.type != 'error') {
-        router.push('/products');
+        if(res?.user?.subscription?.active) router.push('/home');
+        else router.push('/select-plan');
       } 
       else {
         setMessage((current: any) => [...current, {

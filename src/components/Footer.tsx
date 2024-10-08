@@ -114,11 +114,19 @@ const onSubmit = async (data: any) => {
                 </Link>
                   </div>
 
+                  {auth?.user?.subscription?.active ? (
                   <div style={{flex: '1 1 0px;'}} className='cursor-pointer md:w-1/3 w-full'>
-                <Link href={'/select-plan'}>
-                      <h4 className='font-light text-sm md:text-base md:text-center' >Memberships</h4>
-                </Link>
-                  </div>
+                  <Link href={'/home'}>
+                        <h4 className='font-light text-sm md:text-base md:text-center' >Ver Clases</h4>
+                  </Link>
+                    </div>
+                  ) : (
+                    <div style={{flex: '1 1 0px;'}} className='cursor-pointer md:w-1/3 w-full'>
+                    <Link href={'/select-plan'}>
+                          <h4 className='font-light text-sm md:text-base md:text-center' >Entrena Conmigo</h4>
+                    </Link>
+                      </div>
+                  )}
 
                 {/* <div style={{flex: '1 1 0px;'}} className='md:w-1/3 w-full'>
                     <h4 className='font-light text-sm md:text-base md:text-center' >Sobre Nosotros</h4>
