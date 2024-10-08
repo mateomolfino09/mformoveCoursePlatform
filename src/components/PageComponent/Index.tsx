@@ -17,7 +17,7 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { FaHamburger } from 'react-icons/fa';
 import { GiHamburger } from 'react-icons/gi';
-import MainSideBar from '../MainSideBar';
+import MainSideBar from '../MainSidebar/MainSideBar';
 import Footer from '../Footer';
 
 const Index = () => {

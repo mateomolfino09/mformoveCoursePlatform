@@ -1,22 +1,22 @@
 'use client'
-import IndexHeader from './IndexHeader'
-import { useAuth } from '../hooks/useAuth'
-import { User } from '../../typings';
-import AdminDashboardSideBar from './AdminDashboardSideBar';
-import AdminDashboardTopBar from './AdminDashboardTopBar';
+import IndexHeader from '../IndexHeader'
+import { useAuth } from '../../hooks/useAuth'
+import { User } from '../../../typings';
+import AdminDashboardSideBar from '../AdminDashboardSideBar';
+import AdminDashboardTopBar from '../AdminDashboardTopBar';
 import { Transition } from '@headlessui/react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, { Fragment, useEffect, useState } from 'react';
 import MainSideBarDash from './MainSideBarDash';
-import HeaderHome from './HeaderHome';
-import Footer from './Footer';
-import ProductHeader from './PageComponent/Products/HeaderProduct';
-import LoginForm from './PageComponent/Login/LoginForm';
+import HeaderHome from '../HeaderHome';
+import Footer from '../Footer';
+import ProductHeader from '../PageComponent/Products/HeaderProduct';
+import LoginForm from '../PageComponent/Login/LoginForm';
 import { useSnapshot } from 'valtio';
-import state from '../valtio';
-import LoginModal from './PageComponent/Login/LoginModal';
+import state from '../../valtio';
+import LoginModal from '../PageComponent/Login/LoginModal';
 
 interface Props {
   children: any;

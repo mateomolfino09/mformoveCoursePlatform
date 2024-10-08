@@ -9,7 +9,7 @@ import { AiOutlineUser } from 'react-icons/ai';
 import Cookies from 'js-cookie';
 import { useAuth } from '../../hooks/useAuth';
 import HeaderHome from '../HeaderHome';
-import MainSideBar from '../MainSideBar';
+import MainSideBar from '../MainSidebar/MainSideBar';
 
 interface Props {
   bills: Bill[];

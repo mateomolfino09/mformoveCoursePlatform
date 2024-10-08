@@ -15,7 +15,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import MainSideBar from '../../MainSideBar';
+import MainSideBar from '../../MainSidebar/MainSideBar';
 import Footer from '../../Footer';
 import { AcademicCapIcon } from '@heroicons/react/24/solid';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';

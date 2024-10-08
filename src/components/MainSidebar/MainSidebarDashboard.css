@@ -1,0 +1,17 @@
+/* MainSideBarDash.module.css */
+.responsiveText {
+   font-size: 4vw;
+}
+
+.flexColumn {
+   display: flex;
+   flex-direction: column;
+   flex-wrap: wrap;
+}
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 768px) {
+   .text-4xl {
+      font-size: 1.5rem;
+   }
+}
