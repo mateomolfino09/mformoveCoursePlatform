@@ -1,33 +1,34 @@
-'use client'
+'use client';
+
 import imageLoader from '../../../imageLoader';
+import { useAuth } from '../../hooks/useAuth';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useAuth } from '../../hooks/useAuth';
 
 interface Props {
-  token: string
+  token: string;
 }
 
-function Token({token}: Props) {
+function Token({ token }: Props) {
   const [password, setPassword] = useState('');
   const [conPassword, setConPassword] = useState('');
   const router = useRouter();
-  const auth = useAuth()
+  const auth = useAuth();
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     try {
-      const data = await auth.resetPassword(conPassword, password, token)
+      const data = await auth.resetPassword(conPassword, password, token);
 
-      if(data?.error) {
+      if (data?.error) {
         toast.error(data?.error);
-        return
+        return;
       }
 
       toast.success(data.message);

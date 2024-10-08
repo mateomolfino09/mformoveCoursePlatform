@@ -1,25 +1,30 @@
-import { NextResponse } from 'next/server';
 import connectDB from '../../../../../../config/connectDB';
 import User from '../../../../../../models/userModel';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { NextResponse } from 'next/server';
 
 connectDB();
 
 export async function PUT(req, { params }) {
-    try {
+  try {
     if (req.method === 'PUT') {
       const { token } = params;
       const { password, conPassword } = await req.json();
 
-      console.log(password, conPassword, token)
+      console.log(password, conPassword, token);
 
       if (password !== conPassword) {
-        return NextResponse.json({ error: 'Las contraseñas no coinciden'}, { status: 400 })
+        return NextResponse.json(
+          { error: 'Las contraseñas no coinciden' },
+          { status: 400 }
+        );
       }
       if (password.length < 6) {
-        return NextResponse.json({ error: 'La contraseña debe tener almenos 6 caracteres'}, { status: 400 })
-
+        return NextResponse.json(
+          { error: 'La contraseña debe tener almenos 6 caracteres' },
+          { status: 400 }
+        );
       }
 
       if (token) {
@@ -39,13 +44,19 @@ export async function PUT(req, { params }) {
           status: 'green'
         });
         await user.save();
-        return NextResponse.json({ 
-          message: 'Se ha actualizado tu contraseña con éxito!', 
-          user: user 
-        }, { status: 200 });
+        return NextResponse.json(
+          {
+            message: 'Se ha actualizado tu contraseña con éxito!',
+            user: user
+          },
+          { status: 200 }
+        );
       }
     }
   } catch (error) {
-    return NextResponse.json({ message: `Error al cambiar la password. Porfavor vuelva a intentarlo`}, { status: 500 })
+    return NextResponse.json(
+      { message: `Error al cambiar la password. Porfavor vuelva a intentarlo` },
+      { status: 500 }
+    );
   }
-};
+}
