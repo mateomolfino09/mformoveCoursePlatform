@@ -45,16 +45,15 @@ function LoginForm() {
     const password = data.get('password') as string;
 
     auth.signIn(email, password).then((res: any) => {
-      if (res.type != 'error') {
-        router.push('/products');
-      } else {
-        setMessage((current: any) => [
-          ...current,
-          {
-            message: res.message,
-            type: alertTypes.error.type
-          }
-        ]);
+      if(res.type != 'error') {
+        if(res?.user?.subscription?.active) router.push('/home');
+        else router.push('/select-plan');
+      } 
+      else {
+        setMessage((current: any) => [...current, {
+          message: res.message,
+          type: alertTypes.error.type
+        }]);
         setLoading(false);
       }
     });
