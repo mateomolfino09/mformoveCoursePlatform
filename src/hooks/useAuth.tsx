@@ -37,16 +37,6 @@ function useProvideAuth() {
 				},
 				})
 			const user = await res.json()
-
-			const membershipRes = await fetch(endpoints.auth.profile, {
-				method: 'GET',
-				headers: {  
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${token}`
-				},
-				})
-			const membership = await membershipRes.json()
-
 			setUser(user.user)
 			return user
 		  }
@@ -138,7 +128,7 @@ function useProvideAuth() {
 
 				const user = await res.json()
 				setUser(user.user)
-				return {message:'Login Exitoso', type: 'success'}
+				return {message:'Login Exitoso', type: 'success', user: user.user}
 				
 			}
 			else if(message) return {message: message, type: 'error'} 

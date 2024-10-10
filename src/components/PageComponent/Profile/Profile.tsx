@@ -62,15 +62,28 @@ function Profile() {
         <div className='second-container'>
           <h4 className='second-title '>Detalles del Plan</h4>
           <div className='col-span-2 font-medium'>
-            Cuentas con una cantidad de {cantCourses} cursos
+            {auth?.user?.subscription?.active ? (
+              <>
+                Subscripción activa
+              </>
+            ) : (
+              <>
+              Aún no estás subscripto
+              </>
+            )}
           </div>
-          <Link href={'/account/myCourses'}>
+          {auth?.user?.subscription?.active ? (
+            <Link href={'/account/myCourses'}>
             <p
               className='paragraph'
             >
-              Detalles de Cursos
             </p>
           </Link>
+            ) : (
+              <a href='/select-plan' className='paragraph'>
+              Subscribirme
+              </a>
+            )}
         </div>
         <div className='second-container'>
           <h4 className='second-title '>Ajustes</h4>

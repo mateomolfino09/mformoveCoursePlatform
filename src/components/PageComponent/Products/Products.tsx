@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react'
 import { ClassTypes, ProductDB} from '../../../../typings'
-import MainSideBar from '../../MainSideBar'
+import MainSideBar from '../../MainSidebar/MainSideBar'
 import Head from 'next/head'
 import Footer from '../../Footer'
 import ProductCarousel from './ProductCarousel'

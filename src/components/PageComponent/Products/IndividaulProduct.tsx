@@ -15,7 +15,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import MainSideBar from '../../MainSideBar';
+import MainSideBar from '../../MainSidebar/MainSideBar';
 import Footer from '../../Footer';
 import { AcademicCapIcon } from '@heroicons/react/24/solid';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
@@ -190,7 +190,7 @@ const IndividualProduct = ({ product }: Props) => {
                 </div>
               ) : (
                 <>
-                  <div className="absolute inset-0 w-0 bg-[#13E096] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
+                  <div className="absolute inset-0 w-0 bg-[#a38951] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
                   <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Comprar Ahora{' '} ({product.price} {product.currency})
                   </span> 
    

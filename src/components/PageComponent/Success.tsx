@@ -1,15 +1,16 @@
-'use client'
-import Cookies from 'js-cookie';
+'use client';
+
 import imageLoader from '../../../imageLoader';
 import { CoursesDB, User } from '../../../typings';
+import { useAuth } from '../../hooks/useAuth';
 import { motion as m } from 'framer-motion';
+import Cookies from 'js-cookie';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, { useEffect } from 'react';
 import { AiFillCheckCircle } from 'react-icons/ai';
-import { useAuth } from '../../hooks/useAuth';
 
 interface Props {
   course: CoursesDB;
@@ -27,20 +28,18 @@ const container = {
 
 const Success = ({ course }: Props) => {
   const router = useRouter();
-  const auth = useAuth()
+  const auth = useAuth();
 
   useEffect(() => {
+    const cookies: any = Cookies.get('userToken');
 
-    const cookies: any = Cookies.get('userToken')
-    
     if (!cookies) {
       router.push('/login');
     }
-    
-    if(!auth.user) {
-      auth.fetchUser()
-    }
 
+    if (!auth.user) {
+      auth.fetchUser();
+    }
   }, [auth.user]);
 
   return (
@@ -117,6 +116,5 @@ const Success = ({ course }: Props) => {
     </div>
   );
 };
-
 
 export default Success;

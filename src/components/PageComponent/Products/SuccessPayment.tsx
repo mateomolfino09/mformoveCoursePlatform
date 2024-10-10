@@ -8,7 +8,7 @@ import { useAppDispatch } from '../../../hooks/useTypeSelector';
 import { toggleScroll } from '../../../redux/features/headerHomeSlice';
 import Footer from '../../Footer';
 import { LoadingSpinner } from '../../LoadingSpinner';
-import MainSideBar from '../../MainSideBar';
+import MainSideBar from '../../MainSidebar/MainSideBar';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { motion as m } from 'framer-motion';
 import Image from 'next/image';

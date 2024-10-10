@@ -1,5 +1,5 @@
-import { useAuth } from '../hooks/useAuth';
-import state from '../valtio';
+import { useAuth } from '../../hooks/useAuth';
+import state from '../../valtio';
 import { Transition } from '@headlessui/react';
 import {
   CreditCardIcon,
@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { Fragment, forwardRef, useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
-
+import "./MainSidebarDashboard.css";
 interface Props {
   showNav: boolean;
   where: any;

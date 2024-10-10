@@ -3,6 +3,7 @@ import connectDB from '../../../../../config/connectDB';
 import User from '../../../../../models/userModel';
 import { verify } from 'jsonwebtoken'
 import { NextResponse } from 'next/server';
+import { getUserSubscription } from '../../../payments/getUserSubscription'
 
 connectDB();
 
@@ -13,6 +14,13 @@ export async function GET(req) {
       const data =  verify(userToken, process.env.NEXTAUTH_SECRET)
 
       const user = await User.findOne({ _id: data.userId });
+
+      const membership = await getUserSubscription(user);
+
+      if(membership != null) {
+        user.subscription = membership
+        await user.save();
+      }
 
       user ? user.password = undefined : null;
 

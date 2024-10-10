@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import MainSideBar from '../../../MainSideBar';
+import MainSideBar from '../../../MainSidebar/MainSideBar';
 import Head from 'next/head';
 import Banner from '../../../IndexBanner';
 import Footer from '../../../Footer';

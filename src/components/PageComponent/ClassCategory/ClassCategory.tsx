@@ -25,7 +25,7 @@ import Cookies from 'js-cookie';
 import connectDB from '../../../config/connectDB';
 import { useAppSelector } from '../../../redux/hooks';
 import { useGlobalContext } from '../../../app/context/store';
-import MainSideBar from '../../MainSideBar';
+import MainSideBar from '../../MainSidebar/MainSideBar';
 import ClassesFilters from '../../ClassesFilters';
 import { m } from 'framer-motion';
 import FilterNavWrapper from '../../FilterNavWrapper';

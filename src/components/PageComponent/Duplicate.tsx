@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
 import imageLoader from '../../../imageLoader';
+import { CoursesDB } from '../../../typings';
+import { useAuth } from '../../hooks/useAuth';
 import { motion as m } from 'framer-motion';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, { useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth';
-import { CoursesDB } from '../../../typings';
 
 interface Props {
   course: CoursesDB;
@@ -17,20 +17,18 @@ interface Props {
 
 const Duplicate = ({ course }: Props) => {
   const router = useRouter();
-  const auth = useAuth()
+  const auth = useAuth();
 
   useEffect(() => {
+    const cookies: any = Cookies.get('userToken');
 
-    const cookies: any = Cookies.get('userToken')
-    
     if (!cookies) {
       router.push('/login');
     }
-    
-    if(!auth.user) {
-      auth.fetchUser()
-    }
 
+    if (!auth.user) {
+      auth.fetchUser();
+    }
   }, [auth.user]);
 
   return (

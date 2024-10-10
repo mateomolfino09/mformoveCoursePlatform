@@ -1,17 +1,18 @@
-'use client'
+'use client';
+
 import imageLoader from '../../../imageLoader';
 import { CoursesDB, User } from '../../../typings';
+import { useAuth } from '../../hooks/useAuth';
 import { motion as m } from 'framer-motion';
+import Cookies from 'js-cookie';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, { useEffect } from 'react';
 import { AiFillCheckCircle } from 'react-icons/ai';
 import { VscError } from 'react-icons/vsc';
-import { useAuth } from '../../hooks/useAuth';
-import Cookies from 'js-cookie';
 
 interface Props {
   course: CoursesDB;
@@ -29,20 +30,18 @@ const container = {
 
 const Failure = ({ course }: Props) => {
   const router = useRouter();
-  const auth = useAuth()
+  const auth = useAuth();
 
   useEffect(() => {
+    const cookies: any = Cookies.get('userToken');
 
-    const cookies: any = Cookies.get('userToken')
-    
     if (!cookies) {
       router.push('/login');
     }
-    
-    if(!auth.user) {
-      auth.fetchUser()
-    }
 
+    if (!auth.user) {
+      auth.fetchUser();
+    }
   }, [auth.user]);
 
   return (
@@ -100,9 +99,7 @@ const Failure = ({ course }: Props) => {
             <div className='w-full bg-black/50 flex justify-center items-center cursor-pointer border border-white rounded-md transition duration-500 hover:bg-black hover:scale-105'>
               <button
                 className='p-1 text-center'
-                onClick={() =>
-                  router.push(`/courses/purchase//${course.id}`)
-                }
+                onClick={() => router.push(`/courses/purchase//${course.id}`)}
               >
                 Volver a Intentar
               </button>

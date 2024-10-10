@@ -182,7 +182,7 @@ const LoginModal = () => {
     <>
       {!loginForm ? (
         <div className='fixed flex justify-center md:items-center items-end w-full h-full bg-black/70 z-[300]'>
-        <div className='w-96 md:w-[30rem] h-[90%] relative bottom-0 md:mb-12 md:h-[95%] md:mt-12 bg-white rounded-2xl'>
+        <div className='w-96 md:w-[30rem] h-[90%] relative bottom-0 md:mb-12 md:h-[95%] md:mt-12 bg-white rounded-t-2xl md:rounded-2xl'>
             <CldImage layout='fill'
             alt="" src={"my_uploads/image00006_vimnul"} className="object-cover object-top rounded-2xl" />
             <div className='absolute bg-gradient-to-w from-stone-50 to-slate-50  h-full w-full rounded-2xl overflow-scroll scrollbar-hide'>
@@ -194,7 +194,7 @@ const LoginModal = () => {
                 <div className='mt-12 w-full h-full flex flex-col justify-start space-y-1 capitalize'>
                   <div className='flex justify-start space-x-4 items-center h-20 w-full'>
                     <div>
-                    <CiUnlock className='text-[#7912FD] w-8 h-8' style={{flex: '0 1 18%'}}/>
+                    <CiUnlock className='text-[#a38951] w-8 h-8' style={{flex: '0 1 18%'}}/>
 
                     </div>
                     <div className='flex space-y-1 flex-col text-black'>
@@ -204,7 +204,7 @@ const LoginModal = () => {
                   </div>
                   <div className='flex justify-start space-x-4 items-center h-20 w-full '>
                     <div>
-                      <CiBookmarkCheck style={{flex: '0 1 18%'}} className='text-[#7912FD] w-8 h-8'/>
+                      <CiBookmarkCheck style={{flex: '0 1 18%'}} className='text-[#a38951] w-8 h-8'/>
                     </div>
                     <div className='flex space-y-1 flex-col text-black'>
                       <h4 className='text-xl font-bold'>Transforma Tu Vida</h4>
@@ -214,7 +214,7 @@ const LoginModal = () => {
                   </div>
                   <div className='flex justify-start space-x-4 items-center h-20 w-full'>
                     <div>
-                      <CiMobile4 className='text-[#7912FD] w-8 h-8' style={{flex: '0 1 18%'}}/>
+                      <CiMobile4 className='text-[#a38951] w-8 h-8' style={{flex: '0 1 18%'}}/>
 
                     </div>
                     <div className='flex space-y-1 flex-col text-black'>
@@ -253,7 +253,7 @@ const LoginModal = () => {
                     type='submit'
                       className='w-full block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
                     >
-                      <div className="absolute inset-0 w-0 bg-[#13E096] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
+                      <div className="absolute inset-0 w-0 bg-[#beac84] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
                       <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Registrarme{' '}
                       </span>
                     </button>
@@ -283,7 +283,7 @@ const LoginModal = () => {
         <>
       {forgetForm ? (
                 <div className='fixed flex justify-center md:items-center items-end w-full h-full bg-black/70 z-[300]'>
-                <div className='w-96 md:w-[30rem] h-[25rem] relative bottom-0 md:mb-12 md:h-[25rem] md:mt-12 bg-white rounded-2xl'>
+                <div className='w-96 md:w-[30rem] h-[25rem] relative bottom-0 md:mb-12 md:h-[25rem] md:mt-12 bg-white rounded-t-2xl md:rounded-2xl'>
                     <CldImage layout='fill'
 
                     alt="" src={"my_uploads/image00006_vimnul"} className="object-cover object-top rounded-2xl" />
@@ -320,7 +320,7 @@ const LoginModal = () => {
                             <>
                                 <div className="w-[80%] h-full">
                                   <div className='w-full flex flex-col justify-center items-center'>
-                                    <MdOutlineMarkEmailRead className='w-16 h-16 mb-4 text-[#7912FD]'/>
+                                    <MdOutlineMarkEmailRead className='w-16 h-16 mb-4 text-[#a38951]'/>
                                     <h5 className='text-lg md:text-xl font-bold text-black'>¡Email enviado!</h5>
                                     <h6 className='text-sm md:text-base font-medium text-black'>Chequea tu Inbox</h6>
                                   </div>
@@ -347,7 +347,7 @@ const LoginModal = () => {
                               type='submit'
                                 className='w-full block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
                               >
-                                <div className="absolute inset-0 w-0 bg-[#13E096] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
+                                <div className="absolute inset-0 w-0 bg-[#a38951] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
                                 <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Recuperar{' '}
                                 </span>
                               </button>
@@ -368,7 +368,7 @@ const LoginModal = () => {
       ) : 
       (
         <div className='fixed flex justify-center md:items-center items-end w-full h-full bg-black/70 z-[300]'>
-        <div className='w-96 md:w-[30rem] h-[54%] relative bottom-0 md:mb-12 md:min-h-fit md:mt-12 bg-white rounded-2xl'>
+        <div className='w-96 md:w-[30rem] h-[54%] relative bottom-0 md:mb-12 md:min-h-fit md:mt-12 bg-white rounded-t-2xl md:rounded-2xl'>
             <CldImage layout='fill'
             alt="" src={"my_uploads/image00006_vimnul"} className="object-cover object-top rounded-2xl" />
             <div className='absolute bg-gradient-to-w from-stone-50 to-slate-50  h-full w-full rounded-2xl overflow-scroll scrollbar-hide'>
@@ -411,7 +411,7 @@ const LoginModal = () => {
                   type='submit'
                     className='w-full block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
                   >
-                    <div className="absolute inset-0 w-0 bg-[#13E096] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
+                    <div className="absolute inset-0 w-0 bg-[#beac84] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
                     <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Ingresar{' '}
                     </span>
                   </button>

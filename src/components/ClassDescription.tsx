@@ -19,14 +19,14 @@ const ClassDescription = ({ clase, youtubeURL, courseDB }: Props) => {
       try {
         const res = await fetch('/api/course/getCourseInfo', {
           method: 'POST',
-          headers: {  
-            'Content-Type': 'application/json',
+          headers: {
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ youtubeURL }),
-          })
-  
-        let data = await res.json()
-        data = data.data
+          body: JSON.stringify({ youtubeURL })
+        });
+
+        let data = await res.json();
+        data = data.data;
 
         setUrl(
           `https://www.youtube.com/embed/${

@@ -1,6 +1,6 @@
 import React from 'react'
 import { ClassTypes, ProductDB} from '../../../typings'
-import MainSideBar from '../MainSideBar'
+import MainSideBar from '../MainSidebar/MainSideBar'
 import Head from 'next/head'
 import Footer from '../Footer'
 import FilterNavProductWrapper from '../FilterNavProductWrapper'
