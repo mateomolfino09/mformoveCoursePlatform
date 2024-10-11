@@ -29,6 +29,7 @@ import { CiLock } from 'react-icons/ci';
 import { setOpenModal } from '../redux/features/filterClass';
 import state from '../valtio';
 import { useRouter } from 'next/navigation';
+import { classFilters } from '../constants/classFilters';
 interface Props {
   c: IndividualClass;
 }
@@ -131,9 +132,9 @@ function CarouselClassesThumbnail({
                 </div>
                 <div className='flex flex-col justify-center items-start mt-1 w-full px-1 py-1'>
                     <h3 className='font-light text-lg mb-1'>{c.name}</h3>
-                    <div className='flex justify-start space-x-8 items-center w-full'>
-                        <p className="after:content-[''] text-xs after:mr-2 after:bg-white after:w-1 after:h-1 after:absolute after:bottom-[10px] after:left-[3.3rem] after:translate-y-[-50%] font-light after:rounded-full after:">{c.minutes} min</p>
-                        <p className={`after:content-[''] text-xs after:mr-2 after:bg-white after:w-1 after:h-1 after:absolute after:bottom-[10px] ${c.type?.toUpperCase() == "FLEXIBILIDAD" ? "after:left-[10.3rem]" : "after:left-[11.3rem]"}  after:translate-y-[-50%]  after:rounded-full font-light after:`}>{c.type?.toUpperCase()}</p>
+                    <div className='flex justify-start space-x-4 items-center w-full'>
+                        <p className="after:content-[''] text-xs after:mr-1 after:bg-white after:w-1 after:h-1 after:absolute after:bottom-[9px] after:left-[2.83rem] after:translate-y-[-50%] font-light after:rounded-full after:">{c.minutes} min</p>
+                        <p className={`after:content-[''] text-xs after:mr-2 after:bg-white after:w-1 after:h-1 after:absolute after:bottom-[9px] ${c.type?.toUpperCase() == classFilters[0].value.toUpperCase() ? "after:left-[8.73rem]" : "after:left-[11.3rem]"}  after:translate-y-[-50%]  after:rounded-full font-light after:`}>{c.type?.toUpperCase()}</p>
                         <p className="after:content-[''] text-xs font-light after:mr-2 ">Nivel {c.level}</p>
 
 
