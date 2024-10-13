@@ -1,36 +1,25 @@
 import mongoose from 'mongoose';
 
-const connection = {};
+let isConnected = false; // Variable de estado para la conexión
 
-async function db() {
-  if (connection.isConnected) {
-    return;
-  }
-  const db = await mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  });
-  connection.isConnected = db.connections[0].readyState;
-}
-
-const connectDB = () => {
-  if (mongoose.connections[0].readyState) {
-    console.log('Already connected');
+const connectDB = async () => {
+  if (isConnected) {
+    console.log('Ya existe una conexión activa a MongoDB.');
     return;
   }
 
-  mongoose.connect(
-    process.env.MONGODB_URI,
-    {
+  try {
+    const db = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true
-    },
-    (err) => {
-      if (err) throw err;
-      console.log('Connected to mongodb.');
-    }
-  );
+    });
+
+    isConnected = db.connections[0].readyState;
+    console.log('Conectado a MongoDB.');
+  } catch (error) {
+    console.error('Error conectando a MongoDB:', error);
+    throw error;
+  }
 };
 
 export default connectDB;
-export { db };
