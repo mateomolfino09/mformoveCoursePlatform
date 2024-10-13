@@ -69,9 +69,6 @@ const courseSchema = new mongoose.Schema(
       type: String,
       default: () => '$'
     },
-    course_type: {
-      type: String,
-    },
     users: [
       {
         type: mongoose.Types.ObjectId,
