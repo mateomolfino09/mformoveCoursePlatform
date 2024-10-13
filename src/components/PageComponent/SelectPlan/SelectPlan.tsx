@@ -14,7 +14,6 @@ import Footer from '../../Footer'
 import FreeProductWhoAreWe from '../../MainSideBarProducts/FreeProductWhoAreWe'
 import { useAuth } from '../../../hooks/useAuth'
 import { useRouter } from 'next/navigation'
-import { throttle } from 'lodash';
 
 interface Props {
     plans: Plan[]

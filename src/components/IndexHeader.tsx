@@ -17,7 +17,6 @@ import { useSnapshot } from 'valtio';
 import endpoints from '../services/api';
 import { CiMenuFries } from "react-icons/ci";
 import { useAppSelector } from '../redux/hooks';
-import { throttle } from 'lodash';
 
 interface Props {
   user: User | null;
