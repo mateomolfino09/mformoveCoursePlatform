@@ -9,7 +9,7 @@ export default async function Page() {
     : 'http://localhost:3000';
 
   // const res = await fetch(`${baseUrl}/api/payments/plans`, { cache: 'no-store' });
-  const res = await fetch(`https://mformove-platform-dr9mwqv77-mateomolfino09s-projects.vercel.app/api/payments/plans`, { cache: 'no-store' });
+  const res = await fetch(`https://mformove-platform-dr9mwqv77-mateomolfino09s-projects.vercel.app/api/payments/plans`, { cache:'no-store' });
 
   if (!res.ok) {
     throw new Error('Failed toaaa fetch plans');
