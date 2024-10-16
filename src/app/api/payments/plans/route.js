@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server';
 import connectDB from '../../../../config/connectDB';
 import Plan from '../../../../models/planModel';
 
+export const dynamic = "force-dynamic"; 
+export const fetchCache = "force-no-store";
+
 connectDB();
 
 export async function GET() {

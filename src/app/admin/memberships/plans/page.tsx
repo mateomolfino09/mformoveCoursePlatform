@@ -1,17 +1,25 @@
-import {
-    CoursesDB, Plan,
-  } from '../../../../../typings';
-  import { getPlans } from '../../../api/payments/plans/route';
-  import connectDB from '../../../../config/connectDB';
-import AllCourses from '../../../../components/PageComponent/AllCourses';
 import AllPlans from '../../../../components/PageComponent/AdminMembership/AllPlans';
+import { Plan } from '../../../../../typings';
+
+export const dynamic = "force-dynamic"; 
+export const fetchCache = "force-no-store";
+
+export default async function Page() {
+  let plans: Plan[] = [];
   
+  const baseUrl = process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3000'
+    : process.env.NEXT_PUBLIC_BASE_URL;
+
+  const res = await fetch(`${baseUrl}/api/payments/plans`, { next: { revalidate: 0 } });
   
-  export default async function Page() {
-  connectDB();
-  const plans: Plan[] = await getPlans();
-  
-    return (
-      <AllPlans plans={plans}/>
-    );
-  };
+  if (!res.ok) {
+    throw new Error('Failed to fetch plans');
+  }
+
+  plans = await res.json();
+
+  return (
+    <AllPlans plans={plans}/>
+  );
+}
