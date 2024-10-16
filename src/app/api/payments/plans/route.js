@@ -1,5 +1,6 @@
-import connectDB from '../../../../../config/connectDB';
-import Plan from '../../../../../models/planModel';
+
+import Plan from '../../../../models/planModel';
+import connectDB from '../../../../config/connectDB';
 
 connectDB();
 
