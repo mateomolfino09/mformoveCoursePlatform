@@ -5,12 +5,16 @@ import User from '../../../models/userModel';
 
 connectDB();
 
+// Configuraciones para la caché y la dinámica de la función
+export const dynamic = "force-dynamic"; 
+export const fetchCache = "force-no-store";
+
 export async function getPlans() {
   try {
-    const res = await Plan.find({});
-    const plans = JSON.parse(JSON.stringify(res));
-    return plans;
+    const plans = await Plan.find({});
+    return JSON.parse(JSON.stringify(plans));
   } catch (err) {
-    console.log(err);
+    console.error("Error fetching plans:", err);
+    return [];
   }
 }
