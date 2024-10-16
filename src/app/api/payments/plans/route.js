@@ -1,7 +1,6 @@
 
-import Plan from '../../../../../models/planModel';
-import Course from '../../../../../models/courseModel';
-import User from '../../../../../models/userModel';
+import Plan from '../../../../models/planModel';
+
 import connectDB from '../../../../config/connectDB';
 
 connectDB();
