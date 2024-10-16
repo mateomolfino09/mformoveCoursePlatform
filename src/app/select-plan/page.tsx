@@ -1,24 +1,26 @@
 import SelectPlan from '../../components/PageComponent/SelectPlan/SelectPlan';
-import { getPlans } from '../api/payments/getPlans';
-  
-  
-  export default async function Page() {
 
-    const plans = await getPlans()
-    
-    let origin = process.env.DLOCALGO_CHECKOUT_URL != null ? process.env.DLOCALGO_CHECKOUT_URL : "https://checkout-sbx.dlocalgo.com";
+export const dynamic = 'force-dynamic';
 
-    console.log(origin)
+export default async function Page() {
+  // Usa `VERCEL_URL` si está definido, o `localhost` para desarrollo
+  const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000';
 
-    // if (process.env.NODE_ENV != 'production') {
-    //   origin = "https://checkout-sbx.dlocalgo.com"
-    // } else {
-    //   origin = "https://checkout.dlocalgo.com"
-    // }
+  const res = await fetch(`${baseUrl}/api/payments/plans`, { cache: 'no-store' });
 
-    return (
-      <SelectPlan plans={plans} origin={origin}/>
-    );
-  };
-  
-  
+  if (!res.ok) {
+    throw new Error('Failed to fetch plans');
+  }
+
+  const plans = await res.json();
+
+  const origin = process.env.DLOCALGO_CHECKOUT_URL != null
+    ? process.env.DLOCALGO_CHECKOUT_URL
+    : "https://checkout-sbx.dlocalgo.com";
+
+  return (
+    <SelectPlan plans={plans} origin={origin} />
+  );
+}

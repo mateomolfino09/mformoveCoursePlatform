@@ -1,26 +1,29 @@
-import {
-    ClassTypes,
-  } from '../../../typings';
+import { ClassTypes, Plan } from '../../../typings';
 import Membership from '../../components/PageComponent/Membership/Membership';
-  import connectDB from '../../config/connectDB';
-  import dLocalApi from '../api/payments/dlocalTest';
-import { getPlans } from '../api/payments/getPlans';
-  
-  
-  export default async function Page() {
 
-    const plans = await getPlans()
-    let origin;
-    if (process.env.NODE_ENV != 'production') {
-      origin = "https://checkout-sbx.dlocalgo.com"
-    } else {
-      origin = "https://checkout.dlocalgo.com"
-    }
+export const dynamic = 'force-dynamic';
 
-  
-    return (
-      <Membership plans={plans} origin={origin}/>
-    );
-  };
-  
-  
+export default async function Page() {
+  // Define la URL base según el entorno
+  const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000';
+
+  // Realiza la solicitud fetch a la API de planes
+  const res = await fetch(`${baseUrl}/api/payments/plans`, { cache: 'no-store' });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch plans');
+  }
+
+  const plans: Plan[] = await res.json();
+
+  // Define el origen según el entorno
+  const origin = process.env.NODE_ENV !== 'production'
+    ? "https://checkout-sbx.dlocalgo.com"
+    : "https://checkout.dlocalgo.com";
+
+  return (
+    <Membership plans={plans} origin={origin} />
+  );
+}
