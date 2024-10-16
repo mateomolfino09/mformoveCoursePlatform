@@ -4,7 +4,7 @@ import {
 import Membership from '../../components/PageComponent/Membership/Membership';
   import connectDB from '../../config/connectDB';
   import dLocalApi from '../api/payments/dlocalTest';
-import { getPlans } from '../api/payments/getPlans';
+import { getPlans } from '../api/payments/plans/route';
   
   
   export default async function Page() {
