@@ -92,7 +92,7 @@ const IndexHeader = ({ user, toggleNav, where }: Props) => {
           className={`bg-transparent fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${(isScrolled || headerScroll) && 'bg-[#141414]'}`}
         >
           <div className='pl-4 md:pl-16'>
-            <Link href={`${path === "/select-plan" ? "/home" : path === "/home" ? "/" : ""}`}>
+            <Link href={`${path === "/select-plan" ? "/home" : path === "/home" ? "/" : "/"}`}>
               <img
                 alt='icon image'
                 src='/images/MFORMOVE_blanco03.png'

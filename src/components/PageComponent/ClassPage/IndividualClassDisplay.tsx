@@ -44,6 +44,7 @@ import MainSideBar from '../../MainSidebar/MainSideBar';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
 import ClassData from './ClassData';
 import ClassDescription from './ClassDescription';
+import Footer from '../../Footer';
 
 interface Props {
   clase: IndividualClass;
@@ -191,7 +192,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
   }, []);
 
   return (
-    <MainSideBar where={'home'}>
+    <MainSideBar where={'index'}>
         <div className='relative h-full bg-dark overflow-x-clip'>
         <main
             className={`relative flex flex-col bg-dark md:pl-11 md:top-16 lg:top-20 ${
@@ -227,7 +228,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
             />
             <ClassThumbnail clase={clase} />
             <ClassOptions clase={clase} />
-            <div className='w-full h-full'>
+            <div className='w-full h-full hidden'>
             {snap.classHeaders === 'Recursos' && (
                 <>
                 <ClassResources clase={clase} />
@@ -243,6 +244,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
                 </>
             )}
             </div>
+            
         </main>
         {resumeModal && (
             <MuiModal
@@ -279,6 +281,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
             </>
             </MuiModal>
         )}
+        <Footer />
         </div>
     </MainSideBar>
 

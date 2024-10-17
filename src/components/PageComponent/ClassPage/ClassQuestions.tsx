@@ -232,7 +232,7 @@ const pathname = usePathname()
             className='group bg-white text-black border hover:scale-105 transition-all duration-200  px-2 py-0.5 rounded-md flex mt-1 '
             onClick={createQuestion}
           >
-            <span>Publicar</span>
+            <span className='font-light'>Publicar</span>
           </button>
         </div>
       </div>
@@ -308,7 +308,7 @@ const pathname = usePathname()
                               className='group bg-white text-black border hover:scale-105 transition-all duration-200 px-2 mb-2 rounded-md flex mt-1 '
                               onClick={() => createAnswer(quest.id)}
                             >
-                              <span className='text-sm'>Responder</span>
+                              <span className='text-sm font-light'>Responder</span>
                             </button>
                           </div>
                         </div>
