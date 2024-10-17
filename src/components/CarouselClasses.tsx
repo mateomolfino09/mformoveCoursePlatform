@@ -80,21 +80,21 @@ function CarouselClasses({
       className={`group carousel mt-12 px-9 w-full relative ${filtersSelector.classType !== 'all' && classesDB && filtersSelector.classType !== classesDB[0].type.toLowerCase() && 'hidden' }`}
       ref={rowRef}
     >
-      <div className='flex justify-between items-center w-full'>
+      <div className='flex md:justify-between flex-col md:flex-row items-start md:items-center w-full'>
         <div className='flex justify-start items-center w-full' style={{ flex: '1 0 21%'}}>
-          <h2 className='ml-4 relative text-2xl font-normal text-[#E5E5E5] transition duration-200 hover:text-white lg:text-2xl mb-4'>
+          <h2 className='ml-4 relative text-2xl font-normal text-[#E5E5E5] transition duration-200 font-boldFont hover:text-white lg:text-2xl md:mb-4 -mb-3'>
             {title}
           </h2>
-          <div className='flex relative ml-2 mb-4 justify-center items-center w-auto'>
-              <BsExclamationCircle className='w-5 md:w-6 lg:w-7 cursor-pointer' onClick={() => setShowHelper(!showHelper)} onAbort={() => setShowHelper(false)}/>
+          <div className='flex relative ml-2 mb-5 justify-center items-center w-auto'>
+              <BsExclamationCircle className='w-5 md:w-6 relative top-3 md:top-0 lg:w-7 cursor-pointer' onClick={() => setShowHelper(!showHelper)} onAbort={() => setShowHelper(false)}/>
                 <span className={`${showHelper ? 'block' : 'hidden'} rounded-md transition-all duration-200 w-[240px] left-9 top-0 z-[100] bg-[#fafafc] whitespace-nowrap text-black absolute before:border-[9px] before:border-transparent before:border-solid before:rounded-[5px] before:border-r-[#fafafc] before:left-[-15px] before:absolute before:top-[1px] text-xs md:text-sm font-light`}>
                   <p className='w-[240px] break-words whitespace-normal h-full px-2 py-1'>{description}</p> 
                 </span>
           </div>
 
         </div>
-        <div className='flex relative font-light text-xs md:text-sm group' onClick={() => router.push(`/classes-category/${title?.toLowerCase()}`)}>
-          <p className='relative before:content-[""] before:md:bg-yellow-400/80 before:h-[1px] before:absolute before:w-full before:bottom-[-3px] before:left-0 before:bg-yellow-400/80'>Todas las clases {title} </p>
+        <div className='flex ml-4 md:ml-0 mb-5 relative font-light text-xs md:text-sm group' onClick={() => router.push(`/classes-category/${title?.toLowerCase()}`)}>
+          <p className='relative before:content-[""] before:md:bg-yellow-400/80 before:h-[1px] before:absolute before:w-full before:bottom-[-3px] before:left-0 before:bg-yellow-400/80'>Todas las clases de {title} </p>
           <ArrowRightIcon className='w-4 ml-2 group-hover:translate-x-1 transition-all duration-500'/>
         </div>
       </div>

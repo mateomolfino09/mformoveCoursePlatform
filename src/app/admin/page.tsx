@@ -44,12 +44,12 @@ const Index = () => {
     
       <AdmimDashboardLayout>
       <Head>
-        <title>Video Streaming</title>
+        <title>MForMove Platform</title>
         <meta name='description' content='Stream Video App' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
         <div className='bg-gray-700 w-full md:h-[100vh]'>
-          <p className='text-white text-3xl my-12 font-bold'>
+          <p className='text-white font-boldFont text-3xl my-12 font-bold'>
             Bienvenido al Dashboard
           </p>
 

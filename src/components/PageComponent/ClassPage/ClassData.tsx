@@ -21,8 +21,8 @@ const ClassData = ({
 
 
   return (
-    <div className='w-full h-full flex flex-row mt-4 justify-between bg-dark lg:w-2/3 md:h-auto md:mb-4'>
-      <h2 className='text-xl md:text-2xl ml-2 font-light'>{clase?.name}</h2>
+    <div className='w-full h-full flex flex-row mt-8 lg:pb-8 justify-between bg-dark lg:w-2/3 md:h-auto '>
+      <h2 className='text-2xl px-2 md:px-0 font-boldFont md:text-3xl ml-2 mb-4 md:mb-1 font-light'>{clase?.name}</h2>
       <div className='h-10 min-w-[5rem] flex flex-row mr-4 rounded-lg'>
 
       </div>

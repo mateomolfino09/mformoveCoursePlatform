@@ -98,7 +98,7 @@ const AllClasses = ({ classes }: Props) => {
       <AdmimDashboardLayout>
         <>
           <Head>
-            <title>Video Streaming</title>
+            <title>MForMove Platform</title>
             <meta name='description' content='Stream Video App' />
             <link rel='icon' href='/favicon.ico' />
           </Head>
@@ -107,7 +107,7 @@ const AllClasses = ({ classes }: Props) => {
               <div className='overflow-x-auto sm:-mx-6 lg:-mx-8'>
                 <div className='inline-block min-w-full py-2 sm:px-6 lg:px-8'>
                   <div className='overflow-hidden'>
-                    <h1 className='text-2xl mt-4 mb-4'>Cursos</h1>
+                    <h1 className='text-2xl mt-4 mb-4'>Clases</h1>
                     <table className='min-w-full text-left text-sm font-light'>
                       <thead className='border-b font-medium dark:border-neutral-500'>
                         <tr>
@@ -154,7 +154,7 @@ const AllClasses = ({ classes }: Props) => {
                               {`${c.isFree ? 'Si' : 'No'}`} 
                             </td>
                             <td className='whitespace-nowrap px-6 py-4'>
-                              {c.description} 
+                              {c.description.substring(0, 40)}... 
                             </td>
                             <td className='whitespace-nowrap px-6 py-4'>
                               {new Date(c.createdAt).toLocaleDateString(

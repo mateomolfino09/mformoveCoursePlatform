@@ -15,12 +15,12 @@ export async function GET(req) {
 
       const user = await User.findOne({ _id: data.userId });
 
-      const membership = await getUserSubscription(user);
+      // const membership = await getUserSubscription(user);
 
-      if(membership != null) {
-        user.subscription = membership
-        await user.save();
-      }
+      // if(membership != null) {
+      //   user.subscription = membership
+      //   await user.save();
+      // }
 
       user ? user.password = undefined : null;
 

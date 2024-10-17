@@ -9,11 +9,11 @@ export async function POST(req) {
     try {
     if (req.method === 'POST') {
       const {
-        answer, questionId, userId
+        answer, questionId, userEmail
         } = await req.json();
       //Existe?
       let question = await Question.findOne({ id: questionId }).populate('user');
-      let user = await Users.findOne({ id: userId });
+      let user = await Users.findOne({ email: userEmail });
 
       !question && NextResponse.json({ error: "Esta pregunta no existe", success: false }, { status: 500 })
 

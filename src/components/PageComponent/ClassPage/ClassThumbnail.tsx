@@ -9,9 +9,9 @@ interface Props {
 
 const ClassThumbnail = ({ clase }: Props) => {
   return (
-    <div className='w-full h-full flex flex-row justify-between bg-dark lg:w-2/3 md:h-auto'>
+    <div className='w-full h-full flex flex-row justify-between bg-dark pb-24 lg:w-2/3 md:h-auto'>
       <div className='w-full h-full flex flex-row items-center'>
-        <h3 className='text-lg ml-2 font-light'>{clase.description}</h3>
+        <h3 className='text-base md:text-lg pr-5 px-2 md:px-0 md:pr-0 ml-2 font-light'>{clase.description}</h3>
       </div>
     </div>
   );

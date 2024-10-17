@@ -51,14 +51,14 @@ const DeleteQuestion = ({ question, deleteQuestion, isOpen, setIsOpen }: Props) 
                   >
                     Eliminar Pregunta
                   </Dialog.Title>
-                  <div className='mt-2'>
+                  <div className='mt-2 font-light'>
                     <p>Estas a punto de eliminar una pregunta.</p>
                   </div>
 
                   <div className='mt-4'>
                     <button
                       type='button'
-                      className='bg-[#a38951] text-white font-bold py-2 px-4 rounded mr-4 mt-4 mb-4'
+                      className='bg-[#a28e5e] text-white hover:scale-105 transition-all duration-300 font-light py-2 px-4 rounded mr-4 mt-4 mb-4'
                       onClick={() => handleSubmit()}
                     >
                       Eliminar
