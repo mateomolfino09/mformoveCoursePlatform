@@ -31,30 +31,12 @@ export async function POST(req) {
         class: null
       }).save();
 
-      // adminUsers.forEach(async (admin) => {
-      //   admin.notifications.push({
-      //     title: `Te han preguntado en el curso ${clase.course.name}`,
-      //     message: `Respondele a ${user.name} cuando puedas.`,
-      //     link: `/courses/questions/${newQuestion.id}`,
-      //     status: 'green'
-      //   });
-      //   await admin.save();
-      // });
-      // const noti = {
-      //   title: 'Pregunta creada con éxito',
-      //   message: `Se ha creado tu pregunta nro ${newQuestion.id}`,
-      //   link: `/courses/questions/${newQuestion.id}`,
-      //   status: 'green'
-      // };
-      // user.notifications.push(noti);
-      // await user.save()
+      // const titulo = 'Han creado una nueva pregunta'
+      // const action = 'Ver Pregunta'
+      // const contenido = 'Responde lo antes posible'
+      // const subject = 'Han creado una nueva pregunta'
 
-      const titulo = 'Han creado una nueva pregunta'
-      const action = 'Ver Pregunta'
-      const contenido = 'Responde lo antes posible'
-      const subject = 'Han creado una nueva pregunta'
-
-      await prepareEmail(titulo, link, action, user, contenido, subject)
+      // await prepareEmail(titulo, link, action, user, contenido, subject)
 
       return NextResponse.json({ newQuestion: newQuestion, success: true, message: 'Pregunta enviada correctamente' }, { status: 200 })
     }

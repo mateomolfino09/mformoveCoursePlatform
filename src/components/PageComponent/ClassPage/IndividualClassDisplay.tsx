@@ -84,24 +84,6 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
     
   }, []);
 
-//   const exitingFunction = async (actual = 0) => {
-//     const actualTime = actual == 0 ? time : actual;
-//     const idClass = clase.id;
-//     if (time != null && time != undefined) {
-//       const courseId = courseDB.id;
-//       const classId =
-//         idClass != undefined
-//           ? actual != 0
-//             ? +idClass
-//             : forward
-//             ? +idClass - 1
-//             : +idClass + 1
-//           : null;
-
-//       auth.saveClassTime(actualTime, courseId, classId)
-//     }
-//   };
-
   const handleClose = () => {
     playerRef?.current && playerRef.current.seekTo(0);
     setResumeModal(false);

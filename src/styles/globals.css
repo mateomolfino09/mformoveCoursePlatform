@@ -100,6 +100,12 @@
     @apply text-[#c2c9d2];
   }
 
+  textarea::placeholder {
+    font-size: 14px !important; 
+    font-weight: 200 !important;
+      /* Cambia el tamaño del texto del placeholder */
+  }
+
   .toggleLightening {
     @apply transition duration-500 hover:text-white cursor-pointer;
   }

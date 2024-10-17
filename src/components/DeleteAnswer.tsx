@@ -34,7 +34,7 @@ const DeleteAnswer = ({ deleteAnswer, answer, question, isOpen, setIsOpen }: Pro
             <div className='fixed inset-0 bg-black bg-opacity-50' />
           </Transition.Child>
 
-          <div className='fixed inset-0 overflow-y-auto'>
+          <div className='fixed inset-0 overflow-y-auto font-montserrat font-light'>
             <div className='flex min-h-full items-center justify-center p-4 text-center'>
               <Transition.Child
                 as={Fragment}
@@ -59,7 +59,7 @@ const DeleteAnswer = ({ deleteAnswer, answer, question, isOpen, setIsOpen }: Pro
                   <div className='mt-4'>
                     <button
                       type='button'
-                      className='bg-[#a38951] text-white  font-bold py-2 px-4 rounded mr-4 mt-4 mb-4'
+                      className='bg-[#a28e5e] transition-all duration-300 hover:scale-105 text-white  font-light py-2 px-4 rounded mr-4 mt-4 mb-4'
                       onClick={() => handleSubmit()}
                     >
                       Eliminar

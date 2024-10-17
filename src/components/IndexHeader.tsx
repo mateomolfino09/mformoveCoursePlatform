@@ -26,6 +26,7 @@ interface Props {
 }
 const IndexHeader = ({ user, toggleNav, where }: Props) => {
   const router = useRouter();
+  const path = usePathname()
   const headerAnimation = useAnimation();
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -91,13 +92,15 @@ const IndexHeader = ({ user, toggleNav, where }: Props) => {
           className={`bg-transparent fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${(isScrolled || headerScroll) && 'bg-[#141414]'}`}
         >
           <div className='pl-4 md:pl-16'>
-            <img
-              alt='icon image'
-              src='/images/MFORMOVE_blanco03.png'
-              width={180}
-              height={180}
-              className='cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-100'
-            />
+            <Link href={`${path === "/select-plan" ? "/home" : path === "/home" ? "/" : ""}`}>
+              <img
+                alt='icon image'
+                src='/images/MFORMOVE_blanco03.png'
+                width={180}
+                height={180}
+                className='cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-100'
+              />
+            </Link>
           </div>
           <div className='flex items-center pr-4 md:pr-16'>
             <Menu as='div' className='relative inline-block text-left'>

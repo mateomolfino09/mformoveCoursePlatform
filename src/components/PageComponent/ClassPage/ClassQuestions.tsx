@@ -112,11 +112,11 @@ const pathname = usePathname()
         'Content-Type': 'application/json'
       }
     };
-    const userId = user?.id;
+    const email = auth?.user.email
     try {
       const { data } = await axios.post(
         '/api/question/createAnswer',
-        { answer, questionId, userId },
+        { answer, questionId, userEmail: email },
         config
       );
       const index = questions.findIndex((q) => q.id == questionId);
@@ -207,12 +207,12 @@ const pathname = usePathname()
 
 
   return (
-    <div className='p-8 lg:pr-4'>
+    <div className='p-8 lg:pl-12 lg:pr-6'>
       <div className='w-full h-full  flex flex-col mb-4 relative'>
         <label className='inline-block w-full shadow-2xl'>
           <textarea
-            placeholder='Escribe tu pregunta'
-            className='input'
+            placeholder='Añade un comentario...'
+            className='input font-montserrat text-sm'
             onFocus={() => setQuestion(!question)}
             onChange={(e) => setContent(e.target.value)}
             value={content}
@@ -229,7 +229,7 @@ const pathname = usePathname()
         )}
         <div className='w-full flex justify-end '>
           <button
-            className='group bg-white text-black hover:text-white hover:border-black border hover:bg-black transition-all duration-200  px-2 py-0.5 rounded-md flex mt-1 '
+            className='group bg-white text-black border hover:scale-105 transition-all duration-200  px-2 py-0.5 rounded-md flex mt-1 '
             onClick={createQuestion}
           >
             <span>Publicar</span>
@@ -273,7 +273,7 @@ const pathname = usePathname()
                           <div className='w-4 mr-2 transform hover:text-blue-500 hover:scale-110 cursor-pointer'>
                             {/* <PencilIcon onClick={() => setOpenEdit(quest)}/> */}
                           </div>
-                          <div className='w-4 mr-2 transform hover:text-red-500 hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse '>
+                          <div className={`w-4 mr-2 transform hover:text-red-500 hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse ${auth?.user?.rol === "Admin" || auth.user.id === quest.user.id ? "" : "hidden"}`}>
                             <TrashIcon onClick={() => openModalDelete(quest)}/>
                           </div>
                         </div>
@@ -291,8 +291,8 @@ const pathname = usePathname()
                         <div className='mt-4 px-8 relative h-full'>
                           <label className='inline-block w-full shadow-2xl'>
                             <textarea
-                              placeholder='Escribe tu respuesta'
-                              className='inputAnswer'
+                              placeholder='Añade tu respuesta'
+                              className='inputAnswer text-xs placeholder:text-sm'
                               onChange={(e) => setAnswer(e.target.value)}
                               value={answer}
                             />
@@ -305,10 +305,10 @@ const pathname = usePathname()
                           </div>
                           <div className='w-full flex justify-end items-center'>
                             <button
-                              className='group bg-white text-black hover:text-white hover:border-white border hover:bg-black transition-all duration-200 px-2 mb-2 rounded-md flex mt-1 '
+                              className='group bg-white text-black border hover:scale-105 transition-all duration-200 px-2 mb-2 rounded-md flex mt-1 '
                               onClick={() => createAnswer(quest.id)}
                             >
-                              <span className='text-sm'>RESPONDER</span>
+                              <span className='text-sm'>Responder</span>
                             </button>
                           </div>
                         </div>
