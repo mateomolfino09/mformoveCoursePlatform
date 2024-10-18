@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import Select, { StylesConfig } from 'react-select';
 import { levels } from '../../../constants/classLevels';
 import { addStepTwo } from '../../../redux/features/createClassSlice';
+import IsFreeComponent from './IsFreeComponent';
 
 interface Props {
     step1ToStep0: any
@@ -26,7 +27,7 @@ const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass
     const createClass = useAppSelector(
     (state) => state.classesModalReducer.value
     );
-    const { description: descriptionReg, descriptionLength: descriptionLengthReg, level: levelReg, videoId: videoIdOr } = createClass
+    const { description: descriptionReg, descriptionLength: descriptionLengthReg, level: levelReg, videoId: videoIdOr, isFree: isFreeReg } = createClass
 
     const [description, setDescription] = useState(descriptionReg);
     const [descriptionLength, setDescriptionLength] = useState<number>(
@@ -35,6 +36,7 @@ const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass
     const [level, setLevel] = useState(levelReg);
     const [levelName, setLevelName] = useState("");
     const [videoId, setVideoId] = useState(videoIdOr);
+    const [isFree, setIsFree] = useState<boolean>(isFreeReg);
 
     const colourStyles: StylesConfig<any> = {
         control: (styles) => ({
@@ -61,13 +63,18 @@ const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass
             t.error('Debe indicar el precio del curso');
             return;
           } 
-        dispatch(addStepTwo({ description, descriptionLength, level, videoId }))
+        dispatch(addStepTwo({ description, descriptionLength, level, videoId, isFree }))
         handleSubmitClass()
     }
 
     const handleBack = () => {
-        dispatch(addStepTwo({ description, descriptionLength, level, videoId }))        
+        dispatch(addStepTwo({ description, descriptionLength, level, videoId, isFree }))        
         step1ToStep0()
+    }
+
+    const handleIsFree = (val: boolean) => {
+        console.log(val)
+        setIsFree(val)
     }
 
       useEffect(() => {
@@ -115,7 +122,7 @@ const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass
                 <p>Paso 2</p>
             </div>
             <form
-                className='relative mt-16 space-y-12 rounded px-8 md:min-w-[40rem] md:px-14'
+                className='relative mt-16 space-y-12 rounded px-8 md:max-w-[40rem] md:px-14'
                 autoComplete='nope'
                 onSubmit={handleSubmit}
             >
@@ -133,6 +140,8 @@ const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass
                 }}
             />
                 </div>
+
+                <IsFreeComponent handleIsFree={handleIsFree} isFree={isFree}/>
 
                 <label className='flex flex-col space-y-3 w-full'>
                     <p>Introduce el Id del video</p>

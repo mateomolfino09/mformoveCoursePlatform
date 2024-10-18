@@ -41,7 +41,7 @@ const CreateClass = ({ classTypes }: Props) => {
   const createCourseReducer = useAppSelector(
     (state) => state.classesModalReducer.value
     );
-    const { typeId, image_url, descriptionLength, description, level, name, files, videoId } = createCourseReducer
+    const { typeId, image_url, descriptionLength, description, level, name, files, videoId, isFree } = createCourseReducer
 
   console.log(createCourseReducer)
 
@@ -152,7 +152,8 @@ const CreateClass = ({ classTypes }: Props) => {
             typeId,
             userEmail,
             description,
-            videoId
+            videoId,
+            isFree
         },
         config
       );

@@ -124,7 +124,7 @@ function CarouselClassesThumbnail({
                     fill={true}    
                     />
                 </div>
-                <div className={`absolute w-full h-full ${!auth?.user || (!auth?.user?.isMember && auth.user.rol !== "Admin")  ? 'hover:bg-black/50 justify-center items-center' : '' } hidden hover:flex`}>
+                <div className={`absolute w-full h-full ${!auth?.user || (!auth?.user?.subscription && auth.user.rol !== "Admin") ? 'hover:bg-black/50 justify-center items-center' : '' } hidden hover:flex`}>
                     <CiLock className='h-14 text-xs w-14 font-light'/>
                 </div>
                 <div className={`${auth?.user && auth.user?.classesSeen?.includes(c._id) ? "h-2 bg-white" : " bg-white/80 h-1"} w-full rounded-lg mt-1`}>
