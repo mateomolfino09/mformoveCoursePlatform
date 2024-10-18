@@ -67,6 +67,8 @@ function CarouselClassesThumbnail({
   const auth = useAuth()
   const dispatch = useAppDispatch()
   const router = useRouter()
+  const [hoveredIndex, setHoveredIndex] = useState<any>(null);
+
   const filterClassSlice = useAppSelector(
     (state) => state.filterClass.value
     );
@@ -85,7 +87,7 @@ function CarouselClassesThumbnail({
 
   const ComponentToRender = ({ children }: any) =>  (
     <>
-      {auth.user && (auth?.user?.subscription?.active || auth?.user?.rol === "Admin") ? (
+      {auth.user && (auth?.user?.subscription?.active || auth?.user?.rol === "Admin" || c.isFree) ? (
         <>
         <Link href={`/classes/${c.id}`}>
             {children}
@@ -109,8 +111,11 @@ function CarouselClassesThumbnail({
             <m.div
                 className={`thumbnailClassContainer relative 
                 h-[17rem] md:h-[19rem] transition-all duration-500
-                } overflow-hidden `}
-            >
+                } overflow-hidden `} onMouseEnter={() => {
+                  setHoveredIndex(c.id)}
+                } 
+                onMouseLeave={() => setHoveredIndex(null)}
+            > 
                 <div
                 className={`thumb-class-color group rounded-lg min-w-[20rem] min-h-[17rem] md:min-h-[19rem] md:min-w-[23rem]
                 overflow-hidden`}
@@ -124,9 +129,13 @@ function CarouselClassesThumbnail({
                     fill={true}    
                     />
                 </div>
-                <div className={`absolute w-full h-full ${!auth?.user || (!auth?.user?.isMember && auth.user.rol !== "Admin")  ? 'hover:bg-black/50 justify-center items-center' : '' } hidden hover:flex`}>
-                    <CiLock className='h-14 text-xs w-14 font-light'/>
+                <div className="absolute group/item w-full h-60"          
+                >
+                  <div className={` w-full h-full ${!auth?.user?.subscription && auth?.user?.rol !== "Admin" && c.isFree == false ? 'bg-black/20 justify-center flex items-center h-full border-t-md' : 'hidden' } hover:flex`}>
+                      <CiLock className={`h-14 text-xs w-14 ${hoveredIndex === c.id ? "block" : "hidden"}  font-light`}/>
+                  </div>
                 </div>
+
                 <div className={`${auth?.user && auth.user?.classesSeen?.includes(c._id) ? "h-2 bg-white" : " bg-white/80 h-1"} w-full rounded-lg mt-1`}>
 
                 </div>
@@ -140,6 +149,12 @@ function CarouselClassesThumbnail({
 
                     </div>
                 </div>
+                  {/* Rectángulo en diagonal para mostrar "FREE" */}
+                {c.isFree && (
+                  <div className="absolute top-4 left-[-30px] w-[120px] h-[30px] bg-[#a38951] font-boldFont text-white font-bold text-center transform rotate-[-45deg] flex justify-center items-center">
+                    <p>GRATIS</p>
+                  </div>
+                )}
             </m.div>
         </div>
         

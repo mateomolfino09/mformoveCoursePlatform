@@ -159,7 +159,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
       router.push('/login');
     }
     
-    if(!auth.user || (!auth?.user?.subscription?.active && auth?.user.rol != 'Admin')) {
+    if(!auth.user || (!auth?.user?.subscription?.active && auth?.user.rol != 'Admin') && !clase.isFree ) {
       router.push('/home');
     }
 

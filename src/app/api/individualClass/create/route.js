@@ -21,7 +21,8 @@ export async function POST(req) {
         typeId,
         userEmail,
         description,
-        videoId
+        videoId,
+        isFree
       } = await req.json();
 
       console.log(level)
@@ -58,7 +59,7 @@ export async function POST(req) {
         hours,
         level,
         type: typeId,
-        isFree: false,
+        isFree: isFree,
         image_base_link: vimeoVideo.pictures.base_link,
         html: vimeoVideo.embed.html,
         link: vimeoVideo.link,
