@@ -32,7 +32,7 @@ const nextConfig = {
     ]
   },
   // Habilitar source maps en producción
-  //productionBrowserSourceMaps: true
+  productionBrowserSourceMaps: true
 };
 
 module.exports = nextConfig;
