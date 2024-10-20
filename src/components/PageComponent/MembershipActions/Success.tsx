@@ -16,7 +16,7 @@ import Link from 'next/link';
 import React, { useEffect, useState, useRef } from 'react';
 import { AiFillCheckCircle } from 'react-icons/ai';
 import Select, { StylesConfig } from 'react-select';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Cookies from 'js-cookie';
 
 interface Props {}
@@ -28,8 +28,10 @@ const Success = () => {
   const router =  useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [created, setCreated] = useState<boolean | null>(false);
-
+  const searchParams = useSearchParams();
+  const external_id = searchParams.get('external_id');  // Capturamos el external_id
   // Adding a flag to prevent multiple calls
+  console.log(external_id)
   const subCalled = useRef(false);
 
   useEffect(() => {
@@ -48,23 +50,16 @@ const Success = () => {
     subCalled.current = true; // Previene llamadas futuras al subscribe
     setLoading(true);
     
-    const paymentToken = Cookies.get('userPaymentToken');
     const planId = Cookies.get('planToken');
 
-    if (!paymentToken) {
+    if (!external_id) {
       toast.error(`No tienes token de subscripcion, te redireccionaremos al inicio...`);
       router.push('/select-plan');
       return;
     }
 
     try {
-      const user = auth.user;
-      if (!user) {
-        await auth.fetchUser();
-        return;
-      }
-
-      const data = await auth.newSub(user._id, planId);
+      const data = await auth.newSub(external_id, planId);
       if (data.error && !created) {
         toast.error(`${data.error}`);
       } else {

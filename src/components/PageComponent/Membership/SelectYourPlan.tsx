@@ -83,10 +83,11 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
                 }
         
                 const { token, planToken } = data
-                Cookies.set('userPaymentToken', token ? token : '', { expires: 5})
                 Cookies.set('planToken', planToken ? planToken : '', { expires: 5})
+                
+                router.push(`${origin}/validate/subscription/${planSelected?.plan_token}?external_id=${auth?.user?._id}`)
 
-                router.push(`${origin}/validate/subscription/${planSelected?.plan_token}`)
+
             }
             else {
                 console.log(email)
