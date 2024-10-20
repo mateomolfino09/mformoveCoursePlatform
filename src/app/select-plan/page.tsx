@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react';
 import SelectPlan from '../../components/PageComponent/SelectPlan/SelectPlan';
+import { revalidateTag } from 'next/cache';
 
 export default function Page() {
   const [plans, setPlans] = useState([]);
@@ -9,6 +10,7 @@ export default function Page() {
   useEffect(() => {
     async function fetchPlans() {
       try {
+        revalidateTag('plans');
         const res = await fetch('/api/payments/getPlans', {
           // Configuración para evitar el caché en todas partes:
           cache: 'no-store', // Deshabilita el caché del navegador
@@ -16,7 +18,7 @@ export default function Page() {
             'Cache-Control': 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0', // Deshabilita el caché del servidor
           },
         });
-
+        revalidateTag('plans');
         const data = await res.json();
         console.log("ejecuta el fetch")
         setPlans(data);
