@@ -190,7 +190,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
                   <div>
                         <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
                     </div>
-                    <p className='text-base font-light'>7 Días Prueba Gratuita (Para Miembros Nuevos)
+                    <p className='text-base font-light'>7 Días de Garantía (Para Miembros Nuevos)
                     </p>
                 </div>
             </>
@@ -243,8 +243,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
     ) : (
         <>
             <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-4 mt-5 text-center text-xs md:text-sm font-light'>
-                <p>0 {planSelected?.currency} facturado hoy.</p>
-                <p>7 días gratis (para miembros nuevos) luego {planSelected?.amount} {planSelected?.currency} facturado {planSelected?.frequency_label} {planSelected?.frequency_label === "Anual" && `(ahorra ${12 * (plans.find(x => x.frequency_label != planSelected?.frequency_label)?.amount ?? 0) - planSelected?.amount } ${planSelected?.currency})`} </p>
+                <p>{planSelected?.amount} {planSelected?.currency} facturado {planSelected?.frequency_label} {planSelected?.frequency_label === "Anual" && `(ahorra ${12 * (plans.find(x => x.frequency_label != planSelected?.frequency_label)?.amount ?? 0) - planSelected?.amount } ${planSelected?.currency})`} facturado hoy.</p>
                 <p>Enviamos recordatorio antes de facturar para evitar pagos no deseados.</p>
             </div>
         </>
