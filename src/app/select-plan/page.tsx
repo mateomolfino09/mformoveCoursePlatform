@@ -20,7 +20,6 @@ export default function Page() {
         console.error('Error fetching plans:', err);
       }
     }
-  
     fetchPlans();
   }, []);
   
