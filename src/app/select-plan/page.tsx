@@ -9,16 +9,21 @@ export default function Page() {
   useEffect(() => {
     async function fetchPlans() {
       try {
-        const res = await fetch('/api/payments/getPLans'); // Llama a la API route
+        const res = await fetch('/api/payments/getPlans', {
+          next: {
+            tags: ['plans'],
+          },
+        }); 
         const data = await res.json();
         setPlans(data);
       } catch (err) {
         console.error('Error fetching plans:', err);
       }
     }
-
+  
     fetchPlans();
   }, []);
+  
 
   return (
     <SelectPlan plans={plans} origin={origin}/>
