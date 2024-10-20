@@ -1,24 +1,26 @@
+'use client'
+import { useEffect, useState } from 'react';
 import SelectPlan from '../../components/PageComponent/SelectPlan/SelectPlan';
-import { getPlans } from '../api/payments/getPlans';
-  
-  
-  export default async function Page() {
 
-    const plans = await getPlans()
-    
-    let origin = process.env.DLOCALGO_CHECKOUT_URL != null ? process.env.DLOCALGO_CHECKOUT_URL : "https://checkout-sbx.dlocalgo.com";
+export default function Page() {
+  const [plans, setPlans] = useState([]);
+  const origin = process.env.DLOCALGO_CHECKOUT_URL != null ? process.env.DLOCALGO_CHECKOUT_URL : "https://checkout-sbx.dlocalgo.com";
 
-    console.log(origin)
+  useEffect(() => {
+    async function fetchPlans() {
+      try {
+        const res = await fetch('/api/payments/getPLans'); // Llama a la API route
+        const data = await res.json();
+        setPlans(data);
+      } catch (err) {
+        console.error('Error fetching plans:', err);
+      }
+    }
 
-    // if (process.env.NODE_ENV != 'production') {
-    //   origin = "https://checkout-sbx.dlocalgo.com"
-    // } else {
-    //   origin = "https://checkout.dlocalgo.com"
-    // }
+    fetchPlans();
+  }, []);
 
-    return (
-      <SelectPlan plans={plans} origin={origin}/>
-    );
-  };
-  
-  
+  return (
+    <SelectPlan plans={plans} origin={origin}/>
+  );
+}
