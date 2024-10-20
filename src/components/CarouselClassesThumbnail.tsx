@@ -29,6 +29,7 @@ import { CiLock } from 'react-icons/ci';
 import { setOpenModal } from '../redux/features/filterClass';
 import state from '../valtio';
 import { useRouter } from 'next/navigation';
+import { classFilters } from '../constants/classFilters';
 interface Props {
   c: IndividualClass;
 }
@@ -66,6 +67,8 @@ function CarouselClassesThumbnail({
   const auth = useAuth()
   const dispatch = useAppDispatch()
   const router = useRouter()
+  const [hoveredIndex, setHoveredIndex] = useState<any>(null);
+
   const filterClassSlice = useAppSelector(
     (state) => state.filterClass.value
     );
@@ -84,7 +87,7 @@ function CarouselClassesThumbnail({
 
   const ComponentToRender = ({ children }: any) =>  (
     <>
-      {auth.user && (auth?.user?.subscription?.active || auth?.user?.rol === "Admin") ? (
+      {auth.user && (auth?.user?.subscription?.active || auth?.user?.rol === "Admin" || c.isFree) ? (
         <>
         <Link href={`/classes/${c.id}`}>
             {children}
@@ -108,8 +111,11 @@ function CarouselClassesThumbnail({
             <m.div
                 className={`thumbnailClassContainer relative 
                 h-[17rem] md:h-[19rem] transition-all duration-500
-                } overflow-hidden `}
-            >
+                } overflow-hidden `} onMouseEnter={() => {
+                  setHoveredIndex(c.id)}
+                } 
+                onMouseLeave={() => setHoveredIndex(null)}
+            > 
                 <div
                 className={`thumb-class-color group rounded-lg min-w-[20rem] min-h-[17rem] md:min-h-[19rem] md:min-w-[23rem]
                 overflow-hidden`}
@@ -123,22 +129,32 @@ function CarouselClassesThumbnail({
                     fill={true}    
                     />
                 </div>
-                <div className={`absolute w-full h-full ${!auth?.user || (!auth?.user?.isMember && auth.user.rol !== "Admin")  ? 'hover:bg-black/50 justify-center items-center' : '' } hidden hover:flex`}>
-                    <CiLock className='h-14 text-xs w-14 font-light'/>
+                <div className="absolute group/item w-full h-60"          
+                >
+                  <div className={` w-full h-full ${!auth?.user?.subscription && auth?.user?.rol !== "Admin" && c.isFree == false ? 'bg-black/20 justify-center flex items-center h-full border-t-md' : 'hidden' } hover:flex`}>
+                      <CiLock className={`h-14 text-xs w-14 ${hoveredIndex === c.id ? "block" : "hidden"}  font-light`}/>
+                  </div>
                 </div>
+
                 <div className={`${auth?.user && auth.user?.classesSeen?.includes(c._id) ? "h-2 bg-white" : " bg-white/80 h-1"} w-full rounded-lg mt-1`}>
 
                 </div>
                 <div className='flex flex-col justify-center items-start mt-1 w-full px-1 py-1'>
-                    <h3 className='font-light text-xl mb-1'>{c.name}</h3>
-                    <div className='flex justify-start space-x-8 items-center w-full'>
-                        <p className="after:content-[''] after:mr-2 after:bg-white after:w-1 after:h-1 after:absolute after:bottom-3 after:left-[3.5rem] after:translate-y-[-50%]  after:rounded-full after:">{c.minutes} min</p>
-                        <p className="after:content-[''] after:mr-2 after:bg-white after:w-1 after:h-1 after:absolute after:bottom-3 after:left-[7.3rem] after:translate-y-[-50%]  after:rounded-full after:">{c.type?.toUpperCase()}</p>
-                        <p className="after:content-[''] after:mr-2 ">Nivel {c.level}</p>
+                    <h3 className='font-light text-lg mb-1'>{c.name}</h3>
+                    <div className='flex justify-start space-x-4 items-center w-full'>
+                        <p className="after:content-[''] text-xs after:mr-1 after:bg-white after:w-1 after:h-1 after:absolute after:bottom-[9px] after:left-[2.83rem] after:translate-y-[-50%] font-light after:rounded-full after:">{c.minutes} min</p>
+                        <p className={`after:content-[''] text-xs after:mr-2 after:bg-white after:w-1 after:h-1 after:absolute after:bottom-[9px] ${c.type?.toUpperCase() == classFilters[0].value.toUpperCase() ? "after:left-[8.73rem]" : c.type?.toUpperCase() == classFilters[1].value.toUpperCase() ? "after:left-[6.73rem]" : c.type?.toUpperCase() == classFilters[2].value.toUpperCase() ? "after:left-[11.3rem]" : "after:left-[8.8rem]"}  after:translate-y-[-50%]  after:rounded-full font-light after:`}>{c.type?.toUpperCase()}</p>
+                        <p className="after:content-[''] text-xs font-light after:mr-2 ">Nivel {c.level}</p>
 
 
                     </div>
                 </div>
+                  {/* Rectángulo en diagonal para mostrar "FREE" */}
+                {c.isFree && (
+                  <div className="absolute top-4 left-[-30px] w-[120px] h-[30px] bg-[#a38951] font-boldFont text-white font-bold text-center transform rotate-[-45deg] flex justify-center items-center">
+                    <p>GRATIS</p>
+                  </div>
+                )}
             </m.div>
         </div>
         

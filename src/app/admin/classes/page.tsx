@@ -45,8 +45,8 @@ const Index = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
         <div className='bg-gray-700 w-full md:h-[100vh]'>
-          <p className='text-white text-3xl my-12 font-bold'>
-            Bienvenido al Dashboard de Cursos
+          <p className='text-white text-3xl font-boldFont my-12 font-bold'>
+            Bienvenido al Dashboard de Clases
           </p>
 
           <div className='grid lg:grid-cols-3 gap-5 mb-16'>

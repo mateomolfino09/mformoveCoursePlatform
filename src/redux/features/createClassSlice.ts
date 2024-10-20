@@ -15,6 +15,7 @@ type RegisterState = {
     typeId: string | null,
     image_url: string | null,
     videoId: string
+    isFree: boolean
 }
 
 const initialState: InitialState = {
@@ -26,7 +27,8 @@ const initialState: InitialState = {
         descriptionLength: 0,
         level: 0,
         image_url: null,
-        typeId: null
+        typeId: null,
+        isFree: false
 
     }
 }
@@ -54,7 +56,8 @@ export const createClassesSlice = createSlice({
                     description: action.payload.description,
                     descriptionLength: action.payload.descriptionLength,
                     level: action.payload.level,
-                    videoId: action.payload.videoId
+                    videoId: action.payload.videoId,
+                    isFree: action.payload.isFree
                     
                 }
             }

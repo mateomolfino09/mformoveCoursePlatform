@@ -21,8 +21,11 @@ export async function POST(req) {
         typeId,
         userEmail,
         description,
-        videoId
+        videoId,
+        isFree
       } = await req.json();
+
+      console.log(level)
 
       let user = await Users.findOne({ email: userEmail }); 
       const users = await Users.find({});
@@ -56,7 +59,7 @@ export async function POST(req) {
         hours,
         level,
         type: typeId,
-        isFree: false,
+        isFree: isFree,
         image_base_link: vimeoVideo.pictures.base_link,
         html: vimeoVideo.embed.html,
         link: vimeoVideo.link,
@@ -64,8 +67,10 @@ export async function POST(req) {
       }).save();
 
       let notNewClass = await IndividualClass.findOne().skip(9).exec();
-      notNewClass.new = false
-      await notNewClass.save()
+      if(notNewClass) {
+        notNewClass.new = false
+        await notNewClass.save()
+      }
 
       return NextResponse.json({ message: 'Clase individual creada con éxito'}, { status: 200 })
     }
