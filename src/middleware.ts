@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
+const freeCheckSources = ['/login', '/register', '/email', '/reset', '/resetEmail', '/forget', '/about', '/'];
+
 export async function middleware(request: NextRequest) {
     const jwt = request.cookies.get('userToken')?.value;
     const response = NextResponse.next();
     
     // Deshabilitar caché en todas las rutas
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    //response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     
     try {
         // Verifica si el token JWT no existe y redirige a login
@@ -31,5 +33,5 @@ export async function middleware(request: NextRequest) {
 
 // Aplicar el middleware a todas las rutas
 export const config = {
-    matcher: '/:path*',  // Coincide con todas las rutas del proyecto
+    matcher: ['/account/:path*', '/admin/:path*', '/products/:path*', '/payment/:path*']
 };
