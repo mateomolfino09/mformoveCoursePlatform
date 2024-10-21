@@ -11,9 +11,12 @@ export async function GET() {
     const plans = await Plan.find({});
     revalidateTag('plans');
     return NextResponse.json(plans, {
-      status: 200,
-      headers: { 'Cache-Control': 'no-store' },  // No cachear
-    });
+        status: 200,
+        headers: { 
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'x-vercel-cache': 'miss'  // Forzar a Vercel a evitar el caché
+        },
+      });
 
   } catch (error) {
     console.error(error);
