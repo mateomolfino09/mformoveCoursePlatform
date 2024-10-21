@@ -18,8 +18,25 @@ const nextConfig = {
   env: {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET
   },
+  async headers() {
+    return [
+      {
+        source: '/(.*)', // Aplica a todas las rutas
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate'
+          },
+          {
+            key: 'x-vercel-cache',
+            value: 'miss'  // Evitar caché en Vercel
+          }
+        ],
+      },
+    ]
+  },
   // Habilitar source maps en producción
-  //productionBrowserSourceMaps: true
+  // productionBrowserSourceMaps: true
 };
 
 module.exports = nextConfig;
