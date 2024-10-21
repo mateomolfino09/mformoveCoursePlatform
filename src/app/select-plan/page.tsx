@@ -18,6 +18,7 @@ export default function Page() {
           },
         });
         const data = await res.json();
+        console.log(process.env.VERCEL_PROJECT_ID)
         console.log("ejecuta el fetch")
         setPlans(data);
       } catch (err) {
