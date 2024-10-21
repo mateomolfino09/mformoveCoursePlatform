@@ -5,7 +5,8 @@ import { revalidateTag } from 'next/cache';
 
 // Conectar a la base de datos
 connectDB();
-
+export const revalidate = 0;
+export const fetchCache = 'force-no-store'
 export async function GET() {
   try {
     const plans = await Plan.find({});
