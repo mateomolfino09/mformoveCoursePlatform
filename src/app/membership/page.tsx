@@ -1,26 +1,30 @@
-import {
-    ClassTypes,
-  } from '../../../typings';
+'use client';
+import { useEffect, useState } from 'react';
 import Membership from '../../components/PageComponent/Membership/Membership';
-  import connectDB from '../../config/connectDB';
-  import dLocalApi from '../api/payments/dlocalTest';
-import { getPlans } from '../api/payments/getPlans';
-  
-  
-  export default async function Page() {
 
-    const plans = await getPlans()
-    let origin;
-    if (process.env.NODE_ENV != 'production') {
-      origin = "https://checkout-sbx.dlocalgo.com"
-    } else {
-      origin = "https://checkout.dlocalgo.com"
+export default function Page() {
+  const [plans, setPlans] = useState([]);
+  const origin = process.env.NODE_ENV !== 'production'
+    ? 'https://checkout-sbx.dlocalgo.com'
+    : 'https://checkout.dlocalgo.com';
+
+  useEffect(() => {
+    async function fetchPlans() {
+      try {
+        const res = await fetch('/api/payments/getPlans', {
+          headers: {
+            'Cache-Control': 'no-store, max-age=0',  // Cache-Control a nivel de fetch
+          },
+        });
+        const data = await res.json();
+        setPlans(data);
+      } catch (err) {
+        console.error('Error fetching plans:', err);
+      }
     }
 
-  
-    return (
-      <Membership plans={plans} origin={origin}/>
-    );
-  };
-  
-  
+    fetchPlans();
+  }, []);
+
+  return <Membership plans={plans} origin={origin} />;
+}
