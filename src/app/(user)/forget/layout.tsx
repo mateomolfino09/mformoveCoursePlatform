@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import GoogleCaptchaWrapper from '../../../hooks/RecaptchaProvider'
 
 
 export const metadata: Metadata = {
@@ -14,9 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <section>
-        <GoogleCaptchaWrapper>
           {children}
-        </GoogleCaptchaWrapper>
     </section>
   )
 }

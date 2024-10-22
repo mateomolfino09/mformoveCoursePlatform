@@ -17,11 +17,11 @@ connectDB();
 export async function POST(request) {
   try {
     if (request.method === 'POST') {
-      const { email, password, firstname, lastname, gender, country, captcha, gRecaptchaToken } =
+      const { email, password, firstname, lastname, gender, country } =
       await request.json();
       const secretKey = process.env.RECAPTCHA_SECRET_SITE_KEY
 
-      const formData = `secret=${secretKey}&response=${gRecaptchaToken}`;
+      // const formData = `secret=${secretKey}&response=${gRecaptchaToken}`;
       //const validCaptcha =await validateRecaptcha(formData)
 
      // console.log(validCaptcha)

@@ -121,13 +121,23 @@ function CarouselClassesThumbnail({
                 overflow-hidden`}
                 />
                 <div className='thumbnailClassesItem relative'>
-                <Image
-                    src={c.image_base_link}
+                <CldImage
+                  src={c?.image_url}
+                  preserveTransformations
+                  // width={1000}
+                  // height={1000}
+                  className={`cldImage`}
+                  alt={c?.description}
+                  loader={imageLoader}
+                  fill={true}
+                />
+                {/* <Image
+                    src={c.image_url}
                     className='object-cover rounded-lg'
                     alt={c.description}
                     loader={imageLoader}
                     fill={true}    
-                    />
+                    /> */}
                 </div>
                 <div className="absolute group/item w-full h-60"          
                 >
