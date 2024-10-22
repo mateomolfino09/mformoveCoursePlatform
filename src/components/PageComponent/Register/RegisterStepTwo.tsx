@@ -72,7 +72,7 @@ const RegisterStepTwo = ({ step2ToStep3, step2ToStep1, signUp }: Props) => {
       <div className='flex flex-col items-center justify-center relative mt-20 sm:mt-24 space-y-4 rounded py-12 '>
         <AiOutlineCheckCircle className='check-icon' />
         <p className='step'>PASO 2 DE 2</p>
-        <h1 className='title-step-one'>
+        <h1 className='title-step-one font-boldFont'>
           Ya estamos por terminar!
         </h1>
         <h2 className='subtitle-step-one'>

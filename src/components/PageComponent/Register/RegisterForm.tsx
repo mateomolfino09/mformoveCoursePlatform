@@ -22,7 +22,6 @@ import RegisterStepTwo from './RegisterStepTwo';
 import RegisterStepThree from './RegisterStepThree';
 import { motion as m, useAnimation } from 'framer-motion';
 import './registerStyle.css';
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import ResendEmail from './ResendEmail';
 
 interface Inputs {
@@ -40,8 +39,6 @@ function Register() {
   const animationsteptwo = useAnimation();
   const animationstepthree = useAnimation();
 
-  const { executeRecaptcha } = useGoogleReCaptcha()
-
   const [state, setState] = useState({
     stepCero: true,
     stepOne: false,
@@ -51,7 +48,7 @@ function Register() {
   });
   const { stepCero, stepOne, stepTwo, stepThree, resend } = state;
   const [registered, setRegistered] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  // const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const router = useRouter();
   const recaptchaRef = useRef<any>();
   const register = useAppSelector(
@@ -170,18 +167,18 @@ function Register() {
       e.preventDefault();
       setLoading(true);
 
-      const captcha = captchaToken;
+      // const captcha = captchaToken;
 
-      if (!executeRecaptcha) {
-        toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde');
-        setLoading(false);
-        setTimeout(() => {
-          window.location.reload();
-        }, 4000);
-        return;
-      }
+      // if (!executeRecaptcha) {
+      //   toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde');
+      //   setLoading(false);
+      //   setTimeout(() => {
+      //     window.location.reload();
+      //   }, 4000);
+      //   return;
+      // }
 
-      const gRecaptchaObj = await executeRecaptcha("inquirySubmit")
+      // const gRecaptchaObj = await executeRecaptcha("inquirySubmit")
 
 
       if (password !== confirmPassword) {
@@ -198,7 +195,7 @@ function Register() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, firstname, lastname, gender, country, captcha, gRecaptchaToken: gRecaptchaObj }),
+        body: JSON.stringify({ email, password, firstname, lastname, gender, country }),
       })
 
       const data = await res.json()
@@ -226,25 +223,25 @@ function Register() {
       e.preventDefault();
       setLoading(true);
 
-      const captcha = captchaToken;
+      // const captcha = captchaToken;
 
-      if (!executeRecaptcha) {
-        toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde');
-        setLoading(false);
-        setTimeout(() => {
-          window.location.reload();
-        }, 4000);
-        return;
-      }
+      // if (!executeRecaptcha) {
+      //   toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde');
+      //   setLoading(false);
+      //   setTimeout(() => {
+      //     window.location.reload();
+      //   }, 4000);
+      //   return;
+      // }
 
-      const gRecaptchaObj = await executeRecaptcha("inquirySubmit")
+      // const gRecaptchaObj = await executeRecaptcha("inquirySubmit")
 
       const res = await fetch(endpoints.auth.resend, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, gRecaptchaToken: gRecaptchaObj }),
+        body: JSON.stringify({ email }),
       })
 
       const data = await res.json()
@@ -279,17 +276,17 @@ function Register() {
     formState: { errors }
   } = useForm<Inputs>();
 
-  const onChange = () => {
-    if (recaptchaRef.current.getValue()) {
-      setCaptchaToken(recaptchaRef.current.getValue());
-      console.log(recaptchaRef.current.getValue());
-    } else {
-      setCaptchaToken(null);
-    }
-  };
+  // const onChange = () => {
+  //   if (recaptchaRef.current.getValue()) {
+  //     setCaptchaToken(recaptchaRef.current.getValue());
+  //     console.log(recaptchaRef.current.getValue());
+  //   } else {
+  //     setCaptchaToken(null);
+  //   }
+  // };
 
   return (
-    <div className='relative flex h-screen w-screen flex-col md:items-center md:justify-center overflow-hidden'>
+    <div className='relative flex h-screen w-screen flex-col md:items-center md:justify-center overflow-hidden font-montserrat'>
       <Image
       src={'/images/image00013.jpeg'}
       layout='fill'
@@ -322,7 +319,7 @@ function Register() {
                 >
                    <ResendEmail
                   resendEmail={resendEmail}
-                  onChange={onChange}
+                  // onChange={onChange}
                   recaptchaRef={recaptchaRef}
                   step3ToStep2={step3ToStep2}
                 />
@@ -361,7 +358,7 @@ function Register() {
                 >
                 <RegisterStepThree
                   signUp={signupUser}
-                  onChange={onChange}
+                  // onChange={onChange}
                   recaptchaRef={recaptchaRef}
                   step3ToStep2={step3ToStep2}
                 />
@@ -384,7 +381,7 @@ function Register() {
             alt='icon image'
           />
           <div className='relative top-48 md:top-0 space-y-8 rounded py-10 px-6 md:mt-0 md:max-w-lg md:px-14'>
-            <h1 className='text-4xl font-semibold'>
+            <h1 className='text-4xl font-semibold font-boldFont'>
               Hemos enviado un correo a tu cuenta.
             </h1>
             <div className='space-y-4'>

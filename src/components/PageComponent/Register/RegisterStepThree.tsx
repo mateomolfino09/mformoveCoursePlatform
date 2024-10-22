@@ -26,12 +26,11 @@ const colourStyles: StylesConfig<any> = {
 
 interface Props {
   signUp: any;
-  onChange: any;
   recaptchaRef: any;
   step3ToStep2: any
 }
 
-const RegisterStepThree = ({ signUp, onChange, recaptchaRef, step3ToStep2 }: Props) => {
+const RegisterStepThree = ({ signUp, recaptchaRef, step3ToStep2 }: Props) => {
   const router = useRouter();
   const user = useAppSelector(
     (state) => state.registerReducer.value

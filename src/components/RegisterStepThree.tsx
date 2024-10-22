@@ -23,11 +23,9 @@ const colourStyles: StylesConfig<any> = {
 interface Props {
   user: any;
   signUp: any;
-  onChange: any;
-  recaptchaRef: any;
 }
 
-const RegisterStepOne = ({ user, signUp, onChange, recaptchaRef }: Props) => {
+const RegisterStepOne = ({ user, signUp }: Props) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();

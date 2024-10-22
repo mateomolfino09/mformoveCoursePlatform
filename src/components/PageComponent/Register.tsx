@@ -40,9 +40,9 @@ function Register() {
   });
   const { stepCero, stepOne, stepTwo, stepThree } = state;
   const [registered, setRegistered] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  // const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const router = useRouter();
-  const recaptchaRef = useRef<any>();
+  // const recaptchaRef = useRef<any>();
 
   const clearData = () => {
     setState({
@@ -91,7 +91,7 @@ function Register() {
       e.preventDefault();
       setLoading(true);
 
-       const captcha = null;
+      //  const captcha = null;
       // const captcha = captchaToken;
       // if (!captcha) {
       //   toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde');
@@ -116,7 +116,7 @@ function Register() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, firstname, lastname, gender, country, captcha }),
+        body: JSON.stringify({ email, password, firstname, lastname, gender, country }),
       })
 
       const data = await res.json()
@@ -147,17 +147,17 @@ function Register() {
     formState: { errors }
   } = useForm<Inputs>();
 
-  const onChange = () => {
-    if (recaptchaRef.current.getValue()) {
-      setCaptchaToken(recaptchaRef.current.getValue());
-      console.log(recaptchaRef.current.getValue());
-    } else {
-      setCaptchaToken(null);
-    }
-  };
+  // const onChange = () => {
+  //   if (recaptchaRef.current.getValue()) {
+  //     setCaptchaToken(recaptchaRef.current.getValue());
+  //     console.log(recaptchaRef.current.getValue());
+  //   } else {
+  //     setCaptchaToken(null);
+  //   }
+  // };
 
   return (
-    <div className='relative flex h-screen w-screen flex-col bg-white md:items-center md:justify-center'>
+    <div className='relative flex h-screen w-screen flex-col bg-white md:items-center md:justify-center font-montserrat'>
       <Head>
         <title>Video Streaming</title>
         <meta name='description' content='Stream Video App' />
@@ -222,8 +222,8 @@ function Register() {
                     conPassword
                   }}
                   signUp={signupUser}
-                  onChange={onChange}
-                  recaptchaRef={recaptchaRef}
+                  // onChange={onChange}
+                  // recaptchaRef={recaptchaRef}
                 />
               )}
             </div>
@@ -250,7 +250,7 @@ function Register() {
             alt='icon image'
           />
           <div className='relative mt-24 space-y-8 rounded bg-black/75 py-10 px-6 md:mt-0 md:max-w-lg md:px-14'>
-            <h1 className='text-4xl font-semibold'>
+            <h1 className='text-4xl font-semibold font-boldFont'>
               Hemos enviado un correo a tu cuenta.
             </h1>
             <div className='space-y-4'>

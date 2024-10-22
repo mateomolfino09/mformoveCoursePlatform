@@ -103,7 +103,7 @@ const RegisterStepOne = ({ step1ToStep2, step1ToStep0 }: Props) => {
       <div className='stepone-container'>
         <AiOutlineCheckCircle className='check-icon' />
         <p className='step'>PASO 1 DE 2</p>
-        <h1 className='title-step-one'>
+        <h1 className='title-step-one font-boldFont'>
           Completa tu Nombre, Apellidos, Pais y Género
         </h1>
         <h2 className='subtitle-step-one'>

@@ -25,12 +25,11 @@ const colourStyles: StylesConfig<any> = {
 
 interface Props {
   resendEmail: any;
-  onChange: any;
   recaptchaRef: any;
   step3ToStep2: any
 }
 
-const ResendEmail = ({ resendEmail, onChange, recaptchaRef, step3ToStep2 }: Props) => {
+const ResendEmail = ({ resendEmail, recaptchaRef, step3ToStep2 }: Props) => {
   const router = useRouter();
   const user = useAppSelector(
     (state) => state.registerReducer.value
