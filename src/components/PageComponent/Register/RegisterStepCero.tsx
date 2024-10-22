@@ -107,12 +107,12 @@ const RegisterStepCero = ({ step0ToStep1, step0ToResend }: Props) => {
         </>
       ) : (
         <>
-          <div className='sub-container'>
-            <h1 className='title'>
+          <div className='sub-container font-montserrat'>
+            <h1 className='title font-boldFont'>
               Es hora de moverse...
             </h1>
-            <h2 className='subtitle'>
-              Pronto para aprender? Ingresa tu email para crear tu cuenta.
+            <h2 className='subtitle font-boldFont'>
+              ¿Pronto para aprender? Ingresa tu email para crear tu cuenta.
             </h2>
           </div>
           <div className='main-input-container'>

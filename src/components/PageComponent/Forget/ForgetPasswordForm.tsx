@@ -17,7 +17,7 @@ import { toast } from 'react-toastify';
 function ForgetForm() {
   const [message, setMessage] = useState<any>([])
   const [loading, setLoading] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  // const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const router = useRouter();
   const auth = useAuth()
   const recaptchaRef = useRef<any>();
@@ -26,7 +26,7 @@ function ForgetForm() {
       ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
       : '';
       const [capsLock, setCapsLock] = useState<boolean>(false);
-      const { executeRecaptcha } = useGoogleReCaptcha()
+      // const { executeRecaptcha } = useGoogleReCaptcha()
 
       useEffect(() => {
         if (typeof window != 'undefined' && document != undefined) {
@@ -47,13 +47,13 @@ function ForgetForm() {
       }
     
 
-  const onChange = () => {
-    if (recaptchaRef.current.getValue()) {
-      setCaptchaToken(recaptchaRef.current.getValue());
-    } else {
-      setCaptchaToken(null);
-    }
-  };
+  // const onChange = () => {
+  //   if (recaptchaRef.current.getValue()) {
+  //     setCaptchaToken(recaptchaRef.current.getValue());
+  //   } else {
+  //     setCaptchaToken(null);
+  //   }
+  // };
 
   useEffect(() => {
     setTimeout(() => {
@@ -70,7 +70,7 @@ function ForgetForm() {
   const forget = async (data: FormData) => {
     
     setLoading(true);
-    const captcha = captchaToken;
+    // const captcha = captchaToken;
 
     const email = data.get('email') as string
     

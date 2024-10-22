@@ -16,19 +16,19 @@ connectDB();
 export async function POST(request) {
   try {
     if (request.method === 'POST') {
-      const { email, gRecaptchaToken } =
+      const { email } =
       await request.json();
       console.log(email)
-      const secretKey = process.env.RECAPTCHA_SECRET_SITE_KEY
+      // const secretKey = process.env.RECAPTCHA_SECRET_SITE_KEY
 
-      const formData = `secret=${secretKey}&response=${gRecaptchaToken}`;
-      const validCaptcha =await validateRecaptcha(formData)
+      // const formData = `secret=${secretKey}&response=${gRecaptchaToken}`;
+      // const validCaptcha =await validateRecaptcha(formData)
 
-      // const validCaptcha = await validateCaptcha(captcha);
+      // // const validCaptcha = await validateCaptcha(captcha);
 
-      if (!validCaptcha.success) {
-        return NextResponse.json({ error: 'Unprocessable request, Invalid captcha code.'}, { status: 422 })
-      }
+      // if (!validCaptcha.success) {
+      //   return NextResponse.json({ error: 'Unprocessable request, Invalid captcha code.'}, { status: 422 })
+      // }
 
       const user = await Users.findOne({ email: email });
 
