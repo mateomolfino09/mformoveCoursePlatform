@@ -73,21 +73,6 @@ function ForgetForm() {
     const captcha = captchaToken;
 
     const email = data.get('email') as string
-
-    if (!executeRecaptcha) {
-      setMessage((current: any) => [...current, {
-        message: 'Error de CAPTCHA, vuelva a intentarlo mas tarde',
-        type: alertTypes.error.type
-      }]);
-      toast.error('Error de CAPTCHA, vuelva a intentarlo mas tarde');
-      setLoading(false);
-      setTimeout(() => {
-        window.location.reload();
-      }, 4000);
-      return;
-    }
-
-    const gRecaptchaObj = await executeRecaptcha("inquirySubmit")
     
     try {
       //const data = await auth.forgetPasswordSendNoCaptcha(email)
