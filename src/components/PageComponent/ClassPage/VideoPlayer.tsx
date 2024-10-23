@@ -117,7 +117,15 @@ function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
       ...state,
       fullScreen: !fullScreen
     });
-    playerContainerRef.current && screenfull.toggle(playerContainerRef.current);
+    if (playerContainerRef.current && screenfull.isEnabled) {
+      screenfull.isFullscreen 
+      ? screenfull.toggle(playerContainerRef.current) 
+      : screenfull.request(playerContainerRef.current, {navigationUI: 'hide'});
+
+      screenfull.on('error', event => {
+        console.error('Failed to enable fullscreen', event);
+      });
+    }
   };
 
   const handleSeekChange = (e: any, newValue: any) => {
