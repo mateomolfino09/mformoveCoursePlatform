@@ -18,6 +18,7 @@ const classes: IndividualClass[] = await getClasses();
 
 
   return (
+    
     <Home filters={filters} classesDB={classes}/>
   );
 };
