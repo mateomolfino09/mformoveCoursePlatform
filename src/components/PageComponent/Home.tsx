@@ -191,9 +191,14 @@ const Home = ({ classesDB, filters }: Props) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
         <main className='relative lg:space-y-12 mt-32'>
-          <section className='!mt-0'>
-            <ClassesFilters filtersDB={filters}/>
-          </section>
+        <section className='!mt-0'>
+      {/* Solo renderizamos ClassesFilters si hay filtros disponibles */}
+      {filters.length > 0 ? (
+        <ClassesFilters filtersDB={filters} />
+      ) : (
+        <p>No filters found</p>
+      )}
+    </section>
           <section>
             {typedClasses && !loading ? typedClasses?.map((t: any) => (
               <>
