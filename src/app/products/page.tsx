@@ -1,17 +1,41 @@
+'use client';
+import { useEffect, useState } from 'react';
 import Products from '../../components/PageComponent/Products/Products';
 import { getProductFilters } from '../api/product/getFilters';
-import { getProducts } from '../api/product/getProducts';
-  
-  
-  export default async function Page() {
 
-    const products = await getProducts()
-    const filters = await getProductFilters();
+export default function Page() {
+  const [products, setProducts] = useState([]);
+  const [filters, setFilters] = useState([]);
 
-  
-    return (
-      <Products products={products} filters={filters}/>
-    );
-  };
-  
-  
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const res = await fetch('/api/product/getProducts', {
+          // Configuración para evitar el caché:
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          },
+        });
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      }
+    }
+
+    async function fetchFilters() {
+      try {
+        const filtersData = await getProductFilters();
+        setFilters(filtersData);
+      } catch (err) {
+        console.error('Error fetching filters:', err);
+      }
+    }
+
+    fetchProducts();
+    fetchFilters();
+  }, []);
+
+  return <Products products={products} filters={filters} />;
+}

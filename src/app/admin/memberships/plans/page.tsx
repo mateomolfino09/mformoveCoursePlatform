@@ -9,8 +9,13 @@ export default function Page() {
     async function fetchPlans() {
       try {
         const res = await fetch('/api/payments/getPlans', {
+          // Configuración para evitar el caché en todas partes:
+          cache: 'no-store', // Deshabilita el caché del navegador
           headers: {
-            'Cache-Control': 'no-store, max-age=0',  // Cache-Control a nivel de fetch
+            'Cache-Control': 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0', // Deshabilita el caché del servidor
+          },
+          next: {
+            tags: ['plans'],
           },
         });
         const data = await res.json();
