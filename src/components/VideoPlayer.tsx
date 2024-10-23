@@ -116,7 +116,13 @@ function Youtube({ url, img, title, setPlayerRef, play, isToShow }: Props) {
       ...state,
       fullScreen: !fullScreen
     });
-    playerContainerRef.current && screenfull.toggle(playerContainerRef.current);
+    if (playerContainerRef.current && screenfull.isEnabled) {
+      screenfull.request(playerContainerRef.current);
+
+      screenfull.on('error', event => {
+        console.error('Failed to enable fullscreen', event);
+      });
+    }
   };
 
   const handleSeekChange = (e: any, newValue: any) => {
