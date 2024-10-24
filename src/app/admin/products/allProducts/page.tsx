@@ -1,13 +1,29 @@
-import { ProductDB } from "../../../../../typings";
-import AllProducts from "../../../../components/PageComponent/Products/AllProducts";
-import { getProducts } from '../../../api/product/getProducts';
+'use client';
+import { useEffect, useState } from 'react';
+import AllProducts from '../../../../components/PageComponent/Products/AllProducts';
 
-   
-export default async function Page() {
+export default function Page() {
+  const [products, setProducts] = useState([]);
 
-    const products: ProductDB[] = await getProducts();
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const res = await fetch('/api/product/getProducts', {
+          // Configuración para evitar el caché:
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          },
+        });
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      }
+    }
 
-return (
-    <AllProducts products={products} />
-);
-};
+    fetchProducts();
+  }, []);
+
+  return <AllProducts products={products} />;
+}
