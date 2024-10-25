@@ -46,7 +46,7 @@ function LoginForm() {
 
     auth.signIn(email, password).then((res: any) => {
       if(res.type != 'error') {
-        if(res?.user?.subscription?.active) router.push('/home');
+        if(res?.user?.subscription?.active || res?.user?.isVip) router.push('/home');
         else router.push('/select-plan');
       } 
       else {

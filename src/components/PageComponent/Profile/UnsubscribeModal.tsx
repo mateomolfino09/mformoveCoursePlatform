@@ -39,7 +39,7 @@ const UnsubscribeModal
             return
         }
         try {
-        await auth.cancelSub(auth.user.subscription.planId, auth.user.subscription.id, auth.user._id)
+        await auth.cancelSub(auth?.user?.subscription.planId, auth?.user?.subscription.id, auth?.user?._id)
         toast.success('Se ha cancelado la subscricpción con éxito')
         handleVisiblity()
         setLoading(false)
