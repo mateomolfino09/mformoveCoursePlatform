@@ -48,10 +48,10 @@ function Banner() {
     <>
     <div className='flex flex-col space-y-2 py-16 md:space-y-4 min-h-[100vh] justify-end lg:items-end mr-12 lg:mr-24  overflow-hidden'>
       <div className='absolute top-0 left-0 h-[100vh] w-full -z-10 overflow-hidden'>
-        <video src={'/video/videointroMFM.mp4'} autoPlay loop muted={!snap.volumeIndex} className='object-cover h-full w-full'>
+        {/* <video src={'/video/videointroMFM.mp4'} autoPlay loop muted={!snap.volumeIndex} className='object-cover h-full w-full'>
 
-        </video>
-        {/* <Video
+        </video> */}
+        <Video
           cloudName={process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
           publicId='Untitled_phr1ga'
           autoPlay
@@ -59,7 +59,7 @@ function Banner() {
           muted={!snap.volumeIndex}
           controls={false}
           className='object-cover h-full w-full hidden md:block overflow-hidden'
-        /> */}
+        />
         {/* <CldImage layout='fill'
           alt="" src={"my_uploads/image00014_tqwhm5"} className="object-contain h-full object-top w-full md:object-cover md:object-bottom opacity-80" /> */}
         {/* <Image
