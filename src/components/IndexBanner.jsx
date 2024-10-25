@@ -56,7 +56,9 @@ function Banner() {
           publicId='Untitled_phr1ga'
           autoPlay
           loop
-          muted={!snap.volumeIndex}
+          muted
+          playsInline
+          preload="auto"
           controls={false}
           className='object-cover h-full w-full overflow-hidden'
         />
