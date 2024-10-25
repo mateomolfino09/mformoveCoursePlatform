@@ -51,17 +51,17 @@ function Banner() {
         {/* <video src={'/video/videoTest3.mp4'} autoPlay loop muted={!snap.volumeIndex} className='object-cover h-full w-full'>
 
         </video> */}
-        {/* <Video
+        <Video
           cloudName={process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
-          publicId='pexels-tima-miroshnichenko-6068292-3840x2160-25fps_znl04z'
+          publicId='Untitled_phr1ga'
           autoPlay
           loop
           muted={!snap.volumeIndex}
           controls={false}
           className='object-cover h-full w-full hidden md:block overflow-hidden'
-        /> */}
-        <CldImage layout='fill'
-          alt="" src={"my_uploads/image00014_tqwhm5"} className="object-contain h-full object-top w-full md:object-cover md:object-bottom opacity-80" />
+        />
+        {/* <CldImage layout='fill'
+          alt="" src={"my_uploads/image00014_tqwhm5"} className="object-contain h-full object-top w-full md:object-cover md:object-bottom opacity-80" /> */}
         {/* <Image
           src={'/images/bgIndex2.jpg'}
           className='object-cover h-full w-full md:hidden opacity-40'
