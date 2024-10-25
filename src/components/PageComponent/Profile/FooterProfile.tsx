@@ -112,7 +112,7 @@ const onSubmit = async (data: any) => {
                       <h4 className='font-light text-sm md:text-base w-full md:text-center' >Home</h4>
                 </Link>
                   </div>
-                  {auth?.user?.subscription?.active ? (
+                  {auth?.user?.subscription?.active || auth?.user?.isVip ? (
                   <div style={{flex: '1 1 0px;'}} className='cursor-pointer md:w-1/3 w-full'>
                   <Link href={'/home'}>
                         <h4 className='font-light text-sm md:text-base md:text-center' >Ver Clases</h4>
