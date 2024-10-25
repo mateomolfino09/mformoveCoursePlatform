@@ -58,7 +58,7 @@ function Banner() {
           loop
           muted={!snap.volumeIndex}
           controls={false}
-          className='object-cover h-full w-full hidden md:block overflow-hidden'
+          className='object-cover h-full w-full overflow-hidden'
         />
         {/* <CldImage layout='fill'
           alt="" src={"my_uploads/image00014_tqwhm5"} className="object-contain h-full object-top w-full md:object-cover md:object-bottom opacity-80" /> */}
