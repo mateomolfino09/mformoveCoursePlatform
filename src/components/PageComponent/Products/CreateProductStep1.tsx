@@ -69,9 +69,9 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     }
   };
 
-  const [files, setFiles] = useState<any>([] ? [] : null);
-  const [portraitImageArray, setPortraitImage] = useState<any>([] ? [] : null);
-  const [diplomaImageArray, setDiplomaImage] = useState<any>([] ? [] : null);
+  const [files, setFiles] = useState<any>([]);
+  const [portraitImageArray, setPortraitImage] = useState<any>([]);
+  const [diplomaImageArray, setDiplomaImage] = useState<any>([]);
 
   function handleOnChangePortraitPicture(changeEvent: any) {
     const reader = new FileReader();
