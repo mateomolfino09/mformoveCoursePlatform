@@ -1,12 +1,7 @@
 import mongoose from 'mongoose';
-
 const faqSchema = new mongoose.Schema(
   {
-    id: {
-      type: String,
-      required: true
-    },
-    qestion: {
+    question: {  // <-- Asegúrate de que esté escrito como 'question'
       type: String,
       required: true
     },

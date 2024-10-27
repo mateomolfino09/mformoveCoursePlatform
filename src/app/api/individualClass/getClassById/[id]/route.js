@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '../../../../../config/connectDB';
 import IndividualClass from '../../../../../models/individualClassModel';
-import { useSearchParams } from 'next/navigation';
+
 
 connectDB();
 export async function GET(req) {

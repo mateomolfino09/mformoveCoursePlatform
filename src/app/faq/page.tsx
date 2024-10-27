@@ -11,15 +11,13 @@ export default function Page({ params }: { params: { name: string } }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [faqRes] = await Promise.all([
-          fetch('/api/faq', {
+        const faqRes = await fetch('/api/faq/getFAQ', {
             cache: 'no-store',
             headers: {
               'Cache-Control': 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0',
             },
-            next: { tags: ['classFilters'] },
-          }),
-        ]);
+            next: { tags: ['faqs'] },
+          })
 
         const faqData = await faqRes.json();
         // Procesa los datos aquí y actualiza el estado

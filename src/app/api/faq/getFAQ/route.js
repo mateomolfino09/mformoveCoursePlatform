@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
-import FAQ from '../.././../models/faqModel';
+import FAQs from '../../../../models/faqModel';
 import { revalidateTag } from 'next/cache';
-import connectDB from '../../../config/connectDB';
+import connectDB from '../../../../config/connectDB';
 // Conectar a la base de datos
 connectDB();
 export const revalidate = 0;
 export const fetchCache = 'force-no-store'
 export async function GET() {
   try {
-    const faqs = await FAQ.find({});
+    const faqs = await FAQs.find({});
     revalidateTag('faqs');
     return NextResponse.json(faqs, {
         status: 200,
