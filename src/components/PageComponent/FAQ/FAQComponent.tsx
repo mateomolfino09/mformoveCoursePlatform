@@ -9,7 +9,10 @@ interface Props {
 const FAQComponent = ({ questions }: Props) => {
   return (
     <MainSideBar where={'index'}>
-      <div>holaaa</div>
+      {questions?.map(x => <div>
+        {x.question}
+        {x.answser}
+      </div>)}
     </MainSideBar>
   );
 };
