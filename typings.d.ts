@@ -487,5 +487,5 @@ export interface FAQ {
   _id: string;
   id: number;
   question:string;
-  answser:string;
+  answer:string;
 }
