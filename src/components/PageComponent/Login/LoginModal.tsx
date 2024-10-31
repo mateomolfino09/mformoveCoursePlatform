@@ -68,7 +68,7 @@ const LoginModal = () => {
     try {
       setLoading(true);
 
-      const res = await fetch(endpoints.auth.easyRegister, {
+      const res = await fetch(endpoints.auth.easyRegisterSubscribe, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

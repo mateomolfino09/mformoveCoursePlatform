@@ -6,7 +6,7 @@ export const revalidate = 0;
 export const fetchCache = 'force-no-store'
 export default function Page() {
   const [plans, setPlans] = useState([]);
-  const origin = process.env.DLOCALGO_CHECKOUT_URL != null ? process.env.DLOCALGO_CHECKOUT_URL : "https://checkout-sbx.dlocalgo.com";
+  const origin = process.env.DLOCALGO_CHECKOUT_URL != null ? process.env.DLOCALGO_CHECKOUT_URL : "https://checkout.dlocalgo.com";
 
   useEffect(() => {
     async function fetchPlans() {

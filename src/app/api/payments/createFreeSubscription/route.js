@@ -5,9 +5,15 @@ import User from '../../../../models/userModel';
 import { NextResponse } from 'next/server';
 import dLocalApi from '../dlocalTest';
 import absoluteUrl from 'next-absolute-url';
+import mailchimp from "@mailchimp/mailchimp_marketing";
+import { generateMd5 } from '../../helper/generateMd5';
 
 
 connectDB();
+mailchimp.setConfig({
+    apiKey: process.env.MAILCHIMP_API_KEY,
+    server: process.env.MAILCHIMP_API_SERVER,
+  });
 
 export async function PUT(req) {
     const {
@@ -29,32 +35,28 @@ export async function PUT(req) {
 
         const MailchimpKey = process.env.MAILCHIMP_API_KEY;
         const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
-        const MailchimpAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;
-          
-        const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpAudience}/members`;
-      
-        const response = await fetch(customUrl, {
-          method: "POST",
-          headers: {
-            Authorization: `apikey ${MailchimpKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email_address: email,
-            merge_fields: {
-                FNAME: "",
-                LNAME: ""
-              },
-            status: "subscribed",
-            vip: false,
-            tags: ["RUTINA"]
-          }),
-        });
-      
-        const received = await response.json();
-        console.log(received)
+        const MailchimpNewsletterAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;
 
-        if(received.status == "subscribed") {
+        const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpNewsletterAudience}/members`;
+        const hashedEmail = generateMd5(email)
+
+        const res = await mailchimp.lists.setListMember(
+          MailchimpNewsletterAudience,
+          hashedEmail,
+          {
+              email_address: email,
+              merge_fields: {
+                  FNAME: user.name,
+                  LNAME: "",
+                  },
+              status_if_new: "subscribed",
+              status: "subscribed",
+              tags: ["RUTINA", "PLATAFORMA"],
+          })
+
+        console.log(res)
+
+        if(res.status == "subscribed") {
             let newSub = {
                 email: user?.email,
                 active: true,
@@ -68,7 +70,7 @@ export async function PUT(req) {
             return NextResponse.json({ success: true, user: user, message: "Subscriptor creado con éxito. Chequea tu email :)" }, { status: 200 })
         }
         else {
-            return NextResponse.json({ success: false, user: user, message: received.detail }, { status: 400 })
+            return NextResponse.json({ success: false, user: user, message: res.detail }, { status: 400 })
         }
 
 
