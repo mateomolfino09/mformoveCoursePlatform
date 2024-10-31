@@ -28,7 +28,7 @@ const FAQComponent = ({ questions }: Props) => {
     <MainSideBar where={'index'}>
       <div className="flex flex-col md:flex-row m-20 text-gray-200 font-light">
         {/* Sidebar */}
-        <div className="w-full md:w-1/3 bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div className="">
           <h2 className="text-2xl font-semibold text-white mb-6">FAQs</h2>
           {questions?.map((x, index) => (
             <button
@@ -55,7 +55,7 @@ const FAQComponent = ({ questions }: Props) => {
               <div>{formatAnswer(selectedQuestion.answer)}</div>
             </div>
           ) : (
-            <p className="text-gray-500 text-lg">Please select a question to view the answer.</p>
+            <p className="text-gray-500 text-lg">Selecciona la pregunta!</p>
           )}
         </div>
       </div>
