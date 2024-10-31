@@ -489,3 +489,10 @@ export interface FreeProduct {
   created_by: User;
   vimeoId: number
 }
+
+export interface FAQ {
+  _id: string;
+  id: number;
+  question:string;
+  answer:string;
+}
