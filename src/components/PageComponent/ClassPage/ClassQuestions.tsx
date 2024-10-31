@@ -245,7 +245,7 @@ const pathname = usePathname()
             </>
           ) : (
             <>
-              {questions?.reverse().map((quest: Question) => (
+              {questions && questions?.reverse().map((quest: Question) => (
                 <div
                   className=' w-full h-auto p-1  my-4 ml-2 bg-dark-soft rounded-md'
                   key={quest.id}
