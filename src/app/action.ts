@@ -6,4 +6,5 @@ export default async function action() {
   revalidateTag('classes');  // Invalidar la cache relacionada con 'classes'
   revalidateTag('products');  // Invalidar la cache relacionada con 'classes'
   revalidateTag('classFilters');
+  revalidateTag('faqs');
 }

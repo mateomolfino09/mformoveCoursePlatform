@@ -12,6 +12,7 @@ import React, { useEffect, useState } from 'react';
 import './loginStyle.css';
 import { alertTypes } from '../../../constants/alertTypes';
 import AlertComponent from '../../AlertComponent';
+import state from '../../../valtio';
 
 function LoginForm() {
   const [loading, setLoading] = useState(false);
@@ -48,12 +49,14 @@ function LoginForm() {
       if(res.type != 'error') {
         if(res?.user?.subscription?.active || res?.user?.isVip) router.push('/home');
         else router.push('/select-plan');
-      } 
-      else {
-        setMessage((current: any) => [...current, {
-          message: res.message,
-          type: alertTypes.error.type
-        }]);
+      } else {
+        setMessage((current: any) => [
+          ...current,
+          {
+            message: res.message,
+            type: alertTypes.error.type
+          }
+        ]);
         setLoading(false);
       }
     });
@@ -143,14 +146,17 @@ function LoginForm() {
               </button>
               {loading && <MiniLoadingSpinner />}
             </div>
-            <div className="links-container">
-  <Link href={routes.user.forget}>
-    <span className="links">¿Olvidaste tu contraseña?</span>
-  </Link>
-  <Link href={routes.user.register}>
-    <span className="links">¿No tienes una cuenta todavía?</span>
-  </Link>
-</div>
+            <div className='links-container'>
+              <Link href={routes.user.forget}>
+                <span className='links'>¿Olvidaste tu contraseña?</span>
+              </Link>
+              {/* <Link href={routes.user.register}>
+                <span className='links'>¿No tienes una cuenta todavía?</span>
+              </Link>   */}
+              <div onClick={() => state.loginForm = true}>
+                <h4  className='links'>¿No tienes una cuenta todavía?</h4>
+              </div>
+            </div>
           </form>
         </div>
         {message?.map((mes: any) => (
