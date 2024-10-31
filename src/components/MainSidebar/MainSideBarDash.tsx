@@ -117,7 +117,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             </m.div>
           </Link>
         )} */}
-        <Link href={`${auth?.user?.subscription?.active || auth?.user?.isVip ? '/home' : '/select-plan'}`}>
+        <Link href={`${(auth?.user?.subscription?.active || auth?.user?.isVip) || pathname == '/select-plan' ? '/home' : '/select-plan'}`}>
           <m.div
             initial={{ color: '#fff', x: 700 }}
             animate={+windowWidth < 768 ? animationPhones : animation}
