@@ -18,7 +18,7 @@ const CreateFAQ = () => {
     next: { tags: ['faqs'] }
   };
 
-  const handleCreateFAQ = async (e) => {
+  const handleCreateFAQ = async (e:any) => {
     e.preventDefault();
 
     const { data } = await axios.post(
