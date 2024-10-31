@@ -184,6 +184,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: () => false
     },
+    isVip: {
+      type: Boolean,
+      default: () => false
+    },
     courses: [courseUser],
     notifications: [notification],
     admin: adminUser,

@@ -339,6 +339,12 @@ export interface ClassTypes {
   values: [ValuesFilters]
 }
 
+export interface Tags {
+  id: number,
+  title: string,
+
+}
+
 export interface IndividualClass {
   _id: string;
   id: number;
@@ -361,6 +367,7 @@ export interface IndividualClass {
   new: boolean
   links: [Link]
   atachedFiles: [Archive]
+  tags: [Tags]
 
 }
 

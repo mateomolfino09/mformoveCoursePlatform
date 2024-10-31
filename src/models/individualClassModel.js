@@ -37,6 +37,17 @@ const linkSchema = new mongoose.Schema(
   }
 )
 
+const tagsSchema = new mongoose.Schema(
+  {
+    id: {
+      type: Number,
+    },
+    title: {
+      type: String,
+    },
+  }
+)
+
 const individualClassSchema = new mongoose.Schema(
   {
     id: {
@@ -107,6 +118,9 @@ const individualClassSchema = new mongoose.Schema(
       required: true,
       default: () => true
     },
+    tags: [
+      tagsSchema
+    ],
     links: [
       linkSchema
     ],

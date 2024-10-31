@@ -46,8 +46,8 @@ function LoginForm() {
     const password = data.get('password') as string;
 
     auth.signIn(email, password).then((res: any) => {
-      if (res.type != 'error') {
-        if (res?.user?.subscription?.active) router.push('/home');
+      if(res.type != 'error') {
+        if(res?.user?.subscription?.active || res?.user?.isVip) router.push('/home');
         else router.push('/select-plan');
       } else {
         setMessage((current: any) => [

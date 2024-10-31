@@ -62,7 +62,7 @@ function Profile() {
         <div className='second-container'>
           <h4 className='second-title '>Detalles del Plan</h4>
           <div className='col-span-2 font-medium'>
-            {auth?.user?.subscription?.active ? (
+            {auth?.user?.subscription?.active || auth?.user?.isVip ? (
               <>
                 Subscripción activa
               </>
@@ -72,7 +72,7 @@ function Profile() {
               </>
             )}
           </div>
-          {auth?.user?.subscription?.active ? (
+          {auth?.user?.subscription?.active || auth?.user?.isVip ? (
             <Link href={'/account/myCourses'}>
             <p
               className='paragraph'

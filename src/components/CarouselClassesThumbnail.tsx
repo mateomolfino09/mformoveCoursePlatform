@@ -87,7 +87,7 @@ function CarouselClassesThumbnail({
 
   const ComponentToRender = ({ children }: any) =>  (
     <>
-      {auth.user && (auth?.user?.subscription?.active || auth?.user?.rol === "Admin" || c.isFree) ? (
+      {auth.user && (auth?.user?.subscription?.active || auth?.user?.rol === "Admin" || c.isFree || auth?.user?.isVip) ? (
         <>
         <Link href={`/classes/${c.id}`}>
             {children}
@@ -141,7 +141,7 @@ function CarouselClassesThumbnail({
                 </div>
                 <div className="absolute group/item w-full h-60"          
                 >
-                  <div className={` w-full h-full ${!auth?.user?.subscription && auth?.user?.rol !== "Admin" && c.isFree == false ? 'bg-black/20 justify-center flex items-center h-full border-t-md' : 'hidden' } hover:flex`}>
+                  <div className={` w-full h-full ${!auth?.user?.subscription?.active && auth?.user?.rol !== "Admin" && c.isFree == false && !auth?.user?.isVip ? 'bg-black/20 justify-center flex items-center h-full border-t-md' : 'hidden' } hover:flex`}>
                       <CiLock className={`h-14 text-xs w-14 ${hoveredIndex === c.id ? "block" : "hidden"}  font-light`}/>
                   </div>
                 </div>
