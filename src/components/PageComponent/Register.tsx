@@ -256,7 +256,7 @@ function Register() {
             <div className='space-y-4'>
               <label className='inline-block w-full'>
                 <p>
-                  Verifica tu casilla de correos para poder confirmar tu cuenta!
+                  Tu cuenta ha sido creada con éxito
                 </p>
               </label>
               <Link href={'/login'}>

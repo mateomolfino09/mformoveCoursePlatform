@@ -23,6 +23,7 @@ import RegisterStepThree from './RegisterStepThree';
 import { motion as m, useAnimation } from 'framer-motion';
 import './registerStyle.css';
 import ResendEmail from './ResendEmail';
+import { useAuth } from '../../../hooks/useAuth';
 
 interface Inputs {
   email: string;
@@ -35,6 +36,8 @@ function Register() {
   const animationstepcero = useAnimation();
   const animationstepone = useAnimation();
   const animationresend = useAnimation();
+
+  const auth = useAuth()
 
   const animationsteptwo = useAnimation();
   const animationstepthree = useAnimation();
@@ -199,14 +202,21 @@ function Register() {
       })
 
       const data = await res.json()
-
-      console.log(data)
+      const token = data.token
 
       if (res.ok) {
-        setRegistered(true);
-        setState({ ...state, stepThree: false });
-        toast.success('¡Es hora de verificar tu cuenta!')
+        await auth.signInPostRegister(token).then((res: any) => {
+          toast.success('¡Cuenta creada con éxito!')
+          setRegistered(true);
+          setState({ ...state, stepThree: false });
+
+          setTimeout(() => {
+            router.push('/home')
+          }, 3000)
+
+        })
       }
+
       else if(data?.error) {
         toast.error(data.error);
       }
@@ -251,7 +261,7 @@ function Register() {
       if (res.ok) {
         setRegistered(true);
         setState({ ...state, stepThree: false });
-        toast.success('¡Es hora de verificar tu cuenta!')
+        toast.success('¡Cuenta creada con éxito!')
       }
       else if(data?.error) {
         toast.error(data.error);
@@ -387,7 +397,7 @@ function Register() {
             <div className='space-y-4'>
               <label className='inline-block w-full'>
                 <p>
-                  Verifica tu casilla de correos para poder confirmar tu cuenta!
+                Tu cuenta ha sido creada con éxito
                 </p>
               </label>
                 <button

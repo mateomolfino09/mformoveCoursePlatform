@@ -63,6 +63,6 @@
 
     /* Ajuste del diseño para pantallas pequeñas y grandes */
     .links-container {
-        @apply flex flex-col sm:flex-row justify-center mt-4;
+        @apply flex flex-col sm:flex-row justify-center items-center mt-4;
     }
 }

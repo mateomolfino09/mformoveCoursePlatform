@@ -99,7 +99,7 @@ const RegisterStepOne = ({ step1ToStep2, step1ToStep0 }: Props) => {
   };
 
   return (
-    <div>
+    <div className='w-[100vw] h-full px-6'>
       <div className='stepone-container'>
         <AiOutlineCheckCircle className='check-icon' />
         <p className='step'>PASO 1 DE 2</p>
@@ -158,7 +158,7 @@ const RegisterStepOne = ({ step1ToStep2, step1ToStep0 }: Props) => {
           />
         </div>
         <div className='space-x-4 flex ' />
-        <div className='w-full flex justify-center items-center space-x-4 mt-3'>
+        <div className='w-full flex justify-center items-center space-x-4 mt-3 pb-12'>
         <div onClick={() =>  handleClickBack()} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
                   <p className='text-white group-hover:text-black'>Volver</p>
 

@@ -16,6 +16,7 @@ import { BsHeart, BsBoxArrowUpRight } from 'react-icons/bs';
 import DeleteQuestion from '../../DeleteQuestion';
 import DeleteAnswer from '../../DeleteAnswer';
 import { useAuth } from '../../../hooks/useAuth';
+import state from '../../../valtio';
 
 interface Props {
   user: User | null
@@ -62,6 +63,12 @@ const pathname = usePathname()
   };
 
   const createQuestion = async () => {
+
+    if(!auth.user) {
+      state.loginForm = true;
+      return
+    }
+
     setMessage('');
     setMessageType('');
     if (content == '' || content.length < 10) {
@@ -100,6 +107,12 @@ const pathname = usePathname()
   };
 
   const createAnswer = async (questionId: number) => {
+
+    if(!auth.user) {
+      state.loginForm = true;
+      return
+    }
+    
     setMessage('');
     setMessageType('');
     if (answer == '' || answer.length < 1) {

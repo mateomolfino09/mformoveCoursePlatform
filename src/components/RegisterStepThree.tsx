@@ -129,7 +129,7 @@ const RegisterStepOne = ({ user, signUp }: Props) => {
           onClick={(e) => signUp(e)}
           className='w-64 bg-black/70 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold'
         >
-          Crear Cuenta{' '}
+          Registrarme{' '}
         </button>
       </div>
     </div>
