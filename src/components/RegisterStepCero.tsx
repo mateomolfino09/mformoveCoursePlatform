@@ -124,7 +124,7 @@ const RegisterStepCero = ({ setEmail, step0ToStep1 }: Props) => {
             <h1 className='font-extrabold text-4xl text-center'>
               Lleva al siguiente nivel tus conocimientos de peluqueria
             </h1>
-            <h2 className='font-semibold text-xl text-center'>
+            <h2 className='font-semibold text-xl text-center px-3'>
               Pronto para aprender? Ingresa tu email para crear tu cuenta.
             </h2>
           </div>

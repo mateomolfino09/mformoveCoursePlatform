@@ -59,7 +59,7 @@ const Home = ({ classesDB, filters }: Props) => {
   const [reload, setReload] = useState<boolean>(false);
   const [typedClasses, setClasses] = useState<any | null>(null);
   const [isMember, setIsMember] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [selectedClass, setSelectedClass] = useState<IndividualClass | null>(
     null
   );

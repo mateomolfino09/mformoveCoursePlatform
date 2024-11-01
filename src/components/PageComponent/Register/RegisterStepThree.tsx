@@ -140,7 +140,7 @@ const RegisterStepThree = ({ signUp, recaptchaRef, step3ToStep2 }: Props) => {
 
         </div>
         <div onClick={(e) => signUp(e)} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
-            <p className='text-white group-hover:text-black'>Crear Cuenta</p>
+            <p className='text-white group-hover:text-black'>Registrarme</p>
             <ArrowRightIcon className='w-4 group-hover:text-black ml-2 group-hover:translate-x-1 transition-all duration-500'/>
 
             </div>
