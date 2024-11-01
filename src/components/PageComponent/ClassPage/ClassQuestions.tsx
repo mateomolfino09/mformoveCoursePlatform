@@ -245,7 +245,7 @@ const pathname = usePathname()
             </>
           ) : (
             <>
-              {questions && questions?.reverse().map((quest: Question) => (
+              {Array.isArray(questions) && questions.slice().reverse().map((quest: Question) => (
                 <div
                   className=' w-full h-auto p-1  my-4 ml-2 bg-dark-soft rounded-md'
                   key={quest.id}
@@ -320,9 +320,8 @@ const pathname = usePathname()
                             </>
                           ) : (
                             <>
-                            {quest.answers &&
-                              quest.answers.length > 0 &&
-                              quest?.answers.map((answer: Answer, index: number) => (
+                            {Array.isArray(quest?.answers) && quest.answers.length > 0 &&
+                              quest?.answers?.map((answer: Answer, index: number) => (
                                 <>
                                 {index < 2 && (
                                 <div key={answer.answeredAt.toString()} className={`relative -left-2 pl-8 py-3  ml-6  ${(index === 1 || quest.answers.length - 1 === index) ? 'border-none' : 'border-l border-[#40587c]'}`}>

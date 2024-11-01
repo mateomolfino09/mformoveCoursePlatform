@@ -240,7 +240,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
             </>
           ) : (
             <>
-              {questions && questions?.reverse().map((quest: Question) => (
+              {Array.isArray(questions) && questions.slice().reverse().map((quest: Question) => (
                 <div
                   className=' w-full h-auto p-1  my-4 ml-2 bg-dark-soft rounded-md'
                   key={quest.id}
@@ -309,14 +309,13 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
                         </div>
                       ) : (
                         <>
-                          {openEdit != null && openEditAnswer !== -1 ? (
+                          {(openEdit != null && openEditAnswer !== -1) || quest == null ? (
                             <>
-                              <div>Hola</div>
+                              <div>Cargando...</div>
                             </>
                           ) : (
                             <>
-                            {quest.answers &&
-                              quest.answers.length > 0 &&
+                            {Array.isArray(quest?.answers) && quest.answers.length > 0 &&
                               quest?.answers.map((answer: Answer, index: number) => (
                                 <>
                                 {index < 2 && (
