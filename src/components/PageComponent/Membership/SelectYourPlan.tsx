@@ -191,7 +191,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
                   <div>
                         <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
                     </div>
-                    <p className='text-base font-light'>7 Días de Garantía (Para Miembros Nuevos)
+                    <p className='text-base font-light'>3 Días de Garantía (Para Miembros Nuevos)
                     </p>
                 </div>
             </>
@@ -206,7 +206,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
             className='w-72 ml-3'
             value={planSelectedValue}
             onChange={(e) => {
-                setPlanSelected(plans.find(x => x.name === e.label))
+                setPlanSelected(plans.find(x => x.name === e.label && x.active))
                 setPlanSelectedValue(e.value)
             }}
         />
