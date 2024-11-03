@@ -27,7 +27,8 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
     const auth = useAuth()
     const router = useRouter()
     const planSelect = [
-        ...plans.map((p: Plan) => {
+        ...plans.filter(x => x.active).map((p: Plan) =>      
+        {
             return {
                 value: p.name,
                 label: p.name

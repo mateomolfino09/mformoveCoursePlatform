@@ -262,9 +262,9 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
               }}
               className='flex flex-col justify-end items-end  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
             >
-              <h2 className='font-light lg:text-xl'>Admin</h2>
+              <h2 className='font-light lg:text-xl'>¿Dudas?</h2>
               <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
-                FAQ
+                Preguntas Frecuentes
               </h1>
             </m.div>
           </>
