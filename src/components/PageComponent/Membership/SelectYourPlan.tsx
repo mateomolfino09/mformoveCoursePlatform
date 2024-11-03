@@ -34,8 +34,8 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
             }
         }), 
         {
-            value: "Membresía Gratis",
-            label: "Membresía Gratis"
+            value: "Comunidad Gratuita",
+            label: "Comunidad Gratuita"
         }
 
     
@@ -65,7 +65,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
         setLoading(true)
 
         try {
-            if(planSelectedValue != "Membresía Gratis") {
+            if(planSelectedValue != "Comunidad Gratuita") {
                 const res = await fetch(endpoints.payments.createPaymentToken, {
                     method: 'POST',
                     headers: {  
@@ -143,7 +143,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
 
     <div className='flex flex-col space-y-4 capitalize'>
 
-        {planSelectedValue == "Membresía Gratis" ? (
+        {planSelectedValue == "Comunidad Gratuita" ? (
             <>
             <div className='flex space-x-2'>
             <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
@@ -235,7 +235,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
     </Link>
 
     )}
-    {planSelectedValue == "Membresía Gratis" ? (
+    {planSelectedValue == "Comunidad Gratuita" ? (
             <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-2 mt-5 text-center text-xs md:text-sm font-light'>
             <p>GRATIS </p>
             <p>Oportunidad única...</p>
@@ -243,7 +243,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
     ) : (
         <>
             <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-4 mt-5 text-center text-xs md:text-sm font-light'>
-                <p>{planSelected?.amount} {planSelected?.currency} facturado {planSelected?.frequency_label} {planSelected?.frequency_label === "Anual" && `(ahorra ${12 * (plans.find(x => x.frequency_label != planSelected?.frequency_label)?.amount ?? 0) - planSelected?.amount } ${planSelected?.currency})`} facturado hoy.</p>
+                <p>{planSelected?.amount} {planSelected?.currency} facturado {planSelected?.frequency_label} {planSelected?.frequency_label === "Anual" && `(ahorra ${planSelected?.amount - 12 * (plans.find(x => x.frequency_label != planSelected?.frequency_label && x.frequency_value)?.amount ?? 0)} ${planSelected?.currency})`} facturado hoy.</p>
                 <p>Enviamos recordatorio antes de facturar para evitar pagos no deseados.</p>
             </div>
         </>
