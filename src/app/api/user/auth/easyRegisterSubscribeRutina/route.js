@@ -10,8 +10,14 @@ import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
 import { serialize } from 'cookie';
 import axios from 'axios';
+import { generateMd5 } from '../../../helper/generateMd5.js';
+import mailchimp from "@mailchimp/mailchimp_marketing";
 
 connectDB();
+mailchimp.setConfig({
+  apiKey: process.env.MAILCHIMP_API_KEY,
+  server: process.env.MAILCHIMP_API_SERVER,
+});
 
 export async function POST(request) {
   try {
@@ -25,31 +31,27 @@ export async function POST(request) {
 
       const user = await Users.findOne({ email: email });
 
-      const tokenReset = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
-        expiresIn: '30d',
-      });
-
-
       if (user) {
-        const responseNews = await fetch(customNewsletterUrl, {
-          method: "POST",
-          headers: {
-            Authorization: `apikey ${MailchimpKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email_address: email,
-            merge_fields: {
-                FNAME: name,
-                LNAME: "",
-                PASSWORD: password,
-                TOKEN: tokenReset
-              },
-            status: "subscribed",
-            vip: false,
-            tags: ["CLASE", "PLATAFORMA"]
-          }),
-        });
+
+        const hashedEmail = generateMd5(email)
+
+
+        const res = await mailchimp.lists.setListMember(
+          MailchimpNewsletterAudience,
+          hashedEmail,
+          {
+              email_address: email,
+              merge_fields: {
+                  FNAME: user.name,
+                  LNAME: "",
+                  },
+              status_if_new: "subscribed",
+              status: "subscribed",
+              tags: ["PLATAFORMA", "CLASE"]
+            }
+          );
+
+          console.log(res)
 
 
         return NextResponse.json({ error: 'Ya hay una cuenta con este usuario'}, { status: 422 })
@@ -96,7 +98,7 @@ export async function POST(request) {
 
       await newUser.save();
 
-      //SUBSCRIBO A MAILCHIMP PLATFORMA
+      //SUBSCRIBO A MAILCHIMP PLATFORa    
 
       const responseNews = await fetch(customNewsletterUrl, {
         method: "POST",
@@ -104,18 +106,16 @@ export async function POST(request) {
           Authorization: `apikey ${MailchimpKey}`,
           "Content-Type": "application/json",
         },
-        
         body: JSON.stringify({
           email_address: email,
           merge_fields: {
               FNAME: name,
               LNAME: "",
-              PASSWORD: password,
-              TOKEN: tokenReset
+              PASSWORD: password
             },
           status: "subscribed",
           vip: false,
-          tags: ["CLASE", "PLATAFORMA"]
+          tags: ["PLATAFORMA", "CLASE"]
         }),
       });
       
@@ -133,6 +133,7 @@ export async function POST(request) {
       await newUser.save()
 
       newUser.password = null;
+
 
       return NextResponse.json({ message: `Te registraste con éxito.`, newUser, token }, { status: 200 })
     }
