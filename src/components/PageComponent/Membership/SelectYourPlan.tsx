@@ -138,7 +138,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
   return (
     <div className='w-full px-3 mt-24 lg:right-1/4 md:right-32 flex flex-col lg:pl-36'>
         <div className='flex md:space-y-1 flex-col mb-12 items-start pl-2 justify-start'>
-            <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Practica conmigo,</h1>
+            <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Movete conmigo,</h1>
             <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Potencia tu Entrenamiento.</h1>
         </div>
 
@@ -154,11 +154,11 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
             </div>
             <div className='flex space-x-2'>
                 <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
-                <p className='text-base font-light'>Info sobre mi metodología para incorporar en tu Entrenamiento</p>
+                <p className='text-base font-light'>Info sobre movimientos para incorporar en tu Entrenamiento</p>
             </div>
             <div className='flex space-x-2 mb-2'>
                 <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
-                <p className='text-base font-light'>Contenido Exclusivo y Gratuito para la Comunidad de MForMovers</p>
+                <p className='text-base font-light'>Contenido Gratuito para la Comunidad de MForMovers</p>
             </div>
             </>
         ) : (
@@ -167,7 +167,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
               <div>
                         <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
                     </div>
-                <p className='text-base font-light'>Clases de Flexibilidad, Fuerza y Respiración Ilimitadas</p>
+                <p className='text-base font-light'>Clases de Flexibilidad, Movimiento, Fuerza y Respiración</p>
                 </div>
                 {/* <div className='flex space-x-2'>
                   <div>
@@ -185,13 +185,13 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
                     <div>
                         <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
                     </div>
-                    <p className='text-base font-light'>Contenido Exclusivo para la Comunidad de MForMovers</p>
+                    <p className='text-base font-light'>Mejora tu Postura, Sentite Libre, Fuerte y Flexible</p>
                 </div>
                 <div className='flex space-x-2'>
                   <div>
                         <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
                     </div>
-                    <p className='text-base font-light'>7 Días de Garantía (Para Miembros Nuevos)
+                    <p className='text-base font-light'>3 Días de Garantía (Para Miembros Nuevos)
                     </p>
                 </div>
             </>
@@ -206,7 +206,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
             className='w-72 ml-3'
             value={planSelectedValue}
             onChange={(e) => {
-                setPlanSelected(plans.find(x => x.name === e.label))
+                setPlanSelected(plans.find(x => x.name === e.label && x.active))
                 setPlanSelectedValue(e.value)
             }}
         />
