@@ -35,6 +35,14 @@ export async function POST(request) {
 
         const hashedEmail = generateMd5(email)
 
+        const tokenUser = jwt.sign(
+          { userId: newUser._id },
+          process.env.NEXTAUTH_SECRET,
+          {
+            expiresIn: '30d'
+          }
+        );
+
 
         const res = await mailchimp.lists.setListMember(
           MailchimpNewsletterAudience,
@@ -44,6 +52,7 @@ export async function POST(request) {
               merge_fields: {
                   FNAME: user.name,
                   LNAME: "",
+                  TOKEN: `${tokenUser}`
                   },
               status_if_new: "subscribed",
               status: "subscribed",
@@ -54,7 +63,7 @@ export async function POST(request) {
           console.log(res)
 
 
-        return NextResponse.json({ error: 'Ya hay una cuenta con este usuario'}, { status: 422 })
+        return NextResponse.json({ message: 'Actualizamos las etiquetas del usuario con éxito.'}, { status: 200 })
       }
        
       const password = generatePassword(16);
@@ -96,6 +105,16 @@ export async function POST(request) {
         await user.save();
       });
 
+      const token = jwt.sign(
+        { userId: newUser._id },
+        process.env.NEXTAUTH_SECRET,
+        {
+          expiresIn: '30d'
+        }
+      );
+
+      newUser.token = `${token}`
+
       await newUser.save();
 
       //SUBSCRIBO A MAILCHIMP PLATFORa    
@@ -111,7 +130,8 @@ export async function POST(request) {
           merge_fields: {
               FNAME: name,
               LNAME: "",
-              PASSWORD: password
+              PASSWORD: password,
+              TOKEN: newUser.token
             },
           status: "subscribed",
           vip: false,
@@ -119,19 +139,6 @@ export async function POST(request) {
         }),
       });
       
-      console.log(newUser)
-
-      const token = jwt.sign(
-        { userId: newUser._id },
-        process.env.NEXTAUTH_SECRET,
-        {
-          expiresIn: '30d'
-        }
-      );
-
-      newUser.token = `${token}`
-      await newUser.save()
-
       newUser.password = null;
 
 
