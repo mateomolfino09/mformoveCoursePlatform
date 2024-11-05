@@ -35,13 +35,13 @@ export async function POST(request) {
 
         const hashedEmail = generateMd5(email)
 
-        const tokenUser = jwt.sign(
-          { userId: user._id },
-          process.env.NEXTAUTH_SECRET,
-          {
-            expiresIn: '30d'
-          }
-        );
+
+        const resetToken = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
+          expiresIn: '30d',
+        });
+  
+        newUser.resetToken = resetToken;
+        newUser.token = resetToken;
 
 
         const res = await mailchimp.lists.setListMember(
@@ -52,7 +52,7 @@ export async function POST(request) {
               merge_fields: {
                   FNAME: user.name,
                   LNAME: "",
-                  TOKEN: `${tokenUser}`
+                  TOKEN: `${resetToken}`
                   },
               status_if_new: "subscribed",
               status: "subscribed",
@@ -105,14 +105,11 @@ export async function POST(request) {
         await user.save();
       });
 
-      const token = jwt.sign(
-        { userId: newUser._id },
-        process.env.NEXTAUTH_SECRET,
-        {
-          expiresIn: '30d'
-        }
-      );
+      const token = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
+        expiresIn: '30d',
+      });
 
+      newUser.resetToken = token;
       newUser.token = `${token}`
       await newUser.save()
 

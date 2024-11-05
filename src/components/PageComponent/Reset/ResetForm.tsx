@@ -63,6 +63,8 @@ function ResetForm({ token }: Props) {
 
       try {
         const data = await auth.resetPassword(passwordCheck, password, token)
+
+        console.log(passwordCheck, password, token)
   
         if(data?.error) {
           setMessage((current: any) => [...current, {
