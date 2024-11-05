@@ -36,7 +36,7 @@ export async function POST(request) {
         const hashedEmail = generateMd5(email)
 
         const tokenUser = jwt.sign(
-          { userId: newUser._id },
+          { userId: user._id },
           process.env.NEXTAUTH_SECRET,
           {
             expiresIn: '30d'
