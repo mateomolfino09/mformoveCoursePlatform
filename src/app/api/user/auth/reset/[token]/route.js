@@ -9,10 +9,7 @@ connectDB();
 export async function PUT(req, { params }) {
   try {
     if (req.method === 'PUT') {
-      const { token } = params;
-      const { password, conPassword } = await req.json();
-
-      console.log(password, conPassword, token);
+      const { password, conPassword, token } = await req.json();
 
       if (password !== conPassword) {
         return NextResponse.json(

@@ -221,7 +221,7 @@ function useProvideAuth() {
 				  'Content-Type': 'application/json',
 				  'Authorization': `Bearer ${token}`
 				},
-				body: JSON.stringify({ password: pass, conPassword: conPass }),
+				body: JSON.stringify({ password: pass, conPassword: conPass, token: token }),
 			  })
 
 			const data = await res.json()
