@@ -36,7 +36,7 @@ export async function POST(request) {
         const hashedEmail = generateMd5(email)
 
         const tokenUser = jwt.sign(
-          { userId: newUser._id },
+          { userId: user._id },
           process.env.NEXTAUTH_SECRET,
           {
             expiresIn: '30d'
@@ -146,7 +146,7 @@ export async function POST(request) {
     }
   } catch (error) {
     console.log(error)
-    return NextResponse.json({ message: `Error al enviar el mail. Porfavor vuelva a intentarlo`}, { status: 500 })
+    return NextResponse.json({ message: `Error al enviar el mail. Porfavor vuelva a intentarlo`, error}, { status: 500 })
   }
 };
 
