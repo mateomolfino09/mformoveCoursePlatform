@@ -146,7 +146,7 @@ export async function POST(request) {
     }
   } catch (error) {
     console.log(error)
-    return NextResponse.json({ message: `Error al enviar el mail. Porfavor vuelva a intentarlo`}, { status: 500 })
+    return NextResponse.json({ message: `Error al enviar el mail. Porfavor vuelva a intentarlo`, error}, { status: 500 })
   }
 };
 
