@@ -39,10 +39,10 @@ export async function POST(request) {
           expiresIn: '30d',
         });
   
-        newUser.resetToken = resetToken;
-        newUser.token = resetToken;
+        user.resetToken = resetToken;
+        user.token = resetToken;
 
-
+        await user.save()
 
         const res = await mailchimp.lists.setListMember(
           MailchimpNewsletterAudience,
@@ -102,7 +102,9 @@ export async function POST(request) {
         await user.save();
       });
 
-      const token = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
+      await newUser.save()
+
+      const token = jwt.sign({ _id: newUser._id }, process.env.NEXTAUTH_SECRET, {
         expiresIn: '30d',
       });
 
