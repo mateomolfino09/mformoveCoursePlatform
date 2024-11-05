@@ -56,7 +56,7 @@ export async function POST(request) {
                   },
               status_if_new: "subscribed",
               status: "subscribed",
-              tags: ["RUTINA", "PLATAFORMA"],
+              tags: ["CLASE", "PLATAFORMA"],
           }
           );
 
@@ -130,7 +130,7 @@ export async function POST(request) {
             },
           status: "subscribed",
           vip: false,
-          tags: ["PLATAFORMA"]
+          tags: ["PLATAFORMA", "CLASE"]
         }),
       });
       
