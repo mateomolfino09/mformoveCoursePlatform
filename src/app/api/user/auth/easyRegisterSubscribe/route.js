@@ -136,7 +136,7 @@ export async function POST(request) {
             },
           status: "subscribed",
           vip: false,
-          tags: ["PLATAFORMA"]
+          tags: ["PLATAFORMA", "RUTINA"]
         }),
       });
 
