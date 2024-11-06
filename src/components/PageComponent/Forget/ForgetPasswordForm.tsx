@@ -117,42 +117,39 @@ function ForgetForm() {
           </div>
         </div>
       </div>
-      <div className="right-container">
-        <div className="right-card-container">
-          <form className="form-container" action={forget}>
-            <h1 className="sub-title">Recuperar contraseña</h1>
-            <p className="sub-p">Ingresa tu email para recuperar tu contraseña</p>
-            <div className="input-container mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-              </svg>
-              <input id="email" className="input-login" type="email" name="email" placeholder="Email Address" />
-            </div>
-            <p
-              className={`capslock ${
-                !capsLock && 'hidden'
-              }`}
-            >
-              Bloq Mayús Activado
-            </p>
-            <div className='relative'>
-              <button type="submit" className="forget-btn">Recuperar </button>
-              {loading && <MiniLoadingSpinner />}
-            </div>
-            <div className="flex justify-between mt-4">
-            <Link href={routes.user.login}>
-              <span className="links">Ingresar a mi cuenta</span>
-            </Link>
-            <Link href={routes.user.register}>
-              <span className="links">Recuperar acceso</span>
-              </Link>
-            </div>
-          </form>
-        </div>
-        {message?.map((mes: any) => (
-          <AlertComponent type={mes.type} message={mes.message}/>
-        ))} 
+      <div className="right-container p-4">
+  <div className="right-card-container">
+    <form className="form-container space-y-4" action={forget}>
+      <h1 className="sub-title text-2xl font-bold">Recuperar contraseña</h1>
+      <p className="sub-p text-base text-gray-600">Ingresa tu email para recuperar tu contraseña</p>
+      <div className="input-container mb-4 flex items-center space-x-2">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+        </svg>
+        <input id="email" className="input-login w-full p-2 border border-gray-300 rounded" type="email" name="email" placeholder="Email Address" />
       </div>
+      <p className={`capslock ${!capsLock && 'hidden'} text-red-500`}>
+        Bloq Mayús Activado
+      </p>
+      <div className="relative">
+        <button type="submit" className="forget-btn w-full py-2 bg-black text-white rounded hover:bg-gray-800">Recuperar</button>
+        {loading && <MiniLoadingSpinner />}
+      </div>
+      <div className="flex justify-between mt-4 text-sm text-gray-500">
+  <Link href={routes.user.login}>
+    <span className="links block text-center">Ingresar a mi cuenta</span>
+  </Link>
+  <Link href={routes.user.register}>
+    <span className="links block text-center">Recuperar acceso</span>
+  </Link>
+</div>
+    </form>
+  </div>
+  {message?.map((mes: any) => (
+    <AlertComponent type={mes.type} message={mes.message}/>
+  ))}
+</div>
+
     </div>
   );
 }
