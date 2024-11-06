@@ -144,7 +144,7 @@ function ForgetForm() {
               <span className="links">Ingresar a mi cuenta</span>
             </Link>
             <Link href={routes.user.register}>
-              <span className="links">¿No tienes una cuenta todavía?</span>
+              <span className="links">Recuperar acceso</span>
               </Link>
             </div>
           </form>
