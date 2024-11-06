@@ -137,8 +137,13 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
   return (
     <div className='w-full px-3 mt-24 lg:right-1/4 md:right-32 flex flex-col lg:pl-36'>
         <div className='flex md:space-y-1 flex-col mb-12 items-start pl-2 justify-start'>
-            <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Practica conmigo,</h1>
-            <h1 className='text-4xl md:text-5xl font-light capitalize font-boldFont'>Potencia tu Entrenamiento.</h1>
+        <h1 className="text-5xl sm:text-7xl md:text-5xl lg:text-5xl font-light capitalize font-boldFont">
+  Practica conmigo,
+</h1>
+<h1 className="text-5xl sm:text-7xl md:text-5xl lg:text-5xl font-light capitalize font-boldFont">
+  Potencia tu Entrenamiento.
+</h1>
+
         </div>
 
     <div className='flex flex-col space-y-4 capitalize'>
