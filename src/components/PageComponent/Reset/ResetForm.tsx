@@ -175,14 +175,18 @@ function ResetForm({ token }: Props) {
               </button>
               {loading && <MiniLoadingSpinner />}
             </div>
-            <div className="flex justify-between mt-4 text-sm text-gray-500">
-  <Link href={routes.user.login}>
-    <span className="links block text-center">Ingresar a mi cuenta</span>
-  </Link>
-  <Link href={routes.user.register}>
-    <span className="links block text-center">Recuperar acceso</span>
-  </Link>
-</div>
+            <div className='flex flex-col md:flex-row md:justify-between mt-4 text-sm text-gray-500'>
+              <Link href={routes.user.login}>
+                <span className='links block text-center'>
+                  Ingresar a mi cuenta
+                </span>
+              </Link>
+              <Link href={routes.user.register}>
+                <span className='links block text-center mt-2 md:mt-0'>
+                  Recuperar acceso
+                </span>
+              </Link>
+            </div>
           </form>
         </div>
         {message?.map((mes: any) => (
