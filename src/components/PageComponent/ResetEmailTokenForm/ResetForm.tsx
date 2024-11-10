@@ -1,26 +1,27 @@
-'use client'
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../../hooks/useAuth';
-import { useRouter } from 'next/navigation';
-import { MiniLoadingSpinner } from '../../MiniLoadingSpinner';
-import { routes } from '../../../constants/routes';
-import Link from 'next/link';
-import ErrorComponent from '../../AlertComponent';
-import Image from 'next/image';
+'use client';
+
 import imageLoader from '../../../../imageLoader';
+import { routes } from '../../../constants/routes';
+import { useAuth } from '../../../hooks/useAuth';
+import ErrorComponent from '../../AlertComponent';
+import { MiniLoadingSpinner } from '../../MiniLoadingSpinner';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import './resetStyle.css';
-import AlertComponent from '../../AlertComponent';
 import { alertTypes } from '../../../constants/alertTypes';
+import AlertComponent from '../../AlertComponent';
 
 interface Props {
-  token: string
+  token: string;
 }
 
 function ResetEmailForm({ token }: Props) {
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState<any>([])
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<any>([]);
   const auth = useAuth();
-  const router = useRouter()
+  const router = useRouter();
   const [capsLock, setCapsLock] = useState<boolean>(false);
 
   useEffect(() => {
@@ -29,7 +30,7 @@ function ResetEmailForm({ token }: Props) {
       document.addEventListener('keyup', testCapsLock);
     }
   }, []);
-  
+
   function testCapsLock(event: any) {
     if (event.code === 'CapsLock') {
       let isCapsLockOn = event.getModifierState('CapsLock');
@@ -44,64 +45,75 @@ function ResetEmailForm({ token }: Props) {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-      message.some((mes: any) => mes.type === alertTypes.success.type) && router.push('/login');
-    }, 3000)
+      message.some((mes: any) => mes.type === alertTypes.success.type) &&
+        router.push('/login');
+    }, 3000);
     setTimeout(() => {
-      const copy = [...message]
-      if(message.some((mes: any) => mes.type === alertTypes.error.type)) {
-        setMessage((c: any) => copy.filter(mes => mes.type != alertTypes.error.type));
+      const copy = [...message];
+      if (message.some((mes: any) => mes.type === alertTypes.error.type)) {
+        setMessage((c: any) =>
+          copy.filter((mes) => mes.type != alertTypes.error.type)
+        );
       }
-    }, 5000)
-  }, [message])
+    }, 5000);
+  }, [message]);
 
   // useEffect(() => {
   //   const cookies: any = Cookies.get('userToken')
-  
+
   //   if (!cookies) {
   //     router.push('/home');
   //   }
   // }, [router]);
 
-
   const changeEmail = async (data: FormData) => {
-    
     setLoading(true);
 
-    const email = data.get('email') as string
-    const confEmail = data.get('emailCheck') as string
+    const email = data.get('email') as string;
+    const confEmail = data.get('emailCheck') as string;
 
-    if(email !== confEmail) {
-      setMessage((current: any) => [...current, {
-        message: 'Los emails deben ser iguales',
-        type: alertTypes.error.type
-      }]);
-      return
+    if (email !== confEmail) {
+      setMessage((current: any) => [
+        ...current,
+        {
+          message: 'Los emails deben ser iguales',
+          type: alertTypes.error.type
+        }
+      ]);
+      return;
     }
 
-      try {
-        const data = await auth.resetMail(email, token)
+    try {
+      const data = await auth.resetMail(email, token);
 
-        console.log(data)
-  
-        if(data?.type === alertTypes.error.type) {
-          setMessage((current: any) => [...current, {
+      console.log(data);
+
+      if (data?.type === alertTypes.error.type) {
+        setMessage((current: any) => [
+          ...current,
+          {
             message: data?.message,
             type: alertTypes.error.type
-          }]);
-          return
-        }
-        setMessage((current: any) => [...current, {
+          }
+        ]);
+        return;
+      }
+      setMessage((current: any) => [
+        ...current,
+        {
           message: data?.message,
           type: alertTypes.success.type
-        }]);
-      } catch (error: any) {
-        setMessage((current: any) => [...current, {
+        }
+      ]);
+    } catch (error: any) {
+      setMessage((current: any) => [
+        ...current,
+        {
           message: error?.response?.data?.error,
           type: alertTypes.error.type
-        }]);
-      }
-
-      
+        }
+      ]);
+    }
   };
 
   return (
@@ -128,47 +140,79 @@ function ResetEmailForm({ token }: Props) {
           </div>
         </div>
       </div>
-      <div className="right-container">
-        <div className="right-card-container">
-          <form className="form-container" action={changeEmail}>
-            <h1 className="sub-title">Cambiar email</h1>
-            <p className="sub-p">Elige tu nuevo email.</p>
-            <div className="input-container mb-8">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+      <div className='right-container'>
+        <div className='right-card-container'>
+          <form className='form-container' action={changeEmail}>
+            <h1 className='sub-title'>Cambiar email</h1>
+            <p className='sub-p'>Elige tu nuevo email.</p>
+            <div className='input-container mb-8'>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                className='h-5 w-5 text-gray-400'
+                fill='none'
+                viewBox='0 0 24 24'
+                stroke='currentColor'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth='2'
+                  d='M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207'
+                />
               </svg>
-              <input id="email" className="input-login" type="email" name="email" placeholder="Email Address" />
+              <input
+                id='email'
+                className='input-login'
+                type='email'
+                name='email'
+                placeholder='Email Address'
+              />
             </div>
-            <div className="input-container mb-8">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+            <div className='input-container mb-8'>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                className='h-5 w-5 text-gray-400'
+                fill='none'
+                viewBox='0 0 24 24'
+                stroke='currentColor'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth='2'
+                  d='M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207'
+                />
               </svg>
-              <input id="emailCheck" className="input-login" type="email" name="emailCheck" placeholder="Email Address Check" />
+              <input
+                id='emailCheck'
+                className='input-login'
+                type='email'
+                name='emailCheck'
+                placeholder='Email Address Check'
+              />
             </div>
-            <p
-              className={`capslock ${
-                !capsLock && 'hidden'
-              }`}
-            >
+            <p className={`capslock ${!capsLock && 'hidden'}`}>
               Bloq Mayús Activado
             </p>
             <div className='relative'>
-              <button type="submit" className="login-btn">Enviar </button>
+              <button type='submit' className='login-btn'>
+                Enviar{' '}
+              </button>
               {loading && <MiniLoadingSpinner />}
             </div>
-            <div className="flex justify-between mt-4">
-            <Link href={routes.user.login}>
-              <span className="links">Ingresar a mi cuenta</span>
-            </Link>
-            <Link href={routes.user.register}>
-              <span className="links">¿No tienes una cuenta todavía?</span>
+            <div className='flex justify-between mt-4'>
+              <Link href={routes.user.login}>
+                <span className='links'>Ingresar a mi cuenta</span>
+              </Link>
+              <Link href={routes.user.register}>
+                <span className='links'>¿No tienes una cuenta todavía?</span>
               </Link>
             </div>
           </form>
         </div>
         {message?.map((mes: any) => (
-          <AlertComponent type={mes.type} message={mes.message}/>
-        ))} 
+          <AlertComponent type={mes.type} message={mes.message} />
+        ))}
       </div>
     </div>
   );

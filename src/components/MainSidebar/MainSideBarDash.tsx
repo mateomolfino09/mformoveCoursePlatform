@@ -13,7 +13,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { Fragment, forwardRef, useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
-import "./MainSidebarDashboard.css";
+import './MainSidebarDashboard.css';
+
 interface Props {
   showNav: boolean;
   where: any;
@@ -117,7 +118,13 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             </m.div>
           </Link>
         )} */}
-        <Link href={`${(auth?.user?.subscription?.active || auth?.user?.isVip) || pathname == '/select-plan' ? '/home' : '/select-plan'}`}>
+        <Link
+          href={`${
+            auth?.user?.subscription?.active || auth?.user?.isVip
+              ? '/home'
+              : '/select-plan'
+          }`}
+        >
           <m.div
             initial={{ color: '#fff', x: 700 }}
             animate={+windowWidth < 768 ? animationPhones : animation}
@@ -248,26 +255,24 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             </m.div>
           </>
         )}
-          <>
-            <m.div
-              initial={{ color: '#fff', x: 700 }}
-              animate={+windowWidth < 768 ? animationPhones : animation}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = '#fff';
-              }}
-              onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
-              onClick={(e) => {
-                e.currentTarget.style.color = '#fff';
-                router.push('/faq');
-              }}
-              className='flex flex-col justify-end items-end  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
-            >
-              <h2 className='font-light lg:text-xl'>¿Dudas?</h2>
-              <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
-                Preguntas Frecuentes
-              </h1>
-            </m.div>
-          </>
+        <>
+          <m.div
+            initial={{ color: '#fff', x: 700 }}
+            animate={+windowWidth < 768 ? animationPhones : animation}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#fff';
+            }}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
+            onClick={(e) => {
+              e.currentTarget.style.color = '#fff';
+              router.push('/faq');
+            }}
+            className='flex flex-col justify-end items-end  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+          >
+            <h2 className='font-light lg:text-xl'>Centro de ayuda</h2>
+            <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>Preguntas Frecuentes</h1>
+          </m.div>
+        </>
       </div>
     </div>
   );
