@@ -66,7 +66,7 @@ const RegisterStepTwo = ({ step2ToStep3, step2ToStep1, signUp }: Props) => {
   };
   return (
     <div
-      
+      className='w-[100vw] h-full px-1'
     >
       {/* Logo position */}
       <div className='flex flex-col items-center justify-center relative mt-20 sm:mt-24 space-y-4 rounded py-12 '>
@@ -79,8 +79,8 @@ const RegisterStepTwo = ({ step2ToStep3, step2ToStep1, signUp }: Props) => {
           Crea una contraseña segura para tu cuenta
         </h2>
       </div>
-      <div className='flex flex-col items-center justify-center relative space-y-8 rounded px-8 md:w-full'>
-        <div className='space-x-4 flex'>
+      <div className='flex flex-col items-center justify-center relative space-y-4 rounded px-8 md:w-full'>
+        <div className='md:space-x-4 space-y-3 md:space-y-0 flex flex-col md:flex-row'>
           <label className=''>
             <input
               type='password'
@@ -103,13 +103,13 @@ const RegisterStepTwo = ({ step2ToStep3, step2ToStep1, signUp }: Props) => {
           </label>
         </div>
         <div className='space-x-4 flex' />
-        <div className='w-full flex justify-center items-center space-x-4 mt-3'>
+        <div className='w-full flex flex-col justify-center items-center space-y-2 md:space-y-0 md:space-x-4 md:mt-3'>
         <div onClick={() =>  handleClickBack()} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
                   <p className='text-white group-hover:text-black'>Volver</p>
 
               </div>
         <div onClick={(e: any) =>  handleClick(e)} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
-                  <p className='text-white group-hover:text-black'>Crear Cuenta</p>
+                  <p className='text-white group-hover:text-black'>Registrarme</p>
                   <ArrowRightIcon className='w-4 group-hover:text-black ml-2 group-hover:translate-x-1 transition-all duration-500'/>
               </div>
         </div>

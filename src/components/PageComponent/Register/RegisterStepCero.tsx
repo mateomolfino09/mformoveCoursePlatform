@@ -111,11 +111,11 @@ const RegisterStepCero = ({ step0ToStep1, step0ToResend }: Props) => {
             <h1 className='title font-boldFont'>
               Es hora de moverse...
             </h1>
-            <h2 className='subtitle font-boldFont'>
+            <h2 className='subtitle font-boldFont mx-3 md:mx-0'>
               ¿Pronto para aprender? Ingresa tu email para crear tu cuenta.
             </h2>
           </div>
-          <div className='main-input-container'>
+          <div className='main-input-container '>
             <div className='secondary-input-container'>
               <label className='inline-block w-full'>
                 <input

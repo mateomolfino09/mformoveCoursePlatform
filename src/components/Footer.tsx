@@ -109,7 +109,7 @@ const onSubmit = async (data: any) => {
             <div className='flex w-full flex-col md:pl-0 space-y-4 md:space-y-0 md:flex-row md:space-x-5'>
                 {/* <Link href={'/home'}> */}
                   <div style={{flex: '1 1 0px;'}} className='md:w-1/3 w-full cursor-pointer'>
-                <Link href={'/'}>
+                <Link href={'/home'}>
                       <h4 className='font-light text-sm md:text-base w-full md:text-center' >Home</h4>
                 </Link>
                   </div>

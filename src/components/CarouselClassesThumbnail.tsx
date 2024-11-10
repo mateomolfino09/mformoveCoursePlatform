@@ -87,7 +87,7 @@ function CarouselClassesThumbnail({
 
   const ComponentToRender = ({ children }: any) =>  (
     <>
-      {auth.user && (auth?.user?.subscription?.active || auth?.user?.rol === "Admin" || c.isFree || auth?.user?.isVip) ? (
+      {(auth.user && (auth?.user?.subscription?.active || auth?.user?.rol === "Admin" || auth?.user?.isVip)) || c.isFree ? (
         <>
         <Link href={`/classes/${c.id}`}>
             {children}

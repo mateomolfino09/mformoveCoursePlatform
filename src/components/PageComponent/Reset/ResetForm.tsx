@@ -61,16 +61,16 @@ function ResetForm({ token }: Props) {
   const changePassword = async (data: FormData) => {
     setLoading(true);
 
-    const password = data.get('password') as string;
-    const passwordCheck = data.get('passwordCheck') as string;
+    const password = data.get('password') as string
+    const passwordCheck = data.get('passwordCheck') as string
 
-    try {
-      const data = await auth.resetPassword(passwordCheck, password, token);
+      try {
+        const data = await auth.resetPassword(passwordCheck, password, token)
 
-      if (data?.error) {
-        setMessage((current: any) => [
-          ...current,
-          {
+        console.log(passwordCheck, password, token)
+  
+        if(data?.error) {
+          setMessage((current: any) => [...current, {
             message: data?.error,
             type: alertTypes.error.type
           }
@@ -96,23 +96,23 @@ function ResetForm({ token }: Props) {
   };
 
   return (
-    <div className='main-container'>
-      <div className='background-image background-gradient'>
-        <Image
-          src='/images/image00029.jpeg'
-          // src={srcImg}
-          alt={'image'}
-          fill={true}
-          loader={imageLoader}
-          className='image-gradient'
-        />
-        <div className='left-container'>
-          <h1 className='title font-boldFont'>MForMove Platform</h1>
-          <p className='text !mt-0'>Moverse es el medio para reconocerse</p>
-          <div className='about-us-btn-container'>
+    <div className="main-container">
+      <div className="background-image background-gradient">
+          <Image
+            src='/images/image00029.jpeg'
+            // src={srcImg}
+            alt={'image'}
+            fill={true}
+            loader={imageLoader}
+            className='image-gradient'
+          />
+        <div className="left-container">
+        <h1 className="title font-boldFont">MForMove Platform</h1>
+        <p className="text !mt-0">Moverse es el medio para reconocerse</p>
+        <div className='about-us-btn-container'>
             <a
               href='/select-plan'
-              className='about-us-btn !py-3 rounded-full !px-3'
+              className='about-us-btn !py-3 rounded-full font-light font-montserrat !px-3'
             >
               Membresias
             </a>

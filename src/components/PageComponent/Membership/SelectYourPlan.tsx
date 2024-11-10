@@ -24,26 +24,27 @@ interface Props {
   origin: string;
 }
 
-const SelectYourPlan = ({ plans, select = '', origin }: Props) => {
-  const [planSelected, setPlanSelected] = useState<Plan | null | undefined>(
-    plans[0]
-  );
-  const [loading, setLoading] = useState<boolean>(false);
+const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
+    const [planSelected, setPlanSelected] = useState<Plan | null | undefined>(plans[0])
+    const [loading, setLoading] = useState<boolean>(false)
 
-  const auth = useAuth();
-  const router = useRouter();
-  const planSelect = [
-    ...plans.map((p: Plan) => {
-      return {
-        value: p.name,
-        label: p.name
-      };
-    }),
-    {
-      value: 'Membresía Gratis',
-      label: 'Membresía Gratis'
-    }
-  ];
+    const auth = useAuth()
+    const router = useRouter()
+    const planSelect = [
+        ...plans.filter(x => x.active).map((p: Plan) =>      
+        {
+            return {
+                value: p.name,
+                label: p.name
+            }
+        }), 
+        {
+            value: "Comunidad Gratuita",
+            label: "Comunidad Gratuita"
+        }
+
+    
+    ]
 
   useEffect(() => {
     if (!auth.user) {
@@ -55,63 +56,68 @@ const SelectYourPlan = ({ plans, select = '', origin }: Props) => {
     planSelect[0].value
   );
 
-  const handleClick = async () => {
-    if (!auth.user) {
-      toast.error('Usuario no encontrado');
-      return;
-    }
-    const email = auth.user.email;
-
-    setLoading(true);
-
-    try {
-      if (planSelectedValue != 'Membresía Gratis') {
-        const res = await fetch(endpoints.payments.createPaymentToken, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email, planId: planSelected?.id })
-        });
-
-        const data = await res.json();
-        setLoading(false);
-
-        if (!data.success) {
-          toast.error(data.message);
-          return;
+    const handleClick = async () => {
+        if(!auth.user) {
+            toast.error('Usuario no encontrado')
+            return
         }
+        const email = auth.user.email
+        
 
-        const { token, planToken } = data;
-        Cookies.set('planToken', planToken ? planToken : '', { expires: 5 });
+        setLoading(true)
 
-        router.push(
-          `${origin}/validate/subscription/${planSelected?.plan_token}?external_id=${auth?.user?._id}`
-        );
-      } else {
-        console.log(email);
-        const res = await fetch(endpoints.payments.createFreeSubscription, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email })
-        });
+        try {
+            if(planSelectedValue != "Comunidad Gratuita") {
+                const res = await fetch(endpoints.payments.createPaymentToken, {
+                    method: 'POST',
+                    headers: {  
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, planId: planSelected?.id }),
+                  })
+        
+                const data = await res.json()
+                setLoading(false)
 
-        const data = await res.json();
-        setLoading(false);
+                if(!data.success) {
+                    toast.error(data.message)
+                    return
+                }
+        
+                const { token, planToken } = data
+                Cookies.set('planToken', planToken ? planToken : '', { expires: 5})
+                
+                router.push(`${origin}/validate/subscription/${planSelected?.plan_token}?external_id=${auth?.user?._id}`)
 
-        const { message, user, success } = data;
 
-        if (success) toast.success(message);
-        else toast.error(message);
-      }
-    } catch (error: any) {
-      console.log(error);
-      toast.error(error.message);
+            }
+            else {
+                console.log(email)
+                const res = await fetch(endpoints.payments.createFreeSubscription, {
+                    method: 'PUT',
+                    headers: {  
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                  })
+        
+                const data = await res.json()
+                setLoading(false)
+        
+                const { message, user, success } = data
+
+                if(success)
+                toast.success(message)
+                else
+                toast.error(message)
+            }
+        } catch (error: any) {
+            console.log(error)
+            toast.error(error.message)
+        }
+        setLoading(false)
+
     }
-    setLoading(false);
-  };
 
   const colourStyles: StylesConfig<any> = {
     control: (styles) => ({
@@ -141,9 +147,10 @@ const SelectYourPlan = ({ plans, select = '', origin }: Props) => {
         </h1>
       </div>
 
-      <div className='flex flex-col space-y-4 capitalize'>
-        {planSelectedValue == 'Membresía Gratis' ? (
-          <>
+    <div className='flex flex-col space-y-4 capitalize'>
+
+        {planSelectedValue == "Comunidad Gratuita" ? (
+            <>
             <div className='flex space-x-2'>
               <CheckIcon className='w-6 h-6 text-[#ae9359]' />
               {/* <CheckCircleIcon className='text-green-500/80 w-5 h-5 md:w-8 md:h-8 text-[#ae9359]'/> */}
@@ -153,16 +160,12 @@ const SelectYourPlan = ({ plans, select = '', origin }: Props) => {
               </p>
             </div>
             <div className='flex space-x-2'>
-              <CheckIcon className='w-6 h-6 text-[#ae9359]' />
-              <p className='text-base font-light'>
-                Info sobre mi metodología para incorporar en tu Entrenamiento
-              </p>
+                <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
+                <p className='text-base font-light'>Info sobre movimientos para incorporar en tu Entrenamiento</p>
             </div>
             <div className='flex space-x-2 mb-2'>
-              <CheckIcon className='w-6 h-6 text-[#ae9359]' />
-              <p className='text-base font-light'>
-                Contenido Exclusivo y Gratuito para la Comunidad de MForMovers
-              </p>
+                <CheckIcon className='w-6 h-6 text-[#ae9359]'/>
+                <p className='text-base font-light'>Contenido Gratuito para la Comunidad de MForMovers</p>
             </div>
           </>
         ) : (
@@ -225,15 +228,15 @@ const SelectYourPlan = ({ plans, select = '', origin }: Props) => {
     '
       >
         <Select
-          options={planSelect}
-          styles={colourStyles}
-          placeholder={planSelectedValue || 'Nivel de clase'}
-          className='w-72 ml-3'
-          value={planSelectedValue}
-          onChange={(e) => {
-            setPlanSelected(plans.find((x) => x.name === e.label));
-            setPlanSelectedValue(e.value);
-          }}
+            options={planSelect}
+            styles={colourStyles}
+            placeholder={planSelectedValue || 'Nivel de clase'}
+            className='w-72 ml-3'
+            value={planSelectedValue}
+            onChange={(e) => {
+                setPlanSelected(plans.find(x => x.name === e.label && x.active))
+                setPlanSelectedValue(e.value)
+            }}
         />
       </div>
       {!auth.user && (
@@ -263,35 +266,21 @@ const SelectYourPlan = ({ plans, select = '', origin }: Props) => {
         <Link href={'select-plan'} className={`${!auth.user && 'hidden'}`}>
           <div className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '>
             <button className='w-full text-base md:text-lg'>Continuar </button>
-          </div>
-        </Link>
-      )}
-      {planSelectedValue == 'Membresía Gratis' ? (
-        <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-2 mt-5 text-center text-xs md:text-sm font-light'>
-          <p>GRATIS </p>
-          <p>Oportunidad única...</p>
         </div>
-      ) : (
+    </Link>
+
+    )}
+    {planSelectedValue == "Comunidad Gratuita" ? (
+            <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-2 mt-5 text-center text-xs md:text-sm font-light'>
+            <p>GRATIS </p>
+            <p>Oportunidad única...</p>
+            </div>
+    ) : (
         <>
-          <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-4 mt-5 text-center text-xs md:text-sm font-light'>
-            <p>
-              {planSelected?.amount} {planSelected?.currency} facturado{' '}
-              {planSelected?.frequency_label}{' '}
-              {planSelected?.frequency_label === 'Anual' &&
-                `(ahorra ${
-                  12 *
-                    (plans.find(
-                      (x) => x.frequency_label != planSelected?.frequency_label
-                    )?.amount ?? 0) -
-                  planSelected?.amount
-                } ${planSelected?.currency})`}{' '}
-              facturado hoy.
-            </p>
-            <p>
-              Enviamos recordatorio antes de facturar para evitar pagos no
-              deseados.
-            </p>
-          </div>
+            <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-4 mt-5 text-center text-xs md:text-sm font-light'>
+                <p>{planSelected?.amount} {planSelected?.currency} facturado {planSelected?.frequency_label} {planSelected?.frequency_label === "Anual" && `(ahorra ${planSelected?.amount - 12 * (plans.find(x => x.frequency_label != planSelected?.frequency_label && x.frequency_value)?.amount ?? 0)} ${planSelected?.currency})`} facturado hoy.</p>
+                <p>Enviamos recordatorio antes de facturar para evitar pagos no deseados.</p>
+            </div>
         </>
       )}
       <div className='flex flex-col space-y-2 py-16 md:space-y-4 justify-end lg:items-end mr-12 lg:mr-24  overflow-hidden'>

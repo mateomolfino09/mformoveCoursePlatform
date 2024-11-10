@@ -6,6 +6,7 @@ const endpoints = {
     verifyEmail: (email: string) => `/api/user/auth/email/verifyEmail/${email}`,
     email: (token: string) => `/api/user/auth/email/${token}`,
     easyRegister: '/api/user/auth/easyRegister',
+    easyRegisterSubscribe: '/api/user/auth/easyRegisterSubscribe',
     register: '/api/user/auth/register',
     resend: '/api/user/auth/register/resendEmail',
     resetMail: (token: string) =>  `/api/user/auth/resetEmail/${token}`,

@@ -21,6 +21,7 @@ function Banner() {
   const [hasWindow, setHasWindow] = useState(false);
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Asegúrate de que la biblioteca de Vimeo se cargue solo en el lado del cliente
@@ -62,13 +63,19 @@ function Banner() {
     dispatch(loadCourse());
   };
 
+  const handleLoad = () => {
+    setIsLoading(false); // Cambia el estado cuando el iframe termina de cargar
+  };
+
   return (
     <>
     <div className='flex flex-col space-y-2 py-16 md:space-y-4 min-h-[100vh] justify-end lg:items-end mr-12 lg:mr-24  overflow-hidden'>
       <div className='absolute top-0 left-0 h-[100vh] w-full -z-10 overflow-hidden'>
-        {/* <video src={'/video/videointroMFM.mp4'} autoPlay loop muted={!snap.volumeIndex} className='object-cover h-full w-full'>
-
-        </video> */}
+        {isLoading && (
+          <div className="absolute inset-0 mb-12 flex items-center justify-center bg-black bg-opacity-75">
+            <span className="text-white">Cargando...</span>
+          </div>
+        )}
         {isMobile ? (
             <iframe
             src="https://player.vimeo.com/video/1023611525?autoplay=1&loop=1&background=1&muted=1&preload=auto"
@@ -77,6 +84,8 @@ function Banner() {
             className="absolute top-0 left-0 w-full h-full"
             title="videointroMFM"
             style={{ transform: 'scale(1.2)', objectFit: 'cover' }} // Aumenta el tamaño del video
+            onLoad={handleLoad}
+
           />
         ) : (
           <iframe
@@ -86,6 +95,8 @@ function Banner() {
              className="absolute top-0 left-0 w-full h-full"
              title="videointroMFM"
              style={{ transform: 'scale(1.1)', objectFit: 'cover' }} // Aumenta el tamaño del video
+             onLoad={handleLoad}
+
            />
         )}
         {/* <Vimeo

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { ClassTypes, IndividualClass } from '../../../typings';
 import Home from '../../components/PageComponent/Home';
 import { MiniLoadingSpinner } from '../../components/PageComponent/Products/MiniSpinner';
+import { LoadingSpinner } from '../../components/LoadingSpinner';
 
 // Variables globales declaradas fuera del componente
 let filters: ClassTypes[] = [];
@@ -48,7 +49,7 @@ export default function Page() {
   }, []); // El efecto se ejecutará solo una vez al montar el componente
 
   if (isLoading) {
-    return <div> <MiniLoadingSpinner /></div>; 
+    return <div> <LoadingSpinner /></div>; 
   }
 
   // Renderizar el componente Home solo después de que los datos estén disponibles

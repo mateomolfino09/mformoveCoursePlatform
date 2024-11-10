@@ -16,7 +16,7 @@
         @apply absolute -z-10 object-cover
     }
     .left-container {
-        @apply w-full mx-auto px-20 flex-col items-center space-y-6
+        @apply w-full mx-auto px-20 flex-col items-center space-y-6;
     }
     .title {
         @apply font-bold text-4xl text-light-cream

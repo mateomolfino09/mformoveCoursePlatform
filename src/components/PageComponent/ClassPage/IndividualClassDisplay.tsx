@@ -155,11 +155,11 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
   useEffect(() => {
     const cookies: any = Cookies.get('userToken')
     
-    if (!cookies) {
+    if (!cookies && !clase?.isFree) {
       router.push('/login');
     }
     
-    if(!auth.user || (!auth?.user?.subscription?.active && auth?.user?.rol != 'Admin' && !auth?.user?.isVip && !clase?.isFree)) {
+    if(!auth.user && !clase?.isFree || (!auth?.user?.subscription?.active && auth?.user?.rol != 'Admin' && !auth?.user?.isVip && !clase?.isFree)) {
       router.push('/home')
     }
 
