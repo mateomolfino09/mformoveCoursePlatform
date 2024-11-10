@@ -11,10 +11,10 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import './loginStyle.css';
 import { alertTypes } from '../../../constants/alertTypes';
-import AlertComponent from '../../AlertComponent';
 import state from '../../../valtio';
 import Footer from '../../Footer';
 import FooterProfile from '../Profile/FooterProfile';
+import AlertComponent from '../../AlertComponent';
 
 function LoginForm() {
   const [loading, setLoading] = useState(false);
@@ -48,8 +48,9 @@ function LoginForm() {
     const password = data.get('password') as string;
 
     auth.signIn(email, password).then((res: any) => {
-      if(res.type != 'error') {
-        if(res?.user?.subscription?.active || res?.user?.isVip) router.push('/home');
+      if (res.type != 'error') {
+        if (res?.user?.subscription?.active || res?.user?.isVip)
+          router.push('/home');
         else router.push('/select-plan');
       } else {
         setMessage((current: any) => [
@@ -149,17 +150,19 @@ function LoginForm() {
                 </button>
                 {loading && <MiniLoadingSpinner />}
               </div>
-              <div className='links-container'>
-                <Link href={routes.user.forget}>
-                  <span className='links'>¿Olvidaste tu contraseña?</span>
-                </Link>
-                <Link href={routes.user.register}>
-                  <span className='links'>¿No tienes una cuenta todavía?</span>
-                </Link>  
-                {/* <div onClick={() => state.loginForm = true}>
-                  <h4  className='links'>¿No tienes una cuenta todavía?</h4>
-                </div> */}
+              <div className='links-container flex flex-col md:flex-row md:justify-between mt-4 text-sm text-gray-500'>
+              <Link href={routes.user.forget}>
+                <span className='links text-center'>
+                  ¿Olvidaste tu contraseña?
+                </span>
+              </Link>
+              <div
+                onClick={() => (state.loginForm = true)}
+                className='text-center mt-2 md:mt-0'
+              >
+                <h4 className='links'>¿No tienes una cuenta todavía?</h4>
               </div>
+            </div>
             </form>
           </div>
           {message?.map((mes: any) => (
