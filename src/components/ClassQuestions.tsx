@@ -38,10 +38,9 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
   
   const [answerSelected, setAnswerSelected] = useState<number>(0);
 
-
   useEffect(() => {
-    setQuestions([...questionsDB?.reverse()])
-  }, [questionsDB])
+    setQuestions([...(questionsDB?.reverse() || [])]);
+  }, [questionsDB]);
 
   useEffect(() => {
 
