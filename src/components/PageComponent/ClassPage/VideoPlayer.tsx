@@ -219,7 +219,7 @@ function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
             width='100%'
             height='100%'
             playing={playing} // Solo reproduce si `play` está activo y no es móvil
-            muted={isMobile} // Silencia automáticamente en móviles
+            muted={muted} // Silencia automáticamente en móviles
             style={{ position: 'absolute', top: '0', left: '0 ' }}
             volume={volume}
             playbackRate={playbackRate}
@@ -231,12 +231,6 @@ function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
                   playsInline: true // Habilita reproducción en línea en móviles
                 }
               },
-              vimeo: {
-                playerOptions: {
-                  autoplay: !isMobile, // Solo autoplay si no es móvil
-                  muted: isMobile // Silencio automático en móviles
-                }
-              }
             }}
           />
          <PlayerControls
