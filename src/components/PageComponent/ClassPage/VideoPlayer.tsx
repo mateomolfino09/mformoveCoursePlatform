@@ -42,6 +42,12 @@ let count = 0;
 
 function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth <= 768);
+  }, []);
+
   const [state, setState] = useState({
     playing: false,
     muted: false,
@@ -65,10 +71,15 @@ function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
   const playerContainerRef = useRef<any>(null);
   const canvasRef = useRef<any>(null);
   const controlsRef = useRef<any>(null);
-
+  
   useEffect(() => {
-    setState({ ...state, playing: !playing });
-  }, [play]);
+    setState((prevState) => ({
+      ...prevState,
+      playing: play, // Reproduce según el estado de `play`, sin importar si es móvil
+      muted: isMobile // Siempre silenciado en móviles
+    }));
+  }, [play, isMobile]);
+
 
   useEffect(() => {
     setPlayerRef(playerRef);
@@ -113,18 +124,14 @@ function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
   };
 
   const toggleFullScreen = () => {
-    setState({
-      ...state,
-      fullScreen: !fullScreen
-    });
-    if (playerContainerRef.current && screenfull.isEnabled) {
-      screenfull.isFullscreen 
-      ? screenfull.toggle(playerContainerRef.current) 
-      : screenfull.request(playerContainerRef.current, {navigationUI: 'hide'});
-
-      screenfull.on('error', event => {
-        console.error('Failed to enable fullscreen', event);
-      });
+    if (screenfull.isEnabled && playerContainerRef.current) {
+      try {
+        screenfull.toggle(playerContainerRef.current, { navigationUI: 'hide' });
+      } catch (error) {
+        console.error('Fullscreen not supported on this device', error);
+      }
+    } else {
+      console.warn('Screenfull is not enabled');
     }
   };
 
@@ -211,16 +218,23 @@ function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
             url={clase?.link}
             width='100%'
             height='100%'
+            playing={playing} // Solo reproduce si `play` está activo y no es móvil
+            muted={isMobile} // Silencia automáticamente en móviles
             style={{ position: 'absolute', top: '0', left: '0 ' }}
-            playing={playing}
-            muted={muted}
             volume={volume}
             playbackRate={playbackRate}
             onProgress={handleProgress}
             config={{
               file: {
                 attributes: {
-                  crossorigin: 'anonymous'
+                  crossorigin: 'anonymous',
+                  playsInline: true // Habilita reproducción en línea en móviles
+                }
+              },
+              vimeo: {
+                playerOptions: {
+                  autoplay: !isMobile, // Solo autoplay si no es móvil
+                  muted: isMobile // Silencio automático en móviles
                 }
               }
             }}
