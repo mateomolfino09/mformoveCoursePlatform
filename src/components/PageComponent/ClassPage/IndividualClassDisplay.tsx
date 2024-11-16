@@ -52,6 +52,7 @@ interface Props {
 }
 
 function IndividualClassDisplay ({ clase, questions }: Props) {
+  console.log('hola')
   const [forward, setForward] = useState<boolean>(false);
   const [showNav, setShowNav] = useState(false);
   const [time, setTime] = useState<number | null | undefined>(null);
@@ -88,7 +89,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
   const handleClose = () => {
     playerRef?.current && playerRef.current.seekTo(0);
     setResumeModal(false);
-    setPlay(true);
+    // setPlay(true);
   };
   const handleLoad = (currentTime: number, totalTime: number) => {
     if (currentTime > 60) {
@@ -104,7 +105,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
           : 0
       );
     setResumeModal(false);
-    setPlay(true);
+    // setPlay(true);
   };
 
   const handleRouteChange = async (route: string) => {
