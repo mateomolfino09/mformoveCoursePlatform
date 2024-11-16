@@ -45,6 +45,7 @@ import { useAppDispatch } from '../../../hooks/useTypeSelector';
 import ClassData from './ClassData';
 import ClassDescription from './ClassDescription';
 import Footer from '../../Footer';
+import VimeoPlayer from './VimeoPlayer';
 
 interface Props {
   clase: IndividualClass;
@@ -203,14 +204,17 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
             {hasWindow && (
                 <>
                 <div className='w-full h-full lg:w-2/3'>
-                    <VideoPlayer
+                    {/* <VideoPlayer
                     url={clase.link}
                     clase={clase}
                     img={clase.image_url}
                     courseUser={courseUser}
                     setPlayerRef={(val: any) => setPlayerRef(val)}
                     play={play}
-                    />
+                    /> */}
+                    <VimeoPlayer
+                    videoId={clase.link}
+                  />
                 </div>
                 </>
             )}
