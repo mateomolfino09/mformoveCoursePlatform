@@ -43,6 +43,7 @@ let count = 0;
 function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
+  console.log('hola')
 
   useEffect(() => {
     setIsMobile(window.innerWidth <= 768);
