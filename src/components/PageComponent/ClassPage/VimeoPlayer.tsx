@@ -6,9 +6,9 @@ const VimeoPlayer = ({ videoId }: { videoId: string }) => {
   const playerContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (playerContainerRef.current) {
-      const player = new Player(playerContainerRef.current, {
-        id: Number("1030323408"), // Convertir string a número
+    if (playerContainerRef?.current) {
+      const player = new Player(playerContainerRef?.current, {
+        id: Number(videoId), // Convertir string a número
         autoplay: true,
         loop: true,
         muted: true,
@@ -24,12 +24,11 @@ const VimeoPlayer = ({ videoId }: { videoId: string }) => {
   }, [videoId]);
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full flex items-center justify-center">
       <Container className="!h-full !px-0">
-        {/* El contenedor para el player */}
         <div
           ref={playerContainerRef}
-          className="video-container w-full h-full min-h-[30rem] lg:min-h-[60vh] relative border border-3 border-solid border-black"
+          className="video-container w-full h-full min-h-[20rem] top-16 lg:min-h-[60vh] relative"
         />
       </Container>
     </div>
