@@ -153,6 +153,15 @@ function Youtube({ url, img, title, setPlayerRef, play, isToShow }: Props) {
       count += 1;
     }
 
+    if (changeState.playedSeconds === 0 && changeState.loadedSeconds === 0) {
+      setTimeout(() => {
+        // Si después de 10 segundos sigue sin progreso, marcar como atascado
+        setIsStuck(true);
+      }, 10000);
+    } else {
+      setIsStuck(false)
+    }
+
     if (!state.seeking) setState({ ...state, ...changeState });
   };
   const handleMouseMove = () => {
@@ -195,6 +204,41 @@ function Youtube({ url, img, title, setPlayerRef, play, isToShow }: Props) {
   const elapsedTime = format(currentTime);
   const totalDuration = format(duration);
 
+  const [videoUrl, setVideoUrl] = useState(url?.toString());
+
+  const [reloadCount, setReloadCount] = useState(0);
+  const [isStuck, setIsStuck] = useState(false);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (isStuck && reloadCount < 3) {
+      console.log(`Reiniciando video: Intento ${reloadCount + 1}`);
+      setReloadCount((prev) => prev + 1);
+      setVideoUrl(''); // Limpiar URL
+      timer = setTimeout(() => setVideoUrl(url?.toString()), 500); // Reiniciar video
+    }
+
+    return () => clearTimeout(timer);
+  }, [isStuck]);
+
+  
+
+  // Detectar si el dispositivo es móvil
+  const isMobile = () => window.innerWidth <= 768;
+
+  const handleReady = () => {
+    console.log('Video listo');
+    setIsStuck(false);
+    setReloadCount(0);
+  };
+
+  const handleError = () => {
+    console.error('Error al cargar el video');
+    setIsStuck(true);
+  };
+
+
   return (
     <div className='h-full w-full'>
       <Container className='!h-full !px-0'>
@@ -205,7 +249,9 @@ function Youtube({ url, img, title, setPlayerRef, play, isToShow }: Props) {
         >
           <ReactPlayer
             ref={playerRef}
-            url={url?.toString()}
+            onReady={handleReady} // Detecta si el reproductor está listo
+            onError={handleError} // Maneja errores
+            url={videoUrl}
             width='100%'
             height='100%'
             style={{ position: 'absolute', top: '0', left: '0 ' }}
