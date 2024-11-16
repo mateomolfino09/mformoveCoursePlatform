@@ -156,12 +156,9 @@ function LoginForm() {
                   ¿Olvidaste tu contraseña?
                 </span>
               </Link>
-              <div
-                onClick={() => (state.loginForm = true)}
-                className='text-center mt-2 md:mt-0'
-              >
-                <h4 className='links'>¿No tienes una cuenta todavía?</h4>
-              </div>
+              <Link href={routes.user.register}>
+    <span className='links text-center mt-2 md:mt-0'>¿No tienes una cuenta todavía?</span>
+  </Link>
             </div>
             </form>
           </div>

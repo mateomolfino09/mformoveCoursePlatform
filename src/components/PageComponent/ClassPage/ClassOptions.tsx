@@ -23,7 +23,7 @@ const ClassOptions = ({ clase }: Props) => {
   };
 
   return (
-    <div className='w-full h-full flex flex-row mt-8 justify-between bg-dark px-2 lg:w-2/3 lg:hidden'>
+    <div className='w-full h-full flex-row mt-8 justify-between bg-dark px-2 lg:w-2/3 hidden'>
       <div
         className='w-full h-full flex flex-col justify-center items-center'
         onClick={handleClickRecursos}
