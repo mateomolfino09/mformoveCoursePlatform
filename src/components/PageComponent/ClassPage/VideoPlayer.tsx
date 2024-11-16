@@ -43,7 +43,7 @@ let count = 0;
 function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
   const router = useRouter();
   const [state, setState] = useState({
-    playing: true,
+    playing: false,
     muted: false,
     volume: 0.75,
     playbackRate: 1.0,
