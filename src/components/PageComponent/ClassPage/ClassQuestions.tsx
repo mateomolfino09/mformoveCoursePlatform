@@ -42,9 +42,9 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
   const [answerSelected, setAnswerSelected] = useState<number>(0);
 const pathname = usePathname()
 
-  useEffect(() => {
-    setQuestions([...questionsDB?.reverse()])
-  }, [questionsDB])
+useEffect(() => {
+  setQuestions([...(questionsDB?.reverse() || [])]);
+}, [questionsDB]);
 
   useEffect(() => {
 
