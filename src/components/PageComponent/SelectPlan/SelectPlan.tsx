@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import MainSideBar from '../../MainSidebar/MainSideBar'
 import Image from 'next/image'
 import imageLoader from '../../../../imageLoader'
-import { ArrowRightIcon } from '@heroicons/react/24/outline'
+import { ArrowDownIcon, ArrowRightIcon, ChevronDoubleDownIcon } from '@heroicons/react/24/outline'
 import SelectYourPlan from '../Membership/SelectYourPlan'
 import { Plan } from '../../../../typings'
 import Select, { StylesConfig } from 'react-select';
@@ -16,6 +16,7 @@ import { useAuth } from '../../../hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import { throttle } from 'lodash';
 import SelectYourPlanIntro from './SelectYourPlanIntro'
+import { ChevronDownIcon } from '@heroicons/react/24/solid'
 
 interface Props {
     plans: Plan[]
@@ -60,13 +61,14 @@ const SelectPlan = ({ plans, origin }: Props ) => {
     //   }, [router]);
 
   return (
-    <div className='relative bg-to-dark lg:h-full min-h-screen overflow-scroll overflow-x-hidden' onScroll={(event:any) => handleScroll(event)}
+    <div className='relative lg:h-full min-h-screen overflow-scroll overflow-x-hidden' onScroll={(event:any) => handleScroll(event)}
     >          
-    <MainSideBar where={'index'}>
+    <MainSideBar where={'selectPlan'}>
     <SelectYourPlanIntro />
-    <FreeProductWhoAreWe />
 
-          <SelectYourPlan plans={plans} select={"select"} origin={origin}/>   
+          <SelectYourPlan plans={plans} select={"select"} origin={origin}/>  
+          <FreeProductWhoAreWe />
+ 
           <Footer />
           
       </MainSideBar>

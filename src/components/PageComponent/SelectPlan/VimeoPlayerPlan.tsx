@@ -70,16 +70,15 @@ const VimeoPlayerPlan = ({ videoId }: { videoId: string }) => {
   };
 
   return (
-    <div className="h-full w-full flex items-center justify-center"  onMouseMove={handleMouseMove}>
+    <div className={`p-6 md:p-0 h-full w-full flex items-center justify-center `}  onMouseMove={handleMouseMove}>
       <Container className="!h-full !px-0">
         <div
           ref={playerContainerRef}
-          className="video-container w-full h-full min-h-[20rem] top-16 lg:min-h-[60vh] relative"
+          className="video-container w-full top-16 lg:min-h-[60vh] relative"
         />
-        <div className="absolute inset-0 opacity-25 pointer-events-none" />
         <button
             onClick={handlePlayPause}
-            className={`absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2  text-black rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:bg-gray-300 transition ${
+            className={`absolute top-[45%] left-[50%] transform -translate-x-1/2 -translate-y-1/2  text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:bg-black/50 transition ${
                 isButtonVisible ? 'opacity-100' : 'opacity-0'
             }`}
         >

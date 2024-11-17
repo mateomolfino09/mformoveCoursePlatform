@@ -137,7 +137,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
   };
 
   return (
-    <div className='w-full px-3 relative flex flex-col lg:pl-36 pt-8'>
+    <div className='w-full px-3 py-12 relative flex flex-col lg:pl-36 pt-8'>
       <div className='flex md:space-y-1 flex-col mb-12 items-start pl-2 justify-start'>
         <h1 className='text sm:text-7xl md:text-5xl lg:text-5xl font-light capitalize font-boldFont'>
           Practica conmigo,
@@ -299,7 +299,6 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
           />
         </div>
       </div>
-        <button className='relative'>Hola</button>
     </div>
   );
 };
