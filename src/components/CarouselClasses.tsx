@@ -27,14 +27,17 @@ interface Props {
   classesDB: IndividualClass[] | null;
   setSelectedClass: any
   description: string | undefined
+  key: number
 }
 
 function CarouselClasses({
   title,
   classesDB,
   setSelectedClass,
-  description
+  description,
+  key
 }: Props) {
+  console.log(key)
   const rowRef = useRef<HTMLDivElement>(null);
   const scrollRowRef = useRef<HTMLDivElement>(null);
   const theWidth = rowRef.current?.scrollWidth
@@ -80,7 +83,7 @@ function CarouselClasses({
       className={`group carousel mt-12 px-9 w-full relative ${filtersSelector.classType !== 'all' && classesDB && filtersSelector.classType !== classesDB[0].type.toLowerCase() && 'hidden' }`}
       ref={rowRef}
     >
-      <div className='flex md:justify-between flex-col md:flex-row items-start md:items-center w-full'>
+      <div className={`${title == "Publicadas Recientemente" ? "mb-6 md:mb-2" : ""} flex md:justify-between flex-col md:flex-row items-start md:items-center w-full`}>
         <div className='flex justify-start items-center w-full' style={{ flex: '1 0 21%'}}>
           <h2 className='ml-4 relative text-2xl font-normal text-[#E5E5E5] transition duration-200 font-boldFont hover:text-white lg:text-2xl md:mb-4 -mb-3'>
             {title}
@@ -93,7 +96,7 @@ function CarouselClasses({
           </div>
 
         </div>
-        <div className='flex ml-4 md:ml-0 mb-5 relative font-light text-xs md:text-sm group' onClick={() => router.push(`/classes-category/${title?.toLowerCase()}`)}>
+        <div className={`flex ml-4 md:ml-0 mb-5 relative font-light text-xs md:text-sm group ${title == "Publicadas Recientemente" ? 'hidden' : ""}`} onClick={() => router.push(`/classes-category/${title?.toLowerCase()}`)}>
           <p className='relative before:content-[""] before:md:bg-yellow-400/80 before:h-[1px] before:absolute before:w-full before:bottom-[-3px] before:left-0 before:bg-yellow-400/80'>Todas las clases de {title} </p>
           <ArrowRightIcon className='w-4 ml-2 group-hover:translate-x-1 transition-all duration-500'/>
         </div>
@@ -113,7 +116,7 @@ function CarouselClasses({
       >
         {classesDB?.map((c: IndividualClass, index) => (
           <React.Fragment key={index}>
-            <CarouselClassesThumbnail c={c}/>
+            <CarouselClassesThumbnail c={c} isNew={title == "Publicadas Recientemente" && index < 2}/>
           </React.Fragment>
         ))}
       </m.div>

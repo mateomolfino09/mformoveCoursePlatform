@@ -47,6 +47,8 @@ function CarouselSearchClasses({
     );
   useEffect(() => {}, [isOpen, width]);
 
+  console.log(classesDB)
+
   useEffect(() => {
     setWidth(
       rowRef.current?.scrollWidth

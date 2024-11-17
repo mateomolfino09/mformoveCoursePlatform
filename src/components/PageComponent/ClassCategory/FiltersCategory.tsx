@@ -129,7 +129,7 @@ const [searchClasses, setSearchClasses] = useState<null | IndividualClass[]>(nul
   return (
     <div className='flex w-full justify-between lg:items-start flex-col lg:flex-row'>
         <div className='flex justify-start md:justify-start space-x-3 md:space-x-8 lg:space-x-6 md:ml-10 lg:ml-12 ml-2 overflow-scroll scrollbar-hide'>
-            {filtersDB[0].values.map((f: ValuesFilters) => (
+            {filtersDB[0]?.values.map((f: ValuesFilters) => (
               <>
 
                   <span key={f.id} onClick={() => router.push(`/classes-category/${f.value.toLowerCase()}`)} className={`${classType === f.value ? "bg-white rounded-full text-black " : ""} cursor-pointer p-3 md:mr-0 mr-1 font-thin text-sm md:text-base h-7 text-center flex justify-center items-center hover:bg-white hover:rounded-full hover:text-black`}>

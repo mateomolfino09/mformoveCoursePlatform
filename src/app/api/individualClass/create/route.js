@@ -62,7 +62,7 @@ export async function POST(req) {
         isFree: isFree,
         image_base_link: vimeoVideo.pictures.base_link,
         html: vimeoVideo.embed.html,
-        link: vimeoVideo.link,
+        link: videoId,
 
       }).save();
 
