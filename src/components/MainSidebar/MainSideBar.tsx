@@ -46,11 +46,11 @@ const MainSideBar = ({ children, where }: Props) => {
   //   };
   // }, []);
   return (
-    <div className='absolute w-full h-full '>
+    <div className={`absolute w-full h-full}`}>
       {where === "home" || where === "productsHome" && (
         <HeaderHome user={auth.user} toggleNav={toggleNav} />
       )}
-      {where === "index" && ( 
+      {where === "index" || where === "selectPlan" && ( 
       <IndexHeader user={auth.user} toggleNav={toggleNav} where={where} />
       )}
       {where === "product" && ( 
