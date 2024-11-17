@@ -15,6 +15,7 @@ import FreeProductWhoAreWe from '../../MainSideBarProducts/FreeProductWhoAreWe'
 import { useAuth } from '../../../hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import { throttle } from 'lodash';
+import SelectYourPlanIntro from './SelectYourPlanIntro'
 
 interface Props {
     plans: Plan[]
@@ -62,8 +63,10 @@ const SelectPlan = ({ plans, origin }: Props ) => {
     <div className='relative bg-to-dark lg:h-full min-h-screen overflow-scroll overflow-x-hidden' onScroll={(event:any) => handleScroll(event)}
     >          
     <MainSideBar where={'index'}>
+    <SelectYourPlanIntro />
+    <FreeProductWhoAreWe />
+
           <SelectYourPlan plans={plans} select={"select"} origin={origin}/>   
-              <FreeProductWhoAreWe />
           <Footer />
           
       </MainSideBar>
