@@ -10,6 +10,7 @@ import endpoints from '../../../services/api';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { Plan } from '../../../../typings';
+import state from '../../../valtio';
 
 interface Props {
   planSelected: Plan
@@ -145,7 +146,6 @@ const SelectYourPlanIntro = ({ planSelected }: Props) => {
             </div>
 
             <div
-          onClick={handleClick}
           className='flex px-24 py-3 !mt-8 bg-white text-black md:justify-start md:pl-32 rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '
         >
           {loading ? (
@@ -153,8 +153,17 @@ const SelectYourPlanIntro = ({ planSelected }: Props) => {
               <MiniLoadingSpinner />
             </>
           ) : (
-            <button className='w-full text-base md:text-lg'>Empezar</button>
+            <>
+              {auth.user ? (
+                <button className='w-full text-base md:text-lg' onClick={handleClick} >Empezar</button>
+
+              ) : (
+                <button className='w-full text-base md:text-lg' onClick={() => (state.loginForm = true)}>Empezar</button>
+
+              )}
+            </>
           )}
+ 
         </div>
           </>
         </div>
