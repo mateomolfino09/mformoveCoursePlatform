@@ -194,9 +194,9 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
 
   return (
     <MainSideBar where={'index'}>
-        <div className='relative h-full bg-dark overflow-x-clip'>
+        <div className='relative h-full bg-dark overflow-x-clip md:pt-12 pt-0'>
         <main
-            className={`relative flex flex-col bg-dark md:pl-11 md:top-16 lg:top-20 ${
+            className={`relative flex flex-col bg-dark md:pl-11 md:top-16 lg:top-0 ${
             showNav ? '' : ''
             }`}
         >
@@ -220,7 +220,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
             )}
             </div>
             {windowWidth > 1024 && (
-            <div className='w-1/3 absolute right-0 hidden lg:block'>
+            <div className='w-1/3 absolute right-0 hidden lg:block md:mt-12'>
                 <ClassQuestions user={auth.user} clase={clase} questionsDB={questions} />
             </div>
             )}

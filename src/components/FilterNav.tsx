@@ -127,10 +127,10 @@ const FilterNav = ({ showNav }: Props) => {
                           : setExpand(i) 
                         }}>
                         <p className='text-white md:text-black'>{f.name.toUpperCase()}</p>
-                        <div className='flex space-x-4 items-center'>
+                        <div className='flex flex-wrap space-x-4 items-center'>
                           {filterClassSlice[Object.keys(filterClassSlice)[Object.keys(filterClassSlice).findIndex(x => x === f.name.toLowerCase())]]?.length > 0 && (
                             <>
-                              <div className='border border-white md:border-black px-1'>
+                              <div className="border border-white md:border-black px-1 w-1/3">
                                 <p className='text-white md:text-black text-sm md:text-base'>{f.values.filter(x => x.value === filterClassSlice[Object.keys(filterClassSlice)[Object.keys(filterClassSlice).findIndex(x => x === f.name.toLowerCase())]][0]
                               )[0].label}</p> 
                               </div>         
@@ -151,16 +151,38 @@ const FilterNav = ({ showNav }: Props) => {
                         </div>
                       </div>
                       <div className={`${expand === i ? 'max-h-[500px]' : 'max-h-0'} w-full px-2 transition-all duration-500 overflow-hidden`} >
-                        <div className='w-full flex flex-wrap justify-start items-center space-x-3 py-2'>
-                          {filters[i].values.map(val => (
-                            <>
-                              <div key={val.id} onClick={() => handleFilterChange(filters[i], val)} className={`rounded-full max-w-[100px] flex justify-center items-center min-h-[15px] px-2 py-1 border mt-2 transition-all duration-200 ${filterClassSlice[Object.keys(filterClassSlice)[Object.keys(filterClassSlice).findIndex(x => x === f.name.toLowerCase())]]?.includes(val.value) ? 'md:border-white md:bg-black bg-white border-black' : 'md:border-black border-white'}`} style={{ flex: '1 0 21%'}}>
-                                <p className={`transition-all duration-200 ${filterClassSlice[Object.keys(filterClassSlice)[Object.keys(filterClassSlice).findIndex(x => x === f.name.toLowerCase())]]?.includes(val.value) ? 'md:text-white text-black' : 'md:text-black text-white'}`}>{val.label}</p>
-                              </div>
-                            </>
-                          ))}
-
-                        </div>
+                      <div className="w-full flex flex-wrap justify-start items-center gap-x-3 gap-y-2 py-2">
+  {filters[i].values.map((val) => (
+    <div
+      key={val.id}
+      onClick={() => handleFilterChange(filters[i], val)}
+      className={`rounded-full max-w-[100px] flex justify-center items-center min-h-[15px] px-2 py-1 border mt-2 transition-all duration-200 ${
+        filterClassSlice[
+          Object.keys(filterClassSlice)[
+            Object.keys(filterClassSlice).findIndex((x) => x === f.name.toLowerCase())
+          ]
+        ]?.includes(val.value)
+          ? 'md:border-white md:bg-black bg-white border-black'
+          : 'md:border-black border-white'
+      }`}
+      style={{ flex: '1 0 calc(33.33% - 12px)' }} // 33.33% para 3 elementos por fila, ajustando el espacio con el gap
+    >
+      <p
+        className={`transition-all duration-200 ${
+          filterClassSlice[
+            Object.keys(filterClassSlice)[
+              Object.keys(filterClassSlice).findIndex((x) => x === f.name.toLowerCase())
+            ]
+          ]?.includes(val.value)
+            ? 'md:text-white text-black'
+            : 'md:text-black text-white'
+        }`}
+      >
+        {val.label}
+      </p>
+    </div>
+  ))}
+</div>
                       </div>  
                       <hr className='border-[0.5px] border-solid border-white/75 md:border-black/75 w-full my-3'/>
                     </div>

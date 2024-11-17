@@ -12,11 +12,11 @@ export async function GET(request, { params }) {
   try {
     const { classType } = params;
 
+    console.log(classType)
+
     const classes = await IndividualClass.find({
       type: { $regex: classType, $options: 'i' },
     });
-
-    revalidateTag('classes');
 
     return NextResponse.json(classes, {
       status: 200,

@@ -23,14 +23,14 @@ export default function Page({ params }: { params: { classType: string } }) {
         });
         const data = await res.json();
         setFilters(data);
+        console.log(data)
       } catch (err) {
         console.error('Error fetching class types:', err);
       }
     }
-
     async function fetchClasses() {
       try {
-        const res = await fetch(`/api/individualClassesByType?classType=${classType}`, {
+        const res = await fetch(`/api/individualClass/getClassesByType/${classType}`, {
           cache: 'no-store',
           headers: {
             'Cache-Control': 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0',
@@ -40,6 +40,7 @@ export default function Page({ params }: { params: { classType: string } }) {
           },
         });
         const data = await res.json();
+        console.log(data)
         setClasses(data);
       } catch (err) {
         console.error('Error fetching classes:', err);

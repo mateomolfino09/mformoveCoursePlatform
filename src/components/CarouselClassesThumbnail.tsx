@@ -32,6 +32,7 @@ import { useRouter } from 'next/navigation';
 import { classFilters } from '../constants/classFilters';
 interface Props {
   c: IndividualClass;
+  isNew: boolean;
 }
 
 const notify = (message: String, agregado: boolean, like: boolean) =>
@@ -62,8 +63,8 @@ const notify = (message: String, agregado: boolean, like: boolean) =>
   );
 
 function CarouselClassesThumbnail({
-  c
-}: Props) {
+  c,
+  isNew }: Props) {
   const auth = useAuth()
   const dispatch = useAppDispatch()
   const router = useRouter()
@@ -162,7 +163,12 @@ function CarouselClassesThumbnail({
                   {/* Rectángulo en diagonal para mostrar "FREE" */}
                 {c.isFree && (
                   <div className="absolute top-4 left-[-30px] w-[120px] h-[30px] bg-[#a38951] font-boldFont text-white font-bold text-center transform rotate-[-45deg] flex justify-center items-center">
-                    <p>GRATIS</p>
+                    <p className='text-sm'>GRATIS</p>
+                  </div>
+                )}
+                {isNew && !c.isFree && (
+                  <div className="absolute top-4 left-[-30px] w-[120px] h-[30px] bg-soft-black font-boldFont text-white font-bold text-center transform rotate-[-45deg] flex justify-center items-center">
+                    <p className='text-sm'>NUEVA</p>
                   </div>
                 )}
             </m.div>

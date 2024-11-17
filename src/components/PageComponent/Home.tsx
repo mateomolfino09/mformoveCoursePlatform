@@ -58,6 +58,8 @@ interface Props {
 const Home = ({ classesDB, filters }: Props) => {
   const [reload, setReload] = useState<boolean>(false);
   const [typedClasses, setClasses] = useState<any | null>(null);
+  const [lastClasses, setLastClasses] = useState<any | null>(null);
+
   const [isMember, setIsMember] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedClass, setSelectedClass] = useState<IndividualClass | null>(
@@ -108,6 +110,15 @@ const Home = ({ classesDB, filters }: Props) => {
       }
     );
 
+    const lastFiveClasses = classesDB
+    ?.slice(-5) // Toma los últimos 5 elementos
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Orden por fecha descendente (opcional)
+  
+    setLastClasses({
+      group: 0,
+      items: lastFiveClasses
+    })
+
     console.log(arrayOfObjects);
 
     dispatch(setIndividualClasses(arrayOfObjects));
@@ -119,10 +130,65 @@ const Home = ({ classesDB, filters }: Props) => {
     let newArr: any = [];
     setLoading(true);
 
-    console.log(ic);
+    //filtro ultimas clases
+
+    let lastFiveClasses = classesDB
+    ?.slice(-5) // Toma los últimos 5 elementos
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Orden por fecha descendente (opcional)
+
+    lastFiveClasses = lastFiveClasses.filter((iC: IndividualClass) => {
+      let lengthCondition = true;
+      if (filterClassSlice.largo && filterClassSlice.largo?.length > 0) {
+        filterClassSlice.largo.forEach((l) => {
+          lengthCondition ? (lengthCondition = iC.minutes <= +l) : false;
+        });
+      }
+
+      let levelCondition = false;
+
+      if (filterClassSlice.nivel && filterClassSlice.nivel?.length > 0) {
+        filterClassSlice.nivel.forEach((n) => {
+          !levelCondition ? (levelCondition = iC.level == +n) : true;
+        });
+      } else {
+        levelCondition = true;
+      }
+
+      let orderCondition = true;
+
+      if (
+        filterClassSlice.ordenar &&
+        filterClassSlice.ordenar?.length > 0
+      ) {
+        filterClassSlice.ordenar.forEach((n) => {
+          if (n == 'nuevo') {
+            orderCondition ? (orderCondition = iC.new) : false;
+          }
+        });
+      } else {
+        orderCondition = true;
+      }
+
+      let seenCondition = true;
+      if (filterClassSlice.seen) {
+        if (auth.user) {
+          seenCondition = auth.user?.classesSeen?.includes(iC._id);
+        } else seenCondition = false;
+      }
+
+      return (
+        levelCondition && lengthCondition && seenCondition && orderCondition
+      );
+    })
+
+    setLastClasses({
+      group: 0,
+      items: lastFiveClasses
+    })
 
     ic?.forEach((iCGroup: any) => {
       let classesFilter: IndividualClass[] = [];
+
       classesFilter = [
         ...iCGroup.items.filter((iC: IndividualClass) => {
           let lengthCondition = true;
@@ -213,11 +279,23 @@ const Home = ({ classesDB, filters }: Props) => {
             </section>
             <section>
               {typedClasses && !loading ? (
-                typedClasses?.map((t: any) => (
+                <>
+                    <CarouselClasses
+                      key={lastClasses.group}
+                      classesDB={[...(lastClasses.items || [])]}
+                      title={
+                        "Publicadas Recientemente"
+                      }
+                      description={
+                        "Clases agregadas recientemente"
+                      }
+                      setSelectedClass={setSelectedClass}
+                    />
+                {typedClasses?.map((t: any) => (
                   <>
                     <CarouselClasses
                       key={t.group}
-                      classesDB={t.items}
+                      classesDB={[...(t.items || [])].reverse()}
                       title={
                         filters[0].values.find((x) => x.value === t.group)
                           ?.label
@@ -229,7 +307,8 @@ const Home = ({ classesDB, filters }: Props) => {
                       setSelectedClass={setSelectedClass}
                     />
                   </>
-                ))
+                ))}
+                </>
               ) : (
                 <LoadingSpinner />
               )}

@@ -21,7 +21,7 @@ const ClassData = ({
 
 
   return (
-    <div className='w-full h-full flex flex-col mt-8 lg:pb-8 justify-between bg-dark lg:w-2/3 md:h-auto '>
+    <div className='w-full h-full flex flex-col mt-8 md:mt-24 lg:pb-8 justify-between bg-dark lg:w-2/3 md:h-auto '>
       <h2 className='text-2xl px-2 md:px-0 font-boldFont md:text-3xl ml-2 mb-4 md:mb-1 font-light'>
         {clase?.name}
       </h2>
