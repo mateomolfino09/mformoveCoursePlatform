@@ -16,7 +16,6 @@ interface Props {
 }
 
 const SelectYourPlanIntro = ({ planSelected }: Props) => {
-  console.log(planSelected)
     const [hasWindow, setHasWindow] = useState(false);
     const [loading, setLoading] = useState<boolean>(false)
     const auth = useAuth();
@@ -107,7 +106,7 @@ const SelectYourPlanIntro = ({ planSelected }: Props) => {
                 </>
             )}
 
-            <div className='flex flex-col space-y-4 !mt-12 capitalize w-full justify-start md:pl-32'>
+            <div className='flex flex-col space-y-4 !mt-12 capitalize w-full justify-start'>
             <h2 className='text-3xl md:text-4xl font-boldFont align-middle text-start'>¿Que esperar?</h2>
 
             <>
@@ -122,12 +121,6 @@ const SelectYourPlanIntro = ({ planSelected }: Props) => {
                 Clases Ilimitadas de Flexibilidad, Fuerza y Respiración
               </p>
             </div>
-            {/* <div className='flex space-x-2'>
-                  <div>
-                        <CheckCircleIcon style={{flex: "1 0 5%;"}} className='w-6 h-6 text-[#ae9359]'/>
-                    </div>
-                    <p className='text-base font-light'>Asesoramiento Personal Semanal</p>
-                </div> */}
             <div className='flex space-x-2'>
               <div>
                 <CheckCircleIcon
