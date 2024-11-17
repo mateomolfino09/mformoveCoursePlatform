@@ -50,7 +50,10 @@ const MainSideBar = ({ children, where }: Props) => {
       {where === "home" || where === "productsHome" && (
         <HeaderHome user={auth.user} toggleNav={toggleNav} />
       )}
-      {where === "index" || where === "selectPlan" && ( 
+      {where === "selectPlan" && ( 
+      <IndexHeader user={auth.user} toggleNav={toggleNav} where={where} />
+      )}
+      {where === "index" && ( 
       <IndexHeader user={auth.user} toggleNav={toggleNav} where={where} />
       )}
       {where === "product" && ( 
