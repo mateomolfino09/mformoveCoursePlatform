@@ -77,24 +77,29 @@ const VimeoPlayerPlan = ({ videoId }: { videoId: string }) => {
   };
 
   const handleFullScreen = () => {
-    if (screenfull.isEnabled && playerContainerRef.current) {
-      screenfull.toggle(playerContainerRef.current); // Alternar pantalla completa
+    setIsFullScreen(!isFullScreen);
+    if (playerContainerRef.current && screenfull.isEnabled) {
+      screenfull.request(playerContainerRef.current);
+
+      screenfull.on('error', event => {
+        console.error('Failed to enable fullscreen', event);
+      });
     }
   };
 
-  useEffect(() => {
-    const onFullscreenChange = () => {
-      setIsFullScreen(screenfull.isFullscreen); // Actualizar el estado de pantalla completa
-    };
+  // useEffect(() => {
+  //   const onFullscreenChange = () => {
+  //     setIsFullScreen(screenfull.isFullscreen); // Actualizar el estado de pantalla completa
+  //   };
 
-    // Añadir listener para el cambio de pantalla completa
-    screenfull.on('change', onFullscreenChange);
+  //   // Añadir listener para el cambio de pantalla completa
+  //   screenfull.on('change', onFullscreenChange);
 
-    // Limpiar listener cuando el componente se desmonte
-    return () => {
-      screenfull.off('change', onFullscreenChange);
-    };
-  }, []);
+  //   // Limpiar listener cuando el componente se desmonte
+  //   return () => {
+  //     screenfull.off('change', onFullscreenChange);
+  //   };
+  // }, []);
 
   return (
     <div className={`px-0 pb-6 md:p-0 h-full w-full flex items-center justify-center `}  onMouseMove={handleMouseMove}>
@@ -105,7 +110,7 @@ const VimeoPlayerPlan = ({ videoId }: { videoId: string }) => {
         />
         <button
             onClick={handlePlayPause}
-            className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:bg-black/50 transition ${
+            className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg z-[100] hover:bg-black/50 transition ${
                 isButtonVisible ? 'opacity-100' : 'opacity-0'
             }`}
         >
