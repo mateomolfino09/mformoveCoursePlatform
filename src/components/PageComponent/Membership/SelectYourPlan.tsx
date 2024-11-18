@@ -137,8 +137,8 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
   };
 
   return (
-    <div className='w-full px-3 py-12 relative flex flex-col lg:pl-36 pt-8'>
-      <div className='flex md:space-y-1 flex-col mb-12 items-start pl-2 justify-start'>
+    <div className='w-full px-3 py-12 relative flex flex-col lg:pr-36 pt-8'>
+      <div className='flex md:space-y-1 flex-col mb-12 items-end pl-2 justify-end'>
         <h1 className='text sm:text-7xl md:text-5xl lg:text-5xl font-light capitalize font-boldFont'>
           Practica conmigo,
         </h1>
@@ -147,7 +147,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
         </h1>
       </div>
 
-    <div className='flex flex-col space-y-4 capitalize'>
+    <div className='flex flex-col space-y-4 capitalize md:items-end'>
 
         {planSelectedValue == "Comunidad Gratuita" ? (
             <>
@@ -224,14 +224,14 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
         )}
       </div>
       <div
-        className=' right-0 mt-10
+        className='flex md:items-end md:justify-end right-0 mt-10
     '
       >
         <Select
             options={planSelect}
             styles={colourStyles}
             placeholder={planSelectedValue || 'Nivel de clase'}
-            className='w-72 ml-3'
+            className='w-72 mr-5'
             value={planSelectedValue}
             onChange={(e) => {
                 setPlanSelected(plans.find(x => x.name === e.label && x.active))
@@ -247,30 +247,34 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
           <button className='w-full text-base md:text-lg'>Continuar </button>
         </div>
       )}
-      {select === 'select' && auth.user ? (
-        // <a target="_blank" href={`https://checkout-sbx.dlocalgo.com/validate/subscription/${planSelected?.plan_token}`} rel="noopener noreferrer" >
-        <div
-          onClick={handleClick}
-          className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '
-        >
-          {loading ? (
-            <>
-              <MiniLoadingSpinner />
-            </>
-          ) : (
-            <button className='w-full text-base md:text-lg'>Continuar </button>
-          )}
-        </div>
-      ) : (
-        // </a>
-        <Link href={'select-plan'} className={`${!auth.user && 'hidden'}`}>
-          <div className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '>
-            <button className='w-full text-base md:text-lg'>Continuar </button>
-        </div>
-    </Link>
+      <div className='w-full flex md:justify-end md:items-end'>
+        {select === 'select' && auth.user ? (
+          // <a target="_blank" href={`https://checkout-sbx.dlocalgo.com/validate/subscription/${planSelected?.plan_token}`} rel="noopener noreferrer" >
+          <div
+            onClick={handleClick}
+            className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '
+          >
+            {loading ? (
+              <>
+                <MiniLoadingSpinner />
+              </>
+            ) : (
+              <button className='w-full text-base md:text-lg'>Continuar </button>
+            )}
+          </div>
+        ) : (
+          // </a>
+          <Link href={'select-plan'} className={`${!auth.user && 'hidden'}`}>
+            <div className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '>
+              <button className='w-full text-base md:text-lg'>Continuar </button>
+          </div>
+      </Link>
 
-    )}
-    {planSelectedValue == "Comunidad Gratuita" ? (
+      )}
+      </div>
+
+      <div className='w-full flex md:justify-end md:items-end'>
+      {planSelectedValue == "Comunidad Gratuita" ? (
             <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-2 mt-5 text-center text-xs md:text-sm font-light'>
             <p>GRATIS </p>
             <p>Oportunidad única...</p>
@@ -283,6 +287,9 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
             </div>
         </>
       )}
+      </div>
+
+
       <div className='flex flex-col space-y-2 py-16 md:space-y-4 justify-end lg:items-end mr-12 lg:mr-24  overflow-hidden'>
         <div className='absolute top-0 left-0 h-[100vh] w-full -z-10 overflow-hidden'>
           {/* <video src={'/video/videoTest3.mp4'} autoPlay loop muted={!snap.volumeIndex} className='object-cover h-full w-full'>

@@ -28,45 +28,7 @@ export async function POST(req) {
         }
 
         if(user?.subscription != null && user?.subscription.active) {
-          const response = await dLocalApi.get(`/subscription/plan/${planId}/subscription/${user.subscription.id}/execution/all`, {
-            planId,
-            subscriptionId: user.subscription.id
-            });  
-          let total = response?.data?.total_elements;
-          let lastOcurrence = response?.data?.data[total - 1];
-          console.log(lastOcurrence)
-          if(lastOcurrence?.status === "COMPLETED") {
-            return NextResponse.json({ message: 'Ya estas subscripto y tus pagos se realizaron con éxito.', type: 'error', success: false}, { status: 401 })
-          }
-          else {
-            user.subscription = null;
-            const res = await dLocalApi.patch(`/subscription/plan/${planId}/subscription/${user.subscription.id}/deactivate`, {
-              planId,
-              subscriptionId
-              });  
-
-            const resm = await mailchimp.lists.updateListMember(
-              process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID,
-              hashedEmail,
-              {
-                  email_address: user.email,
-                  merge_fields: {
-                      FNAME: "",
-                      LNAME: ""
-                      },
-                  vip: false
-              }
-            );
-
-            const resmtag = await mailchimp.lists.updateListMemberTags(
-              process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID,
-              hashedEmail,
-              { tags: [{ name: "VIP", status: "inactive" }] }
-            );
-
-            await user.save()
-          }
-
+          return NextResponse.json({ message: 'Ya estas subscripto y tus pagos se realizaron con éxito.', type: 'error', success: false}, { status: 401 })
         }
     
         const token = jwt.sign(

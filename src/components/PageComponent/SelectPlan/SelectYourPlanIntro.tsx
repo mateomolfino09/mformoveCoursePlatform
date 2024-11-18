@@ -14,9 +14,10 @@ import state from '../../../valtio';
 
 interface Props {
   planSelected: Plan
+  origin: string
 }
 
-const SelectYourPlanIntro = ({ planSelected }: Props) => {
+const SelectYourPlanIntro = ({ planSelected, origin }: Props) => {
     const [hasWindow, setHasWindow] = useState(false);
     const [loading, setLoading] = useState<boolean>(false)
     const auth = useAuth();
@@ -82,7 +83,7 @@ const SelectYourPlanIntro = ({ planSelected }: Props) => {
       }, []);
 
   return (
-    <div className= "inline-block min-h-[50vh] md:min-h-[105vh] text-left rounded-lg overflow-hidden align-bottom transition-all transform shadow-2xl py-4 sm:pt-8 sm:align-middle w-full md:pt-12 mt-8 pb-16 bg-[#141414] sm:pb-8">
+    <div className= "inline-block min-h-[50vh] md:min-h-[105vh] text-left rounded-lg overflow-hidden align-bottom transition-all transform shadow-2xl py-4 sm:pt-8 sm:align-middle w-full md:pt-12 mt-8 pb-16 md:pb-20 bg-[#141414] sm:pb-8">
       <div className='flex space-y-1 flex-col mt-12 pl-3 md:pl-32'>
       <h1 className='text-3xl md:text-5xl font-boldFont align-middle text-start'>Te doy la bienvenida 🫡</h1>
       <p className='text-red-500/80 text-base md:text-xl align-middle text-start'><b>Siguiente Paso:</b> Mira el video corto 👇  </p>
