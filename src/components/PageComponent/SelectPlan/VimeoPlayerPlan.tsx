@@ -14,6 +14,9 @@ const VimeoPlayerPlan = ({ videoId }: { videoId: string }) => {
   const [isButtonVisible, setIsButtonVisible] = useState(true); // Estado para visibilidad del botón
   const [loading, setLoading] = useState(true); // Estado para visibilidad del botón
   const [isFullScreen, setIsFullScreen] = useState(false); // Estado para manejar play/pausa
+  const isSafariMobile =
+  /^((?!chrome|android).)*safari/i.test(navigator.userAgent) &&
+  /iPhone|iPad|iPod/i.test(navigator.userAgent)
 
   // Ocultar el botón después de 3 segundos
   useEffect(() => {
@@ -79,10 +82,13 @@ const VimeoPlayerPlan = ({ videoId }: { videoId: string }) => {
   const handleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
     if (playerContainerRef.current && screenfull.isEnabled) {
-      screenfull.request(playerContainerRef.current);
-
-      screenfull.on('error', event => {
-        console.error('Failed to enable fullscreen', event);
+      screenfull
+      .toggle(playerContainerRef.current)
+      .then(() => {
+        setIsFullScreen(!isFullScreen);
+      })
+      .catch((err) => {
+        console.error("Failed to enable fullscreen", err);
       });
     }
   };
@@ -120,7 +126,7 @@ const VimeoPlayerPlan = ({ videoId }: { videoId: string }) => {
                 {/* Botón de pantalla completa */}
                 <button
           onClick={handleFullScreen}
-          className="absolute -right-0 -bottom-0 transform  text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:bg-black/50 transition"
+          className={`absolute -right-0 -bottom-0 transform  text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:bg-black/50 transition`}
         >
         <BiFullscreen className='md:h-8 md:w-8 h-5 w-5'/>
         </button>
