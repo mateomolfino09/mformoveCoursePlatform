@@ -64,7 +64,7 @@ const SelectPlan = ({ plans, origin }: Props ) => {
     <div className='relative lg:h-full min-h-screen overflow-scroll overflow-x-hidden' onScroll={(event:any) => handleScroll(event)}
     >          
     <MainSideBar where={'selectPlan'}>
-    <SelectYourPlanIntro planSelected={plans[0]}/>
+    <SelectYourPlanIntro planSelected={plans[0]} origin={origin}/>
 
           <SelectYourPlan plans={plans} select={"select"} origin={origin}/>  
           <FreeProductWhoAreWe />
