@@ -158,7 +158,7 @@ function ForgetForm() {
               </svg>
               <input
                 id='email'
-                className='input-login w-full p-2 border border-gray-300 rounded'
+                className='input-login w-full p-1 border border-gray-300 rounded'
                 type='email'
                 name='email'
                 placeholder='Email Address'
