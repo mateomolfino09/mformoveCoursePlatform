@@ -286,7 +286,7 @@ useEffect(() => {
                           <div className='w-4 mr-2 transform hover:text-blue-500 hover:scale-110 cursor-pointer'>
                             {/* <PencilIcon onClick={() => setOpenEdit(quest)}/> */}
                           </div>
-                          <div className={`w-4 mr-2 transform hover:text-red-500 hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse ${auth?.user?.rol === "Admin" || auth.user.id === quest.user.id ? "" : "hidden"}`}>
+                          <div className={`w-4 mr-2 transform hover:text-red-500 hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse ${auth?.user?.rol === "Admin" || auth?.user?.id === quest.user.id ? "" : "hidden"}`}>
                             <TrashIcon onClick={() => openModalDelete(quest)}/>
                           </div>
                         </div>
