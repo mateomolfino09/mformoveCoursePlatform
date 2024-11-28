@@ -21,10 +21,10 @@ export async function POST(req) {
           return NextResponse.json({ message: 'La combinación usuario contraseña es incorrecta'}, { status: 404 })
         }
   
-        if (user.validEmail === 'not') {
-            return NextResponse.json({ message: 'Debe confirmar su cuenta antes de ingresar al sitio',
-            validate: true}, { status: 404 })
-        }
+        // if (user.validEmail === 'not') {
+        //     return NextResponse.json({ message: 'Debe confirmar su cuenta antes de ingresar al sitio',
+        //     validate: true}, { status: 404 })
+        // }
   
         const exists = await bcrypt.compare(password, user.password);
   
