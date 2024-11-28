@@ -12,7 +12,7 @@ export default async function Page({ params }: { params: { id: string }}) {
     const { id } = params;
 
     const clase: IndividualClass = await getClassById(id);
-    const questions: Question[] = await getQuestionsFromClass(clase._id)
+    const questions: Question[] | undefined = await getQuestionsFromClass(clase._id)
     console.log(questions)
 
   return (

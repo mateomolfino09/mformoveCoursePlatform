@@ -49,7 +49,7 @@ import VimeoPlayer from './VimeoPlayer';
 
 interface Props {
   clase: IndividualClass;
-  questions: Question[];
+  questions: Question[] | undefined ;
 }
 
 function IndividualClassDisplay ({ clase, questions }: Props) {
@@ -221,7 +221,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
             </div>
             {windowWidth > 1024 && (
             <div className='w-1/3 absolute right-0 hidden lg:block md:mt-12'>
-                <ClassQuestions user={auth.user} clase={clase} questionsDB={questions} />
+                <ClassQuestions user={auth.user} clase={clase} questionsDB={questions ? questions : []} />
             </div>
             )}
             <ClassData
@@ -243,7 +243,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
                 <ClassQuestions
                     user={auth.user}
                     clase={clase}
-                    questionsDB={questions}
+                    questionsDB={questions ? questions : []}
                 />
                 </>
             )}
