@@ -12,7 +12,7 @@ export async function getQuestionsFromClass(classUId: string) {
     const res = await Question.where('individualClass')
       .equals(classUId)
       .populate({ path: 'individualClass' })
-      // .populate({ path: 'user' })
+      .populate({ path: 'user' })
       // .populate({ path: 'answers.answerAdmin' })
       .exec();
 
