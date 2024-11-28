@@ -111,7 +111,7 @@ function CarouselClasses({
       />
 
       <m.div
-        className='inner-carousel overflow-y-hidden scrollbar-hide overflow-x-scroll relative mb-12'
+        className='inner-carousel overflow-y-hidden scrollbar-hide overflow-x-scroll relative'
         ref={scrollRowRef}
       >
         {classesDB?.map((c: IndividualClass, index) => (
