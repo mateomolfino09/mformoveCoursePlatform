@@ -1,5 +1,6 @@
 import connectDB from '../../../config/connectDB';
 import Question from '../../../models/questionModel';
+import User from '../../../models/userModel';
 
 connectDB();
 

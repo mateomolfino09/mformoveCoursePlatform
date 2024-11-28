@@ -272,7 +272,7 @@
   }
 
   .carousel {
-    @apply cursor-grab overflow-hidden mb-12;
+    @apply cursor-grab overflow-hidden;
   }
 
   .thumbnailItem {
@@ -280,7 +280,7 @@
   }
 
   .thumbnailClassesItem {
-    @apply w-[20rem] md:w-[23rem] h-full;
+    @apply w-[20rem] md:w-[23rem] md:h-[12.94rem] h-[11.25rem];
   }
 
   .thumbnailContainer {

@@ -118,7 +118,7 @@ function CarouselClassesThumbnail({
                 onMouseLeave={() => setHoveredIndex(null)}
             > 
                 <div
-                className={`thumb-class-color group rounded-lg min-w-[20rem] min-h-[17rem] md:min-h-[19rem] md:min-w-[23rem]
+                className={`thumb-class-color group rounded-lg min-w-[20rem] md:min-w-[23rem]
                 overflow-hidden`}
                 />
                 <div className='thumbnailClassesItem relative'>
@@ -140,7 +140,7 @@ function CarouselClassesThumbnail({
                     fill={true}    
                     /> */}
                 </div>
-                <div className="absolute group/item w-full h-60"          
+                <div className="absolute group/item w-full md:h-[12.94rem] h-[11.25rem]"          
                 >
                   <div className={` w-full h-full ${!auth?.user?.subscription?.active && auth?.user?.rol !== "Admin" && c.isFree == false && !auth?.user?.isVip ? 'bg-black/20 justify-center flex items-center h-full border-t-md' : 'hidden' } hover:flex`}>
                       <CiLock className={`h-14 text-xs w-14 ${hoveredIndex === c.id ? "block" : "hidden"}  font-light`}/>
@@ -153,9 +153,9 @@ function CarouselClassesThumbnail({
                 <div className='flex flex-col justify-center items-start mt-1 w-full px-1 py-1'>
                     <h3 className='font-light text-lg mb-1'>{c.name}</h3>
                     <div className='flex justify-start space-x-4 items-center w-full'>
-                        <p className="after:content-[''] text-xs after:mr-1 after:bg-white after:w-1 after:h-1 after:absolute after:bottom-[9px] after:left-[2.83rem] after:translate-y-[-50%] font-light after:rounded-full after:">{c.minutes} min</p>
-                        <p className={`after:content-[''] text-xs after:mr-2 after:bg-white after:w-1 after:h-1 after:absolute after:bottom-[9px] ${c.type?.toUpperCase() == classFilters[0].value.toUpperCase() ? "after:left-[8.73rem]" : c.type?.toUpperCase() == classFilters[1].value.toUpperCase() ? "after:left-[6.73rem]" : c.type?.toUpperCase() == classFilters[2].value.toUpperCase() ? "after:left-[11.3rem]" : "after:left-[8.8rem]"}  after:translate-y-[-50%]  after:rounded-full font-light after:`}>{c.type?.toUpperCase()}</p>
-                        <p className="after:content-[''] text-xs font-light after:mr-2 ">Nivel {c.level}</p>
+                        <p className=" text-xs font-light">{c.minutes} min</p>
+                        <p className={`text-xs ${c.type?.toUpperCase() == classFilters[0].value.toUpperCase() ? "" : c.type?.toUpperCase() == classFilters[1].value.toUpperCase() ? "" : c.type?.toUpperCase() == classFilters[2].value.toUpperCase() ? "" : ""} font-light after:`}>{c.type?.toUpperCase()}</p>
+                        <p className=" text-xs font-light after:mr-2 ">Nivel {c.level}</p>
 
 
                     </div>

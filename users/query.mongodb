@@ -1,3 +1,11 @@
 use("MForMoveProduccion")
 
-db.users.find({ email: 'jose.delgado@live.cl' })
+
+
+db.users.updateOne(
+    { email: "sofia.velozo13@gmail.com" },
+    { $set: { isVip: true } }
+  );
+  
+  
+  db.users.find({ email: 'sofia.velozo13@gmail.com' })
