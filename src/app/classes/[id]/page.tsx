@@ -4,7 +4,9 @@ import HomeSearch from "../../../components/PageComponent/HomeSearch/HomeSearch"
 import connectDB from "../../../config/connectDB";
 import { getClassById } from "../../api/individualClass/getClassById";
 import { getQuestionsFromClass } from "../../api/individualClass/getAllQuestions";
-
+import User from '../../../models/userModel';
+import IndividualClasses from '../../../models/individualClassModel';
+import ClassFilters from '../../../models/classFiltersModel';
 export default async function Page({ params }: { params: { id: string }}) {
     connectDB();
     const { id } = params;
