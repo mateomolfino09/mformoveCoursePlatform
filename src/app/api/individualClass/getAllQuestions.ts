@@ -1,6 +1,7 @@
 import connectDB from '../../../config/connectDB';
 import Question from '../../../models/questionModel';
 import User from '../../../models/userModel';
+import IndividualClass from '../../../models/individualClassModel';
 
 connectDB();
 
@@ -15,7 +16,7 @@ export async function getQuestionsFromClass(classUId: string) {
       .exec();
 
     const questions = JSON.parse(JSON.stringify(res));
-    console.log(questions, res)
+    console.log(questions, res, 'hola')
 
     return questions;
   } catch (err) {
