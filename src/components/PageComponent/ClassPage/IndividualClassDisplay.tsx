@@ -53,7 +53,7 @@ interface Props {
 }
 
 function IndividualClassDisplay ({ clase, questions }: Props) {
-  console.log('hola')
+  console.log(clase, questions)
   const [forward, setForward] = useState<boolean>(false);
   const [showNav, setShowNav] = useState(false);
   const [time, setTime] = useState<number | null | undefined>(null);
