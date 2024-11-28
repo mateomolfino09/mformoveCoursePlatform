@@ -6,6 +6,7 @@ connectDB();
 
 export async function getQuestionsFromClass(classUId: string) {
   try {
+    console.log(classUId)
     const res = await Question.where('individualClass')
       .equals(classUId)
       .populate({ path: 'individualClass' })
@@ -14,6 +15,7 @@ export async function getQuestionsFromClass(classUId: string) {
       .exec();
 
     const questions = JSON.parse(JSON.stringify(res));
+    console.log(questions, res)
 
     return questions;
   } catch (err) {
