@@ -4,7 +4,7 @@ import IndividualClassDisplay from './IndividualClassDisplay'
 
 interface Props {
     clase: IndividualClass
-    questions: Question[]
+    questions: Question[] | undefined 
 }
 
 const IndividualClassPage = ({ clase, questions }: Props) => {    

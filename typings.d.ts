@@ -274,7 +274,7 @@ export interface Question {
   question: string;
   answers: Answer[];
   user: User;
-  answerAdmin: User;
+  answerAdmin: User | null; // Permite valores nulos;
   class: ClassesDB;
   createdAt: string;
   hasAnswer: boolean;
