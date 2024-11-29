@@ -17,6 +17,7 @@ import DeleteQuestion from '../../DeleteQuestion';
 import DeleteAnswer from '../../DeleteAnswer';
 import { useAuth } from '../../../hooks/useAuth';
 import state from '../../../valtio';
+import { commentsFunction } from '../../../constants/comment';
 
 interface Props {
   user: User | null
@@ -43,7 +44,17 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
 const pathname = usePathname()
 
 useEffect(() => {
-  setQuestions([...(questionsDB?.reverse() || [])]);
+  const comments = commentsFunction(clase, clase.isFree ? 3 : 1);
+
+  const sortedComments = [...comments, ...(questionsDB?.reverse() || [])].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime(); // Obtener el tiempo en milisegundos
+    const dateB = new Date(b.createdAt).getTime(); // Obtener el tiempo en milisegundos
+    return dateA - dateB; // Ordenar de más antiguo a más reciente
+  });
+  
+  setQuestions(sortedComments);
+
+  
 }, [questionsDB]);
 
   useEffect(() => {
@@ -275,9 +286,9 @@ useEffect(() => {
                   </div>
                   <div className={`relative -left-2 pl-8 ml-6 mt-4  ${quest.answers.length != 0 ? 'border-l border-[#40587c]' : ''}`}>  
                     <div className='flex justify-start items-start space-x-2 relative -left-12'>
-                      <div className='h-12 w-8 flex flex-col justify-center items-center border rounded-md bg-dark-soft '>
-                        <BsHeart className='h-8' />
-                        <p className='text-xs pb-1'>0</p>
+                      <div className='h-12 w-8 flex flex-col justify-center items-center rounded-md bg-dark-soft '>
+                        {/* <BsHeart className='h-8' />
+                        <p className='text-xs pb-1'>0</p> */}
                       </div>
                       <p className='text-xs justify-start items-start '> {quest.question}</p>
                       {(user?.rol === 'Admin' || user?._id === quest?.user?._id) && (
@@ -293,7 +304,7 @@ useEffect(() => {
                         </>
                       )}
                     </div>
-                    <div className='flex  text-xs  space-x-1 text-sky-400 hover:underline relative -left-2'>
+                    <div className={`flex  text-xs  space-x-1 text-sky-400 hover:underline relative -left-2 ${auth?.user?.rol === "Admin" ? "" : "hidden"}`}>
                       <ChatBubbleBottomCenterIcon className='w-4' />
                       <button className='' onClick={() => setAnswerOn(quest.id)}>
                         Responder
