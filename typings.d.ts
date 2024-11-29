@@ -259,7 +259,7 @@ export interface ClassesDB {
   image_url: string;
   likes: number;
   totalTime: number;
-  course: CoursesDB;
+  course: CoursesDB | null;
   atachedFiles: [Archive]
   links: [Link]
 }
