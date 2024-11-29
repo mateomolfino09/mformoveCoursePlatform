@@ -304,7 +304,7 @@ useEffect(() => {
                         </>
                       )}
                     </div>
-                    <div className='flex  text-xs  space-x-1 text-sky-400 hover:underline relative -left-2'>
+                    <div className={`flex  text-xs  space-x-1 text-sky-400 hover:underline relative -left-2 ${auth?.user?.rol === "Admin" ? "" : "hidden"}`}>
                       <ChatBubbleBottomCenterIcon className='w-4' />
                       <button className='' onClick={() => setAnswerOn(quest.id)}>
                         Responder
