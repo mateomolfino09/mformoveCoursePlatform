@@ -66,13 +66,13 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
     null
   );
   const dispatch = useAppDispatch()
+  const snap = useSnapshot(state);
 
   const cookies = parseCookies();
   const router = useRouter();
   const MINUTE_MS = process.env.NEXT_PUBLIC_TIME_COURSE_SAVE
     ? +process.env.NEXT_PUBLIC_TIME_COURSE_SAVE
     : 0;
-  const snap = useSnapshot(state);
   const animation = useAnimation();
 
   const auth = useAuth()
@@ -160,16 +160,21 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
     if (!cookies && !clase?.isFree) {
       router.push('/login');
     }
-    
+
     if(!auth.user && !clase?.isFree || (!auth?.user?.subscription?.active && auth?.user?.rol != 'Admin' && !auth?.user?.isVip && !clase?.isFree)) {
       router.push('/home')
     }
+
+    if(!auth.user) {
+      state.loginForm = true
+    }
+    
 
     if (typeof window !== 'undefined') {
       setHasWindow(true);
     }
 
-  }, [router, auth.user]);
+  }, [router, auth.user, snap.loginForm]);
 
   useEffect(() => {
     // Function to handle scroll event

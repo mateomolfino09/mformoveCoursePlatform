@@ -174,6 +174,8 @@ useEffect(() => {
   const deleteQuestion = async () => {
     if(questionSelected) {
 
+      console.log(questionSelected)
+
       const questionId = questionSelected?.id;
   
       const config = {

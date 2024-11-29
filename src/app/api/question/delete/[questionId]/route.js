@@ -9,11 +9,16 @@ export async function DELETE(req) {
         const indexClass = req.url.lastIndexOf('/');
         const questionId = req.url.substr(indexClass + 1)
 
-        console.log(questionId)
+
+        const numericQuestionId = Number(questionId); // Convierte a Number
+        if (isNaN(numericQuestionId)) {
+          return NextResponse.json({ error: "El ID proporcionado no es válido" }, { status: 400});
+        }
         
         const question = await Question.deleteOne({
-            id: questionId
+          id: numericQuestionId, // Ahora es un número
         });
+
         return NextResponse.json({  message: `Question deleted`, success: true }, { status: 200 })
     }
   } catch (e) {

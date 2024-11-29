@@ -32,7 +32,7 @@ const formattedQuestions: Question[] = questions.map(q => {
   }));
 
   return {
-    id: q._id.toString(),
+    id: q.id,
     question: q.question,
     answers,
     user: user || null,
