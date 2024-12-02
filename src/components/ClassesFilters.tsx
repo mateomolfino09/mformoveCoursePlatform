@@ -130,7 +130,7 @@ const [searchClasses, setSearchClasses] = useState<null | IndividualClass[]>(nul
     <div className='flex w-full justify-between lg:items-start flex-col lg:flex-row'>
         <div className='flex justify-start md:justify-start space-x-3 md:space-x-8 lg:space-x-6 md:ml-10 lg:ml-12 ml-2 overflow-scroll scrollbar-hide'>
             <span className={`${classType === "all" ? "bg-white rounded-full text-black " : ""} cursor-pointer p-3 md:mr-0 mr-1 h-7 text-center flex justify-center  items-center md:text-base font-thin text-sm hover:bg-white hover:rounded-full hover:text-black`} onClick={() => handleChange('all')}>
-                <p className=''>All</p>
+                <p className=''>Todos</p>
             </span>
             {filtersDB[0].values.map((f: ValuesFilters) => (
               <>

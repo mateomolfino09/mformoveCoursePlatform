@@ -111,13 +111,16 @@ const Home = ({ classesDB, filters }: Props) => {
     );
 
     const lastFiveClasses = classesDB
-    ?.slice(-5) // Toma los últimos 5 elementos
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Orden por fecha descendente (opcional)
-  
+      ?.slice(-5) // Toma los últimos 5 elementos
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      ); // Orden por fecha descendente (opcional)
+
     setLastClasses({
       group: 0,
       items: lastFiveClasses
-    })
+    });
 
     console.log(arrayOfObjects);
 
@@ -133,8 +136,11 @@ const Home = ({ classesDB, filters }: Props) => {
     //filtro ultimas clases
 
     let lastFiveClasses = classesDB
-    ?.slice(-5) // Toma los últimos 5 elementos
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Orden por fecha descendente (opcional)
+      ?.slice(-5) // Toma los últimos 5 elementos
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      ); // Orden por fecha descendente (opcional)
 
     lastFiveClasses = lastFiveClasses.filter((iC: IndividualClass) => {
       let lengthCondition = true;
@@ -156,10 +162,7 @@ const Home = ({ classesDB, filters }: Props) => {
 
       let orderCondition = true;
 
-      if (
-        filterClassSlice.ordenar &&
-        filterClassSlice.ordenar?.length > 0
-      ) {
+      if (filterClassSlice.ordenar && filterClassSlice.ordenar?.length > 0) {
         filterClassSlice.ordenar.forEach((n) => {
           if (n == 'nuevo') {
             orderCondition ? (orderCondition = iC.new) : false;
@@ -179,12 +182,12 @@ const Home = ({ classesDB, filters }: Props) => {
       return (
         levelCondition && lengthCondition && seenCondition && orderCondition
       );
-    })
+    });
 
     setLastClasses({
       group: 0,
       items: lastFiveClasses
-    })
+    });
 
     ic?.forEach((iCGroup: any) => {
       let classesFilter: IndividualClass[] = [];
@@ -268,46 +271,62 @@ const Home = ({ classesDB, filters }: Props) => {
             <meta name='description' content='Stream Video App' />
             <link rel='icon' href='/favicon.ico' />
           </Head>
+
           <main className='relative lg:space-y-12 mt-32'>
-            <section className='!mt-0'>
+            <section className=' bg-to-dark !mt-0'>
               {/* Solo renderizamos ClassesFilters si hay filtros disponibles */}
               {filters.length > 0 ? (
-                <ClassesFilters filtersDB={filters} />
+                <>
+                  <ClassesFilters filtersDB={filters} />
+
+                  {typedClasses &&
+                    filterClassSlice?.classType !== 'all' &&
+                    !typedClasses?.some(
+                      (x: any) => x.group === filterClassSlice.classType
+                    ) && (
+                      <div className='flex flex-col justify-center items-center h-[50vh] mb-10 rounded-lg shadow-md bg-to-dark'>
+                        <h1 className='text-2xl font-bold text-white font-[Montserrat] text-center'>
+                          Próximamente clases...
+                        </h1>
+                        <p className='text-gray-500 font-[Montserrat] mt-2 text-center'>
+                          Estamos preparando contenido para ti. ¡Mantenete
+                          atento!
+                        </p>
+                      </div>
+                    )}
+                </>
               ) : (
                 <p>No filters found</p>
               )}
             </section>
+
             <section>
               {typedClasses && !loading ? (
                 <>
-                    <CarouselClasses
-                      key={lastClasses.group}
-                      classesDB={[...(lastClasses.items || [])]}
-                      title={
-                        "Publicadas Recientemente"
-                      }
-                      description={
-                        "Clases agregadas recientemente"
-                      }
-                      setSelectedClass={setSelectedClass}
-                    />
-                {typedClasses?.map((t: any) => (
-                  <>
-                    <CarouselClasses
-                      key={t.group}
-                      classesDB={[...(t.items || [])].reverse()}
-                      title={
-                        filters[0].values.find((x) => x.value === t.group)
-                          ?.label
-                      }
-                      description={
-                        filters[0].values.find((x) => x.value === t.group)
-                          ?.description
-                      }
-                      setSelectedClass={setSelectedClass}
-                    />
-                  </>
-                ))}
+                  <CarouselClasses
+                    key={lastClasses.group}
+                    classesDB={[...(lastClasses.items || [])]}
+                    title={'Publicadas Recientemente'}
+                    description={'Clases agregadas recientemente'}
+                    setSelectedClass={setSelectedClass}
+                  />
+                  {typedClasses?.map((t: any) => (
+                    <>
+                      <CarouselClasses
+                        key={t.group}
+                        classesDB={[...(t.items || [])].reverse()}
+                        title={
+                          filters[0].values.find((x) => x.value === t.group)
+                            ?.label
+                        }
+                        description={
+                          filters[0].values.find((x) => x.value === t.group)
+                            ?.description
+                        }
+                        setSelectedClass={setSelectedClass}
+                      />
+                    </>
+                  ))}
                 </>
               ) : (
                 <LoadingSpinner />
