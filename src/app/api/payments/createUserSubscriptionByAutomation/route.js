@@ -23,12 +23,31 @@ export async function POST(req) {
         } = await req.json();  
   try { 
       if (req.method === 'POST') {
+        const user = await User.findOne({ email: email });
+        const hashedEmail = generateMd5(email)
         const response = await dLocalApi.get(`/subscription/plan/${planId}/subscription/all`);  
         const data = response.data.data;
         let clientLastBought = data.filter(x => x.client_email == email && x.active)[0];
+        const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
+        const MailchimpAudience = process.env.MAILCHIMP_PLATFORM_AUDIENCE_ID;
+        const MailchimpNewsletterAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;
+        const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpAudience}/members`;
+        const customNewsletterUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpNewsletterAudience}/members`;
 
+
+        //en caso de que no haya compra elimino al usuario de los vips
         if(!clientLastBought) {
-            return NextResponse.json({ error: true, message: "No se ha encontrado una compra a este nombre."}, { status: 404 })
+          if(user.subscription && user.subscription.planId == planId) {
+            user.subscription = null;
+            updateListMemberTags(
+              MailchimpNewsletterAudience,
+              hashedEmail,
+              { tags: [{ name: "VIP", status: "inactive" }]}
+              );
+
+              return NextResponse.json({ error: true, message: "No se ha encontrado una compra a este nombre. Eliminamos la subscripción"}, { status: 200 })
+          }
+          return NextResponse.json({ error: true, message: "No se ha encontrado una compra a este nombre."}, { status: 404 })
         }
 
         let when = clientLastBought.created_at;
@@ -37,14 +56,8 @@ export async function POST(req) {
         let isTLH = isToday(when) || isToday(update)
 
         if(isTLH) {
-            const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
-            const MailchimpAudience = process.env.MAILCHIMP_PLATFORM_AUDIENCE_ID;
-            const MailchimpNewsletterAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;
-            const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpAudience}/members`;
-            const customNewsletterUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpNewsletterAudience}/members`;
+
             //create Subscription
-            const user = await User.findOne({ email: email });
-            const hashedEmail = generateMd5(email)
 
             if (user) {
 
