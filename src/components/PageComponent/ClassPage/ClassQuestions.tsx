@@ -44,13 +44,15 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
 const pathname = usePathname()
 
 useEffect(() => {
-  const comments = commentsFunction(clase, clase.isFree ? 3 : 1);
+  const comments: any = commentsFunction(clase, clase.isFree ? 1 : 0);
 
   const sortedComments = [...comments, ...(questionsDB?.reverse() || [])].sort((a, b) => {
     const dateA = new Date(a.createdAt).getTime(); // Obtener el tiempo en milisegundos
     const dateB = new Date(b.createdAt).getTime(); // Obtener el tiempo en milisegundos
     return dateA - dateB; // Ordenar de más antiguo a más reciente
   });
+
+  console.log(sortedComments)
   
   setQuestions(sortedComments);
 
