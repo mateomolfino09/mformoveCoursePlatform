@@ -37,16 +37,6 @@ export async function POST(req) {
 
         //en caso de que no haya compra elimino al usuario de los vips
         if(!clientLastBought) {
-          if(user.subscription && user.subscription.planId == planId) {
-            user.subscription = null;
-            updateListMemberTags(
-              MailchimpNewsletterAudience,
-              hashedEmail,
-              { tags: [{ name: "VIP", status: "inactive" }]}
-              );
-
-              return NextResponse.json({ error: true, message: "No se ha encontrado una compra a este nombre. Eliminamos la subscripción"}, { status: 200 })
-          }
           return NextResponse.json({ error: true, message: "No se ha encontrado una compra a este nombre."}, { status: 404 })
         }
 

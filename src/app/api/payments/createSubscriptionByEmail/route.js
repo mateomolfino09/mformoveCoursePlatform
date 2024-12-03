@@ -24,14 +24,14 @@ export async function PUT(req) {
       if (req.method === 'PUT') {
         //Me trae por defecto cuando Id es undefined
         const user = await User.findOne({ email: email });
-
+        const hashedEmail = generateMd5(email)
+        const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
+        const MailchimpAudience = process.env.MAILCHIMP_PLATFORM_AUDIENCE_ID;
+        const MailchimpNewsletterAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;
+        const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpAudience}/members`;
+        const customNewsletterUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpNewsletterAudience}/members`;
         if(!user) {
             return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
-        }
-
-        if(user.subscription) {
-          return NextResponse.json({ error: 'El usuario ya tiene una subscripción' }, { status: 401 })
-
         }
         
         let subsFromAPI = []
@@ -47,55 +47,46 @@ export async function PUT(req) {
           return NextResponse.json({ error: 'Subscriptor no encontrado' }, { status: 404 })
         }
 
-        console.log(subToAdd)
+        if(subToAdd?.active) {
+          let newSub = {
+            id: subToAdd?.id,
+            planId: subToAdd.plan.id,
+            subscription_token: subToAdd.subscription_token,
+            status: subToAdd?.status,
+            payment_method_code: subToAdd?.payment_method_code,
+            client_id: subToAdd?.client_id,
+            success_url:subToAdd?.success_url,
+            client_first_name: subToAdd?.client_first_name,
+            client_last_name: subToAdd?.client_last_name,
+            client_document_type: subToAdd?.client_document_type,
+            client_document: subToAdd?.client_document,
+            client_email: subToAdd?.client_email,
+            created_at: subToAdd?.created_at,
+            active: subToAdd?.active,
+            }
+    
+            user.subscription = newSub
+            user.freeSubscription = null
+            await user.save()
+            user.password = null
+            return NextResponse.json({ success: true, user: user, message: "Subscriptor creado con éxito. Chequea tu email :)" }, { status: 200 })
 
-        // const hashedEmail = generateMd5(user.email)
+        }
+        else {
+          if(user.subscription && user.subscription.planId == planId) {
+            user.subscription = null;
+            await user.save()
 
-        // const res = await mailchimp.lists.setListMember(
-        //     process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID,
-        //     hashedEmail,
-        //     {
-        //         email_address: user.email,
-        //         merge_fields: {
-        //             FNAME: "",
-        //             LNAME: ""
-        //             },
-        //         status_if_new: "subscribed",
-        //         tags: ["VIP"],
-        //         vip: true
-        //     }
-        //     );
+            updateListMemberTags(
+              MailchimpNewsletterAudience,
+              hashedEmail,
+              { tags: [{ name: "VIP", status: "inactive" }]}
+              );
 
-        //     const resmtag = await mailchimp.lists.updateListMemberTags(
-        //     process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID,
-        //     hashedEmail,
-        //     { tags: [{ name: "VIP", status: "active" }] }
-        //     );
-
-            let newSub = {
-                id: subToAdd?.id,
-                planId: subToAdd.plan.id,
-                subscription_token: subToAdd.subscription_token,
-                status: subToAdd?.status,
-                payment_method_code: subToAdd?.payment_method_code,
-                client_id: subToAdd?.client_id,
-                success_url:subToAdd?.success_url,
-                client_first_name: subToAdd?.client_first_name,
-                client_last_name: subToAdd?.client_last_name,
-                client_document_type: subToAdd?.client_document_type,
-                client_document: subToAdd?.client_document,
-                client_email: subToAdd?.client_email,
-                created_at: subToAdd?.created_at,
-                active: subToAdd?.active,
-                }
-        
-                user.subscription = newSub
-                user.freeSubscription = null
-
-                await user.save()
-                
-                user.password = null
-        return NextResponse.json({ success: true, user: user, message: "Subscriptor creado con éxito. Chequea tu email :)" }, { status: 200 })
+              return NextResponse.json({ error: true, message: "No se ha encontrado una compra a este nombre. Eliminamos la subscripción"}, { status: 200 })
+          }
+          return NextResponse.json({ error: true, message: "No se ha encontrado una compra a este nombre."}, { status: 404 })
+        }
     } else {
         return NextResponse.json({ error: 'Algo salio mal' }, { status: 401 })
     }
