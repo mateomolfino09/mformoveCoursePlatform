@@ -5,6 +5,7 @@ import axios from "axios";
 import endpoints from "../services/api";
 import { User } from "../../typings";
 import { serialize } from "v8";
+import state from "../valtio";
 
 const AuthContext = createContext<any>(null);
 
@@ -25,6 +26,8 @@ function useProvideAuth() {
 	const fetchUser = async () => {
 		try {
 		  const token = Cookie.get('userToken');	
+
+		  console.log(token)
 
 		  Cookie.set('userToken', token ? token : '', { expires: 5})
 	
