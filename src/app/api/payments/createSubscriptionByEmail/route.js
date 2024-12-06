@@ -67,6 +67,12 @@ export async function PUT(req) {
     
             user.subscription = newSub
             user.freeSubscription = null
+            updateListMemberTags(
+              MailchimpNewsletterAudience,
+              hashedEmail,
+              { tags: [{ name: "VIP", status: "active" }]}
+              );
+
             await user.save()
             user.password = null
             return NextResponse.json({ success: true, user: user, message: "Subscriptor creado con éxito. Chequea tu email :)" }, { status: 200 })
