@@ -12,8 +12,10 @@ export async function GET(req) {
     const userToken= cookies().get('userToken').value;
     
       const data =  verify(userToken, process.env.NEXTAUTH_SECRET)
+      
+      console.log(userToken, data)
 
-      const user = await User.findOne({ _id: data.userId });
+      const user = await User.findOne({ _id: data.userId ? data.userId : data._id });
 
       // const membership = await getUserSubscription(user);
 

@@ -27,6 +27,7 @@ import { alertTypes } from '../../../constants/alertTypes';
 import { MiniLoadingSpinner } from '../Products/MiniSpinner';
 import { MdEmail } from 'react-icons/md';
 import { MdOutlineMarkEmailRead } from "react-icons/md";
+import Cookies from 'js-cookie';
 
 
 
@@ -63,6 +64,12 @@ const LoginModal = () => {
     };
   }, []); //
 
+  useEffect(() => {
+    if(!auth.user) {
+      auth.fetchUser()
+    }
+  }, [auth.user]);
+
   const signupUser = async (name: string, email: string) => {
     // const { email, firstname, lastname, gender, country } = register
     try {
@@ -84,7 +91,7 @@ const LoginModal = () => {
 
       //login
 
-      if (res.ok) {
+      if (data.ok) {
         await auth.signInPostRegister(token).then((res: any) => {
           toast.success('¡Cuenta creada con éxito!')
           setLoading(false);
