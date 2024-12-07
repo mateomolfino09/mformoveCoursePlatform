@@ -273,7 +273,7 @@ const Home = ({ classesDB, filters }: Props) => {
           </Head>
 
           <main className='relative lg:space-y-12 mt-32'>
-            <section className=' bg-to-dark !mt-0'>
+            <section className='  !mt-0'>
               {/* Solo renderizamos ClassesFilters si hay filtros disponibles */}
               {filters.length > 0 ? (
                 <>
