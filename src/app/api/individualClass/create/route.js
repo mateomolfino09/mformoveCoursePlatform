@@ -80,7 +80,7 @@ export async function POST(req) {
       );
 
       const usuarios = await getConfirmedUsers();
-      const baseUrl = process.env.BASE_URL || 'https://mateomove.com';
+      const baseUrl = process.env.BASE_URL ;
       const message = `
         <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
           <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
@@ -89,7 +89,7 @@ export async function POST(req) {
               Una nueva clase ha sido subida y está disponible para ti. ¡Revisa los detalles a continuación y continúa tu aprendizaje!
             </p>
             <div style="margin: 20px 0; text-align: center;">
-              <a href="${baseUrl}/classes/${newClass.id}" style="color: #007BFF; text-decoration: none; font-size: 18px; font-weight: bold;">
+              <a href="https://www.mateomove.com//classes/${newClass.id}" style="color: #007BFF; text-decoration: none; font-size: 18px; font-weight: bold;">
                 ${name}
               </a>
               <p style="font-size: 14px; color: #333333;">${description}</p>
