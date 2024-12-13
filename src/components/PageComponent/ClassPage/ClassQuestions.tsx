@@ -329,19 +329,19 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
                         <div>
                           <div className="flex items-center space-x-2">
                             <p className="text-sm font-semibold text-white">
-                              {answer.answerAdmin.name}
+                              {answer?.answerAdmin?.name}
                             </p>
                             <p className="text-xs text-gray-400">
-                              {handleDateReturn(new Date(answer.answeredAt))}
+                              {handleDateReturn(new Date(answer?.answeredAt))}
                             </p>
                           </div>
                           <p className="mt-1 text-sm text-gray-300">
-                            {answer.answer}
+                            {answer?.answer}
                           </p>
   
                           {/* Botones de editar/eliminar respuestas con íconos */}
                           {(user?.rol === 'Admin' ||
-                            user?._id === answer.answerAdmin._id) && (
+                            user?._id === answer?.answerAdmin?._id) && (
                             <div className="flex justify-end space-x-2 mt-2">
                               <div
                                 className="w-4 transform hover:text-blue-500 hover:scale-110 cursor-pointer"
