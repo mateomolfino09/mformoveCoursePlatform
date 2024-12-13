@@ -276,7 +276,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
       </div>
   
       {/* Contenedor desplazable para preguntas */}
-      <div className="rounded-md max-h-[400px] overflow-y-auto space-y-4">
+      <div className="rounded-md max-h-[500px] overflow-y-auto space-y-4">
         {Array.isArray(questions) &&
           questions
             .slice()
