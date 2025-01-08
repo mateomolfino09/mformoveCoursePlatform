@@ -6,6 +6,7 @@ import { ObjectId } from 'mongodb';
 export default async function deleteUser(req, res) {
   try {
     if (req.method === 'DELETE') {
+      debugger;
       const userId = req.query.deleteUser;
 
       const bills = await Bills.deleteMany({
@@ -16,7 +17,7 @@ export default async function deleteUser(req, res) {
         _id: ObjectId(userId)
       });
       console.log(user, bills);
-      res.status(200).json({ message: `User deleted` });
+      res.status(200).json({ message: `User deleted` }, { status: 200 }, { success: true });
     }
   } catch (e) {
     console.error(e);

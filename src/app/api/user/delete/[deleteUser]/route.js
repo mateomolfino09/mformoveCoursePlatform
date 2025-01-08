@@ -18,7 +18,7 @@ export async function DELETE(req) {
         _id: ObjectId(userId)
       });
       console.log(user, bills);
-      return NextResponse.json({ message: `User deleted` }, { status: 200 })
+      return NextResponse.json({ message: `User deleted` }, { status: 200 }, { success: true })
     }
   } catch (e) {
     console.error(e);
