@@ -2,7 +2,6 @@ import { CoursesDB } from '../../../../typings';
 import EmailMarketing from '../../../components/PageComponent/EmailMarketing/EmailMarketing';
 import connectDB from '../../../config/connectDB';
 import { getCourses } from '../../api/course/getCourses';
-import { getConfirmedUsers } from '../../api/user/getConfirmedUsers';
 
   export default async function Page() {
   connectDB();
