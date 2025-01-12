@@ -19,7 +19,7 @@ export const commentsFunction = (clase: IndividualClass, length: number): Questi
     return comment;
   };
 
-  return Array.from({ length: length }, (_, index) => ({
+  return Array.from({ length: length }, (_) => ({
     id: Math.floor(Math.random() * 1000), // Genera un ID aleatorio
     question: getUniqueRandomComment(),  // Usa el comentario único
     answers: [],
@@ -45,6 +45,7 @@ export const commentsFunction = (clase: IndividualClass, length: number): Questi
         createdAt: generateRandomDate(),
         active: true,
       },
+      isVip:false
     },
     answerAdmin: null,
     class: {

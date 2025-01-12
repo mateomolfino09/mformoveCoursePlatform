@@ -226,7 +226,7 @@ export interface User {
   isMember: boolean
   subscription: any
   freeSubscription: FreeSubscription;
-  isVip: true;
+  isVip: boolean;
 }
 
 export interface CoursesDB {
