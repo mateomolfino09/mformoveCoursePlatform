@@ -15,7 +15,7 @@ interface DataTableProps<T> {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  onSort?: (key: keyof T | string, direction: 'asc' | 'desc') => void;
+  onSort?: (key: any | string, direction: 'asc' | 'desc') => void;
   renderActions?: (row: T) => React.ReactNode;
   onRowsPerPageChange?: (rowsPerPage: number) => void;
   initialRowsPerPage?: number;
