@@ -114,15 +114,15 @@ export async function POST(req) {
             try {
               return await mailchimpClient.messages.send({
                 message: {
-                  from_email: 'noreply@mateomove.com', // Reemplazar con tu correo de remitente
-                  subject: 'Nueva Clase Disponible', // Cambia el asunto
+                  from_email: 'noreply@mateomove.com', 
+                  subject: 'Nueva Clase Disponible', 
                   html: message,
                   to: [{ email: user.email, type: 'to' }]
                 }
               });
             } catch (error) {
               console.error(`Error enviando email a ${user.email}:`, error);
-              return null; // Opcional: Para evitar que se rompa el flujo
+              return null; 
             }
           }
           return null;

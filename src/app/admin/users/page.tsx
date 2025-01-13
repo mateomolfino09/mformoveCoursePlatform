@@ -6,8 +6,8 @@ import { getConfirmedUsers } from '../../api/user/getConfirmedUsers';
 interface InitialData {
   users: any[];
   total: number;
-  totalPages?: number; // Ahora opcional
-  currentPage?: number; // Ahora opcional
+  totalPages?: number; 
+  currentPage?: number; 
 }
 
 
