@@ -24,9 +24,10 @@ import { toast as t } from 'react-toastify';
 interface Props {
   step1ToStep0: any;
   handleSubmitClass: any;
+  getDescripcion:any;
 }
 
-const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass }: Props) => {
+const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass, getDescripcion }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const createClass = useAppSelector(
     (state) => state.classesModalReducer.value
@@ -174,12 +175,15 @@ const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass }: Props) => {
             <p>Escribe una descripción para la clase</p>
 
             <label className='inline-block w-full'>
-              <textarea
-                placeholder='Descripción'
-                className='input'
-                onChange={(e) => setDescription(e.target.value)}
-                value={description}
-              />
+            <textarea
+  placeholder='Descripción'
+  className='input'
+  onChange={(e) => {
+    getDescripcion(e.target.value); 
+    setDescription(e.target.value);
+  }}
+  value={description}
+/>
             </label>
             <div className='flex flex-row justify-center items-center space-x-2'>
               <p className='font-light text-xs text-[gray]'>

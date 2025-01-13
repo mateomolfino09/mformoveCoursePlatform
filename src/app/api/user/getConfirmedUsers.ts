@@ -22,25 +22,30 @@ function serializeDocument(doc: any) {
 }
 
 /**
- * Obtiene usuarios confirmados con paginación opcional.
+ * Obtiene usuarios confirmados con o sin paginación.
  * @param page Número de página (opcional).
  * @param limit Número de usuarios por página (opcional).
- * @returns Objeto con usuarios y metadatos de paginación.
+ * @returns Objeto con usuarios y, si aplica, metadatos de paginación.
  */
-export async function getConfirmedUsers(page: number = 1, limit: number = 10) {
+export async function getConfirmedUsers(page?: number, limit?: number) {
   try {
     const query = { validEmail: 'yes' };
+
+    // Si no hay paginación, devolver todos los usuarios
+    if (!page || !limit) {
+      const users = await User.find(query).lean().exec();
+      const processedUsers = users.map((user) => serializeDocument(user));
+      return {
+        users: processedUsers,
+        total: processedUsers.length, // Total es igual al número de usuarios
+      };
+    }
+
+    // Si hay paginación, calcular el desplazamiento y los límites
     const skip = (page - 1) * limit;
 
-    const users = await User.find(query)
-      .skip(skip)
-      .limit(limit)
-      .lean()
-      .exec();
-
-    // Serializa cada usuario para garantizar que sea un objeto plano
+    const users = await User.find(query).skip(skip).limit(limit).lean().exec();
     const processedUsers = users.map((user) => serializeDocument(user));
-
     const total = await User.countDocuments(query);
 
     return {
