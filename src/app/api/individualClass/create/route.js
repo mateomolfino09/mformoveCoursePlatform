@@ -57,16 +57,16 @@ export async function POST(req) {
         name,
         image_url,
         description,
-        totalTime: vimeoVideo?.duration.toString(),
-        seconds,
-        minutes,
-        hours,
+        totalTime: vimeoVideo?.duration.toString() || 1,
+        seconds: seconds|| 1,
+        minutes:minutes || 1 ,
+        hours:hours || 1 ,
         level,
         type: typeId,
         isFree: isFree,
-        image_base_link: vimeoVideo.pictures.base_link,
-        html: vimeoVideo.embed.html,
-        link: videoId
+        image_base_link: vimeoVideo?.pictures?.base_link || "asdasdaasda",
+        html: vimeoVideo?.embed?.html || "asdasdaasda",
+        link: videoId || "afsdfasdf"
       }).save();
 
       let notNewClass = await IndividualClass.findOne().skip(9).exec();
@@ -109,7 +109,7 @@ export async function POST(req) {
       `;
 
       const envioMail = await Promise.all(
-        usuarios.map(async (user) => {
+        usuarios.users.map(async (user) => {
           if (user.isVip) {
             try {
               return await mailchimpClient.messages.send({

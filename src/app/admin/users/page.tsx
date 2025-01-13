@@ -6,9 +6,10 @@ import { getConfirmedUsers } from '../../api/user/getConfirmedUsers';
 interface InitialData {
   users: any[];
   total: number;
-  totalPages: number;
-  currentPage: number;
+  totalPages?: number; // Ahora opcional
+  currentPage?: number; // Ahora opcional
 }
+
 
 interface PageProps {
   searchParams: {
