@@ -24,7 +24,8 @@ export async function POST(req) {
         userEmail,
         description,
         videoId,
-        isFree
+        isFree,
+        tags
       } = await req.json();
 
       console.log(level);
@@ -32,7 +33,7 @@ export async function POST(req) {
       let user = await Users.findOne({ email: userEmail });
       const users = await Users.find({});
 
-      //Es Admin?
+      // Es Admin?
 
       if (user.rol !== 'Admin' || user?.admin?.coursesAvailable <= 0) {
         return NextResponse.json(
@@ -40,9 +41,8 @@ export async function POST(req) {
           { status: 422 }
         );
       }
-      //user.admin?.active = true;
 
-      //Busco video subido a Vimeo
+      // Busco video subido a Vimeo
 
       const vimeoVideo = await getVimeoVideo(videoId);
 
@@ -52,21 +52,28 @@ export async function POST(req) {
 
       const lastClass = await IndividualClass.find().sort({ _id: -1 }).limit(1);
 
+     
+      const createdTags = tags.map((tag, index) => ({
+        id: index + 1, // ID basado en la posición del arreglo
+        title: tag.trim(),
+      }));
+
       const newClass = await new IndividualClass({
         id: JSON.stringify(lastClass) != '[]' ? lastClass[0].id + 1 : 1,
         name,
         image_url,
         description,
         totalTime: vimeoVideo?.duration.toString() || 1,
-        seconds: seconds|| 1,
-        minutes:minutes || 1 ,
-        hours:hours || 1 ,
+        seconds: seconds || 1,
+        minutes: minutes || 1,
+        hours: hours || 1,
         level,
         type: typeId,
         isFree: isFree,
         image_base_link: vimeoVideo?.pictures?.base_link || "asdasdaasda",
         html: vimeoVideo?.embed?.html || "asdasdaasda",
-        link: videoId || "afsdfasdf"
+        link: videoId || "afsdfasdf",
+        tags: createdTags, // Asociamos los tags creados
       }).save();
 
       let notNewClass = await IndividualClass.findOne().skip(9).exec();
@@ -80,7 +87,7 @@ export async function POST(req) {
       );
 
       const usuarios = await getConfirmedUsers();
-      const baseUrl = process.env.BASE_URL ;
+      const baseUrl = process.env.BASE_URL;
       const message = `
         <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
           <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
