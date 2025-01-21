@@ -52,7 +52,7 @@ export async function POST(req) {
 
       const lastClass = await IndividualClass.find().sort({ _id: -1 }).limit(1);
 
-      // Crear los tags como objetos simples
+     
       const createdTags = tags.map((tag, index) => ({
         id: index + 1, // ID basado en la posición del arreglo
         title: tag.trim(),

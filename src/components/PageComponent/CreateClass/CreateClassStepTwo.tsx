@@ -36,7 +36,7 @@ const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass, getDescripcion, g
   const [levelName, setLevelName] = useState('');
   const [videoId, setVideoId] = useState(videoIdOr);
   const [isFree, setIsFree] = useState<boolean>(isFreeReg);
-  const [tags, setTags] = useState<string[]>([]); // Cambiado a un arreglo desde el inicio
+  const [tags, setTags] = useState<string[]>([]);
 
   const colourStyles: StylesConfig<any> = {
     control: (styles) => ({
