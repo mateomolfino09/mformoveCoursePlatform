@@ -1,179 +1,180 @@
-'use client'
-import AdmimDashboardLayout from '../../components/AdmimDashboardLayout';
-import DeleteUser from '../../components/DeleteUser';
+'use client';
+
 import { User } from '../../../typings';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
-import axios from 'axios';
-import Head from 'next/head';
-import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
-import { parseCookies } from 'nookies';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { toast } from 'react-toastify';
+import DeleteUser from '../../components/DeleteUser';
 import { useAuth } from '../../hooks/useAuth';
+import AdmimDashboardLayout from '../AdmimDashboardLayout';
+import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import Cookies from 'js-cookie';
-import endpoints from '../../services/api';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import DataTable from '../snippets/DataTable/DataTable';
 
 interface Props {
-  users: any;
+  initialData: {
+    users: User[];
+    total: number;
+    totalPages: number;
+    currentPage: number;
+  };
 }
-const ShowUsers = ({ users }: Props) => {
-  const cookies = parseCookies();
-  const router = useRouter();
-  let [isOpenDelete, setIsOpenDelete] = useState(false);
-  const ref = useRef(null);
-  const [userSelected, setUserSelected] = useState<User | null>(null);
-  const [elementos, setElementos] = useState<User[]>([]);
 
-  const auth = useAuth()
+const AdminUsers = ({ initialData }: Props) => {
+  const router = useRouter();
+  const auth = useAuth();
+
+  const [users, setUsers] = useState<User[]>(initialData.users);
+  const [totalUsers, setTotalUsers] = useState(initialData.total);
+  const [totalPages, setTotalPages] = useState(initialData.totalPages);
+  const [currentPage, setCurrentPage] = useState(initialData.currentPage);
+
+  const [isOpenDelete, setIsOpenDelete] = useState(false);
+  const [userSelected, setUserSelected] = useState<User | null>(null);
 
   useEffect(() => {
-
-    const cookies: any = Cookies.get('userToken')
-    
-    if (!cookies ) {
+    const userToken = Cookies.get('userToken');
+    if (!userToken) {
       router.push('/login');
     }
-    
-    if(!auth.user) {
-      auth.fetchUser()
+
+    if (!auth.user) {
+      auth.fetchUser();
+    } else if (auth.user.rol !== 'Admin') {
+      router.push('/login');
     }
-    else if(auth.user.rol != 'Admin') router.push('/login');
+  }, [auth.user, router]);
 
-
-  }, [auth.user]);
-
-
-  useEffect(() => {
-    setElementos(users);
-  }, []);
-
-  const deleteUser = async () => {
-    if(userSelected) {
-
-      const userId = userSelected?._id;
-
-      const res = await fetch(endpoints.user.delete(userId.toString()), {
-        method: 'DELETE',
-        headers: {  
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          userId
-        }),
-        })
-
-      const data = await res.json()
-      await auth.fetchUser()
-      const updatedUsers = users.filter(
-        (person: User) => person._id !== userSelected._id
-      );
-      setElementos(updatedUsers);
-      if (data.success) {
-        toast.success(`${userSelected.name} fue eliminado correctamente`);
+  const fetchUsers = async (page: number) => {
+    try {
+      const response = await fetch(`/api/users?page=${page}&limit=10`);
+      if (!response.ok) {
+        throw new Error('Error al obtener los datos');
       }
-  
-      setIsOpenDelete(false);
+
+      const data = await response.json();
+
+      setUsers(data.users);
+      setCurrentPage(data.currentPage);
+      setTotalPages(data.totalPages);
+      setTotalUsers(data.total);
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al cargar usuarios');
     }
-     
   };
-  function openModalDelete(user: User) {
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+
+    router.push(`/admin/users?page=${page}`);
+    fetchUsers(page);
+  };
+
+  const openModalDelete = (user: User) => {
     setUserSelected(user);
     setIsOpenDelete(true);
-  }
-  function openEdit(user: User) {
-    setUserSelected(user);
-  }
+  };
+
+  const handleSort = (key: keyof User, direction: 'asc' | 'desc') => {
+    const sortedUsers = [...users].sort((a, b) => {
+      if (direction === 'asc') {
+        return String(a[key]).localeCompare(String(b[key]));
+      } else {
+        return String(b[key]).localeCompare(String(a[key]));
+      }
+    });
+    setUsers(sortedUsers);
+  };
+
+  const deleteUser = async () => {
+    if (userSelected) {
+      const userId = userSelected._id;
+
+      try {
+        const res = await fetch(`/api/user/delete/${userId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId
+          })
+        });
+
+        const data = await res.json();
+        if (res.status == 200) {
+          toast.success(`${userSelected.name} fue eliminado correctamente`);
+          fetchUsers(currentPage);
+        } else {
+          toast.error('Error al eliminar el usuario');
+        }
+      } catch (error) {
+        toast.error('Error al eliminar el usuario');
+      }
+
+      setIsOpenDelete(false);
+    }
+  };
+
+  const columns = [
+    { key: 'name', label: 'Nombre', sortable: true },
+    { key: 'email', label: 'Email', sortable: true },
+    { key: 'rol', label: 'Rol', sortable: false },
+    { key: 'createdAt', label: 'Creado', sortable: true },
+    { key: 'subscription', label: 'VIP', sortable: true }
+  ] as const;
+
   return (
-      <AdmimDashboardLayout>
-        <>
-          <Head>
-            <title>Video Streaming</title>
-            <meta name='description' content='Stream Video App' />
-            <link rel='icon' href='/favicon.ico' />
-          </Head>
-          <div className='w-full h-[100vh]'>
-            <div className='flex flex-col'>
-              <div className='overflow-x-auto sm:-mx-6 lg:-mx-8'>
-                <div className='inline-block min-w-full py-2 sm:px-6 lg:px-8'>
-                  <div className='overflow-hidden'>
-                    <h1 className='text-2xl mt-4 mb-4'>Usuarios</h1>
-                    <table className='min-w-full text-left text-sm font-light'>
-                      <thead className='border-b font-medium dark:border-neutral-500'>
-                        <tr>
-                          <th scope='col' className='px-6 py-4'>
-                            Nombre
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Email
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Rol
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Creado
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Acciones
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {elementos?.map((user: any, index: number) => (
-                          <tr
-                            className='border-b dark:border-neutral-500'
-                            key={index}
-                          >
-                            <td className='whitespace-nowrap px-6 py-4 font-medium'>
-                              {user.name}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {user.email}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {user.rol}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {new Date(user.createdAt).toLocaleDateString(
-                                'es-ES'
-                              )}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              <div className='flex item-center justify-center border-solid border-transparent border border-collapse text-base'>
-                                <div className='w-6 mr-2 transform hover:text-blue-500 hover:scale-110 cursor-pointer'>
-                                  <Link
-                                    href={`/admin/updateUser/${user._id}`}
-                                  >
-                                    <PencilIcon
-                                      onClick={() => openEdit(user)}
-                                    />
-                                  </Link>
-                                </div>
-                                <div className='w-6 mr-2 transform hover:text-red-500 hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse '>
-                                  <TrashIcon
-                                    onClick={() => openModalDelete(user)}
-                                  />
-                                </div>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+    <AdmimDashboardLayout>
+      <div className='w-full h-auto min-h-screen'>
+        <h1 className='text-2xl mt-4 mb-4'>Usuarios</h1>
+        <DataTable
+          columns={columns}
+          data={users.map((user) => ({
+            ...user,
+            isVip: user.isVip ?? false
+          }))}
+          total={totalUsers}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          onSort={handleSort}
+          customRenderers={{
+            subscription: (value) => (
+              <div
+                className={`w-4 h-4 rounded-full ${
+                  value ? 'bg-green-500' : 'bg-red-500'
+                }`}
+                title={value ? 'VIP' : 'No VIP'}
+              ></div>
+            )
+          }}
+          renderActions={(user) => (
+            <div className="flex items-center justify-center text-base">
+              <Link href={`/admin/updateUser/${user._id}`} className="w-6 mr-2">
+                <PencilIcon className="h-6 w-6 text-blue-500" />
+              </Link>
+              <div
+                onClick={() => openModalDelete(user)}
+                className="w-6 mr-2 cursor-pointer"
+              >
+                <TrashIcon className="h-6 w-6 text-red-500" />
               </div>
             </div>
-          </div>
-          <DeleteUser
-            isOpen={isOpenDelete}
-            setIsOpen={setIsOpenDelete}
-            user={userSelected}
-            deleteUser={deleteUser}
-          />
-        </>
-      </AdmimDashboardLayout>
+          )}
+        />
+
+        <DeleteUser
+          isOpen={isOpenDelete}
+          setIsOpen={setIsOpenDelete}
+          user={userSelected}
+          deleteUser={deleteUser}
+        />
+      </div>
+    </AdmimDashboardLayout>
   );
 };
 
-export default ShowUsers;
+export default AdminUsers;
