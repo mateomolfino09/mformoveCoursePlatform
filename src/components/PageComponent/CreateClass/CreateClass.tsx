@@ -51,7 +51,8 @@ const CreateClass = ({ classTypes }: Props) => {
     name,
     files,
     videoId,
-    isFree
+    isFree,
+    tags
   } = createCourseReducer;
 
   console.log(createCourseReducer);
@@ -94,10 +95,16 @@ const CreateClass = ({ classTypes }: Props) => {
     } else if (auth.user.rol != 'Admin') router.push('/login');
   }, [auth.user]);
 
-  const [descriptionStep, setDescriptionStep] = useState("");
+  const [descriptionStep, setDescriptionStep] = useState('');
 
   const getDescripcion = (desc: string) => {
     setDescriptionStep(desc);
+  };
+
+  const [tagsStep, setTags] = useState([]);
+
+  const getTags = (tags: []) => {
+    setTags(tags);
   };
 
   async function handleSubmit() {
@@ -165,9 +172,10 @@ const CreateClass = ({ classTypes }: Props) => {
           level,
           typeId,
           userEmail,
-          description:descriptionStep,
+          description: descriptionStep,
           videoId,
-          isFree
+          isFree,
+          tags: tagsStep
         },
         config
       );
@@ -204,11 +212,12 @@ const CreateClass = ({ classTypes }: Props) => {
             </>
           )}
           {stepOne && (
-           <CreateClassStepTwo
-  step1ToStep0={step1ToStep0}
-  handleSubmitClass={handleSubmit}
-  getDescripcion={getDescripcion} 
-/>
+            <CreateClassStepTwo
+              step1ToStep0={step1ToStep0}
+              handleSubmitClass={handleSubmit}
+              getDescripcion={getDescripcion}
+              getTags={getTags}
+            />
           )}
         </>
       )}
