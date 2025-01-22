@@ -52,28 +52,30 @@ export async function POST(req) {
 
       const lastClass = await IndividualClass.find().sort({ _id: -1 }).limit(1);
 
-     
-      const createdTags = tags.map((tag, index) => ({
-        id: index + 1, // ID basado en la posición del arreglo
-        title: tag.trim(),
-      }));
+      let createdTags = [];
+      if (!!tags) {
+        createdTags = tags?.map((tag, index) => ({
+          id: index + 1, 
+          title: tag.trim()
+        }));
+      }
 
       const newClass = await new IndividualClass({
         id: JSON.stringify(lastClass) != '[]' ? lastClass[0].id + 1 : 1,
         name,
         image_url,
         description,
-        totalTime: vimeoVideo?.duration.toString() || 1,
-        seconds: seconds || 1,
-        minutes: minutes || 1,
-        hours: hours || 1,
+        totalTime: vimeoVideo?.duration.toString(),
+        seconds: seconds,
+        minutes: minutes,
+        hours: hours,
         level,
         type: typeId,
         isFree: isFree,
-        image_base_link: vimeoVideo?.pictures?.base_link || "asdasdaasda",
-        html: vimeoVideo?.embed?.html || "asdasdaasda",
-        link: videoId || "afsdfasdf",
-        tags: createdTags, // Asociamos los tags creados
+        image_base_link: vimeoVideo?.pictures?.base_link,
+        html: vimeoVideo?.embed?.html,
+        link: videoId,
+        tags: createdTags // Asociamos los tags creados
       }).save();
 
       let notNewClass = await IndividualClass.findOne().skip(9).exec();
@@ -121,15 +123,15 @@ export async function POST(req) {
             try {
               return await mailchimpClient.messages.send({
                 message: {
-                  from_email: 'noreply@mateomove.com', 
-                  subject: 'Nueva Clase Disponible', 
+                  from_email: 'noreply@mateomove.com',
+                  subject: 'Nueva Clase Disponible',
                   html: message,
                   to: [{ email: user.email, type: 'to' }]
                 }
               });
             } catch (error) {
               console.error(`Error enviando email a ${user.email}:`, error);
-              return null; 
+              return null;
             }
           }
           return null;
