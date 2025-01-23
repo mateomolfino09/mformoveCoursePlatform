@@ -16,9 +16,10 @@ interface Props {
   getDescripcion: any;
   getTags: any;
   getVideoId:any;
+  getIsFree:any;
 }
 
-const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass, getDescripcion, getTags, getVideoId }: Props) => {
+const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass, getDescripcion, getTags, getVideoId, getIsFree }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const createClass = useAppSelector((state) => state.classesModalReducer.value);
   const {
@@ -109,7 +110,7 @@ const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass, getDescripcion, g
             />
           </div>
 
-          <IsFreeComponent handleIsFree={setIsFree} isFree={isFree} />
+          <IsFreeComponent handleIsFree={ getIsFree} isFree={isFree} />
 
           <label className="flex flex-col space-y-3 w-full">
             <p>Introduce el Id del video</p>
