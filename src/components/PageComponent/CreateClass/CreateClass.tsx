@@ -113,6 +113,13 @@ const CreateClass = ({ classTypes }: Props) => {
     setVideoIdStepTwo(tags);
   };
 
+  const [isFreeStepTwo, setIsFreeStepTwo] = useState<boolean>();
+
+  const getIsFree = (isFree: boolean) => {
+    setIsFreeStepTwo(isFree);
+  };
+
+
 
   async function handleSubmit() {
     setLoading(true);
@@ -149,7 +156,7 @@ const CreateClass = ({ classTypes }: Props) => {
           userEmail,
           description: descriptionStepTwo,
           videoId:videoIdStepTwo,
-          isFree,
+          isFree: isFreeStepTwo,
           tags: tagsStepTwo,
         },
         {
@@ -197,6 +204,7 @@ const CreateClass = ({ classTypes }: Props) => {
               getDescripcion={getDescripcion}
               getTags={getTags}
               getVideoId={getVideoId}
+              getIsFree={getIsFree}
             />
           )}
         </>
