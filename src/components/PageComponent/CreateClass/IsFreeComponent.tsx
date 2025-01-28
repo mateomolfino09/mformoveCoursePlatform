@@ -59,7 +59,7 @@ const IsFreeComponent = ({ handleIsFree, isFree }: Props) => {
             type='checkbox'
             id='flowbite-option'
             checked={!isFree}
-            onChange={(e) => handleIsFree(!e.target.checked)}
+            onChange={(e) => handleIsFree(e.target.checked)}
             className='hidden peer'
           />
           <label

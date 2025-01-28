@@ -119,6 +119,12 @@ const CreateClass = ({ classTypes }: Props) => {
     setIsFreeStepTwo(isFree);
   };
 
+  const [levelStepTwo, setLevelStepTwo] = useState<string>();
+
+  const getLevel = (level: string) => {
+    setLevelStepTwo(level);
+  };
+
 
 
   async function handleSubmit() {
@@ -151,7 +157,7 @@ const CreateClass = ({ classTypes }: Props) => {
           name,
           image_url: imgUrl,
           totalTime: 0,
-          level,
+          level:levelStepTwo,
           typeId,
           userEmail,
           description: descriptionStepTwo,
@@ -205,6 +211,7 @@ const CreateClass = ({ classTypes }: Props) => {
               getTags={getTags}
               getVideoId={getVideoId}
               getIsFree={getIsFree}
+              getLevel={getLevel}
             />
           )}
         </>
