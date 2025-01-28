@@ -17,9 +17,10 @@ interface Props {
   getTags: any;
   getVideoId:any;
   getIsFree:any;
+  getLevel:any;
 }
 
-const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass, getDescripcion, getTags, getVideoId, getIsFree }: Props) => {
+const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass, getDescripcion, getTags, getVideoId, getIsFree, getLevel }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const createClass = useAppSelector((state) => state.classesModalReducer.value);
   const {
@@ -106,6 +107,7 @@ const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass, getDescripcion, g
               onChange={(e) => {
                 setLevelName(e.label);
                 setLevel(e.value);
+                getLevel(e.value);
               }}
             />
           </div>
