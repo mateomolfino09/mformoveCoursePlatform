@@ -15,9 +15,11 @@ interface Props {
   handleSubmitClass: any;
   getDescripcion: any;
   getTags: any;
+  getVideoId:any;
+  getIsFree:any;
 }
 
-const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass, getDescripcion, getTags }: Props) => {
+const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass, getDescripcion, getTags, getVideoId, getIsFree }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const createClass = useAppSelector((state) => state.classesModalReducer.value);
   const {
@@ -108,7 +110,7 @@ const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass, getDescripcion, g
             />
           </div>
 
-          <IsFreeComponent handleIsFree={setIsFree} isFree={isFree} />
+          <IsFreeComponent handleIsFree={ getIsFree} isFree={isFree} />
 
           <label className="flex flex-col space-y-3 w-full">
             <p>Introduce el Id del video</p>
@@ -117,7 +119,8 @@ const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass, getDescripcion, g
               placeholder="ID Del video"
               className="input"
               value={videoId || ''}
-              onChange={(e) => setVideoId(e.target.value)}
+              onChange={(e) =>{ setVideoId(e.target.value);
+                 getVideoId(e.target.value)}}
             />
           </label>
 
@@ -127,12 +130,12 @@ const CreateClassStepTwo = ({ step1ToStep0, handleSubmitClass, getDescripcion, g
               <textarea
                 placeholder="Descripción"
                 className="input"
+                value={description}
                 onChange={(e) => {
                   getDescripcion(e.target.value);
                   setDescription(e.target.value);
                   setDescriptionLength(e.target.value.length);
                 }}
-                value={description}
               />
             </label>
             <div className="flex flex-row justify-center items-center space-x-2">

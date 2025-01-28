@@ -95,74 +95,56 @@ const CreateClass = ({ classTypes }: Props) => {
     } else if (auth.user.rol != 'Admin') router.push('/login');
   }, [auth.user]);
 
-  const [descriptionStep, setDescriptionStep] = useState('');
+  const [descriptionStepTwo, setDescriptionStepTwo] = useState('');
 
   const getDescripcion = (desc: string) => {
-    setDescriptionStep(desc);
+    setDescriptionStepTwo(desc);
   };
 
-  const [tagsStep, setTags] = useState([]);
+  const [tagsStepTwo, setTagsStepTwo] = useState([]);
 
   const getTags = (tags: []) => {
-    setTags(tags);
+    setTagsStepTwo(tags);
   };
+
+  const [videoIdStepTwo, setVideoIdStepTwo] = useState([]);
+
+  const getVideoId = (tags: []) => {
+    setVideoIdStepTwo(tags);
+  };
+
+  const [isFreeStepTwo, setIsFreeStepTwo] = useState<boolean>();
+
+  const getIsFree = (isFree: boolean) => {
+    setIsFreeStepTwo(isFree);
+  };
+
+
 
   async function handleSubmit() {
     setLoading(true);
-    if (name.length < 5) {
-      toast.error('El Nombre de la clase debe tener almenos 5 caracteres');
-      setLoading(false);
-      return;
-    } else if (files.length === 0) {
-      toast.error('Debe poner una imágen para la clase');
-      setLoading(false);
-      return;
-    } else if (descriptionStep.length < 30) {
-      toast.error(
-        'La descripción de la clase debe tener almenos 30 caracteres'
-      );
-      setLoading(false);
-      return;
-    } else if (level == null) {
-      toast.error('Debe indicar el nivel de la clase');
-      setLoading(false);
-      return;
-    } else if (typeId == null) {
-      toast.error('Debe indicar el tipo de clase');
-      setLoading(false);
-      return;
-    }
+  
     try {
       const userEmail = auth.user.email;
       const formData = new FormData();
-      const formDataDiploma = new FormData();
-
-      for (const file of files) {
-        formData.append('file', file);
+  
+      for (const serializedFile of files) {
+        const blob = await fetch(serializedFile.preview).then((res) => res.blob());
+        const reconstructedFile = new File([blob], serializedFile.path || serializedFile.name, {
+          type: serializedFile.type,
+        });
+        formData.append('file', reconstructedFile);
       }
+  
       formData.append('upload_preset', 'my_uploads');
-
-      if (files[0].size / 1000000 > 10) {
-        toast.error('Formato Incorrecto');
-        return;
-      }
-
-      //image Url -> secure_url
+  
       const imageData = await fetch(requests.fetchCloudinary, {
         method: 'POST',
-        body: formData
+        body: formData,
       }).then((r) => r.json());
-
+  
       const imgUrl = imageData.public_id;
-
-      const config = {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      };
-
-      console.log(videoId);
-
+  
       const { data } = await axios.post(
         '/api/individualClass/create',
         {
@@ -172,26 +154,30 @@ const CreateClass = ({ classTypes }: Props) => {
           level,
           typeId,
           userEmail,
-          description: descriptionStep,
-          videoId,
-          isFree,
-          tags: tagsStep
+          description: descriptionStepTwo,
+          videoId:videoIdStepTwo,
+          isFree: isFreeStepTwo,
+          tags: tagsStepTwo,
         },
-        config
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
       );
-
-      auth.fetchUser();
-
+  
       toast.success(data.message);
       router.push('/admin/classes');
       dispatch(clearData());
     } catch (error: any) {
-      console.log(error);
-      toast.error(error.response.data.error);
+      console.error(error);
+      toast.error(error.response?.data?.error || 'Error al crear la clase');
     }
+  
     setLoading(false);
   }
-
+  
+  
   return (
     <AdmimDashboardLayout>
       {loading ? (
@@ -217,6 +203,8 @@ const CreateClass = ({ classTypes }: Props) => {
               handleSubmitClass={handleSubmit}
               getDescripcion={getDescripcion}
               getTags={getTags}
+              getVideoId={getVideoId}
+              getIsFree={getIsFree}
             />
           )}
         </>
