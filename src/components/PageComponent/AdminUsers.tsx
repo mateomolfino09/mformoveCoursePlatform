@@ -47,7 +47,10 @@ const AdminUsers = ({ initialData }: Props) => {
     }
   }, [auth.user, router]);
 
-  const fetchUsers = async (page: number, filter: 'ALL' | 'VIP' | 'NON_VIP') => {
+  const fetchUsers = async (
+    page: number,
+    filter: 'ALL' | 'VIP' | 'NON_VIP'
+  ) => {
     try {
       const response = await fetch(
         `/api/users?page=${page}&limit=10&filter=${filter}`
@@ -92,8 +95,8 @@ const AdminUsers = ({ initialData }: Props) => {
         const res = await fetch(`/api/user/delete/${userId}`, {
           method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json',
-          },
+            'Content-Type': 'application/json'
+          }
         });
 
         if (res.ok) {
@@ -120,30 +123,33 @@ const AdminUsers = ({ initialData }: Props) => {
     { key: 'email', label: 'Email', sortable: true },
     { key: 'rol', label: 'Rol', sortable: false },
     { key: 'createdAt', label: 'Creado', sortable: true },
-    { key: 'subscription', label: 'VIP', sortable: false },
+    { key: 'subscription', label: 'VIP', sortable: false }
   ] as const;
 
   return (
     <AdmimDashboardLayout>
-      <div className="w-full h-auto min-h-screen">
-        <h1 className="text-2xl mt-4 mb-4">Usuarios</h1>
-        <div className="mb-4">
-
-  <select
-    id="filter-select"
-    value={filter}
-    onChange={(e) => {
-      const selectedFilter = e.target.value as 'ALL' | 'VIP' | 'NON_VIP';
-      setFilter(selectedFilter);
-      fetchUsers(1, selectedFilter); // Fetch users on change
-    }}
-    className="block w-40 px-3 py-2 border border-gray-300 bg-white text-black rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-  >
-    <option value="ALL">Todos</option>
-    <option value="VIP">VIP</option>
-    <option value="NON_VIP">No VIP</option>
-  </select>
-</div>
+      <div className='w-full h-auto min-h-screen'>
+        <h1 className='text-2xl mt-4 mb-4'>Usuarios</h1>
+        <div className='mb-4'>
+          <select
+            id='filter-select'
+            value={filter}
+            onChange={(e) => {
+              const selectedFilter = e.target.value as
+                | 'ALL'
+                | 'VIP'
+                | 'NON_VIP';
+              setFilter(selectedFilter);
+              fetchUsers(1, selectedFilter); // Fetch users on change
+            }}
+            className=' input'
+            style={{width: "20%"}}
+          >
+            <option value='ALL'>Todos</option>
+            <option value='VIP'>VIP</option>
+            <option value='NON_VIP'>No VIP</option>
+          </select>
+        </div>
 
         <DataTable
           columns={columns}
@@ -161,18 +167,18 @@ const AdminUsers = ({ initialData }: Props) => {
                 }`}
                 title={value ? 'VIP' : 'No VIP'}
               ></div>
-            ),
+            )
           }}
           renderActions={(user) => (
-            <div className="flex items-center justify-center text-base">
-              <Link href={`/admin/updateUser/${user._id}`} className="w-6 mr-2">
-                <PencilIcon className="h-6 w-6 text-blue-500" />
+            <div className='flex items-center justify-center text-base'>
+              <Link href={`/admin/updateUser/${user._id}`} className='w-6 mr-2'>
+                <PencilIcon className='h-6 w-6 text-blue-500' />
               </Link>
               <div
                 onClick={() => openModalDelete(user)}
-                className="w-6 mr-2 cursor-pointer"
+                className='w-6 mr-2 cursor-pointer'
               >
-                <TrashIcon className="h-6 w-6 text-red-500" />
+                <TrashIcon className='h-6 w-6 text-red-500' />
               </div>
             </div>
           )}
