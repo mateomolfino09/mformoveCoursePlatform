@@ -1,15 +1,12 @@
-import { useAppSelector } from '../../../redux/hooks';
 import React, { useState } from 'react';
 
 interface Props {
-  handleIsFree: any;
+  handleIsFree: (isFree: boolean) => void;
   isFree: boolean;
 }
 
 const IsFreeComponent = ({ handleIsFree, isFree }: Props) => {
-  const createClass = useAppSelector(
-    (state) => state.classesModalReducer.value
-  );
+  const [notFreeCheck, setNotFreeCheck] = useState(true);
 
   return (
     <div className='flex flex-col justify-center items-start space-y-4'>
@@ -19,14 +16,18 @@ const IsFreeComponent = ({ handleIsFree, isFree }: Props) => {
       <ul className='grid w-full gap-6 md:grid-cols-2'>
         <li>
           <input
-            type='checkbox'
-            id='react-option'
-            checked={isFree}
+            type='radio'
+            id='free-option'
+            name='isFree'
+            checked={!notFreeCheck} // Asegúrate de que esté seleccionado si isFree es true
+            onChange={() => {
+              handleIsFree(true);
+              setNotFreeCheck(false);
+            }} // Llama a handleIsFree con true
             className='hidden peer'
-            onChange={(e) => handleIsFree(e.target.checked)}
           />
           <label
-            htmlFor='react-option'
+            htmlFor='free-option'
             className='inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700'
           >
             <div className='block'>
@@ -56,14 +57,18 @@ const IsFreeComponent = ({ handleIsFree, isFree }: Props) => {
         </li>
         <li>
           <input
-            type='checkbox'
-            id='flowbite-option'
-            checked={!isFree}
-            onChange={(e) => handleIsFree(e.target.checked)}
+            type='radio'
+            id='paid-option'
+            name='isFree'
+            checked={notFreeCheck} // Asegúrate de que esté seleccionado si isFree es false
+            onChange={() => {
+              handleIsFree(false);
+              setNotFreeCheck(true);
+            }} // Llama a handleIsFree con false
             className='hidden peer'
           />
           <label
-            htmlFor='flowbite-option'
+            htmlFor='paid-option'
             className='inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700'
           >
             <div className='block'>
