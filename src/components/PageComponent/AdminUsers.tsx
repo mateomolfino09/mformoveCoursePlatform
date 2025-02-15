@@ -29,10 +29,11 @@ const AdminUsers = ({ initialData }: Props) => {
   const [totalUsers, setTotalUsers] = useState(initialData.total);
   const [totalPages, setTotalPages] = useState(initialData.totalPages);
   const [currentPage, setCurrentPage] = useState(initialData.currentPage);
-  const [filter, setFilter] = useState<'ALL' | 'VIP' | 'NON_VIP'>('ALL'); // Selector state
+  const [filter, setFilter] = useState<'ALL' | 'VIP' | 'NON_VIP'>('ALL');
 
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [userSelected, setUserSelected] = useState<User | null>(null);
+  const [isOpenRemoveVIP, setIsOpenRemoveVIP] = useState(false);
 
   useEffect(() => {
     const userToken = Cookies.get('userToken');
@@ -60,7 +61,6 @@ const AdminUsers = ({ initialData }: Props) => {
       }
 
       const data = await response.json();
-
       setUsers(data.users);
       setCurrentPage(data.currentPage);
       setTotalPages(data.totalPages);
@@ -76,42 +76,32 @@ const AdminUsers = ({ initialData }: Props) => {
     fetchUsers(page, filter);
   };
 
-  const handleSort = (key: keyof User, direction: 'asc' | 'desc') => {
-    const sortedUsers = [...users].sort((a, b) => {
-      if (direction === 'asc') {
-        return String(a[key]).localeCompare(String(b[key]));
-      } else {
-        return String(b[key]).localeCompare(String(a[key]));
-      }
-    });
-    setUsers(sortedUsers);
-  };
-
-  const deleteUser = async () => {
+  const removeVIP = async () => {
     if (userSelected) {
-      const userId = userSelected._id;
-
       try {
-        const res = await fetch(`/api/user/delete/${userId}`, {
-          method: 'DELETE',
+        const res = await fetch(`/api/user/subscription/remove`, {  // ✅ RUTA CORRECTA
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json'
-          }
+          },
+          body: JSON.stringify({ userId: userSelected._id })  // ✅ Enviar ID en el body
         });
-
+  
         if (res.ok) {
-          toast.success(`${userSelected.name} fue eliminado correctamente`);
+          toast.success(`${userSelected.name} ya no es VIP`);
           fetchUsers(currentPage, filter);
         } else {
-          toast.error('Error al eliminar el usuario');
+          toast.error('Error al eliminar la suscripción VIP');
         }
       } catch (error) {
-        toast.error('Error al eliminar el usuario');
+        toast.error('Error al eliminar la suscripción VIP');
       }
-
-      setIsOpenDelete(false);
+  
+      setIsOpenRemoveVIP(false);
     }
   };
+  
+  
 
   const openModalDelete = (user: User) => {
     setUserSelected(user);
@@ -123,13 +113,17 @@ const AdminUsers = ({ initialData }: Props) => {
     { key: 'email', label: 'Email', sortable: true },
     { key: 'rol', label: 'Rol', sortable: false },
     { key: 'createdAt', label: 'Creado', sortable: true },
-    { key: 'subscription', label: 'VIP', sortable: false }
+    { key: 'subscription', label: 'VIP', sortable: false },
+    { key: 'removeVIP', label: 'Eliminar VIP', sortable: false },
+    { key: 'actions', label: 'Acciones', sortable: false }
   ] as const;
 
   return (
     <AdmimDashboardLayout>
       <div className='w-full h-auto min-h-screen'>
         <h1 className='text-2xl mt-4 mb-4'>Usuarios</h1>
+
+        {/* Selector de Filtros */}
         <div className='mb-4'>
           <select
             id='filter-select'
@@ -140,10 +134,9 @@ const AdminUsers = ({ initialData }: Props) => {
                 | 'VIP'
                 | 'NON_VIP';
               setFilter(selectedFilter);
-              fetchUsers(1, selectedFilter); // Fetch users on change
+              fetchUsers(1, selectedFilter);
             }}
-            className=' input'
-            style={{width: "20%"}}
+            className='bg-gray-800 text-white px-3 py-2 rounded-md'
           >
             <option value='ALL'>Todos</option>
             <option value='VIP'>VIP</option>
@@ -158,37 +151,79 @@ const AdminUsers = ({ initialData }: Props) => {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={handlePageChange}
-          onSort={handleSort}
           customRenderers={{
             subscription: (value) => (
               <div
                 className={`w-4 h-4 rounded-full ${
                   value ? 'bg-green-500' : 'bg-red-500'
                 }`}
-                title={value ? 'VIP' : 'No VIP'}
-              ></div>
+              />
+            ),
+            removeVIP: (_, user) =>
+              user.subscription ? (
+                <button
+                  onClick={() => {
+                    setUserSelected(user);
+                    setIsOpenRemoveVIP(true);
+                  }}
+                  className='bg-red-500 text-white px-2 py-1 rounded text-sm'
+                >
+                  Quitar VIP
+                </button>
+              ) : null,
+            actions: (_, user) => (
+              <div className='flex items-center justify-center space-x-2'>
+                <Link
+                  href={`/admin/updateUser/${user._id}`}
+                  className='text-blue-500'
+                >
+                  <PencilIcon className='h-5 w-5' />
+                </Link>
+                <button
+                  onClick={() => openModalDelete(user)}
+                  className='text-red-500'
+                >
+                  <TrashIcon className='h-5 w-5' />
+                </button>
+              </div>
             )
           }}
-          renderActions={(user) => (
-            <div className='flex items-center justify-center text-base'>
-              <Link href={`/admin/updateUser/${user._id}`} className='w-6 mr-2'>
-                <PencilIcon className='h-6 w-6 text-blue-500' />
-              </Link>
-              <div
-                onClick={() => openModalDelete(user)}
-                className='w-6 mr-2 cursor-pointer'
-              >
-                <TrashIcon className='h-6 w-6 text-red-500' />
-              </div>
-            </div>
-          )}
         />
+
         <DeleteUser
+          deleteUser={() => {}}
           isOpen={isOpenDelete}
           setIsOpen={setIsOpenDelete}
           user={userSelected}
-          deleteUser={deleteUser}
         />
+
+        {isOpenRemoveVIP && (
+          <div className='fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50'>
+            <div className='bg-white p-6 rounded-lg shadow-lg text-black'>
+              {' '}
+              {/* Se agregó text-black */}
+              <h2 className='text-lg font-semibold mb-4'>Confirmar</h2>
+              <p>
+                ¿Seguro que quieres quitar la suscripción VIP a{' '}
+                {userSelected?.name}?
+              </p>
+              <div className='mt-4 flex justify-end space-x-2'>
+                <button
+                  onClick={() => setIsOpenRemoveVIP(false)}
+                  className='px-4 py-2 bg-gray-300 rounded'
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={removeVIP}
+                  className='px-4 py-2 bg-red-500 text-white rounded'
+                >
+                  Confirmar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AdmimDashboardLayout>
   );
