@@ -19,6 +19,7 @@ import { FaHamburger } from 'react-icons/fa';
 import { GiHamburger } from 'react-icons/gi';
 import MainSideBar from '../MainSidebar/MainSideBar';
 import Footer from '../Footer';
+import NewsletterForm from './Index/NewsletterForm';
 
 const Index = () => {
   const auth = useAuth()
@@ -55,13 +56,14 @@ const Index = () => {
             <div className='absolute w-full top-[28%] flex justify-center items-center' >
                 <button className='w-48 h-12 md:w-56 md:h-14 md:text-lg rounded-3xl border-white hover:bg-white hover:text-black border text-base font-thin' >
                   <a href="/home">
-                  Practicar Conmigo 
+                  Movete Conmigo 
                   </a>
                 </button>
 
           </div>
           <div className='absolute right-0 bottom-0 h-12 w-12'>
           </div>
+          <NewsletterForm />
           <Footer />
 
         </MainSideBar>
