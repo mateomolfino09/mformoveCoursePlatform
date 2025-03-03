@@ -12,6 +12,7 @@ import {
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { forwardRef } from 'react';
+import { routes } from '../constants/routes';
 
 const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
   ({ showNav }: any, ref) => {
@@ -21,7 +22,7 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
     return (
       <div ref={ref} className='fixed w-56 h-full bg-gray-100 shadow-sm z-20'>
         <div className='flex justify-center mt-6 mb-14'>
-          <Link href={'/home'}>
+          <Link href={routes.navegation.membresiaHome}>
             <picture>
               <img
                 alt='icon image'

@@ -26,6 +26,7 @@ import { RxCross2 } from 'react-icons/rx';
 import { useSnapshot } from 'valtio';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from 'js-cookie';
+import { routes } from '../constants/routes';
 
 const Header = ({
   scrollToList,
@@ -208,7 +209,7 @@ const Header = ({
         </Link>
 
         <ul className='hidden space-x-4 md:flex'>
-          <li className='headerLink' onClick={() => router.push('/home')}>
+          <li className='headerLink' onClick={() => router.push(routes.navegation.membresiaHome)}>
             Home
           </li>
 
@@ -219,7 +220,7 @@ const Header = ({
               Nuevo
             </li>
           ) : (
-            <Link href={'/home'}>
+            <Link href={routes.navegation.membresiaHome}>
               <li className='headerLink'>Nuevo</li>
             </Link>
           )}
@@ -228,7 +229,7 @@ const Header = ({
               Mi Lista
             </li>
           ) : (
-            <Link href={'/home'}>
+            <Link href={routes.navegation.membresiaHome}>
               <li className='headerLink'>Mi Lista</li>
             </Link>
           )}

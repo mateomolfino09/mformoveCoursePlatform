@@ -7,6 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import { AiOutlineUser } from 'react-icons/ai';
+import { routes } from '../../constants/routes';
 
 interface Props {
   question: Question
@@ -44,7 +45,7 @@ const QuestionPage = ({ question }: Props) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <header className={`bg-dark`}>
-        <div onClick={() => handleRouteChange('/home')}>
+        <div onClick={() => handleRouteChange(routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip))}>
           <img
             alt='Logo Video Stream'
             src='/images/logoWhite.png'

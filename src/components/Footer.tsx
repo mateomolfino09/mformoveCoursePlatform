@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify'
 import { CiInstagram, CiMail, CiYoutube } from 'react-icons/ci'
+import { routes } from '../constants/routes'
 
 const Footer = () => {
 const auth = useAuth()
@@ -104,7 +105,7 @@ const onSubmit = async (data: any) => {
           </a>
         </div>
         <div className='text-black md:max-w-[33%] flex flex-col space-y-12 pt-12 !mx-0 px-8 overflow-x-hidden md:items-center md:left-7 relative'>
-        <Link href={`${path === "/select-plan" ? "/home" : path === "/home" ? "/" : "/"}`}>
+        <Link href={`${path === routes.navegation.selectPlan ? routes.navegation.membresiaHome : path === routes.navegation.membresiaHome ? "/" : "/"}`}>
               <img
                 alt='icon image'
                 src='/images/MFORMOVE_v2.negro03.png'

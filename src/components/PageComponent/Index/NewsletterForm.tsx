@@ -84,8 +84,8 @@ const onSubmit = async (data: any) => {
     }
 
   return (
-    <div className='bg-gradient-to-bl w-full h-auto flex flex-col md:flex-col justify-start md:justify-center items-center scrollbar-hide space-x-16 overflow-hidden relative bottom-0 pb-12 md:pb-24'>
-        <div className='text-white flex flex-col items-center justify-center md:flex-col pt-12 md:pt-8 lg:pt-20 space-y-3 pl-8 pr-12 w-full'>
+    <div className='bg-gradient-to-bl w-full h-auto flex flex-col md:flex-col justify-start md:justify-center items-center scrollbar-hide space-x-16 overflow-hidden relative bottom-0 pb-12 md:pb-24 lg:px-24 md:px-20 '>
+        <div className='text-white flex flex-col items-center justify-center md:flex-col space-y-3 pl-8 pr-12 w-full'>
             <h3 className='text-3xl md:text-4xl font-normal'>Unite a la comunidad de movimiento</h3>
             <p className='text-base md:text-lg font-light md:w-[70%] md:text-center'>Esta no es cualquier newsletter deportiva... </p>
             <p className='text-base md:text-lg font-bold italic md:w-[70%] md:text-center'>Es salud, movimiento, cambio, pensamiento crítico, desarrollo personal y creativo.</p>

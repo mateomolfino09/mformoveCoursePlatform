@@ -10,6 +10,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { MiniLoadingSpinner } from '../Products/MiniSpinner'
+import { routes } from '../../../constants/routes'
 
 const FooterProfile = () => {
     const auth = useAuth()
@@ -106,7 +107,7 @@ const onSubmit = async (data: any) => {
             <p className='text-xs md:text-sm'>Un espacio para deportistas y mentes críticas</p>
         </div>
         <div className='text-black md:w-[30%] flex flex-col space-y-12 pt-12 !mx-0 px-6 overflow-x-hidden'>
-        <Link href={`${path === "/select-plan" ? "/home" : path === "/home" ? "/" : "/"}`}>
+        <Link href={`${path === routes.navegation.selectPlan ? routes.navegation.membresiaHome : path === routes.navegation.membresiaHome ? "/" : "/"}`}>
               <img
                 alt='icon image'
                 src='/images/MFORMOVE_blanco03.png'
