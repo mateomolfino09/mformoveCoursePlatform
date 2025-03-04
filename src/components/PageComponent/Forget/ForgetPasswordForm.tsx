@@ -51,14 +51,6 @@ function ForgetForm() {
     }
   }
 
-  // const onChange = () => {
-  //   if (recaptchaRef.current.getValue()) {
-  //     setCaptchaToken(recaptchaRef.current.getValue());
-  //   } else {
-  //     setCaptchaToken(null);
-  //   }
-  // };
-
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
@@ -134,8 +126,8 @@ function ForgetForm() {
               ))}
             </div>
           </div>
-          <NewsletterF/>
-          <Footer />
+        <NewsletterF/>
+        <Footer />
       </MainSideBar>
 
     </div>

@@ -348,7 +348,7 @@ function useProvideAuth() {
 		}
 	  };
 
-	  const cancelSub = async (planId: string, subscriptionId: string, id: string) => {
+	  const cancelSub = async (planId: string, subscriptionId: string, id: string, message: string) => {
 		try {
 			const res = await fetch(endpoints.payments.cancelSubscription(subscriptionId), {
 				method: 'PUT',
@@ -356,7 +356,7 @@ function useProvideAuth() {
 				  'Content-Type': 'application/json',
 				   accept: '*/*',
 				},
-				body: JSON.stringify({ subscriptionId, planId, id }),
+				body: JSON.stringify({ subscriptionId, planId, id, message }),
 			  })
 
 			const data = await res.json();

@@ -119,7 +119,7 @@ export async function POST(req) {
 
       const envioMail = await Promise.all(
         usuarios.users.map(async (user) => {
-          if (user.isVip) {
+          if (user?.isVip || user?.subscription?.active) {
             try {
               return await mailchimpClient.messages.send({
                 message: {
