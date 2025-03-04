@@ -20,6 +20,7 @@ import { GiHamburger } from 'react-icons/gi';
 import MainSideBar from '../MainSidebar/MainSideBar';
 import Footer from '../Footer';
 import NewsletterForm from './Index/NewsletterForm';
+import { routes } from '../../constants/routes';
 
 const Index = () => {
   const auth = useAuth()
@@ -55,7 +56,7 @@ const Index = () => {
           </main>
             <div className='absolute w-full top-[28%] flex justify-center items-center' >
                 <button className='w-48 h-12 md:w-56 md:h-14 md:text-lg rounded-3xl border-white hover:bg-white hover:text-black border text-base font-thin' >
-                  <a href="/home">
+                  <a href={routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip)}>
                   Movete Conmigo 
                   </a>
                 </button>
@@ -63,7 +64,10 @@ const Index = () => {
           </div>
           <div className='absolute right-0 bottom-0 h-12 w-12'>
           </div>
-          <NewsletterForm />
+          <div className='w-full h-full pt-12'>
+            <NewsletterForm />
+
+          </div>
           <Footer />
 
         </MainSideBar>

@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -22,7 +23,7 @@ module.exports = {
       },
       colors: {
         'light-cream': '#FFFDFD',
-        'rich-black': '#01161E',
+        'rich-black': '#0D0D0D',
         'chill-black': '#293132',
         'light-white': '#FFFDFD',
         'soft-error': '#AA6373',

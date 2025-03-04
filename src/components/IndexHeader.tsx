@@ -11,7 +11,7 @@ import {
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { Fragment, useContext, useEffect, useState } from 'react';
+import { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import { useSnapshot } from 'valtio';
 import endpoints from '../services/api';
 import { CiMenuFries } from "react-icons/ci";
@@ -19,6 +19,7 @@ import { useAppSelector } from '../redux/hooks';
 import { throttle } from 'lodash';
 import { Menu, MenuButton, Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { useAuth } from '../hooks/useAuth';
+import { routes } from '../constants/routes';
 
 interface Props {
   user: User | null;
@@ -32,7 +33,11 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
   const headerAnimation = useAnimation();
   const [isScrolled, setIsScrolled] = useState(false);
   const auth = useAuth();
+    const linkRef = useRef<HTMLAnchorElement | null>(null);
 
+    const handleClick = () => {
+      linkRef.current?.click(); // Simula el clic en el enlace oculto
+    };
   const [domLoaded, setDomLoaded] = useState(false);
   const snap = useSnapshot(state);
   const headerScroll = useAppSelector(
@@ -92,10 +97,10 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
             opacity: 1
           }}
           animate={headerAnimation}
-          className={`bg-transparent fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${(isScrolled || headerScroll) && 'bg-[#141414]'}`}
+          className={`bg-transparent fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${(isScrolled || headerScroll) && 'bg-[#141414]'} ${(path === routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && !isScrolled && !headerScroll && 'md:bg-[#1414147c]'}`}
         >
           <div className=''>
-            <Link href={`${path === "/select-plan" ? "/home" : path === "/home" ? "/" : "/"}`}>
+            <Link href={`${path === routes.navegation.selectPlan ? routes.navegation.membresiaHome : path === routes.navegation.membresiaHome ? "/" : "/"}`}>
               <img
                 alt='icon image'
                 src='/images/MFORMOVE_blanco03.png'
@@ -135,26 +140,28 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
                 </div>
               </PopoverPanel>
             </Popover>
-            <div className="block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal" onClick={(e) => {
+            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.mentoria && '!text-white'}`} onClick={(e) => {
                 e.currentTarget.style.color = '#fff';
                 router.push('/');
               }}>Mentoría Online</div>
-            <div className="block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal" onClick={(e) => {
+            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.membresiaHome && '!text-white'}`} onClick={(e) => {
                 e.currentTarget.style.color = '#fff';
-                router.push('/home');
+                router.push(routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip));
               }}>Membresía</div>
-            <div className="block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal" onClick={(e) => {
-
+            <a href="/account" ref={linkRef} style={{ display: 'none' }}>
+              Ir a Cuenta
+            </a>
+            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && '!text-white'}`} onClick={(e) => {
                     e.currentTarget.style.color = '#fff';
                     if(!auth.user) {
-                      toggleNav();
-                      state.loginForm = true;
+                      router.push('/login')
                     }
-                    else router.push('/account');
+                    else handleClick();
 
                   }}>Cuenta</div>
 
-            <div className="block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal" onClick={(e) => {
+            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.preguntasFrecuentes && '!text-white'}`}
+            onClick={(e) => {
                 e.currentTarget.style.color = '#fff';
                 router.push('/faq');
               }}>Ayuda</div>

@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
 import endpoints from '../../services/api';
+import { routes } from '../../constants/routes';
 
 interface Inputs {
   email: string;
@@ -139,7 +140,7 @@ function Register() {
     const cookies: any = Cookies.get('userToken')
   
     if (cookies) {
-      router.push('/home');
+      router.push(routes.navegation.membresiaHome);
     }
   }, [router]);
   //using React Hook Form library

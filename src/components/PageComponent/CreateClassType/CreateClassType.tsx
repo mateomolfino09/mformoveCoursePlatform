@@ -22,6 +22,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import { routes } from '../../../constants/routes';
 
 interface User {
   id: number;
@@ -254,7 +255,7 @@ const CreateClassType = () => {
               </button>
               <div className='text-[gray]'>
                 Volver al Inicio
-                <Link href={'/home'}>
+                <Link href={routes.navegation.membresiaHome}>
                   <button
                     type='button'
                     className='text-white hover:underline ml-2'
