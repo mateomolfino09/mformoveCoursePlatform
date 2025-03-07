@@ -8,7 +8,7 @@
     @apply pl-2 w-full h-10 outline-none border-none bg-transparent text-white
 }
 .links {
-    @apply text-sm ml-2 hover:text-rich-black text-chill-black cursor-pointer hover:-translate-y-1 duration-500 transition-all hover:underline
+    @apply text-sm hover:text-rich-black text-chill-black cursor-pointer hover:-translate-y-1 duration-500 transition-all hover:underline
 }
 .capslock {
     @apply text-white/80 text-xs 
@@ -23,7 +23,7 @@
     @apply !inline opacity-50 h-full
 }
 .sub-container {
-    @apply flex flex-col items-center justify-center relative space-y-8 rounded py-12 -mt-24 md:-mt-24
+    @apply flex flex-col items-center justify-center relative space-y-8 rounded pb-5 -mt-24 md:-mt-24
 }
 .title {
     @apply font-extrabold text-4xl text-center
@@ -35,13 +35,13 @@
     @apply font-semibold text-xl text-center
 }
 .main-input-container {
-    @apply flex flex-col md:flex-row items-center justify-center relative md:space-x-8 rounded px-8 md:w-screen
+    @apply flex flex-col md:flex-col items-center justify-center relative rounded px-8 md:w-screen space-y-4 md:space-y-3 md:mt-6
 }
 .secondary-input-container {
-    @apply w-full bg-transparent border border-white rounded-md md:w-[40%] lg:w-[30%] 
+    @apply w-full md:w-[40%] lg:w-[30%] 
 }
 .stepone-container {
-    @apply flex flex-col items-center justify-center relative mt-20 sm:mt-24 space-y-4 rounded py-12 md:px-0
+    @apply flex flex-col items-center justify-center relative space-y-4 rounded pt-2 pb-2 md:px-0
 }
 .check-icon {
     @apply text-light-white w-12 h-12
@@ -50,7 +50,7 @@
     @apply font-extralight text-light-white text-base
 }
 .title-step-one {
-    @apply font-light text-4xl text-center text-light-white
+    @apply font-normal text-2xl md:text-4xl text-center text-light-white
 }
 .subtitle-step-one {
     @apply font-normal text-xl text-center text-light-white
@@ -65,7 +65,7 @@
     @apply text-white text-base text-start w-24
 }
 .input-step-three {
-    @apply text-black text-base text-start w-full md:ml-10 rounded placeholder-[#808080] px-1 py-1 focus:bg-light-white;
+    @apply text-black text-base text-start w-full rounded placeholder-[#808080] px-1 py-1 focus:bg-light-white;
 }
 .input-container {
     @apply flex flex-col sm:flex-row justify-center sm:items-center w-auto sm:w-96 h-12 border-none  mb-2 sm:mb-0

@@ -97,7 +97,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
             opacity: 1
           }}
           animate={headerAnimation}
-          className={`bg-transparent fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${(isScrolled || headerScroll) && 'bg-[#141414]'} ${(path === routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && !isScrolled && !headerScroll && 'md:bg-[#1414147c]'}`}
+          className={`bg-transparent fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${(isScrolled || headerScroll) && 'bg-[#141414]'} ${(path === routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.register) && !isScrolled && !headerScroll && 'md:bg-[#1414147c]'}`}
         >
           <div className=''>
             <Link href={`${path === routes.navegation.selectPlan ? routes.navegation.membresiaHome : path === routes.navegation.membresiaHome ? "/" : "/"}`}>

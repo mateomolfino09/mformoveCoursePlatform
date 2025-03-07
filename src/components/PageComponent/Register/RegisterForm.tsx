@@ -25,6 +25,8 @@ import './registerStyle.css';
 import ResendEmail from './ResendEmail';
 import { useAuth } from '../../../hooks/useAuth';
 import { routes } from '../../../constants/routes';
+import MainSideBar from '../../MainSidebar/MainSideBar';
+import Footer from '../../Footer';
 
 interface Inputs {
   email: string;
@@ -297,121 +299,129 @@ function Register() {
   // };
 
   return (
-    <div className='relative flex h-screen w-screen flex-col md:items-center md:justify-center overflow-hidden font-montserrat'>
-      <Image
-      src={'/images/image00013.jpeg'}
-      layout='fill'
-      className={`bg-image ${stepThree && '!h-[120%]'} `} 
-      objectFit='cover'
-      alt='icon image'
-      loader={imageLoader}
-          />
-      {loading && (
-        <div
-          className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}
-        >
-          <LoadingSpinner />
-        </div>
-      )}
-      {!registered && !loading && (
-        <div className='container-register'>
-          {stepCero && (
-            <RegisterStepCero
-              step0ToStep1={step0ToStep1}
-              step0ToResend={step0ToResend}
+    <div>
+      <MainSideBar where={"index"}>
+      <div className='relative flex h-screen w-full flex-col md:items-center md:justify-center overflow-hidden font-montserrat'>
+
+        <Image
+        src={'/images/image00013.jpeg'}
+        layout='fill'
+        className={`bg-image ${stepThree && '!h-[120%]'} `} 
+        objectFit='cover'
+        alt='icon image'
+        loader={imageLoader}
             />
-          )}
-          {!stepCero && (
-            <>
-                {resend && (
-                <m.div
-                initial={{ x: 1200 }}
-                animate={animationresend}
-                >
-                   <ResendEmail
-                  resendEmail={resendEmail}
-                  // onChange={onChange}
-                  recaptchaRef={recaptchaRef}
-                  step3ToStep2={step3ToStep2}
-                />
-                </m.div>
+        {loading && (
+          <div
+            className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}
+          >
+            <LoadingSpinner />
+          </div>
+        )}
+        {!registered && !loading && (
+          <div className='container-register'>
+            {stepCero && (
+              <RegisterStepCero
+                step0ToStep1={step0ToStep1}
+                step0ToResend={step0ToResend}
+              />
+            )}
+            {!stepCero && (
+              <>
+                  {resend && (
+                  <m.div
+                  initial={{ x: 1200 }}
+                  animate={animationresend}
+                  >
+                    <ResendEmail
+                    resendEmail={resendEmail}
+                    // onChange={onChange}
+                    recaptchaRef={recaptchaRef}
+                    step3ToStep2={step3ToStep2}
+                  />
+                  </m.div>
 
-              )}
-              {stepOne && (
-                <m.div
-                initial={{ x: 1200 }}
-                animate={animationstepone}
-                >
-                   <RegisterStepOne
-                  step1ToStep2={step1ToStep2}
-                  step1ToStep0={step1ToStep0}
-                />
-                </m.div>
+                )}
+                {stepOne && (
+                  <m.div
+                  initial={{ x: 1200 }}
+                  animate={animationstepone}
+                  >
+                    <RegisterStepOne
+                    step1ToStep2={step1ToStep2}
+                    step1ToStep0={step1ToStep0}
+                  />
+                  </m.div>
 
-              )}
-              {stepTwo && (
-                <m.div
-                initial={{ x: 1200 }}
-                animate={animationsteptwo}
-                >
-                <RegisterStepTwo
-                  step2ToStep3={step2ToStep3}
-                  step2ToStep1={step2ToStep1}
-                  signUp={signupUser}
-                />
-                </m.div>
+                )}
+                {stepTwo && (
+                  <m.div
+                  initial={{ x: 1200 }}
+                  animate={animationsteptwo}
+                  >
+                  <RegisterStepTwo
+                    step2ToStep3={step2ToStep3}
+                    step2ToStep1={step2ToStep1}
+                    signUp={signupUser}
+                  />
+                  </m.div>
 
-              )}
-              {stepThree && (
-                <m.div
-                initial={{ x: 1200 }}
-                animate={animationstepthree}
-                >
-                <RegisterStepThree
-                  signUp={signupUser}
-                  // onChange={onChange}
-                  recaptchaRef={recaptchaRef}
-                  step3ToStep2={step3ToStep2}
-                />
-                </m.div>
+                )}
+                {stepThree && (
+                  <m.div
+                  initial={{ x: 1200 }}
+                  animate={animationstepthree}
+                  >
+                  <RegisterStepThree
+                    signUp={signupUser}
+                    // onChange={onChange}
+                    recaptchaRef={recaptchaRef}
+                    step3ToStep2={step3ToStep2}
+                  />
+                  </m.div>
 
-              )}
-            </>
-          )}
-        </div>
-      )}
+                )}
+              </>
+            )}
+          </div>
+        )}
 
-      {registered && !loading && (
-        <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
-          {/* Logo position */}
-          <img
-            src='/images/logo.png'
-            className='absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 transition duration-500 hover:scale-105'
-            width={150}
-            height={150}
-            alt='icon image'
-          />
-          <div className='relative top-48 md:top-0 space-y-8 rounded py-10 px-6 md:mt-0 md:max-w-lg md:px-14'>
-            <h1 className='text-4xl font-semibold font-boldFont'>
-              Hemos enviado un correo a tu cuenta.
-            </h1>
-            <div className='space-y-4'>
-              <label className='inline-block w-full'>
-                <p>
-                Tu cuenta ha sido creada con éxito
-                </p>
-              </label>
-                <button
-                  type='button'
-                  className='text-white underline cursor-pointer'
-                >
-                  <a href="/login">Volver al Inicio</a>
-                </button>
+        {registered && !loading && (
+          <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
+            {/* Logo position */}
+            <img
+              src='/images/logo.png'
+              className='absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 transition duration-500 hover:scale-105'
+              width={150}
+              height={150}
+              alt='icon image'
+            />
+            <div className='relative top-48 md:top-0 space-y-8 rounded py-10 px-6 md:mt-0 md:max-w-lg md:px-14'>
+              <h1 className='text-4xl font-semibold font-montserrat'>
+                Hemos enviado un correo a tu cuenta.
+              </h1>
+              <div className='space-y-4'>
+                <label className='inline-block w-full'>
+                  <p>
+                  Tu cuenta ha sido creada con éxito
+                  </p>
+                </label>
+                  <button
+                    type='button'
+                    className='text-white underline cursor-pointer'
+                  >
+                    <a href="/login">Volver al Inicio</a>
+                  </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+      <Footer/>
+      </MainSideBar>
     </div>
+
+
   );
 }
 
