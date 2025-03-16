@@ -44,8 +44,9 @@ const UnsubscribeModal
             return
         }
         try {
-        await auth.cancelSub(auth?.user?.subscription.planId, auth?.user?.subscription.id, auth?.user?._id, selected)
-        toast.success('Se ha cancelado la subscricpción con éxito')
+        let data = await auth.cancelSub(auth?.user?.subscription.planId, auth?.user?.subscription.id, auth?.user?._id, selected)
+        console.log(data)
+        toast.success(data.message ?? 'Se ha cancelado la subscricpción con éxito')
         handleVisiblity()
         close()
         setLoading(false)
@@ -103,6 +104,9 @@ const UnsubscribeModal
 
   return (
     <div className={` w-full h-full font-montserrat font-light z-[120] bg-black/50 text-white top-0 ${visible ? 'absolute' : 'hidden'}`}>
+      {loading ? (
+        <LoadingSpinner/>
+      ) : (
       <Dialog open={visible} as="div" className="relative z-[130] focus:outline-none " onClose={close}>
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4">
@@ -160,6 +164,8 @@ const UnsubscribeModal
           </div>
         </div>
       </Dialog>
+
+      )}
         {/* <m.div initial={{ x: '80%', y:'-50%', opacity: 0, zIndex: '125'}}
         animate={animation} className={`absolute dark:bg-neutral-800 w-2/3 lg:w-1/2 max-h-96 pb-2 z-10 left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] rounded-md shadow-2xl overflow-x-hidden !scrollbar-thin px-2`}>
         <button

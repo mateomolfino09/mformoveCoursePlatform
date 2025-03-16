@@ -140,11 +140,11 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
                 </div>
               </PopoverPanel>
             </Popover>
-            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.mentoria && '!text-white'}`} onClick={(e) => {
+            {/* <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.mentoria && '!text-white'}`} onClick={(e) => {
                 e.currentTarget.style.color = '#fff';
                 router.push('/');
-              }}>Mentoría Online</div>
-            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.membresiaHome && '!text-white'}`} onClick={(e) => {
+              }}>Mentoría Online</div> */}
+            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${(path == routes.navegation.membresiaHome || path == routes.navegation.selectPlan) && '!text-white'}`} onClick={(e) => {
                 e.currentTarget.style.color = '#fff';
                 router.push(routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip));
               }}>Membresía</div>

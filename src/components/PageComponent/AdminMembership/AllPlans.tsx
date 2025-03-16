@@ -20,6 +20,7 @@ interface Props {
   plans: Plan[];
 }
 const AllPlans = ({ plans }: Props) => {
+  console.log(plans)
   const cookies = parseCookies();
   const router = useRouter();
   let [isOpen, setIsOpen] = useState(false);

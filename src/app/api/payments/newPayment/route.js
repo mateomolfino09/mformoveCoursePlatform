@@ -2,7 +2,7 @@ import { verify } from 'jsonwebtoken';
 import connectDB from '../../../../config/connectDB';
 import Plan from '../../../../models/planModel';
 import { NextResponse } from 'next/server';
-import dLocalApi from '../dlocalTest';
+import dLocalApi from '../dlocalConfig';
 import { isToday, isTodayLastHour } from '../../assets/isTodayLastHour';
 import { generateMd5 } from '../../helper/generateMd5';
 import User from '../../../../models/userModel';

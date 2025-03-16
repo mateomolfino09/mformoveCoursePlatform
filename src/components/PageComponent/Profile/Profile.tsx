@@ -17,6 +17,7 @@ import FooterProfile from './FooterProfile';
 import UnsubscribeModal from './UnsubscribeModal';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import { Button, Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
+import endpoints from '../../../services/api';
 
 function Profile() {
   const router = useRouter();
@@ -24,6 +25,12 @@ function Profile() {
   const aRef = useRef<any>(null)
   const [visible, setVisible] = useState<boolean>(false)
   let [isOpen, setIsOpen] = useState(false)
+  let [loading, setLoading] = useState(false)
+  let [loadingDates, setLoadingDates] = useState(false)
+
+  let [plan, setPlan] = useState(null)
+  let [startDate, setStartDate] = useState(null)
+  let [endDate, setEndDate] = useState(null)
 
   function open() {
     setIsOpen(true)
@@ -47,6 +54,53 @@ function Profile() {
     
     if(!auth.user) {
       auth.fetchUser()
+    }
+    else if(auth?.user?.subscription?.planId) {
+      const fetchData = async () => {
+        setLoading(true)
+        try {
+          const data = await fetch(endpoints.auth.getUserPlan(auth?.user?.subscription?.planId), {
+            method: 'GET',
+          }).then((r) => r.json());
+
+          setPlan(data?.plan)
+        } catch (err: any) {
+          throw new Error(err)
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      if(auth?.user?.subscription?.provider == "stripe") {
+
+        const fetchSubscriptionPeriod = async () => {
+          setLoadingDates(true)
+          try {
+            const data = await fetch(endpoints.user.getSubscriptionPeriod(auth?.user?.subscription?.id), {
+              method: 'GET',
+            }).then((r) => r.json());
+  
+            setStartDate(data?.startDate)
+            setEndDate(data?.endDate);
+  
+            console.log(data)
+  
+          } catch (err: any) {
+            throw new Error(err)
+          } finally {
+            setLoadingDates(false);
+          }
+
+
+        };
+    
+
+        fetchSubscriptionPeriod();
+
+      }
+
+  
+      fetchData();
     }
 
 
@@ -72,20 +126,24 @@ function Profile() {
           <h1 className='title text-black font-light text-start md:text-center'>Mi Cuenta</h1>
         </div>
 
-        <Membership user={auth.user} handleVisibility={open}/>
+        <Membership user={auth.user} handleVisibility={open} plan={plan} loading={loading}/>
         <div className='second-container'>
           <h4 className='second-title '>Detalles del Plan</h4>
-          <div className='col-span-2 font-medium'>
+          <div className='col-span-2 font-light'>
             {auth?.user?.subscription?.active || auth?.user?.isVip ? (
               <>
-                Subscripción activa
+              {loadingDates || !startDate ? <>Subscripción activa</> : <> Subscripción activa desde el {startDate}
+              </>}
               </>
             ) : (
               <>
               Aún no estás subscripto
               </>
             )}
+
+            <p>{loadingDates || !startDate ? "" : "Renovación del plan el " + endDate}</p>
           </div>
+          
           {auth?.user?.subscription?.active || auth?.user?.isVip ? (
             <Link href={'/account/myCourses'}>
             <p

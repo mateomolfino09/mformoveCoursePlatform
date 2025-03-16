@@ -423,6 +423,7 @@ export interface Plan {
   success_url: string
   error_url: string
   createdAt: string;
+  provider: string;
 }
 
 export interface ClassesProduct {

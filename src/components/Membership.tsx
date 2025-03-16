@@ -1,5 +1,5 @@
 import imageLoader from '../../imageLoader';
-import { User } from '../../typings';
+import { Plan, User } from '../../typings';
 import { LoadingSpinner } from './LoadingSpinner';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -7,10 +7,13 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
+import { MiniLoadingSpinner } from './MiniLoadingSpinner';
 
 interface Props {
   user: User | null;
   handleVisibility: any
+  plan: Plan | null;
+  loading: boolean
 }
 
 const monthNames = [
@@ -28,7 +31,7 @@ const monthNames = [
   'Diciembre'
 ];
 
-function Membership({ user, handleVisibility }: Props) {
+function Membership({ user, handleVisibility, plan, loading }: Props) {
   const [isBillingLoading, setBillingLoading] = useState(false);
   const router = useRouter();
   const auth = useAuth();
@@ -71,14 +74,43 @@ function Membership({ user, handleVisibility }: Props) {
 
         <div className='flex flex-col justify-between md:pt-4 md:flex-row md:pb-0'>
           <div>
-            <Image
-              src='/images/dlocal.svg'
-              alt={'image'}
-              loader={imageLoader}
-              className='rounded-md h-auto  w-12'
-              height={150}
-              width={150}
-            />
+            {loading ? (
+              <>
+                <MiniLoadingSpinner/>
+              </>
+            ) : (
+              <>
+                {!plan ? (
+                  <></>
+                ) : (
+                  <>
+                    {plan.provider == 'stripe' ? (
+                      <>                
+                      <Image
+                      src='/images/logoStripe.png'
+                      alt={'image'}
+                      loader={imageLoader}
+                      className='rounded-md h-auto  w-12'
+                      height={150}
+                      width={150}
+                    /></>
+                    ) : (
+                      <>            
+                      <Image
+                      src='/images/dlocal.svg'
+                      alt={'image'}
+                      loader={imageLoader}
+                      className='rounded-md h-auto  w-12'
+                      height={150}
+                      width={150}
+                    />
+                    </>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+
           </div>
           <div className='md:text-right'>
             {/* <Link href={'/account/billing'}>

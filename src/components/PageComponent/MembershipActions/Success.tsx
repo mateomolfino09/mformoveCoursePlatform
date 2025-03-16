@@ -30,8 +30,6 @@ const Success = () => {
   const [created, setCreated] = useState<boolean | null>(false);
   const searchParams = useSearchParams();
   const external_id = searchParams.get('external_id');  // Capturamos el external_id
-  // Adding a flag to prevent multiple calls
-  console.log(external_id)
   const subCalled = useRef(false);
 
   useEffect(() => {
@@ -52,27 +50,32 @@ const Success = () => {
     
     const planId = Cookies.get('planToken');
 
-    if (!external_id) {
+    console.log(planId, external_id)
+
+    if (!external_id || !planId) {
       toast.error(`No tienes token de subscripcion, te redireccionaremos al inicio...`);
-      router.push('/select-plan');
+      // router.push('/select-plan');
       return;
     }
-
+    else {
     try {
-      const data = await auth.newSub(external_id, planId);
-      if (data.error && !created) {
-        toast.error(`${data.error}`);
-      } else {
-        setUser(data.user);
-        await auth.fetchUser();
-        toast.success(`Subscriptor creado con éxito`);
-        setCreated(true);
+        const data = await auth.newSub(external_id, planId);
+        if (data.error && !created) {
+          toast.error(`${data?.error}`);
+        } else {
+          setUser(data.user);
+          await auth.fetchUser();
+          toast.success(`Subscriptor creado con éxito`);
+          setCreated(true);
+        }
+      } catch (error: any) {
+        toast.error(`${error?.error ?? 'Hubo un error'}`);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
     }
+
+
   };
 
   useEffect(() => {
