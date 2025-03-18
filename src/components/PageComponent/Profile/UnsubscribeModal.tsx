@@ -45,7 +45,7 @@ const UnsubscribeModal
         }
         try {
         let data = await auth.cancelSub(auth?.user?.subscription.planId, auth?.user?.subscription.id, auth?.user?._id, selected)
-        console.log(data)
+        auth.fetchUser()
         toast.success(data.message ?? 'Se ha cancelado la subscricpción con éxito')
         handleVisiblity()
         close()

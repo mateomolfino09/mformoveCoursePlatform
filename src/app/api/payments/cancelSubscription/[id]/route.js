@@ -27,6 +27,11 @@ export async function PUT(req) {
     if(plan.provider == "stripe") {
       let sub = await cancelStripeSubscription(user.subscription.id)
 
+      user.subscription ? user.subscription.isCanceled = true : null;
+      console.log('cancelado', user.subscription)
+
+      await user.save()
+
       return NextResponse.json({ message: `Se ha desactivado tu subscripción. Lamentamos verte partir. Puedes seguir disfrutando de los beneficios hasta el final del período actual.`, success: true, user }, { status: 200 })
     } else {
       try {
@@ -36,6 +41,8 @@ export async function PUT(req) {
           });  
   
         user.subscription ? user.subscription.active = false : null;
+        user.subscription ? user.subscription.isCanceled = true : null;
+
         await user.save()
 
         const messageAdminHTML = `
@@ -108,7 +115,8 @@ export async function PUT(req) {
         console.log(error)
   
       }
-    }   
+    } 
+    
 
     }
   } catch (e) {

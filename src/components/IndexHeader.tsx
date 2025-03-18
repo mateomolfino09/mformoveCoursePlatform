@@ -34,9 +34,13 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const auth = useAuth();
     const linkRef = useRef<HTMLAnchorElement | null>(null);
+    const linkMembRef = useRef<HTMLAnchorElement | null>(null);
 
     const handleClick = () => {
       linkRef.current?.click(); // Simula el clic en el enlace oculto
+    };
+    const handleClickMemb = () => {
+      linkMembRef.current?.click(); // Simula el clic en el enlace oculto
     };
   const [domLoaded, setDomLoaded] = useState(false);
   const snap = useSnapshot(state);
@@ -146,8 +150,13 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
               }}>Mentoría Online</div> */}
             <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${(path == routes.navegation.membresiaHome || path == routes.navegation.selectPlan) && '!text-white'}`} onClick={(e) => {
                 e.currentTarget.style.color = '#fff';
-                router.push(routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip));
-              }}>Membresía</div>
+                handleClickMemb();
+              }}>
+                  Membresia
+                </div>
+              <a href={`${routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip)}`} ref={linkMembRef} style={{ display: 'none' }}>
+              Ir a Membresia
+            </a>
             <a href="/account" ref={linkRef} style={{ display: 'none' }}>
               Ir a Cuenta
             </a>

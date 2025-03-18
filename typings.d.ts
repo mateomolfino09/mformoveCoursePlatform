@@ -208,6 +208,26 @@ export interface FreeSubscription {
   active: boolean;
 }
 
+interface ISubscription {
+  id?: string;
+  planId?: string;
+  country?: string;
+  subscription_token?: string;
+  status?: string;
+  payment_method_code?: string;
+  client_id?: string;
+  created_at?: Date;
+  client_first_name?: string;
+  client_last_name?: string;
+  client_document_type?: string;
+  client_document?: string;
+  client_email?: string;
+  active?: boolean;
+  isCanceled?: boolean;
+  cancellation_reason?: string;
+}
+
+
 export interface User {
   id: number;
   _id: number;
@@ -224,7 +244,7 @@ export interface User {
   notifications: Notification[];
   classesSeen: IndividualClass[];
   isMember: boolean
-  subscription: any
+  subscription: ISubscription
   freeSubscription: FreeSubscription;
   isVip: boolean;
 }

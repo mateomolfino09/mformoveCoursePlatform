@@ -28,8 +28,8 @@ export const sendSubscriptionEmail = async (
       buttonLink: `${origin}/home`,
     },
     active: {
-      title: "Tu subscripción está activa",
-      message: "Gracias por continuar con nosotros. Accede a tus clases y sigue avanzando en tu entrenamiento.",
+      title: "¡Se activó tu subscripción!",
+      message: "Gracias por elegirnos. Accede a tus clases y avanza en tu entrenamiento.",
       buttonText: "Empezar a moverme",
       buttonLink: `${origin}/home`,
     },

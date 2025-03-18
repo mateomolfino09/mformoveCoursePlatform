@@ -1,6 +1,6 @@
 'use client'
 import Membership from '../../../components/Membership';
-import { CourseUser, User } from '../../../../typings';
+import { CourseUser, Plan, User } from '../../../../typings';
 import cookie from 'js-cookie';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -45,6 +45,8 @@ function Profile() {
     setVisible(!visible)
   }
 
+  console.log(auth.user)
+
   useEffect(() => {
     const cookies: any = Cookies.get('userToken')
     
@@ -55,7 +57,10 @@ function Profile() {
     if(!auth.user) {
       auth.fetchUser()
     }
-    else if(auth?.user?.subscription?.planId) {
+
+    let plan: any = null
+
+    if(auth?.user?.subscription?.planId) {
       const fetchData = async () => {
         setLoading(true)
         try {
@@ -64,6 +69,8 @@ function Profile() {
           }).then((r) => r.json());
 
           setPlan(data?.plan)
+          fetchSubscriptionPeriod(data?.plan);
+
         } catch (err: any) {
           throw new Error(err)
         } finally {
@@ -71,9 +78,11 @@ function Profile() {
         }
       };
 
-      if(auth?.user?.subscription?.provider == "stripe") {
+      fetchData();
 
-        const fetchSubscriptionPeriod = async () => {
+      const fetchSubscriptionPeriod = async (plan:Plan) => {
+        console.log(plan)
+        if(plan.provider == "stripe") {
           setLoadingDates(true)
           try {
             const data = await fetch(endpoints.user.getSubscriptionPeriod(auth?.user?.subscription?.id), {
@@ -86,22 +95,15 @@ function Profile() {
             console.log(data)
   
           } catch (err: any) {
+            console.log(err)
             throw new Error(err)
           } finally {
             setLoadingDates(false);
           }
-
-
-        };
-    
-
-        fetchSubscriptionPeriod();
+        }
+      };
 
       }
-
-  
-      fetchData();
-    }
 
 
   }, [auth.user]);
@@ -141,7 +143,7 @@ function Profile() {
               </>
             )}
 
-            <p>{loadingDates || !startDate ? "" : "Renovación del plan el " + endDate}</p>
+            <p>{loadingDates || !startDate ? "" : auth?.user?.subscription?.isCanceled ? "Fin del plan el " + endDate : "Renovación del plan el " + endDate}</p>
           </div>
           
           {auth?.user?.subscription?.active || auth?.user?.isVip ? (

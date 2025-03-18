@@ -46,8 +46,13 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
     }
   }, [auth.user]);
 
+  useEffect(() => {
+    setPlanSelectedValue(planSelect[0]?.value ?? "¡Elegí ti Plan!")
+    setPlanSelected(plans.find(x => x.name === planSelect[0]?.label))
+  }, [plans])
+
   const [planSelectedValue, setPlanSelectedValue] = useState<string>(
-    planSelect[0]?.value ?? "Seleccionar plan"
+    planSelect[0]?.value ?? "¡Elegí ti Plan!"
   );
 
     const handleClick = async () => {
@@ -146,10 +151,10 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
   return (
     <div className='w-full px-3 py-12 relative flex flex-col lg:pr-36 pt-8'>
       <div className='flex md:space-y-1 flex-col mb-12 items-end pl-2 justify-end'>
-        <h1 className='text sm:text-7xl md:text-5xl lg:text-5xl font-light capitalize font-boldFont'>
-          Practica conmigo,
+        <h1 className='text sm:text-7xl md:text-5xl lg:text-5xl font-bold capitalize font-montserrat'>
+          Movete conmigo,
         </h1>
-        <h1 className='text sm:text-7xl md:text-4xl lg:text-5xl font-light capitalize font-boldFont'>
+        <h1 className='text sm:text-7xl md:text-4xl lg:text-5xl font-bold capitalize font-montserrat'>
           Potencia tu Entrenamiento.
         </h1>
       </div>
@@ -237,7 +242,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
         <Select
             options={planSelect}
             styles={colourStyles}
-            placeholder={planSelectedValue || 'Seleccionar plan'}
+            placeholder={planSelectedValue || '¡Elegí tu plan!'}
             className='w-72 mr-5'
             value={planSelectedValue}
             onChange={(e) => {
@@ -247,12 +252,15 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
         />
       </div>
       {!auth.user && (
+        <div className='w-full flex justify-end'>
         <div
           onClick={() => (state.loginForm = true)}
           className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '
         >
           <button className='w-full text-base md:text-lg'>Continuar </button>
         </div>
+        </div>
+
       )}
       <div className='w-full flex md:justify-end md:items-end'>
         {select === 'select' && auth.user ? (

@@ -116,7 +116,7 @@ function Membership({ user, handleVisibility, plan, loading }: Props) {
             {/* <Link href={'/account/billing'}>
               <p className='membershipLink'>Detalles de Facturación</p>
             </Link> */}
-              <p className={`membershipLink ${!auth?.user?.subscription?.active ? 'hidden' : ''} text-sm md:text-sm`} onClick={handleVisibility}>Cancelar Subscripción</p>
+              <p className={`membershipLink ${!auth?.user?.subscription?.active || auth?.user?.subscription?.isCanceled ? 'hidden' : ''} text-sm md:text-sm`} onClick={handleVisibility}>Cancelar Subscripción</p>
           </div>
         </div>
       </div>
