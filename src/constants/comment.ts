@@ -2,7 +2,7 @@ import { ClassesDB, IndividualClass, Question } from "../../typings";
 
 let usedComments: string[] = [];
 
-export const commentsFunction = (clase: IndividualClass, length: number): Question[] => {
+export const commentsFunction = (clase: IndividualClass, length: number): any[] => {
   // Función para obtener un comentario aleatorio sin repeticiones
   const getUniqueRandomComment = () => {
     // Obtiene un comentario aleatorio de la lista
