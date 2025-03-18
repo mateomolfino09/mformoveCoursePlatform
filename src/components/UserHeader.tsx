@@ -101,6 +101,18 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
         >
           <div className=''>
             <Link href={`${path === routes.navegation.selectPlan ? routes.navegation.membresiaHome : path === routes.navegation.membresiaHome ? "/" : "/"}`}>
+            <>
+              {showNav ? (
+                <>
+              <img
+                alt='icon image'
+                src='/images/MFORMOVE_blanco03.png'
+                width={180}
+                height={180}
+                className='cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-100'
+              /></>
+              ) : (
+              <>               
               <img
                 alt='icon image'
                 src='/images/MFORMOVE_v2.negro03.png'
@@ -108,6 +120,9 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
                 height={180}
                 className='cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-80'
               />
+              </>
+              )}
+            </>
             </Link>
           </div>
           <div className="flex w-full justify-center">
@@ -163,7 +178,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
             <Menu as='div' className='relative inline-block text-left'>
               <div>
                 <MenuButton className='inline-flex w-full justify-center items-center'>
-                      <CiMenuFries className='h-6 w-6' onClick={toggleNav}/>                  
+                      <CiMenuFries className={`h-6 w-6 ${showNav && 'text-white'}`} onClick={toggleNav}/>                  
                 </MenuButton>
               </div>
             </Menu>

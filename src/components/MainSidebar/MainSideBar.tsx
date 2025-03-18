@@ -38,11 +38,11 @@ const MainSideBar = ({ children, where }: Props) => {
   }
 
   return (
-    <div className={`absolute w-full h-full}`}>
+    <div className={`absolute w-full h-full`}>
       {(path == routes.navegation.membresiaHome || where === "productsHome") && (
         <HeaderHome user={auth.user} toggleNav={toggleNav} />
       )}
-      {(path == routes.navegation.selectPlan || path == routes.navegation.index || path == routes.user.login || path == routes.user.forgetEmail || path == routes.user.forget) && ( 
+      {(path == routes.navegation.selectPlan || path == routes.navegation.index || path == routes.user.login || path == routes.user.forgetEmail || path == routes.user.forget || path == routes.user.register || path.includes(routes.navegation.payments)) && ( 
       <IndexHeader user={auth.user} toggleNav={toggleNav} where={where} showNav={showNav} />
       )}
       {(path == routes.user.perfil) && ( 

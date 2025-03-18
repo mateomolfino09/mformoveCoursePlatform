@@ -9,7 +9,7 @@ export const revalidate = 0;
 export const fetchCache = 'force-no-store'
 export async function GET() {
   try {
-    const plans = await Plan.find({});
+    const plans = await Plan.find({ active: true });
     revalidateTag('plans');
     return NextResponse.json(plans, {
         status: 200,

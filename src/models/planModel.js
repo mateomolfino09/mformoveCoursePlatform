@@ -9,7 +9,6 @@ const planSchema = new mongoose.Schema(
     },
     merchant_id: {
       type: Number,
-      required: true
     },
     name: {
       type: String,
@@ -48,7 +47,6 @@ const planSchema = new mongoose.Schema(
     },
     free_trial_days: {
       type: Number,
-      required: true
     },
     plan_token: {
       type: String,
@@ -65,6 +63,12 @@ const planSchema = new mongoose.Schema(
     error_url: {
       type: String,
       required: true
+    },
+    provider: {
+      type: String,
+      required: true,
+      default: () => "dlocalgo"
+
     },
     createdAt: {
       type: Date,

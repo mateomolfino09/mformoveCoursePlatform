@@ -3,7 +3,6 @@ import connectDB from '../../../../config/connectDB';
 import Plan from '../../../../models/planModel';
 import User from '../../../../models/userModel';
 import { NextResponse } from 'next/server';
-import dLocalApi from '../dlocalTest';
 import absoluteUrl from 'next-absolute-url';
 import mailchimp from "@mailchimp/mailchimp_marketing";
 import { generateMd5 } from '../../helper/generateMd5';

@@ -1,6 +1,6 @@
 import { useAuth } from '../../../hooks/useAuth';
 import state from '../../../valtio';
-import { Transition } from '@headlessui/react';
+import { Button, Transition } from '@headlessui/react';
 import {
   CreditCardIcon,
   HomeIcon,
@@ -188,7 +188,7 @@ const LoginModal = () => {
   return (
     <>
       {!loginForm ? (
-        <div className='fixed flex justify-center md:items-center items-end w-full h-full bg-black/70 z-[300]'>
+        <div className='fixed flex justify-center md:items-center items-end w-full h-full bg-black/70 z-[300] font-montserrat'>
         <div className='w-96 md:w-[30rem] h-[90%] relative bottom-0 md:mb-12 md:h-[95%] md:mt-12 bg-white rounded-t-2xl md:rounded-2xl'>
             <CldImage layout='fill'
             alt="" src={"my_uploads/image00006_vimnul"} className="object-cover object-top rounded-2xl" />
@@ -256,14 +256,17 @@ const LoginModal = () => {
                       <p className={`text-red-500 text-xs italic ${errorMessage ? 'block' : 'hidden'}`}>{errorMessage}</p>
                     </div>
                     <div className="flex items-center justify-between h-12">
-                    <button
-                    type='submit'
+                      <Button
+                      type='submit'
                       className='w-full block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
-                    >
-                      <div className="absolute inset-0 w-0 bg-[#beac84] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
-                      <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Registrarme{' '}
+                      >
+                  <div className="absolute inset-0 w-0 transition-all duration-[750ms] rounded-md ease-out group-hover:w-full" style={{
+                    background: 'linear-gradient(to right, #beac84, #000000)',
+                    /* Otros estilos que desees aplicar */
+                  }}></div>
+                      <span className='text-white/80 transition-all group-hover:text-white group-hover:text-lg duration-[500ms] ease-out relative'>Crear Cuenta{' '}
                       </span>
-                    </button>
+                      </Button>
                     </div>
                     <div className="flex items-center mb-1 mt-3">
                           <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">Al subscribirte estas de acuerdo con nuestras
@@ -378,10 +381,10 @@ const LoginModal = () => {
         <div className='w-96 md:w-[30rem] h-[54%] relative bottom-0 md:mb-12 md:min-h-fit md:mt-12 bg-white rounded-t-2xl md:rounded-2xl'>
             <CldImage layout='fill'
             alt="" src={"my_uploads/image00006_vimnul"} className="object-cover object-top rounded-2xl" />
-            <div className='absolute bg-gradient-to-w from-stone-50 to-slate-50  h-full w-full rounded-2xl overflow-scroll scrollbar-hide'>
+            <div className='absolute bg-gradient-to-w from-stone-50 to-slate-50  h-full w-full rounded-2xl overflow-scroll scrollbar-hide font-montserrat'>
               <div className='w-full pt-12 pb-6 px-8 flex flex-col'> 
                 <div className='w-full relative flex justify-between'>
-                  <h1 className='text-black font-bold text-2xl md:text-3xl pr-12 mt-4 capitalize'>Ingresa tu cuenta para empezar</h1>
+                  <h1 className='text-black font-bold text-2xl md:text-3xl pr-12 mt-4 capitalize font-montserrat'>Ingresa tu cuenta para empezar</h1>
                   <IoCloseCircle className='w-8 h-8 absolute -right-3 -top-8 text-black cursor-pointer' onClick={() => state.loginForm = false}/>
                 </div>
 
@@ -414,14 +417,18 @@ const LoginModal = () => {
                     } } className="text-blue-600 hover:underline cursor-pointer"> Olvidé mi Contraseña</p></label>
                   </div>
                   <div className="flex items-center justify-between h-12">
-                  <button
-                  type='submit'
-                    className='w-full block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
-                  >
-                    <div className="absolute inset-0 w-0 bg-[#beac84] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
-                    <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Ingresar{' '}
+                  <Button
+                      type='submit'
+                      className='w-full block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
+                      >
+                  <div className="absolute inset-0 w-0 transition-all duration-[750ms] rounded-md ease-out group-hover:w-full" style={{
+                    background: 'linear-gradient(to right, #beac84, #000000)',
+                    /* Otros estilos que desees aplicar */
+                  }}></div>
+                    <span className='text-white transition-all group-hover:text-white duration-[500ms] ease-out relative group-hover:text-lg'>Ingresar{' '}
                     </span>
-                  </button>
+                      </Button>
+  
                   </div>
                   <div className="flex items-center mb-1 mt-3">
                     <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">¿No tenés una cuenta?

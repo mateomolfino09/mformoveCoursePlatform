@@ -15,11 +15,13 @@ const endpoints = {
     resetPasswordSend: `/api/user/auth/forget`,
     resetPasswordSendNoCaptcha: `/api/user/auth/forgetNoCaptcha`,
     resetPasswordSendMailchamp: `/api/auth/resetPasswordMailChamp`,
+    getUserPlan: (planId: string) => `api/user/getUserPlan/${planId}`
   },
   user: {
     update: (id: string) => `/api/user/update/${id}`,
     delete: (userId: string) => `/api/user/delete/${userId}`,
-    
+    getSubscriptionPeriod: (id: string) => `api/user/subscription/getSubscriptionPeriod/${id}`,
+
     //addUserToken : (userId: string, membershipToken:string,productId:string)=> `/api/user/memberships/${userId}/${membershipToken}/${productId}`,
     addUserToken : `/api/user/memberships/asignMembershipToken`
   },
@@ -47,7 +49,11 @@ const endpoints = {
     createProductUser: `/api/payments/oneTimePayment/createProductUser`,
     createFreeSubscription: `/api/payments/createFreeSubscription`,
     createPaymentToken: `/api/payments/createPaymentToken`,
-    cancelSubscription: (id:string) => `/api/payments/cancelSubscription/${id}`
+    cancelSubscription: (id:string) => `/api/payments/cancelSubscription/${id}`,
+    stripe: {
+      createPaymentURL: `/api/payments/stripe/createPaymentURL`,
+
+    }
   },
   admin: {
     emailMarketing: '/api/admin/emailMarketing'

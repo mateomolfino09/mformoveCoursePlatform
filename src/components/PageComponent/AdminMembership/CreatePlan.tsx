@@ -51,7 +51,7 @@ const CreatePlan = () => {
 
   }, [auth.user]);
 
-  async function handleSubmit(name: string, description: string, currency: string = "USD", amount: number, frequency_type: string) {
+  async function handleSubmit(name: string, description: string, currency: string = "USD", amount: number, amountAnual: number, frequency_type: string, useStripe: boolean) {
     setLoading(true);
 
     try {
@@ -61,13 +61,6 @@ const CreatePlan = () => {
         }
       };  
 
-      console.log(            name,
-        description,
-        currency,
-        amount,
-        frequency_type)
-
-
       const { data } = await axios.post(
         '/api/payments/createPlan',
         {       
@@ -75,7 +68,9 @@ const CreatePlan = () => {
             description,
             currency,
             amount,
-            frequency_type
+            amountAnual,
+            frequency_type,
+            useStripe
         },
         config
       );

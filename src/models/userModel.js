@@ -81,6 +81,10 @@ const subscriptionSchema = new mongoose.Schema(
       type: Boolean,
       default: () => false
     },
+    isCanceled: {
+      type: Boolean,
+      default: () => false
+    },
     cancellation_reason: {
       type: String,
       default: () => ''

@@ -3,6 +3,8 @@ import connectDB from '../../../../config/connectDB';
 import IndividualClassModel from '../../../../models/individualClassModel';
 import { IndividualClass } from '../../../../../typings';
 
+export const dynamic = "force-dynamic"; // 👈 Solución
+
 connectDB();
 export async function GET(req: any) {
   try {

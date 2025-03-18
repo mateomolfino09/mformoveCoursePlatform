@@ -2,7 +2,7 @@ import { verify } from 'jsonwebtoken';
 import connectDB from '../../../../config/connectDB';
 import Plan from '../../../../models/planModel';
 import { NextResponse } from 'next/server';
-import dLocalApi from '../dlocalTest';
+import dLocalApi from '../dlocalConfig';
 
 connectDB();
 

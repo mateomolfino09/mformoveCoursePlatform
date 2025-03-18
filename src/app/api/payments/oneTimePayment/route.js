@@ -4,7 +4,7 @@ import axios from 'axios';
 import { verify } from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
 import { NextResponse } from 'next/server';
-import dLocalApi from '../dlocalTest';
+import dLocalApi from '../dlocalConfig';
 import { getCurrentURL } from '../../assets/getCurrentURL'
 
 connectDB();
