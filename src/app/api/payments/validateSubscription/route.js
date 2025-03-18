@@ -3,7 +3,6 @@ import connectDB from '../../../../config/connectDB';
 import Plan from '../../../../models/planModel';
 import User from '../../../../models/userModel';
 import { NextResponse } from 'next/server';
-import dLocalApi from '../dlocalTest';
 import { subtle } from 'crypto';
 
 connectDB();

@@ -5,7 +5,6 @@ import absoluteUrl from 'next-absolute-url';
 import { serialize } from 'cookie';
 import { NextResponse } from 'next/server';
 import connectDB from '../../../../config/connectDB';
-import dLocalApi from '../dlocalTest';
 import mailchimp from "@mailchimp/mailchimp_marketing";
 
 export async function POST(req) {

@@ -1,6 +1,6 @@
 import connectDB from '../../../config/connectDB';
 import Question from '../../../models/questionModel';
-import dLocalApi from './dlocalTest';
+import dLocalApi from './dlocalConfig';
 
 connectDB();
 

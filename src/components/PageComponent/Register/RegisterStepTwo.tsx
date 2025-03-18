@@ -8,6 +8,7 @@ import { addStepTwo } from '../../../redux/features/register'
 import './registerStyle.css';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { useAppSelector } from '../../../redux/hooks';
+import { Field, Input, Label } from '@headlessui/react';
 
 const colourStyles: StylesConfig<any> = {
   control: (styles) => ({
@@ -69,38 +70,37 @@ const RegisterStepTwo = ({ step2ToStep3, step2ToStep1, signUp }: Props) => {
       className='w-[100vw] h-full px-1'
     >
       {/* Logo position */}
-      <div className='flex flex-col items-center justify-center relative mt-20 sm:mt-24 space-y-4 rounded py-12 '>
+      <div className='flex flex-col items-center justify-center relative mt-0 sm:mt-24 space-y-4 rounded py-2 '>
         <AiOutlineCheckCircle className='check-icon' />
         <p className='step'>PASO 2 DE 2</p>
-        <h1 className='title-step-one font-boldFont'>
-          Ya estamos por terminar!
+        <h1 className='title-step-one font-montserrat'>
+          ¡Ya estamos por terminar!
         </h1>
-        <h2 className='subtitle-step-one'>
-          Crea una contraseña segura para tu cuenta
-        </h2>
       </div>
-      <div className='flex flex-col items-center justify-center relative space-y-4 rounded px-8 md:w-full'>
-        <div className='md:space-x-4 space-y-3 md:space-y-0 flex flex-col md:flex-row'>
-          <label className=''>
-            <input
-              type='password'
-              placeholder='Contraseña'
-              className='input transition duration-1000'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={keyDownHandler}
-            />
-          </label>
-          <label className=''>
-            <input
-              type='password'
-              placeholder='Confirmar Contraseña'
-              className='input transition duration-1000'
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              onKeyDown={keyDownHandler}
-            />
-          </label>
+      <div className='flex flex-col items-center justify-center relative space-y-4 rounded px-8 w-full'>
+        <div className=' w-full md:w-96 space-y-3 md:space-y-0 flex flex-col'>
+          <Field>
+          <Label className="text-xs font-medium text-white">Contraseña</Label>
+          <Input
+            value={password}
+            type='password'
+            placeholder='Contraseña'
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={keyDownHandler}
+            className="mt-1 block w-full rounded-lg border-none bg-white/5 py-1.5 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2"
+          />
+        </Field>
+        <Field>
+          <Label className="text-xs font-medium text-white">Confirmar Contraseña</Label>
+          <Input
+            value={confirmPassword}
+            type='password'
+            placeholder='Confirmar Contraseña'
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            onKeyDown={keyDownHandler}
+            className="mt-1 block w-full rounded-lg border-none bg-white/5 py-1.5 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2"
+          />
+        </Field>
         </div>
         <div className='space-x-4 flex' />
         <div className='w-full flex justify-center items-center space-x-4 mt-3 pb-12'>

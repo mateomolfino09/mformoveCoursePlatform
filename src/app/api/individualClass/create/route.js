@@ -111,7 +111,7 @@ export async function POST(req) {
             </p>
             <hr style="border: none; border-top: 1px solid #eeeeee; margin: 20px 0;">
             <p style="font-size: 12px; color: #999999; text-align: center;">
-              © 2024 MForMove. Todos los derechos reservados.
+              © 2025 MForMove. Todos los derechos reservados.
             </p>
           </div>
         </div>

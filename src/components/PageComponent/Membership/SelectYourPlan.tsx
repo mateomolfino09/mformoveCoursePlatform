@@ -25,7 +25,7 @@ interface Props {
 }
 
 const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
-    const [planSelected, setPlanSelected] = useState<Plan | null | undefined>(plans[0])
+    const [planSelected, setPlanSelected] = useState<Plan | null | undefined>(plans[0] ?? null)
     const [loading, setLoading] = useState<boolean>(false)
 
     const auth = useAuth()
@@ -37,13 +37,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
                 value: p.name,
                 label: p.name
             }
-        }), 
-        {
-            value: "Comunidad Gratuita",
-            label: "Comunidad Gratuita"
-        }
-
-    
+        })
     ]
 
   useEffect(() => {
@@ -52,8 +46,13 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
     }
   }, [auth.user]);
 
+  useEffect(() => {
+    setPlanSelectedValue(planSelect[0]?.value ?? "¡Elegí ti Plan!")
+    setPlanSelected(plans.find(x => x.name === planSelect[0]?.label))
+  }, [plans])
+
   const [planSelectedValue, setPlanSelectedValue] = useState<string>(
-    planSelect[0].value
+    planSelect[0]?.value ?? "¡Elegí ti Plan!"
   );
 
     const handleClick = async () => {
@@ -67,7 +66,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
         setLoading(true)
 
         try {
-            if(planSelectedValue != "Comunidad Gratuita") {
+            if(planSelected?.provider != "stripe") {
                 const res = await fetch(endpoints.payments.createPaymentToken, {
                     method: 'POST',
                     headers: {  
@@ -91,25 +90,38 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
 
 
             }
-            else {
-                console.log(email)
-                const res = await fetch(endpoints.payments.createFreeSubscription, {
-                    method: 'PUT',
-                    headers: {  
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email }),
-                  })
-        
-                const data = await res.json()
-                setLoading(false)
-        
-                const { message, user, success } = data
+            else{
+              try {
+                const res = await fetch(endpoints.payments.stripe.createPaymentURL, {
+                  method: 'POST',
+                  headers: {  
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ email, planId: planSelected?.id }),
+                })
 
-                if(success)
-                toast.success(message)
-                else
-                toast.error(message)
+  
+                const data = await res.json()
+                console.log(data)
+
+                setLoading(false)
+  
+                if(!data.success) {
+                    toast.error(data.message)
+                    return
+                }
+        
+                const { url, planToken } = data;
+                Cookies.set('planToken', planToken ? planToken : '', { expires: 5})
+  
+                router.push(url)
+              }
+              catch (error: any) {
+                console.log(error)
+                setLoading(false);
+                toast.error(error?.message);
+              }
+
             }
         } catch (error: any) {
             console.log(error)
@@ -139,10 +151,10 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
   return (
     <div className='w-full px-3 py-12 relative flex flex-col lg:pr-36 pt-8'>
       <div className='flex md:space-y-1 flex-col mb-12 items-end pl-2 justify-end'>
-        <h1 className='text sm:text-7xl md:text-5xl lg:text-5xl font-light capitalize font-boldFont'>
-          Practica conmigo,
+        <h1 className='text sm:text-7xl md:text-5xl lg:text-5xl font-bold capitalize font-montserrat'>
+          Movete conmigo,
         </h1>
-        <h1 className='text sm:text-7xl md:text-4xl lg:text-5xl font-light capitalize font-boldFont'>
+        <h1 className='text sm:text-7xl md:text-4xl lg:text-5xl font-bold capitalize font-montserrat'>
           Potencia tu Entrenamiento.
         </h1>
       </div>
@@ -230,7 +242,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
         <Select
             options={planSelect}
             styles={colourStyles}
-            placeholder={planSelectedValue || 'Nivel de clase'}
+            placeholder={planSelectedValue || '¡Elegí tu plan!'}
             className='w-72 mr-5'
             value={planSelectedValue}
             onChange={(e) => {
@@ -240,16 +252,18 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
         />
       </div>
       {!auth.user && (
+        <div className='w-full flex justify-end'>
         <div
           onClick={() => (state.loginForm = true)}
           className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '
         >
           <button className='w-full text-base md:text-lg'>Continuar </button>
         </div>
+        </div>
+
       )}
       <div className='w-full flex md:justify-end md:items-end'>
         {select === 'select' && auth.user ? (
-          // <a target="_blank" href={`https://checkout-sbx.dlocalgo.com/validate/subscription/${planSelected?.plan_token}`} rel="noopener noreferrer" >
           <div
             onClick={handleClick}
             className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '
@@ -282,7 +296,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
     ) : (
         <>
             <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-4 mt-5 text-center text-xs md:text-sm font-light'>
-                <p>{planSelected?.amount} {planSelected?.currency} facturado {planSelected?.frequency_label} {planSelected?.frequency_label === "Anual" && `(ahorra ${planSelected?.amount - 12 * (plans.find(x => x.frequency_label != planSelected?.frequency_label && x.frequency_value)?.amount ?? 0)} ${planSelected?.currency})`} facturado hoy.</p>
+                <p>{planSelected?.amount} {planSelected?.currency} facturado {planSelected?.frequency_label} {planSelected?.frequency_label === "Anual" && `(ahorra ${Math.round(-planSelected?.amount + 12 * (plans.find(x => x.frequency_label != planSelected?.frequency_label && x.frequency_value)?.amount ?? 0))} ${planSelected?.currency})`} facturado hoy.</p>
                 <p>Enviamos recordatorio antes de facturar para evitar pagos no deseados.</p>
             </div>
         </>

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 
 let API_BASE_URL;
 
@@ -8,7 +8,7 @@ if (process.env.NODE_ENV != 'production') {
   API_BASE_URL = "https://api.dlocalgo.com/v1"
 }
 
-const dLocalApi = axios.create({
+const dLocalApi: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',

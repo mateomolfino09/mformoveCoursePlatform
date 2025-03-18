@@ -1,3 +1,4 @@
+import { payments } from "./payments";
 
 export const routes = {
     user: {
@@ -15,6 +16,7 @@ export const routes = {
         mentoria: '/mentoria',
         preguntasFrecuentes: '/faq',
         index: '/',
-        products: '/products'
+        products: '/products',
+        payments: `/payment`
     }
 }
