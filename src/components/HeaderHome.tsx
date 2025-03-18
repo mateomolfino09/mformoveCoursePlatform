@@ -17,7 +17,6 @@ import { useSnapshot } from 'valtio';
 import endpoints from '../services/api';
 import { CiMenuFries } from "react-icons/ci";
 import { useAppSelector } from '../redux/hooks';
-import { routes } from '../constants/routes';
 
 interface Props {
   user: User | null;
@@ -77,7 +76,7 @@ const HeaderHome = ({ user, toggleNav }: Props) => {
           className={`${headerScroll ? 'bg-black/80 fixed' : 'bg-transparent fixed'} ${isScrolled && 'bg-[#141414]'}  w-full h-16 flex justify-between items-center transition-all duration-500 z-[250]`}
         >
           <div className='pl-4 md:pl-16'>
-            <a href={pathname != routes.navegation.membresiaHome ? routes.navegation.membresiaHome : `/`}>
+            <a href={pathname != '/home' ? '/home' : `/`}>
               <img
                 alt='icon image'
                 src='/images/MFORMOVE_blanco03.png'

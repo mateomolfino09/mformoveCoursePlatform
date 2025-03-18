@@ -15,10 +15,6 @@ import state from '../../../valtio';
 import Footer from '../../Footer';
 import FooterProfile from '../Profile/FooterProfile';
 import AlertComponent from '../../AlertComponent';
-import MainSideBar from '../../MainSidebar/MainSideBar';
-import LoginModalForm from './AccountForm';
-import NewsletterF from '../Index/NewsletterForm';
-import Footprint from '../../svg/FootPrint'
 
 function LoginForm() {
   const [loading, setLoading] = useState(false);
@@ -53,7 +49,9 @@ function LoginForm() {
 
     auth.signIn(email, password).then((res: any) => {
       if (res.type != 'error') {
-          router.push(routes.navegation.membresia(res?.user?.subscription?.active || res?.user?.isVip));
+        if (res?.user?.subscription?.active || res?.user?.isVip)
+          router.push('/home');
+        else router.push('/select-plan');
       } else {
         setMessage((current: any) => [
           ...current,
@@ -69,10 +67,9 @@ function LoginForm() {
 
   return (
     <div>
-      <MainSideBar where={"index"}>
-      <div className='main-container background-gradient-right'>
-        {/* <div className='background-image background-gradient'>
-        <Image
+      <div className='main-container'>
+        <div className='background-image background-gradient'>
+          <Image
             src='/images/image00029.jpeg'
             // src={srcImg}
             alt={'image'}
@@ -92,19 +89,10 @@ function LoginForm() {
               </a>
             </div>
           </div>
-        </div> */}
+        </div>
         <div className='right-container'>
           <div className='right-card-container'>
-          <Image
-            src='/images/image00029.jpeg'
-            // src={srcImg}
-            alt={'image'}
-            fill={true}
-            loader={imageLoader}
-            className='image-gradient-right max-h-screen'
-          />
-            <LoginModalForm submitFunction={signinUser} buttonTitle={"Ingresar"} showEmail={true} showPassword={true} title='Ingresar al sitio' showForget={true} showLogIn={false}/>
-            {/* <form className='form-container' action={signinUser}>
+            <form className='form-container' action={signinUser}>
               <h1 className='sub-title font-boldFont'>Sign In</h1>
               <p className='sub-p'>
                 Te damos la bienvenida al mundo del movimiento :)
@@ -172,17 +160,14 @@ function LoginForm() {
     <span className='links text-center mt-2 md:mt-0'>¿No tienes una cuenta todavía?</span>
   </Link>
             </div>
-            </form> */}
+            </form>
           </div>
           {message?.map((mes: any) => (
             <AlertComponent type={mes.type} message={mes.message} />
           ))}
         </div>
       </div>
-      <NewsletterF/>
-      <Footer />
-      </MainSideBar>
-
+      <FooterProfile />
     </div>
   );
 }

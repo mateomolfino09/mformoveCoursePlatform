@@ -17,7 +17,6 @@ import { useRouter, usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useSnapshot } from 'valtio';
-import { routes } from '../constants/routes';
 
 interface Props {
   course: CoursesDB;
@@ -78,7 +77,7 @@ const PaymentGateway = ({ user, course }: Props) => {
           <m.header className={``} {...slideAnimation('down')}>
             <m.div
               {...headContentAnimation}
-              onClick={() => handleRouteChange(routes.navegation.membresiaHome)}
+              onClick={() => handleRouteChange('/home')}
             >
               <img
                 alt='Logo Video Stream'

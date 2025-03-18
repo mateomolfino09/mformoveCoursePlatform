@@ -46,7 +46,6 @@ import ClassData from './ClassData';
 import ClassDescription from './ClassDescription';
 import Footer from '../../Footer';
 import VimeoPlayer from './VimeoPlayer';
-import { routes } from '../../../constants/routes';
 
 interface Props {
   clase: IndividualClass;
@@ -162,7 +161,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
     }
 
     if(!auth.user && !clase?.isFree || (!auth?.user?.subscription?.active && auth?.user?.rol != 'Admin' && !auth?.user?.isVip && !clase?.isFree)) {
-      router.push(routes.navegation.membresiaHome)
+      router.push('/home')
     }
 
     if(!auth.user) {

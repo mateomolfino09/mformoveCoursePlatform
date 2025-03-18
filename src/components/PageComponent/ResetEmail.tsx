@@ -10,8 +10,6 @@ import { useRouter, usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../hooks/useAuth';
-import MainSideBar from '../MainSidebar/MainSideBar';
-import { routes } from '../../constants/routes';
 
 function Forget() {
   const [email, setEmail] = useState('');
@@ -23,7 +21,7 @@ function Forget() {
     const cookies: any = Cookies.get('userToken')
   
     if (!cookies) {
-      router.push(routes.navegation.membresiaHome);
+      router.push('/home');
     }
   }, [router]);
 
@@ -40,8 +38,11 @@ function Forget() {
 
   return (
     <div className='relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent'>
-      <MainSideBar where={"index"}>
-
+      <Head>
+        <title>Video Streaming</title>
+        <meta name='description' content='Stream Video App' />
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
       <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
         <Image
           src='/images/bgIndex1.jpg'
@@ -96,7 +97,7 @@ function Forget() {
           </form>
           <div className='flex items-start justify-between flex-row'>
             <div className='text-xl md:text-sm'>
-              <Link href={routes.navegation.membresiaHome}>
+              <Link href={'/home'}>
                 <button
                   type='button'
                   className='text-white hover:underline cursor-pointer'
@@ -117,7 +118,6 @@ function Forget() {
           </div>
         </div>
       </div>
-      </MainSideBar>
     </div>
   );
 }

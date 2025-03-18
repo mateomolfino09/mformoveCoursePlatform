@@ -17,7 +17,6 @@ import { useSnapshot } from 'valtio';
 import endpoints from '../../../services/api';
 import { CiMenuFries } from "react-icons/ci";
 import { useAppSelector } from '../../../redux/hooks';
-import { routes } from '../../../constants/routes';
 
 interface Props {
   user: User | null;
@@ -59,7 +58,7 @@ const ProductHeader = ({ user, toggleNav }: Props) => {
             className={` w-full h-full flex justify-between items-center`}
             >
             <div className='pl-4 md:pl-16'>
-                <a href={pathname != routes.navegation.membresiaHome ? routes.navegation.membresiaHome : `/`}>
+                <a href={pathname != '/home' ? '/home' : `/`}>
                 <img
                     alt='icon image'
                     src='/images/MFORMOVE_v2.negro03.png'

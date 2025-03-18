@@ -13,7 +13,6 @@ import { RxCrossCircled } from 'react-icons/rx';
 import { useDispatch } from 'react-redux';
 import Select, { StylesConfig } from 'react-select';
 import { toast } from 'react-toastify';
-import { routes } from '../../../constants/routes';
 
 interface Props {
   handleSubmit: any;
@@ -177,7 +176,7 @@ const CreatePlanStepOne = ({ handleSubmit }: Props) => {
           </button>
           <div className='text-[gray]'>
             Volver al Inicio
-            <Link href={routes.navegation.membresiaHome}>
+            <Link href={'/home'}>
               <button type='button' className='text-white hover:underline ml-2'>
                 {' '}
                 Volver

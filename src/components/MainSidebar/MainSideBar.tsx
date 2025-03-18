@@ -6,7 +6,7 @@ import AdminDashboardSideBar from '../AdminDashboardSideBar';
 import AdminDashboardTopBar from '../AdminDashboardTopBar';
 import { Transition } from '@headlessui/react';
 import axios from 'axios';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, { Fragment, useEffect, useState } from 'react';
 import MainSideBarDash from './MainSideBarDash';
@@ -15,8 +15,6 @@ import ProductHeader from '../PageComponent/Products/HeaderProduct';
 import { useSnapshot } from 'valtio';
 import state from '../../valtio';
 import LoginModal from '../PageComponent/Login/LoginModal';
-import { routes } from '../../constants/routes';
-import UserHeader from '../UserHeader';
 
 interface Props {
   children: any;
@@ -26,7 +24,6 @@ interface Props {
 const MainSideBar = ({ children, where }: Props) => {  
   const auth = useAuth()
   const [showNav, setShowNav] = useState(false);
-  const path = usePathname();
   const [isMobile, setIsMobile] = useState(false);
   const cookies = parseCookies();
   const router = useRouter();
@@ -37,18 +34,27 @@ const MainSideBar = ({ children, where }: Props) => {
     setShowNav(!showNav)
   }
 
+  // useEffect(() => {
+  //   if (typeof window !== 'undefined') {
+  //     addEventListener('resize', handleResize);
+  //   }
+
+  //   return () => {
+  //     removeEventListener('resize', handleResize);
+  //   };
+  // }, []);
   return (
     <div className={`absolute w-full h-full}`}>
-      {(path == routes.navegation.membresiaHome || where === "productsHome") && (
+      {where === "home" || where === "productsHome" && (
         <HeaderHome user={auth.user} toggleNav={toggleNav} />
       )}
-      {(path == routes.navegation.selectPlan || path == routes.navegation.index || path == routes.user.login || path == routes.user.forgetEmail || path == routes.user.forget) && ( 
-      <IndexHeader user={auth.user} toggleNav={toggleNav} where={where} showNav={showNav} />
+      {where === "selectPlan" && ( 
+      <IndexHeader user={auth.user} toggleNav={toggleNav} where={where} />
       )}
-      {(path == routes.user.perfil) && ( 
-      <UserHeader user={auth.user} toggleNav={toggleNav} where={where} showNav={showNav} />
+      {where === "index" && ( 
+      <IndexHeader user={auth.user} toggleNav={toggleNav} where={where} />
       )}
-      {path === routes.navegation.products && ( 
+      {where === "product" && ( 
       <ProductHeader user={auth.user} toggleNav={toggleNav} />
       )}
       {showNav ? (

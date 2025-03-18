@@ -24,7 +24,6 @@ import { motion as m, useAnimation } from 'framer-motion';
 import './registerStyle.css';
 import ResendEmail from './ResendEmail';
 import { useAuth } from '../../../hooks/useAuth';
-import { routes } from '../../../constants/routes';
 
 interface Inputs {
   email: string;
@@ -212,7 +211,7 @@ function Register() {
           setState({ ...state, stepThree: false });
 
           setTimeout(() => {
-            router.push(routes.navegation.membresiaHome)
+            router.push('/home')
           }, 3000)
 
         })
@@ -279,7 +278,7 @@ function Register() {
     const cookies: any = Cookies.get('userToken')
   
     if (cookies) {
-      router.push(routes.navegation.membresiaHome);
+      router.push('/home');
     }
   }, [router]);
   //using React Hook Form library

@@ -103,7 +103,7 @@ const RegisterStepTwo = ({ step2ToStep3, step2ToStep1, signUp }: Props) => {
           </label>
         </div>
         <div className='space-x-4 flex' />
-        <div className='w-full flex justify-center items-center space-x-4 mt-3 pb-12'>
+        <div className='w-full flex flex-col justify-center items-center space-y-2 md:space-y-0 md:space-x-4 md:mt-3'>
         <div onClick={() =>  handleClickBack()} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
                   <p className='text-white group-hover:text-black'>Volver</p>
 
@@ -111,19 +111,8 @@ const RegisterStepTwo = ({ step2ToStep3, step2ToStep1, signUp }: Props) => {
         <div onClick={(e: any) =>  handleClick(e)} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
                   <p className='text-white group-hover:text-black'>Registrarme</p>
                   <ArrowRightIcon className='w-4 group-hover:text-black ml-2 group-hover:translate-x-1 transition-all duration-500'/>
-
               </div>
         </div>
-        {/* <div className='w-full flex flex-col justify-center items-center space-y-2 md:space-y-0 md:space-x-4 md:mt-3'>
-        <div onClick={() =>  handleClickBack()} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
-                  <p className='text-white group-hover:text-black'>Volver</p>
-
-              </div>
-        <div onClick={(e: any) =>  handleClick(e)} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
-                  <p className='text-white group-hover:text-black'>Registrarme</p>
-                  <ArrowRightIcon className='w-4 group-hover:text-black ml-2 group-hover:translate-x-1 transition-all duration-500'/>
-              </div>
-        </div> */}
       </div>
     </div>
   );

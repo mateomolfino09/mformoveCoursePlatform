@@ -14,10 +14,6 @@ import { alertTypes } from '../../../constants/alertTypes';
 import AlertComponent from '../../AlertComponent';
 import Cookies from 'js-cookie';
 import ReCAPTCHA from 'react-google-recaptcha';
-import MainSideBar from '../../MainSidebar/MainSideBar';
-import AccountForm from '../Login/AccountForm';
-import NewsletterF from '../Index/NewsletterForm';
-import Footer from '../../Footer';
 
 function ForgetForm() {
   const [message, setMessage] = useState<any>([]);
@@ -37,7 +33,7 @@ function ForgetForm() {
     const cookies: any = Cookies.get('userToken');
 
     if (!cookies) {
-      router.push(routes.navegation.membresiaHome);
+      router.push('/home');
     }
   }, [router]);
 
@@ -106,22 +102,32 @@ function ForgetForm() {
   };
 
   return (
-    <div>
-    <MainSideBar where={"index"}>
-      <div className='main-container background-gradient-right'>
+    <div className="main-container">
+      <div className="background-image background-gradient">
+          <Image
+            src='/images/image00029.jpeg'
+            // src={srcImg}
+            alt={'image'}
+            fill={true}
+            loader={imageLoader}
+            className='image-gradient'
+          />
+        <div className="left-container">
+        <h1 className="title font-boldFont">MForMove Platform</h1>
+        <p className="text !mt-0">Moverse es el medio para reconocerse</p>
+        <div className='about-us-btn-container'>
+            <a
+              href='/select-plan'
+              className='about-us-btn !py-3 rounded-full font-light font-montserrat !px-3'
+            >
+              Membresias
+            </a>
+          </div>
+        </div>
+      </div>
       <div className='right-container'>
-      <div className='right-card-container'>
-      <Image
-                  src='/images/image00029.jpeg'
-                  // src={srcImg}
-                  alt={'image'}
-                  fill={true}
-                  loader={imageLoader}
-                  className='image-gradient-right max-h-screen'
-                />
-          <AccountForm title={"Cambiar Email"}  submitFunction={forget} buttonTitle={"Recuperar"} showEmail={true} showPassword={false} showForget={false} showLogIn={true}/>
-                
-          {/* <form className='form-container' action={forget}>
+        <div className='right-card-container'>
+          <form className='form-container' action={forget}>
             <h1 className='sub-title'>Cambiar Email</h1>
             <p className='sub-p'>Ingresa el email para verificar su cuenta</p>
             <div className='input-container mb-8'>
@@ -158,27 +164,22 @@ function ForgetForm() {
               {loading && <MiniLoadingSpinner />}
             </div>
             <div className='flex flex-col md:flex-row md:justify-between mt-4 text-sm text-gray-500'>
-              <Link href={routes.user.login}>
-                <span className='links text-center'>Ingresar a mi cuenta</span>
-              </Link>
-              <Link href={routes.user.register}>
-                <span className='links text-center mt-2 md:mt-0'>¿No tienes una cuenta todavía?</span>
-              </Link>
-            </div>
+  <Link href={routes.user.login}>
+    <span className='links text-center'>Ingresar a mi cuenta</span>
+  </Link>
+  <Link href={routes.user.register}>
+    <span className='links text-center mt-2 md:mt-0'>¿No tienes una cuenta todavía?</span>
+  </Link>
+</div>
 
-          </form> */}
+          </form>
         </div>
         {message.length > 0 &&
           message?.map((mes: any) => (
             <AlertComponent type={mes.type} message={mes.message} />
           ))}
       </div>
-      </div>
-      <NewsletterF/>
-      <Footer />
-      </MainSideBar>
     </div>
-
   );
 }
 

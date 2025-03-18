@@ -4,7 +4,7 @@
 
 @layer components {
   .background-gradient {
-    background: white;
+    background: linear-gradient(rgba(2, 2, 2, 0.442), rgba(0, 0, 0, 0.7));
   }
 
   .background-image {
@@ -64,13 +64,13 @@
     @apply mt-6 grid grid-cols-1 gap-x-4 border px-4 py-4 md:grid-cols-4 md:border-x-0 md:border-t md:border-b-0 md:px-0 md:pb-0;
   }
   .second-title {
-    @apply text-lg text-[gray] font-light text-start md:text-center
+    @apply text-lg text-[gray] font-light;
   }
   .paragraph {
     @apply cursor-pointer text-blue-500 hover:underline md:text-right font-light;
   }
   .paragraph-third {
-    @apply col-span-3 text-start cursor-pointer text-blue-500 hover:underline font-light;
+    @apply col-span-3 cursor-pointer text-blue-500 hover:underline font-light;
   }
   .title {
     @apply text-3xl md:text-4xl font-light;
