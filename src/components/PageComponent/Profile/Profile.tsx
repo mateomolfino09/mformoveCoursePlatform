@@ -15,12 +15,24 @@ import './profileStyle.css';
 import Footer from '../../Footer';
 import FooterProfile from './FooterProfile';
 import UnsubscribeModal from './UnsubscribeModal';
+import MainSideBar from '../../MainSidebar/MainSideBar';
+import { Button, Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 
 function Profile() {
   const router = useRouter();
   const auth = useAuth()
   const aRef = useRef<any>(null)
   const [visible, setVisible] = useState<boolean>(false)
+  let [isOpen, setIsOpen] = useState(false)
+
+  function open() {
+    setIsOpen(true)
+  }
+
+  function close() {
+    setIsOpen(false)
+  }
+
 
   const handleVisibility = () => {
     setVisible(!visible)
@@ -52,13 +64,15 @@ function Profile() {
   ).length;
 
   return (
-    <div className='main-container font-montserrat'>
-      <main className='sub-main-container h-screen'>
+
+    <div className='main-container w-full h-screen font-montserrat'>
+      <MainSideBar where={"index"}>
+      <main className='sub-main-container mt-4 font-light md:mt-0 h-screen'>
         <div className='title-container'>
-          <h1 className='title text-black font-light'>Mi Cuenta</h1>
+          <h1 className='title text-black font-light text-start md:text-center'>Mi Cuenta</h1>
         </div>
 
-        <Membership user={auth.user} handleVisibility={handleVisibility}/>
+        <Membership user={auth.user} handleVisibility={open}/>
         <div className='second-container'>
           <h4 className='second-title '>Detalles del Plan</h4>
           <div className='col-span-2 font-medium'>
@@ -80,13 +94,13 @@ function Profile() {
             </p>
           </Link>
             ) : (
-              <a href='/select-plan' className='paragraph'>
+              <a href='/select-plan' className='paragraph font-medium underline text-start md:text-end'>
               Subscribirme
               </a>
             )}
         </div>
         <div className='second-container'>
-          <h4 className='second-title '>Ajustes</h4>
+          <h4 className='second-title '>Salir</h4>
           <p
             className='paragraph-third'
             onClick={(e) => logoutHandler(e)}
@@ -98,8 +112,12 @@ function Profile() {
       </main>
       <hr className='w-full border-[0.5px] border-solid border-black'/>
       <FooterProfile />
-      <UnsubscribeModal handleVisiblity={handleVisibility} visible={visible}/>
+      <UnsubscribeModal handleVisiblity={open} visible={isOpen} close={close}/>
+
+      </MainSideBar>
+
     </div>
+
   );
 }
 

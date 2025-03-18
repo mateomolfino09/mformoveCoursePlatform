@@ -19,6 +19,8 @@ const connectDB = () => {
     return;
   }
 
+  console.log(process.env.MONGODB_URI)
+
   mongoose.connect(
     process.env.MONGODB_URI,
     {

@@ -1,6 +1,5 @@
 import { User } from '../../typings';
 import state from '../valtio';
-import { Menu, Popover, Transition } from '@headlessui/react';
 import { BellIcon, CheckIcon } from '@heroicons/react/24/outline';
 import {
   Bars3CenterLeftIcon,
@@ -12,24 +11,33 @@ import {
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { Fragment, useContext, useEffect, useState } from 'react';
+import { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import { useSnapshot } from 'valtio';
 import endpoints from '../services/api';
 import { CiMenuFries } from "react-icons/ci";
 import { useAppSelector } from '../redux/hooks';
 import { throttle } from 'lodash';
+import { Menu, MenuButton, Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
+import { useAuth } from '../hooks/useAuth';
+import { routes } from '../constants/routes';
 
 interface Props {
   user: User | null;
   toggleNav: any
   where: any
+  showNav: any
 }
-const IndexHeader = ({ user, toggleNav, where }: Props) => {
+const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
   const router = useRouter();
   const path = usePathname()
   const headerAnimation = useAnimation();
   const [isScrolled, setIsScrolled] = useState(false);
+  const auth = useAuth();
+    const linkRef = useRef<HTMLAnchorElement | null>(null);
 
+    const handleClick = () => {
+      linkRef.current?.click(); // Simula el clic en el enlace oculto
+    };
   const [domLoaded, setDomLoaded] = useState(false);
   const snap = useSnapshot(state);
   const headerScroll = useAppSelector(
@@ -89,10 +97,10 @@ const IndexHeader = ({ user, toggleNav, where }: Props) => {
             opacity: 1
           }}
           animate={headerAnimation}
-          className={`bg-transparent fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${(isScrolled || headerScroll) && 'bg-[#141414]'}`}
+          className={`bg-transparent fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${(isScrolled || headerScroll) && 'bg-[#141414]'} ${(path === routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && !isScrolled && !headerScroll && 'md:bg-[#1414147c]'}`}
         >
-          <div className='pl-4 md:pl-16'>
-            <Link href={`${path === "/select-plan" ? "/home" : path === "/home" ? "/" : "/"}`}>
+          <div className=''>
+            <Link href={`${path === routes.navegation.selectPlan ? routes.navegation.membresiaHome : path === routes.navegation.membresiaHome ? "/" : "/"}`}>
               <img
                 alt='icon image'
                 src='/images/MFORMOVE_blanco03.png'
@@ -102,12 +110,69 @@ const IndexHeader = ({ user, toggleNav, where }: Props) => {
               />
             </Link>
           </div>
+          <div className="flex w-full justify-center">
+          <div className={`gap-8 font-montserrat relative -left-8 ${showNav ? 'md:hidden' : 'md:flex'} hidden`}>
+          <Popover>
+              <PopoverButton className="block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white font-normal">
+              Escuela
+              </PopoverButton>
+              <PopoverPanel
+                transition
+                anchor="bottom"
+                className="divide-y divide-white/5 rounded-xl bg-white/5 text-sm/6 transition duration-200 ease-in-out [--anchor-gap:var(--spacing-8)] data-[closed]:-translate-y-1 data-[closed]:opacity-0 mt-4 font-normal"
+              >
+                <div className="p-4 font-montserrat">
+                  <a className="block rounded-lg py-2 px-3 transition hover:bg-white/5" target="_blank" href="https://www.google.com/maps/place/Kinetikuy/@-34.9040232,-56.1706911,17z/data=!3m1!4b1!4m6!3m5!1s0x959f81d3c44ddd3d:0x4850160c4c6b00bb!8m2!3d-34.9040232!4d-56.1681108!16s%2Fg%2F11g0tpk3g3?entry=ttu&g_ep=EgoyMDI1MDIyNC4wIKXMDSoASAFQAw%3D%3D">
+                    <p className="font-semibold text-white text-lg">Montevideo</p>
+                    <p className="text-white/50 font-light -mt-1">Kinetic</p>
+                  </a>
+                  {/* <a className="block rounded-lg py-2 px-3 transition hover:bg-white/5" href="#">
+                    <p className="font-semibold text-white text-lg">Mentoría Online</p>
+                    <p className="text-white/50 font-light -mt-1">Próximamente...</p>
+                  </a>
+                  <a className="block rounded-lg py-2 px-3 transition hover:bg-white/5" href="#">
+                    <p className="font-semibold text-white text-lg">Clases Presenciales</p>
+                    <p className="text-white/50 font-light -mt-1">Info</p>
+                  </a> */}
+                </div>
+                <div>
+
+                </div>
+              </PopoverPanel>
+            </Popover>
+            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.mentoria && '!text-white'}`} onClick={(e) => {
+                e.currentTarget.style.color = '#fff';
+                router.push('/');
+              }}>Mentoría Online</div>
+            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.membresiaHome && '!text-white'}`} onClick={(e) => {
+                e.currentTarget.style.color = '#fff';
+                router.push(routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip));
+              }}>Membresía</div>
+            <a href="/account" ref={linkRef} style={{ display: 'none' }}>
+              Ir a Cuenta
+            </a>
+            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && '!text-white'}`} onClick={(e) => {
+                    e.currentTarget.style.color = '#fff';
+                    if(!auth.user) {
+                      router.push('/login')
+                    }
+                    else handleClick();
+
+                  }}>Cuenta</div>
+
+            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.preguntasFrecuentes && '!text-white'}`}
+            onClick={(e) => {
+                e.currentTarget.style.color = '#fff';
+                router.push('/faq');
+              }}>Ayuda</div>
+          </div>
+        </div>
           <div className='flex items-center pr-4 md:pr-16'>
             <Menu as='div' className='relative inline-block text-left'>
               <div>
-                <Menu.Button className='inline-flex w-full justify-center items-center'>
+                <MenuButton className='inline-flex w-full justify-center items-center'>
                       <CiMenuFries className='h-6 w-6' onClick={toggleNav}/>                  
-                </Menu.Button>
+                </MenuButton>
               </div>
             </Menu>
           </div>

@@ -1,31 +1,38 @@
+'use client'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import React, { useState } from 'react'
-import { BiRightArrow } from 'react-icons/bi'
-import { BsInstagram, BsMailbox } from 'react-icons/bs'
-import { MdMail, MdMailOutline } from 'react-icons/md'
 import { useAuth } from '../../../hooks/useAuth'
-import state from '../../../valtio'
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
+import { usePathname, useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify'
-import { MiniLoadingSpinner } from '../Products/MiniSpinner'
+import { CiInstagram, CiMail, CiYoutube } from 'react-icons/ci'
+import { routes } from '../../../constants/routes'
 
-const FooterProfile = () => {
-    const auth = useAuth()
-    const router = useRouter()
-    const { register, handleSubmit, formState: { errors,  } } = useForm()
-    const [message, setMessage] = useState("");
-    const [status, setStatus] = useState<number>(0);
-    const [loading, setLoading] = useState<boolean>(false);
+const Footer = () => {
+const auth = useAuth()
+const router = useRouter()
+const { register, handleSubmit, formState: { errors,  } } = useForm()
+const [message, setMessage] = useState("");
+const [status, setStatus] = useState<number>(0);
+const [loading, setLoading] = useState<boolean>(false);
+const path = usePathname()
+
+const email = "info@mateomove.com";
+  const subject = encodeURIComponent("Consulta sobre tus servicios");
+  const body = encodeURIComponent(
+    `Hola Mateo,\n\nEstoy interesado en conocer más sobre tus servicios y tengo algunas dudas.\n\nEspecíficamente, me gustaría saber sobre:\n- [Especifica aquí tu consulta]\n\nTambién quisiera saber si hay opciones para solucionar [cualquier problema o inquietud].\n\n¡Gracias de antemano! Espero tu respuesta.\n\nSaludos,\n[Tu Nombre]`
+  );
+
+  const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
+
+function validateEmail(email: string) {
+    // Regular expression for basic email validation
+    const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     
-    function validateEmail(email: string) {
-        // Regular expression for basic email validation
-        const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        
-        // Test the email against the regular expression
-        return re.test(String(email).toLowerCase());
-      }
+    // Test the email against the regular expression
+    return re.test(String(email).toLowerCase());
+  }
 
 const onSubmit = async (data: any) => {
     console.log(data)
@@ -82,88 +89,34 @@ const onSubmit = async (data: any) => {
     }
 
   return (
-    <div className='bg-soft-black w-full h-auto md:h-72 flex flex-col md:flex-row justify-start md:justify-between scrollbar-hide space-x-12 overflow-hidden relative bottom-0'>
-        <div className='text-white flex flex-col md:flex-col pt-12 pl-8 '>
-            <h3 className='text-base md:text-lg mb-2'>Newsletter: </h3>
-            <form onSubmit={handleSubmit(onSubmit)} className='border-b-white border-b-[1px] flex md:w-full w-80  group mb-2'>
-                <input placeholder='email' type="email"  {...register('email')} className="relative m-0 block w-[1px] min-w-0 flex-auto rounded-r  bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-300 outline-none transition duration-200 ease-in-out focus:z-[3]  focus:text-neutral-300 focus:outline-none focus:border-none  dark:placeholder:text-neutral-200/80 dark:placeholder:font-light"
-                                aria-label="Sizing example input"
-                                aria-describedby="inputGroup-sizing-default" />
-                                {loading ? (
-                                    <>
-                                    <MiniLoadingSpinner />
-                                    </>
-                                ) : (
-                                    <>
-                                    <button type='submit'>
-                                        <ArrowRightIcon className='w-5 h-5 group-hover:translate-x-2 transition-all cursor-pointer' />
-                                    </button>
-                                    </>
-                                )}
-
-            </form>
-            <p className='text-xs md:text-sm'>Subscribete hoy para todas las actualizaciones y promociones</p>
+    <div className='bg-black w-full h-auto md:h-72 flex flex-col md:flex-row justify-start md:justify-around scrollbar-hide space-x-12 md:space-x-2 overflow-hidden relative bottom-0'>
+        <div className='text-white md:max-w-[33%] md:h-full flex flex-row space-x-6 pt-12 !mx-0 overflow-x-hidden px-8 md:px-0 md:items-start md:justify-center md:pl-8 relative md:top-12'>
+          <Link href={'https://www.instagram.com/mateo.move/#'} target="_blank"> 
+            <CiInstagram  className='w-8 h-8 opacity-60 cursor-pointer'/>
+          </Link>
+          <Link href={'https://www.youtube.com/@mateomolfino4254'} target="_blank"> 
+          <CiYoutube  className='w-8 h-8 opacity-60 cursor-pointer'/>
+          </Link>
+          <a
+            href={mailtoLink}
+            className=""
+          >
+            <CiMail  className='w-8 h-8 opacity-60 cursor-pointer'/>
+          </a>
         </div>
-        <div className='text-white md:w-[30%] flex flex-col space-y-12 pt-12 !mx-0 px-6 overflow-x-hidden'>
-        <div className='flex w-full flex-col md:pl-0 space-y-4 md:space-y-0 md:flex-row md:space-x-5'>
-                {/* <Link href={'/home'}> */}
-                  <div style={{flex: '1 1 0px;'}} className='md:w-1/3 w-full cursor-pointer'>
-                <Link href={'/'}>
-                      <h4 className='font-light text-sm md:text-base w-full md:text-center' >Home</h4>
-                </Link>
-                  </div>
-                  {auth?.user?.subscription?.active || auth?.user?.isVip ? (
-                  <div style={{flex: '1 1 0px;'}} className='cursor-pointer md:w-1/3 w-full'>
-                  <Link href={'/home'}>
-                        <h4 className='font-light text-sm md:text-base md:text-center' >Ver Clases</h4>
-                  </Link>
-                    </div>
-                  ) : (
-                    <div style={{flex: '1 1 0px;'}} className='cursor-pointer md:w-1/3 w-full'>
-                    <Link href={'/select-plan'}>
-                          <h4 className='font-light text-sm md:text-base md:text-center' >Entrena Conmigo</h4>
-                    </Link>
-                      </div>
-                  )}
-
-
-
-                {/* <div style={{flex: '1 1 0px;'}} className='md:w-1/3 w-full'>
-                    <h4 className='font-light text-sm md:text-base md:text-center' >Sobre Nosotros</h4>
-
-                </div> */}
-     
-                {/* </Link> */}
-                {/* <Link href={'/membership'}> */}
-                {/* </Link> */}
-                {/* <Link href={'/aboutUs'}> */}
-                {/* </Link> */}
-                {auth.user ? (
-                    <div style={{flex: '1 1 0px;'}} className='md:w-1/3 w-full'>
-                <Link href={'/account'}>
-                    <h4 className='font-light text-sm md:text-base md:text-center cursor-pointer' >Mi Cuenta</h4>
-
-                </Link>
-                    </div>
-                ) : (
-                    <div style={{flex: '1 1 0px;'}} onClick={() => state.loginForm = true} className='md:w-1/3 w-full'>
-                        <h4 className='font-light text-sm md:text-base md:text-center cursor-pointer' >Log In</h4>
-
-                    </div>
-                // <Link href={'/login'}>
-                // </Link>
-                )}
-            </div>
-            <div className='flex w-full flex-row md:justify-center justify-start space-x-6 md:pl-0'>
-                <BsInstagram className='md:w-6 md:h-6 w-5 h-5 cursor-pointer' onClick={() => router.push('https://www.instagram.com/mformove_/')}/>
-                    <a href="mailto:info@mateomove.com?subject=Contacto%20Here&body=Tu mensaje aqui.">
-                        <MdMailOutline className='md:w-7 md:h-7 w-6 h-6'/>
-                    </a>
-            </div>
-
+        <div className='text-white md:max-w-[33%] flex flex-col space-y-12 pt-12 !mx-0 px-8 overflow-x-hidden md:items-center md:left-7 relative'>
+        <Link href={`${path === routes.navegation.selectPlan ? routes.navegation.membresiaHome : path === routes.navegation.membresiaHome ? "/" : "/"}`}>
+              <img
+                alt='icon image'
+                src='/images/MFORMOVE_blanco03.png'
+                width={300}
+                height={300}
+                className='cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-50 md:mt-12 text-start'
+              />
+            </Link>
         </div>
-        <div className='text-white flex items-start justify-start flex-col md:pl-0 space-y-2 !mx-6 mb-8 mt-12 md:pt-12 md:pr-4 overflow-x-hidden'>
-            <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" rel='noopener noreferrer' className="text-xs font-light md:mb-2 hover:underline focus:underline cursor-pointer"> Términos y Condiciones</a>
+        <div className='text-white md:max-w-[33%] flex items-start justify-start flex-col md:pl-0 space-y-2 !mx-8 mb-8 mt-12 md:pt-12 md:pr-4 overflow-x-hidden'>
+            <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" rel='noopener noreferrer' className="text-xs font-light md:mb-2 hover:underline focus:underline cursor-pointer">Términos y Condiciones</a>
             <a target='_blank' href="/privacy" rel='noopener noreferrer' className="text-xs font-light md:mb-2 hover:underline focus:underline cursor-pointer"> Políticas de Privacidad </a>
             {/* <p className=''>Políticas de privacidad </p> */}
             <p className='text-xs font-light md:mb-2 hover:underline focus:underline cursor-pointer'>@ 2024 Todos los derechos reservados. </p>
@@ -173,4 +126,4 @@ const onSubmit = async (data: any) => {
   )
 }
 
-export default FooterProfile
+export default Footer

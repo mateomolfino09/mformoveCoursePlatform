@@ -39,23 +39,17 @@ function Membership({ user, handleVisibility }: Props) {
   return (
     <div className='mt-6 grid grid-cols-1 gap-x-4 border px-4 md:grid-cols-4 md:border-x-0 md:border-t md:border-b-0 md:px-0'>
       <div className='space-y-2 py-4'>
-        {/* <button
-          onClick={() => router.push('/account/billing')}
-          //   disabled={isBillingLoading || !subscription}
-          className='block min-w-fit px-5 h-10 !bg-black text-center font-light text-white py-2 rounded-full hover:bg-black hover:-translate-y-1 transition-all duration-500
-        '
-          //   onClick={manageSubscription}
-        >
-          {isBillingLoading ? <LoadingSpinner /> : 'Facturación'}
-        </button> */}
+      <h4 className='second-title '>General</h4>
+
       </div>
 
       <div className='col-span-3'>
+        
         <div className='flex flex-col justify-between border-b border-white/10 py-4 md:flex-row'>
           <div>
-            <p className='font-medium'>{auth.user?.email}</p>
-            <p className='text-[gray]'>Contraseña: ********</p>
-            <p className='font-medium mt-2'>
+            <p className='font-light'>{auth.user?.email}</p>
+            <p className='text-[gray] font-light'>Contraseña: ********</p>
+            <p className='font-light mt-2'>
               Usuario creado el{' '}
               {auth.user?.createdAt &&
                 new Date(auth.user?.createdAt).getDate().toString()}{' '}
@@ -67,7 +61,7 @@ function Membership({ user, handleVisibility }: Props) {
                 new Date(auth.user?.createdAt).getFullYear().toString()}{' '}
             </p>
           </div>
-          <div className='md:text-right'>
+          <div className='md:text-right mt-2 md:mt-0'>
               <a href='/resetEmail'><p className='membershipLink '>Cambiar Email</p></a>
     
             <a href='/forget'><p className='membershipLink '>Cambiar Contraseña</p></a>
@@ -75,7 +69,7 @@ function Membership({ user, handleVisibility }: Props) {
 
         </div>
 
-        <div className='flex flex-col justify-between pt-4 pb-4 md:flex-row md:pb-0'>
+        <div className='flex flex-col justify-between md:pt-4 md:flex-row md:pb-0'>
           <div>
             <Image
               src='/images/dlocal.svg'
@@ -90,7 +84,7 @@ function Membership({ user, handleVisibility }: Props) {
             {/* <Link href={'/account/billing'}>
               <p className='membershipLink'>Detalles de Facturación</p>
             </Link> */}
-              <p className={`membershipLink ${!auth?.user?.subscription?.active ? 'hidden' : ''}`} onClick={handleVisibility}>Cancelar Subscripción</p>
+              <p className={`membershipLink ${!auth?.user?.subscription?.active ? 'hidden' : ''} text-sm md:text-sm`} onClick={handleVisibility}>Cancelar Subscripción</p>
           </div>
         </div>
       </div>

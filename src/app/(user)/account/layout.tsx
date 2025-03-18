@@ -16,7 +16,6 @@ export default function RootLayout({
 
   return (
     <section>
-        <ProfileHeader />
         {children}
     </section>
   )
