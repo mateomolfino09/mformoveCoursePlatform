@@ -20,7 +20,7 @@ export async function createCheckoutSession(priceId: string, customerEmail?: str
         ],
         mode: 'subscription', // Modo suscripción
         success_url: successUrl.toString(), // Usa la URL con el parámetro agregado
-        cancel_url: `${origin}/payment/cancel`,
+        cancel_url: `${origin}/select-plan`,
         customer_email: customerEmail, // Opcional, para precargar el email del cliente
         metadata: {
             email: user.email
