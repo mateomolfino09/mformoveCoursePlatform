@@ -23,7 +23,6 @@ const SelectYourPlanIntro = ({ planSelected, origin }: Props) => {
     const auth = useAuth();
     const router = useRouter()
 
-
     const handleClick = async () => {
       if(!auth.user) {
           toast.error('Usuario no encontrado')
@@ -35,6 +34,7 @@ const SelectYourPlanIntro = ({ planSelected, origin }: Props) => {
       setLoading(true)
 
       try {
+          if(planSelected?.provider != "stripe") {
               const res = await fetch(endpoints.payments.createPaymentToken, {
                   method: 'POST',
                   headers: {  
@@ -44,7 +44,6 @@ const SelectYourPlanIntro = ({ planSelected, origin }: Props) => {
                 })
       
               const data = await res.json()
-              console.log(data)
               setLoading(false)
 
               if(!data.success) {
@@ -57,15 +56,41 @@ const SelectYourPlanIntro = ({ planSelected, origin }: Props) => {
               
               router.push(`${origin}/validate/subscription/${planSelected?.plan_token}?external_id=${auth?.user?._id}`)
 
-              console.log(email)
-              setLoading(false)
-      
-              const { message, user, success } = data
 
-              if(success)
-              toast.success(message)
-              else
-              toast.error(message)
+          }
+          else{
+            try {
+              const res = await fetch(endpoints.payments.stripe.createPaymentURL, {
+                method: 'POST',
+                headers: {  
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, planId: planSelected?.id }),
+              })
+
+
+              const data = await res.json()
+              console.log(data)
+
+              setLoading(false)
+
+              if(!data.success) {
+                  toast.error(data.message)
+                  return
+              }
+      
+              const { url, planToken } = data;
+              Cookies.set('planToken', planToken ? planToken : '', { expires: 5})
+
+              router.push(url)
+            }
+            catch (error: any) {
+              console.log(error)
+              setLoading(false);
+              toast.error(error?.message);
+            }
+
+          }
       } catch (error: any) {
           console.log(error)
           toast.error(error.message)
