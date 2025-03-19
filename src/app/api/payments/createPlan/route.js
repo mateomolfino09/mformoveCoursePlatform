@@ -21,7 +21,7 @@ export async function POST(req) {
       if(useStripe) {
         //CASO STRIPE
 
-        let plan = createPlanStripe({name,
+        let plan = await createPlanStripe({name,
           currency,
           description,
           amount,
