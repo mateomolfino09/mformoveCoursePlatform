@@ -1,4 +1,4 @@
-import connectDB from '../../../../../config/connectDB.js';
+import connectDB from '../../../../../config/connectDB';
 import Plan from '../../../../../models/planModel';
 import Stripe from 'stripe';
 

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import connectDB from '../../../../../config/connectDB.js';
-import { sendEmail } from '../../../../../helpers/sendEmail.ts';
-import Users from '../../../../../models/userModel.js';
+import connectDB from '../../../../../config/connectDB';
+import { sendEmail } from '../../../../../helpers/sendEmail';
+import Users from '../../../../../models/userModel';
 import validateCaptcha from '../../validateCaptcha.ts';
 import {validateRecaptcha} from '../../../recaptcha/validate.ts';
 import { generatePassword } from '../../../assets/randomPasswordGenerator.ts'
@@ -10,7 +10,7 @@ import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
 import { serialize } from 'cookie';
 import axios from 'axios';
-import { generateMd5 } from '../../../helper/generateMd5.js';
+import { generateMd5 } from '../../../helper/generateMd5';
 import mailchimp from "@mailchimp/mailchimp_marketing";
 
 connectDB();
