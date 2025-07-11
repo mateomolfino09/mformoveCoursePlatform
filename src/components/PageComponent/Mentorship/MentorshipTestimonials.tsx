@@ -14,15 +14,15 @@ const testimonials = [
     text: 'Nunca había sentido un progreso tan real y sostenido. Mateo te motiva, te corrige y te acompaña en cada paso. Recomiendo la mentoría a cualquiera que busque un cambio profundo.'
   },
   {
-    name: 'Sofía Gómez',
+    name: 'Gonzalo Gómez',
     plan: 'Mentoría Explorador',
     photo: '/images/testimonials/sofia.jpg',
-    text: 'Me sentí parte de una comunidad desde el primer día. El feedback es constante y el plan se adapta a tu vida. Es una inversión en salud y bienestar.'
+    text: 'Mateo como profe es excelente. Siempre te pone a prueba, te motiva y celebra tus intentos, sin importar el resultado. Lo recomiendo al 100% si querés sentirte más libre, con confianza en cada movimiento, y rodeado de un ambiente de amistad.'
   },
   {
     name: 'Diego Ramírez',
     plan: 'Mentoría Practicante',
-    photo: '/images/testimonials/diego.jpg',
+    photo: '/images/testimonials/gonza.jpg',
     text: 'El seguimiento 1:1 y la calidad humana de Mateo marcan la diferencia. Aprendí a moverme mejor y a confiar en mi cuerpo.'
   },
   {

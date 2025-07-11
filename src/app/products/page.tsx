@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Products from '../../components/PageComponent/Products/Products';
 import { getProductFilters } from '../api/product/getFilters';
+import connectDB from '../../config/connectDB';
 
 export default function Page() {
   const [products, setProducts] = useState([]);
