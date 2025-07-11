@@ -71,7 +71,7 @@ const CreateProduct = () => {
         }
       };
 
-      //const formData = new FormData();
+      const formData = new FormData();
 
       for (const file of portraitImageArray) {
         formData.append('file', file);
