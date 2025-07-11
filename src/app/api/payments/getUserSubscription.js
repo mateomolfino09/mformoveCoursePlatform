@@ -47,6 +47,5 @@ export async function getUserSubscription(user) {
       }
       return null;
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

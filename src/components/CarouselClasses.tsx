@@ -37,7 +37,6 @@ function CarouselClasses({
   description,
   key
 }: Props) {
-  console.log(key)
   const rowRef = useRef<HTMLDivElement>(null);
   const scrollRowRef = useRef<HTMLDivElement>(null);
   const theWidth = rowRef.current?.scrollWidth
@@ -67,8 +66,6 @@ function CarouselClasses({
 
     if (scrollRowRef.current) {
       const { scrollLeft, clientWidth } = scrollRowRef.current;
-      console.log(scrollLeft, clientWidth);
-
       const scrollTo =
         direction === 'left'
           ? scrollLeft - clientWidth

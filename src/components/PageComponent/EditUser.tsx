@@ -86,8 +86,7 @@ const EditUser = ({ user }: Props) => {
         );
         setCourseName(courseArray);
       } catch (error) {
-        console.log(error);
-      }
+        }
     };
     getCourses();
   }, [courses]);
@@ -114,8 +113,6 @@ const EditUser = ({ user }: Props) => {
   
         const data = await res.json()
         await auth.fetchUser()
-        console.log(data)
-
         if (data) {
           router.push('/admin/users');
           toast.success(
@@ -124,8 +121,7 @@ const EditUser = ({ user }: Props) => {
         }
       }
     } catch (error) {
-      console.log(error);
-    }
+      }
   };
 
   function handleInputChange(event: any, index: number) {

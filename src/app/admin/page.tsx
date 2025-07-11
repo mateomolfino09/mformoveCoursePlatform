@@ -6,7 +6,8 @@ import {
   TableCellsIcon,
   AtSymbolIcon,
   UserIcon,
-  BuildingStorefrontIcon
+  BuildingStorefrontIcon,
+  AcademicCapIcon
 } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
@@ -90,6 +91,12 @@ const Index = () => {
               <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
                 <BuildingStorefrontIcon className='w-24' />
                 <p>Memberships</p>
+              </div>
+            </Link>
+            <Link href={'/admin/mentorship/plans'}>
+              <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
+                <AcademicCapIcon className='w-24' />
+                <p>Mentoría</p>
               </div>
             </Link>
             {/* <Link href={'#'}>

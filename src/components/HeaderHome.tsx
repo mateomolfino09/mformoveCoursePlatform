@@ -37,7 +37,6 @@ const HeaderHome = ({ user, toggleNav }: Props) => {
   useEffect(() => {
 
     const handleScroll = () => {
-      console.log(window.scrollY > 0)
       if (window.scrollY > 0) {
         setIsScrolled(true);
       } else {

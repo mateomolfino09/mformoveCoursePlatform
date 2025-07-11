@@ -12,8 +12,6 @@ export async function PUT(req, { params }) {
       const { token } = params;
       const { password, conPassword } = await req.json();
 
-      console.log(password, conPassword, token);
-
       if (password !== conPassword) {
         return NextResponse.json(
           { error: 'Las contraseñas no coinciden' },

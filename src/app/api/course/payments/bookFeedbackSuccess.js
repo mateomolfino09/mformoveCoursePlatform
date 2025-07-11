@@ -28,7 +28,6 @@ const bookFeedbackSuccess = async (req, res) => {
     status
   } = req.query;
   try {
-    console.log(req.query);
     const user = await User.findOne({ email });
     const course = await Course.findOne({ id: courseId });
     const adminUsers = await User.find({ rol: 'Admin' });
@@ -36,8 +35,6 @@ const bookFeedbackSuccess = async (req, res) => {
     const index = user.courses.findIndex((element) => {
       return element.course.valueOf() === course._id.valueOf();
     });
-
-    console.log(index);
 
     user.courses[index].purchased = true;
 
@@ -117,7 +114,6 @@ const bookFeedbackSuccess = async (req, res) => {
         );
     }
   } catch (err) {
-    console.log(err);
     return res.status(401).json({ error: 'Algo salio mal' });
   }
 };

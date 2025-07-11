@@ -37,8 +37,6 @@ export const POST = async (req: NextRequest) => {
           case 'customer.subscription.created': {
             const subscriptionCreated = event.data.object;
             
-            console.log('CREATE');
-        
             try {
               const user = await createStripeSubscription(email ?? "");
               if (status === "trialing") {
@@ -52,12 +50,8 @@ export const POST = async (req: NextRequest) => {
         
           case 'customer.subscription.updated': {
             const subscriptionUpdated = event.data.object;
-            console.log('UPDATE');
-        
             try {
               const subscription = await updateStripeSubscription(email ?? "");
-              console.log(subscription)
-
               //al cancelar el estado se mantiene hasta el fin del periodo, por eso chequeamos isCanceled
               subscription?.isCanceled && (status == "trialing" || status == "active")
               ? await sendSubscriptionEmail("canceled", "mateomolfino09@gmail.com", origin)
@@ -76,8 +70,7 @@ export const POST = async (req: NextRequest) => {
           }
         
           default:
-            console.log(`Evento no manejado: ${event.type}`);
-        }
+            }
   
       }
     }

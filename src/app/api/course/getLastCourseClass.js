@@ -8,6 +8,5 @@ export async function getLastCourseClass(id) {
     const res = await Course.findOne({ id });
     return res.classes.length;
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

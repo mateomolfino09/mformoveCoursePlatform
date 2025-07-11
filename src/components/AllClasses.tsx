@@ -74,7 +74,6 @@ const AllClasses = ({ classes }: Props) => {
       const updatedClasses = classes.filter(
         (c: IndividualClass) => c._id !== classSelected._id
       );
-      console.log(data)
       setElementos(updatedClasses);
       if (data.success) {
         toast.success(`${classSelected.name} fue eliminado correctamente`);

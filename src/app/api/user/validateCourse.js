@@ -20,8 +20,7 @@ const validateCourse = async (req, res) => {
       return res.status(401).json({ error: 'Invalid' });
     }
   } catch (err) {
-    console.log(err);
-  }
+    }
 };
 
 export default validateCourse;

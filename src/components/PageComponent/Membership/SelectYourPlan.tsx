@@ -102,8 +102,6 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
 
   
                 const data = await res.json()
-                console.log(data)
-
                 setLoading(false)
   
                 if(!data.success) {
@@ -117,14 +115,12 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
                 router.push(url)
               }
               catch (error: any) {
-                console.log(error)
                 setLoading(false);
                 toast.error(error?.message);
               }
 
             }
         } catch (error: any) {
-            console.log(error)
             toast.error(error.message)
         }
         setLoading(false)
@@ -149,7 +145,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
   };
 
   return (
-    <div className='w-full px-3 py-12 relative flex flex-col lg:pr-36 pt-8'>
+    <div className='w-full px-3 py-12 hidden relative flex-col lg:pr-36 pt-8'>
       <div className='flex md:space-y-1 flex-col mb-12 items-end pl-2 justify-end'>
         <h1 className='text sm:text-7xl md:text-5xl lg:text-5xl font-bold capitalize font-montserrat'>
           Movete conmigo,
@@ -278,7 +274,7 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
           </div>
         ) : (
           // </a>
-          <Link href={'select-plan'} className={`${!auth.user && 'hidden'}`}>
+          <Link href={'mentorship'} className={`${!auth.user && 'hidden'}`}>
             <div className='flex px-24 py-3 mt-6 bg-white text-black rounded-full justify-center items-center w-full md:w-96 group cursor-pointer '>
               <button className='w-full text-base md:text-lg'>Continuar </button>
           </div>

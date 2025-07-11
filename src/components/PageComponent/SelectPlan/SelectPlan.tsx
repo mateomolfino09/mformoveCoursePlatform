@@ -17,6 +17,10 @@ import { useRouter } from 'next/navigation'
 import { throttle } from 'lodash';
 import SelectYourPlanIntro from './SelectYourPlanIntro'
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
+import SelectPlanOptions from './SelectPlanOptions'
+import SelectPlanPlans from './SelectPlanPlans'
+import Philosophy from './Philosophy'
+import FrequentQuestions from './FrequentQuestions'
 
 interface Props {
     plans: Plan[]
@@ -65,10 +69,12 @@ const SelectPlan = ({ plans, origin }: Props ) => {
     >          
     <MainSideBar where={'selectPlan'}>
     <SelectYourPlanIntro planSelected={plans[0]} origin={origin}/>
-
+    <SelectPlanOptions/>
+    <SelectPlanPlans plans={plans}/>
           <SelectYourPlan plans={plans} select={"select"} origin={origin}/>  
           <FreeProductWhoAreWe />
- 
+          <Philosophy />
+          <FrequentQuestions />
           <Footer />
           
       </MainSideBar>

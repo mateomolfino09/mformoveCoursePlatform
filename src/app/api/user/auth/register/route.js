@@ -111,7 +111,6 @@ export async function POST(request) {
       return NextResponse.json({ message: `Email enviado a ${newUser.email}, porfavor chequea tu correo.`, token}, { status: 200 })
     }
   } catch (error) {
-    console.log(error)
     return NextResponse.json({ message: `Error al enviar el mail. Porfavor vuelva a intentarlo`}, { status: 500 })
   }
 };

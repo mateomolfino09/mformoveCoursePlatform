@@ -37,7 +37,7 @@ function ForgetForm() {
     const cookies: any = Cookies.get('userToken');
 
     if (!cookies) {
-      router.push(routes.navegation.membresiaHome);
+      router.push('/mentorship');
     }
   }, [router]);
 
@@ -53,7 +53,6 @@ function ForgetForm() {
   }
 
   useEffect(() => {
-    console.log(message);
     setTimeout(() => {
       setLoading(false);
     }, 3000);
@@ -73,8 +72,6 @@ function ForgetForm() {
 
     try {
       const data = await auth.resetMailSend(email);
-
-      console.log(data);
 
       if (data?.type) {
         setMessage((current: any) => [

@@ -181,8 +181,7 @@ function Modal({ courseDB, user }: Props) {
           : null;
         setItems(data.items);
       } catch (error: any) {
-        console.log(error.message);
-      }
+        }
     };
     getCourseInfo();
     indexCourse != undefined && auth.user.courses[indexCourse].like

@@ -56,7 +56,7 @@ const Index = () => {
           </main>
             <div className='absolute w-full top-1/2 flex justify-center items-center' >
                 <button className='w-48 h-12 md:w-56 md:h-14 md:text-lg rounded-3xl border-white hover:bg-white hover:text-black border text-base font-thin' >
-                  <a href={routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip)}>
+                  <a href={routes.navegation.mentoria}>
                   Movete Conmigo 
                   </a>
                 </button>

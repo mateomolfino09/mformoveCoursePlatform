@@ -80,7 +80,6 @@ const AllProducts = ({ products }: Props) => {
           const updatedProducts = products.filter(
             (product: ProductDB) => product._id !== productSelected._id
           );
-          console.log(data)
           setElementos(updatedProducts);
           if (data.success) {
             toast.success(`${productSelected.name} fue eliminado correctamente`);

@@ -11,6 +11,5 @@ export async function getCourses() {
     const courses = JSON.parse(JSON.stringify(res));
     return courses;
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

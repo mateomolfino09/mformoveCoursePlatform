@@ -125,7 +125,6 @@ const IndividualProduct = ({ product }: Props) => {
       }
       // dispatch(clearData()) //VERLO BIEN
     } catch (error: any) {
-      console.log(error);
       toast.error(error.response.data.error);
     }
     setLoading(false);
@@ -142,7 +141,6 @@ const IndividualProduct = ({ product }: Props) => {
     for (let index = 1; index <= product.classes[product.classes.length - 1].module; index++) {
       modules.push(product.classes.filter(x => x.module === index))
     }
-    console.log(modules)
     setModulesQuantity(modules)
     
   }, [])

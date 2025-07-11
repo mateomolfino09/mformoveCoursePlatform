@@ -7,7 +7,6 @@ export async function createCheckoutSession(priceId: string, customerEmail?: str
     const user = await User.findOne({ email: customerEmail })
     const successUrl = new URL(`${origin}/payment/success`);
     successUrl.searchParams.append("external_id", user._id); // Agrega el user._id como parámetro
-    console.log(user, 'Hola soy el usuario')
     const trialPeriodDays = parseInt(process.env.STRIPE_MEMBERSHIP_FREE_DAYS ?? '0', 10) || 0;
 
     const subscriptionData: any = {

@@ -65,8 +65,7 @@ const OneQuestion = ({ user, question }: Props) => {
         setMessageType('');
       }, 3000);
     } catch (error) {
-      console.log(error);
-    }
+      }
   };
 
   const createAnswer = async (questionId: number) => {
@@ -97,8 +96,7 @@ const OneQuestion = ({ user, question }: Props) => {
         setMessageType('');
       }, 3000);
     } catch (error) {
-      console.log(error);
-    }
+      }
   };
 
   return (

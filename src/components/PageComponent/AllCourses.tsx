@@ -73,7 +73,6 @@ const AllCourses = ({ courses }: Props) => {
       const updatedCourses = courses.filter(
         (course: CoursesDB) => course._id !== courseSelected._id
       );
-      console.log(data)
       setElementos(updatedCourses);
       if (data.success) {
         toast.success(`${courseSelected.name} fue eliminado correctamente`);

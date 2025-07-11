@@ -49,8 +49,6 @@ const CreateClassType = () => {
   useEffect(() => {
     const cookies: any = Cookies.get('userToken');
 
-    console.log(auth);
-
     if (!cookies) {
       router.push('/login');
     }
@@ -61,7 +59,6 @@ const CreateClassType = () => {
   }, [auth.user]);
 
   async function onSubmit(data: any) {
-    console.log(data);
     const { name, description, question } = data;
     setLoading(true);
     if (name.length < 3) {
@@ -90,9 +87,6 @@ const CreateClassType = () => {
 
       const typeSend = type ? 'two' : 'multiple'
 
-      console.log(typeSend)
-
-
       // const { data } = await axios.post(
       //   '/api/individualClass/filters/create',
       //   {
@@ -111,7 +105,6 @@ const CreateClassType = () => {
       toast.success(data.message);
       router.push('/admin/classes')
     } catch (error: any) {
-      console.log(error);
       toast.error(error.response.data.error);
     }
     setLoading(false);
@@ -255,7 +248,7 @@ const CreateClassType = () => {
               </button>
               <div className='text-[gray]'>
                 Volver al Inicio
-                <Link href={routes.navegation.membresiaHome}>
+                <Link href={'/mentorship'}>
                   <button
                     type='button'
                     className='text-white hover:underline ml-2'

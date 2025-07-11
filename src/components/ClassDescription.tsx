@@ -36,8 +36,7 @@ const ClassDescription = ({ clase, youtubeURL, courseDB }: Props) => {
         setItem(data.items[clase.id - 1]);
         setItems(data.items);
       } catch (error: any) {
-        console.log(error.message);
-      }
+        }
     };
 
     getClassInfo();

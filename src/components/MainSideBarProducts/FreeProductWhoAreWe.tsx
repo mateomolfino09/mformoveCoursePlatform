@@ -1,35 +1,53 @@
-import Image from 'next/image'
+import { ClipboardDocumentCheckIcon, CloudArrowDownIcon, UserGroupIcon, VideoCameraIcon } from '@heroicons/react/24/outline'
+import { CldImage } from 'next-cloudinary'
 import React from 'react'
 import imageLoader from '../../../imageLoader'
 
-const FreeProductWhoAreWe = () => {
+const Whoarewhe = () => {
   return (
-    <div className= "inline-block text-left bg-[#141414] rounded-lg overflow-hidden align-bottom transition-all transform shadow-2xl py-4 sm:py-8 sm:align-middle sm:w-full">
-        <div className="items-center w-full mr-auto ml-auto relative max-w-7xl md:px-12 lg:px-24">
-<div className="grid grid-cols-1 h-full">
-  <div className="mt-4 mb-4 bg-[#141414] max-w-lg">
-    <div className="flex flex-col items-center pt-6 pr-12 pb-6 pl-6 justify-end h-full">
-      <img
-        src='/images/image00010.jpeg'
-        className="flex-shrink-0 object-cover object-center btn- flex w-24 h-24 md:w-32 md:h-32 mr-auto ml-auto rounded-full shadow-xl"
-      />
-      <p className="mt-8 text-2xl md:text-4xl font-semibold leading-none text-white tracking-tighter lg:text-3xl font-montserrat text-center">
-        Mi nombre es Mateo Molfino
-      </p>
-      <p className="mt-5 text-base md:text-lg leading-relaxed text-center text-gray-200 font-montserrat">
-        Soy instructor certificado de yoga y profe de movimiento. Mi trabajo es guiar prácticas y procesos de
-        exploración personal enraizadas en la ciencia y la creatividad estructural.
-      </p>
-      <p className="mt-2 text-lg md:text-lg leading-relaxed text-center text-gray-200 font-montserrat">
-        La idea es que salgas del molde, que disfrutes de entrenar y puedas potenciar el cuerpo que se te dio, para
-        que TU calidad de vida MEJORE.
-      </p>
+    <div className='w-full bg-primary font-montserrat relative'>
+    <div className='w-full md:pt-0 pt-2 flex flex-col md:space-y-12 md:space-x-18 justify-center items-center px-4  pb-16 md:pb-20 bg-primary/40'> 
+    <div className='flex space-y-3 flex-col md:flex-row items-start justify-start' >
+      <div className='w-full h-full md:px-24'>
+      <CldImage
+            src={'my_uploads/plaza/DSC09647_rdtb40'}
+            preserveTransformations
+            width={1000}
+            height={1000}
+            className={`object-cover rounded-md h-full w-full max`}
+            alt={'Rutina Imagen'}
+            loader={imageLoader}
+          />
+      </div>
+
+    <div className=' font-montserrat font-normal  w-full  text-left text-black'>
+
+      <h2 className='!text-3xl md:!text-4xl mb-1'>¿Qué es el <strong>MOVE CREW</strong>?
+      </h2>
+      <p className='text-start text-gray-600'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aut, inventore aliquam? Tempora accusantium alias asperiores magnam, veritatis corrupti animi laudantium delectus perferendis corporis, iste ipsum nihil adipisci nostrum sint modi?
+          <br/><br/>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita commodi, molestias quidem amet aliquam modi adipisci velit odit? Aliquid atque reprehenderit eum iusto perspiciatis recusandae doloribus eius porro facere. Doloribus. 
+          <br/><br/>
+          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Dignissimos neque sapiente ab cum corrupti eius id consequuntur. Nulla nisi, facilis minus ullam nam beatae aut eos maxime at repudiandae sit.</p>
     </div>
+
   </div>
-</div>
+
+
+
+{/* 
+      <div className='w-full md:pt-6 flex justify-center flex-col items-center hover:scale-105 transition-all duration-500 cursor-pointer pt-8'>
+            <ChevronDownIcon className='w-12 h-12'/>
+          </div> */}
+        </div>  
+        <div className='absolute top-0 left-0 h-[100vh] w-full -z-10 overflow-hidden'>
+          {/* <video src={'/video/videoTest3.mp4'} autoPlay loop muted={!snap.volumeIndex} className='object-cover h-full w-full'>
+
+            </video> */}
+
         </div>
     </div>
-  )
+)
 }
 
-export default FreeProductWhoAreWe
+export default Whoarewhe

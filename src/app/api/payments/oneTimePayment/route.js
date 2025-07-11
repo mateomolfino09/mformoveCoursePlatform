@@ -15,8 +15,6 @@ export async function POST(req) {
 
   try {
     let origin = getCurrentURL();
-    console.log(`${origin}${back_url}`);
-
     if (req.method === 'POST') {
         const response = await dLocalApi.post(
             '/payments',
@@ -36,8 +34,6 @@ export async function POST(req) {
 
       const data = response.data;
 
-      console.log(data);
-
       return NextResponse.json(
         { response: data, success: true, message: 'Link creado con éxito' },
         { status: 200 }
@@ -46,7 +42,6 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Algo salió mal' }, { status: 401 });
     }
   } catch (err) {
-    console.log(err); 
     return NextResponse.json({ error: 'Algo salió mal' }, { status: 401 });
   }
 }

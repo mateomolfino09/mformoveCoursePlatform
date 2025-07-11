@@ -20,8 +20,6 @@ export async function PUT(req) {
         .populate({ path: 'users' })
         .exec();
 
-        console.log(product, 'hola', user)
-
         if(!user) {
             return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
         }
@@ -55,7 +53,6 @@ export async function PUT(req) {
         return NextResponse.json({ error: 'Algo salio mal' }, { status: 401 })
     }
   } catch (err) {
-    console.log(err);
     return NextResponse.json({ error: 'Algo salio mal' }, { status: 401 })
 }
 };

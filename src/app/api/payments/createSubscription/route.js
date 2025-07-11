@@ -45,8 +45,6 @@ export async function PUT(req) {
         if(plan?.provider == "stripe") {
             const latestSub = await getLatestSubscriptionByEmail(user.email);
 
-            console.log(latestSub)
-
             if (!latestSub) {
                 return NextResponse.json({ success: false, message: "No hay suscripciones activas" }, { status: 404 });
             }
@@ -118,7 +116,6 @@ export async function PUT(req) {
         return NextResponse.json({ error: 'Algo salio mal' }, { status: 401 })
     }
   } catch (err) {
-    console.log(err);
     return NextResponse.json({ error: 'Algo salio mal', message }, { status: 401 })
 }
 };

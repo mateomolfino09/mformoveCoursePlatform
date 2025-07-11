@@ -100,7 +100,7 @@ const GetMembershipModal
             </div>
 
             <div className='flex justify-center items-center mt-2 pb-4'>
-            <button onClick={() => router.push('/select-plan')} className='w-72 h-12 bg-[#a38951] text-white rounded-md hover:bg-white/80 hover:text-black'> Subscribirme</button>
+            <button onClick={() => router.push('/mentorship')} className='w-72 h-12 bg-[#a38951] text-white rounded-md hover:bg-white/80 hover:text-black'> Subscribirme</button>
             </div>
         </div>
         </m.div>

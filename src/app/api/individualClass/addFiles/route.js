@@ -35,7 +35,6 @@ export async function PUT(req) {
           
           await clase.save()
           
-          console.log(clase.atachedFiles) 
           return NextResponse.json({ clase: clase, success: true }, { status: 200 })
 
 
@@ -43,7 +42,6 @@ export async function PUT(req) {
         return NextResponse.json({ error: 'Algo salio mal' }, { status: 401 })
     }
   } catch (err) {
-    console.log(err);
     return NextResponse.json({ error: 'Algo salio mal' }, { status: 401 })
 }
 };

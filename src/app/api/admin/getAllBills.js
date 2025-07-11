@@ -12,6 +12,5 @@ export async function getAllBills() {
       .exec();
     return JSON.parse(JSON.stringify(bills));
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

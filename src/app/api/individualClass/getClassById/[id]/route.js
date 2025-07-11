@@ -15,7 +15,6 @@ export async function GET(req) {
 
     return NextResponse.json({clase: clase, success: true }, { status: 200 })
   } catch (error) {
-    console.log(error)
     return NextResponse.json({ error: error, success: false }, { status: 404 })
 
   }

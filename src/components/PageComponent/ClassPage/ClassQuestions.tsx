@@ -63,8 +63,6 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
       return dateA - dateB; // Ordenar de más antiguo a más reciente
     });
 
-    console.log(sortedComments);
-
     setQuestions(sortedComments);
   }, [questionsDB]);
 
@@ -103,7 +101,6 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
     };
     const classId = clase?.id;
     const userEmail = auth.user?.email;
-    console.log(userEmail);
     const link = window.location.href;
     try {
       const { data } = await axios.post(
@@ -111,7 +108,6 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
         { userEmail, classId, question: content, link },
         config
       );
-      console.log(data);
       setQuestions([data.newQuestion, ...questions]);
       setMessage('Pregunta creada con éxito');
       setMessageType('mensaje');
@@ -121,8 +117,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
         setMessageType('');
       }, 3000);
     } catch (error) {
-      console.log(error);
-    }
+      }
   };
 
   const createAnswer = async (questionId: number) => {
@@ -163,8 +158,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
         setMessageType('');
       }, 3000);
     } catch (error) {
-      console.log(error);
-    }
+      }
   };
 
   function openModalDelete(question: Question) {
@@ -180,8 +174,6 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
 
   const deleteQuestion = async () => {
     if (questionSelected) {
-      console.log(questionSelected);
-
       const questionId = questionSelected?.id;
 
       const config = {

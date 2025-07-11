@@ -27,7 +27,6 @@ const checkAsRead = async (req: any, res: any) => {
       return res.status(401).json({ error: 'Algo salio mal' });
     }
   } catch (err) {
-    console.log(err);
     return res.status(401).json({ error: 'Algo salio mal' });
   }
 };

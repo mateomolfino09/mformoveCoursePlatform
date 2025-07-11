@@ -59,6 +59,5 @@ export async function createPlanDlocal({name,
 
       return newPlan;
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

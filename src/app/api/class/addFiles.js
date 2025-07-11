@@ -33,7 +33,6 @@ const addFiles = async (req, res) => {
           
           await clase.save()
           
-          console.log(clase.atachedFiles) 
           return res.status(200).send({ clase });
 
 
@@ -41,7 +40,6 @@ const addFiles = async (req, res) => {
       return res.status(401).json({ error: 'Algo salio mal' });
     }
   } catch (err) {
-    console.log(err);
     return res.status(401).json({ error: 'Algo salio mal' });
   }
 };

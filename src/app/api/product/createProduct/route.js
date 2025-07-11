@@ -30,8 +30,6 @@ export async function POST(req) {
 
       let user = await Users.findOne({ email: userEmail });
 
-      console.log(user);
-
       //Es Admin?
       if (user.rol !== 'Admin' || user?.admin?.coursesAvailable <= 0) {
         return NextResponse.json(
@@ -106,7 +104,6 @@ export async function POST(req) {
       );
     }
   } catch (error) {
-    console.log(error);
     return NextResponse.json({ error: error }, { status: 401 });
   }
 }

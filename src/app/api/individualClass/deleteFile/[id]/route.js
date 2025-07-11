@@ -12,11 +12,7 @@ export async function DELETE(req) {
         const indexClass = req.url.lastIndexOf('/');
         const id = req.url.substr(indexClass + 1)
     
-        console.log(claseId)
-
-      const clase = await IndividualClass.findOne({ id: claseId });
-
-      console.log(clase)
+        const clase = await IndividualClass.findOne({ id: claseId });
 
       const index = clase.atachedFiles.findIndex((file) => file.id === id)
 
@@ -25,7 +21,6 @@ export async function DELETE(req) {
       return NextResponse.json({ clase: clase, success: false }, { status: 200 })
     }
   } catch (error) {
-    console.log(error)
     return NextResponse.json({ error: error, success: false }, { status: 404 })
   }
 }

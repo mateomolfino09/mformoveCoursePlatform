@@ -69,8 +69,6 @@ export const createCourseSlice = createSlice({
     initialState,
     reducers: {
         addStepOne: (state: any, action: PayloadAction<any>) => {
-            console.log(state)
-
             return {
                 value: {
                     ...state.value,
@@ -81,8 +79,6 @@ export const createCourseSlice = createSlice({
             }
         },
         addStepTwo: (state: any, action: PayloadAction<any>) => {
-            console.log(state)
-
             return {
                 value: {
                     ...state.value,
@@ -99,8 +95,6 @@ export const createCourseSlice = createSlice({
             }
         },
         addStepThree: (state: any, action: PayloadAction<any>) => {
-            console.log(state)
-
             return {
                 value: {
                     ...state.value,

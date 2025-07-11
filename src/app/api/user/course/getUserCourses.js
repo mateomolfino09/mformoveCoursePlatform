@@ -10,8 +10,6 @@ export async function getUserCourses() {
     const userToken= cookies().get('userToken');
     const data =  verify(userToken.value, process.env.NEXTAUTH_SECRET)
     const userId = data.userId
-    console.log(userToken.value, data)
-
     const user = await User.findOne({ _id: userId });
     const coursesId = [];
     user.courses.forEach((course) => {
@@ -24,6 +22,5 @@ export async function getUserCourses() {
 
     return JSON.parse(JSON.stringify(courses));
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

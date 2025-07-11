@@ -28,8 +28,6 @@ export async function POST(req) {
         tags
       } = await req.json();
 
-      console.log(level);
-
       let user = await Users.findOne({ email: userEmail });
       const users = await Users.find({});
 
@@ -144,7 +142,6 @@ export async function POST(req) {
       );
     }
   } catch (error) {
-    console.log(error);
     return NextResponse.json({ error: error }, { status: 401 });
   }
 }

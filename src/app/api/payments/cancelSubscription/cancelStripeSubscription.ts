@@ -11,7 +11,6 @@ export const cancelStripeSubscription = async (subscriptionId: string) => {
         cancel_at_period_end: true, // La suscripción se cancela cuando finaliza el período actual
     });
   
-      console.log("✅ Suscripción cancelada:", canceledSubscription.id);
       return canceledSubscription;
     } catch (error: any) {
       console.error("❌ Error al cancelar la suscripción:", error.message);

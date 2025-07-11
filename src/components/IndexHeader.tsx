@@ -144,15 +144,27 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
                 </div>
               </PopoverPanel>
             </Popover>
-            {/* <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.mentoria && '!text-white'}`} onClick={(e) => {
+            {/* <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.mentorship && '!text-white'}`} onClick={(e) => {
                 e.currentTarget.style.color = '#fff';
-                router.push('/');
-              }}>Mentoría Online</div> */}
-            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${(path == routes.navegation.membresiaHome || path == routes.navegation.selectPlan) && '!text-white'}`} onClick={(e) => {
+                router.push('/mentorship');
+              }}>Mentoría</div> */}
+            {/* Membresía eliminada */}
+            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.mentorship && '!text-white'}`} onClick={(e) => {
                 e.currentTarget.style.color = '#fff';
-                handleClickMemb();
+                router.push('/mentorship');
               }}>
-                  Membresia
+                  Mentoría
+                {path == routes.navegation.mentorship && (
+                  <svg
+                    width="100%"
+                    height="3"
+                    viewBox="0 0 120 5"
+                    className="block mx-auto mt-0 relative bottom-1 left-1/2 -translate-x-1/2"
+                    style={{ minWidth: '100%', maxWidth: '100%' }}
+                  >
+                    <ellipse cx="60" cy="4" rx="60" ry="3" fill="black" />
+                  </svg>
+                )}
                 </div>
               <a href={`${routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip)}`} ref={linkMembRef} style={{ display: 'none' }}>
               Ir a Membresia
@@ -167,13 +179,21 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
                     }
                     else handleClick();
 
-                  }}>Cuenta</div>
+                  }}>
+                  Cuenta
+                  {(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.perfil || path == '/account') && (
+                  <svg
+                    width="100%"
+                    height="3"
+                    viewBox="0 0 100 5"
+                    className="block mx-auto mt-0 relative bottom-1 left-1/2 -translate-x-1/2"
+                    style={{ minWidth: '100%', maxWidth: '100%' }}
+                  >
+                    <ellipse cx="60" cy="4" rx="60" ry="3" fill="white" />
+                  </svg>
+                )}
+                </div>
 
-            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.preguntasFrecuentes && '!text-white'}`}
-            onClick={(e) => {
-                e.currentTarget.style.color = '#fff';
-                router.push('/faq');
-              }}>Ayuda</div>
           </div>
         </div>
           <div className='flex items-center pr-4 md:pr-16'>

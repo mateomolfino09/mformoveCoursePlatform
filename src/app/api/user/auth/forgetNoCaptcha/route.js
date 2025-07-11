@@ -44,7 +44,6 @@ export async function POST(req) {
       let origin = getCurrentURL();
       
       const link = `${origin}/reset/${token}`;
-      console.log(link)
       const title = `<h1>Restablece tu contraseña</h1>`;
 
       const message = `
@@ -71,8 +70,6 @@ export async function POST(req) {
         subject: 'Resetear contraseña'
       });
 
-
-      console.log(resp)
 
       return NextResponse.json({ message: `Se ha enviado un mail a ${user.email}, revisa tu correo porfavor.`}, { status: 200 })
     }

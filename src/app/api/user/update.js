@@ -7,9 +7,7 @@ connectDB();
 const update = async (req, res) => {
   const { email, update } = req.body;
 
-  //   console.log(req.body)
-
-  try {
+  //   try {
     if (req.method === 'PUT') {
       const user = await User.findOne({});
       const adminUsers = await User.find({ rol: 'Admin' });
@@ -36,8 +34,7 @@ const update = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
   } catch (err) {
-    console.log(err);
-  }
+    }
 };
 
 export default update;

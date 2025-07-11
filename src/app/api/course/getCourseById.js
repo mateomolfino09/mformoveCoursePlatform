@@ -12,6 +12,5 @@ export async function getCourseById(id) {
     course = JSON.parse(JSON.stringify(course));
     return course;
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

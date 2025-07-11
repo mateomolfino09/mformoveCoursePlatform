@@ -12,6 +12,5 @@ export async function getProductFilters() {
     const productFilters = JSON.parse(JSON.stringify(res));
     return productFilters;
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

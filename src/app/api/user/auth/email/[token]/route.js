@@ -79,7 +79,6 @@ export async function PUT(req, { params }) {
       return NextResponse.json({ error: 'Hubo un error al verificar su cuenta'}, { status: 500 })
     }
   } catch (error) {
-    console.log(error);
     return NextResponse.json({ error: 'Hubo un error al verificar su cuenta'}, { status: 500 })
   }
 };

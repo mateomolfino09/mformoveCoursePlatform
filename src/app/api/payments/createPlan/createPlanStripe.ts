@@ -29,8 +29,6 @@ export async function createPlanStripe({name,
         description
     });
 
-    console.log(amount, amountAnual)
-
     // Crear precio (plan de suscripción)
     const price = await stripe.prices.create({
         unit_amount: amount * 100, // Stripe usa centavos
@@ -48,9 +46,7 @@ export async function createPlanStripe({name,
       billing_scheme: 'per_unit',
   });
 
-  console.log(price)
-
-    let newPlan = await new Plan({
+  let newPlan = await new Plan({
         id: price.id,
         name: `${name} Mensual`,
         description,
@@ -87,6 +83,5 @@ export async function createPlanStripe({name,
 
       return newPlan;
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

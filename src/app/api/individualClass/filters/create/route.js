@@ -35,8 +35,6 @@ export async function POST(req) {
 
       const lastFilter = await ClassFilters.find().sort({ _id: -1 }).limit(1);
 
-      console.log(lastFilter)
-
       if(type === 'multiple') {
         let valuesToAdd = [];
         values.forEach((val, i) => {
@@ -71,7 +69,6 @@ export async function POST(req) {
       return NextResponse.json({ message: 'Filtro para clase individual creada con éxito'}, { status: 200 })
     }
   } catch (error) {
-    console.log(error)
     return NextResponse.json({ error: error }, { status: 401 })
   }
 };

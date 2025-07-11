@@ -32,8 +32,6 @@ const ProductHeader = ({ user, toggleNav }: Props) => {
     (state: any) => state.headerHomeReducer.value.scrollHeader
     );
   const pathname = usePathname()
-  console.log('hola')
-
   useEffect(() => {
     setDomLoaded(true);
       headerAnimation.start({

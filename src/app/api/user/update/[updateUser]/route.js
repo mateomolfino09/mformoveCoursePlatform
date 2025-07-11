@@ -9,8 +9,7 @@ export async function PUT(req) {
     } = await req.json();
     const userId = id;
     const fullName = firstname + ' ' + lastname;
-    console.log(fullName)
-  try {
+    try {
     if (req.method === 'PUT') {
       await User.findByIdAndUpdate(userId, {
         name: fullName,

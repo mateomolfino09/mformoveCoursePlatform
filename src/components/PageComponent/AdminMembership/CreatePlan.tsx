@@ -53,37 +53,31 @@ const CreatePlan = () => {
 
   async function handleSubmit(name: string, description: string, currency: string = "USD", amount: number, amountAnual: number, frequency_type: string, useStripe: boolean) {
     setLoading(true);
-
     try {
       const config = {
         headers: {
           'Content-Type': 'application/json'
         }
-      };  
-
+      };
       const { data } = await axios.post(
-        '/api/payments/createPlan',
-        {       
-            name,
-            description,
-            currency,
-            amount,
-            amountAnual,
-            frequency_type,
-            useStripe
+        '/api/payments/membership/createPlan',
+        {
+          name,
+          description,
+          features: [], // Puedes adaptar esto si tienes features
+          level: '', // Puedes adaptar esto si tienes niveles
+          price: amount,
+          currency,
+          interval: frequency_type || 'month',
         },
         config
       );
-
-      auth.fetchUser()
-
-      toast.success(data.message);
-      router.push('/admin/memberships')
-      dispatch(clearData())
-
+      auth.fetchUser();
+      toast.success('Plan de membresía creado exitosamente');
+      router.push('/admin/memberships');
+      dispatch(clearData());
     } catch (error: any) {
-      console.log(error)
-      toast.error(error.response.data.error);
+      toast.error(error.response?.data?.error || 'Error al crear el plan');
     }
     setLoading(false);
   }

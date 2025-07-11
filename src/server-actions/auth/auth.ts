@@ -6,9 +6,7 @@ const loginServerAction = async (data: FormData) => {
 
     if(!email || !password) return
 
-    console.log(email, password)
-
-}
+    }
 
 export {
     loginServerAction,

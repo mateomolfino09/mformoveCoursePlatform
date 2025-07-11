@@ -17,6 +17,5 @@ export async function getUserBills(req) {
       .exec();
     return JSON.parse(JSON.stringify(bills));
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

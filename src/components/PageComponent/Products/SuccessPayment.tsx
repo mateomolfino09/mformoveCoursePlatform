@@ -31,8 +31,6 @@ const SuccessProductPayment = ({ product }: Props) => {
   const [user, setUser] = useState<User | null>(null);
   const [productDb, setProductDb] = useState<ProductDB>(product);
 
-  console.log(auth)
-
   useEffect(() => {
     let userProduct = productDb?.users.filter(x => x._id === auth?.user?._id)[0]
     const paymentToken = Cookies.get('userPaymentToken');
@@ -53,7 +51,7 @@ const SuccessProductPayment = ({ product }: Props) => {
 
     if (!paymentToken) {
       toast.error(`No podes acceder a esta página, te redireccionaremos al inicio...`);
-      router.push('/select-plan');
+      router.push('/mentorship');
       return;
     }
 
@@ -63,8 +61,6 @@ const SuccessProductPayment = ({ product }: Props) => {
         const prod = productDb;
 
         let userProduct = prod?.users.filter(x => x._id === auth?.user?._id).length > 0;
-        console.log(prod, auth?.user)
-
         if(userProduct) {
           toast.success('ya lo agregaste')
           return
@@ -81,8 +77,7 @@ const SuccessProductPayment = ({ product }: Props) => {
           setProductDb(data.product)
         }
       } catch (error) {
-        console.log(error);
-      } finally {
+        } finally {
         setLoading(false);
       }
     };

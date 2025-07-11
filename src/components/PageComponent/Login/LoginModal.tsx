@@ -84,10 +84,7 @@ const LoginModal = () => {
       })
 
       const data = await res.json()
-      console.log(data)
       const { token } = data;
-
-      console.log(data)
 
       //login
 
@@ -104,7 +101,6 @@ const LoginModal = () => {
       }
 
     } catch (error: any) {
-      console.log(error);
       setErrorMessage(error?.response?.data?.error)
       toast.error(error?.response?.data?.error); 
     }
@@ -176,7 +172,6 @@ const LoginModal = () => {
   }, []);
 
   const onSubmit = async (data: any) => {
-    console.log(data)
     const { name, email, password } = data;
     if(loginForm && !forgetForm) await signinUser(email, password)
     else if(loginForm && forgetForm) await forgetPassword(email);

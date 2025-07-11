@@ -15,8 +15,6 @@ export async function DELETE(req) {
           planId: planId
         }
       );
-      console.log(response);
-
       const p = await Plan.deleteOne({
         id: planId
       });

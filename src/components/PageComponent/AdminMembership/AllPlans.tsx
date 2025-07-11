@@ -20,7 +20,6 @@ interface Props {
   plans: Plan[];
 }
 const AllPlans = ({ plans }: Props) => {
-  console.log(plans)
   const cookies = parseCookies();
   const router = useRouter();
   let [isOpen, setIsOpen] = useState(false);
@@ -75,7 +74,6 @@ const AllPlans = ({ plans }: Props) => {
       const updatedPlans = plans.filter(
         (p: Plan) => p._id !== planSelected._id
       );
-      console.log(data)
       setElementos(updatedPlans);
       if (data.success) {
         toast.success(`${planSelected.name} fue eliminado correctamente`);

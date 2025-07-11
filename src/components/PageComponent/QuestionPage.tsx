@@ -14,8 +14,6 @@ interface Props {
 }
 
 const QuestionPage = ({ question }: Props) => {
-  console.log(question)
-
   const router = useRouter();
   const auth = useAuth()
 
@@ -45,7 +43,7 @@ const QuestionPage = ({ question }: Props) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <header className={`bg-dark`}>
-        <div onClick={() => handleRouteChange(routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip))}>
+        <div onClick={() => handleRouteChange('/mentorship')}>
           <img
             alt='Logo Video Stream'
             src='/images/logoWhite.png'

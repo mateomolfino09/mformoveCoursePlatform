@@ -213,7 +213,6 @@ function Youtube({ url, img, title, setPlayerRef, play, isToShow }: Props) {
     let timer: NodeJS.Timeout;
 
     if (isStuck && reloadCount < 3) {
-      console.log(`Reiniciando video: Intento ${reloadCount + 1}`);
       setReloadCount((prev) => prev + 1);
       setVideoUrl(''); // Limpiar URL
       timer = setTimeout(() => setVideoUrl(url?.toString()), 500); // Reiniciar video
@@ -228,7 +227,6 @@ function Youtube({ url, img, title, setPlayerRef, play, isToShow }: Props) {
   const isMobile = () => window.innerWidth <= 768;
 
   const handleReady = () => {
-    console.log('Video listo');
     setIsStuck(false);
     setReloadCount(0);
   };

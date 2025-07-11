@@ -96,7 +96,7 @@ function CarouselClassesThumbnail({
         </>
       ) : (
         <div onClick={() => {
-          checkLogin() ? router.push('/select-plan') : null;
+          checkLogin() ? router.push('/mentorship') : null;
         }}>
             {children}
         </div>

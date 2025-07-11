@@ -19,6 +19,5 @@ export async function getUserFromBack(req) {
     user.password = undefined;
     return JSON.parse(JSON.stringify(user));
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

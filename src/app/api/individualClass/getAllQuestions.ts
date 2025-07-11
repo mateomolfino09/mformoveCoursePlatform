@@ -69,6 +69,5 @@ return questionsF;
     // const questionsF = JSON.parse(JSON.stringify(questionsWithDetails));
     // return questionsF;
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

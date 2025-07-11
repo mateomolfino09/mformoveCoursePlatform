@@ -42,7 +42,6 @@ function Carousel({
   user,
   courseIndex
 }: Props) {
-  console.log(coursesDB)
   const rowRef = useRef<HTMLDivElement>(null);
   const scrollRowRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -72,8 +71,6 @@ function Carousel({
 
     if (scrollRowRef.current) {
       const { scrollLeft, clientWidth } = scrollRowRef.current;
-      console.log(scrollLeft, clientWidth);
-
       const scrollTo =
         direction === 'left'
           ? scrollLeft - clientWidth

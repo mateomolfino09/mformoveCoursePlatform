@@ -89,8 +89,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
         setMessageType('');
       }, 3000);
     } catch (error) {
-      console.log(error);
-    }
+      }
   };
 
   const createAnswer = async (questionId: number) => {
@@ -126,8 +125,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
         setMessageType('');
       }, 3000);
     } catch (error) {
-      console.log(error);
-    }
+      }
   };
 
   function openModalDelete(question: Question) {

@@ -118,7 +118,6 @@ const createCourse = async (req, res) => {
           let data = await fetch(singleYoutubeURL);
           let singleItem = await data.json();
           let durationISO = singleItem.items[0]?.contentDetails.duration;
-          console.log(durationISO);
           let seg = 0;
 
           if (
@@ -183,8 +182,7 @@ const createCourse = async (req, res) => {
       res.status(200).json({ message: 'Curso creado correctamente' });
     }
   } catch (error) {
-    console.log(error.message);
-  }
+    }
 };
 
 export default createCourse;

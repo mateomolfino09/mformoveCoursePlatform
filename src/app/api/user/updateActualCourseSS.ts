@@ -34,6 +34,5 @@ export async function updateActualCourseSS(
 
     return JSON.parse(JSON.stringify(user));
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

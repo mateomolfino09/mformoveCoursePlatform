@@ -33,7 +33,6 @@ const FileUploader = ({ clase, handleAdd, handleBack }: Props) => {
             })
             )
         );
-        console.log(acceptedFiles)
         },
         multiple: true,
         accept: { '*': [] }
@@ -52,7 +51,6 @@ const FileUploader = ({ clase, handleAdd, handleBack }: Props) => {
                 formData.append('upload_preset', 'my_uploads');
                 
                 if (file.size / 1000000 > 10) {
-                  console.log('tamanio incorrexcto');
                   return;
                 }
     
@@ -66,9 +64,6 @@ const FileUploader = ({ clase, handleAdd, handleBack }: Props) => {
                 dataFiles = [...res]
             );
 
-            console.log(dataFiles)
-            
-    
             //ALLOW IN CLOUDINARY TO WORK
     
             const userId = auth.user._id;
@@ -78,12 +73,9 @@ const FileUploader = ({ clase, handleAdd, handleBack }: Props) => {
             await addFiles({ dataFiles, userId, claseId }).unwrap()
             toast.success(`archivos agregados correctamente`);
     
-            console.log(data)
-            
-        } catch (error: any) {
+            } catch (error: any) {
             toast.error(error.data.error);
-            console.log(error)
-        }
+            }
         handleAdd()
 
     }
@@ -103,9 +95,9 @@ const FileUploader = ({ clase, handleAdd, handleBack }: Props) => {
       }
 
     const handleFileRemove = (index: number) => {
-        const fileMem = [...files]
-        console.log(fileMem, fileMem.splice(index, 1))
-        setFiles(fileMem.splice(index, 1))
+        const fileMem = [...files];
+        fileMem.splice(index, 1);
+        setFiles(fileMem);
     }
 
   return (

@@ -45,7 +45,6 @@ interface Props {
 
 const ClassesCategory = ({ classesDB, filters, filter  }: Props) => {
     const [typedClasses, setClasses] = useState<any | null>(classesDB);
-    console.log(typedClasses, classesDB)
     const [isMember, setIsMember] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);  const [selectedClass, setSelectedClass] = useState<IndividualClass | null>(null);
   const router = useRouter()

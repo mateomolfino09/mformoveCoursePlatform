@@ -8,8 +8,6 @@ export default async function deleteQuestion(req, res) {
         
       const questionId = req.query.questionId;
 
-      console.log(questionId)
-
       const question = await Question.deleteOne({
         id: questionId
       });

@@ -66,7 +66,6 @@ const CreateCourseStepOne = ({ step1ToStep2, step1ToStep0 }: Props) => {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    console.log(moduleNumbers);
     if (description.length < 30) {
       t.error('La descripción del curso debe tener almenos 30 caracteres');
       return;
@@ -168,8 +167,7 @@ const CreateCourseStepOne = ({ step1ToStep2, step1ToStep0 }: Props) => {
 
   useEffect(() => {
     notify('Agregado a la Lista', true, false);
-    console.log('hola');
-  }, []);
+    }, []);
 
   const notify = (message: String, agregado: boolean, like: boolean) =>
     toast.custom(

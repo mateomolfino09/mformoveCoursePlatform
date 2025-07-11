@@ -23,7 +23,7 @@ function Forget() {
     const cookies: any = Cookies.get('userToken')
   
     if (!cookies) {
-      router.push(routes.navegation.membresiaHome);
+      router.push('/mentorship');
     }
   }, [router]);
 
@@ -96,7 +96,7 @@ function Forget() {
           </form>
           <div className='flex items-start justify-between flex-row'>
             <div className='text-xl md:text-sm'>
-              <Link href={routes.navegation.membresiaHome}>
+              <Link href={'/mentorship'}>
                 <button
                   type='button'
                   className='text-white hover:underline cursor-pointer'

@@ -26,8 +26,6 @@ export async function getLatestSubscriptionByEmail(email: string) {
         const isCanceled = latestSub.cancel_at_period_end;
         const canceledAt = latestSub.cancel_at ? new Date(latestSub.cancel_at * 1000) : null;
 
-        console.log(isCanceled)
-
         return {
             id: latestSub.id,
             planId: latestSub.items.data[0]?.price.id || null,

@@ -17,6 +17,7 @@ import state from '../../valtio';
 import LoginModal from '../PageComponent/Login/LoginModal';
 import { routes } from '../../constants/routes';
 import UserHeader from '../UserHeader';
+import MembershipHeader from '../MembershipHeader';
 
 interface Props {
   children: any;
@@ -42,8 +43,11 @@ const MainSideBar = ({ children, where }: Props) => {
       {(path == routes.navegation.membresiaHome || where === "productsHome") && (
         <HeaderHome user={auth.user} toggleNav={toggleNav} />
       )}
-      {(path == routes.navegation.selectPlan || path == routes.navegation.index || path == routes.user.login || path == routes.user.forgetEmail || path == routes.user.forget || path == routes.user.register || path.includes(routes.navegation.payments)) && ( 
+      {(path == routes.navegation.index || path == routes.user.login || path == routes.user.forgetEmail || path == routes.user.forget || path == routes.user.register || path.includes(routes.navegation.payments)) && ( 
       <IndexHeader user={auth.user} toggleNav={toggleNav} where={where} showNav={showNav} />
+      )}
+      {(path == routes.navegation.selectPlan || path == routes.navegation.mentorship) && ( 
+      <MembershipHeader user={auth.user} toggleNav={toggleNav} where={where} showNav={showNav} />
       )}
       {(path == routes.user.perfil) && ( 
       <UserHeader user={auth.user} toggleNav={toggleNav} where={where} showNav={showNav} />

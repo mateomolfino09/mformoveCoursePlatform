@@ -19,8 +19,6 @@ export async function POST(req) {
       const adminUsers = await Users.find({ rol: 'Admin' });
       let clase = await IndividualClass.findOne({ id: classId });
 
-      console.log(user, userEmail)
-
       const lastQuestion = await Question.find().sort({ _id: -1 }).limit(1);
 
       const newQuestion = await new Question({
@@ -41,7 +39,6 @@ export async function POST(req) {
       return NextResponse.json({ newQuestion: newQuestion, success: true, message: 'Pregunta enviada correctamente' }, { status: 200 })
     }
   } catch (error) {
-    console.log(error.message);
     return NextResponse.json({ error: "Error al enviar", success: false }, { status: 500 })
 
   }

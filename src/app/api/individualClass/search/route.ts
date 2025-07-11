@@ -16,11 +16,9 @@ export async function GET(req: any) {
       const regex = new RegExp(text ? text : "", 'i'); // 'i' flag makes the search case-insensitive
 
       const individualClass: IndividualClass[] | null = await IndividualClassModel.find({ name: { $regex: regex } });
-      console.log(individualClass)
       return NextResponse.json({ individualClass: individualClass }, { status: 200 })
     }
   } catch (error) {
-    console.log(error)
     return NextResponse.json({error: 'Hubo un error'}, { status: 404 })
   }
 }

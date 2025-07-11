@@ -24,8 +24,6 @@ export async function DELETE(req) {
         let courseIndex = user.courses.map(x => x.course).indexOf(courseId)
         user.courses.splice(courseIndex, 1)
 
-        console.log(courseIndex, user.courses)
-
         await user.save()
       })
 

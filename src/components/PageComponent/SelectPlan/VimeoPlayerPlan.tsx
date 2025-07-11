@@ -39,12 +39,13 @@ const VimeoPlayerPlan = ({ videoId }: { videoId: string }) => {
         });
 
         player.on('loaded', () => {
-          console.log('Video cargado');
           setLoading(false); // El video ha terminado de cargar
         });
 
       // Eventos
-        player.on('ended', () => console.log('Video terminado'));
+        player.on('ended', () => {
+          // El video ha terminado, puedes agregar lógica aquí si es necesario
+        });
         player.on('error', (error) => console.error('Error:', error));
 
         // Manejar eventos de estado del reproductor
@@ -64,8 +65,6 @@ const VimeoPlayerPlan = ({ videoId }: { videoId: string }) => {
   const handlePlayPause = () => {
     if (playerContainerRef?.current) {
       const player = new Player(playerContainerRef?.current);
-
-      console.log(isPlaying)
 
       if (isPlaying) {
         player.pause();
@@ -108,7 +107,7 @@ const VimeoPlayerPlan = ({ videoId }: { videoId: string }) => {
   // }, []);
 
   return (
-    <div className={`px-0 pb-6 md:p-0 h-full w-full flex items-center justify-center `}  onMouseMove={handleMouseMove}>
+    <div className={`px-0 md:p-0 h-full w-full flex items-center rounded-md overflow-hidden max-w-[900px] justify-center shadow-2xl `}  onMouseMove={handleMouseMove}>
       <Container className="!h-full !px-0 relative">
         <div
           ref={playerContainerRef}
@@ -124,13 +123,13 @@ const VimeoPlayerPlan = ({ videoId }: { videoId: string }) => {
         </button>
 
                 {/* Botón de pantalla completa */}
-                <button
+                {/* <button
           onClick={handleFullScreen}
           className={`absolute -right-0 -bottom-0 transform  text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:bg-black/50 transition`}
         >
         <BiFullscreen className='md:h-8 md:w-8 h-5 w-5'/>
         </button>
-        
+         */}
       </Container>
 
             {/* Mostrar loader mientras está cargando */}

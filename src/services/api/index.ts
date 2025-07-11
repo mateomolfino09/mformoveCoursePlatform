@@ -52,8 +52,11 @@ const endpoints = {
     cancelSubscription: (id:string) => `/api/payments/cancelSubscription/${id}`,
     stripe: {
       createPaymentURL: `/api/payments/stripe/createPaymentURL`,
-
     }
+  },
+  mentorship: {
+    plans: `/api/payments/getPlans?type=mentorship`,
+    createCheckoutSession: `/api/mentorship/stripe/createCheckoutSession`,
   },
   admin: {
     emailMarketing: '/api/admin/emailMarketing'

@@ -4,8 +4,6 @@ mail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export default async function sendMailGrid(name, email, msg, subject) {
   try {
-    console.log(process.env.SENDGRID_API_KEY);
-
     const message = `
         Nombre : ${name} \r\n
         Email : ${email} \r\n
@@ -26,7 +24,6 @@ export default async function sendMailGrid(name, email, msg, subject) {
     await mail.send(data);
     return 'Ok';
   } catch (error) {
-    console.log(error);
     return error;
   }
 }

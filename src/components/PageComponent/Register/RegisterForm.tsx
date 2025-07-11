@@ -168,7 +168,6 @@ function Register() {
 
   const signupUser = async (e: MouseEvent<HTMLButtonElement>, password: string, confirmPassword: string) => {
     const { email, firstname, lastname, gender, country } = register
-    console.log(password, confirmPassword)
     try {
       e.preventDefault();
       setLoading(true);
@@ -214,7 +213,7 @@ function Register() {
           setState({ ...state, stepThree: false });
 
           setTimeout(() => {
-            router.push(routes.navegation.membresiaHome)
+            router.push('/mentorship')
           }, 3000)
 
         })
@@ -224,7 +223,6 @@ function Register() {
         toast.error(data.error);
       }
     } catch (error: any) {
-      console.log(error);
       toast.error(error?.response?.data?.error); 
     }
     setLoading(false);
@@ -259,8 +257,6 @@ function Register() {
 
       const data = await res.json()
 
-      console.log(data)
-
       if (res.ok) {
         setRegistered(true);
         setState({ ...state, stepThree: false });
@@ -270,7 +266,6 @@ function Register() {
         toast.error(data.error);
       }
     } catch (error: any) {
-      console.log(error);
       toast.error(error?.response?.data?.error); 
     }
     setLoading(false);
@@ -281,7 +276,7 @@ function Register() {
     const cookies: any = Cookies.get('userToken')
   
     if (cookies) {
-      router.push(routes.navegation.membresiaHome);
+      router.push('/mentorship');
     }
   }, [router]);
   //using React Hook Form library
@@ -292,7 +287,7 @@ function Register() {
   // const onChange = () => {
   //   if (recaptchaRef.current.getValue()) {
   //     setCaptchaToken(recaptchaRef.current.getValue());
-  //     console.log(recaptchaRef.current.getValue());
+  //     );
   //   } else {
   //     setCaptchaToken(null);
   //   }

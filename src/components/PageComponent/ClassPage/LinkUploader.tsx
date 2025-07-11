@@ -28,7 +28,6 @@ const LinkUploader = ({ clase, handleAdd }: Props) => {
         if(links.length + clase.links.length >= 5 ) return toast.error('La clase no puede superar los 4 links');
         else if(link.length < 5) return toast.error('Elija un link válido');
 
-        console.log(link, links)
         setLinks([...links, link])
         setLink('')
     }
@@ -45,20 +44,16 @@ const LinkUploader = ({ clase, handleAdd }: Props) => {
                 await addLinks({ links , userId, claseId }).unwrap()
                 toast.success(`links agregados correctamente`);
         
-                console.log(data)
-                
-            } catch (error: any) {
+                } catch (error: any) {
                 toast.error(error.data.error);
-                console.log(error)
-            }
+                }
         }
         else return toast.error('Debe agregar a lo sumo un link');
 
     }
 
     useEffect(() => {
-        console.log(links)
-    }, [links])
+        }, [links])
 
     const handleLinkRemove = (index: number) => {
         const linkMem = [...links]

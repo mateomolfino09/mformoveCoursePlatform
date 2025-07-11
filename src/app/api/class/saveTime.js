@@ -9,8 +9,6 @@ connectDB();
 const saveTime = async (req, res) => {
   const { actualTime, email, courseId, classId } = req.body;
 
-  console.log(classId)
-
   try {
     if (req.method === 'POST' && actualTime != undefined) {
       const userToken= cookies().get('userToken').value;
@@ -32,7 +30,6 @@ const saveTime = async (req, res) => {
       return res.status(401).json({ error: 'Algo salio mal' });
     }
   } catch (err) {
-    console.log(err);
     return res.status(401).json({ error: 'Algo salio mal' });
   }
 };

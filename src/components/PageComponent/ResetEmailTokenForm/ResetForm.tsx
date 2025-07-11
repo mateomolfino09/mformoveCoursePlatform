@@ -86,8 +86,6 @@ function ResetEmailForm({ token }: Props) {
     try {
       const data = await auth.resetMail(email, token);
 
-      console.log(data);
-
       if (data?.type === alertTypes.error.type) {
         setMessage((current: any) => [
           ...current,
@@ -132,7 +130,7 @@ function ResetEmailForm({ token }: Props) {
         <p className="text !mt-0">Moverse es el medio para reconocerse</p>
         <div className='about-us-btn-container'>
             <a
-              href='/select-plan'
+              href='/mentorship'
               className='about-us-btn !py-3 rounded-full font-light font-montserrat !px-3'
             >
               Membresias

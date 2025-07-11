@@ -58,7 +58,6 @@ const ProductsFilters = () => {
   }, [auth.user]);
 
   async function onSubmit(data: any) {
-    console.log(data);
     const { name, description, question } = data;
     setLoading(true);
     if (name.length < 3) {
@@ -87,9 +86,6 @@ const ProductsFilters = () => {
 
       const typeSend = type ? 'two' : 'multiple'
 
-      console.log(typeSend)
-
-
       const { data } = await axios.post(
         '/api/product/filters/create',
         {
@@ -108,7 +104,6 @@ const ProductsFilters = () => {
       toast.success(data.message);
       router.push('/admin/products')
     } catch (error: any) {
-      console.log(error);
       toast.error(error.response.data.error);
     }
     setLoading(false);

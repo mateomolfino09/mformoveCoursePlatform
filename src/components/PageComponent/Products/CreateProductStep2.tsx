@@ -81,8 +81,7 @@ const CreateProductStep2 = ({ productCreado }: Props) => {
   }, [modulesQuantity]);
 
   useEffect(() => {
-    console.log(modules);
-  }, [modules]);
+    }, [modules]);
 
   const router = useRouter()
   async function handleAddModules() {
@@ -103,10 +102,7 @@ const CreateProductStep2 = ({ productCreado }: Props) => {
         config
       );
       router.push('/admin')
-      console.log(data)
-
-    } catch (error: any) {
-      console.log(error);
+      } catch (error: any) {
       toast.error(error.response.data.error);
     }
   }
