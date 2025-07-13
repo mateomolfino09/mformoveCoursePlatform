@@ -117,21 +117,21 @@ const MentorshipPlans = ({ plans, origin }: MentorshipProps) => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-semibold mb-6 font-montserrat" style={{ color: 'var(--mentoria-title-black)' }}>
+          <h2 className="text-4xl md:text-5xl font-semibold mb-6 font-montserrat text-black">
             Elegí tu plan
           </h2>
-          <p className="text-xl max-w-3xl mx-auto font-montserrat" style={{ color: 'var(--mentoria-blue)' }}>
+          <p className="text-xl max-w-3xl mx-auto font-montserrat text-gray-700">
             Elige el nivel de compromiso que mejor se adapte a tus objetivos de transformación
           </p>
           <div className="flex justify-center mb-4 mt-4 gap-2">
             <button
-              className={`px-4 py-2 rounded-l font-semibold border ${interval === 'trimestral' ? 'bg-[var(--mentoria-blue)] text-white' : 'bg-white text-[var(--mentoria-blue)]'}`}
+              className={`px-4 py-2 rounded-l font-semibold border transition-colors duration-200 ${interval === 'trimestral' ? 'bg-black text-white border-black' : 'bg-white text-black border-gray-300 hover:border-black'}`}
               onClick={() => setInterval('trimestral')}
             >
               Trimestral
             </button>
             <button
-              className={`px-4 py-2 rounded-r font-semibold border ${interval === 'anual' ? 'bg-[var(--mentoria-blue)] text-white' : 'bg-white text-[var(--mentoria-blue)]'}`}
+              className={`px-4 py-2 rounded-r font-semibold border transition-colors duration-200 ${interval === 'anual' ? 'bg-black text-white border-black' : 'bg-white text-black border-gray-300 hover:border-black'}`}
               onClick={() => setInterval('anual')}
             >
               Anual (-15%)
@@ -143,6 +143,7 @@ const MentorshipPlans = ({ plans, origin }: MentorshipProps) => {
           {plans.map((plan, index) => {
             const priceObj = plan.prices?.find((p: PlanPrice) => p.interval === interval);
             if (!priceObj) return null;
+            const isPopular = plan.level === 'practitioner';
             return (
               <motion.div
                 key={plan._id + '-' + interval}
@@ -150,24 +151,50 @@ const MentorshipPlans = ({ plans, origin }: MentorshipProps) => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
                 viewport={{ once: true }}
-                className={`mentoria-gradient-card rounded-2xl flex flex-col h-full group`}
+                className={`rounded-2xl flex flex-col h-full group border border-gray-200 bg-white shadow-lg hover:shadow-2xl transition-shadow duration-300`}
               >
-                <div className="relative bg-white rounded-2xl h-full w-full z-10 p-8 border border-[var(--mentoria-blue-light)] shadow-sm flex flex-col">
+                <div className="relative rounded-2xl h-full w-full z-10 p-8 flex flex-col">
                   {/* Badge */}
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className={`inline-block px-4 py-2 rounded-full text-sm font-bold font-montserrat`}
-                      style={{ background: '#F2F3F6', color: 'var(--mentoria-blue)', border: '1px solid var(--mentoria-blue-light)' }}>
+                    <span className="inline-block px-4 py-2 rounded-full text-sm font-bold font-montserrat bg-black text-white border border-black">
                       {plan.level === 'explorer' ? 'Explorador' : plan.level === 'practitioner' ? 'Practicante' : 'Estudiante'}
                     </span>
                   </div>
+                  {/* Badge MÁS POPULAR */}
+                  {isPopular && (
+                    <div className="absolute -top-2 -right-2">
+                      <span
+                        className="font-bold px-3 py-1 rounded-full text-xs font-montserrat"
+                        style={{ background: '#234C8C', color: 'white' }}
+                      >
+                        MÁS POPULAR
+                      </span>
+                    </div>
+                  )}
                   {/* Plan Header */}
                   <div className="text-center mb-8">
-                    <h3 className="text-2xl font-semibold mb-4 font-montserrat" style={{ color: 'var(--mentoria-blue)' }}>{plan.name}</h3>
+                    <h3 className="text-2xl font-semibold mb-4 font-montserrat text-black">{plan.name}</h3>
                     <div className="mb-4">
-                      <span className="text-4xl font-bold font-montserrat" style={{ color: 'var(--mentoria-title-black)' }}>${priceObj.price}</span>
-                      <span className="ml-2 font-montserrat" style={{ color: 'var(--mentoria-blue)' }}>/{priceObj.interval}</span>
+                      {interval === 'trimestral' ? (
+                        <div>
+                          <div className="mb-2 flex flex-col items-center justify-center">
+                            <span className="text-3xl font-bold font-montserrat text-black">
+                              ${Math.round(priceObj.price / 3)}
+                            </span>
+                            <span className="ml-2 font-montserrat text-gray-600">/mes</span>
+                          </div>
+                          <div className="text-sm font-montserrat text-gray-600">
+                            <span className="font-semibold text-black">${priceObj.price}</span> pagados trimestralmente
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <span className="text-4xl font-bold font-montserrat text-black">${priceObj.price}</span>
+                          <span className="ml-2 font-montserrat text-gray-600">/año</span>
+                        </div>
+                      )}
                     </div>
-                    <p className="text-sm leading-relaxed font-montserrat" style={{ color: 'var(--mentoria-blue-light)' }}>
+                    <p className="text-sm leading-relaxed font-montserrat text-gray-700">
                       {plan.description}
                     </p>
                   </div>
@@ -175,8 +202,8 @@ const MentorshipPlans = ({ plans, origin }: MentorshipProps) => {
                   <div className="space-y-4 mb-8 flex-1">
                     {plan.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-start space-x-3">
-                        <CheckIcon className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: 'var(--mentoria-blue)' }} />
-                        <span className="text-sm font-montserrat" style={{ color: 'var(--mentoria-text-dark)' }}>{feature}</span>
+                        <CheckIcon className="w-5 h-5 mt-0.5 flex-shrink-0 text-black" />
+                        <span className="text-sm font-montserrat text-gray-800">{feature}</span>
                       </div>
                     ))}
                   </div>
@@ -185,20 +212,11 @@ const MentorshipPlans = ({ plans, origin }: MentorshipProps) => {
                     <button
                       onClick={() => handlePlanSelect(plan)}
                       disabled={loadingPlanId === plan._id || !plan.active}
-                      className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 text-white font-montserrat shadow-lg disabled:opacity-50 disabled:cursor-not-allowed`}
-                      style={{ background: 'var(--mentoria-blue)', color: 'white' }}
+                      className="w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 text-white font-montserrat shadow-lg disabled:opacity-50 disabled:cursor-not-allowed bg-black hover:bg-[#234C8C]"
                     >
                       {loadingPlanId === plan._id ? 'Procesando...' : `Comenzar`}
                     </button>
                   </div>
-                  {/* Popular Badge for Practitioner */}
-                  {plan.level === 'practitioner' && (
-                    <div className="absolute -top-2 -right-2">
-                      <span className="font-bold px-3 py-1 rounded-full text-xs font-montserrat" style={{ background: '#222', color: 'white' }}>
-                        MÁS POPULAR
-                      </span>
-                    </div>
-                  )}
                 </div>
               </motion.div>
             );

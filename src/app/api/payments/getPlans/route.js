@@ -12,13 +12,28 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const planType = searchParams.get('type') || 'membership';
+    const planId = searchParams.get('id');
     
     let plans;
     
     if (planType === 'mentorship') {
-      plans = await MentorshipPlan.find({ active: true }).sort({ createdAt: -1 });
+      if (planId) {
+        // Si se proporciona un ID específico, buscar ese plan
+        plans = await MentorshipPlan.findById(planId);
+        plans = plans ? [plans] : [];
+      } else {
+        // Si no hay ID, obtener todos los planes activos
+        plans = await MentorshipPlan.find({ active: true }).sort({ createdAt: -1 });
+      }
     } else {
-      plans = await Plan.find({ active: true });
+      if (planId) {
+        // Si se proporciona un ID específico, buscar ese plan
+        plans = await Plan.findById(planId);
+        plans = plans ? [plans] : [];
+      } else {
+        // Si no hay ID, obtener todos los planes activos
+        plans = await Plan.find({ active: true });
+      }
     }
     
     revalidateTag('plans');
