@@ -46,6 +46,9 @@ const MainSideBar = ({ children, where }: Props) => {
       {(path == routes.navegation.index || path == routes.user.login || path == routes.user.forgetEmail || path == routes.user.forget || path == routes.user.register || path.includes(routes.navegation.payments)) && ( 
       <IndexHeader user={auth.user} toggleNav={toggleNav} where={where} showNav={showNav} />
       )}
+      {(path == '/faq' || path == '/about' || path == '/privacy') && ( 
+      <MembershipHeader user={auth.user} toggleNav={toggleNav} where={where} showNav={showNav} />
+      )}
       {(path == routes.navegation.selectPlan || path == routes.navegation.mentorship) && ( 
       <MembershipHeader user={auth.user} toggleNav={toggleNav} where={where} showNav={showNav} />
       )}

@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRightIcon } from '@heroicons/react/24/solid';
 import { CldImage } from 'next-cloudinary';
+import Link from 'next/link';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -112,9 +113,11 @@ const MentorshipCTA = () => {
                 <ArrowRightIcon className="w-5 h-5" />
               </button>
 
-              <button className="w-full sm:w-auto bg-white/10 backdrop-blur-sm text-white font-semibold py-4 px-8 rounded-full text-lg hover:bg-[#234C8C]/20 transition-all duration-300 border border-[#234C8C]/30 flex items-center justify-center space-x-2">
-                <span>Agendar Consulta</span>
-              </button>
+              <Link href="/mentorship/consulta" className="w-full sm:w-auto">
+                <button className="w-full sm:w-auto bg-white/10 backdrop-blur-sm text-white font-semibold py-4 px-8 rounded-full text-lg hover:bg-[#234C8C]/20 transition-all duration-300 border border-[#234C8C]/30 flex items-center justify-center space-x-2">
+                  <span>Agendar Consulta</span>
+                </button>
+              </Link>
             </motion.div>
           </div>
 

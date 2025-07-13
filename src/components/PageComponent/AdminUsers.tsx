@@ -175,7 +175,7 @@ const AdminUsers = ({ initialData }: Props) => {
               <div className='flex items-center justify-center space-x-2'>
                 <Link
                   href={`/admin/updateUser/${user._id}`}
-                  className='text-blue-500'
+                  className='text-[#234C8C]'
                 >
                   <PencilIcon className='h-5 w-5' />
                 </Link>

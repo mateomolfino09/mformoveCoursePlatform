@@ -114,9 +114,9 @@ const onSubmit = async (data: any) => {
             </Link>
         </div>
         <div className='text-black md:max-w-[33%] flex items-start justify-start flex-col md:pl-0 space-y-2 !mx-8 mb-8 mt-12 md:pt-12 md:pr-4 overflow-x-hidden'>
+            <Link href="/faq" className="text-xs font-light md:mb-2 hover:underline focus:underline cursor-pointer"> Preguntas Frecuentes</Link>
             <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" rel='noopener noreferrer' className="text-xs font-light md:mb-2 hover:underline focus:underline cursor-pointer"> Términos y Condiciones</a>
             <a target='_blank' href="/privacy" rel='noopener noreferrer' className="text-xs font-light md:mb-2 hover:underline focus:underline cursor-pointer"> Políticas de Privacidad </a>
-            {/* <p className=''>Políticas de privacidad </p> */}
             <p className='text-xs font-light md:mb-2 hover:underline focus:underline cursor-pointer'>@ 2025 Todos los derechos reservados. </p>
             <p className='text-xs font-light md:mb-2'>Desarrollo de MForMove </p>
         </div>

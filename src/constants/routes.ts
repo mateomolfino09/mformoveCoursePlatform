@@ -15,6 +15,7 @@ export const routes = {
         membresiaHome: '/home',
         mentorship: '/mentorship',
         mentoria: '/mentorship', // Mantener para compatibilidad
+        mentorshipConsulta: '/mentorship/consulta',
         preguntasFrecuentes: '/faq',
         index: '/',
         products: '/products',

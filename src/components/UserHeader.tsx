@@ -147,8 +147,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
                 </div>
               </PopoverPanel>
             </Popover>
-            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${path == routes.navegation.mentorship && '!text-black'}`} onClick={(e) => {
-                e.currentTarget.style.color = '#fff';
+            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${path == routes.navegation.mentorship && '!text-black'}`} onClick={() => {
                 router.push('/mentorship');
               }}>
                 Mentoría
@@ -168,8 +167,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
             <a href="/account" ref={linkRef} style={{ display: 'none' }}>
               Ir a Cuenta
             </a>
-            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.perfil || path == '/account') && '!text-black'}`} onClick={(e) => {
-                    e.currentTarget.style.color = '#fff';
+            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.perfil || path == '/account') && '!text-black'}`} onClick={() => {
                     if(!auth.user) {
                       router.push('/login')
                     }

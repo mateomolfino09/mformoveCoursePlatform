@@ -98,7 +98,7 @@ const onSubmit = async (data: any) => {
                                     </>
                                 ) : (
                                     <>
-                                    <button type='submit'>
+                                    <button type='submit' className='hover:text-[#234C8C] transition-colors'>
                                         <ArrowRightIcon className='w-5 h-5 group-hover:translate-x-2 transition-all cursor-pointer' />
                                     </button>
                                     </>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
+import { useRouter } from 'next/navigation';
 
 const imagesDesktop = [
   'my_uploads/plaza/DSC03370_l1kh3e',
@@ -33,6 +34,7 @@ const MentorshipBannerCarousel = ({ hideText = false }: { hideText?: boolean }) 
   const isMobile = useIsMobile();
   const images = isMobile ? imagesMobile : imagesDesktop;
   const [current, setCurrent] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     setCurrent(0);
@@ -77,10 +79,33 @@ const MentorshipBannerCarousel = ({ hideText = false }: { hideText?: boolean }) 
                 Mentoría Online
               </h1>
             </div>
-            <p className="text-xl md:text-3xl text-white font-light drop-shadow-xl max-w-2xl mx-auto font-montserrat text-center mb-2">
+            <p className="text-xl md:text-3xl text-white font-light drop-shadow-xl max-w-2xl mx-auto font-montserrat text-center mb-8">
               Programa personalizado guiado por <span className="font-semibold">Mateo Molfino</span>
             </p>
-            {/* Eliminado el SVG divisor */}
+            
+            {/* Botón de Agendar Consulta */}
+            <div className="flex justify-center">
+              <motion.button
+                onClick={() => router.push('/mentorship/consulta')}
+                className="relative bg-gradient-to-r from-[#234C8C] to-[#1a3763] text-white px-8 py-3 rounded-full font-bold text-base md:text-lg hover:from-[#1a3763] hover:to-[#234C8C] transition-all duration-500 transform hover:scale-105 shadow-2xl font-montserrat border-2 border-white/20 backdrop-blur-sm overflow-hidden group"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+              >
+                {/* Efecto de brillo */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                
+                {/* Contenido del botón */}
+                <span className="relative z-10 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Agendar Consulta
+                </span>
+              </motion.button>
+            </div>
           </div>
         </div>
       )}

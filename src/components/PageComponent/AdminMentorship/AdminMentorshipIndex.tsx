@@ -5,6 +5,7 @@ import {
   PlusCircleIcon,
   TableCellsIcon,
 } from '@heroicons/react/24/solid';
+import { ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -41,7 +42,7 @@ const AdminMentorshipIndex = () => {
           Bienvenido al Dashboard de Mentoría
         </p>
 
-        <div className='grid lg:grid-cols-3 gap-5 mb-16'>
+        <div className='grid lg:grid-cols-4 gap-5 mb-16'>
           <Link href={'/admin/mentorship/createPlan'}>
             <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
               <PlusCircleIcon className='w-24' />
@@ -57,6 +58,12 @@ const AdminMentorshipIndex = () => {
           <Link href={'/admin/mentorship/analytics'}>
             <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
               <p>Analytics</p>
+            </div>
+          </Link>
+          <Link href={'/admin/mentorship/solicitudes'}>
+            <div className='rounded bg-[#234C8C] h-40 shadow-lg flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer border-2 border-[#234C8C]'>
+              <ClipboardDocumentListIcon className='w-24 text-white' />
+              <p className='text-white font-bold mt-2'>Solicitudes de Mentoría</p>
             </div>
           </Link>
         </div>

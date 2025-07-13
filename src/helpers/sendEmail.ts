@@ -1,4 +1,3 @@
-import nodemailer from 'nodemailer';
 import mailchimp from '@mailchimp/mailchimp_transactional';
 
 interface Options {
@@ -54,17 +53,5 @@ export const sendEmail = async (options: Options) => {
     },
   });
 
-  // const transporter = nodemailer.createTransport({
-  //   service: 'gmail',
-  //   auth: {
-  //     user: email,
-  //     pass
-  //   }
-  // });
-
-  // transporter.sendMail(mailOptions, function (err, info) {
-  //   if (err) {
-  //     //   } else {
-  //     //   }
-  // });
+  return response;
 };

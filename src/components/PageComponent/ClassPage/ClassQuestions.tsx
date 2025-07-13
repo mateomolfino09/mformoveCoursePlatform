@@ -295,7 +295,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
                 {(user?.rol === 'Admin' || user?._id === quest?.user?._id) && (
                   <div className="flex justify-end space-x-2 mt-2">
                     <div
-                      className="w-4 transform hover:text-blue-500 hover:scale-110 cursor-pointer"
+                      className="w-4 transform hover:text-[#234C8C] hover:scale-110 cursor-pointer"
                       onClick={() => setOpenEdit(quest)}
                     >
                       <PencilIcon className="w-5 h-5" />
@@ -336,7 +336,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
                             user?._id === answer?.answerAdmin?._id) && (
                             <div className="flex justify-end space-x-2 mt-2">
                               <div
-                                className="w-4 transform hover:text-blue-500 hover:scale-110 cursor-pointer"
+                                className="w-4 transform hover:text-[#234C8C] hover:scale-110 cursor-pointer"
                                 onClick={() => {
                                   setOpenEdit(quest);
                                   setOpenEditAnswer(index);

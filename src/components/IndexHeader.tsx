@@ -26,8 +26,9 @@ interface Props {
   toggleNav: any
   where: any
   showNav: any
+  lightTheme?: boolean
 }
-const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
+const IndexHeader = ({ user, toggleNav, where, showNav, lightTheme = false }: Props) => {
   const router = useRouter();
   const path = usePathname()
   const headerAnimation = useAnimation();
@@ -101,13 +102,13 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
             opacity: 1
           }}
           animate={headerAnimation}
-          className={`bg-transparent fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${(isScrolled || headerScroll) && 'bg-[#141414]'} ${(path === routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.register) && !isScrolled && !headerScroll && 'md:bg-[#1414147c]'}`}
+          className={`fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${lightTheme ? 'bg-white/90 backdrop-blur-sm' : 'bg-transparent'} ${(isScrolled || headerScroll) && !lightTheme && 'bg-[#141414]'} ${(path === routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.register) && !isScrolled && !headerScroll && !lightTheme && 'md:bg-[#1414147c]'}`}
         >
           <div className=''>
             <Link href={`${path === routes.navegation.selectPlan ? routes.navegation.membresiaHome : path === routes.navegation.membresiaHome ? "/" : "/"}`}>
               <img
                 alt='icon image'
-                src='/images/MFORMOVE_blanco03.png'
+                src={lightTheme ? '/images/MFORMOVE_azul03.png' : '/images/MFORMOVE_blanco03.png'}
                 width={180}
                 height={180}
                 className='cursor-pointer object-contain transition duration-500 hover:scale-105 opacity-100'
@@ -115,7 +116,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
             </Link>
           </div>
           <div className="flex w-full justify-center">
-          <div className={`gap-8 font-montserrat relative -left-8 ${showNav ? 'md:hidden' : 'md:flex'} hidden`}>
+          <div className={`gap-8 font-montserrat relative -left-8 ${showNav ? 'md:hidden' : 'md:flex'} hidden ${lightTheme ? 'text-gray-800' : 'text-white'}`}>
           <Popover>
               <PopoverButton className="block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white font-normal">
               Escuela
@@ -149,8 +150,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
                 router.push('/mentorship');
               }}>Mentoría</div> */}
             {/* Membresía eliminada */}
-            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${path == routes.navegation.mentorship && '!text-white'}`} onClick={(e) => {
-                e.currentTarget.style.color = '#fff';
+            <div className={`block text-sm/6 ${lightTheme ? 'text-gray-600 hover:text-gray-800' : 'text-white/50 hover:text-white'} focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer focus:text-white active:text-white font-normal ${path == routes.navegation.mentorship && (lightTheme ? '!text-gray-800' : '!text-white')}`} onClick={() => {
                 router.push('/mentorship');
               }}>
                   Mentoría
@@ -172,8 +172,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
             <a href="/account" ref={linkRef} style={{ display: 'none' }}>
               Ir a Cuenta
             </a>
-            <div className={`block text-sm/6 text-white/50 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer hover:text-white focus:text-white active:text-white font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && '!text-white'}`} onClick={(e) => {
-                    e.currentTarget.style.color = '#fff';
+            <div className={`block text-sm/6 ${lightTheme ? 'text-gray-600 hover:text-gray-800' : 'text-white/50 hover:text-white'} focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer focus:text-white active:text-white font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && (lightTheme ? '!text-gray-800' : '!text-white')}`} onClick={() => {
                     if(!auth.user) {
                       router.push('/login')
                     }

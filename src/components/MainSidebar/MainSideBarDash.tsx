@@ -185,6 +185,23 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
           </>
         )}
 
+        <Link href="/faq">
+          <m.div
+            initial={{ color: '#fff', x: 700 }}
+            animate={+windowWidth < 768 ? animationPhones : animation}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#fff';
+            }}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
+            className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+          >
+            <h2 className='font-light lg:text-xl'>Ayuda</h2>
+            <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
+              Preguntas Frecuentes
+            </h1>
+          </m.div>
+        </Link>
+
         {auth.user && auth.user.rol === 'Admin' && (
           <>
             <m.div

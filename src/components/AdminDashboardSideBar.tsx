@@ -1,7 +1,8 @@
 import {
   BookOpenIcon,
   BuildingStorefrontIcon,
-  AcademicCapIcon
+  AcademicCapIcon,
+  ClipboardDocumentListIcon
 } from '@heroicons/react/24/outline';
 import {
   CreditCardIcon,
@@ -160,7 +161,8 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
                 pathname == '/admin/mentorship' ||
                 pathname == '/admin/mentorship/plans' ||
                 pathname == '/admin/mentorship/createPlan' ||
-                pathname == '/admin/mentorship/analytics'
+                pathname == '/admin/mentorship/analytics' ||
+                pathname == '/admin/mentorship/solicitudes'
                   ? 'bg-orange-100 text-orange-500'
                   : 'text-gray-400 hover:bg-orange-100 hover:text-orange-500'
               }`}

@@ -152,8 +152,7 @@ const MembershipHeader = ({ user, toggleNav, where, showNav }: Props) => {
                 router.push('/mentorship');
               }}>Mentoría</div> */}
             {!IS_MEMBERSHIP_PAUSED && (
-              <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${(path == routes.navegation.membresiaHome || path == routes.navegation.selectPlan) && '!text-black relative'}`} onClick={(e) => {
-                  e.currentTarget.style.color = '#fff';
+              <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${(path == routes.navegation.membresiaHome || path == routes.navegation.selectPlan) && '!text-black relative'}`} onClick={() => {
                   handleClickMemb();
                 }}>
                     Membresia
@@ -170,8 +169,7 @@ const MembershipHeader = ({ user, toggleNav, where, showNav }: Props) => {
                     )}
                   </div>
             )}
-            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${path == routes.navegation.mentorship && '!text-black relative'}`} onClick={(e) => {
-                e.currentTarget.style.color = '#fff';
+            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${path == routes.navegation.mentorship && '!text-black relative'}`} onClick={() => {
                 router.push('/mentorship');
               }}>
                   Mentoría
@@ -193,8 +191,7 @@ const MembershipHeader = ({ user, toggleNav, where, showNav }: Props) => {
             <a href="/account" ref={linkRef} style={{ display: 'none' }}>
               Ir a Cuenta
             </a>
-            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && '!text-black relative'}`} onClick={(e) => {
-                    e.currentTarget.style.color = '#fff';
+            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && '!text-black relative'}`} onClick={() => {
                     if(!auth.user) {
                       router.push('/login')
                     }

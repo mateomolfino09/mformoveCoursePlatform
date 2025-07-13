@@ -16,26 +16,8 @@ const testimonials = [
   {
     name: 'Gonzalo Gómez',
     plan: 'Mentoría Explorador',
-    photo: '/images/testimonials/sofia.jpg',
-    text: 'Mateo como profe es excelente. Siempre te pone a prueba, te motiva y celebra tus intentos, sin importar el resultado. Lo recomiendo al 100% si querés sentirte más libre, con confianza en cada movimiento, y rodeado de un ambiente de amistad.'
-  },
-  {
-    name: 'Diego Ramírez',
-    plan: 'Mentoría Practicante',
     photo: '/images/testimonials/gonza.jpg',
-    text: 'El seguimiento 1:1 y la calidad humana de Mateo marcan la diferencia. Aprendí a moverme mejor y a confiar en mi cuerpo.'
-  },
-  {
-    name: 'Valentina Torres',
-    plan: 'Mentoría Estudiante',
-    photo: '/images/testimonials/valentina.jpg',
-    text: 'La mentoría me ayudó a superar mis límites y a disfrutar el proceso de cambio. Recomiendo esta experiencia a todos los que buscan algo real.'
-  },
-  {
-    name: 'Juan Pablo Suárez',
-    plan: 'Mentoría Explorador',
-    photo: '/images/testimonials/juanpablo.jpg',
-    text: 'Nunca imaginé que podría avanzar tanto en tan poco tiempo. El plan es personalizado y el acompañamiento es constante. ¡Gracias Mateo!'
+    text: 'Mateo como profe es excelente. Siempre te pone a prueba, te motiva y celebra tus intentos, sin importar el resultado. Lo recomiendo al 100% si querés sentirte más libre, con confianza en cada movimiento, y rodeado de un ambiente de amistad.'
   }
 ];
 

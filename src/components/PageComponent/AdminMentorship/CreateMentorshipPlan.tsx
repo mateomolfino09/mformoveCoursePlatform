@@ -188,7 +188,7 @@ const CreateMentorshipPlan = () => {
                       <div className='flex items-center'>
                         <span className='font-semibold text-white'>{level.label}</span>
                         {selectedLevel.value === level.value && (
-                          <CheckCircleIcon className='w-5 h-5 ml-2 text-blue-500' />
+                          <CheckCircleIcon className='w-5 h-5 ml-2 text-[#234C8C]' />
                         )}
                       </div>
                     </Radio>
@@ -233,7 +233,7 @@ const CreateMentorshipPlan = () => {
               <div className='flex flex-row justify-end'>
                 <button
                   type='submit'
-                  className='bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-blue-700 transition-all duration-300 shadow-lg'
+                  className='bg-[#234C8C] text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-[#1a3763] transition-all duration-300 shadow-lg'
                   disabled={loading}
                 >
                   {loading ? 'Creando...' : 'Crear Plan'}

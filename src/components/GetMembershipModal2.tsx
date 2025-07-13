@@ -244,13 +244,13 @@ const GetMembershipModal2 = ({ visible, handleVisiblity }: Props) => {
                     </div>
                     <div className="flex items-center mb-1 mt-3">
                           <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">Al subscribirte estas de acuerdo con nuestras
-                          <a target='_blank' href="/privacy" rel='noopener noreferrer' className="text-blue-600 hover:underline"> Políticas de Privacidad </a>
+                          <a target='_blank' href="/privacy" rel='noopener noreferrer' className="text-[#234C8C] hover:underline"> Políticas de Privacidad </a>
                           y 
-                          <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" rel='noopener noreferrer' className="text-blue-600 hover:underline"> Términos y Condiciones</a></label>
+                                                      <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" rel='noopener noreferrer' className="text-[#234C8C] hover:underline"> Términos y Condiciones</a></label>
                         </div>
                         <div className="flex items-center mb-1 mt-3">
                           <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">¿Ya tenés una cuenta?
-                          <p onClick={() => setLoginForm(true)} className="text-blue-600 underline hover:underline"> Click aquí</p></label>
+                                                      <p onClick={() => setLoginForm(true)} className="text-[#234C8C] underline hover:underline"> Click aquí</p></label>
                         </div>
                 
                 </div>
