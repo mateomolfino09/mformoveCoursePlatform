@@ -93,7 +93,13 @@ export default function SolicitudesMentoriaAdmin() {
   };
 
   useEffect(() => {
-    fetch("/api/mentorship/request/all")
+    fetch("/api/mentorship/request/all", {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setSolicitudes(data.solicitudes || []);
