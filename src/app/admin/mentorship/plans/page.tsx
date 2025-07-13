@@ -19,6 +19,12 @@ interface MentorshipPlan {
   level: string;
   stripePriceId: string;
   active: boolean;
+  prices?: Array<{
+    interval: string;
+    price: number;
+    currency: string;
+    stripePriceId: string;
+  }>;
 }
 
 const emptyPlan: MentorshipPlan = {
@@ -47,6 +53,7 @@ export default function AdminMentorshipPlansPage() {
   const ref = useRef(null);
   const [planSelected, setPlanSelected] = useState<MentorshipPlan | null>(null);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
+  const [isOpenInfo, setIsOpenInfo] = useState(false);
 
   // Protección de admin
   useEffect(() => {
@@ -109,6 +116,11 @@ export default function AdminMentorshipPlansPage() {
     router.push(`/admin/mentorship/createPlan?id=${p._id}`);
   }
 
+  function openInfo(p: MentorshipPlan) {
+    setPlanSelected(p);
+    setIsOpenInfo(true);
+  }
+
   return (
     <AdmimDashboardLayout>
       <div className="w-full min-h-screen font-montserrat">
@@ -117,7 +129,7 @@ export default function AdminMentorshipPlansPage() {
             <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
               <div className="overflow-hidden">
                 <div className="flex justify-between items-center mb-8">
-                  <h1 className="text-[#1A1A1A] font-boldFont text-3xl font-bold mt-4 mb-4 font-montserrat">
+                  <h1 className="text-white text-3xl font-bold mt-4 mb-4 font-montserrat">
                     Planes de Mentoría
                   </h1>
                   <Link href="/admin/mentorship/createPlan">
@@ -142,9 +154,28 @@ export default function AdminMentorshipPlansPage() {
                   <tbody>
                     {plans.map((plan) => (
                       <tr key={plan._id} ref={ref} className="border-b border-[#E5E7EB] text-[#222] font-montserrat bg-[#F7F7F7]">
-                        <td className="whitespace-nowrap px-6 py-4 font-semibold text-[#1A1A1A]">{plan.name}</td>
+                        <td className="whitespace-nowrap px-6 py-4 font-semibold text-[#1A1A1A]">
+                          <button 
+                            onClick={() => openInfo(plan)}
+                            className="hover:text-[#234C8C] hover:underline cursor-pointer transition-colors duration-200"
+                          >
+                            {plan.name}
+                          </button>
+                        </td>
                         <td className="whitespace-nowrap px-6 py-4 text-[#6B7280]">{plan._id}</td>
-                        <td className="whitespace-nowrap px-6 py-4 text-[#1A1A1A]">${plan.price} {plan.currency}</td>
+                        <td className="whitespace-nowrap px-6 py-4 text-[#1A1A1A]">
+                          {plan.prices && plan.prices.length > 0 ? (
+                            <div className="space-y-1">
+                              {plan.prices.map((price, index) => (
+                                <div key={index} className="text-sm">
+                                  ${price.price} {price.currency} ({price.interval})
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <span>${plan.price} {plan.currency}</span>
+                          )}
+                        </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold bg-[#FFD600]/20 text-[#FFD600] border border-[#FFD600]`}>
                             {levels.find(l => l.value === plan.level)?.label}
@@ -174,6 +205,120 @@ export default function AdminMentorshipPlansPage() {
                       <div className="flex justify-end space-x-4">
                         <button className="bg-[#F7F7F7] px-4 py-2 rounded font-montserrat border border-[#E5E7EB] text-[#1A1A1A]" onClick={() => setIsOpenDelete(false)}>Cancelar</button>
                         <button className="bg-[#FFD600] text-[#1A1A1A] px-4 py-2 rounded font-montserrat border border-[#FFD600]" onClick={deletePlan}>Eliminar</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Modal informativo del plan */}
+                {isOpenInfo && planSelected && (
+                  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 font-montserrat">
+                    <div className="bg-white p-8 rounded-xl shadow-lg border border-[#E5E7EB] max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                      <div className="flex justify-between items-start mb-6">
+                        <h2 className="text-2xl font-bold text-[#1A1A1A] font-montserrat">{planSelected.name}</h2>
+                        <button 
+                          onClick={() => setIsOpenInfo(false)}
+                          className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                        >
+                          ×
+                        </button>
+                      </div>
+                      
+                      <div className="space-y-6">
+                        {/* Información básica */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-[#F7F7F7] p-4 rounded-lg">
+                            <h3 className="font-semibold text-[#1A1A1A] mb-2">Precio</h3>
+                            {planSelected.prices && planSelected.prices.length > 0 ? (
+                              <div className="space-y-2">
+                                {planSelected.prices.map((price, index) => (
+                                  <div key={index}>
+                                    <p className="text-lg font-semibold text-[#234C8C]">
+                                      ${price.price} {price.currency}
+                                    </p>
+                                    <p className="text-sm text-gray-600 capitalize">
+                                      {price.interval}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-2xl font-bold text-[#234C8C]">
+                                ${planSelected.price} {planSelected.currency}
+                              </p>
+                            )}
+                          </div>
+                          <div className="bg-[#F7F7F7] p-4 rounded-lg">
+                            <h3 className="font-semibold text-[#1A1A1A] mb-2">Nivel</h3>
+                            <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold bg-[#FFD600]/20 text-[#FFD600] border border-[#FFD600]`}>
+                              {levels.find(l => l.value === planSelected.level)?.label}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Descripción */}
+                        <div>
+                          <h3 className="font-semibold text-[#1A1A1A] mb-2">Descripción</h3>
+                          <p className="text-gray-700 leading-relaxed">{planSelected.description}</p>
+                        </div>
+
+                        {/* Características */}
+                        {planSelected.features && planSelected.features.length > 0 && (
+                          <div>
+                            <h3 className="font-semibold text-[#1A1A1A] mb-3">Características</h3>
+                            <ul className="space-y-2">
+                              {planSelected.features.map((feature, index) => (
+                                <li key={index} className="flex items-start">
+                                  <span className="text-[#234C8C] mr-2 mt-1">•</span>
+                                  <span className="text-gray-700">{feature}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Información técnica */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <h3 className="font-semibold text-[#1A1A1A] mb-2">ID del Plan</h3>
+                            <p className="text-sm text-gray-600 font-mono break-all">{planSelected._id}</p>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-[#1A1A1A] mb-2">Stripe Price ID</h3>
+                            <p className="text-sm text-gray-600 font-mono break-all">{planSelected.stripePriceId}</p>
+                          </div>
+                        </div>
+
+                        {/* Estado */}
+                        <div>
+                          <h3 className="font-semibold text-[#1A1A1A] mb-2">Estado</h3>
+                          <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
+                            planSelected.active 
+                              ? 'bg-green-100 text-green-800 border border-green-300' 
+                              : 'bg-red-100 text-red-800 border border-red-300'
+                          }`}>
+                            {planSelected.active ? 'Activo' : 'Inactivo'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Botones de acción */}
+                      <div className="flex justify-end space-x-4 mt-8 pt-6 border-t border-[#E5E7EB]">
+                        <button 
+                          onClick={() => setIsOpenInfo(false)}
+                          className="bg-[#F7F7F7] px-4 py-2 rounded font-montserrat border border-[#E5E7EB] text-[#1A1A1A] hover:bg-gray-200 transition-colors"
+                        >
+                          Cerrar
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setIsOpenInfo(false);
+                            openEdit(planSelected);
+                          }}
+                          className="bg-[#234C8C] text-white px-4 py-2 rounded font-montserrat hover:bg-[#1a3763] transition-colors"
+                        >
+                          Editar Plan
+                        </button>
                       </div>
                     </div>
                   </div>

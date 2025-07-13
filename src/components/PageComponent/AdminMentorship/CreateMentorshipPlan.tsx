@@ -1,6 +1,6 @@
 'use client'
 import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
@@ -19,8 +19,11 @@ const mentorshipLevels = [
 
 const CreateMentorshipPlan = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const auth = useAuth();
   const [loading, setLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [planId, setPlanId] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: '',
     price: 0,
@@ -46,6 +49,53 @@ const CreateMentorshipPlan = () => {
     }
     else if(auth.user.rol != 'Admin') router.push('/login');
   }, [auth.user]);
+
+  // Verificar si estamos en modo edición
+  useEffect(() => {
+    const id = searchParams.get('id');
+    if (id) {
+      setIsEditing(true);
+      setPlanId(id);
+      loadPlanData(id);
+    }
+  }, [searchParams]);
+
+  // Cargar datos del plan para edición
+  const loadPlanData = async (id: string) => {
+    try {
+      const response = await fetch(`/api/payments/getPlans?type=mentorship&id=${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.length > 0) {
+          const plan = data[0];
+          
+          // Obtener el precio trimestral del array de precios
+          const trimestralPrice = plan.prices?.find((p: any) => p.interval === 'trimestral');
+          const price = trimestralPrice?.price || plan.price || 0;
+          const currency = trimestralPrice?.currency || plan.currency || 'USD';
+          
+          setForm({
+            name: plan.name || '',
+            price: price,
+            currency: currency,
+            interval: plan.interval || 'trimestral',
+            description: plan.description || '',
+            features: plan.features ? plan.features.join(', ') : '',
+            level: plan.level || mentorshipLevels[0].value,
+            active: plan.active !== undefined ? plan.active : true
+          });
+          setDescriptionLength(plan.description ? plan.description.length : 0);
+          const levelObj = mentorshipLevels.find(l => l.value === plan.level);
+          if (levelObj) {
+            setSelectedLevel(levelObj);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error cargando plan:', error);
+      toast.error('Error al cargar los datos del plan');
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -78,24 +128,42 @@ const CreateMentorshipPlan = () => {
         setLoading(false); return;
       }
       const featuresArray = form.features.split(',').map(f => f.trim()).filter(f => f);
-      const response = await fetch('/api/payments/mentorship/createPlan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: form.name,
-          description: form.description,
-          features: featuresArray,
-          level: form.level,
-          priceTrimestral: form.price,
-          currency: form.currency
-        }),
-      });
-      if (!response.ok) throw new Error('Error al crear el plan');
-      toast.success('Plan de mentoría creado exitosamente');
+      
+      const requestData = {
+        name: form.name,
+        description: form.description,
+        features: featuresArray,
+        level: form.level,
+        priceTrimestral: form.price,
+        currency: form.currency
+      };
+
+      let response;
+      if (isEditing && planId) {
+        // Actualizar plan existente
+        response = await fetch(`/api/payments/mentorship/updatePlan`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...requestData,
+            planId: planId
+          }),
+        });
+      } else {
+        // Crear nuevo plan
+        response = await fetch('/api/payments/mentorship/createPlan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestData),
+        });
+      }
+      
+      if (!response.ok) throw new Error(isEditing ? 'Error al actualizar el plan' : 'Error al crear el plan');
+      toast.success(isEditing ? 'Plan de mentoría actualizado exitosamente' : 'Plan de mentoría creado exitosamente');
       router.push('/admin/mentorship/plans');
     } catch (error) {
       console.error('Error:', error);
-      toast.error('Error al crear el plan');
+      toast.error(isEditing ? 'Error al actualizar el plan' : 'Error al crear el plan');
     } finally {
       setLoading(false);
     }
@@ -111,8 +179,8 @@ const CreateMentorshipPlan = () => {
       <div className='relative flex w-full min-h-screen flex-col md:items-center md:justify-center'>
         <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
           <div className='w-full flex pt-12 justify-between items-center'>
-            <h1 className='text-4xl font-light'>Crear un Plan de Mentoría</h1>
-            <p>Paso único</p>
+            <h1 className='text-4xl font-light'>{isEditing ? 'Editar Plan de Mentoría' : 'Crear un Plan de Mentoría'}</h1>
+            <p>{isEditing ? 'Modificar plan existente' : 'Paso único'}</p>
           </div>
           <form
             className='relative mt-16 space-y-4 rounded px-8 md:min-w-[40rem] md:px-14 font-montserrat'
@@ -236,7 +304,7 @@ const CreateMentorshipPlan = () => {
                   className='bg-[#234C8C] text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-[#1a3763] transition-all duration-300 shadow-lg'
                   disabled={loading}
                 >
-                  {loading ? 'Creando...' : 'Crear Plan'}
+                  {loading ? (isEditing ? 'Actualizando...' : 'Creando...') : (isEditing ? 'Actualizar Plan' : 'Crear Plan')}
                 </button>
               </div>
             </div>
