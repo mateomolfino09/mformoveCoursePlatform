@@ -41,6 +41,5 @@ export const prepareEmail = async (titulo, link, action, user, contenido, subjec
     //     subject: `Órden nro ${merchant_order_id}`
     //   });
   } catch (error) {
-    console.log(error.message);
-  }
+    }
 };

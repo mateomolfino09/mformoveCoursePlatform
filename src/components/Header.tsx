@@ -94,8 +94,7 @@ const Header = ({
         data.notifications.filter((x: Notification) => !x.read).slice(-5).reverse()
       );
     } catch (error) {
-      console.log(error);
-    }
+      }
   };
 
 

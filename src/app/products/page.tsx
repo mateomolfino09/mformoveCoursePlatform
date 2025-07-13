@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Products from '../../components/PageComponent/Products/Products';
-import { getProductFilters } from '../api/product/getFilters';
+
 
 export default function Page() {
   const [products, setProducts] = useState([]);
@@ -26,10 +26,17 @@ export default function Page() {
 
     async function fetchFilters() {
       try {
-        const filtersData = await getProductFilters();
+        const res = await fetch('/api/product/getFilters', {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          },
+        });
+        const filtersData = await res.json();
         setFilters(filtersData);
       } catch (err) {
         console.error('Error fetching filters:', err);
+        setFilters([]); // Set empty array on error
       }
     }
 

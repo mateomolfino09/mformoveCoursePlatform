@@ -80,7 +80,6 @@ const AllProducts = ({ products }: Props) => {
           const updatedProducts = products.filter(
             (product: ProductDB) => product._id !== productSelected._id
           );
-          console.log(data)
           setElementos(updatedProducts);
           if (data.success) {
             toast.success(`${productSelected.name} fue eliminado correctamente`);
@@ -181,7 +180,7 @@ const AllProducts = ({ products }: Props) => {
                           </td>
                           <td className='whitespace-nowrap px-6 py-4'>
                             <div className='flex item-center justify-center border-solid border-transparent border border-collapse text-base'>
-                              <div className='w-6 mr-2 transform hover:text-blue-500 hover:scale-110 cursor-pointer'>
+                              <div className='w-6 mr-2 transform hover:text-[#234C8C] hover:scale-110 cursor-pointer'>
                                 <PencilIcon onClick={() => openEdit(product)} />
                               </div>
                               <div className='w-6 mr-2 transform hover:text-red-500 hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse '>

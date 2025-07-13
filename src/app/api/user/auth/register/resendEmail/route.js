@@ -18,7 +18,6 @@ export async function POST(request) {
     if (request.method === 'POST') {
       const { email } =
       await request.json();
-      console.log(email)
       // const secretKey = process.env.RECAPTCHA_SECRET_SITE_KEY
 
       // const formData = `secret=${secretKey}&response=${gRecaptchaToken}`;
@@ -76,7 +75,6 @@ export async function POST(request) {
       return NextResponse.json({ message: `Email enviado a ${user.email}, porfavor chequea tu correo.`}, { status: 200 })
     }
   } catch (error) {
-    console.log(error)
     return NextResponse.json({ message: `Error al enviar el mail. Porfavor vuelva a intentarlo`}, { status: 500 })
   }
 };

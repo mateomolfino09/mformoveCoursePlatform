@@ -14,7 +14,6 @@ const AdminGuideModal = ({ title, textArr, visible, handleVisiblity }: Props) =>
     const animation = useAnimation();
 
     useEffect(() => {
-        console.log(visible)
         if (visible) {
           animation.start({
             x: '-50%',

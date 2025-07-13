@@ -13,6 +13,5 @@ export async function getQuestionById(id) {
       const question = JSON.parse(JSON.stringify(res));
       return question[0];
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

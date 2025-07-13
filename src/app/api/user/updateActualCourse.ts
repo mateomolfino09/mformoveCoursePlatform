@@ -22,12 +22,10 @@ const updateActualCourse = async (req: any, res: any) => {
 
       await user?.save();
 
-      console.log();
       return res.status(200).send(user);
     }
   } catch (err) {
-    console.log(err);
-  }
+    }
 };
 
 export default updateActualCourse;

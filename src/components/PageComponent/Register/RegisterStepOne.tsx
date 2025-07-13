@@ -69,7 +69,6 @@ const RegisterStepOne = ({ step1ToStep2, step1ToStep0 }: Props) => {
   }
 
   const handleClick = () => {
-    console.log(firstname, lastname, country, gender)
     if (
       firstname == '' ||
       lastname == '' ||

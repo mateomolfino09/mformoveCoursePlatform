@@ -47,8 +47,6 @@ function CarouselSearchClasses({
     );
   useEffect(() => {}, [isOpen, width]);
 
-  console.log(classesDB)
-
   useEffect(() => {
     setWidth(
       rowRef.current?.scrollWidth
@@ -61,8 +59,6 @@ function CarouselSearchClasses({
 
     if (scrollRowRef.current) {
       const { scrollLeft, clientWidth } = scrollRowRef.current;
-      console.log(scrollLeft, clientWidth);
-
       const scrollTo =
         direction === 'left'
           ? scrollLeft - clientWidth

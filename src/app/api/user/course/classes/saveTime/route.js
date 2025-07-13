@@ -32,7 +32,6 @@ export async function POST(req) {
 
     }
   } catch (err) {
-    console.log(err);
     return NextResponse.json({ error: 'Algo salio mal'}, { status: 401 })
 }
 };

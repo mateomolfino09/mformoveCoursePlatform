@@ -10,7 +10,6 @@ import { FreeProduct } from '../../../../../typings';
 export default async function Page({ params }: { params: { name: string }}) {
     connectDB();
     const { name } = params;
-    console.log(name)
     const product: FreeProduct = await getProductByName(name);
 
   return <Index product={product} />;

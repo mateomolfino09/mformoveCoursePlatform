@@ -39,8 +39,7 @@ const FilterNav = ({ showNav }: Props) => {
         );
       const { filters } = filterClassSlice;
         const path = usePathname()
-        console.log(path)
-      const snap = useSnapshot(state);
+        const snap = useSnapshot(state);
 
       useEffect(() => {
           animation.start({
@@ -64,7 +63,6 @@ const FilterNav = ({ showNav }: Props) => {
       }, []);
 
       const handleFilterChange = (f: ClassTypes, v: ValuesFilters) => {
-        console.log(f)
         if(f.name.toLowerCase() === "largo") {
           const lengthSelector = filterClassSlice.largo;
 

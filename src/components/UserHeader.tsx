@@ -147,31 +147,45 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
                 </div>
               </PopoverPanel>
             </Popover>
-            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${path == routes.navegation.mentoria && '!text-black'}`} onClick={(e) => {
-                e.currentTarget.style.color = '#fff';
-                router.push('/');
-              }}>Mentoría Online</div>
-            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${path == routes.navegation.membresiaHome && '!text-black'}`} onClick={(e) => {
-                e.currentTarget.style.color = '#fff';
-                router.push(routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip));
-              }}>Membresía</div>
+            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${path == routes.navegation.mentorship && '!text-black'}`} onClick={() => {
+                router.push('/mentorship');
+              }}>
+                Mentoría
+                {path == routes.navegation.mentorship && (
+                  <svg
+                    width="100%"
+                    height="3"
+                    viewBox="0 0 120 5"
+                    className="block mx-auto mt-0 relative bottom-1 left-1/2 -translate-x-1/2"
+                    style={{ minWidth: '100%', maxWidth: '100%' }}
+                  >
+                    <ellipse cx="60" cy="4" rx="60" ry="3" fill="black" />
+                  </svg>
+                )}
+            </div>
+            {/* Membresía eliminada */}
             <a href="/account" ref={linkRef} style={{ display: 'none' }}>
               Ir a Cuenta
             </a>
-            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && '!text-black'}`} onClick={(e) => {
-                    e.currentTarget.style.color = '#fff';
+            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.perfil || path == '/account') && '!text-black'}`} onClick={() => {
                     if(!auth.user) {
                       router.push('/login')
                     }
                     else handleClick();
-
-                  }}>Cuenta</div>
-
-            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${path == routes.navegation.preguntasFrecuentes && '!text-black'}`}
-            onClick={(e) => {
-                e.currentTarget.style.color = '#fff';
-                router.push('/faq');
-              }}>Ayuda</div>
+                  }}>
+                Cuenta
+                {(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.perfil || path == '/account') && (
+                  <svg
+                    width="100%"
+                    height="3"
+                    viewBox="0 0 100 5"
+                    className="block mx-auto mt-0 relative bottom-1 left-1/2 -translate-x-1/2"
+                    style={{ minWidth: '100%', maxWidth: '100%' }}
+                  >
+                    <ellipse cx="60" cy="4" rx="60" ry="3" fill="black" />
+                  </svg>
+                )}
+            </div>
           </div>
         </div>
           <div className='flex items-center pr-4 md:pr-16'>

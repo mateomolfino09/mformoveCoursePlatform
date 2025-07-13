@@ -17,7 +17,6 @@ export async function DELETE(req) {
       const user = await User.deleteOne({
         _id: ObjectId(userId)
       });
-      console.log(user, bills);
       return NextResponse.json({ message: `User deleted` }, { status: 200 }, { success: true })
     }
   } catch (e) {

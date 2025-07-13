@@ -20,9 +20,6 @@ export const getSubscriptionPeriod = async (subscriptionId: string) => {
       const startDate = formatDate(subscription.current_period_start);
       const endDate = formatDate(subscription.current_period_end);
   
-      console.log(`📅 La suscripción comenzó el: ${startDate}`);
-      console.log(`⏳ Se renueva o expira el: ${endDate}`);
-  
       return { startDate, endDate, subscription };
     } catch (error: any) {
       console.error("❌ Error al obtener la suscripción:", error.message);

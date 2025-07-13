@@ -21,8 +21,6 @@ const changeEmail = async (req, res) => {
       const token = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
         expiresIn: '30d'
       });
-      console.log(user);
-
       user.resetToken = token;
       await user.save();
 
@@ -59,8 +57,7 @@ const changeEmail = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error);
-  }
+    }
 };
 
 export default changeEmail;

@@ -89,8 +89,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
         setMessageType('');
       }, 3000);
     } catch (error) {
-      console.log(error);
-    }
+      }
   };
 
   const createAnswer = async (questionId: number) => {
@@ -126,8 +125,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
         setMessageType('');
       }, 3000);
     } catch (error) {
-      console.log(error);
-    }
+      }
   };
 
   function openModalDelete(question: Question) {
@@ -264,7 +262,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
                       {(user?.rol === 'Admin' || user?._id === quest?.user?._id) && (
                         <>
                         <div className='flex item-center justify-center border-solid border-transparent border border-collapse text-base !ml-12'>
-                          <div className='w-4 mr-2 transform hover:text-blue-500 hover:scale-110 cursor-pointer'>
+                          <div className='w-4 mr-2 transform hover:text-[#234C8C] hover:scale-110 cursor-pointer'>
                             {/* <PencilIcon onClick={() => setOpenEdit(quest)}/> */}
                           </div>
                           <div className='w-4 mr-2 transform hover:text-red-500 hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse '>
@@ -341,7 +339,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
                                     {(user?.rol === 'Admin' || user?._id === answer.answerAdmin._id) && (
                           <>
                           <div className='flex items-center justify-center border-solid border-transparent border border-collapse text-base !ml-12'>
-                            <div className='w-4 mr-2 transform hover:text-blue-500 hover:scale-110 cursor-pointer'>
+                            <div className='w-4 mr-2 transform hover:text-[#234C8C] hover:scale-110 cursor-pointer'>
                               {/* <PencilIcon onClick={() => {
                                 setOpenEdit(quest)
                                 setOpenEditAnswer(index)

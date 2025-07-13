@@ -70,12 +70,33 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
 
   //   flex flex-col space-y-2 py-16 md:space-y-4 h-[75vh] lg:h-[90vh] justify-end lg:items-end mr-12 lg:mr-24
 
+  // Variable para pausar la membresía (debe estar sincronizada con la de la página)
+  const IS_MEMBERSHIP_PAUSED = true;
+
   return (
     <div className='fixed   w-full h-full bg-black z-[200] font-montserrat'>
       <div className='w-full h-full relative top-40 md:top-28 right-12 flex flex-col space-y-4 md:space-y-4 justify-start lg:items-end mr-12 lg:mr-24'>
-        <Link
-          href={`${routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip)}`}
-        >
+        {!IS_MEMBERSHIP_PAUSED && (
+          <Link
+            href={`${routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip)}`}
+          >
+            <m.div
+              initial={{ color: '#fff', x: 700 }}
+              animate={+windowWidth < 768 ? animationPhones : animation}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = '#fff';
+              }}
+              onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
+              className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+            >
+              <h2 className='font-light lg:text-xl'>Membresía</h2>
+              <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
+                Movete conmigo
+              </h1>
+            </m.div>
+          </Link>
+        )}
+        <Link href="/mentorship">
           <m.div
             initial={{ color: '#fff', x: 700 }}
             animate={+windowWidth < 768 ? animationPhones : animation}
@@ -85,9 +106,9 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
             className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
           >
-            <h2 className='font-light lg:text-xl'>Membresía</h2>
+            <h2 className='font-light lg:text-xl'>Mentoría</h2>
             <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
-              Movete conmigo
+              Entrenamiento Personal
             </h1>
           </m.div>
         </Link>
@@ -164,6 +185,23 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
           </>
         )}
 
+        <Link href="/faq">
+          <m.div
+            initial={{ color: '#fff', x: 700 }}
+            animate={+windowWidth < 768 ? animationPhones : animation}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#fff';
+            }}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
+            className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+          >
+            <h2 className='font-light lg:text-xl'>Ayuda</h2>
+            <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
+              Preguntas Frecuentes
+            </h1>
+          </m.div>
+        </Link>
+
         {auth.user && auth.user.rol === 'Admin' && (
           <>
             <m.div
@@ -186,24 +224,6 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             </m.div>
           </>
         )}
-        <>
-          <m.div
-            initial={{ color: '#fff', x: 700 }}
-            animate={+windowWidth < 768 ? animationPhones : animation}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = '#fff';
-            }}
-            onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
-            onClick={(e) => {
-              e.currentTarget.style.color = '#fff';
-              router.push('/faq');
-            }}
-            className='flex flex-col justify-end items-end  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
-          >
-            <h2 className='font-light lg:text-xl'>Ayuda</h2>
-            <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>Preguntas Frecuentes</h1>
-          </m.div>
-        </>
       </div>
     </div>
   );

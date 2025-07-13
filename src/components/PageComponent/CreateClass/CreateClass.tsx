@@ -55,8 +55,6 @@ const CreateClass = ({ classTypes }: Props) => {
     tags
   } = createCourseReducer;
 
-  console.log(createCourseReducer);
-
   const { stepCero, stepOne, stepTwo, stepThree } = state;
 
   const auth = useAuth();
@@ -83,8 +81,6 @@ const CreateClass = ({ classTypes }: Props) => {
 
   useEffect(() => {
     const cookies: any = Cookies.get('userToken');
-
-    console.log(auth);
 
     if (!cookies) {
       router.push('/login');

@@ -33,7 +33,6 @@ const CreateCourseStepTwo = ({ step2ToStep1, createCourse }: Props) => {
     (state) => state.createCourseReducer.value
   );
 
-  console.log(createCourseReducer);
   useEffect(() => {
     dispatch(addStepThree({ questions, diploma, courseType }));
   }, [questions, diploma, courseType]);
@@ -61,7 +60,6 @@ const CreateCourseStepTwo = ({ step2ToStep1, createCourse }: Props) => {
       arr[index][4] = element.respuesta4;
       arr[index][5] = element.respuestacorrecta;
     }
-    console.log(arr);
     setQuestions(arr);
   };
 
@@ -77,8 +75,6 @@ const CreateCourseStepTwo = ({ step2ToStep1, createCourse }: Props) => {
   const handleSubmit = (e: any) => {
     e.preventDefault();
 
-    console.log(courseType);
-
     if (courseType === courseTypeConst[0]) {
       dispatch(addStepThree({ questions: null, diploma: null, courseType }));
     } else if (courseType === courseTypeConst[1]) {
@@ -86,7 +82,6 @@ const CreateCourseStepTwo = ({ step2ToStep1, createCourse }: Props) => {
         ? toast.error('Debe elegir un diploma para el curso')
         : dispatch(addStepThree({ questions: null, diploma, courseType }));
     } else if (courseType === courseTypeConst[2]) {
-      console.log(questions);
       diploma.length === 0
         ? toast.error('Debe elegir un diploma para el curso')
         : questions

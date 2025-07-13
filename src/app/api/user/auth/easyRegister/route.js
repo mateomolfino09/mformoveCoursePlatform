@@ -62,14 +62,10 @@ export async function POST(request) {
           }
           );
 
-          console.log(res)
-
-
-        return NextResponse.json({ error: 'Ya hay una cuenta con este usuario'}, { status: 422 })
+          return NextResponse.json({ error: 'Ya hay una cuenta con este usuario'}, { status: 422 })
       }
        
       const password = generatePassword(16);
-      console.log(password, email, name, gender, country)
       const HashedPassword = await bcrypt.hash(password, 12);
 
       const newUser = await new Users({
@@ -146,7 +142,6 @@ export async function POST(request) {
       return NextResponse.json({ message: `Te registraste con éxito.`, newUser, token }, { status: 200 })
     }
   } catch (error) {
-    console.log(error)
     return NextResponse.json({ message: `Error al enviar el mail. Porfavor vuelva a intentarlo`}, { status: 500 })
   }
 };

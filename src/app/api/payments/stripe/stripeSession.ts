@@ -12,8 +12,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // 🔹 Consultar la sesión en Stripe
         const session = await stripe.checkout.sessions.retrieve(session_id);
 
-        console.log(session)
-
         res.status(200).json({
             customer: session.customer_details, // Datos del cliente (nombre, email, etc.)
             subscriptionId: session.subscription, // ID de la suscripción (si es un plan recurrente)

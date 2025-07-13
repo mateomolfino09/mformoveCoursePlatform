@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import connectDB from '../../../../../config/connectDB.js';
-import { sendEmail } from '../../../../../helpers/sendEmail.ts';
-import Users from '../../../../../models/userModel.js';
+import connectDB from '../../../../../config/connectDB';
+import { sendEmail } from '../../../../../helpers/sendEmail';
+import Users from '../../../../../models/userModel';
 import validateCaptcha from '../../validateCaptcha.ts';
 import {validateRecaptcha} from '../../../recaptcha/validate.ts';
 import { generatePassword } from '../../../assets/randomPasswordGenerator.ts'
@@ -10,7 +10,7 @@ import jwt from 'jsonwebtoken';
 import absoluteUrl from 'next-absolute-url';
 import { serialize } from 'cookie';
 import axios from 'axios';
-import { generateMd5 } from '../../../helper/generateMd5.js';
+import { generateMd5 } from '../../../helper/generateMd5';
 import mailchimp from "@mailchimp/mailchimp_marketing";
 
 connectDB();
@@ -64,7 +64,6 @@ export async function POST(request) {
       }
        
       const password = generatePassword(16);
-      console.log(password, email, name, gender, country)
       const HashedPassword = await bcrypt.hash(password, 12);
 
       const newUser = await new Users({
@@ -140,7 +139,6 @@ export async function POST(request) {
       return NextResponse.json({ message: `Te registraste con éxito.`, newUser, token }, { status: 200 })
     }
   } catch (error) {
-    console.log(error)
     return NextResponse.json({ message: `Error al enviar el mail. Porfavor vuelva a intentarlo`, error}, { status: 500 })
   }
 };

@@ -515,6 +515,8 @@ export interface FreeProduct {
 export interface FAQ {
   _id: string;
   id: number;
-  question:string;
-  answer:string;
+  question: string;
+  answer: string;
+  category?: string;
+  order?: number;
 }

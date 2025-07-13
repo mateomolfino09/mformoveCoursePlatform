@@ -12,9 +12,7 @@ export default async function handler(req, res) {
 
       const index = clase.atachedFiles.findIndex((file) => file.id === id)
 
-console.log(clase,index)
-
-      clase.atachedFiles.splice(index, 1)
+clase.atachedFiles.splice(index, 1)
       await clase.save()
       return res.status(200).send(clase);
     }

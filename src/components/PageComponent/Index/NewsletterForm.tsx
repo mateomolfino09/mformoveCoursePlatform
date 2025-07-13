@@ -30,7 +30,6 @@ function validateEmail(email: string) {
   }
 
 const onSubmit = async (data: any) => {
-    console.log(data)
     setLoading(true)
     let email = data.email;
     if(!validateEmail(email)) {
@@ -71,7 +70,6 @@ const onSubmit = async (data: any) => {
         toast.success("Gracias por subscribirte! 👻.");
 
       } catch (error) {
-        console.log(error)
         setStatus(500);
         setMessage(
           "Error al unirte. Contactanos directamente via Instagram!."
@@ -100,7 +98,7 @@ const onSubmit = async (data: any) => {
                                     </>
                                 ) : (
                                     <>
-                                    <button type='submit'>
+                                    <button type='submit' className='hover:text-[#234C8C] transition-colors'>
                                         <ArrowRightIcon className='w-5 h-5 group-hover:translate-x-2 transition-all cursor-pointer' />
                                     </button>
                                     </>

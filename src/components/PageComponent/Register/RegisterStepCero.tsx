@@ -67,7 +67,6 @@ const RegisterStepCero = ({ step0ToStep1, step0ToResend }: Props) => {
 
       if(data.resend) {
         let user = data.user;
-        console.log(user)
         dispatch(addEmail(user.email))
         step0ToResend()
       }

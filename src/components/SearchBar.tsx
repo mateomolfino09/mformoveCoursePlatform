@@ -23,11 +23,9 @@ const SearchBar = ({ setSelectedCourse }: Props) => {
 
   useEffect(() => {
     if (snap.searchInput != '') {
-      console.log(courses, snap.searchInput)
       const coursestToSearch = courses.filter((c: CoursesDB) =>
         c.name.toLowerCase().includes(snap.searchInput.toLowerCase())
       );
-      console.log(coursestToSearch)
       setCoursesSearch(coursestToSearch);
     } else {
       setCoursesSearch(courses);

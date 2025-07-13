@@ -27,7 +27,6 @@ const SuccessOneTimePayment = () => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    console.log(auth.user);
     if (!user?.subscription) {
       handleMembership();
     } else if (!auth.user) {
@@ -44,7 +43,7 @@ const SuccessOneTimePayment = () => {
 
     if (!paymentToken) {
       toast.error(`No tienes token de membresia, te redireccionaremos al inicio...`);
-      router.push('/select-plan');
+      router.push('/mentorship');
       return;
     }
 
@@ -58,14 +57,13 @@ const SuccessOneTimePayment = () => {
         const data = await auth.newMembership(user._id, paymentToken);
         if (data.error) {
           toast.error(`${data.error}`);
-          router.push('/select-plan');
+          router.push('/mentorship');
         } else {
           setUser(data.user);
           toast.success(`Membership creada con éxito`);
         }
       } catch (error) {
-        console.log(error);
-      } finally {
+        } finally {
         setLoading(false);
       }
     };

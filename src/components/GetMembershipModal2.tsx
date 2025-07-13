@@ -35,8 +35,7 @@ interface Props {
 }
 
 const GetMembershipModal2 = ({ visible, handleVisiblity }: Props) => {
-    console.log(visible)
-  const router = useRouter();
+    const router = useRouter();
   const pathname = usePathname();
   const animation = useAnimation();
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -79,10 +78,7 @@ const GetMembershipModal2 = ({ visible, handleVisiblity }: Props) => {
       })
 
       const data = await res.json()
-      console.log(data)
       const { token } = data;
-
-      console.log(data)
 
       //login
 
@@ -99,7 +95,6 @@ const GetMembershipModal2 = ({ visible, handleVisiblity }: Props) => {
       }
 
     } catch (error: any) {
-      console.log(error);
       setErrorMessage(error?.response?.data?.error)
       toast.error(error?.response?.data?.error); 
     }
@@ -171,7 +166,6 @@ const GetMembershipModal2 = ({ visible, handleVisiblity }: Props) => {
   }, []);
 
   const onSubmit = async (data: any) => {
-    console.log(data)
     const { name, email, password } = data;
     if(loginForm && !forgetForm) await signinUser(email, password)
     else if(loginForm && forgetForm) await forgetPassword(email);
@@ -250,13 +244,13 @@ const GetMembershipModal2 = ({ visible, handleVisiblity }: Props) => {
                     </div>
                     <div className="flex items-center mb-1 mt-3">
                           <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">Al subscribirte estas de acuerdo con nuestras
-                          <a target='_blank' href="/privacy" rel='noopener noreferrer' className="text-blue-600 hover:underline"> Políticas de Privacidad </a>
+                          <a target='_blank' href="/privacy" rel='noopener noreferrer' className="text-[#234C8C] hover:underline"> Políticas de Privacidad </a>
                           y 
-                          <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" rel='noopener noreferrer' className="text-blue-600 hover:underline"> Términos y Condiciones</a></label>
+                                                      <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" rel='noopener noreferrer' className="text-[#234C8C] hover:underline"> Términos y Condiciones</a></label>
                         </div>
                         <div className="flex items-center mb-1 mt-3">
                           <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">¿Ya tenés una cuenta?
-                          <p onClick={() => setLoginForm(true)} className="text-blue-600 underline hover:underline"> Click aquí</p></label>
+                                                      <p onClick={() => setLoginForm(true)} className="text-[#234C8C] underline hover:underline"> Click aquí</p></label>
                         </div>
                 
                 </div>

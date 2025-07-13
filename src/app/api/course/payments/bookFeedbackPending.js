@@ -28,7 +28,6 @@ const bookFeedbackPending = async (req, res) => {
     status
   } = req.query;
   try {
-    console.log(req.query);
     const user = await User.findOne({ email });
     const course = await Course.findOne({ id: courseId });
     const adminUsers = await User.find({ rol: 'Admin' });
@@ -108,7 +107,6 @@ const bookFeedbackPending = async (req, res) => {
         );
     }
   } catch (err) {
-    console.log(err);
     return res.status(401).json({ error: 'Algo salio mal' });
   }
 };

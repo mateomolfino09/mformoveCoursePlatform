@@ -162,7 +162,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
     }
 
     if(!auth.user && !clase?.isFree || (!auth?.user?.subscription?.active && auth?.user?.rol != 'Admin' && !auth?.user?.isVip && !clase?.isFree)) {
-      router.push(routes.navegation.membresiaHome)
+      router.push('/mentorship')
     }
 
     if(!auth.user) {

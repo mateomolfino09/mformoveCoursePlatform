@@ -29,7 +29,6 @@ export async function PUT(req) {
         return NextResponse.json({ error: 'Algo salio mal'}, { status: 401 })
     }
   } catch (err) {
-    console.log(err);
     return NextResponse.json({ error: 'Algo salio mal'}, { status: 401 })
 }
 };

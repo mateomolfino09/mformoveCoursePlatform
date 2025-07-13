@@ -6,8 +6,7 @@ interface Props {
 }
 
 const AddQuestions = ({ quantity, questions }: Props ) => {
-    console.log(questions)
-  const arr = [];
+    const arr = [];
   const current = 0
 
   return (

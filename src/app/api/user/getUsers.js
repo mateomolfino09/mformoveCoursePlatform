@@ -9,6 +9,5 @@ export async function getUsers() {
     const users = JSON.parse(JSON.stringify(res));
     return users;
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

@@ -17,8 +17,12 @@ const VimeoPlayer = ({ videoId }: { videoId: string }) => {
       });
 
       // Eventos
-      player.on('play', () => console.log('Reproduciendo...'));
-      player.on('ended', () => console.log('Video terminado'));
+      player.on('play', () => {
+        // El video ha comenzado a reproducirse
+      });
+      player.on('ended', () => {
+        // El video ha terminado
+      });
       player.on('error', (error) => console.error('Error:', error));
     }
   }, [videoId]);

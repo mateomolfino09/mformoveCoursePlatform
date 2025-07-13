@@ -23,15 +23,12 @@ export async function PUT(req,res) {
 
     await user.save();
 
-    console.log(user)
-
     return NextResponse.json(
         { message: `El usuario se actualizo correctamente` },
         { status: 200 }
       );
    
   } catch (err) {
-    console.log(err);
     return NextResponse.json(
       { error: `Algo salio mal ${err}` },
       { status: 401 }

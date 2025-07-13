@@ -10,6 +10,5 @@ export async function getUser(id) {
     const user = JSON.parse(JSON.stringify(res));
     return user;
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

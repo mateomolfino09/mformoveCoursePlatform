@@ -69,8 +69,6 @@ export async function POST(req) {
       },
     });
 
-    console.log(response);
-
     return NextResponse.json(
       { message: `Se ha enviado un mail a ${user.email}, revisa tu correo por favor.` },
       { status: 200 }

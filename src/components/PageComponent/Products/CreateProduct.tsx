@@ -71,8 +71,6 @@ const CreateProduct = () => {
         }
       };
 
-      //console.log(name, description, currency, price , productVimeoId);
-      console.log(portraitImageArray, diplomaImageArray);
       const formData = new FormData();
 
       for (const file of portraitImageArray) {
@@ -135,7 +133,6 @@ const CreateProduct = () => {
       toast.success(data.message);
       //dispatch(clearData());
     } catch (error: any) {
-      console.log(error);
       toast.error(error.response.data.error);
     }
     setLoading(false);

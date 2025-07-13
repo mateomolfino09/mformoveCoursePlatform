@@ -28,12 +28,8 @@ export async function POST(req) {
         cantidadClases
       } = await req.json();
 
-      console.log(userEmail)
-
       let user = await Users.findOne({ email: userEmail }); 
       const users = await Users.find({});
-
-      console.log(user)
 
       //Es Admin?
 
@@ -122,7 +118,6 @@ export async function POST(req) {
           let data = await fetch(singleYoutubeURL);
           let singleItem = await data.json();
           let durationISO = singleItem.items[0]?.contentDetails.duration;
-          console.log(durationISO);
           let seg = 0;
 
           if (
@@ -187,7 +182,6 @@ export async function POST(req) {
       return NextResponse.json({ message: 'Curso creado con éxito'}, { status: 200 })
     }
   } catch (error) {
-    console.log(error)
     return NextResponse.json({ error: error }, { status: 401 })
   }
 };

@@ -91,7 +91,6 @@ const [searchClasses, setSearchClasses] = useState<null | IndividualClass[]>(nul
   }, [filters.search]);
 
   const handleSearchActivation = () => {
-    console.log(filters.search)
     dispatch(toggleSearch(!filters.search))
   };
 
@@ -127,7 +126,6 @@ const [searchClasses, setSearchClasses] = useState<null | IndividualClass[]>(nul
   
         setSearchClasses([...data.individualClass])
       } catch (error) {
-        console.log(error)
         toast.error(
           'Hubo un error, vuelva a intentarlo más tarde'
         )

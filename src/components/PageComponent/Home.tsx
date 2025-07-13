@@ -122,8 +122,6 @@ const Home = ({ classesDB, filters }: Props) => {
       items: lastFiveClasses
     });
 
-    console.log(arrayOfObjects);
-
     dispatch(setIndividualClasses(arrayOfObjects));
     setClasses(arrayOfObjects);
   }, [reload]);
@@ -241,8 +239,6 @@ const Home = ({ classesDB, filters }: Props) => {
       classesFilter.length > 0 &&
         newArr.push({ group: iCGroup.group, items: classesFilter });
     });
-
-    console.log(newArr);
 
     setClasses(newArr);
     setLoading(false);

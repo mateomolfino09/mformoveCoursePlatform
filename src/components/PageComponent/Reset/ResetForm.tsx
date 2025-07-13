@@ -46,7 +46,7 @@ function ResetForm({ token }: Props) {
     setTimeout(() => {
       setLoading(false);
       message.some((mes: any) => mes.type === alertTypes.success.type) &&
-        router.push('/select-plan');
+        router.push('/mentorship');
     }, 3000);
     setTimeout(() => {
       const copy = [...message];
@@ -67,8 +67,6 @@ function ResetForm({ token }: Props) {
       try {
         const data = await auth.resetPassword(passwordCheck, password, token)
 
-        console.log(passwordCheck, password, token)
-  
         if(data?.error) {
           setMessage((current: any) => [...current, {
             message: data?.error,
@@ -111,7 +109,7 @@ function ResetForm({ token }: Props) {
         <p className="text !mt-0">Moverse es el medio para reconocerse</p>
         <div className='about-us-btn-container'>
             <a
-              href='/select-plan'
+              href='/mentorship'
               className='about-us-btn !py-3 rounded-full font-light font-montserrat !px-3'
             >
               Membresias

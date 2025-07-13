@@ -1,0 +1,188 @@
+"use client"
+import React, { useEffect, useState, useRef } from "react";
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../../../../hooks/useAuth';
+import Cookies from 'js-cookie';
+import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout';
+import Link from 'next/link';
+import { PlusCircleIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { toast } from 'react-toastify';
+
+interface MentorshipPlan {
+  _id?: string;
+  name: string;
+  price: number;
+  currency: string;
+  interval: string;
+  description: string;
+  features: string[];
+  level: string;
+  stripePriceId: string;
+  active: boolean;
+}
+
+const emptyPlan: MentorshipPlan = {
+  name: "",
+  price: 0,
+  currency: "USD",
+  interval: "trimestral",
+  description: "",
+  features: [],
+  level: "explorer",
+  stripePriceId: "",
+  active: true,
+};
+
+const levels = [
+  { value: "explorer", label: "Explorador" },
+  { value: "practitioner", label: "Practicante" },
+  { value: "student", label: "Estudiante" },
+];
+
+export default function AdminMentorshipPlansPage() {
+  const router = useRouter();
+  const auth = useAuth();
+  const [plans, setPlans] = useState<MentorshipPlan[]>([]);
+  const [loading, setLoading] = useState(false);
+  const ref = useRef(null);
+  const [planSelected, setPlanSelected] = useState<MentorshipPlan | null>(null);
+  const [isOpenDelete, setIsOpenDelete] = useState(false);
+
+  // Protección de admin
+  useEffect(() => {
+    const cookies: any = Cookies.get('userToken')
+    if (!cookies) {
+      router.push('/login');
+    }
+    if (!auth.user) {
+      auth.fetchUser()
+    }
+    else if (auth.user.rol != 'Admin') {
+      router.push('/login');
+    }
+  }, [auth.user]);
+
+  // Fetch all plans
+  const fetchPlans = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/payments/getPlans?type=mentorship");
+      const data = await res.json();
+      setPlans(data);
+    } catch (error) {
+      console.error('Error fetching plans:', error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
+  // Delete plan
+  const deletePlan = async () => {
+    if(planSelected) {
+      const planId = planSelected?._id;
+      const res = await fetch(`/api/payments/plans/${planId}?type=mentorship`, {
+        method: "DELETE",
+        headers: {  
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ planId }),
+      });
+      if (res.ok) {
+        toast.success(`${planSelected.name} fue eliminado correctamente`);
+        fetchPlans();
+      } else {
+        toast.error('Error al eliminar el plan');
+      }
+      setIsOpenDelete(false);
+    }
+  };
+
+  function openModalDelete(p: MentorshipPlan) {
+    setPlanSelected(p);
+    setIsOpenDelete(true);
+  }
+
+  function openEdit(p: MentorshipPlan) {
+    router.push(`/admin/mentorship/createPlan?id=${p._id}`);
+  }
+
+  return (
+    <AdmimDashboardLayout>
+      <div className="w-full min-h-screen font-montserrat">
+        <div className="flex flex-col">
+          <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
+              <div className="overflow-hidden">
+                <div className="flex justify-between items-center mb-8">
+                  <h1 className="text-[#1A1A1A] font-boldFont text-3xl font-bold mt-4 mb-4 font-montserrat">
+                    Planes de Mentoría
+                  </h1>
+                  <Link href="/admin/mentorship/createPlan">
+                    <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md hover:bg-[#FFD600] hover:text-[#1A1A1A] flex items-center space-x-2 font-montserrat transition-colors duration-300">
+                      <PlusCircleIcon className="w-5 h-5" />
+                      <span>Crear Plan</span>
+                    </button>
+                  </Link>
+                </div>
+                <table className="min-w-full text-left text-sm font-light bg-[#F7F7F7] rounded-xl shadow font-montserrat border border-[#E5E7EB]">
+                  <thead className="border-b font-medium border-[#E5E7EB] bg-white">
+                    <tr>
+                      <th className="px-6 py-4 text-[#1A1A1A]">Nombre</th>
+                      <th className="px-6 py-4 text-[#1A1A1A]">Id</th>
+                      <th className="px-6 py-4 text-[#1A1A1A]">Precio</th>
+                      <th className="px-6 py-4 text-[#1A1A1A]">Nivel</th>
+                      <th className="px-6 py-4 text-[#1A1A1A]">Stripe Price ID</th>
+                      <th className="px-6 py-4 text-[#1A1A1A]">Activo</th>
+                      <th className="px-6 py-4 text-[#1A1A1A]">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {plans.map((plan) => (
+                      <tr key={plan._id} ref={ref} className="border-b border-[#E5E7EB] text-[#222] font-montserrat bg-[#F7F7F7]">
+                        <td className="whitespace-nowrap px-6 py-4 font-semibold text-[#1A1A1A]">{plan.name}</td>
+                        <td className="whitespace-nowrap px-6 py-4 text-[#6B7280]">{plan._id}</td>
+                        <td className="whitespace-nowrap px-6 py-4 text-[#1A1A1A]">${plan.price} {plan.currency}</td>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold bg-[#FFD600]/20 text-[#FFD600] border border-[#FFD600]`}>
+                            {levels.find(l => l.value === plan.level)?.label}
+                          </span>
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4 text-[#A7B6C2]">{plan.stripePriceId}</td>
+                        <td className="whitespace-nowrap px-6 py-4 text-[#1A1A1A]">{plan.active ? "Sí" : "No"}</td>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="flex item-center justify-center border-solid border-transparent border border-collapse text-base">
+                            <div className="w-6 mr-2 transform hover:text-[#A7B6C2] hover:scale-110 cursor-pointer">
+                              <PencilIcon onClick={() => openEdit(plan)}/>
+                            </div>
+                            <div className="w-6 mr-2 transform hover:text-[#FFD600] hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse ">
+                              <TrashIcon onClick={() => openModalDelete(plan)}/>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {/* Modal de confirmación de borrado */}
+                {isOpenDelete && (
+                  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 font-montserrat">
+                    <div className="bg-white p-8 rounded-xl shadow-lg border border-[#E5E7EB]">
+                      <h2 className="text-xl font-bold mb-4 text-[#1A1A1A] font-montserrat">¿Seguro que deseas eliminar este plan?</h2>
+                      <div className="flex justify-end space-x-4">
+                        <button className="bg-[#F7F7F7] px-4 py-2 rounded font-montserrat border border-[#E5E7EB] text-[#1A1A1A]" onClick={() => setIsOpenDelete(false)}>Cancelar</button>
+                        <button className="bg-[#FFD600] text-[#1A1A1A] px-4 py-2 rounded font-montserrat border border-[#FFD600]" onClick={deletePlan}>Eliminar</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </AdmimDashboardLayout>
+  );
+} 

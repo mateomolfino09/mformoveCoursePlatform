@@ -4,8 +4,6 @@ const getVimeoVideo = async (videoId: string) => {
   const accessToken = process.env.VIMEO_ACCESS_TOKEN;
   const url = `https://api.vimeo.com/videos/${videoId}`;
 
-  console.log(url, videoId)
-
   try {
     const response = await axios.get(url, {
       headers: {

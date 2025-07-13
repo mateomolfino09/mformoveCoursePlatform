@@ -13,8 +13,6 @@ export async function POST(req) {
     if (req.method === 'POST') {
       const { email } = await req.json();
       const user = await User.findOne({ email });
-      console.log(email)
-
       if (!user) {
         return NextResponse.json({ message: 'No se ha encontrado ningun usuario con ese email', type: 'error'}, { status: 404 })
       }
@@ -22,8 +20,6 @@ export async function POST(req) {
       const token = jwt.sign({ _id: user._id }, process.env.NEXTAUTH_SECRET, {
         expiresIn: '30d'
       });
-      console.log(user);
-
       user.resetToken = token;
       await user.save();
 

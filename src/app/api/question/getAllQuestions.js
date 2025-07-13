@@ -16,6 +16,5 @@ export async function getQuestionsFromClass(classUId) {
 
     return questions;
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

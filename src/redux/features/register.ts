@@ -34,8 +34,6 @@ export const registerSlice = createSlice({
     initialState,
     reducers: {
         addEmail: (state: any, action: PayloadAction<string>) => {
-            console.log(state, action)
-
             return {
                 value: {
                     ...state.value,
@@ -44,8 +42,6 @@ export const registerSlice = createSlice({
             }
         },
         addStepOne: (state: any, action: PayloadAction<any>) => {
-            console.log(state)
-
             return {
                 value: {
                     ...state.value,
@@ -57,7 +53,6 @@ export const registerSlice = createSlice({
             }
         },
         addStepTwo: (state: any, action: PayloadAction<any>) => {
-            console.log(state)
             return {
                 value: {
                     ...state.value,

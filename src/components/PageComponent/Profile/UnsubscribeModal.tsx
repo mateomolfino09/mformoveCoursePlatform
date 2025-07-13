@@ -52,7 +52,6 @@ const UnsubscribeModal
         setLoading(false)
 
         } catch (error) {
-        console.log(error)
         toast.error('Hubo un error al cancelar tu subscricpción, comunicate con soporte')
         setLoading(false)
 

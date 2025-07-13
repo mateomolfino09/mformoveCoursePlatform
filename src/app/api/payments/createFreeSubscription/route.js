@@ -53,8 +53,6 @@ export async function PUT(req) {
               tags: ["RUTINA", "PLATAFORMA"],
           })
 
-        console.log(res)
-
         if(res.status == "subscribed") {
             let newSub = {
                 email: user?.email,
@@ -78,7 +76,6 @@ export async function PUT(req) {
         return NextResponse.json({ error: 'Algo salio mal' }, { status: 401 })
     }
   } catch (err) {
-    console.log(err);
     return NextResponse.json({ error: 'Algo salio mal' }, { status: 401 })
 }
 };

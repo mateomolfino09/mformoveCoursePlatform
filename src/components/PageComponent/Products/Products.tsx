@@ -5,7 +5,7 @@ import MainSideBar from '../../MainSidebar/MainSideBar'
 import Head from 'next/head'
 import Footer from '../../Footer'
 import ProductCarousel from './ProductCarousel'
-import ProductsFilters from '../ProductFiltersBoard'
+
 import FilterNavProductWrapper from '../../FilterNavProductWrapper'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/navigation'

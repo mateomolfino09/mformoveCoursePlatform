@@ -13,8 +13,6 @@ export async function POST(req: Request, res: NextApiResponse) {
     const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
     const MailchimpAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;
 
-    console.log(MailchimpKey,MailchimpServer,  MailchimpAudience)
-  
     const customUrl = `https://${MailchimpServer}.api.mailchimp.com/3.0/lists/${MailchimpAudience}/members`;
   
     const responseNews = await fetch(customUrl, {
@@ -44,14 +42,9 @@ export async function POST(req: Request, res: NextApiResponse) {
     //   email
     // }).save();
 
-    // console.log(newSub)
-  
     const received = await responseNews.json();
-    console.log(received)
-
     return NextResponse.json(received);
   } catch (error) {
-    console.log(error)
     return NextResponse.json({ error: error }, { status: 401 })
   }
 

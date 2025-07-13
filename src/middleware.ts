@@ -17,8 +17,8 @@ export async function middleware(request: NextRequest) {
         }
 
         // Redirecciones específicas según las rutas
-        if (request.nextUrl.pathname === '/products' || request.nextUrl.pathname === '/payment/back') {
-            return NextResponse.redirect(new URL('/select-plan', request.url));
+        if (request.nextUrl.pathname === '/payment/back') {
+            return NextResponse.redirect(new URL('/mentorship', request.url));
         }
 
         // Verificar el JWT

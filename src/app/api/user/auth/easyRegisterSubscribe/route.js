@@ -142,7 +142,6 @@ export async function POST(request) {
       return NextResponse.json({ message: `Te registraste con éxito.`, newUser, token, ok: true }, { status: 200 })
     }
   } catch (error) {
-    console.log(error)
     return NextResponse.json({ message: `Error al enviar el mail. Porfavor vuelva a intentarlo`}, { status: 500 })
   }
 };

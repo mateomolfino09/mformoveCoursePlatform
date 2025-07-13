@@ -42,7 +42,6 @@ function Carousel({
   user,
   courseIndex
 }: Props) {
-  console.log(coursesDB)
   const rowRef = useRef<HTMLDivElement>(null);
   const scrollRowRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -72,8 +71,6 @@ function Carousel({
 
     if (scrollRowRef.current) {
       const { scrollLeft, clientWidth } = scrollRowRef.current;
-      console.log(scrollLeft, clientWidth);
-
       const scrollTo =
         direction === 'left'
           ? scrollLeft - clientWidth
@@ -96,7 +93,7 @@ function Carousel({
       <ChevronLeftIcon
         className={`absolute left-2 z-[110] h-9 ${
           title === 'Mis Cursos' ? 'bottom-64' : 'bottom-32'
-        }  md:hidden opacity-0 transition hover:scale-125 group-hover:opacity-100 ${
+        }  md:hidden opacity-0 transition hover:scale-125 group-hover:opacity-100 text-[#234C8C] hover:text-[#1a3763] ${
           coursesDB?.length && coursesDB?.length == 0 ? 'hidden' : ''
         }`}
         onClick={() => handleClick('left')}
@@ -123,7 +120,7 @@ function Carousel({
       <ChevronRightIcon
         className={`absolute right-0 z-[110] h-9 ${
           title === 'Mis Cursos' ? 'bottom-64' : 'bottom-32'
-        } md:hidden transition hover:scale-125 ${
+        } md:hidden transition hover:scale-125 text-[#234C8C] hover:text-[#1a3763] ${
           coursesDB?.length && coursesDB?.length < 1 ? 'hidden' : ''
         }`}
         onClick={() => handleClick('right')}

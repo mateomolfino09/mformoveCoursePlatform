@@ -114,8 +114,7 @@ export const sendSubscriptionEmail = async (
       },
     });
 
-    console.log(`✅ Email enviado a ${email} para el estado ${status}`);
-  } catch (error) {
+    } catch (error) {
     console.error(`❌ Error al enviar el email:`, error);
   }
 };

@@ -11,6 +11,5 @@ export async function getClassById(id, courseId) {
     const clase = JSON.parse(JSON.stringify(courseToSend[0]));
     return clase;
   } catch (err) {
-    console.log(err);
-  }
+    }
 }

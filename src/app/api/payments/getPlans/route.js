@@ -1,15 +1,26 @@
 import { NextResponse } from 'next/server';
 import connectDB from '../../../../config/connectDB';
 import Plan from '../../../../models/planModel';
+import MentorshipPlan from '../../../../models/mentorshipPlanModel';
 import { revalidateTag } from 'next/cache';
 
 // Conectar a la base de datos
 connectDB();
 export const revalidate = 0;
 export const fetchCache = 'force-no-store'
-export async function GET() {
+export async function GET(request) {
   try {
-    const plans = await Plan.find({ active: true });
+    const { searchParams } = new URL(request.url);
+    const planType = searchParams.get('type') || 'membership';
+    
+    let plans;
+    
+    if (planType === 'mentorship') {
+      plans = await MentorshipPlan.find({ active: true }).sort({ createdAt: -1 });
+    } else {
+      plans = await Plan.find({ active: true });
+    }
+    
     revalidateTag('plans');
     return NextResponse.json(plans, {
         status: 200,

@@ -13,7 +13,9 @@ export const routes = {
         membresia: (isMember: boolean) => isMember ? '/home' : '/select-plan',
         selectPlan: '/select-plan',
         membresiaHome: '/home',
-        mentoria: '/mentoria',
+        mentorship: '/mentorship',
+        mentoria: '/mentorship', // Mantener para compatibilidad
+        mentorshipConsulta: '/mentorship/consulta',
         preguntasFrecuentes: '/faq',
         index: '/',
         products: '/products',

@@ -27,8 +27,6 @@ function useProvideAuth() {
 		try {
 		  const token = Cookie.get('userToken');	
 
-		  console.log(token)
-
 		  Cookie.set('userToken', token ? token : '', { expires: 5})
 	
 		  if (token) {

@@ -48,5 +48,5 @@ const productFiltersSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-let Dataset = mongoose.models.ProductFilters || mongoose.model('ProductFilters', productFiltersSchema);
-export default Dataset;
+const ProductFilters = mongoose.models.ProductFilters || mongoose.model('ProductFilters', productFiltersSchema);
+export default ProductFilters;

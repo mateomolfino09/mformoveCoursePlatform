@@ -23,8 +23,7 @@ export default function Page({ params }: { params: { classType: string } }) {
         });
         const data = await res.json();
         setFilters(data);
-        console.log(data)
-      } catch (err) {
+        } catch (err) {
         console.error('Error fetching class types:', err);
       }
     }
@@ -40,7 +39,6 @@ export default function Page({ params }: { params: { classType: string } }) {
           },
         });
         const data = await res.json();
-        console.log(data)
         setClasses(data);
       } catch (err) {
         console.error('Error fetching classes:', err);

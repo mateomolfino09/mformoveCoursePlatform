@@ -42,7 +42,6 @@ export async function PUT(req) {
       );
     }
   } catch (error) {
-    console.log(error);
     return NextResponse.json({ error: error }, { status: 401 });
   }
 }

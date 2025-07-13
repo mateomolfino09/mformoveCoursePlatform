@@ -36,7 +36,6 @@ const ResendEmail = ({ resendEmail, recaptchaRef, step3ToStep2 }: Props) => {
   );
 
   useEffect(() => {
-    console.log(recaptchaRef)
     recaptchaRef.re
   }, [])
   

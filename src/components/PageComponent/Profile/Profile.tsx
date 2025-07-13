@@ -45,8 +45,6 @@ function Profile() {
     setVisible(!visible)
   }
 
-  console.log(auth.user)
-
   useEffect(() => {
     const cookies: any = Cookies.get('userToken')
     
@@ -81,7 +79,6 @@ function Profile() {
       fetchData();
 
       const fetchSubscriptionPeriod = async (plan:Plan) => {
-        console.log(plan)
         if(plan.provider == "stripe") {
           setLoadingDates(true)
           try {
@@ -92,10 +89,7 @@ function Profile() {
             setStartDate(data?.startDate)
             setEndDate(data?.endDate);
   
-            console.log(data)
-  
-          } catch (err: any) {
-            console.log(err)
+            } catch (err: any) {
             throw new Error(err)
           } finally {
             setLoadingDates(false);
@@ -154,7 +148,7 @@ function Profile() {
             </p>
           </Link>
             ) : (
-              <a href='/select-plan' className='paragraph font-medium underline text-start md:text-end'>
+              <a href='/mentorship' className='paragraph font-medium underline text-start md:text-end'>
               Subscribirme
               </a>
             )}

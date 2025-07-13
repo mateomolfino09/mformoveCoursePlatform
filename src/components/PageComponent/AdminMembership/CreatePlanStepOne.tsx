@@ -283,7 +283,7 @@ const CreatePlanStepOne = ({ handleSubmit }: Props) => {
           </button>
           <div className='text-[gray]'>
             Volver al Inicio
-            <Link href={routes.navegation.membresiaHome}>
+            <Link href={'/mentorship'}>
               <button type='button' className='text-white hover:underline ml-2'>
                 {' '}
                 Volver

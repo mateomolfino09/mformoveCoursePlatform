@@ -60,8 +60,6 @@ const Success = () => {
     
     const planId = Cookies.get('planToken');
 
-    console.log(planId, external_id)
-
     if (!external_id || !planId) {
       toast.error(`No tienes token de subscripcion, te redireccionaremos al inicio...`);
       // router.push('/select-plan');

@@ -14,9 +14,7 @@ export async function POST(req: NextRequest) {
 
         const users = await User.find({ "courses.id": courseGroupId }).lean().exec();
 
-        console.log(users)
-
-      const title: string = `<h1>${titulo}</h1>`;
+        const title: string = `<h1>${titulo}</h1>`;
 
       const message: string = `
       <div>     

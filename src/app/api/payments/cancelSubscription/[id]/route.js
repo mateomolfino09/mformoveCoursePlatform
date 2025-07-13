@@ -22,14 +22,10 @@ export async function PUT(req) {
 
     const user = await User.findOne({ _id: id })
     const plan = await Plan.findOne({ id: planId })
-    console.log(user, plan)
-
     if(plan.provider == "stripe") {
       let sub = await cancelStripeSubscription(user.subscription.id)
 
       user.subscription ? user.subscription.isCanceled = true : null;
-      console.log('cancelado', user.subscription)
-
       await user.save()
 
       return NextResponse.json({ message: `Se ha desactivado tu subscripción. Lamentamos verte partir. Puedes seguir disfrutando de los beneficios hasta el final del período actual.`, success: true, user }, { status: 200 })
@@ -112,9 +108,7 @@ export async function PUT(req) {
 
         return NextResponse.json({ message: `Se ha desactivado la subscripcion del usuario`, success: true, user }, { status: 200 })
       } catch (error) {
-        console.log(error)
-  
-      }
+        }
     } 
     
 

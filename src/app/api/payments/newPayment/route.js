@@ -24,8 +24,6 @@ export async function POST(req) {
   try { 
     const response = await dLocalApi.get(`/payments/${payment_id}`);  
     const data = response.data.data;
-    console.log(payment_id , data)
-
     if(data.status === "PAID") {
 
         // let user = await User.find({ email: data })
@@ -37,7 +35,6 @@ export async function POST(req) {
         return NextResponse.json({ error: 'Algo salio mal' }, { status: 401 })
     }
   } catch (err) {
-    console.log(err);
     return NextResponse.json({ error: 'Algo salio mal' }, { status: 401 })
 }
 };

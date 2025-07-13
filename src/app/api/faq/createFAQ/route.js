@@ -11,8 +11,6 @@ export async function POST(req) {
 
   try {
     let origin = getCurrentURL();
-    console.log(origin);
-
     if (req.method === 'POST') {
       // Crea y guarda la nueva FAQ en la base de datos
       const newFAQ = await new FAQs({
@@ -31,7 +29,6 @@ export async function POST(req) {
       );
     }
   } catch (err) {
-    console.log(err);
     return NextResponse.json({ error: err.message }, { status: 401 });
   }
 }

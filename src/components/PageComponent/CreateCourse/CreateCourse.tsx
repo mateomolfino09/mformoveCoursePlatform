@@ -62,8 +62,6 @@ const CreateCourse = () => {
     files
   } = createCourseReducer;
 
-  console.log(createCourseReducer);
-
   const { stepCero, stepOne, stepTwo, stepThree } = state;
 
   const auth = useAuth();
@@ -91,8 +89,6 @@ const CreateCourse = () => {
   useEffect(() => {
     const cookies: any = Cookies.get('userToken');
 
-    console.log(auth);
-
     if (!cookies) {
       router.push('/login');
     }
@@ -103,7 +99,6 @@ const CreateCourse = () => {
   }, [auth.user]);
 
   async function handleSubmit(event: any) {
-    console.log(courseType);
     event.preventDefault();
     setLoading(true);
     if (name.length < 5) {
@@ -235,7 +230,6 @@ const CreateCourse = () => {
       router.push('/admin/courses');
       dispatch(clearData());
     } catch (error: any) {
-      console.log(error);
       toast.error(error.response.data.error);
     }
     setLoading(false);

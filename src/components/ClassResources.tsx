@@ -45,7 +45,6 @@ const ClassResources = ({ clase }: Props) => {
   const handleDownloadFile = (file: Archive) => {
     const doc_url = file.document_url;
     const url = doc_url.substring(0,  doc_url.indexOf('upload') + 7) + 'fl_attachment/' + doc_url.substring(doc_url.indexOf('upload') + 7)
-    console.log(url)
     const fileName = file.name;
     const aTag = document.createElement('a');
     aTag.href = url;

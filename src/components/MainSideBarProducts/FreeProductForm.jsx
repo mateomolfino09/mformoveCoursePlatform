@@ -14,8 +14,7 @@ import { IoCarOutline } from 'react-icons/io5'
 import Timer2 from './FreeProductCountDown'
 
 const FreeProductForm = ({ product, setRef }) => {
-  console.log(product)
-const auth = useAuth()
+  const auth = useAuth()
 const { register, handleSubmit, formState: { errors,  } } = useForm()
 const rowRef = useRef(null);
 const scrollRowRef = useRef(null);
@@ -68,7 +67,6 @@ useEffect(() => {
 
 useEffect(() => {
   const { innerWidth: width, innerHeight: height } = window;
-  console.log(height, width)
   setDimensions({
     width,
     height: height * 2,
@@ -95,7 +93,6 @@ function validateEmail(email) {
 }
 
 const onSubmit = async (data) => {
-  console.log(data)
   let email = data.email;
   if(!validateEmail(email)) {
     setMessage(
@@ -156,7 +153,6 @@ const onSubmit = async (data) => {
       }, 4000);
       setTotalCounts(400);
     } catch (error) {
-      console.log(error)
       setStatus(500);
       setMessage(
         "Error al unirte. Contactanos directamente via Instagram!."

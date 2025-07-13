@@ -57,7 +57,7 @@ const Membership = ({ plans, origin }: Props ) => {
         <div className='w-96 relative lg:w-[28rem] md:left-32 lg:left-1/4 bottom-24'>
             <h1 className='text-4xl md:text-5xl font-light mb-6'>Membresías</h1>
             <p className='text-base md:text-lg font-light'>Elevate your Practice: Rooted in Science, Cultivated with Mindfulness. Uniting Yoga, Movement, Breathwork, and Skill-Based Training with Dylan Werner</p>
-            <Link href={'select-plan'}>
+            <Link href={'mentorship'}>
             <div className='flex px-24 py-3 mt-6 border-white border rounded-full justify-center items-center w-full group cursor-pointer hover:bg-white hover:text-black'>
                 <button className='w-full'>Empezar Prueba Gratis </button>
                 <ArrowRightIcon className='w-4 h-4 relative left-4'/>
