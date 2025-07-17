@@ -1,4 +1,3 @@
-import { ClassesDB, CourseUser, User } from '../../../../typings';
 import PlayerControls from './PlayerControls';
 import { Container, Grid, Paper, Typography } from '@mui/material';
 import axios from 'axios';
