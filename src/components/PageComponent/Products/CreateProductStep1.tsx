@@ -71,6 +71,12 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   const [earlyBirdStart, setEarlyBirdStart] = useState<string>(now);
   const [lastTicketsEnd, setLastTicketsEnd] = useState<string>(fecha || "");
 
+  // Estados para imágenes
+  const [files, setFiles] = useState<any>([]);
+  const [portraitImageArray, setPortraitImage] = useState<any>([]);
+  const [diplomaImageArray, setDiplomaImage] = useState<any>([]);
+  const [ubicacionSugerencias, setUbicacionSugerencias] = useState<any[]>([]);
+
   // useEffect para actualizar lastTicketsEnd si cambia la fecha del evento
   useEffect(() => {
     if (tipo === 'evento' && fecha) {
@@ -248,11 +254,6 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       descuentoObj
     );
   };
-
-  const [files, setFiles] = useState<any>([]);
-  const [portraitImageArray, setPortraitImage] = useState<any>([]);
-  const [diplomaImageArray, setDiplomaImage] = useState<any>([]);
-  const [ubicacionSugerencias, setUbicacionSugerencias] = useState<any[]>([]);
 
   function handleOnChangePortraitPicture(changeEvent: any) {
     setPortraitImage([changeEvent.target.files[0]]);
