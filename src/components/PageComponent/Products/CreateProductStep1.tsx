@@ -11,7 +11,6 @@ import { RxCrossCircled } from 'react-icons/rx';
 import { StylesConfig } from 'react-select';
 import { toast } from 'react-toastify';
 import { countries } from 'countries-list';
-import cities from './world-cities.json'; // Debes agregar este archivo JSON con las ciudades del mundo
 
 interface Props {
   handleSubmit: any;
@@ -20,6 +19,19 @@ interface Props {
 declare const process: any;
 
 const CreateProductStep1 = ({ handleSubmit }: Props) => {
+  // Cargar cities dinámicamente para evitar problemas de prerenderizado
+  const [cities, setCities] = useState<any[]>([]);
+  
+  useEffect(() => {
+    // Cargar el archivo JSON solo en el cliente
+    import('./world-cities.json').then((module) => {
+      setCities(module.default || []);
+    }).catch((error) => {
+      console.error('Error loading cities:', error);
+      setCities([]);
+    });
+  }, []);
+
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [descriptionLength, setDescriptionLength] = useState<number>(0);
