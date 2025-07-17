@@ -1,6 +1,5 @@
 import connectDB from '../../../../../../config/connectDB';
 import User from '../../../../../../models/userModel';
-import Course from '../../../../../../models/courseModel';
 import Class from '../../../../../../models/classModel';
 import IndividualClass from '../../../../../../models/individualClassModel';
 
@@ -13,8 +12,6 @@ export async function PUT(req, { params }) {
     const { token } = params
 
     if (req.method === 'PUT') {
-      const courses = await Course.find({}).populate('classes');
-
       if (token) {
         const decoded = await jwt.verify(token, process.env.NEXTAUTH_SECRET);
         req.user = decoded;
@@ -27,7 +24,6 @@ export async function PUT(req, { params }) {
       if (user && user.validEmail != 'yes') {
         user.validEmail = 'yes';
         user.emailToken = undefined;
-        user.courses = [];
         let userClass = [];
 
         user.notifications.push({
@@ -53,23 +49,6 @@ export async function PUT(req, { params }) {
           await user.save();
         });
 
-        courses.forEach((course) => {
-          course.classes.forEach((clase) => {
-            userClass.push({
-              class: clase,
-              id: clase.id,
-              actualTime: 0,
-              like: false
-            });
-          });
-
-          user.courses.push({
-            course,
-            like: false,
-            purchased: user.rol === 'Admin' ? true : false,
-            classes: userClass
-          });
-        });
 
         await user.save();
         return NextResponse.json({ message: 'Cuenta verificada con éxito'}, { status: 200 })

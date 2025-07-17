@@ -42,10 +42,6 @@ const examSchema = new mongoose.Schema(
         type: Number,
         required: true
     },
-    courseId: {
-      type: mongoose.Types.ObjectId,
-      ref: 'Course'
-    },
     questions: [questionSchema],
   },
   { timestamps: true }

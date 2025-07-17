@@ -63,7 +63,8 @@ const endpoints = {
   },
   product: {
     delete: (productId: string) => `/api/product/delete/${productId}`,
-    getOne: (productId: string) => `/api/product/viewProduct/${productId}`
+    getOne: (productId: string) => `/api/product/viewProduct/${productId}`,
+    update: `/api/product/updateProduct`
   },
   freeProduct: {
     delete: (productId: string) => `/api/product/delete/${productId}`,

@@ -1,16 +1,11 @@
 'use client';
 
 import { RxCross2 } from 'react-icons/rx';
-import { courseTypeConst } from '../../../constants/courseType';
 import { useAuth } from '../../../hooks/useAuth';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
-import { clearData } from '../../../redux/features/createCoursesSlice';
 import { useAppSelector } from '../../../redux/hooks';
 import requests from '../../../utils/requests';
 import AdmimDashboardLayout from '../../AdmimDashboardLayout';
-import CreateCourseStepCero from '../../CreateCourseStepCero';
-import CreateCourseStepOne from '../../CreateCourseStepOne';
-import CreateCourseStepTwo from '../../CreateCourseStepTwo';
 import { LoadingSpinner } from '../../LoadingSpinner';
 import axios from 'axios';
 import Cookies from 'js-cookie';

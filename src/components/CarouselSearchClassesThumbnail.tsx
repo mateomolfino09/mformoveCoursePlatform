@@ -1,7 +1,6 @@
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import imageLoader from '../../imageLoader';
-import { CourseUser, CoursesDB, IndividualClass, Ricks, User } from '../../typings';
+import { IndividualClass, Ricks, User } from '../../typings';
 import {
   ChevronDownIcon,
   PlayIcon,
@@ -32,7 +31,6 @@ import { TbLockOpenOff } from 'react-icons/tb';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
-import { useGlobalContext } from '../app/context/store';
 import { IoLockClosedOutline } from "react-icons/io5";
 import { HiOutlineLockClosed } from 'react-icons/hi2';
 
@@ -71,9 +69,7 @@ function CarouselSearchClassesThumbnail({
   c
 }: Props) {
   const dispatch = useAppDispatch();
-  const [courseUser, setCourseUser] = useState<CourseUser | null>(null);
   const [zIndex, setZIndex] = useState(0);
-  const { listCourse, setListCourse } = useGlobalContext();
   const animation = useAnimation();
   const animationButton = useAnimation();
   const animationArrow = useAnimation();

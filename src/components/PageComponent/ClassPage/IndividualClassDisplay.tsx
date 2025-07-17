@@ -1,17 +1,12 @@
 'use client'
-import ClassBanner from '../../ClassBanner';
-import ClassBannerSideBar from '../../ClassBannerSideBar';
 import ClassOptions from './ClassOptions';
 import ClassQuestions from './ClassQuestions';
 import ClassResources from './ClassResources';
 import ClassThumbnail from './ClassThumbnail';
-import CourseData from '../../CourseData';
 import VideoPlayer from './VideoPlayer';
 import { toggleScroll } from '../../../redux/features/headerHomeSlice';
 import {
   ClassesDB,
-  CourseUser,
-  CoursesDB,
   IndividualClass,
   Question,
   User
@@ -59,7 +54,6 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
   const [time, setTime] = useState<number | null | undefined>(null);
   const [play, setPlay] = useState<boolean>(false);
   const [resumeModal, setResumeModal] = useState<boolean>(false);
-  const [courseUser, setCourseUser] = useState<CourseUser | null>(null);
   const [hasWindow, setHasWindow] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
   const [playerRef, setPlayerRef] = useState<RefObject<ReactPlayer> | null>(
@@ -96,17 +90,6 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
     if (currentTime > 60) {
       setResumeModal(true);
     }
-  };
-
-  const handleMove = () => {
-    playerRef?.current &&
-      playerRef.current.seekTo(
-        courseUser?.classes[clase.id - 1].actualTime
-          ? courseUser?.classes[clase.id - 1].actualTime
-          : 0
-      );
-    setResumeModal(false);
-    // setPlay(true);
   };
 
   const handleRouteChange = async (route: string) => {
@@ -279,7 +262,6 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
                 </h3>
                 </div>
                 <button
-                onClick={handleMove}
                 className='modalButton absolute left-12 top-32 !z-40 h-8 w-24 md:w-32 bg-gray-200 text-black hover:scale-105 transition duration-300 shadow-2xl'
                 >
                 <h3 className='text-sm md:text-sm'>Continuar</h3>

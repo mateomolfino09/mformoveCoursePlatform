@@ -53,13 +53,7 @@ const Billing = ({ bills }: Props) => {
                       <thead className='border-b font-medium dark:border-neutral-500'>
                         <tr>
                           <th scope='col' className='px-6 py-4'>
-                            Curso
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
                             Usuario
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Precio
                           </th>
                           <th scope='col' className='px-6 py-4'>
                             Estado
@@ -82,14 +76,8 @@ const Billing = ({ bills }: Props) => {
                             ref={ref}
                             className='border-b dark:border-neutral-500'
                           >
-                            <td className='whitespace-nowrap px-6 py-4 font-medium'>
-                              {bill.course.name}
-                            </td>
                             <td className='whitespace-nowrap px-6 py-4'>
                               {bill.user.name}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {bill.course.currency} {bill.course.price}
                             </td>
                             <td className='whitespace-nowrap px-6 py-4'>
                               {bill.status}

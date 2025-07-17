@@ -1,6 +1,5 @@
 import { verify } from 'jsonwebtoken';
 import connectDB from '../../../config/connectDB';
-import Course from '../../../models/courseModel';
 import Class from '../../../models/classModel';
 import User from '../../../models/userModel';
 

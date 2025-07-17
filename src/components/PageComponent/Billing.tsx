@@ -53,8 +53,6 @@ const Billing = ({ bills }: Props) => {
             <table className='min-w-full text-sm  '>
               <thead>
                 <tr>
-                  <th className='border rounded-md text-xl px-1'>Curso</th>
-                  <th className='border  text-xl px-1'>Precio</th>
                   <th className='border  text-xl px-1'>Status</th>
                   <th className='border  text-xl px-1'>Id Pago</th>
                   <th className='border  text-xl px-1'>Tipo de Pago</th>
@@ -64,12 +62,6 @@ const Billing = ({ bills }: Props) => {
               <tbody>
                 {bills.map((bill: Bill) => (
                   <tr key={bill ? +bill.payment_id : 0} ref={ref}>
-                    <th className='border-solid border border-collapse  bg-gray-900/70 text-base opacity-75'>
-                      {bill.course.name}
-                    </th>
-                    <th className='border-solid border border-collapse text-base bg-gray-900/70 opacity-75 px-1'>
-                      {bill.course.currency} {bill.course.price}
-                    </th>
                     <th className='border-solid border border-collapse text-base bg-gray-900/70 opacity-75 px-1'>
                       {bill.status}
                     </th>

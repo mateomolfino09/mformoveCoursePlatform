@@ -1,6 +1,4 @@
-import { getCourseById } from '../../../api/course/getCourseById';
 import connectDB from '../../../../config/connectDB';
-import CoursePurchase from '../../../../components/PageComponent/CoursePurchase';
 import ResetPassword from '../../../../components/PageComponent/ResetPassword';
 import ResetForm from '../../../../components/PageComponent/Reset/ResetForm';
 

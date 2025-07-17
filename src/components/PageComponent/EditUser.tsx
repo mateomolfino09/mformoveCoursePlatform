@@ -5,7 +5,7 @@ import { countries } from '../../constants/countries';
 import { genders } from '../../constants/genders';
 import { purchased } from '../../constants/purchased';
 import { rols } from '../../constants/rols';
-import { CourseUser, User } from '../../../typings';
+import { User } from '../../../typings';
 import axios from 'axios';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -48,8 +48,6 @@ const EditUser = ({ user }: Props) => {
   const [gender, setGender] = useState(user.gender);
   const [country, setCountry] = useState(user.country);
   const [rol, setRol] = useState(user.rol);
-  const [courses, setCourses] = useState<CourseUser[]>([]);
-  const [courseName, setCourseName] = useState<string[]>([]);
 
   const auth = useAuth()
 
@@ -69,28 +67,6 @@ const EditUser = ({ user }: Props) => {
 
   }, [auth.user]);
 
-  useEffect(() => {
-    const getCourses = async () => {
-      try {
-        const config = {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        };
-        const courseArray = await Promise.all(
-          courses.map((course) =>
-            axios.get(`/api/course/${course.course}`, config).then((res) => {
-              return res.data.name;
-            })
-          )
-        );
-        setCourseName(courseArray);
-      } catch (error) {
-        }
-    };
-    getCourses();
-  }, [courses]);
-  
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     try {
@@ -133,13 +109,6 @@ const EditUser = ({ user }: Props) => {
     if (str === 'false') {
       purchased = false;
     }
-    setCourses((prevCourses) => {
-      const updatedCourses = [...prevCourses];
-
-      updatedCourses[index] = { ...updatedCourses[index], purchased };
-
-      return updatedCourses;
-    });
   }
 
   return (
@@ -215,22 +184,6 @@ const EditUser = ({ user }: Props) => {
                     />
                   </div>
                   <>
-                    {courses.map((course, index) => (
-                      <div key={index}>
-                        <label className='inline-block w-full '>
-                          {courseName[index]}
-                        </label>
-
-                        <Select
-                          options={purchased}
-                          styles={colourStyles}
-                          placeholder={'Comprado'}
-                          className='w-full '
-                          defaultInputValue={course.purchased.toString()}
-                          onChange={(event) => handleInputChange(event, index)}
-                        />
-                      </div>
-                    ))}
                   </>
                   <div className='flex   '>
                     <Select

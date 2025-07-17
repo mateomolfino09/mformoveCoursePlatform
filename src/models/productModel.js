@@ -1,186 +1,54 @@
 import mongoose from 'mongoose';
 
-const fileSchema = new mongoose.Schema({
-  id: {
-    type: Number,
-    required: true
-  },
-  document_url: {
-    type: String,
-    required: true
-  },
-  public_id: {
-    type: String,
-    required: true
-  },
-  name: {
-    type: String
-  },
-  format: {
-    type: String
-  }
-});
+const ubicacionSchema = new mongoose.Schema({
+  display_name: { type: String },
+  lat: { type: String },
+  lon: { type: String },
+  ciudad: { type: String },
+  pais: { type: String }
+}, { _id: false });
 
-const frequentQuestion = new mongoose.Schema({
-  id: {
-    type: Number,
-    required: true
-  },
-  question: {
-    type: String,
-    required: true
-  },
-  answer: {
-    type: String,
-    required: true
-  },
-});
+const productSchema = new mongoose.Schema({
+  nombre: { type: String, required: true },
+  descripcion: { type: String, required: true, minLength: 20 },
+  tipo: { type: String, enum: ['curso', 'bundle', 'evento', 'recurso'], required: true },
+  precio: { type: Number, required: true },
+  moneda: { type: String, default: 'USD' },
+  imagenes: [{ type: String }], // URLs de imágenes
+  portada: { type: String }, // URL de la imagen de portada
+  precios: { type: Object }, // Objeto con earlyBird, general, lastTickets
+  paymentLinks: { type: Object }, // Links de pago para cada precio
+  activo: { type: Boolean, default: true },
+  destacado: { type: Boolean, default: false },
 
-const classSchema = new mongoose.Schema(
-  {
-    id: {
-      type: Number,
-      required: true
-    },
-    name: {
-      type: String,
-      required: true
-    },
-    class_code: {
-      type: String,
-      required: true
-    },
-    image_url: {
-      type: String,
-      required: true
-    },
-    video_url: {
-      type: String,
-      required: true
-    },
-    totalTime: {
-      type: Number,
-      default: () => 0
-    },
-    module: {
-      type: Number,
-      required: true
-    },
-    atachedFiles: [fileSchema],
-    link: { type: String, default: () => null }
+  // --- Eventos ---
+  fecha: { type: Date },
+  ubicacion: { type: ubicacionSchema },
+  online: { type: Boolean },
+  linkEvento: { type: String }, // Zoom, Meet, etc.
+  cupo: { type: Number },
+  pdfPresentacionUrl: { type: String }, // PDF de presentación para eventos
+
+  // --- Recursos descargables ---
+  archivoUrl: { type: String }, // PDF, video, audio, etc.
+  tipoArchivo: { type: String, enum: ['pdf', 'video', 'audio', 'zip'] },
+
+  // --- Comunes ---
+  etiquetas: [{ type: String }],
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+
+  // --- Descuento familia y amigos ---
+  descuento: {
+    codigo: { type: String },
+    porcentaje: { type: Number },
+    maxUsos: { type: Number },
+    expiracion: { type: Date },
   },
-  { timestamps: true }
-);
 
-const moduleSchema = mongoose.Schema({
-  id: {
-    type: Number,
-    required: true
-  },
-  name: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  }
-}, { timestamps: true })
-
-const productSchema = new mongoose.Schema(
-  {
-    id: {
-      type: Number,
-      required: true
-    },
-    name: {
-      type: String,
-      required: true
-    },
-    phraseName: {
-      type: String,
-      required: true
-    },
-    description: {
-      type: String,
-      required: true,
-      minLength: 20
-    },
-    longDescription: {
-      type: String,
-      required: true,
-      minLength: 20
-    },
-    intro_video_url: {
-      type: String,
-      required: true
-    },
-    frequentQuestions : [frequentQuestion],
-    paymentLink: {
-      type: String,
-      default: () => "",
-     // required: true
-    },
-    createdAt: {
-      type: Date,
-      immutable: true,
-      default: () => Date.now()
-    },
-    classesQuantity: {
-      type: Number,
-      default: () => "",
-      required: true
-    },
-    image_url: {
-      type: String,
-      default: () => ""
-    },
-    url: {
-      type: String,
-      required: true
-    },
-    diploma_url: {
-      type: String,
-      default: () => ""
-    },
-    likes: {
-      type: Number,
-      default: () => 12
-    },
-    price: {
-      type: Number,
-      default: () => 10
-    },
-
-    vimeoShowCaseId: {
-      type: Number,
-      default: () => 10
-    },
-
-    currency: {
-      type: String,
-      default: () => '$'
-    },
-    classes:[classSchema],
-    modules:[moduleSchema],
-    users: [
-      {
-        type: mongoose.Types.ObjectId,
-        ref: 'User'
-      }
-    ],
-    created_by: {
-      type: mongoose.Types.ObjectId,
-      ref: 'User'
-    },
-    productType:{
-      type: String,
-      //required:true
-    }
-
-  },
-  { timestamps: true }
-);
+  // --- Legacy/compatibilidad (puedes eliminar estos campos cuando migres todo) ---
+  // phraseName, intro_video_url, paymentLink, classesQuantity, image_url, url, diploma_url, likes, vimeoShowCaseId, classes, modules, users, created_by, productType, frequentQuestions
+}, { timestamps: true });
 
 let Dataset = mongoose.models.Product || mongoose.model('Product', productSchema);
 export default Dataset;

@@ -44,10 +44,6 @@ const billSchema = new mongoose.Schema(
       type: String,
       default: () => '$'
     },
-    course: {
-      type: mongoose.Types.ObjectId,
-      ref: 'Course'
-    },
     user: {
       type: mongoose.Types.ObjectId,
       ref: 'User'

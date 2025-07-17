@@ -1,7 +1,7 @@
-import { ClassesDB, CoursesDB, IndividualClass } from '../../../../typings';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import React from 'react';
+import { IndividualClass } from '../../../../typings';
 
 interface Props {
   clase: IndividualClass;

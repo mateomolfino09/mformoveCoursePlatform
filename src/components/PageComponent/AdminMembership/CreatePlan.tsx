@@ -13,7 +13,6 @@ import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import { useAppSelector } from '../../../redux/hooks';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
-import { clearData } from '../../../redux/features/createCoursesSlice';
 import { ClassTypes } from '../../../../typings';
 import CreatePlanStepOne from './CreatePlanStepOne';
 
