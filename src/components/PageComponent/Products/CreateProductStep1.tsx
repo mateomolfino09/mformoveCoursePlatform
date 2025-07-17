@@ -25,7 +25,8 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   useEffect(() => {
     // Cargar el archivo JSON solo en el cliente
     import('./world-cities.json').then((module) => {
-      setCities(module.default || []);
+      const citiesData = module.default;
+      setCities(Array.isArray(citiesData) ? citiesData : []);
     }).catch((error) => {
       console.error('Error loading cities:', error);
       setCities([]);
