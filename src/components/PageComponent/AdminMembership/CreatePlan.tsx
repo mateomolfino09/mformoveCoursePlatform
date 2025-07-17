@@ -74,7 +74,6 @@ const CreatePlan = () => {
       auth.fetchUser();
       toast.success('Plan de membresía creado exitosamente');
       router.push('/admin/memberships');
-      dispatch(clearData());
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Error al crear el plan');
     }
