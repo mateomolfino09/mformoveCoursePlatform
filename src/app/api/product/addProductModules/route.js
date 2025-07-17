@@ -1,5 +1,4 @@
 import connectDB from '../../../../config/connectDB';
-import { courseTypeConst } from '../../../../constants/courseType';
 import Classes from '../../../../models/classModel';
 import Exam from '../../../../models/examModel';
 import IndividualClass from '../../../../models/individualClassModel';
