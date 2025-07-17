@@ -1,12 +1,6 @@
 import React from 'react';
+import { IndividualClass } from '../../typings';
 
-interface IndividualClass {
-  id: number;
-  name: string;
-  description: string;
-  totalTime: string;
-  level: string;
-}
 
 interface AllClassesProps {
   classes: IndividualClass[];
