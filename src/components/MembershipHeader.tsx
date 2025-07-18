@@ -185,6 +185,22 @@ const MembershipHeader = ({ user, toggleNav, where, showNav }: Props) => {
                     </svg>
                   )}
                 </div>
+            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${path == routes.navegation.eventos && '!text-black relative'}`} onClick={() => {
+                router.push(routes.navegation.eventos);
+              }}>
+                  Eventos
+                  {path == routes.navegation.eventos && (
+                    <svg
+                      width="100%"
+                      height="3"
+                      viewBox="0 0 120 5"
+                      className="block mx-auto mt-0 relative bottom-1 left-1/2 -translate-x-1/2"
+                      style={{ minWidth: '100%', maxWidth: '100%' }}
+                    >
+                      <ellipse cx="60" cy="4" rx="60" ry="3" fill="black" />
+                    </svg>
+                  )}
+                </div>
               <a href={`${routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip)}`} ref={linkMembRef} style={{ display: 'none' }}>
               Ir a Membresia
             </a>

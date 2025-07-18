@@ -214,6 +214,10 @@ const Header = ({
 
           <li className='headerLink' onClick={() => router.push('/courses')}>Cursos</li>
 
+          <li className='headerLink' onClick={() => router.push(routes.navegation.eventos)}>Eventos</li>
+
+          <li className='headerLink' onClick={() => router.push('/mentorship')}>Mentoría</li>
+
           {scrollToNuevo !== null ? (
             <li onClick={scrollToNuevo} className='headerLink'>
               Nuevo

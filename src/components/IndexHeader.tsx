@@ -102,7 +102,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav, lightTheme = false }: Pr
             opacity: 1
           }}
           animate={headerAnimation}
-          className={`fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${lightTheme ? 'bg-white/90 backdrop-blur-sm' : 'bg-transparent'} ${(isScrolled || headerScroll) && !lightTheme && 'bg-[#141414]'} ${(path === routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.register) && !isScrolled && !headerScroll && !lightTheme && 'md:bg-[#1414147c]'}`}
+          className={`fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${where === "home" ? "mt-28" : ""} ${lightTheme ? 'bg-white/90 backdrop-blur-sm' : 'bg-transparent'} ${(isScrolled || headerScroll) && !lightTheme && 'bg-[#141414]/40'} ${(path === routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.register) && !isScrolled && !headerScroll && !lightTheme && 'md:bg-[#1414147c]/40'}`}
         >
           <div className=''>
             <Link href={`${path === routes.navegation.selectPlan ? routes.navegation.membresiaHome : path === routes.navegation.membresiaHome ? "/" : "/"}`}>
@@ -163,6 +163,22 @@ const IndexHeader = ({ user, toggleNav, where, showNav, lightTheme = false }: Pr
                     style={{ minWidth: '100%', maxWidth: '100%' }}
                   >
                     <ellipse cx="60" cy="4" rx="60" ry="3" fill="black" />
+                  </svg>
+                )}
+                </div>
+            <div className={`block text-sm/6 ${lightTheme ? 'text-gray-600 hover:text-gray-800' : 'text-white/50 hover:text-white'} focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer focus:text-white active:text-white font-normal ${path == routes.navegation.eventos && (lightTheme ? '!text-gray-800' : '!text-white')}`} onClick={() => {
+                router.push(routes.navegation.eventos);
+              }}>
+                  Eventos
+                {path == routes.navegation.eventos && (
+                  <svg
+                    width="100%"
+                    height="3"
+                    viewBox="0 0 120 5"
+                    className="block mx-auto mt-0 relative bottom-1 left-1/2 -translate-x-1/2"
+                    style={{ minWidth: '100%', maxWidth: '100%' }}
+                  >
+                    <ellipse cx="60" cy="4" rx="60" ry="3" fill="white" />
                   </svg>
                 )}
                 </div>

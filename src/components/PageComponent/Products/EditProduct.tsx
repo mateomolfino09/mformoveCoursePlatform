@@ -59,7 +59,8 @@ const EditProduct = ({ product }: Props) => {
     online?: boolean,
     linkEvento?: string,
     cupo?: number,
-    descuentoObj?: any
+    descuentoObj?: any,
+    pdfPresentacion?: any
   ) {
     setLoading(true);
 
@@ -143,34 +144,50 @@ const EditProduct = ({ product }: Props) => {
 
       const userEmail = auth.user.email;
 
-      const { data } = await axios.put(
-        '/api/product/updateProduct',
-        {
-          productId: product._id,
-          nombre: name,
-          descripcion: description,
-          moneda: currency,
-          precio: price,
-          userEmail,
-          portada,
-          imagenes,
-          precios,
-          tipo: productType,
-          productVimeoId,
-          diplomaUrl,
-          // Campos de evento
-          ...(productType === 'evento' && {
-            fecha,
-            ubicacion: ubicacionObj,
-            online,
-            linkEvento,
-            cupo,
-          }),
-          // Descuento
-          ...(descuentoObj && { descuento: descuentoObj })
-        },
-        config
-      );
+      // Preparar datos para el envío
+      const productData = {
+        productId: product._id,
+        nombre: name,
+        descripcion: description,
+        moneda: currency,
+        precio: price,
+        userEmail,
+        portada,
+        imagenes,
+        precios,
+        tipo: productType,
+        productVimeoId,
+        diplomaUrl,
+        // Campos de evento
+        ...(productType === 'evento' && {
+          fecha,
+          ubicacion: ubicacionObj,
+          online,
+          linkEvento,
+          cupo,
+        }),
+        // Descuento
+        ...(descuentoObj && { descuento: descuentoObj })
+      };
+
+      let response;
+      if (productType === 'evento' && pdfPresentacion) {
+        // Usar FormData para enviar archivos
+        const formData = new FormData();
+        formData.append('data', JSON.stringify(productData));
+        formData.append('pdfPresentacion', pdfPresentacion);
+        
+        response = await axios.put('/api/product/updateProduct', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      } else {
+        // Usar JSON para datos sin archivos
+        response = await axios.put('/api/product/updateProduct', productData, config);
+      }
+
+      const { data } = response;
 
       auth.fetchUser();
       toast.success(data.message);

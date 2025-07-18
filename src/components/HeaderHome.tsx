@@ -88,6 +88,11 @@ const HeaderHome = ({ user, toggleNav }: Props) => {
             </a>
           </div>
           <div className={`${!headerScroll && 'mt-1'} flex items-center pr-4 md:pr-16`}>
+            <div className="flex items-center gap-6 mr-6">
+              <Link href={routes.navegation.eventos} className="text-white/80 hover:text-white transition-colors duration-200 font-montserrat text-sm">
+                Eventos
+              </Link>
+            </div>
             <Menu as='div' className='relative inline-block text-left'>
               <div>
                 <Menu.Button className={'inline-flex w-full justify-center items-center'}>

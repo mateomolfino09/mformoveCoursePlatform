@@ -6,10 +6,39 @@ import { stripe } from '../../payments/stripe/stripeConfig';
 
 connectDB();
 
+// Función auxiliar para subir archivos a Cloudinary
+async function uploadToCloudinary(file, folder = 'productos') {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'my_uploads');
+  formData.append('folder', folder);
+  
+  const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`;
+  
+  const res = await fetch(cloudinaryUrl, {
+    method: 'POST',
+    body: formData,
+  });
+  const data = await res.json();
+  return data.secure_url;
+}
+
 export async function PUT(req) {
   try {
     if (req.method === 'PUT') {
-      const data = await req.json();
+      const contentType = req.headers.get('content-type') || '';
+      let data = {};
+      let pdfPresentacion = null;
+      let pdfPresentacionUrl = undefined;
+
+      if (contentType.includes('multipart/form-data')) {
+        const formData = await req.formData();
+        data = JSON.parse(formData.get('data'));
+        pdfPresentacion = formData.get('pdfPresentacion');
+      } else {
+        data = await req.json();
+      }
+
       const {
         productId,
         nombre,
@@ -47,6 +76,11 @@ export async function PUT(req) {
           { error: 'Producto no encontrado' },
           { status: 404 }
         );
+      }
+
+      // Subir PDF de presentación si viene en FormData
+      if (tipo === 'evento' && pdfPresentacion && pdfPresentacion instanceof File) {
+        pdfPresentacionUrl = await uploadToCloudinary(pdfPresentacion, 'productos/pdfPresentacion');
       }
 
       // Manejar descuento si se proporciona
@@ -186,6 +220,7 @@ export async function PUT(req) {
         moneda,
         imagenes,
         portada,
+        pdfPresentacionUrl: tipo === 'evento' ? (pdfPresentacionUrl || existingProduct.pdfPresentacionUrl) : undefined,
         precios: tipo === 'evento' ? preciosConLinks : undefined,
         fecha: tipo === 'evento' ? fecha : undefined,
         ubicacion: tipo === 'evento' ? ubicacion : undefined,

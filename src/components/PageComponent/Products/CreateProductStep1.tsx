@@ -264,7 +264,9 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       tipo === 'evento' ? linkEvento : undefined,
       tipo === 'evento' ? cupo : undefined,
       // Descuento
-      descuentoObj
+      descuentoObj,
+      // PDF de presentación
+      tipo === 'evento' ? pdfPresentacion : undefined
     );
   };
 

@@ -131,7 +131,7 @@ const AllProducts = ({ products }: Props) => {
             <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
               <div className="overflow-hidden">
                 <div className="flex justify-between items-center mb-8">
-                  <h1 className="text-black text-3xl font-bold mt-4 mb-4 font-montserrat">
+                  <h1 className="text-white text-3xl font-bold mt-4 mb-4 font-montserrat">
                     Productos
                   </h1>
                   <Link href="/admin/products/createProduct">
@@ -411,6 +411,54 @@ const AllProducts = ({ products }: Props) => {
                                 className="text-gray-600 hover:text-[#234C8C] text-sm whitespace-nowrap"
                               >
                                 Copiar
+                              </button>
+                            </div>
+                          </div>
+                        }
+                        showBorder={false}
+                      />
+                    </InfoModalSection>
+                  )}
+
+                  {/* PDF de presentación */}
+                  {infoProduct?.pdfPresentacionUrl && (
+                    <InfoModalSection title="PDF de Presentación">
+                      <InfoModalField
+                        label=""
+                        value={
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2 flex-1">
+                              <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                              </svg>
+                              <span className="text-gray-700 font-medium">
+                                {infoProduct.nombre || infoProduct.name}-informacion.pdf
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <a 
+                                href={infoProduct.pdfPresentacionUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-[#234C8C] hover:text-[#1A1A1A] underline text-sm whitespace-nowrap"
+                              >
+                                Ver PDF
+                              </a>
+                              <button 
+                                onClick={() => {
+                                  if (infoProduct.pdfPresentacionUrl) {
+                                    const link = document.createElement('a');
+                                    link.href = infoProduct.pdfPresentacionUrl;
+                                    link.download = `${infoProduct.nombre || infoProduct.name}-informacion.pdf`;
+                                    link.target = '_blank';
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                  }
+                                }}
+                                className="text-gray-600 hover:text-[#234C8C] text-sm whitespace-nowrap"
+                              >
+                                Descargar
                               </button>
                             </div>
                           </div>

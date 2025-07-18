@@ -13,7 +13,10 @@ async function uploadToCloudinary(file, folder = 'productos') {
   formData.append('file', file);
   formData.append('upload_preset', 'my_uploads');
   formData.append('folder', folder);
-  const res = await fetch(process.env.CLOUDINARY_UPLOAD_URL, {
+  
+  const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`;
+  
+  const res = await fetch(cloudinaryUrl, {
     method: 'POST',
     body: formData,
   });
