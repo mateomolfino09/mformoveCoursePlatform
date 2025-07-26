@@ -18,7 +18,10 @@ export enum EmailType {
   WELCOME_MENTORSHIP = 'welcome_mentorship',
   WELCOME_MEMBERSHIP = 'welcome_membership',
   COURSE_COMPLETION = 'course_completion',
-  REMINDER_EMAIL = 'reminder_email'
+  REMINDER_EMAIL = 'reminder_email',
+  EVENT_CONFIRMATION = 'event_confirmation',
+  PRODUCT_CONFIRMATION = 'product_confirmation',
+  ADMIN_NOTIFICATION = 'admin_notification'
 }
 
 // Interfaz para datos de email
@@ -371,6 +374,163 @@ const emailTemplates = {
       </div>
     `;
     return getBaseTemplate(content);
+  },
+
+  [EmailType.EVENT_CONFIRMATION]: (data: EmailData) => {
+    const isOnline = data.isOnline;
+    const content = `
+      <h2 style="color: ${colors.primary.blue}; text-align: center; font-size: 24px; margin-bottom: 20px;">Reserva Confirmada</h2>
+      
+      <p style="font-size: 16px; color: ${colors.text.secondary}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
+        Hola <strong>${data.customerName}</strong>, tu reserva para <strong>${data.eventName}</strong> ha sido confirmada exitosamente.
+      </p>
+
+      <div style="background-color: ${colors.background.tertiary}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 15px 0; font-size: 18px; text-align: center;">Detalles del Evento</h3>
+        <div style="text-align: center;">
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Fecha:</strong> ${data.eventDate}</p>
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Hora:</strong> ${data.eventTime}</p>
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Modalidad:</strong> ${isOnline ? 'Online' : 'Presencial'}</p>
+          ${!isOnline ? `<p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Ubicación:</strong> ${data.eventLocation}</p>` : ''}
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Monto pagado:</strong> ${data.amount}</p>
+        </div>
+      </div>
+
+      ${isOnline ? `
+      <div style="background-color: ${colors.background.tertiary}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 15px 0; font-size: 18px; text-align: center;">Información para Evento Online</h3>
+        <div style="text-align: center;">
+          ${data.eventLink ? `<p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Link de acceso:</strong> <a href="${data.eventLink}" style="color: ${colors.primary.blue}; text-decoration: underline;">Acceder al evento</a></p>` : '<p style="margin: 8px 0; color: ${colors.text.secondary};">El link de acceso se enviará 15 minutos antes del evento</p>'}
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Grabación:</strong> ${data.recordingInfo}</p>
+        </div>
+      </div>
+      ` : `
+      <div style="background-color: ${colors.background.tertiary}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 15px 0; font-size: 18px; text-align: center;">Información para Evento Presencial</h3>
+        <div style="text-align: center;">
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Llegada:</strong> ${data.arrivalInstructions}</p>
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Traer:</strong> ${data.whatToBring}</p>
+        </div>
+      </div>
+      `}
+
+      ${data.beneficios && data.beneficios.length > 0 ? `
+      <div style="background-color: ${colors.background.tertiary}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 15px 0; font-size: 18px; text-align: center;">Tu Reserva Incluye</h3>
+        <ul style="margin: 0; padding-left: 20px; text-align: left;">
+          ${data.beneficios.map((beneficio: string) => `
+            <li style="margin: 8px 0; color: ${colors.text.secondary};">• ${beneficio}</li>
+          `).join('')}
+        </ul>
+      </div>
+      ` : ''}
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${data.eventPageUrl}" style="background-color: ${colors.primary.blue}; color: ${colors.text.inverse}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block; margin: 0 10px;">
+          Ver Detalles del Evento
+        </a>
+      </div>
+
+      <div style="background-color: ${colors.background.tertiary}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 10px 0; font-size: 16px; text-align: center;">¿Necesitas ayuda?</h3>
+        <p style="margin: 5px 0; color: ${colors.text.secondary}; text-align: center;">
+          Si tienes alguna pregunta, no dudes en contactarnos:
+        </p>
+        <p style="margin: 5px 0; color: ${colors.text.secondary}; text-align: center;">
+          <strong>Email:</strong> <a href="mailto:${data.supportEmail}" style="color: ${colors.primary.blue}; text-decoration: underline;">${data.supportEmail}</a>
+        </p>
+      </div>
+
+      <p style="font-size: 14px; color: ${colors.text.tertiary}; text-align: center; margin-top: 20px;">
+        <strong>ID de reserva:</strong> ${data.sessionId}
+      </p>
+    `;
+    return getBaseTemplate(content);
+  },
+
+  [EmailType.PRODUCT_CONFIRMATION]: (data: EmailData) => {
+    const content = `
+      <h2 style="color: ${colors.primary.blue}; text-align: center; font-size: 24px; margin-bottom: 20px;">Compra Confirmada</h2>
+      
+      <p style="font-size: 16px; color: ${colors.text.secondary}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
+        Hola <strong>${data.customerName}</strong>, tu compra de <strong>${data.productName}</strong> ha sido confirmada exitosamente.
+      </p>
+
+      <div style="background-color: ${colors.background.tertiary}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 15px 0; font-size: 18px; text-align: center;">Detalles de la Compra</h3>
+        <div style="text-align: center;">
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Producto:</strong> ${data.productName}</p>
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Descripción:</strong> ${data.productDescription}</p>
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Monto pagado:</strong> ${data.amount}</p>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${data.productPageUrl}" style="background-color: ${colors.primary.blue}; color: ${colors.text.inverse}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block; margin: 0 10px;">
+          Ver Producto
+        </a>
+      </div>
+
+      <div style="background-color: ${colors.background.tertiary}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 10px 0; font-size: 16px; text-align: center;">¿Necesitas ayuda?</h3>
+        <p style="margin: 5px 0; color: ${colors.text.secondary}; text-align: center;">
+          Si tienes alguna pregunta sobre tu compra, no dudes en contactarnos:
+        </p>
+        <p style="margin: 5px 0; color: ${colors.text.secondary}; text-align: center;">
+          <strong>Email:</strong> <a href="mailto:${data.supportEmail}" style="color: ${colors.primary.blue}; text-decoration: underline;">${data.supportEmail}</a>
+        </p>
+      </div>
+
+      <p style="font-size: 14px; color: ${colors.text.tertiary}; text-align: center; margin-top: 20px;">
+        <strong>ID de compra:</strong> ${data.sessionId}
+      </p>
+    `;
+    return getBaseTemplate(content);
+  },
+
+  [EmailType.ADMIN_NOTIFICATION]: (data: EmailData) => {
+    const content = `
+      <h2 style="color: ${colors.primary.blue}; text-align: center; font-size: 24px; margin-bottom: 20px;">Nueva Compra Realizada</h2>
+      
+      <div style="background-color: ${colors.background.tertiary}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 15px 0; font-size: 18px; text-align: center;">Información del Cliente</h3>
+        <div style="text-align: center;">
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Nombre:</strong> ${data.customerName}</p>
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Email:</strong> ${data.customerEmail}</p>
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Teléfono:</strong> ${data.customerPhone}</p>
+        </div>
+      </div>
+
+      <div style="background-color: ${colors.background.tertiary}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 15px 0; font-size: 18px; text-align: center;">Detalles de la Compra</h3>
+        <div style="text-align: center;">
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Producto:</strong> ${data.productName}</p>
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Tipo:</strong> ${data.productType}</p>
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Monto:</strong> ${data.amount}</p>
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Fecha de pago:</strong> ${data.paymentDate}</p>
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>ID de sesión:</strong> ${data.sessionId}</p>
+        </div>
+      </div>
+
+      ${data.productType === 'evento' ? `
+      <div style="background-color: ${colors.background.tertiary}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 15px 0; font-size: 18px; text-align: center;">Información del Evento</h3>
+        <div style="text-align: center;">
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Fecha del evento:</strong> ${data.eventDate}</p>
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Ubicación:</strong> ${data.eventLocation}</p>
+          <p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Modalidad:</strong> ${data.isOnline ? 'Online' : 'Presencial'}</p>
+          ${data.cupo ? `<p style="margin: 8px 0; color: ${colors.text.secondary};"><strong>Cupo:</strong> ${data.cupo} personas</p>` : ''}
+        </div>
+      </div>
+      ` : ''}
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="https://mateomove.com/admin" style="background-color: ${colors.primary.blue}; color: ${colors.text.inverse}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+          Ver en el Panel de Admin
+        </a>
+      </div>
+    `;
+    return getBaseTemplate(content);
   }
 };
 
@@ -413,7 +573,7 @@ export class EmailService {
         },
       });
 
-      console.log(`✅ Email enviado exitosamente: ${config.type} a ${recipients.join(', ')}`);
+  
       
       return {
         success: true,

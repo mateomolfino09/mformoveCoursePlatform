@@ -43,7 +43,7 @@ interface Props {
 
 const AllProducts = ({ products }: Props) => {
 
-  console.log(products);
+  
 
     let [isOpenDelete, setIsOpenDelete] = useState(false);
     const [elementos, setElementos] = useState<ProductDB[]>([]);
@@ -284,11 +284,7 @@ const AllProducts = ({ products }: Props) => {
 
                   {/* Links de pagos */}
                   {(() => {
-                    console.log('Debug - infoProduct:', infoProduct);
-                    console.log('Debug - precios:', infoProduct?.precios);
-                    console.log('Debug - earlyBird:', infoProduct?.precios?.earlyBird);
-                    console.log('Debug - general:', infoProduct?.precios?.general);
-                    console.log('Debug - lastTickets:', infoProduct?.precios?.lastTickets);
+
                     return infoProduct?.precios && (
                       <InfoModalSection title="Links de Pagos">
                         <div className="space-y-3">
@@ -496,6 +492,45 @@ const AllProducts = ({ products }: Props) => {
                             showBorder={false}
                           />
                         )}
+                      </div>
+                    </InfoModalSection>
+                  )}
+
+                  {/* Beneficios del evento */}
+                  {infoProduct?.tipo === 'evento' && infoProduct?.beneficios && infoProduct.beneficios.length > 0 && (
+                    <InfoModalSection title="Beneficios Incluidos">
+                      <div className="space-y-2">
+                        {infoProduct.beneficios.map((beneficio, index) => (
+                          <div key={index} className="flex items-center space-x-3">
+                            <span className="text-gray-700">{beneficio}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </InfoModalSection>
+                  )}
+
+                  {/* Para quién es este evento */}
+                  {infoProduct?.tipo === 'evento' && infoProduct?.paraQuien && infoProduct.paraQuien.length > 0 && (
+                    <InfoModalSection title="¿Para quién es este evento?">
+                      <div className="space-y-2">
+                        {infoProduct.paraQuien.map((item, idx) => (
+                          <div key={idx} className="flex items-center space-x-3">
+                            <span className="text-gray-700">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </InfoModalSection>
+                  )}
+
+                  {/* Aprendizajes del evento */}
+                  {infoProduct?.tipo === 'evento' && infoProduct?.aprendizajes && infoProduct.aprendizajes.length > 0 && (
+                    <InfoModalSection title="¿Qué vas a aprender?">
+                      <div className="space-y-2">
+                        {infoProduct.aprendizajes.map((item, idx) => (
+                          <div key={idx} className="flex items-center space-x-3">
+                            <span className="text-gray-700">{item}</span>
+                          </div>
+                        ))}
                       </div>
                     </InfoModalSection>
                   )}

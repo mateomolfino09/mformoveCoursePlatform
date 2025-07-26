@@ -58,6 +58,7 @@ const CreateProduct = () => {
     currency: string = 'USD',
     price: number,
     portraitImageArray: any,
+    portraitMobileImageArray: any,
     diplomaImageArray: any,
     galleryImageArray: any = [],
     earlyBirdPrice?: number,
@@ -74,10 +75,15 @@ const CreateProduct = () => {
     online?: boolean,
     linkEvento?: string,
     cupo?: number,
+    beneficios?: string[],
+    aprendizajes?: string[],
+    paraQuien?: string[],
     descuentoObj?: any,
     pdfPresentacion?: any
   ) {
     setLoading(true);
+
+
 
     // Validaciones robustas de imágenes
     if (!portraitImageArray || !portraitImageArray[0]) {
@@ -132,6 +138,21 @@ const CreateProduct = () => {
         body: formData
       }).then((r) => r.json());
       const portada = portraitData.public_id;
+
+      // Subir portada móvil (opcional)
+      let portadaMobile = null;
+      if (portraitMobileImageArray && portraitMobileImageArray[0]) {
+        const mobileFormData = new FormData();
+        for (const file of portraitMobileImageArray) {
+          mobileFormData.append('file', file);
+        }
+        mobileFormData.append('upload_preset', 'my_uploads');
+        const mobilePortraitData = await fetch(requests.fetchCloudinary, {
+          method: 'POST',
+          body: mobileFormData
+        }).then((r) => r.json());
+        portadaMobile = mobilePortraitData.public_id;
+      }
 
       // Subir galería de imágenes (imagenes)
       let imagenes = [];
@@ -195,6 +216,7 @@ const CreateProduct = () => {
         precio: price,
         userEmail,
         portada,
+        portadaMobile,
         imagenes,
         precios,
         tipo: productType,
@@ -207,10 +229,15 @@ const CreateProduct = () => {
           online,
           linkEvento,
           cupo,
+          beneficios: beneficios || [],
+          aprendizajes: aprendizajes || [],
+          paraQuien: paraQuien || [],
         }),
         // Descuento
         ...(descuentoObj && { descuento: descuentoObj })
       };
+
+
 
       let response;
       if (productType === 'evento' && pdfPresentacion) {

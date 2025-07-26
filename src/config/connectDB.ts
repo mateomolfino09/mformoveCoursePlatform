@@ -9,7 +9,7 @@ const connectDB = async (): Promise<void> => {
   try {
     // Verificar si ya hay una conexión activa
     if (mongoose.connections[0].readyState) {
-      console.log('MongoDB ya está conectado');
+  
       return;
     }
     
@@ -21,7 +21,7 @@ const connectDB = async (): Promise<void> => {
     // Conectar a MongoDB
     await mongoose.connect(process.env.MONGODB_URI);
     
-    console.log('MongoDB conectado exitosamente');
+
   } catch (error) {
     console.error('Error conectando a MongoDB:', error);
     throw error;

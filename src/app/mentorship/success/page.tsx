@@ -169,8 +169,8 @@ export default function MentorshipSuccessPage() {
           >
             <p className="text-white/60 text-sm">
               ¿Tienes preguntas? Contáctanos en{' '}
-              <a href="mailto:soporte@mformove.com" className="text-blue-400 hover:text-blue-300">
-                soporte@mformove.com
+              <a href="mailto:soporte@mateomove.com" className="text-blue-400 hover:text-blue-300">
+                soporte@mateomove.com
               </a>
             </p>
           </motion.div>

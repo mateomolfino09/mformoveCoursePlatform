@@ -47,6 +47,7 @@ export async function PUT(req) {
         precio,
         moneda,
         portada,
+        portadaMobile,
         imagenes,
         precios,
         fecha,
@@ -54,12 +55,14 @@ export async function PUT(req) {
         online,
         linkEvento,
         cupo,
+        beneficios,
+        aprendizajes,
+        paraQuien,
         archivoUrl,
         tipoArchivo,
         descuento,
         userEmail
       } = data;
-
       // Validar usuario admin
       let user = await Users.findOne({ email: userEmail });
       if (!user || user.rol !== 'Admin') {
@@ -122,19 +125,12 @@ export async function PUT(req) {
           }
         }
       }
-
-      // Actualizar precios en Stripe si es un evento y los precios cambiaron
-      console.log('Debug - existingProduct.precios:', existingProduct.precios);
-      console.log('Debug - precios recibidos:', precios);
-      console.log('Debug - existingProduct.stripeProductId:', existingProduct.stripeProductId);
       
       let preciosConLinks = { ...existingProduct.precios, ...precios };
       if (tipo === 'evento' && precios) {
         // Si el producto ya existe en Stripe, actualizar los precios
         if (existingProduct.stripeProductId) {
-          console.log('Debug - Producto tiene stripeProductId, procesando precios');
         } else {
-          console.log('Debug - Producto NO tiene stripeProductId, conservando precios existentes');
           // Si no tiene stripeProductId pero tiene precios existentes, conservar los links
           for (const tipoPrecio of ['earlyBird', 'general', 'lastTickets']) {
             const nuevoPrecio = precios[tipoPrecio];
@@ -145,7 +141,6 @@ export async function PUT(req) {
                 priceId: precioExistente.priceId,
                 paymentLink: precioExistente.paymentLink,
               };
-              console.log(`Debug - ${tipoPrecio} - Conservando links existentes:`, preciosConLinks[tipoPrecio]);
             }
           }
         }
@@ -154,23 +149,18 @@ export async function PUT(req) {
           for (const tipoPrecio of ['earlyBird', 'general', 'lastTickets']) {
             const nuevoPrecio = precios[tipoPrecio];
             const precioExistente = existingProduct.precios?.[tipoPrecio];
-            if (nuevoPrecio) {
-              console.log(`Debug - ${tipoPrecio} - nuevoPrecio:`, nuevoPrecio);
-              console.log(`Debug - ${tipoPrecio} - precioExistente:`, precioExistente);
-              
+            if (nuevoPrecio) {              
               // Si el precio no cambió, conserva el link y priceId
               if (
                 precioExistente &&
                 Number(nuevoPrecio.price) === Number(precioExistente.price)
               ) {
-                console.log(`Debug - ${tipoPrecio} - Precio no cambió, conservando links`);
                 preciosConLinks[tipoPrecio] = {
                   ...nuevoPrecio,
                   priceId: precioExistente.priceId,
                   paymentLink: precioExistente.paymentLink,
                 };
               } else if (nuevoPrecio.price && nuevoPrecio.start && nuevoPrecio.end) {
-                console.log(`Debug - ${tipoPrecio} - Precio cambió, creando nuevo en Stripe`);
                 // Si el precio cambió, crear uno nuevo en Stripe
                 const stripePrice = await stripe.prices.create({
                   unit_amount: Math.round(nuevoPrecio.price * 100),
@@ -182,7 +172,30 @@ export async function PUT(req) {
                     end: nuevoPrecio.end,
                   },
                 });
-                // Crear link de pago
+                // Crear link de pago con URL de success específica para eventos
+                const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+                
+                let successUrl;
+                if (existingProduct.tipo === 'evento') {
+                  // Crear URL limpia para el nombre del evento
+                  const cleanEventName = existingProduct.nombre
+                    .toLowerCase()
+                    .replace(/[áäâà]/g, 'a')
+                    .replace(/[éëêè]/g, 'e')
+                    .replace(/[íïîì]/g, 'i')
+                    .replace(/[óöôò]/g, 'o')
+                    .replace(/[úüûù]/g, 'u')
+                    .replace(/[ñ]/g, 'n')
+                    .replace(/[^a-z0-9\s-]/g, '') // Remover caracteres especiales
+                    .replace(/\s+/g, '-') // Reemplazar espacios con guiones
+                    .replace(/-+/g, '-') // Remover guiones múltiples
+                    .replace(/^-+|-+$/g, ''); // Remover guiones al inicio y final
+                  
+                  successUrl = `${baseUrl}/events/${cleanEventName}/success`;
+                } else {
+                  successUrl = `${baseUrl}/products/${existingProduct._id}/success-payment`;
+                }
+                
                 const paymentLink = await stripe.paymentLinks.create({
                   line_items: [
                     {
@@ -193,24 +206,24 @@ export async function PUT(req) {
                   after_completion: {
                     type: 'redirect',
                     redirect: {
-                      url: `${process.env.NEXT_PUBLIC_BASE_URL}/products/${existingProduct._id}/success-payment`,
+                      url: successUrl,
                     },
                   },
+                  metadata: {
+                    productId: existingProduct._id.toString()
+                  }
                 });
                 preciosConLinks[tipoPrecio] = {
                   ...nuevoPrecio,
                   priceId: stripePrice.id,
                   paymentLink: paymentLink.url,
                 };
-                console.log(`Debug - ${tipoPrecio} - Nuevo precio creado:`, preciosConLinks[tipoPrecio]);
               }
             }
           }
         }
       }
       
-      console.log('Debug - preciosConLinks final:', preciosConLinks);
-
       // Construir objeto de actualización
       const updateData = {
         nombre,
@@ -220,6 +233,7 @@ export async function PUT(req) {
         moneda,
         imagenes,
         portada,
+        portadaMobile,
         pdfPresentacionUrl: tipo === 'evento' ? (pdfPresentacionUrl || existingProduct.pdfPresentacionUrl) : undefined,
         precios: tipo === 'evento' ? preciosConLinks : undefined,
         fecha: tipo === 'evento' ? fecha : undefined,
@@ -227,6 +241,9 @@ export async function PUT(req) {
         online: tipo === 'evento' ? online : undefined,
         linkEvento: tipo === 'evento' ? linkEvento : undefined,
         cupo: tipo === 'evento' ? cupo : undefined,
+        beneficios: tipo === 'evento' ? (beneficios || []) : undefined,
+        aprendizajes: tipo === 'evento' ? (aprendizajes || []) : undefined,
+        paraQuien: tipo === 'evento' ? (paraQuien || []) : undefined,
         archivoUrl: tipo === 'recurso' ? archivoUrl : undefined,
         tipoArchivo: tipo === 'recurso' ? tipoArchivo : undefined,
         descuento: descuento ? {
@@ -237,8 +254,17 @@ export async function PUT(req) {
         updatedAt: new Date(),
       };
 
-      // Eliminar campos undefined
-      Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+      // Debug: ver el objeto de actualización (solo para eventos)
+      if (tipo === 'evento') {
+    
+      }
+
+      // Eliminar campos undefined (pero mantener arrays vacíos)
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key] === undefined) {
+          delete updateData[key];
+        }
+      });
 
       // Actualizar el producto
       const updatedProduct = await Product.findByIdAndUpdate(

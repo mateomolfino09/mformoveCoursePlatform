@@ -148,8 +148,8 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
             Cada evento es una oportunidad para conectar con tu potencial. 
             Te acompañamos en este viaje con transparencia, dedicación y respeto por tu proceso personal.
           </p>
-          </div>
         </div>
+      </div>
       </div>
       {/* Filtros Premium */}
       <div className="w-full bg-white py-12">
@@ -227,7 +227,7 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
             </div>
           </div>
         )}
-          </div>
+      </div>
         </div>
       {/* Tira Promocional Premium de Mentoría */}
       <div className="bg-black relative overflow-hidden">
@@ -343,7 +343,7 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
                   
                   {/* Badge floating */}
                   <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full">
-                    <span className="text-black font-semibold text-sm font-montserrat">Programa Premium</span>
+                    <span className="text-black font-semibold text-sm font-montserrat">Programa</span>
                   </div>
                 </div>
               </div>
@@ -385,7 +385,7 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
                   className="text-white hover:text-[#234C8C] transition-colors group-hover:translate-x-1 transition-transform"
                 >
                   <ArrowRightIcon className="w-6 h-6" />
-                </button>
+          </button>
               )}
             </div>
           </form>

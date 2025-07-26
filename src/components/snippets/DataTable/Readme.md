@@ -79,11 +79,11 @@ const MyPage = () => {
   ];
 
   const handlePageChange = (page) => {
-    console.log('Página cambiada a:', page);
+    
   };
 
   const handleSort = (key, direction) => {
-    console.log('Ordenando por:', key, 'en orden', direction);
+    
   };
 
   return (

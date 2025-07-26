@@ -166,11 +166,11 @@ const IndexHeader = ({ user, toggleNav, where, showNav, lightTheme = false }: Pr
                   </svg>
                 )}
                 </div>
-            <div className={`block text-sm/6 ${lightTheme ? 'text-gray-600 hover:text-gray-800' : 'text-white/50 hover:text-white'} focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer focus:text-white active:text-white font-normal ${path == routes.navegation.eventos && (lightTheme ? '!text-gray-800' : '!text-white')}`} onClick={() => {
+            <div className={`block text-sm/6 ${lightTheme ? 'text-gray-600 hover:text-gray-800' : 'text-white/50 hover:text-white'} focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer focus:text-white active:text-white font-normal ${path == 'events' ||  path.includes(routes.navegation.eventos) && (lightTheme ? '!text-gray-800' : '!text-white')}`} onClick={() => {
                 router.push(routes.navegation.eventos);
               }}>
                   Eventos
-                {path == routes.navegation.eventos && (
+                {path == 'events' || path.includes(routes.navegation.eventos) && (
                   <svg
                     width="100%"
                     height="3"

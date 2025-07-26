@@ -1,7 +1,7 @@
 import connectDB from '../../../config/connectDB';
 import Product from '../../../models/productModel';
 import { notFound } from 'next/navigation';
-import EventsList from '../../../components/PageComponent/Eventos/EventsList';
+import EventDetailPage from '../../../components/PageComponent/Events/EventDetailPage';
 
 // Conectar a la base de datos una sola vez
 let isConnected = false;
@@ -40,5 +40,5 @@ export default async function EventPage({ params }: Props) {
   // Serializar los datos para eliminar referencias circulares de MongoDB
   const evento = JSON.parse(JSON.stringify(eventoRaw));
 
-  return <EventsList eventos={evento} />;
+  return <EventDetailPage evento={evento} />;
 } 

@@ -28,7 +28,7 @@ export const useMentorshipAnalytics = () => {
     };
 
     // Log to console for development
-    console.log('Mentorship Analytics:', analyticsEvent);
+
 
     // Send to analytics service (Google Analytics, etc.)
     if (typeof window !== 'undefined' && (window as any).gtag) {

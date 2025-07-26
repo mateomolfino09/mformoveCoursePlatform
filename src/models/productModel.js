@@ -16,6 +16,7 @@ const productSchema = new mongoose.Schema({
   moneda: { type: String, default: 'USD' },
   imagenes: [{ type: String }], // URLs de imágenes
   portada: { type: String }, // URL de la imagen de portada
+  portadaMobile: { type: String }, // URL de la imagen de portada para móviles
   precios: { type: Object }, // Objeto con earlyBird, general, lastTickets
   paymentLinks: { type: Object }, // Links de pago para cada precio
   activo: { type: Boolean, default: true },
@@ -28,6 +29,15 @@ const productSchema = new mongoose.Schema({
   linkEvento: { type: String }, // Zoom, Meet, etc.
   cupo: { type: Number },
   pdfPresentacionUrl: { type: String }, // PDF de presentación para eventos
+  beneficios: [{ type: String }], // Lista de beneficios del evento
+  aprendizajes: {
+    type: [String],
+    default: [],
+  },
+  paraQuien: {
+    type: [String],
+    default: [],
+  },
 
   // --- Recursos descargables ---
   archivoUrl: { type: String }, // PDF, video, audio, etc.

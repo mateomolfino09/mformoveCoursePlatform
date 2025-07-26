@@ -16,7 +16,7 @@ interface Props {
 
 const EditProductStep1 = ({ handleSubmit, product }: Props) => {
   // Debug: ver qué datos llegan
-  console.log('Product data received:', product);
+  
 
   // Función helper para formatear fechas
   const formatDateForInput = (dateString: string | Date | undefined) => {
@@ -45,6 +45,8 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
   const [online, setOnline] = useState<boolean>(product.online || false);
   const [linkEvento, setLinkEvento] = useState<string>(product.linkEvento || '');
   const [cupo, setCupo] = useState<number | undefined>(product.cupo);
+  const [beneficios, setBeneficios] = useState<string[]>(product.beneficios || ['Acceso completo al evento', 'Material de apoyo']);
+  const [nuevoBeneficio, setNuevoBeneficio] = useState<string>('');
   const [archivo, setArchivo] = useState<any>(null);
   const [tipoArchivo, setTipoArchivo] = useState<string>(product.tipoArchivo || 'pdf');
   const [vimeoGallery, setVimeoGallery] = useState<string>('');
@@ -79,8 +81,11 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
 
   // Estados para imágenes
   const [portraitImageArray, setPortraitImageArray] = useState<any[]>([]);
+  const [portraitMobileImageArray, setPortraitMobileImageArray] = useState<any[]>([]);
   const [diplomaImageArray, setDiplomaImageArray] = useState<any[]>([]);
   const [galleryImageArray, setGalleryImageArray] = useState<any[]>([]);
+  // Estado para imágenes ya guardadas en la galería
+  const [existingGalleryImages, setExistingGalleryImages] = useState<string[]>(product.imagenes || []);
   
   // Estado para modal de imagen
   const [imageModal, setImageModal] = useState<{
@@ -94,7 +99,7 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
   });
 
   // Debug: ver los valores inicializados
-  console.log('Initialized values:', {
+  
     name, description, price, currency, tipo, fecha,
     earlyBirdPrice, earlyBirdStart, earlyBirdEnd,
     generalPrice, lastTicketsPrice,
@@ -104,6 +109,12 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
   // Dropzone hooks
   const { getRootProps: getRootPropsPortrait, getInputProps: getInputPropsPortrait, isDragActive: isDragActivePortrait } = useDropzone({
     onDrop: (acceptedFiles) => setPortraitImageArray(acceptedFiles),
+    accept: { 'image/*': ['.jpeg', '.jpg', '.png'] },
+    multiple: false
+  });
+
+  const { getRootProps: getRootPropsPortraitMobile, getInputProps: getInputPropsPortraitMobile, isDragActive: isDragActivePortraitMobile } = useDropzone({
+    onDrop: (acceptedFiles) => setPortraitMobileImageArray(acceptedFiles),
     accept: { 'image/*': ['.jpeg', '.jpg', '.png'] },
     multiple: false
   });
@@ -151,9 +162,18 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
   }
 
   const eliminarImagen = (idx: number) => {
-    const newImagenes = [...galleryImageArray];
-    newImagenes.splice(idx, 1);
-    setGalleryImageArray(newImagenes);
+    // Si es una imagen nueva (archivo local)
+    if (idx < galleryImageArray.length) {
+      const newImagenes = [...galleryImageArray];
+      newImagenes.splice(idx, 1);
+      setGalleryImageArray(newImagenes);
+    } else {
+      // Si es una imagen existente (Cloudinary)
+      const realIdx = idx - galleryImageArray.length;
+      const newExisting = [...existingGalleryImages];
+      newExisting.splice(realIdx, 1);
+      setExistingGalleryImages(newExisting);
+    }
   };
 
   const handleUbicacionInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -196,6 +216,41 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
       imageUrl: '',
       title: ''
     });
+  };
+
+  const agregarBeneficio = () => {
+    if (nuevoBeneficio.trim() && !beneficios.includes(nuevoBeneficio.trim())) {
+      setBeneficios([...beneficios, nuevoBeneficio.trim()]);
+      setNuevoBeneficio('');
+    }
+  };
+
+  const eliminarBeneficio = (index: number) => {
+    setBeneficios(beneficios.filter((_, i) => i !== index));
+  };
+
+  const [aprendizajes, setAprendizajes] = useState<string[]>(product.aprendizajes || []);
+  const [nuevoAprendizaje, setNuevoAprendizaje] = useState<string>('');
+  const agregarAprendizaje = () => {
+    if (nuevoAprendizaje.trim() && !aprendizajes.includes(nuevoAprendizaje.trim())) {
+      setAprendizajes([...aprendizajes, nuevoAprendizaje.trim()]);
+      setNuevoAprendizaje('');
+    }
+  };
+  const eliminarAprendizaje = (index: number) => {
+    setAprendizajes(aprendizajes.filter((_, i) => i !== index));
+  };
+
+  const [paraQuien, setParaQuien] = useState<string[]>(product.paraQuien || []);
+  const [nuevoParaQuien, setNuevoParaQuien] = useState<string>('');
+  const agregarParaQuien = () => {
+    if (nuevoParaQuien.trim() && !paraQuien.includes(nuevoParaQuien.trim())) {
+      setParaQuien([...paraQuien, nuevoParaQuien.trim()]);
+      setNuevoParaQuien('');
+    }
+  };
+  const eliminarParaQuien = (index: number) => {
+    setParaQuien(paraQuien.filter((_, i) => i !== index));
   };
 
   const handleSubmitLocal = (e: any) => {
@@ -284,8 +339,9 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
       currency,
       price,
       portraitImageArray,
+      portraitMobileImageArray,
       diplomaImageArray,
-      galleryImageArray,
+      galleryImageArray.length > 0 ? galleryImageArray : existingGalleryImages.filter(Boolean),
       earlyBirdPrice,
       earlyBirdStart,
       earlyBirdEnd,
@@ -300,6 +356,9 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
       online,
       linkEvento,
       cupo,
+      beneficios,
+      aprendizajes.length > 0 ? aprendizajes : (product.aprendizajes || []),
+      paraQuien.length > 0 ? paraQuien : (product.paraQuien || []),
       descuentoObj,
       pdfPresentacion
     );
@@ -401,6 +460,28 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
             </label>
           )}
 
+          {/* Imagen de portada móvil actual */}
+          {product.portadaMobile && (
+            <label className='flex flex-col space-y-3 w-full'>
+              <p className='text-white'>Imagen de portada móvil actual</p>
+              <div className='border rounded p-4 bg-[#333]'>
+                <div 
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => product.portadaMobile && openImageModal(product.portadaMobile, 'Imagen de Portada Móvil')}
+                >
+                  <CldImage
+                    src={product.portadaMobile}
+                    alt="Portada móvil actual"
+                    width={200}
+                    height={150}
+                    className="rounded"
+                  />
+                </div>
+                <p className='text-sm text-gray-400 mt-2'>Click en la imagen para ver en tamaño grande. Para cambiar la imagen, sube una nueva abajo</p>
+              </div>
+            </label>
+          )}
+
           {/* Campos dinámicos según tipo */}
           {tipo === 'bundle' && (
             <label className='flex flex-col space-y-3 w-full'>
@@ -435,6 +516,31 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
                       <img
                         src={portraitImageArray[0].preview || URL.createObjectURL(portraitImageArray[0])}
                         alt='Portada'
+                        className='w-32 h-32 object-cover mt-2 rounded'
+                      />
+                    </div>
+                  )}
+                </div>
+              </label>
+
+              {/* Imagen de portada móvil para evento como dropzone */}
+              <label className='flex flex-col space-y-3 w-full'>
+                <p className='text-white'>Nueva imagen de portada móvil (opcional)</p>
+                <div
+                  {...getRootPropsPortraitMobile()}
+                  className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${isDragActivePortraitMobile ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-white hover:border-blue-500'}`}
+                >
+                  <input {...getInputPropsPortraitMobile()} />
+                  <span className='text-gray-500 mb-2'>Arrastra la imagen aquí o haz click para seleccionar</span>
+                  <span className='text-xs text-gray-400'>Formatos permitidos: JPG, PNG. Solo una imagen. Recomendado: 9:16 ratio.</span>
+                  {portraitMobileImageArray[0] && (
+                    <div 
+                      className="cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => openImageModal(portraitMobileImageArray[0].preview || URL.createObjectURL(portraitMobileImageArray[0]), 'Nueva Imagen de Portada Móvil')}
+                    >
+                      <img
+                        src={portraitMobileImageArray[0].preview || URL.createObjectURL(portraitMobileImageArray[0])}
+                        alt='Portada Móvil'
                         className='w-32 h-32 object-cover mt-2 rounded'
                       />
                     </div>
@@ -495,6 +601,161 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
                 </div>
               </label>
 
+              {/* Beneficios del evento */}
+              <label>
+                <p className='text-white'>Beneficios incluidos</p>
+                <div className='space-y-3'>
+                  {/* Lista de beneficios actuales */}
+                  <div className='space-y-2'>
+                    {beneficios.map((beneficio, index) => (
+                      <div key={index} className='flex items-center space-x-2'>
+                        <div className='w-2 h-2 bg-white rounded-full'></div>
+                        <span className='flex-1 text-white'>{beneficio}</span>
+                        <button
+                          type='button'
+                          onClick={() => eliminarBeneficio(index)}
+                          className='text-red-400 hover:text-red-300 text-sm'
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Agregar nuevo beneficio */}
+                  <div className='flex space-x-2'>
+                    <input
+                      type='text'
+                      value={nuevoBeneficio}
+                      onChange={(e) => setNuevoBeneficio(e.target.value)}
+                      placeholder='Agregar nuevo beneficio...'
+                      className='input text-white flex-1'
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), agregarBeneficio())}
+                    />
+                    <button
+                      type='button'
+                      onClick={agregarBeneficio}
+                      className='px-4 py-2 bg-white text-black rounded hover:bg-gray-100 transition-colors'
+                    >
+                      Agregar
+                    </button>
+                  </div>
+                </div>
+              </label>
+              {/* Aprendizajes del evento */}
+              <label>
+                <p className='text-white'>¿Qué vas a aprender? (uno por línea)</p>
+                <div className='space-y-3'>
+                  {/* Lista de aprendizajes actuales */}
+                  <div className='space-y-2'>
+                    {aprendizajes.map((apr, index) => (
+                      <div key={index} className='flex items-center space-x-2'>
+                        <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
+                        <span className='flex-1 text-white'>{apr}</span>
+                        <button
+                          type='button'
+                          onClick={() => eliminarAprendizaje(index)}
+                          className='text-red-400 hover:text-red-300 text-sm'
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Agregar nuevo aprendizaje */}
+                  <div className='flex space-x-2'>
+                    <input
+                      type='text'
+                      value={nuevoAprendizaje}
+                      onChange={(e) => setNuevoAprendizaje(e.target.value)}
+                      placeholder='Agregar nuevo aprendizaje...'
+                      className='input text-white flex-1'
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), agregarAprendizaje())}
+                    />
+                    <button
+                      type='button'
+                      onClick={agregarAprendizaje}
+                      className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
+                    >
+                      Agregar
+                    </button>
+                  </div>
+                </div>
+              </label>
+
+              {/* Para quién es este evento */}
+              <label>
+                <p className='text-white'>¿Para quién es este evento? (uno por línea)</p>
+                <div className='space-y-3'>
+                  {/* Lista de paraQuien actuales */}
+                  <div className='space-y-2'>
+                    {paraQuien.map((pq, index) => (
+                      <div key={index} className='flex items-center space-x-2'>
+                        <div className='w-2 h-2 bg-[#234C8C] rounded-full'></div>
+                        <span className='flex-1 text-white'>{pq}</span>
+                        <button
+                          type='button'
+                          onClick={() => eliminarParaQuien(index)}
+                          className='text-red-400 hover:text-red-300 text-sm'
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Agregar nuevo paraQuien */}
+                  <div className='flex space-x-2'>
+                    <input
+                      type='text'
+                      value={nuevoParaQuien}
+                      onChange={(e) => setNuevoParaQuien(e.target.value)}
+                      placeholder='Agregar nuevo destinatario...'
+                      className='input text-white flex-1'
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), agregarParaQuien())}
+                    />
+                    <button
+                      type='button'
+                      onClick={agregarParaQuien}
+                      className='px-4 py-2 bg-[#234C8C] text-white rounded hover:bg-blue-600 transition-colors'
+                    >
+                      Agregar
+                    </button>
+                  </div>
+                </div>
+              </label>
+
+              {/* Galería de imágenes actuales */}
+              {existingGalleryImages && existingGalleryImages.length > 0 && (
+                <label className='flex flex-col space-y-3 w-full'>
+                  <p className='text-white'>Imágenes de galería actuales</p>
+                  <div className='flex flex-wrap gap-2 border rounded p-4 bg-[#333]'>
+                    {existingGalleryImages.map((img, idx) => (
+                      <div key={"galeria-"+idx} className='relative w-20 h-20'>
+                        <CldImage
+                          src={img}
+                          alt={`Imagen galería ${idx+1}`}
+                          width={80}
+                          height={80}
+                          className='object-cover w-full h-full rounded cursor-pointer hover:opacity-80 transition-opacity'
+                          onClick={() => openImageModal(img, `Imagen galería ${idx+1}`)}
+                        />
+                        <button
+                          type='button'
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExistingGalleryImages(prev => prev.filter((_, i) => i !== idx));
+                          }}
+                          className='absolute top-0 right-0 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600'
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <p className='text-sm text-gray-400 mt-2'>Las imágenes aquí se mantendrán salvo que las elimines o subas nuevas.</p>
+                </label>
+              )}
+
               {/* Galería de imágenes (opcional) */}
               <label>
                 <p className='text-white'>Galería de imágenes (opcional)</p>
@@ -506,19 +767,41 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
                   <span className='text-gray-500 mb-2'>Arrastra imágenes aquí o haz click para seleccionar</span>
                   <span className='text-xs text-gray-400'>Formatos permitidos: JPG, PNG, etc. Puedes subir varias.</span>
                   <div className='flex flex-wrap gap-2 mt-2'>
+                    {/* Imágenes nuevas (archivos locales) */}
                     {galleryImageArray.map((img, idx) => (
-                      <div key={idx} className='relative w-20 h-20'>
+                      <div key={"new-"+idx} className='relative w-20 h-20'>
                         <img 
                           src={img.preview || URL.createObjectURL(img)} 
-                          alt={`img-${idx}`} 
+                          alt={`img-nuevo-${idx}`} 
                           className='object-cover w-full h-full rounded cursor-pointer hover:opacity-80 transition-opacity'
-                          onClick={() => openImageModal(img.preview || URL.createObjectURL(img), `Imagen ${idx + 1}`)}
+                          onClick={() => openImageModal(img.preview || URL.createObjectURL(img), `Imagen nueva ${idx + 1}`)}
                         />
                         <button 
                           type='button' 
                           onClick={(e) => {
                             e.stopPropagation();
                             eliminarImagen(idx);
+                          }} 
+                          className='absolute top-0 right-0 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600'
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    {/* Imágenes existentes (Cloudinary) */}
+                    {existingGalleryImages.map((img, idx) => (
+                      <div key={"existente-"+idx} className='relative w-20 h-20'>
+                        <img 
+                          src={img} 
+                          alt={`img-existente-${idx}`} 
+                          className='object-cover w-full h-full rounded cursor-pointer hover:opacity-80 transition-opacity'
+                          onClick={() => openImageModal(img, `Imagen existente ${idx + 1}`)}
+                        />
+                        <button 
+                          type='button' 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            eliminarImagen(galleryImageArray.length + idx);
                           }} 
                           className='absolute top-0 right-0 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600'
                         >

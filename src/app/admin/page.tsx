@@ -67,6 +67,12 @@ const Index = () => {
                 <p>Facturación</p>
               </div>
             </Link>
+            <Link href={'/admin/mentorship'}>
+              <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
+                <AcademicCapIcon className='w-24' />
+                <p>Mentoría</p>
+              </div>
+            </Link>
           </div>
           <div className='grid lg:grid-cols-3 gap-5 mb-16'>
             <Link href={'/admin/emailmarketing'}>
@@ -87,12 +93,7 @@ const Index = () => {
                 <p>Memberships</p>
               </div>
             </Link>
-            <Link href={'/admin/mentorship'}>
-              <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
-                <AcademicCapIcon className='w-24' />
-                <p>Mentoría</p>
-              </div>
-            </Link>
+
             {/* <Link href={'#'}>
               <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
               </div>

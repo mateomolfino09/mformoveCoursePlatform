@@ -312,7 +312,7 @@ import { Badge } from '@/components/ui';
 // Interactivos
 <Badge 
   variant="primary" 
-  onClick={() => console.log('clicked')}
+  onClick={() => {}}
 >
   Clickable
 </Badge>
@@ -327,7 +327,7 @@ import { Badge } from '@/components/ui';
 <Badge 
   variant="warning" 
   removable
-  onRemove={() => console.log('removed')}
+  onRemove={() => {}}
 >
   Removible
 </Badge>

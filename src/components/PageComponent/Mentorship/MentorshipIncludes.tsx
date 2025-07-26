@@ -36,14 +36,14 @@ const benefits = [
 ];
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, scale: 0.98 },
   visible: (i: number) => ({
     opacity: 1,
-    y: 0,
+    scale: 1,
     transition: {
-      duration: 0.7,
-      delay: i * 0.15,
-      ease: 'easeOut',
+      duration: 0.9,
+      delay: i * 0.12,
+      ease: [0.4, 0, 0.2, 1],
     },
   }),
 };
@@ -59,12 +59,13 @@ const MentorshipIncludes = () => {
           {benefits.map((b, idx) => (
             <motion.div
               key={idx}
-              className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center border border-gray-100 hover:border-[#234C8C]/20 relative overflow-hidden"
+              className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform flex flex-col items-center text-center border border-gray-100 hover:border-[#234C8C]/20 relative overflow-hidden"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
               variants={cardVariants}
               custom={idx}
+              whileHover={{ scale: 1.025, transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] } }}
             >
               {/* Background gradient on hover */}
               <div className="absolute inset-0 bg-gradient-to-br from-[#234C8C]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

@@ -275,7 +275,7 @@ export default function UIShowcase() {
                 <Badge 
                   variant="warning" 
                   removable
-                  onRemove={() => console.log('Badge removido')}
+                  onRemove={() => {}}
                 >
                   Removible
                 </Badge>

@@ -60,7 +60,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
             to: [{ email: solicitud.email, type: "to" }],
           },
         });
-        console.log(`Email de aprobación enviado a: ${solicitud.email}`);
+    
       } catch (emailError) {
         console.error('Error al enviar email de aprobación:', emailError);
         // No fallamos la actualización si el email falla

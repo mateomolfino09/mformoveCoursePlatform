@@ -47,7 +47,7 @@ function analyzeImages(dirPath) {
 }
 
 // Analizar imágenes en public/
-console.log('🔍 Analizando imágenes del proyecto...\n');
+
 
 const startTime = Date.now();
 const allImages = analyzeImages('./public');
@@ -56,13 +56,10 @@ const endTime = Date.now();
 // Ordenar por tamaño (más grandes primero)
 allImages.sort((a, b) => b.size - a.size);
 
-console.log(`📊 Total de imágenes encontradas: ${allImages.length}`);
-console.log(`⏱️  Tiempo de análisis: ${endTime - startTime}ms\n`);
+
 
 // Mostrar las 20 imágenes más grandes
-console.log('🏆 TOP 20 IMÁGENES MÁS PESADAS:\n');
-console.log('Tamaño\t\tExtensión\tRuta');
-console.log('─'.repeat(80));
+
 
 allImages.slice(0, 20).forEach((image, index) => {
   const size = image.sizeFormatted.padEnd(12);

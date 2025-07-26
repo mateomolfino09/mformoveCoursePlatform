@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     
     // Log the analytics event
-    console.log('Mentorship Analytics Event:', body);
+  
     
     // Here you can:
     // 1. Save to database

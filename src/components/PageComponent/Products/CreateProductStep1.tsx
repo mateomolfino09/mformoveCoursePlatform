@@ -44,13 +44,18 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   const [courseType, setCourseType] = useState<string>('');
   const [diplomaUrl, setDiplomaUrl] = useState<string>('');
   const [tipo, setTipo] = useState<string>('curso');
-  const [imagenes, setImagenes] = useState<any[]>([]);
+  const [galleryImageArray, setGalleryImageArray] = useState<any[]>([]);
+  
+  // Log del estado inicial
+  
   const [cursosIncluidos, setCursosIncluidos] = useState<string>(''); // IDs separados por coma
   const [fecha, setFecha] = useState<string>('');
   const [ubicacion, setUbicacion] = useState<string>('');
   const [online, setOnline] = useState<boolean>(false);
   const [linkEvento, setLinkEvento] = useState<string>('');
   const [cupo, setCupo] = useState<number | undefined>(undefined);
+  const [beneficios, setBeneficios] = useState<string[]>(['Acceso completo al evento', 'Material de apoyo']);
+  const [nuevoBeneficio, setNuevoBeneficio] = useState<string>('');
   const [archivo, setArchivo] = useState<any>(null);
   const [tipoArchivo, setTipoArchivo] = useState<string>('pdf');
   const [vimeoGallery, setVimeoGallery] = useState<string>('');
@@ -87,6 +92,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   // Estados para imágenes
   const [files, setFiles] = useState<any>([]);
   const [portraitImageArray, setPortraitImage] = useState<any>([]);
+  const [portraitMobileImageArray, setPortraitMobileImage] = useState<any>([]);
   const [diplomaImageArray, setDiplomaImage] = useState<any>([]);
   const [ubicacionSugerencias, setUbicacionSugerencias] = useState<any[]>([]);
 
@@ -134,7 +140,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   };
 
   const handleImagenesChange = (e: any) => {
-    setImagenes(Array.from(e.target.files));
+    setGalleryImageArray(Array.from(e.target.files));
   };
   const handleArchivoChange = (e: any) => {
     setArchivo(e.target.files[0]);
@@ -211,7 +217,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       }
     }
 
-    console.log(portraitImageArray, diplomaImageArray);
+
     // Validación de descuento
     let descuentoObj = undefined;
     if (codigoDescuento) {
@@ -238,6 +244,8 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       ciudad: ubicacionCiudad,
       pais: ubicacionPais
     };
+
+    
     handleSubmit(
       name,
       description,
@@ -246,8 +254,9 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       'USD',        // currency
       price,
       portraitImageArray,
+      portraitMobileImageArray,
       diplomaImageArray,
-      imagenes, // galería de imágenes
+      galleryImageArray, // <-- PASAR galleryImageArray
       tipo === 'evento' ? earlyBirdPrice : undefined,
       tipo === 'evento' ? earlyBirdStartValue : undefined,
       tipo === 'evento' ? earlyBirdEnd : undefined,
@@ -263,6 +272,9 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       tipo === 'evento' ? online : undefined,
       tipo === 'evento' ? linkEvento : undefined,
       tipo === 'evento' ? cupo : undefined,
+      tipo === 'evento' ? beneficios : undefined,
+      tipo === 'evento' ? aprendizajes : undefined,
+      tipo === 'evento' ? paraQuien : undefined,
       // Descuento
       descuentoObj,
       // PDF de presentación
@@ -270,8 +282,8 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     );
   };
 
-  function handleOnChangePortraitPicture(changeEvent: any) {
-    setPortraitImage([changeEvent.target.files[0]]);
+  function handleOnChangePortraitMobilePicture(changeEvent: any) {
+    setPortraitMobileImage([changeEvent.target.files[0]]);
   }
 
   function handleOnChangeDiplomaPicture(changeEvent: any) {
@@ -279,12 +291,18 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   }
 
   const onDropImagenes = (acceptedFiles: any[]) => {
-    setImagenes((prev) => [
-      ...prev,
-      ...acceptedFiles.map((file) =>
-        Object.assign(file, { preview: URL.createObjectURL(file) })
-      ),
-    ]);
+
+    
+    setGalleryImageArray((prev: any[]) => {
+      const newArray = [
+        ...prev,
+        ...acceptedFiles.map((file) =>
+          Object.assign(file, { preview: URL.createObjectURL(file) })
+        ),
+      ];
+      
+      return newArray;
+    });
   };
   const {
     getRootProps: getRootPropsImagenes,
@@ -295,13 +313,20 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     accept: { 'image/*': [] },
     multiple: true,
   });
+
+  const { getRootProps: getRootPropsPortrait, getInputProps: getInputPropsPortrait, isDragActive: isDragActivePortrait } = useDropzone({
+    onDrop: (acceptedFiles) => setPortraitImage(acceptedFiles),
+    accept: { 'image/*': ['.jpeg', '.jpg', '.png'] },
+    multiple: false
+  });
+
   const {
-    getRootProps: getRootPropsPortrait,
-    getInputProps: getInputPropsPortrait,
-    isDragActive: isDragActivePortrait,
+    getRootProps: getRootPropsPortraitMobile,
+    getInputProps: getInputPropsPortraitMobile,
+    isDragActive: isDragActivePortraitMobile,
   } = useDropzone({
     onDrop: (acceptedFiles: any) => {
-      setPortraitImage(
+      setPortraitMobileImage(
         acceptedFiles.map((file: any) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file)
@@ -359,7 +384,12 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
 
   // Eliminar imagen del arreglo
   const eliminarImagen = (idx: number) => {
-    setImagenes((prev) => prev.filter((_, i) => i !== idx));
+
+    setGalleryImageArray((prev: any[]) => {
+      const newArray = prev.filter((_: any, i: number) => i !== idx);
+      
+      return newArray;
+    });
   };
 
   const portraitImageShow = portraitImageArray?.map((file: any) => (
@@ -403,6 +433,41 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     setUbicacionCiudad(sug.address?.city || sug.address?.town || sug.address?.village || '');
     setUbicacionPais(sug.address?.country || '');
     setUbicacionSugerencias([]);
+  };
+
+  const agregarBeneficio = () => {
+    if (nuevoBeneficio.trim() && !beneficios.includes(nuevoBeneficio.trim())) {
+      setBeneficios([...beneficios, nuevoBeneficio.trim()]);
+      setNuevoBeneficio('');
+    }
+  };
+
+  const eliminarBeneficio = (index: number) => {
+    setBeneficios(beneficios.filter((_, i) => i !== index));
+  };
+
+  const [aprendizajes, setAprendizajes] = useState<string[]>([]);
+  const [nuevoAprendizaje, setNuevoAprendizaje] = useState<string>('');
+  const agregarAprendizaje = () => {
+    if (nuevoAprendizaje.trim() && !aprendizajes.includes(nuevoAprendizaje.trim())) {
+      setAprendizajes([...aprendizajes, nuevoAprendizaje.trim()]);
+      setNuevoAprendizaje('');
+    }
+  };
+  const eliminarAprendizaje = (index: number) => {
+    setAprendizajes(aprendizajes.filter((_, i) => i !== index));
+  };
+
+  const [paraQuien, setParaQuien] = useState<string[]>([]);
+  const [nuevoParaQuien, setNuevoParaQuien] = useState<string>('');
+  const agregarParaQuien = () => {
+    if (nuevoParaQuien.trim() && !paraQuien.includes(nuevoParaQuien.trim())) {
+      setParaQuien([...paraQuien, nuevoParaQuien.trim()]);
+      setNuevoParaQuien('');
+    }
+  };
+  const eliminarParaQuien = (index: number) => {
+    setParaQuien(paraQuien.filter((_, i) => i !== index));
   };
 
   return (
@@ -491,6 +556,25 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                     )}
                   </div>
                 </label>
+                {/* Imagen de portada móvil para evento como dropzone */}
+                <label className='flex flex-col space-y-3 w-full'>
+                  <p>Imagen de portada móvil (opcional)</p>
+                  <div
+                    {...getRootPropsPortraitMobile()}
+                    className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${isDragActivePortraitMobile ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-white hover:border-blue-500'}`}
+                  >
+                    <input {...getInputPropsPortraitMobile()} />
+                    <span className='text-gray-500 mb-2'>Arrastra la imagen aquí o haz click para seleccionar</span>
+                    <span className='text-xs text-gray-400'>Formatos permitidos: JPG, PNG. Solo una imagen. Recomendado: 9:16 ratio.</span>
+                    {portraitMobileImageArray[0] && (
+                      <img
+                        src={portraitMobileImageArray[0].preview || URL.createObjectURL(portraitMobileImageArray[0])}
+                        alt='Portada Móvil'
+                        className='w-32 h-32 object-cover mt-2 rounded'
+                      />
+                    )}
+                  </div>
+                </label>
                 {/* PDF de presentación (opcional) */}
                 <label>
                   <p>PDF de presentación (opcional)</p>
@@ -508,23 +592,125 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                     )}
                   </div>
                 </label>
-                {/* Galería de imágenes (opcional) */}
+
+                {/* Beneficios del evento */}
                 <label>
-                  <p>Galería de imágenes (opcional)</p>
-                  <div
-                    {...getRootPropsImagenes()}
-                    className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${isDragActiveImagenes ? 'border-black bg-gray-100' : 'border-gray-300 bg-white hover:border-black'}`}
-                  >
-                    <input {...getInputPropsImagenes()} />
-                    <span className='text-gray-500 mb-2'>Arrastra imágenes aquí o haz click para seleccionar</span>
-                    <span className='text-xs text-gray-400'>Formatos permitidos: JPG, PNG, etc. Puedes subir varias.</span>
-                    <div className='flex flex-wrap gap-2 mt-2'>
-                      {imagenes.map((img, idx) => (
-                        <div key={idx} className='relative w-20 h-20'>
-                          <img src={img.preview || URL.createObjectURL(img)} alt={`img-${idx}`} className='object-cover w-full h-full rounded' />
-                          <button type='button' onClick={() => eliminarImagen(idx)} className='absolute top-0 right-0 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs'>×</button>
+                  <p>Beneficios incluidos</p>
+                  <div className='space-y-3'>
+                    {/* Lista de beneficios actuales */}
+                    <div className='space-y-2'>
+                      {beneficios.map((beneficio, index) => (
+                        <div key={index} className='flex items-center space-x-2'>
+                          <div className='w-2 h-2 bg-green-500 rounded-full'></div>
+                          <span className='flex-1'>{beneficio}</span>
+                          <button
+                            type='button'
+                            onClick={() => eliminarBeneficio(index)}
+                            className='text-red-500 hover:text-red-700 text-sm'
+                          >
+                            Eliminar
+                          </button>
                         </div>
                       ))}
+                    </div>
+                    
+                    {/* Agregar nuevo beneficio */}
+                    <div className='flex space-x-2'>
+                      <input
+                        type='text'
+                        value={nuevoBeneficio}
+                        onChange={(e) => setNuevoBeneficio(e.target.value)}
+                        placeholder='Agregar nuevo beneficio...'
+                        className='input flex-1'
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), agregarBeneficio())}
+                      />
+                      <button
+                        type='button'
+                        onClick={agregarBeneficio}
+                        className='px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors'
+                      >
+                        Agregar
+                      </button>
+                    </div>
+                  </div>
+                </label>
+                {/* Aprendizajes del evento */}
+                <label>
+                  <p>¿Qué vas a aprender? (uno por línea)</p>
+                  <div className='space-y-3'>
+                    {/* Lista de aprendizajes actuales */}
+                    <div className='space-y-2'>
+                      {aprendizajes.map((apr, index) => (
+                        <div key={index} className='flex items-center space-x-2'>
+                          <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
+                          <span className='flex-1'>{apr}</span>
+                          <button
+                            type='button'
+                            onClick={() => eliminarAprendizaje(index)}
+                            className='text-red-500 hover:text-red-700 text-sm'
+                          >
+                            Eliminar
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Agregar nuevo aprendizaje */}
+                    <div className='flex space-x-2'>
+                      <input
+                        type='text'
+                        value={nuevoAprendizaje}
+                        onChange={(e) => setNuevoAprendizaje(e.target.value)}
+                        placeholder='Agregar nuevo aprendizaje...'
+                        className='input flex-1'
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), agregarAprendizaje())}
+                      />
+                      <button
+                        type='button'
+                        onClick={agregarAprendizaje}
+                        className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
+                      >
+                        Agregar
+                      </button>
+                    </div>
+                  </div>
+                </label>
+                {/* Para quién es este evento */}
+                <label>
+                  <p>¿Para quién es este evento? (uno por línea)</p>
+                  <div className='space-y-3'>
+                    {/* Lista de paraQuien actuales */}
+                    <div className='space-y-2'>
+                      {paraQuien.map((pq, index) => (
+                        <div key={index} className='flex items-center space-x-2'>
+                          <div className='w-2 h-2 bg-[#234C8C] rounded-full'></div>
+                          <span className='flex-1'>{pq}</span>
+                          <button
+                            type='button'
+                            onClick={() => eliminarParaQuien(index)}
+                            className='text-red-500 hover:text-red-700 text-sm'
+                          >
+                            Eliminar
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Agregar nuevo paraQuien */}
+                    <div className='flex space-x-2'>
+                      <input
+                        type='text'
+                        value={nuevoParaQuien}
+                        onChange={(e) => setNuevoParaQuien(e.target.value)}
+                        placeholder='Agregar nuevo destinatario...'
+                        className='input flex-1'
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), agregarParaQuien())}
+                      />
+                      <button
+                        type='button'
+                        onClick={agregarParaQuien}
+                        className='px-4 py-2 bg-[#234C8C] text-white rounded hover:bg-blue-600 transition-colors'
+                      >
+                        Agregar
+                      </button>
                     </div>
                   </div>
                 </label>
@@ -735,6 +921,27 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                 />
               </label>
             </div>
+            {/* Galería de imágenes (opcional) - Disponible para todos los tipos de productos */}
+            <label>
+              <p>Galería de imágenes (opcional)</p>
+              <div
+                {...getRootPropsImagenes()}
+                className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${isDragActiveImagenes ? 'border-black bg-gray-100' : 'border-gray-300 bg-white hover:border-black'}`}
+                onClick={() => {}}
+              >
+                <input {...getInputPropsImagenes()} />
+                <span className='text-gray-500 mb-2'>Arrastra imágenes aquí o haz click para seleccionar</span>
+                <span className='text-xs text-gray-400'>Formatos permitidos: JPG, PNG, etc. Puedes subir varias.</span>
+                <div className='flex flex-wrap gap-2 mt-2'>
+                  {galleryImageArray.map((img: any, idx: number) => (
+                    <div key={idx} className='relative w-20 h-20'>
+                      <img src={img.preview || URL.createObjectURL(img)} alt={`img-${idx}`} className='object-cover w-full h-full rounded' />
+                      <button type='button' onClick={() => eliminarImagen(idx)} className='absolute top-0 right-0 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs'>×</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </label>
             {/* Imagen de diploma solo si NO es evento */}
             {tipo !== 'evento' && (
               <label className='flex flex-col space-y-3 w-full'>

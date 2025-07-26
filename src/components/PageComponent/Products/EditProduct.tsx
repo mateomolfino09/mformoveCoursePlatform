@@ -43,6 +43,7 @@ const EditProduct = ({ product }: Props) => {
     currency: string = 'USD',
     price: number,
     portraitImageArray: any,
+    portraitMobileImageArray: any,
     diplomaImageArray: any,
     galleryImageArray: any = [],
     earlyBirdPrice?: number,
@@ -59,6 +60,9 @@ const EditProduct = ({ product }: Props) => {
     online?: boolean,
     linkEvento?: string,
     cupo?: number,
+    beneficios?: string[],
+    aprendizajes?: string[],
+    paraQuien?: string[],
     descuentoObj?: any,
     pdfPresentacion?: any
   ) {
@@ -73,7 +77,9 @@ const EditProduct = ({ product }: Props) => {
 
       // Subir nuevas imágenes si se proporcionaron
       let portada = product.portada; // Mantener la imagen actual por defecto
+      let portadaMobile = product.portadaMobile; // Mantener la imagen móvil actual por defecto
       let imagenes = product.imagenes || []; // Mantener las imágenes actuales por defecto
+  
       let diplomaUrl = (product as any).diplomaUrl || ''; // Mantener el diploma actual por defecto
 
       // Subir nueva portada si se proporcionó
@@ -90,20 +96,36 @@ const EditProduct = ({ product }: Props) => {
         portada = portraitData.public_id;
       }
 
+      // Subir nueva portada móvil si se proporcionó
+      if (portraitMobileImageArray && portraitMobileImageArray[0]) {
+        const mobileFormData = new FormData();
+        for (const file of portraitMobileImageArray) {
+          mobileFormData.append('file', file);
+        }
+        mobileFormData.append('upload_preset', 'my_uploads');
+        const mobilePortraitData = await fetch(requests.fetchCloudinary, {
+          method: 'POST',
+          body: mobileFormData
+        }).then((r) => r.json());
+        portadaMobile = mobilePortraitData.public_id;
+      }
+
       // Subir nueva galería si se proporcionó
-      if (Array.isArray(galleryImageArray) && galleryImageArray.length > 0) {
+      if (Array.isArray(galleryImageArray) && galleryImageArray.length > 0 && galleryImageArray) {
         const newImagenes = [];
         for (const file of galleryImageArray) {
-          const galeriaFormData = new FormData();
-          galeriaFormData.append('file', file);
-          galeriaFormData.append('upload_preset', 'my_uploads');
-          const galeriaData = await fetch(requests.fetchCloudinary, {
-            method: 'POST',
-            body: galeriaFormData
-          }).then((r) => r.json());
-          newImagenes.push(galeriaData.public_id);
+          if(!imagenes.includes(file)) {
+            const galeriaFormData = new FormData();
+            galeriaFormData.append('file', file);
+            galeriaFormData.append('upload_preset', 'my_uploads');
+            const galeriaData = await fetch(requests.fetchCloudinary, {
+              method: 'POST',
+              body: galeriaFormData
+            }).then((r) => r.json());
+            newImagenes.push(galeriaData.public_id);
+          }
         }
-        imagenes = newImagenes;
+        imagenes = [...imagenes, ...newImagenes];
       }
 
       // Subir nuevo diploma si se proporcionó
@@ -153,6 +175,7 @@ const EditProduct = ({ product }: Props) => {
         precio: price,
         userEmail,
         portada,
+        portadaMobile,
         imagenes,
         precios,
         tipo: productType,
@@ -165,10 +188,18 @@ const EditProduct = ({ product }: Props) => {
           online,
           linkEvento,
           cupo,
+          beneficios: beneficios || [],
+          aprendizajes: aprendizajes || [],
+          paraQuien: paraQuien || [],
         }),
         // Descuento
         ...(descuentoObj && { descuento: descuentoObj })
       };
+
+      // Debug: ver qué datos se envían (solo para eventos)
+      if (productType === 'evento') {
+        
+      }
 
       let response;
       if (productType === 'evento' && pdfPresentacion) {

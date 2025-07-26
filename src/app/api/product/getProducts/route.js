@@ -12,7 +12,7 @@ export async function GET() {
   try {
     const products = await Product.find({});
 
-    console.log('PRODUCTOS ENCONTRADOS:', products);
+
 
     revalidateTag('products');
 

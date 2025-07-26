@@ -1,6 +1,9 @@
 import connectDB from '../../../../../config/connectDB';
 import MentorshipPlan from '../../../../../models/mentorshipPlanModel';
 import { NextResponse } from 'next/server';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 connectDB();
 
@@ -36,18 +39,77 @@ export async function PUT(req) {
 
     // Actualizar el precio en el array de precios
     if (priceTrimestral !== undefined) {
-      const priceIndex = existingPlan.prices.findIndex(p => p.interval === 'trimestral');
-      if (priceIndex !== -1) {
-        existingPlan.prices[priceIndex].price = priceTrimestral;
-        existingPlan.prices[priceIndex].currency = currency || 'USD';
+      const trimestralIndex = existingPlan.prices.findIndex(p => p.interval === 'trimestral');
+      const anualIndex = existingPlan.prices.findIndex(p => p.interval === 'anual');
+      const oldTrimestralPrice = trimestralIndex !== -1 ? existingPlan.prices[trimestralIndex].price : null;
+      
+      // Si el precio trimestral cambió, crear nuevos precios en Stripe
+      if (oldTrimestralPrice !== priceTrimestral) {
+        try {
+          // Crear nuevo precio trimestral en Stripe
+          const newTrimestralStripePrice = await stripe.prices.create({
+            unit_amount: Math.round(priceTrimestral * 100),
+            currency: (currency || 'USD').toLowerCase(),
+            recurring: { interval: 'month', interval_count: 3 }, // Trimestral
+            product_data: { name: `${name} (Trimestral)` },
+          });
+
+          // Calcular precio anual con 15% de descuento (como en createPlan)
+          const priceAnual = Math.round(priceTrimestral * 4 * 0.85);
+          
+          // Crear nuevo precio anual en Stripe
+          const newAnualStripePrice = await stripe.prices.create({
+            unit_amount: Math.round(priceAnual * 100),
+            currency: (currency || 'USD').toLowerCase(),
+            recurring: { interval: 'year', interval_count: 1 }, // Anual
+            product_data: { name: `${name} (Anual)` },
+          });
+
+          // Actualizar precio trimestral en el array
+          if (trimestralIndex !== -1) {
+            existingPlan.prices[trimestralIndex].price = priceTrimestral;
+            existingPlan.prices[trimestralIndex].currency = currency || 'USD';
+            existingPlan.prices[trimestralIndex].stripePriceId = newTrimestralStripePrice.id;
+          } else {
+            // Si no existe un precio trimestral, agregarlo
+            existingPlan.prices.push({
+              interval: 'trimestral',
+              price: priceTrimestral,
+              currency: currency || 'USD',
+              stripePriceId: newTrimestralStripePrice.id
+            });
+          }
+
+          // Actualizar precio anual en el array
+          if (anualIndex !== -1) {
+            existingPlan.prices[anualIndex].price = priceAnual;
+            existingPlan.prices[anualIndex].currency = currency || 'USD';
+            existingPlan.prices[anualIndex].stripePriceId = newAnualStripePrice.id;
+          } else {
+            // Si no existe un precio anual, agregarlo
+            existingPlan.prices.push({
+              interval: 'anual',
+              price: priceAnual,
+              currency: currency || 'USD',
+              stripePriceId: newAnualStripePrice.id
+            });
+          }
+        } catch (stripeError) {
+          console.error('Error creando nuevos precios en Stripe:', stripeError);
+          return NextResponse.json({
+            success: false,
+            message: 'Error al crear los nuevos precios en Stripe',
+            error: stripeError.message
+          }, { status: 500 });
+        }
       } else {
-        // Si no existe un precio trimestral, agregarlo
-        existingPlan.prices.push({
-          interval: 'trimestral',
-          price: priceTrimestral,
-          currency: currency || 'USD',
-          stripePriceId: existingPlan.stripePriceId || `price_${level}_quarterly`
-        });
+        // Si el precio no cambió, solo actualizar la moneda si es necesario
+        if (trimestralIndex !== -1) {
+          existingPlan.prices[trimestralIndex].currency = currency || 'USD';
+        }
+        if (anualIndex !== -1) {
+          existingPlan.prices[anualIndex].currency = currency || 'USD';
+        }
       }
     }
 

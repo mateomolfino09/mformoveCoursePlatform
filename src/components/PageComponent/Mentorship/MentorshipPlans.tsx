@@ -178,13 +178,10 @@ const MentorshipPlans = ({ plans, origin }: MentorshipProps) => {
                       {interval === 'trimestral' ? (
                         <div>
                           <div className="mb-2 flex flex-col items-center justify-center">
-                            <span className="text-3xl font-bold font-montserrat text-black">
-                              ${Math.round(priceObj.price / 3)}
+                            <span className="text-4xl font-bold font-montserrat text-black">
+                              ${priceObj.price}
                             </span>
-                            <span className="ml-2 font-montserrat text-gray-600">/mes</span>
-                          </div>
-                          <div className="text-sm font-montserrat text-gray-600">
-                            <span className="font-semibold text-black">${priceObj.price}</span> pagados trimestralmente
+                            <span className="ml-2 font-montserrat text-gray-600">/trimestre</span>
                           </div>
                         </div>
                       ) : (

@@ -37,7 +37,7 @@ export async function POST(req) {
     if (contentType.includes('multipart/form-data')) {
       const formData = await req.formData();
       data = JSON.parse(formData.get('data'));
-      imagenes = formData.getAll('imagenes');
+      imagenes = data.imagenes || []; // Extraer imágenes del JSON, no del FormData
       archivo = formData.get('archivo');
       pdfPresentacion = formData.get('pdfPresentacion');
     } else {
@@ -47,7 +47,9 @@ export async function POST(req) {
       pdfPresentacion = data.pdfPresentacion || null;
     }
 
-    const { nombre, descripcion, tipo, precio, moneda, cursosIncluidos, fecha, ubicacion, online, linkEvento, cupo, tipoArchivo, userEmail } = data;
+
+
+    const { nombre, descripcion, tipo, precio, moneda, cursosIncluidos, fecha, ubicacion, online, linkEvento, cupo, tipoArchivo, userEmail, beneficios, aprendizajes, paraQuien } = data;
 
     // Validar usuario admin
     let user = await Users.findOne({ email: userEmail });
@@ -64,9 +66,14 @@ export async function POST(req) {
         const url = await uploadToCloudinary(img, 'productos/imagenes');
         imagenesUrls.push(url);
       }
-    } else {
+    } else if (imagenes && imagenes.length > 0) {
+      // Si las imágenes ya están subidas a Cloudinary (public_id), usarlas directamente
       imagenesUrls = imagenes;
+    } else {
+      imagenesUrls = [];
     }
+    
+
 
     // Subir PDF de presentación si viene en FormData
     if (tipo === 'evento' && pdfPresentacion && pdfPresentacion instanceof File) {
@@ -84,7 +91,6 @@ export async function POST(req) {
     // Crear cupón y promotion code en Stripe si hay descuento
     let stripeCouponId = undefined;
     let stripePromotionCodeId = undefined;
-    console.log(data);
     if (data.descuento && data.descuento.codigo && data.descuento.porcentaje) {
       // Buscar si ya existe un promotion code con ese código
       const existingPromos = await stripe.promotionCodes.list({
@@ -118,13 +124,80 @@ export async function POST(req) {
     }
 
     // Construir el objeto del producto
-    let stripeProductId, preciosConLinks;
+    let stripeProductId, preciosConLinks, product;
+    
     if (tipo === 'evento' && data.precios) {
+      // Construir URL de success para el evento
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+      
+      // Crear URL limpia para el nombre del evento
+      const cleanEventName = nombre
+        .toLowerCase()
+        .replace(/[áäâà]/g, 'a')
+        .replace(/[éëêè]/g, 'e')
+        .replace(/[íïîì]/g, 'i')
+        .replace(/[óöôò]/g, 'o')
+        .replace(/[úüûù]/g, 'u')
+        .replace(/[ñ]/g, 'n')
+        .replace(/[^a-z0-9\s-]/g, '') // Remover caracteres especiales
+        .replace(/\s+/g, '-') // Reemplazar espacios con guiones
+        .replace(/-+/g, '-') // Remover guiones múltiples
+        .replace(/^-+|-+$/g, ''); // Remover guiones al inicio y final
+      
+      const successUrl = `${baseUrl}/events/${cleanEventName}/success`;
+
+
+      
+      // Crear el producto primero para obtener el ID
+      const productoData = {
+        nombre,
+        descripcion,
+        tipo,
+        precio,
+        moneda,
+        imagenes: imagenesUrls,
+        portada: data.portada,
+        portadaMobile: data.portadaMobile,
+        pdfPresentacionUrl: tipo === 'evento' ? pdfPresentacionUrl : undefined,
+        cursosIncluidos: tipo === 'bundle' ? cursosIncluidos : undefined,
+        fecha: tipo === 'evento' ? fecha : undefined,
+        ubicacion: tipo === 'evento' ? ubicacion : undefined,
+        online: tipo === 'evento' ? online : undefined,
+        linkEvento: tipo === 'evento' ? linkEvento : undefined,
+        cupo: tipo === 'evento' ? cupo : undefined,
+        beneficios: tipo === 'evento' ? (beneficios || []) : undefined,
+        aprendizajes: tipo === 'evento' ? (aprendizajes || []) : undefined,
+        paraQuien: tipo === 'evento' ? (paraQuien || []) : undefined,
+        archivoUrl: tipo === 'recurso' ? archivoUrl : undefined,
+        tipoArchivo: tipo === 'recurso' ? tipoArchivo : undefined,
+        descuento: data.descuento ? {
+          ...data.descuento,
+          stripeCouponId,
+          stripePromotionCodeId
+        } : undefined,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+
+
+      // Eliminar campos undefined (pero mantener arrays vacíos)
+      Object.keys(productoData).forEach(key => {
+        if (productoData[key] === undefined) {
+          delete productoData[key];
+        }
+      });
+
+      product = await Product.create(productoData);
+
+      
       const stripeResult = await createEventProductWithPrices({
         nombre,
         descripcion,
         precios: data.precios,
         portadaUrl: data.portada || imagenesUrls[0] || undefined,
+        successUrl,
+        productId: product._id.toString(),
       });
       stripeProductId = stripeResult.productId;
       // Armar objeto precios con paymentLink y priceId
@@ -145,39 +218,52 @@ export async function POST(req) {
           paymentLink: stripeResult.precios.lastTickets.paymentLink
         }
       };
+
+      // Actualizar el producto con los datos de Stripe
+      product.precios = preciosConLinks;
+      product.stripeProductId = stripeResult.productId;
+      await product.save();
+    } else {
+      // Para productos que no son eventos, crear directamente
+      const productoData = {
+        nombre,
+        descripcion,
+        tipo,
+        precio,
+        moneda,
+        imagenes: imagenesUrls,
+        portada: data.portada,
+        portadaMobile: data.portadaMobile,
+        pdfPresentacionUrl: tipo === 'evento' ? pdfPresentacionUrl : undefined,
+        cursosIncluidos: tipo === 'bundle' ? cursosIncluidos : undefined,
+        fecha: tipo === 'evento' ? fecha : undefined,
+        ubicacion: tipo === 'evento' ? ubicacion : undefined,
+        online: tipo === 'evento' ? online : undefined,
+        linkEvento: tipo === 'evento' ? linkEvento : undefined,
+        cupo: tipo === 'evento' ? cupo : undefined,
+        beneficios: tipo === 'evento' ? (beneficios || []) : undefined,
+        aprendizajes: tipo === 'evento' ? (aprendizajes || []) : undefined,
+        paraQuien: tipo === 'evento' ? (paraQuien || []) : undefined,
+        archivoUrl: tipo === 'recurso' ? archivoUrl : undefined,
+        tipoArchivo: tipo === 'recurso' ? tipoArchivo : undefined,
+        descuento: data.descuento ? {
+          ...data.descuento,
+          stripeCouponId,
+          stripePromotionCodeId
+        } : undefined,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      // Eliminar campos undefined (pero mantener arrays vacíos)
+      Object.keys(productoData).forEach(key => {
+        if (productoData[key] === undefined) {
+          delete productoData[key];
+        }
+      });
+
+      product = await Product.create(productoData);
     }
-    const productoData = {
-      nombre,
-      descripcion,
-      tipo,
-      precio,
-      moneda,
-      imagenes: imagenesUrls,
-      portada: data.portada,
-      pdfPresentacionUrl: tipo === 'evento' ? pdfPresentacionUrl : undefined,
-      cursosIncluidos: tipo === 'bundle' ? cursosIncluidos : undefined,
-      fecha: tipo === 'evento' ? fecha : undefined,
-      ubicacion: tipo === 'evento' ? ubicacion : undefined,
-      online: tipo === 'evento' ? online : undefined,
-      linkEvento: tipo === 'evento' ? linkEvento : undefined,
-      cupo: tipo === 'evento' ? cupo : undefined,
-      precios: tipo === 'evento' ? preciosConLinks : undefined,
-      stripeProductId: tipo === 'evento' ? stripeProductId : undefined,
-      archivoUrl: tipo === 'recurso' ? archivoUrl : undefined,
-      tipoArchivo: tipo === 'recurso' ? tipoArchivo : undefined,
-      descuento: data.descuento ? {
-        ...data.descuento,
-        stripeCouponId,
-        stripePromotionCodeId
-      } : undefined,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    // Eliminar campos undefined
-    Object.keys(productoData).forEach(key => productoData[key] === undefined && delete productoData[key]);
-
-    const product = await Product.create(productoData);
 
     return NextResponse.json(
       { message: 'Producto creado con éxito', product },

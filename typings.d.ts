@@ -455,7 +455,8 @@ export interface ProductDB {
   isOpen: boolean;
   modules: ProductModules[];
   productType: string;
-
+  aprendizajes?: string[];
+  paraQuien?: string[];
   // --- Nuevos campos del modelo actual ---
   nombre?: string;
   descripcion?: string;
@@ -464,6 +465,7 @@ export interface ProductDB {
   moneda?: string;
   imagenes?: string[];
   portada?: string;
+  portadaMobile?: string; // URL de la imagen de portada para móviles
   precios?: {
     earlyBird?: {
       price: number;
@@ -504,6 +506,7 @@ export interface ProductDB {
   linkEvento?: string;
   cupo?: number;
   pdfPresentacionUrl?: string;
+  beneficios?: string[];
 
   // --- Recursos descargables ---
   archivoUrl?: string;
