@@ -99,7 +99,7 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
   });
 
   // Debug: ver los valores inicializados
-  
+  console.log('Valores inicializados:', {
     name, description, price, currency, tipo, fecha,
     earlyBirdPrice, earlyBirdStart, earlyBirdEnd,
     generalPrice, lastTicketsPrice,
@@ -229,26 +229,30 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
     setBeneficios(beneficios.filter((_, i) => i !== index));
   };
 
+  // Estados para aprendizajes y paraQuien
   const [aprendizajes, setAprendizajes] = useState<string[]>(product.aprendizajes || []);
   const [nuevoAprendizaje, setNuevoAprendizaje] = useState<string>('');
+  const [paraQuien, setParaQuien] = useState<string[]>(product.paraQuien || []);
+  const [nuevoParaQuien, setNuevoParaQuien] = useState<string>('');
+
   const agregarAprendizaje = () => {
     if (nuevoAprendizaje.trim() && !aprendizajes.includes(nuevoAprendizaje.trim())) {
       setAprendizajes([...aprendizajes, nuevoAprendizaje.trim()]);
       setNuevoAprendizaje('');
     }
   };
+  
   const eliminarAprendizaje = (index: number) => {
     setAprendizajes(aprendizajes.filter((_, i) => i !== index));
   };
 
-  const [paraQuien, setParaQuien] = useState<string[]>(product.paraQuien || []);
-  const [nuevoParaQuien, setNuevoParaQuien] = useState<string>('');
   const agregarParaQuien = () => {
     if (nuevoParaQuien.trim() && !paraQuien.includes(nuevoParaQuien.trim())) {
       setParaQuien([...paraQuien, nuevoParaQuien.trim()]);
       setNuevoParaQuien('');
     }
   };
+  
   const eliminarParaQuien = (index: number) => {
     setParaQuien(paraQuien.filter((_, i) => i !== index));
   };
