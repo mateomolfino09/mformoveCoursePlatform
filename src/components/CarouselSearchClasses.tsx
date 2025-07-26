@@ -1,8 +1,4 @@
-import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
-import { Courses, CoursesDB, IndividualClass, Item, Ricks, User } from '../../typings';
-import CarouselThumbnail from './CarouselThumbnail';
-import CourseThumbnail from './CourseThumbnail';
-import Thumbnail from './Thumbnail';
+import { IndividualClass, Item, Ricks, User } from '../../typings';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { motion as m } from 'framer-motion';
 import Link from 'next/link';
@@ -15,7 +11,6 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { useGlobalContext } from '../app/context/store';
 import { useAuth } from '../hooks/useAuth';
 import { useAppSelector } from '../redux/hooks';
 import CarouselClassesThumbnail from './CarouselClassesThumbnail';

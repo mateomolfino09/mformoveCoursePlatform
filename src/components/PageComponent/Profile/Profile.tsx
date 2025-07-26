@@ -1,6 +1,6 @@
 'use client'
 import Membership from '../../../components/Membership';
-import { CourseUser, Plan, User } from '../../../../typings';
+import { Plan, User } from '../../../../typings';
 import cookie from 'js-cookie';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -108,10 +108,6 @@ function Profile() {
 
     aRef?.current?.click()
   };
-
-  const cantCourses = auth.user?.courses?.filter(
-    (c: CourseUser) => c.purchased
-  ).length;
 
   return (
 

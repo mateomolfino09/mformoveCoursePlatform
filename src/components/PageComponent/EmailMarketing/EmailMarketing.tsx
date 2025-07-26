@@ -7,14 +7,13 @@ import { toast } from 'react-toastify';
 import AdmimDashboardLayout from '../../AdmimDashboardLayout';
 import Select, { StylesConfig } from 'react-select';
 import { genders } from '../../../constants/genders';
-import { CoursesDB } from '../../../../typings';
 import requests from '../../../utils/requests';
 import endpoints from '../../../services/api';
 import './emailmarketingStyle.css';
 import { LoadingSpinner } from '../../LoadingSpinner';
 
 interface Props {
-    courses: CoursesDB[]
+    courses: any[]
 }
 
 const colourStyles: StylesConfig<any> = {
@@ -46,7 +45,7 @@ const EmailMarketing = ({ courses }: Props) => {
         // { value: 'otro', label: 'Otro' }
         ];
 
-    courses.forEach((x: CoursesDB) => {
+    courses.forEach((x: any) => {
         coursesGroup.push({
             value: x.id,
             label: "Usuarios de " + x.name 

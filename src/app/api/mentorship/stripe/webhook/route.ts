@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
               };
 
               await user.save();
-              console.log(`Mentoría activada para usuario: ${email}`);
+      
             }
           }
           break;
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
               }
               
               await user.save();
-              console.log(`Mentoría actualizada para usuario: ${email}`);
+      
             }
           }
           break;
@@ -92,14 +92,14 @@ export async function POST(req: NextRequest) {
               user.mentorship.active = false;
               user.mentorship.status = 'canceled';
               await user.save();
-              console.log(`Mentoría cancelada para usuario: ${email}`);
+      
             }
           }
           break;
         }
 
         default:
-          console.log(`Evento no manejado: ${event.type}`);
+  
       }
 
       return new NextResponse("Evento procesado", { status: 200 });

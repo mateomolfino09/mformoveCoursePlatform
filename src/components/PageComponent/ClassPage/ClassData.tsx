@@ -1,4 +1,4 @@
-import { ClassesDB, CoursesDB, IndividualClass } from '../../../../typings';
+import { IndividualClass } from '../../../../typings';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';

@@ -1,7 +1,6 @@
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import imageLoader from '../../imageLoader';
-import { CourseUser, CoursesDB, IndividualClass, Ricks, User } from '../../typings';
+import { IndividualClass, Ricks, User } from '../../typings';
 import {
   ChevronDownIcon,
   PlayIcon,

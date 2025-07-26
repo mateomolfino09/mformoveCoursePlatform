@@ -119,7 +119,6 @@ export async function POST(req) {
       
             newUser.validEmail = 'yes';
             newUser.emailToken = undefined;
-            newUser.courses = [];
       
             newUser.notifications.push({
               title: 'Usuario creado',
@@ -129,7 +128,6 @@ export async function POST(req) {
       
             newUser.admin = {
               active: false,
-              coursesAvailable: 3
             };
       
             const adminUsers = await User.find({

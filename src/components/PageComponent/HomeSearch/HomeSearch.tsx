@@ -1,13 +1,6 @@
 "use client"
-import Banner from './../../Banner';
-import Carousel from './../../Carousel';
-import Header from './../../Header';
-import Modal from './../../Modal';
-import SearchBar from './../../SearchBar';
 import {
   ClassTypes,
-  CourseUser,
-  CoursesDB,
   Images,
   IndividualClass,
   User
@@ -24,12 +17,10 @@ import { verify } from 'jsonwebtoken';
 import Cookies from 'js-cookie';
 import connectDB from '../../../config/connectDB';
 import { useAppSelector } from '../../../redux/hooks';
-import { useGlobalContext } from '../../../app/context/store';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import ClassesFilters from '../../ClassesFilters';
 import { m } from 'framer-motion';
 import FilterNavWrapper from '../../FilterNavWrapper';
-import CarouselClasses from '../../CarouselClasses';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
 import { toggleScroll } from '../../../redux/features/headerHomeSlice';
 import { setFilters, setIndividualClasses } from '../../../redux/features/filterClass';

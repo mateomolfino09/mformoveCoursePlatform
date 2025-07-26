@@ -18,7 +18,7 @@ export default function MentorshipPage() {
         setLoading(true);
         setError(null);
         
-        console.log('🔄 Intentando cargar planes de mentoría...');
+    
         
         const res = await fetch('/api/payments/getPlans?type=mentorship', {
           cache: 'no-store',
@@ -27,7 +27,7 @@ export default function MentorshipPage() {
           },
         });
         
-        console.log('📡 Status de respuesta:', res.status);
+
         
         if (!res.ok) {
           const errorText = await res.text();
@@ -36,7 +36,7 @@ export default function MentorshipPage() {
         }
         
         const data = await res.json();
-        console.log('📊 Datos recibidos:', data);
+
         
         if (!Array.isArray(data)) {
           console.error('❌ Los datos no son un array:', data);
@@ -45,7 +45,7 @@ export default function MentorshipPage() {
         
         // Filtrar solo planes activos
         const activePlans = data.filter((plan: MentorshipPlan) => plan.active);
-        console.log('✅ Planes activos encontrados:', activePlans.length);
+
         
         setPlans(activePlans);
       } catch (err) {

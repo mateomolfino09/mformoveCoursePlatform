@@ -7,13 +7,13 @@ import User from '../../../../../models/userModel';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🔄 Iniciando creación de sesión de checkout de mentoría...');
+  
     
     await connectDB();
     const body = await request.json();
     const { planId, userEmail, interval } = body;
 
-    console.log('📊 Datos recibidos:', { planId, userEmail });
+    
 
     // Buscar el plan de mentoría
     const plan = await MentorshipPlan.findById(planId);
@@ -22,12 +22,7 @@ export async function POST(request: NextRequest) {
     if (!priceObj) {
       return NextResponse.json({ error: 'No se encontró el precio para el intervalo seleccionado' }, { status: 400 });
     }
-    console.log('📋 Plan encontrado:', plan ? { 
-      id: plan._id, 
-      name: plan.name, 
-      stripePriceId: plan.stripePriceId,
-      active: plan.active 
-    } : 'No encontrado');
+
     
     if (!plan) {
       return NextResponse.json({ error: 'Plan de mentoría no encontrado' }, { status: 404 });
@@ -35,10 +30,7 @@ export async function POST(request: NextRequest) {
 
     // Buscar el usuario
     const user = await User.findOne({ email: userEmail });
-    console.log('👤 Usuario encontrado:', user ? { 
-      id: user._id, 
-      email: user.email 
-    } : 'No encontrado');
+
     
     if (!user) {
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
@@ -46,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar que el plan esté activo
     if (!plan.active) {
-      console.log('❌ Plan inactivo:', plan.name);
+
       return NextResponse.json({ error: 'Plan no disponible' }, { status: 400 });
     }
 
@@ -55,11 +47,7 @@ export async function POST(request: NextRequest) {
     successUrl.searchParams.append("external_id", user._id);
     successUrl.searchParams.append("plan_id", planId);
 
-    console.log('🔗 URLs configuradas:', {
-      successUrl: successUrl.toString(),
-      cancelUrl: `${origin}/mentorship`,
-      stripePriceId: plan.stripePriceId
-    });
+
 
     // Crear sesión de checkout de Stripe
     const session = await stripe.checkout.sessions.create({
@@ -93,10 +81,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    console.log('✅ Sesión de Stripe creada exitosamente:', {
-      sessionId: session.id,
-      url: session.url
-    });
+
 
     return NextResponse.json({ 
       url: session.url,

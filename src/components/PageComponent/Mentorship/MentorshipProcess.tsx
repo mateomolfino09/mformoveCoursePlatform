@@ -96,8 +96,8 @@ const MentorshipProcess = () => {
           {steps.map((step, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
               className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border hover:bg-white/10 transition-all duration-300"

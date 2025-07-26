@@ -46,58 +46,6 @@ function useProvideAuth() {
 		}
 	  };
 
-	const addCourseToList = async (courseId: string, userId: string) => {
-		try {
-			const res = await fetch(endpoints.course.listCourse, {
-				method: 'PUT',
-				headers: {  
-				  'Content-Type': 'application/json',
-				   accept: '*/*',
-				},
-				body: JSON.stringify({ courseId, userId }),
-			  })
-
-			const data = await res.json();
-			setUser(data.user);
-		} catch (error) {
-		}
-	  };
-	const deleteCourseFromList = async (courseId: string, userId: string) => {
-		try {
-			const res = await fetch(endpoints.course.dislistCourse, {
-				method: 'PUT',
-				headers: {  
-				  'Content-Type': 'application/json',
-				   accept: '*/*',
-				},
-				body: JSON.stringify({ courseId, userId }),
-			  })
-
-			const data = await res.json();
-			
-			setUser(data.user);
-		} catch (error) {
-		}
-	  };
-
-	  const saveClassTime = async (actualTime: string, courseId: string, classId: string) => {
-		try {
-			const res = await fetch(endpoints.course.class.saveTime, {
-				method: 'POST',
-				headers: {  
-				  'Content-Type': 'application/json',
-				   accept: '*/*',
-				},
-				body: JSON.stringify({ actualTime, courseId, classId }),
-			  })
-
-			const data = await res.json();
-
-			setUser(data.user);
-		} catch (error) {
-		}
-	  };
-
 	const signIn = async (email: string, password: string) => {
 		try {
 			setError(null)
@@ -412,9 +360,6 @@ function useProvideAuth() {
 		signInPostRegister,
 		signOut,
 		fetchUser,
-		addCourseToList,
-		deleteCourseFromList,
-		saveClassTime,
 		setUserBack,
 		resetPassword,
 		resetMail,

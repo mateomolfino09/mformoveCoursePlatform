@@ -16,6 +16,7 @@ export const routes = {
         mentorship: '/mentorship',
         mentoria: '/mentorship', // Mantener para compatibilidad
         mentorshipConsulta: '/mentorship/consulta',
+        eventos: '/events',
         preguntasFrecuentes: '/faq',
         index: '/',
         products: '/products',

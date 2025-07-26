@@ -1,4 +1,4 @@
-import { ClassesDB, CoursesDB } from '../../typings';
+import { ClassesDB } from '../../typings';
 import state from '../valtio';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
@@ -8,9 +8,8 @@ import { useSnapshot } from 'valtio';
 
 interface Props {
   clase: ClassesDB;
-  course: CoursesDB;
 }
-const ClassOptions = ({ clase, course }: Props) => {
+const ClassOptions = ({ clase }: Props) => {
   const snap = useSnapshot(state);
 
   const handleClickTemario = () => {

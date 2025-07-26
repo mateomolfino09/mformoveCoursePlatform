@@ -1,5 +1,4 @@
-import { ClassesDB, CoursesDB, IndividualClass, Item } from '../../../../typings';
-import Row from './../../Row';
+import { ClassesDB, IndividualClass, Item } from '../../../../typings';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 

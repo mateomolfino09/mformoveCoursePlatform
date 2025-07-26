@@ -161,12 +161,6 @@ export interface Playlist {
   pageInfo: PageInfo;
 }
 
-export interface Courses {
-  name: string;
-  playlistId: string;
-  imageUrl: string;
-}
-
 export interface ClassesUser {
   actualTime: number;
 }
@@ -177,16 +171,6 @@ export interface Notification {
   status: string;
   read: boolean;
   link: string;
-}
-
-export interface CourseUser {
-  course: string;
-  like: Boolean;
-  inList: Boolean;
-  actualChapter: number;
-  actualTime: number;
-  purchased: Boolean;
-  classes: [ClassesUser];
 }
 
 export interface Modules {
@@ -239,7 +223,6 @@ export interface User {
   createdAt: string;
   rol: string;
   emailToken: string;
-  courses: CourseUser[];
   admin: AdminUser;
   notifications: Notification[];
   classesSeen: IndividualClass[];
@@ -247,28 +230,6 @@ export interface User {
   subscription: ISubscription
   freeSubscription: FreeSubscription;
   isVip: boolean;
-}
-
-export interface CoursesDB {
-  _id: string;
-  id: number;
-  createdAt: string;
-  udpatedAt: string;
-  description: string;
-  playlist_code: string;
-  image_url: string;
-  name: string;
-  dbLikes: string;
-  likes: number;
-  users: User[];
-  classes: ClassesDB[];
-  price: number;
-  currency: string;
-  created_by: User;
-  index: number;
-  classesQuantity: number;
-  isOpen: boolean;
-  modules: Modules;
 }
 
 export interface ClassesDB {
@@ -280,7 +241,6 @@ export interface ClassesDB {
   image_url: string;
   likes: number;
   totalTime: number;
-  course: CoursesDB | null;
   atachedFiles: [Archive]
   links: [Link]
 }
@@ -310,7 +270,6 @@ export interface Bill {
   createdAt: Date;
   status: String;
   processing_mode: String;
-  course: CoursesDB;
   user: User;
 }
 
@@ -457,7 +416,6 @@ export interface ClassesProduct {
   module: number
   likes: number;
   totalTime: number;
-  course: CoursesDB;
   atachedFiles: [Archive]
   link: Link
 }
@@ -496,7 +454,80 @@ export interface ProductDB {
   classesQuantity: number;
   isOpen: boolean;
   modules: ProductModules[];
-  productType: string
+  productType: string;
+  aprendizajes?: string[];
+  paraQuien?: string[];
+  // --- Nuevos campos del modelo actual ---
+  nombre?: string;
+  descripcion?: string;
+  tipo?: string;
+  precio?: number;
+  moneda?: string;
+  imagenes?: string[];
+  portada?: string;
+  portadaMobile?: string; // URL de la imagen de portada para móviles
+  precios?: {
+    earlyBird?: {
+      price: number;
+      start: string;
+      end: string;
+      priceId?: string;
+      paymentLink?: string;
+    };
+    general?: {
+      price: number;
+      start: string;
+      end: string;
+      priceId?: string;
+      paymentLink?: string;
+    };
+    lastTickets?: {
+      price: number;
+      start: string;
+      end: string;
+      priceId?: string;
+      paymentLink?: string;
+    };
+  };
+  paymentLinks?: any;
+  activo?: boolean;
+  destacado?: boolean;
+
+  // --- Eventos ---
+  fecha?: Date;
+  ubicacion?: {
+    display_name: string;
+    lat: string;
+    lon: string;
+    ciudad: string;
+    pais: string;
+  };
+  online?: boolean;
+  linkEvento?: string;
+  cupo?: number;
+  pdfPresentacionUrl?: string;
+  beneficios?: string[];
+
+  // --- Recursos descargables ---
+  archivoUrl?: string;
+  tipoArchivo?: string;
+
+  // --- Comunes ---
+  etiquetas?: string[];
+  updatedAt?: Date;
+
+  // --- Descuento familia y amigos ---
+  descuento?: {
+    codigo: string;
+    porcentaje: number;
+    maxUsos?: number;
+    expiracion?: Date;
+    stripeCouponId?: string;
+    stripePromotionCodeId?: string;
+  };
+
+  // --- Stripe ---
+  stripeProductId?: string;
 }
 
 export interface FreeProduct {

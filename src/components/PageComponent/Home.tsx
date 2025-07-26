@@ -2,13 +2,10 @@
 
 import {
   ClassTypes,
-  CourseUser,
-  CoursesDB,
   Images,
   IndividualClass,
   User
 } from '../../../typings';
-import { useGlobalContext } from '../../app/context/store';
 import connectDB from '../../config/connectDB';
 import { useAuth } from '../../hooks/useAuth';
 import { useAppDispatch } from '../../hooks/useTypeSelector';
@@ -29,11 +26,6 @@ import GetMembershipModal from '../GetMembershipModal';
 import GetMembershipModal2 from '../GetMembershipModal2';
 import { LoadingSpinner } from '../LoadingSpinner';
 import MainSideBar from '../MainSidebar/MainSideBar';
-import Banner from './../Banner';
-import Carousel from './../Carousel';
-import Header from './../Header';
-import Modal from './../Modal';
-import SearchBar from './../SearchBar';
 import { m } from 'framer-motion';
 import Cookies from 'js-cookie';
 import { verify } from 'jsonwebtoken';

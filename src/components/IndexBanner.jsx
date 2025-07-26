@@ -1,6 +1,5 @@
 import { useAppDispatch } from '../hooks/useTypeSelector';
 import imageLoader from '../../imageLoader';
-import { loadCourse, closeCourse } from '../redux/features/courseModalSlice'; 
 import state from '../valtio';
 import { Video } from 'cloudinary-react';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
@@ -59,9 +58,6 @@ function Banner() {
     }
   }, [snap.volumeModal]);
 
-  const handleOpen = () => {
-    dispatch(loadCourse());
-  };
 
   const handleLoad = () => {
     setIsLoading(false); // Cambia el estado cuando el iframe termina de cargar

@@ -1,6 +1,5 @@
 'use client'
 import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
-import { CoursesDB, Plan, User } from '../../../../typings';
 import {
   PencilIcon,
   TrashIcon
@@ -11,10 +10,10 @@ import { parseCookies } from 'nookies';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
-import DeleteCourse from '../../DeleteCourse';
 import endpoints from '../../../services/api';
 import { toast } from 'react-toastify';
 import DeletePlan from './DeletePlan';
+import { Plan } from '../../../../typings';
 
 interface Props {
   plans: Plan[];

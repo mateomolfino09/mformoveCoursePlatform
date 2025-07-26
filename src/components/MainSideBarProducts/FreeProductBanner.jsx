@@ -1,6 +1,5 @@
 import { useAppDispatch } from '../../hooks/useTypeSelector';
 import imageLoader from '../../../imageLoader';
-import { loadCourse, closeCourse } from '../../redux/features/courseModalSlice'; 
 import state from '../../valtio';
 import { Video } from 'cloudinary-react';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
@@ -39,10 +38,6 @@ function FreeProductBanner({ product }) {
       });
     }
   }, [snap.volumeModal]);
-
-  const handleOpen = () => {
-    dispatch(loadCourse());
-  };
 
   return (
     <>

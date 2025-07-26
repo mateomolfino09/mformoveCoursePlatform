@@ -1,4 +1,4 @@
-import { ClassesDB, CourseUser, IndividualClass, User } from '../../../../typings';
+import { ClassesDB, IndividualClass, User } from '../../../../typings';
 import PlayerControls from '../../PlayerControls';
 import { Container, Grid, Paper, Typography } from '@mui/material';
 import axios from 'axios';
@@ -18,7 +18,6 @@ import Vimeo from '@u-wave/react-vimeo';
 interface Props {
   url: string | null;
   img: string;
-  courseUser: CourseUser | null;
   clase: IndividualClass | null;
   setPlayerRef: any;
   play: boolean;
@@ -40,7 +39,7 @@ const format = (seconds: any) => {
 
 let count = 0;
 
-function Youtube({ url, img, courseUser, clase, setPlayerRef, play }: Props) {
+function Youtube({ url, img, clase, setPlayerRef, play }: Props) {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {

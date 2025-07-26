@@ -58,11 +58,67 @@ const CreateProduct = () => {
     currency: string = 'USD',
     price: number,
     portraitImageArray: any,
-    diplomaImageArray: any
-    
-   
+    portraitMobileImageArray: any,
+    diplomaImageArray: any,
+    galleryImageArray: any = [],
+    earlyBirdPrice?: number,
+    earlyBirdStart?: string,
+    earlyBirdEnd?: string,
+    generalPrice?: number,
+    generalStart?: string,
+    generalEnd?: string,
+    lastTicketsPrice?: number,
+    lastTicketsStart?: string,
+    lastTicketsEnd?: string,
+    fecha?: string,
+    ubicacionObj?: any,
+    online?: boolean,
+    linkEvento?: string,
+    cupo?: number,
+    beneficios?: string[],
+    aprendizajes?: string[],
+    paraQuien?: string[],
+    descuentoObj?: any,
+    pdfPresentacion?: any
   ) {
     setLoading(true);
+
+
+
+    // Validaciones robustas de imágenes
+    if (!portraitImageArray || !portraitImageArray[0]) {
+      toast.error('Debes subir una imagen de portada');
+      setLoading(false);
+      return;
+    }
+    if (productType !== 'evento' && (!diplomaImageArray || !diplomaImageArray[0])) {
+      toast.error('Debes subir una imagen de diploma');
+      setLoading(false);
+      return;
+    }
+    // Validar tipo de archivo (solo imágenes jpg/png/jpeg)
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedTypes.includes(portraitImageArray[0].type)) {
+      toast.error('La imagen de portada debe ser JPG o PNG');
+      setLoading(false);
+      return;
+    }
+    if (productType !== 'evento' && !allowedTypes.includes(diplomaImageArray[0].type)) {
+      toast.error('La imagen de diploma debe ser JPG o PNG');
+      setLoading(false);
+      return;
+    }
+    // Validar tamaño (máx 10MB)
+    if (portraitImageArray[0].size / 1000000 > 10) {
+      toast.error('La imagen de portada es demasiado grande (máx 10MB)');
+      setLoading(false);
+      return;
+    }
+    if (productType !== 'evento' && diplomaImageArray[0].size / 1000000 > 10) {
+      toast.error('La imagen de diploma es demasiado grande (máx 10MB)');
+      setLoading(false);
+      return;
+    }
 
     try {
       const config = {
@@ -71,74 +127,151 @@ const CreateProduct = () => {
         }
       };
 
+      // Subir portada
       const formData = new FormData();
-
       for (const file of portraitImageArray) {
         formData.append('file', file);
       }
-
       formData.append('upload_preset', 'my_uploads');
-
-      if (portraitImageArray[0].size / 1000000 > 10) {
-        toast.error('Formato Incorrecto');
-        return;
-      }
-
       const portraitData = await fetch(requests.fetchCloudinary, {
         method: 'POST',
         body: formData
       }).then((r) => r.json());
+      const portada = portraitData.public_id;
 
-      const formData2 = new FormData();
-
-      for (const file of diplomaImageArray) {
-        formData2.append('file', file);
+      // Subir portada móvil (opcional)
+      let portadaMobile = null;
+      if (portraitMobileImageArray && portraitMobileImageArray[0]) {
+        const mobileFormData = new FormData();
+        for (const file of portraitMobileImageArray) {
+          mobileFormData.append('file', file);
+        }
+        mobileFormData.append('upload_preset', 'my_uploads');
+        const mobilePortraitData = await fetch(requests.fetchCloudinary, {
+          method: 'POST',
+          body: mobileFormData
+        }).then((r) => r.json());
+        portadaMobile = mobilePortraitData.public_id;
       }
 
-      formData2.append('upload_preset', 'my_uploads');
-
-      if (portraitImageArray[0].size / 1000000 > 10) {
-        toast.error('Formato Incorrecto');
-        return;
+      // Subir galería de imágenes (imagenes)
+      let imagenes = [];
+      if (Array.isArray(galleryImageArray) && galleryImageArray.length > 0) {
+        for (const file of galleryImageArray) {
+          const galeriaFormData = new FormData();
+          galeriaFormData.append('file', file);
+          galeriaFormData.append('upload_preset', 'my_uploads');
+          const galeriaData = await fetch(requests.fetchCloudinary, {
+            method: 'POST',
+            body: galeriaFormData
+          }).then((r) => r.json());
+          imagenes.push(galeriaData.public_id);
+        }
       }
 
-      const diplomaData = await fetch(requests.fetchCloudinary, {
-        method: 'POST',
-        body: formData2
-      }).then((r) => r.json());
+      // Subir diploma si corresponde
+      let diplomaUrl = '';
+      if (productType !== 'evento') {
+        const formData2 = new FormData();
+        for (const file of diplomaImageArray) {
+          formData2.append('file', file);
+        }
+        formData2.append('upload_preset', 'my_uploads');
+        const diplomaData = await fetch(requests.fetchCloudinary, {
+          method: 'POST',
+          body: formData2
+        }).then((r) => r.json());
+        diplomaUrl = diplomaData.public_id;
+      }
 
-      const portraitUrl = portraitData.public_id;
-      const diplomaUrl = diplomaData.public_id;
+      // Armar objeto de precios escalonados para eventos
+      let precios = undefined;
+      if (productType === 'evento') {
+        precios = {
+          earlyBird: {
+            price: earlyBirdPrice,
+            start: earlyBirdStart,
+            end: earlyBirdEnd
+          },
+          general: {
+            price: generalPrice,
+            start: generalStart,
+            end: generalEnd
+          },
+          lastTickets: {
+            price: lastTicketsPrice,
+            start: lastTicketsStart,
+            end: lastTicketsEnd
+          }
+        };
+      }
 
       const userEmail = auth.user.email;
 
-      const { data } = await axios.post(
-        '/api/product/createProduct',
-        {
-          name,
-          description,
-          productVimeoId,
-          currency,
-          price,
-          userEmail,
-          portraitUrl,
-          diplomaUrl,
-          productType
-        },
-        config
-      );
+      // Preparar datos para el envío
+      const productData = {
+        nombre: name,
+        descripcion: description,
+        moneda: currency,
+        precio: price,
+        userEmail,
+        portada,
+        portadaMobile,
+        imagenes,
+        precios,
+        tipo: productType,
+        productVimeoId,
+        diplomaUrl,
+        // Campos de evento
+        ...(productType === 'evento' && {
+          fecha,
+          ubicacion: ubicacionObj,
+          online,
+          linkEvento,
+          cupo,
+          beneficios: beneficios || [],
+          aprendizajes: aprendizajes || [],
+          paraQuien: paraQuien || [],
+        }),
+        // Descuento
+        ...(descuentoObj && { descuento: descuentoObj })
+      };
+
+
+
+      let response;
+      if (productType === 'evento' && pdfPresentacion) {
+        // Usar FormData para enviar archivos
+        const formData = new FormData();
+        formData.append('data', JSON.stringify(productData));
+        formData.append('pdfPresentacion', pdfPresentacion);
+        
+        response = await axios.post('/api/product/createProduct', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      } else {
+        // Usar JSON para datos sin archivos
+        response = await axios.post('/api/product/createProduct', productData, config);
+      }
+
+      const { data } = response;
       setProductCreado(data.product);
       auth.fetchUser();
 
       toast.success(data.message);
-      //dispatch(clearData());
+      // Limpiar arrays de imágenes y estado tras éxito
+      setProductCreado({});
+      // Aquí podrías agregar lógica para limpiar el formulario en CreateProductStep1 usando un callback o estado global si lo deseas
     } catch (error: any) {
-      toast.error(error.response.data.error);
+      if (error.response && error.response.data && error.response.data.error) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error('Ocurrió un error inesperado al crear el producto.');
+      }
     }
     setLoading(false);
-    //if(productType == "workshop"){
-      step0ToStep1();
-    //}
   }
 
   return (

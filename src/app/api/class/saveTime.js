@@ -1,6 +1,5 @@
 import { verify } from 'jsonwebtoken';
 import connectDB from '../../../config/connectDB';
-import Course from '../../../models/courseModel';
 import User from '../../../models/userModel';
 import { cookies } from 'next/headers';
 

@@ -5,13 +5,13 @@ import mailchimp from '@mailchimp/mailchimp_transactional';
 
 export async function POST(req: NextRequest) {
   try {
-    console.log('Iniciando POST request');
+  
     
     await connectDB();
-    console.log('Conexión a DB exitosa');
+
     
     const body = await req.json();
-    console.log('Datos recibidos:', JSON.stringify(body, null, 2));
+
     
     // Validar campos requeridos
     const requiredFields = ['nombre', 'email', 'paisCiudad', 'interesadoEn', 'dondeEntrena', 'nivelActual', 'principalFreno', 'porQueElegirme', 'whatsapp', 'presupuesto'];
@@ -33,9 +33,9 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
     
-    console.log('Validaciones pasadas, creando solicitud...');
+
     const solicitud = await MentorshipRequest.create(body);
-    console.log('Solicitud creada exitosamente:', solicitud._id);
+
 
     // Enviar email de notificación
     try {
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
           to: [{ email: 'mateomolfino09@gmail.com', type: "to" }],
         },
       });
-      console.log('Email de notificación enviado correctamente');
+  
     } catch (emailError) {
       console.error('Error al enviar email de notificación:', emailError);
       // No fallamos la solicitud si el email falla

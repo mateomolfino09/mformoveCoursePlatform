@@ -1,4 +1,4 @@
-import { CoursesDB, IndividualClass, User } from '../../typings';
+import { IndividualClass, User } from '../../typings';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 

@@ -18,7 +18,6 @@ import AlertComponent from '../../AlertComponent';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import LoginModalForm from './AccountForm';
 import NewsletterF from '../Index/NewsletterForm';
-import Footprint from '../../svg/FootPrint'
 
 function LoginForm() {
   const [loading, setLoading] = useState(false);

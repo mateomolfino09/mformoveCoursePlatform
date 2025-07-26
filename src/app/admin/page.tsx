@@ -61,16 +61,16 @@ const Index = () => {
                 <p>Usuarios</p>
               </div>
             </Link>
-            <Link href={'/admin/courses'}>
-              <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
-                <TableCellsIcon className='w-24' />
-                <p>Cursos</p>
-              </div>
-            </Link>
             <Link href={'/admin/billing'}>
               <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
                 <CreditCardIcon className='w-24' />
                 <p>Facturación</p>
+              </div>
+            </Link>
+            <Link href={'/admin/mentorship'}>
+              <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
+                <AcademicCapIcon className='w-24' />
+                <p>Mentoría</p>
               </div>
             </Link>
           </div>
@@ -93,12 +93,7 @@ const Index = () => {
                 <p>Memberships</p>
               </div>
             </Link>
-            <Link href={'/admin/mentorship'}>
-              <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
-                <AcademicCapIcon className='w-24' />
-                <p>Mentoría</p>
-              </div>
-            </Link>
+
             {/* <Link href={'#'}>
               <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
               </div>

@@ -13,7 +13,6 @@ import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import { useAppSelector } from '../../../redux/hooks';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
-import { clearData } from '../../../redux/features/createCoursesSlice';
 import { ClassTypes } from '../../../../typings';
 import CreatePlanStepOne from './CreatePlanStepOne';
 
@@ -75,7 +74,6 @@ const CreatePlan = () => {
       auth.fetchUser();
       toast.success('Plan de membresía creado exitosamente');
       router.push('/admin/memberships');
-      dispatch(clearData());
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Error al crear el plan');
     }

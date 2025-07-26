@@ -52,7 +52,6 @@ export async function POST(req: NextRequest) {
       reactivateUrl: 'https://mateomove.com/membership',
       accessUrl: 'https://mateomove.com/account',
       retryUrl: 'https://mateomove.com/membership',
-      nextCourseUrl: 'https://mateomove.com/courses'
     };
 
     // Enviar todos los tipos de email

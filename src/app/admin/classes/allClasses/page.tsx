@@ -48,5 +48,5 @@ export default function Page() {
   }
 
   // Renderiza las clases cuando se obtienen correctamente
-  return <AllClasses classes={classes} />;
+  return <AllClasses classes={classes as IndividualClass[]} />;
 }

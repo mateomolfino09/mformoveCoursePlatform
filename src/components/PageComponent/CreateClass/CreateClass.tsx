@@ -1,16 +1,12 @@
 'use client';
 
 import { ClassTypes } from '../../../../typings';
-import { courseTypeConst } from '../../../constants/courseType';
 import { useAuth } from '../../../hooks/useAuth';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
-import { clearData } from '../../../redux/features/createCoursesSlice';
+import { clearData } from '../../../redux/features/filterClass';
 import { useAppSelector } from '../../../redux/hooks';
 import requests from '../../../utils/requests';
 import AdmimDashboardLayout from '../../AdmimDashboardLayout';
-import CreateCourseStepCero from '../../CreateCourseStepCero';
-import CreateCourseStepOne from '../../CreateCourseStepOne';
-import CreateCourseStepTwo from '../../CreateCourseStepTwo';
 import { LoadingSpinner } from '../../LoadingSpinner';
 import CreateClassStepOne from './CreateClassStepOne';
 import CreateClassStepTwo from './CreateClassStepTwo';

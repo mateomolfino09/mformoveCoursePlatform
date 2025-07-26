@@ -70,6 +70,57 @@ const IndividualProduct = ({ product }: Props) => {
     }
   }
 
+  // --- Lógica para precio vigente (solo eventos con precios escalonados) ---
+  function getCurrentPriceInfo() {
+    const { precios, stripePrices, tipo } = product as any;
+    if (tipo !== 'evento' || !precios || !stripePrices) return null;
+    const now = new Date();
+    // Early Bird
+    if (
+      precios.earlyBird?.price &&
+      precios.earlyBird.start &&
+      precios.earlyBird.end &&
+      now >= new Date(precios.earlyBird.start) &&
+      now <= new Date(precios.earlyBird.end)
+    ) {
+      return {
+        label: 'Early Bird',
+        price: precios.earlyBird.price,
+        stripePriceId: stripePrices.earlyBird,
+      };
+    }
+    // General
+    if (
+      precios.general?.price &&
+      precios.general.start &&
+      precios.general.end &&
+      now >= new Date(precios.general.start) &&
+      now <= new Date(precios.general.end)
+    ) {
+      return {
+        label: 'General',
+        price: precios.general.price,
+        stripePriceId: stripePrices.general,
+      };
+    }
+    // Last Tickets
+    if (
+      precios.lastTickets?.price &&
+      precios.lastTickets.start &&
+      precios.lastTickets.end &&
+      now >= new Date(precios.lastTickets.start) &&
+      now <= new Date(precios.lastTickets.end)
+    ) {
+      return {
+        label: 'Last Tickets',
+        price: precios.lastTickets.price,
+        stripePriceId: stripePrices.lastTickets,
+      };
+    }
+    return null;
+  }
+  const currentPriceInfo = getCurrentPriceInfo();
+
   async function handleSubmit() {
 
     const pass = checkLogin();
@@ -83,14 +134,20 @@ const IndividualProduct = ({ product }: Props) => {
           'Content-Type': 'application/json'
         }
       };
-
+      // Usar el priceId vigente si es evento escalonado
+      let priceId = undefined;
+      const { tipo } = product as any;
+      if (tipo === 'evento' && currentPriceInfo) {
+        priceId = currentPriceInfo.stripePriceId;
+      }
       const { data } = await axios.post(
         '/api/payments/oneTimePayment',
         {
           name: product.name,
-          description:product.phraseName,
+          description: product.phraseName,
           currency: 'USD',
-          amount: product.price,
+          amount: currentPriceInfo ? currentPriceInfo.price : product.price,
+          priceId,
           back_url: `/products/${product.url}`,
           success_url: `/products/${product.url}/success-payment`
         },
@@ -176,25 +233,40 @@ const IndividualProduct = ({ product }: Props) => {
             )}
             </div>
             <div className='flex w-full lg:bg-gray-300/50 lg:p-6 lg:rounded-md flex-col lg:space-y-4 md:space-y-4'>
-            <button
-              onClick={(e) => handleSubmit()}
-              className='w-full hidden md:block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
-            >
-          
-              {loading ? (
-                <div className='w-full h-5 flex justify-center items-center'>
-                  <MiniLoadingSpinner />
-
+              {/* Mostrar precio vigente */}
+              {(() => { const { tipo } = product as any; return tipo === 'evento' && currentPriceInfo })() ? (
+                <div className='mb-2'>
+                  <span className='text-lg font-bold text-black'>
+                    {currentPriceInfo?.label}: ${currentPriceInfo?.price} USD
+                  </span>
                 </div>
               ) : (
-                <>
-                  <div className="absolute inset-0 w-0 bg-[#a38951] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
-                  <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Comprar Ahora{' '} ({product.price} {product.currency})
-                  </span> 
-   
-                </>
+                <div className='mb-2'>
+                  <span className='text-lg font-bold text-black'>
+                    Precio: ${product.price} {product.currency}
+                  </span>
+                </div>
               )}
-            </button>
+              <button
+                onClick={(e) => handleSubmit()}
+                className='w-full hidden md:block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
+                disabled={(() => { const { tipo } = product as any; return tipo === 'evento' && !currentPriceInfo })()}
+              >
+                {loading ? (
+                  <div className='w-full h-5 flex justify-center items-center'>
+                    <MiniLoadingSpinner />
+                  </div>
+                ) : (
+                  <>
+                    <div className="absolute inset-0 w-0 bg-[#a38951] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
+                    <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>
+                      {(() => { const { tipo } = product as any; return tipo === 'evento' && currentPriceInfo })()
+                        ? `Comprar (${currentPriceInfo?.label} $${currentPriceInfo?.price} USD)`
+                        : `Comprar Ahora (${product.price} ${product.currency})`}
+                    </span>
+                  </>
+                )}
+              </button>
               <p className='text-black text-lg  md:text-lg font-normal'>{product.longDescription}</p>
             </div>
             <div className='w-full hidden lg:flex lg:flex-col lg:bg-gray-300/50 lg:p-6 cursor-pointer rounded-md' onClick={() => setActivateFrequent(!activateFrequent)}>

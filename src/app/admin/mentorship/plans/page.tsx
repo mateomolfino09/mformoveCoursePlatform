@@ -289,6 +289,146 @@ export default function AdminMentorshipPlansPage() {
                           </div>
                         </div>
 
+                        {/* Links de Pago */}
+                        <div>
+                          <h3 className="font-semibold text-[#1A1A1A] mb-3">Links de Pago Stripe</h3>
+                          <div className="space-y-3">
+                            {planSelected.prices && planSelected.prices.length > 0 ? (
+                              planSelected.prices.map((price, index) => (
+                                <div key={index} className="bg-[#F7F7F7] p-3 rounded-lg">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-sm font-medium text-[#1A1A1A] capitalize">
+                                      {price.interval}
+                                    </span>
+                                    <span className="text-sm font-semibold text-[#234C8C]">
+                                      ${price.price} {price.currency}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <input
+                                      type="text"
+                                      value="Generando link..."
+                                      readOnly
+                                      id={`payment-link-${price.interval}`}
+                                      className="flex-1 text-xs text-gray-600 bg-white border border-gray-300 rounded px-2 py-1 font-mono"
+                                    />
+                                    <button
+                                      onClick={async () => {
+                                        try {
+                                          const response = await fetch('/api/mentorship/stripe/createPaymentLinks', {
+                                            method: 'POST',
+                                            headers: {
+                                              'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({
+                                              planId: planSelected._id,
+                                            }),
+                                          });
+                                          
+                                          const data = await response.json();
+                                          
+                                          if (data.success && data.paymentLinks[price.interval]) {
+                                            const linkInput = document.getElementById(`payment-link-${price.interval}`) as HTMLInputElement;
+                                            if (linkInput) {
+                                              linkInput.value = data.paymentLinks[price.interval];
+                                            }
+                                            navigator.clipboard.writeText(data.paymentLinks[price.interval]);
+                                            toast.success('Link de Stripe copiado al portapapeles');
+                                          } else {
+                                            toast.error('Error al generar el link de pago');
+                                          }
+                                        } catch (error) {
+                                          toast.error('Error al generar el link de pago');
+                                        }
+                                      }}
+                                      className="bg-[#234C8C] text-white px-3 py-1 rounded text-xs hover:bg-[#1a3763] transition-colors"
+                                    >
+                                      Generar
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        const linkInput = document.getElementById(`payment-link-${price.interval}`) as HTMLInputElement;
+                                        if (linkInput && linkInput.value !== 'Generando link...') {
+                                          navigator.clipboard.writeText(linkInput.value);
+                                          toast.success('Link copiado al portapapeles');
+                                        }
+                                      }}
+                                      className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 transition-colors"
+                                    >
+                                      Copiar
+                                    </button>
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="bg-[#F7F7F7] p-3 rounded-lg">
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className="text-sm font-medium text-[#1A1A1A] capitalize">
+                                    {planSelected.interval}
+                                  </span>
+                                  <span className="text-sm font-semibold text-[#234C8C]">
+                                    ${planSelected.price} {planSelected.currency}
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <input
+                                    type="text"
+                                    value="Generando link..."
+                                    readOnly
+                                    id={`payment-link-${planSelected.interval}`}
+                                    className="flex-1 text-xs text-gray-600 bg-white border border-gray-300 rounded px-2 py-1 font-mono"
+                                  />
+                                  <button
+                                    onClick={async () => {
+                                      try {
+                                        const response = await fetch('/api/mentorship/stripe/createPaymentLinks', {
+                                          method: 'POST',
+                                          headers: {
+                                            'Content-Type': 'application/json',
+                                          },
+                                          body: JSON.stringify({
+                                            planId: planSelected._id,
+                                          }),
+                                        });
+                                        
+                                        const data = await response.json();
+                                        
+                                        if (data.success && data.paymentLinks[planSelected.interval]) {
+                                          const linkInput = document.getElementById(`payment-link-${planSelected.interval}`) as HTMLInputElement;
+                                          if (linkInput) {
+                                            linkInput.value = data.paymentLinks[planSelected.interval];
+                                          }
+                                          navigator.clipboard.writeText(data.paymentLinks[planSelected.interval]);
+                                          toast.success('Link de Stripe copiado al portapapeles');
+                                        } else {
+                                          toast.error('Error al generar el link de pago');
+                                        }
+                                      } catch (error) {
+                                        toast.error('Error al generar el link de pago');
+                                      }
+                                    }}
+                                    className="bg-[#234C8C] text-white px-3 py-1 rounded text-xs hover:bg-[#1a3763] transition-colors"
+                                  >
+                                    Generar
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      const linkInput = document.getElementById(`payment-link-${planSelected.interval}`) as HTMLInputElement;
+                                      if (linkInput && linkInput.value !== 'Generando link...') {
+                                        navigator.clipboard.writeText(linkInput.value);
+                                        toast.success('Link copiado al portapapeles');
+                                      }
+                                    }}
+                                    className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 transition-colors"
+                                  >
+                                    Copiar
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
                         {/* Estado */}
                         <div>
                           <h3 className="font-semibold text-[#1A1A1A] mb-2">Estado</h3>

@@ -1,7 +1,5 @@
 import connectDB from '../../../../config/connectDB';
-import { courseTypeConst } from '../../../../constants/courseType';
 import Classes from '../../../../models/classModel';
-import Courses from '../../../../models/courseModel';
 import Exam from '../../../../models/examModel';
 import IndividualClass from '../../../../models/individualClassModel';
 import Users from '../../../../models/userModel';
@@ -18,7 +16,8 @@ export async function PUT(req) {
       const {
         productId,
         modules,
-        updatedClasses
+        updatedClasses,
+        descuento // nuevo campo opcional
       } = await req.json();
 
 
@@ -28,8 +27,11 @@ export async function PUT(req) {
         const findEditProduct = await Product.findOne({id:productId});// Assuming unique IDs
 
         findEditProduct.modules = modules;
-        findEditProduct.classes = updatedClasses
-        findEditProduct.save();
+        findEditProduct.classes = updatedClasses;
+        if (descuento !== undefined) {
+          findEditProduct.descuento = descuento;
+        }
+        await findEditProduct.save();
 
         return findEditProduct;
       };

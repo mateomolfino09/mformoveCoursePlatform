@@ -108,14 +108,19 @@ const preguntas = [
     type: "radio",
     options: [
       {
-        value: "opcion1",
-        label: "OPCIÓN 1. Mentoría Explorador ($100/mes)",
-        description: "Acompañamiento básico con rutina personalizada, seguimiento quincenal, 2 encuentros mensuales y correcciones de técnica por WhatsApp. Ideal para quienes buscan resultados con menor inversión."
+        value: "explorer",
+        label: "MENTORÍA EXPLORADOR ($250/trimestre - $850/año)",
+        description: "Ideal para iniciarse en el movimiento consciente. Plan personalizado, 1 encuentro mensual, comunidad y feedbacks semanales."
       },
       {
-        value: "opcion2", 
-        label: "OPCIÓN 2. Mentoría Personalizada ($200 - $300/mes)",
-        description: "Acompañamiento 1:1 con Mateo, rutinas personalizadas, seguimiento y llamadas semanales, correcciones de técnica y contacto directo. Para quienes buscan resultados garantizados y procesos profundos."
+        value: "practitioner", 
+        label: "MENTORÍA PRACTICANTE ($300/trimestre - $1020/año)",
+        description: "Para quienes ya tienen experiencia. 2 encuentros mensuales, evaluaciones y soporte prioritario."
+      },
+      {
+        value: "student",
+        label: "MENTORÍA ESTUDIANTE ($460/trimestre - $1564/año)",
+        description: "El plan más completo. 1 encuentro semanal, feedback ilimitado, formación avanzada y 50% descuento en talleres."
       }
     ],
     required: true,
@@ -349,7 +354,7 @@ export default function MentorshipConsultaPage() {
           exit="hidden"
         >
           <motion.h1
-            className="text-3xl md:text-4xl font-bold text-center tracking-tight"
+            className="text-3xl md:text-4xl font-bold text-center tracking-tight font-montserrat"
             style={{ color: '#234C8C', fontFamily: 'Montserrat, sans-serif', letterSpacing: '-0.5px' }}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -358,7 +363,7 @@ export default function MentorshipConsultaPage() {
             Entrena Conmigo
           </motion.h1>
           <motion.h3
-            className="text-lg md:text-xl mb-4 text-center tracking-tight !mt-2" 
+            className="text-lg md:text-xl mb-4 text-center font-montserrat tracking-tight !mt-2" 
             style={{ color: 'black', fontFamily: 'Montserrat, sans-serif', letterSpacing: '-0.5px' }}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -453,6 +458,8 @@ export default function MentorshipConsultaPage() {
                   {(preguntaActual.options as any[]).map((opt: any) => (
                     <label key={opt.value} className="block cursor-pointer">
                       <div className="border border-[#234C8C]/30 rounded-lg p-4 hover:bg-[#234C8C]/5 transition-colors">
+
+                        
                         <div className="flex items-start space-x-3">
                           <input
                             type="radio"
@@ -463,8 +470,24 @@ export default function MentorshipConsultaPage() {
                             className="w-4 h-4 text-[#234C8C] border-[#234C8C]/30 focus:ring-[#234C8C] mt-1"
                           />
                           <div className="flex-1">
-                            <div className="font-semibold text-[#234C8C] mb-2">{opt.label}</div>
-                            <div className="text-gray-700 text-sm">{opt.description}</div>
+                            <div className={`font-semibold mb-2 ${
+                              opt.value === "student" 
+                                ? "text-transparent bg-clip-text bg-gradient-to-r from-[#234C8C] to-[#5FA8E9] text-lg" 
+                                : opt.value === "practitioner"
+                                ? "text-[#234C8C] text-base font-bold"
+                                : "text-[#234C8C]"
+                            }`}>
+                              {opt.label}
+                            </div>
+                            <div className={`text-sm ${
+                              opt.value === "student" 
+                                ? "text-gray-800 font-medium" 
+                                : opt.value === "practitioner"
+                                ? "text-gray-700 font-medium"
+                                : "text-gray-700"
+                            }`}>
+                              {opt.description}
+                            </div>
                           </div>
                         </div>
                       </div>

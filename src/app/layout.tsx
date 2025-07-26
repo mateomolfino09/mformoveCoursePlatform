@@ -1,10 +1,8 @@
 import '../styles/globals.css';
-import { CoursesDB, User } from '../../typings';
 import { ProviderAuth } from '../hooks/useAuth';
 import ToasterProvider from '../hooks/toastProvider';
 import ProgressBarProvider from '../hooks/progressBar';
 import Providers from '../redux/providers';
-import { GlobalContextProvider } from './context/store';
 import GoogleCaptchaWrapper from '../hooks/RecaptchaProvider';
 import { BoldFont, MontserratFont } from "../utils/customFonts"
 
@@ -26,13 +24,11 @@ export default function RootLayout({
       <body className={`${BoldFont.variable} ${MontserratFont.variable}`}>
       <ProviderAuth>
           <Providers>
-          <GlobalContextProvider>
           <ToasterProvider>
             <ProgressBarProvider>
               {children}
             </ProgressBarProvider>
             </ToasterProvider>
-            </GlobalContextProvider>
           </Providers>
       </ProviderAuth>
       </body>
