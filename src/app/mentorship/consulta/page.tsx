@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CldImage } from 'next-cloudinary';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -17,6 +17,10 @@ interface FormState {
   comentarios: string;
 }
 
+interface FormErrors {
+  [key: string]: string;
+}
+
 interface RadioOption {
   value: string;
   label: string;
@@ -29,6 +33,23 @@ interface Pregunta {
   type: "text" | "email" | "textarea" | "select" | "checkbox" | "radio";
   required: boolean;
   options?: any[];
+}
+
+interface PlanPrice {
+  interval: 'trimestral' | 'anual';
+  price: number;
+  currency: string;
+  stripePriceId: string;
+}
+
+interface MentorshipPlan {
+  _id: string;
+  name: string;
+  description: string;
+  features: string[];
+  level: string;
+  active: boolean;
+  prices: PlanPrice[];
 }
 
 const preguntas = [
@@ -106,23 +127,7 @@ const preguntas = [
     name: "presupuesto",
     label: "¿Qué servicios te interesan más según tu situación financiera actual?",
     type: "radio",
-    options: [
-      {
-        value: "explorer",
-        label: "MENTORÍA EXPLORADOR ($250/trimestre - $850/año)",
-        description: "Ideal para iniciarse en el movimiento consciente. Plan personalizado, 1 encuentro mensual, comunidad y feedbacks semanales."
-      },
-      {
-        value: "practitioner", 
-        label: "MENTORÍA PRACTICANTE ($300/trimestre - $1020/año)",
-        description: "Para quienes ya tienen experiencia. 2 encuentros mensuales, evaluaciones y soporte prioritario."
-      },
-      {
-        value: "student",
-        label: "MENTORÍA ESTUDIANTE ($460/trimestre - $1564/año)",
-        description: "El plan más completo. 1 encuentro semanal, feedback ilimitado, formación avanzada y 50% descuento en talleres."
-      }
-    ],
+    options: [], // Se llenará dinámicamente con los planes de la base de datos
     required: true,
   },
   {
@@ -166,22 +171,205 @@ function isStringOptions(options: any[]): options is string[] {
   return options.length > 0 && typeof options[0] === 'string';
 }
 
+// Funciones de validación
+const validators = {
+  nombre: (value: string): string => {
+    if (!value.trim()) return 'El nombre es requerido';
+    if (value.trim().length < 2) return 'El nombre debe tener al menos 2 caracteres';
+    if (value.trim().length > 50) return 'El nombre no puede exceder 50 caracteres';
+    if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value.trim())) {
+      return 'El nombre solo puede contener letras y espacios';
+    }
+    return '';
+  },
+
+  email: (value: string): string => {
+    if (!value.trim()) return 'El email es requerido';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value.trim())) {
+      return 'Ingresa un email válido';
+    }
+    return '';
+  },
+
+  paisCiudad: (value: string): string => {
+    if (!value.trim()) return 'El país y ciudad son requeridos';
+    if (value.trim().length < 5) return 'Ingresa país y ciudad completos';
+    if (value.trim().length > 100) return 'El texto es demasiado largo';
+    return '';
+  },
+
+  interesadoEn: (value: string[]): string => {
+    if (!value || value.length === 0) return 'Debes seleccionar al menos una opción';
+    return '';
+  },
+
+  dondeEntrena: (value: string): string => {
+    if (!value.trim()) return 'Debes seleccionar dónde entrenas';
+    return '';
+  },
+
+  nivelActual: (value: string): string => {
+    if (!value.trim()) return 'Debes seleccionar tu nivel actual';
+    return '';
+  },
+
+  principalFreno: (value: string): string => {
+    if (!value.trim()) return 'Este campo es requerido';
+    if (value.trim().length < 20) return 'Describe tu situación con más detalle (mínimo 20 caracteres)';
+    if (value.trim().length > 500) return 'El texto es demasiado largo (máximo 500 caracteres)';
+    return '';
+  },
+
+  porQueElegirme: (value: string): string => {
+    if (!value.trim()) return 'Este campo es requerido';
+    if (value.trim().length < 20) return 'Describe tus expectativas con más detalle (mínimo 20 caracteres)';
+    if (value.trim().length > 500) return 'El texto es demasiado largo (máximo 500 caracteres)';
+    return '';
+  },
+
+  whatsapp: (value: string): string => {
+    if (!value.trim()) return 'El WhatsApp es requerido';
+    // Validar formato internacional: +1234567890 o 1234567890
+    const whatsappRegex = /^(\+?[1-9]\d{1,14}|[1-9]\d{8,14})$/;
+    const cleanNumber = value.trim().replace(/[\s\-\(\)]/g, '');
+    if (!whatsappRegex.test(cleanNumber)) {
+      return 'Ingresa un número de WhatsApp válido (ej: +1234567890)';
+    }
+    return '';
+  },
+
+  presupuesto: (value: string): string => {
+    if (!value.trim()) return 'Debes seleccionar un plan de mentoría';
+    return '';
+  },
+
+  comentarios: (value: string): string => {
+    if (value.trim() && value.trim().length > 300) {
+      return 'Los comentarios no pueden exceder 300 caracteres';
+    }
+    return '';
+  }
+};
+
 export default function MentorshipConsultaPage() {
   const [form, setForm] = useState<FormState>(initialState);
   const [step, setStep] = useState(0);
   const [enviado, setEnviado] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [mentorshipPlans, setMentorshipPlans] = useState<MentorshipPlan[]>([]);
+  const [plansLoaded, setPlansLoaded] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<{[key: string]: boolean}>({});
 
   const preguntaActual = preguntas[step];
+
+  // Función para cargar los planes de mentoría
+  const loadMentorshipPlans = async () => {
+    try {
+      console.log('Cargando planes de mentoría...');
+      const response = await fetch('/api/payments/getPlans?type=mentorship');
+      console.log('Response status:', response.status);
+      
+      if (response.ok) {
+        const plans = await response.json();
+        console.log('Planes recibidos:', plans);
+        
+        const activePlans = plans.filter((plan: MentorshipPlan) => plan.active);
+        console.log('Planes activos:', activePlans);
+        
+        setMentorshipPlans(activePlans);
+        
+        // Actualizar las opciones de presupuesto con los planes reales
+        const presupuestoPregunta = preguntas.find(p => p.name === 'presupuesto');
+        if (presupuestoPregunta) {
+          const options = activePlans.map((plan: MentorshipPlan) => {
+            const trimestralPrice = plan.prices?.find((p: PlanPrice) => p.interval === 'trimestral');
+            const anualPrice = plan.prices?.find((p: PlanPrice) => p.interval === 'anual');
+            
+            let label = `MENTORÍA ${plan.level.toUpperCase()}`;
+            if (trimestralPrice && anualPrice) {
+              label += ` ($${trimestralPrice.price}/${trimestralPrice.interval} - $${anualPrice.price}/${anualPrice.interval})`;
+            } else if (trimestralPrice) {
+              label += ` ($${trimestralPrice.price}/${trimestralPrice.interval})`;
+            }
+            
+            return {
+              value: plan.level,
+              label: label,
+              description: plan.description
+            };
+          });
+          
+          console.log('Opciones generadas:', options);
+          presupuestoPregunta.options = options;
+        }
+        
+        setPlansLoaded(true);
+      } else {
+        console.error('Error en la respuesta:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error cargando planes de mentoría:', error);
+    }
+  };
+
+  // Cargar planes al montar el componente
+  useEffect(() => {
+    loadMentorshipPlans();
+  }, []);
+
+  // Función para validar un campo específico
+  const validateField = (name: string, value: any): string => {
+    const validator = validators[name as keyof typeof validators];
+    if (validator) {
+      return validator(value);
+    }
+    return '';
+  };
+
+  // Función para validar todos los campos
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+    
+    Object.keys(form).forEach(key => {
+      const error = validateField(key, form[key as keyof FormState]);
+      if (error) {
+        newErrors[key] = error;
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Función para validar el paso actual
+  const validateCurrentStep = (): boolean => {
+    const currentField = preguntaActual.name;
+    const currentValue = form[currentField as keyof FormState];
+    const error = validateField(currentField, currentValue);
+    
+    if (error) {
+      setErrors(prev => ({ ...prev, [currentField]: error }));
+      return false;
+    } else {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[currentField];
+        return newErrors;
+      });
+      return true;
+    }
+  };
 
   // Validación de paso
   const isValid = () => {
     if (preguntaActual.required) {
-      if (preguntaActual.type === "select" && form[preguntaActual.name as keyof FormState] === "") return false;
-      if (preguntaActual.type === "radio" && form[preguntaActual.name as keyof FormState] === "") return false;
-      if (preguntaActual.type === "checkbox" && (form[preguntaActual.name as keyof FormState] as string[]).length === 0) return false;
-      if (preguntaActual.type !== "select" && preguntaActual.type !== "radio" && preguntaActual.type !== "checkbox" && !form[preguntaActual.name as keyof FormState]) return false;
+      const currentField = preguntaActual.name;
+      const currentValue = form[currentField as keyof FormState];
+      const error = validateField(currentField, currentValue);
+      return !error;
     }
     return true;
   };
@@ -201,16 +389,52 @@ export default function MentorshipConsultaPage() {
     } else {
       setForm({ ...form, [name]: value } as FormState);
     }
+
+    // Validación en tiempo real
+    if (touched[name]) {
+      const newValue = type === 'checkbox' ? 
+        (e.target as HTMLInputElement).checked ? 
+          [...(form[name as keyof FormState] as string[] || []), value] : 
+          (form[name as keyof FormState] as string[] || []).filter(v => v !== value)
+        : value;
+      
+      const error = validateField(name, newValue);
+      setErrors(prev => ({
+        ...prev,
+        [name]: error
+      }));
+    }
   };
 
   const handleRadioChange = (name: string, value: string) => {
     setForm({ ...form, [name]: value } as FormState);
+    
+    // Validación en tiempo real
+    if (touched[name]) {
+      const error = validateField(name, value);
+      setErrors(prev => ({
+        ...prev,
+        [name]: error
+      }));
+    }
+  };
+
+  const handleBlur = (name: string) => {
+    setTouched(prev => ({ ...prev, [name]: true }));
+    const value = form[name as keyof FormState];
+    const error = validateField(name, value);
+    setErrors(prev => ({
+      ...prev,
+      [name]: error
+    }));
   };
 
   const handleNext = () => {
     setError("");
-    if (!isValid()) {
-      setError("Por favor completa este campo para continuar.");
+    // Marcar el campo actual como tocado
+    setTouched(prev => ({ ...prev, [preguntaActual.name]: true }));
+    
+    if (!validateCurrentStep()) {
       return;
     }
     setStep((prev) => prev + 1);
@@ -224,6 +448,19 @@ export default function MentorshipConsultaPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    
+    // Marcar todos los campos como tocados
+    const allTouched = Object.keys(form).reduce((acc, key) => {
+      acc[key] = true;
+      return acc;
+    }, {} as {[key: string]: boolean});
+    setTouched(allTouched);
+    
+    // Validar todo el formulario
+    if (!validateForm()) {
+      return;
+    }
+    
     setLoading(true);
     
     try {
@@ -384,78 +621,132 @@ export default function MentorshipConsultaPage() {
               <label className="block font-semibold mb-2 text-black text-lg md:text-xl" style={{ color: '#234C8C', fontFamily: 'Montserrat, sans-serif' }}>{preguntaActual.label}</label>
               
               {preguntaActual.type === "text" && (
-                <input
-                  type="text"
-                  name={preguntaActual.name}
-                  value={form[preguntaActual.name as keyof FormState] as string}
-                  onChange={handleChange}
-                  required={preguntaActual.required}
-                  className="w-full border border-[#234C8C]/30 rounded px-3 py-2 text-black bg-white/90 focus:outline-none focus:ring-2 focus:ring-[#234C8C] font-montserrat"
-                  autoFocus
-                />
+                <div>
+                  <input
+                    type="text"
+                    name={preguntaActual.name}
+                    value={form[preguntaActual.name as keyof FormState] as string}
+                    onChange={handleChange}
+                    onBlur={() => handleBlur(preguntaActual.name)}
+                    required={preguntaActual.required}
+                    className={`w-full border rounded px-3 py-2 text-black bg-white/90 focus:outline-none focus:ring-2 font-montserrat ${
+                      errors[preguntaActual.name] && touched[preguntaActual.name]
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-[#234C8C]/30 focus:ring-[#234C8C]'
+                    }`}
+                    autoFocus
+                  />
+                  {errors[preguntaActual.name] && touched[preguntaActual.name] && (
+                    <p className="text-red-600 text-sm mt-1 font-montserrat">{errors[preguntaActual.name]}</p>
+                  )}
+                </div>
               )}
               
               {preguntaActual.type === "email" && (
-                <input
-                  type="email"
-                  name={preguntaActual.name}
-                  value={form[preguntaActual.name as keyof FormState] as string}
-                  onChange={handleChange}
-                  required={preguntaActual.required}
-                  className="w-full border border-[#234C8C]/30 rounded px-3 py-2 text-black bg-white/90 focus:outline-none focus:ring-2 focus:ring-[#234C8C] font-montserrat"
-                  autoFocus
-                />
+                <div>
+                  <input
+                    type="email"
+                    name={preguntaActual.name}
+                    value={form[preguntaActual.name as keyof FormState] as string}
+                    onChange={handleChange}
+                    onBlur={() => handleBlur(preguntaActual.name)}
+                    required={preguntaActual.required}
+                    className={`w-full border rounded px-3 py-2 text-black bg-white/90 focus:outline-none focus:ring-2 font-montserrat ${
+                      errors[preguntaActual.name] && touched[preguntaActual.name]
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-[#234C8C]/30 focus:ring-[#234C8C]'
+                    }`}
+                    autoFocus
+                  />
+                  {errors[preguntaActual.name] && touched[preguntaActual.name] && (
+                    <p className="text-red-600 text-sm mt-1 font-montserrat">{errors[preguntaActual.name]}</p>
+                  )}
+                </div>
               )}
               
               {preguntaActual.type === "textarea" && (
-                <textarea
-                  name={preguntaActual.name}
-                  value={form[preguntaActual.name as keyof FormState] as string}
-                  onChange={handleChange}
-                  required={preguntaActual.required}
-                  rows={4}
-                  className="w-full border border-[#234C8C]/30 rounded px-3 py-2 text-black bg-white/90 focus:outline-none focus:ring-2 focus:ring-[#234C8C] font-montserrat resize-none"
-                  autoFocus
-                />
+                <div>
+                  <textarea
+                    name={preguntaActual.name}
+                    value={form[preguntaActual.name as keyof FormState] as string}
+                    onChange={handleChange}
+                    onBlur={() => handleBlur(preguntaActual.name)}
+                    required={preguntaActual.required}
+                    rows={4}
+                    className={`w-full border rounded px-3 py-2 text-black bg-white/90 focus:outline-none focus:ring-2 font-montserrat resize-none ${
+                      errors[preguntaActual.name] && touched[preguntaActual.name]
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-[#234C8C]/30 focus:ring-[#234C8C]'
+                    }`}
+                    autoFocus
+                  />
+                  {errors[preguntaActual.name] && touched[preguntaActual.name] && (
+                    <p className="text-red-600 text-sm mt-1 font-montserrat">{errors[preguntaActual.name]}</p>
+                  )}
+                </div>
               )}
               
               {preguntaActual.type === "select" && Array.isArray(preguntaActual.options) && (
-                <select
-                  name={preguntaActual.name}
-                  value={form[preguntaActual.name as keyof FormState] as string}
-                  onChange={handleChange}
-                  required={preguntaActual.required}
-                  className="w-full border border-[#234C8C]/30 rounded px-3 py-2 text-black bg-white/90 focus:outline-none focus:ring-2 focus:ring-[#234C8C] font-montserrat"
-                  autoFocus
-                >
-                  <option value="">Selecciona una opción</option>
-                  {preguntaActual.options.map((opt: any) => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
+                <div>
+                  <select
+                    name={preguntaActual.name}
+                    value={form[preguntaActual.name as keyof FormState] as string}
+                    onChange={handleChange}
+                    onBlur={() => handleBlur(preguntaActual.name)}
+                    required={preguntaActual.required}
+                    className={`w-full border rounded px-3 py-2 text-black bg-white/90 focus:outline-none focus:ring-2 font-montserrat ${
+                      errors[preguntaActual.name] && touched[preguntaActual.name]
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-[#234C8C]/30 focus:ring-[#234C8C]'
+                    }`}
+                    autoFocus
+                  >
+                    <option value="">Selecciona una opción</option>
+                    {preguntaActual.options.map((opt: any) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                  {errors[preguntaActual.name] && touched[preguntaActual.name] && (
+                    <p className="text-red-600 text-sm mt-1 font-montserrat">{errors[preguntaActual.name]}</p>
+                  )}
+                </div>
               )}
               
               {preguntaActual.type === "checkbox" && Array.isArray(preguntaActual.options) && preguntaActual.options.length > 0 && (
-                <div className="space-y-3">
-                  {preguntaActual.options.map((opt: any) => (
-                    <label key={opt} className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name={preguntaActual.name}
-                        value={opt}
-                        checked={(form[preguntaActual.name as keyof FormState] as string[] || []).includes(opt)}
-                        onChange={handleChange}
-                        className="w-4 h-4 text-[#234C8C] border-[#234C8C]/30 rounded focus:ring-[#234C8C]"
-                      />
-                      <span className="text-gray-800 font-montserrat">{opt}</span>
-                    </label>
-                  ))}
+                <div>
+                  <div className="space-y-3">
+                    {preguntaActual.options.map((opt: any) => (
+                      <label key={opt} className="flex items-center space-x-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          name={preguntaActual.name}
+                          value={opt}
+                          checked={(form[preguntaActual.name as keyof FormState] as string[] || []).includes(opt)}
+                          onChange={handleChange}
+                          onBlur={() => handleBlur(preguntaActual.name)}
+                          className="w-4 h-4 text-[#234C8C] border-[#234C8C]/30 rounded focus:ring-[#234C8C]"
+                        />
+                        <span className="text-gray-800 font-montserrat">{opt}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {errors[preguntaActual.name] && touched[preguntaActual.name] && (
+                    <p className="text-red-600 text-sm mt-1 font-montserrat">{errors[preguntaActual.name]}</p>
+                  )}
+                </div>
+              )}
+              
+              {preguntaActual.type === "radio" && preguntaActual.name === "presupuesto" && !plansLoaded && (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#234C8C]"></div>
+                  <span className="ml-3 text-gray-600 font-montserrat">Cargando planes de mentoría...</span>
                 </div>
               )}
               
               {preguntaActual.type === "radio" && Array.isArray(preguntaActual.options) && preguntaActual.options.length > 0 && (
-                <div className="space-y-4">
-                  {(preguntaActual.options as any[]).map((opt: any) => (
+                <div>
+                  <div className="space-y-4">
+                    {(preguntaActual.options as any[]).map((opt: any) => (
                     <label key={opt.value} className="block cursor-pointer">
                       <div className="border border-[#234C8C]/30 rounded-lg p-4 hover:bg-[#234C8C]/5 transition-colors">
 
@@ -493,6 +784,10 @@ export default function MentorshipConsultaPage() {
                       </div>
                     </label>
                   ))}
+                  </div>
+                  {errors[preguntaActual.name] && touched[preguntaActual.name] && (
+                    <p className="text-red-600 text-sm mt-1 font-montserrat">{errors[preguntaActual.name]}</p>
+                  )}
                 </div>
               )}
             </motion.div>
