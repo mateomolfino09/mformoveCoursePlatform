@@ -3,7 +3,6 @@ import connectDB from '../../../../config/connectDB';
 import Product from '../../../../models/productModel';
 import ProgramaTransformacionalUser from '../../../../models/programaTransformacionalUserModel';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,7 +11,7 @@ export async function POST(req: NextRequest) {
     const { programId } = await req.json();
     
     // Verificar autenticación
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Debes estar autenticado para inscribirte' },
@@ -45,7 +44,7 @@ export async function POST(req: NextRequest) {
 
     // Verificar que el usuario no esté ya inscrito
     const existingEnrollment = await ProgramaTransformacionalUser.findOne({
-      userId: session.user.id,
+      userId: session.user.email,
       programId: programId
     });
 
@@ -58,16 +57,16 @@ export async function POST(req: NextRequest) {
 
     // Crear la inscripción
     const enrollment = new ProgramaTransformacionalUser({
-      userId: session.user.id,
+      userId: session.user.email,
       programId: programId,
       estado: 'inscrito',
       fechaInscripcion: new Date(),
       fechaInicio: programa.fecha,
-      progresoSemanas: programa.programaTransformacional?.semanas?.map(semana => ({
+      progresoSemanas: programa.programaTransformacional?.semanas?.map((semana: any) => ({
         numeroSemana: semana.numero,
         completada: false
       })) || [],
-      sesionesEnVivo: programa.programaTransformacional?.sesionesEnVivo?.map(sesion => ({
+      sesionesEnVivo: programa.programaTransformacional?.sesionesEnVivo?.map((sesion: any) => ({
         fecha: sesion.fecha,
         asistio: false
       })) || []
@@ -109,7 +108,7 @@ export async function GET(req: NextRequest) {
     const programId = searchParams.get('programId');
     
     // Verificar autenticación
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Debes estar autenticado' },
@@ -126,7 +125,7 @@ export async function GET(req: NextRequest) {
 
     // Buscar la inscripción del usuario
     const enrollment = await ProgramaTransformacionalUser.findOne({
-      userId: session.user.id,
+      userId: session.user.email,
       programId: programId
     }).populate('programId');
 
