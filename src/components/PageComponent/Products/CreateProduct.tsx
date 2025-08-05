@@ -79,7 +79,9 @@ const CreateProduct = () => {
     aprendizajes?: string[],
     paraQuien?: string[],
     descuentoObj?: any,
-    pdfPresentacion?: any
+    pdfPresentacion?: any,
+    esProgramaTransformacional?: boolean,
+    programaTransformacionalData?: any
   ) {
     setLoading(true);
 
@@ -232,6 +234,11 @@ const CreateProduct = () => {
           beneficios: beneficios || [],
           aprendizajes: aprendizajes || [],
           paraQuien: paraQuien || [],
+        }),
+        // Programa Transformacional
+        ...(esProgramaTransformacional && {
+          esProgramaTransformacional: true,
+          programaTransformacional: programaTransformacionalData
         }),
         // Descuento
         ...(descuentoObj && { descuento: descuentoObj })

@@ -96,6 +96,64 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   const [diplomaImageArray, setDiplomaImage] = useState<any>([]);
   const [ubicacionSugerencias, setUbicacionSugerencias] = useState<any[]>([]);
 
+  // Estados para Programas Transformacionales
+  const [esProgramaTransformacional, setEsProgramaTransformacional] = useState<boolean>(false);
+  const [duracionSemanas, setDuracionSemanas] = useState<number>(8);
+  const [fechaFin, setFechaFin] = useState<string>('');
+  const [cupoDisponible, setCupoDisponible] = useState<number>(50);
+  const [estadoCohorte, setEstadoCohorte] = useState<string>('abierta');
+  const [semanas, setSemanas] = useState<Array<{
+    numero: number;
+    titulo: string;
+    descripcion: string;
+    contenido: Array<{
+      tipo: string;
+      titulo: string;
+      url?: string;
+      duracion?: number;
+      descripcion?: string;
+      orden: number;
+    }>;
+    desbloqueado: boolean;
+    fechaDesbloqueo?: string;
+  }>>([]);
+  const [sesionesEnVivo, setSesionesEnVivo] = useState<Array<{
+    fecha: string;
+    titulo: string;
+    descripcion: string;
+    linkZoom?: string;
+    grabacionUrl?: string;
+    duracion?: number;
+    tipo: string;
+  }>>([]);
+  const [comunidad, setComunidad] = useState<{
+    grupoWhatsapp?: string;
+    grupoTelegram?: string;
+    foroUrl?: string;
+    descripcion?: string;
+  }>({});
+  const [resultadosEsperados, setResultadosEsperados] = useState<string[]>([]);
+  const [requisitosPrevios, setRequisitosPrevios] = useState<string[]>([]);
+  const [materialesNecesarios, setMaterialesNecesarios] = useState<string[]>([]);
+
+  // Estados para agregar elementos dinámicos
+  const [nuevoResultado, setNuevoResultado] = useState<string>('');
+  const [nuevoRequisito, setNuevoRequisito] = useState<string>('');
+  const [nuevoMaterial, setNuevoMaterial] = useState<string>('');
+  const [nuevaSesion, setNuevaSesion] = useState<{
+    fecha: string;
+    titulo: string;
+    descripcion: string;
+    duracion: number;
+    tipo: string;
+  }>({
+    fecha: '',
+    titulo: '',
+    descripcion: '',
+    duracion: 60,
+    tipo: 'q&a'
+  });
+
   // useEffect para actualizar lastTicketsEnd si cambia la fecha del evento
   useEffect(() => {
     if (tipo === 'evento' && fecha) {
@@ -245,6 +303,20 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       pais: ubicacionPais
     };
 
+    // Datos del programa transformacional
+    const programaTransformacionalData = esProgramaTransformacional ? {
+      duracionSemanas,
+      fechaFin: fechaFin || (fecha ? new Date(new Date(fecha).getTime() + duracionSemanas * 7 * 24 * 60 * 60 * 1000).toISOString()) : undefined,
+      cupoDisponible: cupoDisponible || cupo,
+      estadoCohorte,
+      semanas: semanas.length > 0 ? semanas : undefined,
+      sesionesEnVivo: sesionesEnVivo.length > 0 ? sesionesEnVivo : undefined,
+      comunidad: Object.keys(comunidad).length > 0 ? comunidad : undefined,
+      resultadosEsperados: resultadosEsperados.length > 0 ? resultadosEsperados : undefined,
+      requisitosPrevios: requisitosPrevios.length > 0 ? requisitosPrevios : undefined,
+      materialesNecesarios: materialesNecesarios.length > 0 ? materialesNecesarios : undefined
+    } : undefined;
+
     
     handleSubmit(
       name,
@@ -278,7 +350,10 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       // Descuento
       descuentoObj,
       // PDF de presentación
-      tipo === 'evento' ? pdfPresentacion : undefined
+      tipo === 'evento' ? pdfPresentacion : undefined,
+      // Programa Transformacional
+      esProgramaTransformacional,
+      programaTransformacionalData
     );
   };
 
@@ -470,6 +545,72 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     setParaQuien(paraQuien.filter((_, i) => i !== index));
   };
 
+  // Funciones para Programas Transformacionales
+  const agregarResultado = () => {
+    if (nuevoResultado.trim()) {
+      setResultadosEsperados([...resultadosEsperados, nuevoResultado.trim()]);
+      setNuevoResultado('');
+    }
+  };
+
+  const eliminarResultado = (index: number) => {
+    setResultadosEsperados(resultadosEsperados.filter((_, i) => i !== index));
+  };
+
+  const agregarRequisito = () => {
+    if (nuevoRequisito.trim()) {
+      setRequisitosPrevios([...requisitosPrevios, nuevoRequisito.trim()]);
+      setNuevoRequisito('');
+    }
+  };
+
+  const eliminarRequisito = (index: number) => {
+    setRequisitosPrevios(requisitosPrevios.filter((_, i) => i !== index));
+  };
+
+  const agregarMaterial = () => {
+    if (nuevoMaterial.trim()) {
+      setMaterialesNecesarios([...materialesNecesarios, nuevoMaterial.trim()]);
+      setNuevoMaterial('');
+    }
+  };
+
+  const eliminarMaterial = (index: number) => {
+    setMaterialesNecesarios(materialesNecesarios.filter((_, i) => i !== index));
+  };
+
+  const agregarSesionEnVivo = () => {
+    if (nuevaSesion.titulo.trim() && nuevaSesion.fecha) {
+      setSesionesEnVivo([...sesionesEnVivo, { ...nuevaSesion }]);
+      setNuevaSesion({
+        fecha: '',
+        titulo: '',
+        descripcion: '',
+        duracion: 60,
+        tipo: 'q&a'
+      });
+    }
+  };
+
+  const eliminarSesionEnVivo = (index: number) => {
+    setSesionesEnVivo(sesionesEnVivo.filter((_, i) => i !== index));
+  };
+
+  const generarSemanasAutomaticas = () => {
+    const semanasGeneradas = [];
+    for (let i = 1; i <= duracionSemanas; i++) {
+      semanasGeneradas.push({
+        numero: i,
+        titulo: `Semana ${i}`,
+        descripcion: `Descripción de la semana ${i}`,
+        contenido: [],
+        desbloqueado: i === 1,
+        fechaDesbloqueo: i === 1 ? fecha : undefined
+      });
+    }
+    setSemanas(semanasGeneradas);
+  };
+
   return (
     <div className='relative flex w-full min-h-screen flex-col bg-transparent md:items-center md:justify-center md:bg-transparent'>
       <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}>
@@ -519,9 +660,25 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                 <option value='curso'>Curso</option>
                 <option value='bundle'>Bundle de cursos</option>
                 <option value='evento'>Evento</option>
+                <option value='programa_transformacional'>Programa Transformacional</option>
                 <option value='recurso'>Recurso descargable</option>
               </select>
             </label>
+            
+            {/* Checkbox para marcar como programa transformacional */}
+            {tipo === 'evento' && (
+              <label className='flex items-center space-x-3 w-full'>
+                <input
+                  type='checkbox'
+                  checked={esProgramaTransformacional}
+                  onChange={e => setEsProgramaTransformacional(e.target.checked)}
+                  className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'
+                />
+                <span className='text-sm text-gray-700'>
+                  Es un programa transformacional de 8 semanas
+                </span>
+              </label>
+            )}
             {/* Campos dinámicos según tipo */}
             {tipo === 'bundle' && (
               <label className='flex flex-col space-y-3 w-full'>
@@ -959,6 +1116,282 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                   />
                 )}
               </label>
+            )}
+
+            {/* Campos específicos para Programas Transformacionales */}
+            {esProgramaTransformacional && (
+              <div className='border rounded p-6 mt-6 bg-blue-50'>
+                <h3 className='text-lg font-bold text-blue-900 mb-4'>Configuración del Programa Transformacional</h3>
+                
+                {/* Información básica del programa */}
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
+                  <label>
+                    <span>Duración en semanas</span>
+                    <input
+                      type='number'
+                      className='input'
+                      min={1}
+                      max={52}
+                      value={duracionSemanas}
+                      onChange={e => setDuracionSemanas(Number(e.target.value))}
+                    />
+                  </label>
+                  <label>
+                    <span>Cupo disponible</span>
+                    <input
+                      type='number'
+                      className='input'
+                      min={1}
+                      value={cupoDisponible}
+                      onChange={e => setCupoDisponible(Number(e.target.value))}
+                    />
+                  </label>
+                  <label>
+                    <span>Estado de la cohorte</span>
+                    <select className='input' value={estadoCohorte} onChange={e => setEstadoCohorte(e.target.value)}>
+                      <option value='abierta'>Abierta</option>
+                      <option value='cerrada'>Cerrada</option>
+                      <option value='en_curso'>En Curso</option>
+                      <option value='finalizada'>Finalizada</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Fecha de finalización (opcional)</span>
+                    <input
+                      type='datetime-local'
+                      className='input'
+                      value={fechaFin}
+                      onChange={e => setFechaFin(e.target.value)}
+                    />
+                  </label>
+                </div>
+
+                {/* Generar semanas automáticamente */}
+                <div className='mb-6'>
+                  <button
+                    type='button'
+                    onClick={generarSemanasAutomaticas}
+                    className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors'
+                  >
+                    Generar {duracionSemanas} semanas automáticamente
+                  </button>
+                </div>
+
+                {/* Resultados esperados */}
+                <div className='mb-6'>
+                  <label>
+                    <span>Resultados esperados</span>
+                    <div className='flex space-x-2'>
+                      <input
+                        type='text'
+                        className='input flex-1'
+                        value={nuevoResultado}
+                        onChange={e => setNuevoResultado(e.target.value)}
+                        placeholder='Ej: Mayor consciencia corporal'
+                      />
+                      <button
+                        type='button'
+                        onClick={agregarResultado}
+                        className='px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700'
+                      >
+                        Agregar
+                      </button>
+                    </div>
+                  </label>
+                  <div className='mt-2 space-y-1'>
+                    {resultadosEsperados.map((resultado, index) => (
+                      <div key={index} className='flex items-center space-x-2'>
+                        <div className='w-2 h-2 bg-green-500 rounded-full'></div>
+                        <span className='flex-1'>{resultado}</span>
+                        <button
+                          type='button'
+                          onClick={() => eliminarResultado(index)}
+                          className='text-red-500 hover:text-red-700 text-sm'
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Requisitos previos */}
+                <div className='mb-6'>
+                  <label>
+                    <span>Requisitos previos</span>
+                    <div className='flex space-x-2'>
+                      <input
+                        type='text'
+                        className='input flex-1'
+                        value={nuevoRequisito}
+                        onChange={e => setNuevoRequisito(e.target.value)}
+                        placeholder='Ej: No se requiere experiencia previa'
+                      />
+                      <button
+                        type='button'
+                        onClick={agregarRequisito}
+                        className='px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700'
+                      >
+                        Agregar
+                      </button>
+                    </div>
+                  </label>
+                  <div className='mt-2 space-y-1'>
+                    {requisitosPrevios.map((requisito, index) => (
+                      <div key={index} className='flex items-center space-x-2'>
+                        <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
+                        <span className='flex-1'>{requisito}</span>
+                        <button
+                          type='button'
+                          onClick={() => eliminarRequisito(index)}
+                          className='text-red-500 hover:text-red-700 text-sm'
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Materiales necesarios */}
+                <div className='mb-6'>
+                  <label>
+                    <span>Materiales necesarios</span>
+                    <div className='flex space-x-2'>
+                      <input
+                        type='text'
+                        className='input flex-1'
+                        value={nuevoMaterial}
+                        onChange={e => setNuevoMaterial(e.target.value)}
+                        placeholder='Ej: Espacio cómodo para moverte'
+                      />
+                      <button
+                        type='button'
+                        onClick={agregarMaterial}
+                        className='px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700'
+                      >
+                        Agregar
+                      </button>
+                    </div>
+                  </label>
+                  <div className='mt-2 space-y-1'>
+                    {materialesNecesarios.map((material, index) => (
+                      <div key={index} className='flex items-center space-x-2'>
+                        <div className='w-2 h-2 bg-orange-500 rounded-full'></div>
+                        <span className='flex-1'>{material}</span>
+                        <button
+                          type='button'
+                          onClick={() => eliminarMaterial(index)}
+                          className='text-red-500 hover:text-red-700 text-sm'
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Sesiones en vivo */}
+                <div className='mb-6'>
+                  <h4 className='font-semibold mb-3'>Sesiones en vivo</h4>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-3'>
+                    <input
+                      type='datetime-local'
+                      className='input'
+                      value={nuevaSesion.fecha}
+                      onChange={e => setNuevaSesion({...nuevaSesion, fecha: e.target.value})}
+                      placeholder='Fecha y hora'
+                    />
+                    <input
+                      type='text'
+                      className='input'
+                      value={nuevaSesion.titulo}
+                      onChange={e => setNuevaSesion({...nuevaSesion, titulo: e.target.value})}
+                      placeholder='Título de la sesión'
+                    />
+                    <input
+                      type='text'
+                      className='input'
+                      value={nuevaSesion.descripcion}
+                      onChange={e => setNuevaSesion({...nuevaSesion, descripcion: e.target.value})}
+                      placeholder='Descripción'
+                    />
+                    <select
+                      className='input'
+                      value={nuevaSesion.tipo}
+                      onChange={e => setNuevaSesion({...nuevaSesion, tipo: e.target.value})}
+                    >
+                      <option value='q&a'>Q&A</option>
+                      <option value='practica'>Práctica</option>
+                      <option value='reflexion'>Reflexión</option>
+                      <option value='comunidad'>Comunidad</option>
+                    </select>
+                  </div>
+                  <button
+                    type='button'
+                    onClick={agregarSesionEnVivo}
+                    className='px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700'
+                  >
+                    Agregar Sesión
+                  </button>
+                  <div className='mt-3 space-y-2'>
+                    {sesionesEnVivo.map((sesion, index) => (
+                      <div key={index} className='flex items-center justify-between p-3 bg-white rounded border'>
+                        <div>
+                          <div className='font-medium'>{sesion.titulo}</div>
+                          <div className='text-sm text-gray-600'>
+                            {new Date(sesion.fecha).toLocaleDateString('es-ES')} - {sesion.tipo}
+                          </div>
+                        </div>
+                        <button
+                          type='button'
+                          onClick={() => eliminarSesionEnVivo(index)}
+                          className='text-red-500 hover:text-red-700'
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Comunidad */}
+                <div className='mb-6'>
+                  <h4 className='font-semibold mb-3'>Información de comunidad</h4>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                    <label>
+                      <span>Grupo de WhatsApp (opcional)</span>
+                      <input
+                        type='url'
+                        className='input'
+                        value={comunidad.grupoWhatsapp || ''}
+                        onChange={e => setComunidad({...comunidad, grupoWhatsapp: e.target.value})}
+                        placeholder='https://chat.whatsapp.com/...'
+                      />
+                    </label>
+                    <label>
+                      <span>Grupo de Telegram (opcional)</span>
+                      <input
+                        type='url'
+                        className='input'
+                        value={comunidad.grupoTelegram || ''}
+                        onChange={e => setComunidad({...comunidad, grupoTelegram: e.target.value})}
+                        placeholder='https://t.me/...'
+                      />
+                    </label>
+                    <label className='md:col-span-2'>
+                      <span>Descripción de la comunidad</span>
+                      <textarea
+                        className='input'
+                        rows={3}
+                        value={comunidad.descripcion || ''}
+                        onChange={e => setComunidad({...comunidad, descripcion: e.target.value})}
+                        placeholder='Describe cómo funciona la comunidad...'
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
           <button

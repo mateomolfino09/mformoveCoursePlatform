@@ -11,7 +11,8 @@ import {
 } from '@heroicons/react/24/solid';
 import { AnimatePresence, motion as m, useAnimation, useScroll } from 'framer-motion';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next13-progressbar';
+import { usePathname } from 'next/navigation';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
 import endpoints from '../../../services/api';

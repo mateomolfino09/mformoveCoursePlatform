@@ -4,7 +4,7 @@ import React from 'react'
 import { AiOutlineLogout } from 'react-icons/ai'
 import { motion } from 'framer-motion'
 import { useAuth } from '../hooks/useAuth'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next13-progressbar'
 
 const ProfileHeader = () => {
   const auth = useAuth();

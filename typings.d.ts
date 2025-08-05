@@ -528,6 +528,48 @@ export interface ProductDB {
 
   // --- Stripe ---
   stripeProductId?: string;
+
+  // --- Programas Transformacionales ---
+  esProgramaTransformacional?: boolean;
+  programaTransformacional?: {
+    duracionSemanas: number;
+    fechaFin: string;
+    cupoDisponible?: number;
+    estadoCohorte: 'abierta' | 'cerrada' | 'en_curso' | 'finalizada';
+    semanas: Array<{
+      numero: number;
+      titulo: string;
+      descripcion?: string;
+      contenido: Array<{
+        tipo: 'video' | 'pdf' | 'audio' | 'tarea' | 'practica' | 'reflexion';
+        titulo: string;
+        url?: string;
+        duracion?: number;
+        descripcion?: string;
+        orden?: number;
+      }>;
+      desbloqueado: boolean;
+      fechaDesbloqueo?: string;
+    }>;
+    sesionesEnVivo: Array<{
+      fecha: string;
+      titulo: string;
+      descripcion?: string;
+      linkZoom?: string;
+      grabacionUrl?: string;
+      duracion?: number;
+      tipo: 'q&a' | 'practica' | 'reflexion' | 'comunidad';
+    }>;
+    comunidad?: {
+      grupoWhatsapp?: string;
+      grupoTelegram?: string;
+      foroUrl?: string;
+      descripcion?: string;
+    };
+    resultadosEsperados?: string[];
+    requisitosPrevios?: string[];
+    materialesNecesarios?: string[];
+  };
 }
 
 export interface FreeProduct {

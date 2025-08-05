@@ -10,7 +10,8 @@ import {
 } from '@heroicons/react/24/solid';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next13-progressbar';
+import { usePathname } from 'next/navigation';
 import { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import { useSnapshot } from 'valtio';
 import endpoints from '../services/api';
@@ -32,6 +33,7 @@ const MembershipHeader = ({ user, toggleNav, where, showNav }: Props) => {
   const path = usePathname()
   const headerAnimation = useAnimation();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [loadingLink, setLoadingLink] = useState<string | null>(null);
   const auth = useAuth();
     const linkRef = useRef<HTMLAnchorElement | null>(null);
     const linkMembRef = useRef<HTMLAnchorElement | null>(null);
@@ -42,6 +44,20 @@ const MembershipHeader = ({ user, toggleNav, where, showNav }: Props) => {
     const handleClickMemb = () => {
       linkMembRef.current?.click(); // Simula el clic en el enlace oculto
     };
+
+  // Función para manejar clicks en links con feedback visual
+  const handleLinkClick = async (route: string, linkName: string) => {
+    setLoadingLink(linkName);
+    
+    // Delay más largo para que el usuario pueda ver el estado de carga
+    setTimeout(() => {
+      router.push(route);
+      // Limpiar el estado de carga después de un tiempo
+      setTimeout(() => {
+        setLoadingLink(null);
+      }, 500);
+    }, 300);
+  };
   const [domLoaded, setDomLoaded] = useState(false);
   const snap = useSnapshot(state);
   const headerScroll = useAppSelector(
@@ -169,10 +185,10 @@ const MembershipHeader = ({ user, toggleNav, where, showNav }: Props) => {
                     )}
                   </div>
             )}
-            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${path == routes.navegation.mentorship && '!text-black relative'}`} onClick={() => {
-                router.push('/mentorship');
+            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal transition-all duration-200 ${path == routes.navegation.mentorship && '!text-black relative'} ${loadingLink === 'mentoria' ? 'opacity-60 cursor-wait' : ''}`} onClick={() => {
+                handleLinkClick('/mentorship', 'mentoria');
               }}>
-                  Mentoría
+                  {loadingLink === 'mentoria' ? 'Cargando...' : 'Mentoría'}
                   {path == routes.navegation.mentorship && (
                     <svg
                       width="100%"
@@ -185,10 +201,10 @@ const MembershipHeader = ({ user, toggleNav, where, showNav }: Props) => {
                     </svg>
                   )}
                 </div>
-            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${path == routes.navegation.eventos && '!text-black relative'}`} onClick={() => {
-                router.push(routes.navegation.eventos);
+            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal transition-all duration-200 ${path == routes.navegation.eventos && '!text-black relative'} ${loadingLink === 'eventos' ? 'opacity-60 cursor-wait' : ''}`} onClick={() => {
+                handleLinkClick(routes.navegation.eventos, 'eventos');
               }}>
-                  Eventos
+                  {loadingLink === 'eventos' ? 'Cargando...' : 'Eventos'}
                   {path == routes.navegation.eventos && (
                     <svg
                       width="100%"
@@ -209,11 +225,11 @@ const MembershipHeader = ({ user, toggleNav, where, showNav }: Props) => {
             </a>
             <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && '!text-black relative'}`} onClick={() => {
                     if(!auth.user) {
-                      router.push('/login')
+                      handleLinkClick('/login', 'cuenta');
                     }
                     else handleClick();
 
-                  }}>Cuenta
+                  }}>{loadingLink === 'cuenta' ? 'Cargando...' : 'Cuenta'}
                   {(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && (
                     <svg
                       width="120%"

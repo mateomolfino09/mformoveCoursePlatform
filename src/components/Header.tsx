@@ -11,7 +11,7 @@ import axios from 'axios';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import cookie from 'js-cookie';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next13-progressbar';
 import { parseCookies } from 'nookies';
 import React, {
   Fragment,
@@ -50,6 +50,7 @@ const Header = ({
   const [notificationList, setNotificationList] = useState<
     null | Notification[]
   >(null);
+  const [loadingLink, setLoadingLink] = useState<string | null>(null);
   const snap = useSnapshot(state);
   const animationInput = useAnimation();
   const animationIcon = useAnimation();
@@ -57,6 +58,19 @@ const Header = ({
   const auth = useAuth()
   const router = useRouter()
 
+  // Función para manejar clicks en links con feedback visual
+  const handleLinkClick = async (route: string, linkName: string) => {
+    setLoadingLink(linkName);
+    
+    // Delay más largo para que el usuario pueda ver el estado de carga
+    setTimeout(() => {
+      router.push(route);
+      // Limpiar el estado de carga después de un tiempo
+      setTimeout(() => {
+        setLoadingLink(null);
+      }, 500);
+    }, 300);
+  };
 
 
   useEffect(() => {
@@ -208,37 +222,64 @@ const Header = ({
         </Link>
 
         <ul className='hidden space-x-4 md:flex'>
-          <li className='headerLink' onClick={() => router.push(routes.navegation.membresiaHome)}>
-            Home
+          <li 
+            className={`headerLink transition-all duration-200 ${loadingLink === 'home' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
+            onClick={() => handleLinkClick(routes.navegation.membresiaHome, 'home')}
+          >
+            {loadingLink === 'home' ? 'Cargando...' : 'Home'}
           </li>
 
-          <li className='headerLink' onClick={() => router.push('/courses')}>Cursos</li>
+          <li 
+            className={`headerLink transition-all duration-200 ${loadingLink === 'cursos' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
+            onClick={() => handleLinkClick('/courses', 'cursos')}
+          >
+            {loadingLink === 'cursos' ? 'Cargando...' : 'Cursos'}
+          </li>
 
-          <li className='headerLink' onClick={() => router.push(routes.navegation.eventos)}>Eventos</li>
+          <li 
+            className={`headerLink transition-all duration-200 ${loadingLink === 'eventos' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
+            onClick={() => handleLinkClick(routes.navegation.eventos, 'eventos')}
+          >
+            {loadingLink === 'eventos' ? 'Cargando...' : 'Eventos'}
+          </li>
 
-          <li className='headerLink' onClick={() => router.push('/mentorship')}>Mentoría</li>
+          <li 
+            className={`headerLink transition-all duration-200 ${loadingLink === 'mentoria' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
+            onClick={() => handleLinkClick('/mentorship', 'mentoria')}
+          >
+            {loadingLink === 'mentoria' ? 'Cargando...' : 'Mentoría'}
+          </li>
 
           {scrollToNuevo !== null ? (
-            <li onClick={scrollToNuevo} className='headerLink'>
+            <li onClick={scrollToNuevo} className='headerLink cursor-pointer hover:bg-white/5 rounded px-2 py-1 transition-all duration-200'>
               Nuevo
             </li>
           ) : (
-            <Link href={routes.navegation.membresiaHome}>
-              <li className='headerLink'>Nuevo</li>
-            </Link>
+            <li 
+              className={`headerLink transition-all duration-200 ${loadingLink === 'nuevo' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
+              onClick={() => handleLinkClick(routes.navegation.membresiaHome, 'nuevo')}
+            >
+              {loadingLink === 'nuevo' ? 'Cargando...' : 'Nuevo'}
+            </li>
           )}
           {scrollToList !== null ? (
-            <li onClick={scrollToList} className='headerLink'>
+            <li onClick={scrollToList} className='headerLink cursor-pointer hover:bg-white/5 rounded px-2 py-1 transition-all duration-200'>
               Mi Lista
             </li>
           ) : (
-            <Link href={routes.navegation.membresiaHome}>
-              <li className='headerLink'>Mi Lista</li>
-            </Link>
+            <li 
+              className={`headerLink transition-all duration-200 ${loadingLink === 'miLista' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
+              onClick={() => handleLinkClick(routes.navegation.membresiaHome, 'miLista')}
+            >
+              {loadingLink === 'miLista' ? 'Cargando...' : 'Mi Lista'}
+            </li>
           )}
-          <Link href={'/account/myCourses'}>
-            <li className='headerLink cursor-pointer'>Mis Cursos</li>
-          </Link>
+          <li 
+            className={`headerLink transition-all duration-200 ${loadingLink === 'misCursos' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
+            onClick={() => handleLinkClick('/account/myCourses', 'misCursos')}
+          >
+            {loadingLink === 'misCursos' ? 'Cargando...' : 'Mis Cursos'}
+          </li>
         </ul>
       </div>
       <div className='flex items-center space-x-4 text-sm font-light'>
@@ -335,7 +376,7 @@ const Header = ({
                                   : 'bg-yellow-200'
                               } h-8 w-8 flex items-center justify-center`}
                             >
-                              <CheckIcon className={`h-4 w-4 `} />
+                              <CheckIcon className={`h-4 w-4`} />
                             </div>
                             <div className='ml-4'>
                               <p className='font-medium text-gray-700'>
@@ -372,12 +413,9 @@ const Header = ({
             </Popover.Panel>
           </Transition>
         </Popover>
-        {/* <Link href="/account"> */}
         <Link href={'/account'}>
           <AiOutlineUser className='h-6 w-6 cursor-pointer' />
         </Link>
-
-        {/* </Link> */}
       </div>
     </header>
   );

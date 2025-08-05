@@ -47,7 +47,7 @@ const MentorshipCTA = () => {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.4 }}
           viewport={{ once: true }}
           className="text-center"
         >
@@ -98,7 +98,7 @@ const MentorshipCTA = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
               viewport={{ once: true }}
               className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center w-full"
             >
