@@ -306,7 +306,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     // Datos del programa transformacional
     const programaTransformacionalData = esProgramaTransformacional ? {
       duracionSemanas,
-      fechaFin: fechaFin || (fecha ? new Date(new Date(fecha).getTime() + duracionSemanas * 7 * 24 * 60 * 60 * 1000).toISOString()) : undefined,
+      fechaFin: fechaFin || (fecha ? new Date(new Date(fecha).getTime() + duracionSemanas * 7 * 24 * 60 * 60 * 1000).toISOString() : undefined),
       cupoDisponible: cupoDisponible || cupo,
       estadoCohorte,
       semanas: semanas.length > 0 ? semanas : undefined,

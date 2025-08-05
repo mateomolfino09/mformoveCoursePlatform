@@ -107,14 +107,14 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
   const [semanas, setSemanas] = useState<Array<{
     numero: number;
     titulo: string;
-    descripcion: string;
+    descripcion?: string;
     contenido: Array<{
       tipo: string;
       titulo: string;
       url?: string;
       duracion?: number;
       descripcion?: string;
-      orden: number;
+      orden?: number;
     }>;
     desbloqueado: boolean;
     fechaDesbloqueo?: string;
@@ -122,7 +122,7 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
   const [sesionesEnVivo, setSesionesEnVivo] = useState<Array<{
     fecha: string;
     titulo: string;
-    descripcion: string;
+    descripcion?: string;
     linkZoom?: string;
     grabacionUrl?: string;
     duracion?: number;
