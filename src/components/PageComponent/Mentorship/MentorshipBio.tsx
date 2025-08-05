@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 const bioVariants = {
   hidden: { opacity: 0, y: 40, scale: 0.96 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: 'easeOut' } },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: 'easeOut' } },
 };
 
 const MentorshipBio = () => {
@@ -20,7 +20,7 @@ const MentorshipBio = () => {
         <motion.div
           initial={{ opacity: 0, scale: 0.92 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
           viewport={{ once: true }}
           className="relative mb-8 group cursor-pointer"
         >

@@ -11,6 +11,7 @@ interface Props {
   eventoTerminado: boolean;
   onBuyTicket: () => void;
   loading: boolean;
+  esProgramaTransformacional?: boolean;
 }
 
 const EventCTA: React.FC<Props> = ({ 
@@ -18,7 +19,8 @@ const EventCTA: React.FC<Props> = ({
   precioActual, 
   eventoTerminado, 
   onBuyTicket, 
-  loading 
+  loading,
+  esProgramaTransformacional = false
 }) => {
   // Estado para el countdown
   const [timeLeft, setTimeLeft] = useState({

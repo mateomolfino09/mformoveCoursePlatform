@@ -11,6 +11,7 @@ interface Props {
   eventoTerminado: boolean;
   diasRestantes: number | null;
   onBuyTicket?: () => void;
+  esProgramaTransformacional?: boolean;
 }
 
 const EventOverview: React.FC<Props> = ({ 
@@ -18,7 +19,8 @@ const EventOverview: React.FC<Props> = ({
   precioActual, 
   eventoTerminado, 
   diasRestantes,
-  onBuyTicket
+  onBuyTicket,
+  esProgramaTransformacional = false
 }) => {
   // Formatear fecha completa
   const formatearFechaCompleta = (fecha: string | Date | undefined) => {

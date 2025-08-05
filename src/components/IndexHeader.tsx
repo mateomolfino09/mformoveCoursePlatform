@@ -10,7 +10,8 @@ import {
 } from '@heroicons/react/24/solid';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next13-progressbar';
+import { usePathname } from 'next/navigation';
 import { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import { useSnapshot } from 'valtio';
 import endpoints from '../services/api';
@@ -33,6 +34,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav, lightTheme = false }: Pr
   const path = usePathname()
   const headerAnimation = useAnimation();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [loadingLink, setLoadingLink] = useState<string | null>(null);
   const auth = useAuth();
     const linkRef = useRef<HTMLAnchorElement | null>(null);
     const linkMembRef = useRef<HTMLAnchorElement | null>(null);
@@ -43,6 +45,20 @@ const IndexHeader = ({ user, toggleNav, where, showNav, lightTheme = false }: Pr
     const handleClickMemb = () => {
       linkMembRef.current?.click(); // Simula el clic en el enlace oculto
     };
+
+  // Función para manejar clicks en links con feedback visual
+  const handleLinkClick = async (route: string, linkName: string) => {
+    setLoadingLink(linkName);
+    
+    // Delay más largo para que el usuario pueda ver el estado de carga
+    setTimeout(() => {
+      router.push(route);
+      // Limpiar el estado de carga después de un tiempo
+      setTimeout(() => {
+        setLoadingLink(null);
+      }, 500);
+    }, 300);
+  };
   const [domLoaded, setDomLoaded] = useState(false);
   const snap = useSnapshot(state);
   const headerScroll = useAppSelector(
@@ -150,10 +166,10 @@ const IndexHeader = ({ user, toggleNav, where, showNav, lightTheme = false }: Pr
                 router.push('/mentorship');
               }}>Mentoría</div> */}
             {/* Membresía eliminada */}
-            <div className={`block text-sm/6 ${lightTheme ? 'text-gray-600 hover:text-gray-800' : 'text-white/50 hover:text-white'} focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer focus:text-white active:text-white font-normal ${path == routes.navegation.mentorship && (lightTheme ? '!text-gray-800' : '!text-white')}`} onClick={() => {
-                router.push('/mentorship');
+            <div className={`block text-sm/6 ${lightTheme ? 'text-gray-600 hover:text-gray-800' : 'text-white/50 hover:text-white'} focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer focus:text-white active:text-white font-normal transition-all duration-200 ${path == routes.navegation.mentorship && (lightTheme ? '!text-gray-800' : '!text-white')} ${loadingLink === 'mentoria' ? 'opacity-60 cursor-wait' : ''}`} onClick={() => {
+                handleLinkClick('/mentorship', 'mentoria');
               }}>
-                  Mentoría
+                  {loadingLink === 'mentoria' ? 'Cargando...' : 'Mentoría'}
                 {path == routes.navegation.mentorship && (
                   <svg
                     width="100%"
@@ -166,10 +182,10 @@ const IndexHeader = ({ user, toggleNav, where, showNav, lightTheme = false }: Pr
                   </svg>
                 )}
                 </div>
-            <div className={`block text-sm/6 ${lightTheme ? 'text-gray-600 hover:text-gray-800' : 'text-white/50 hover:text-white'} focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer focus:text-white active:text-white font-normal ${path == 'events' ||  path.includes(routes.navegation.eventos) && (lightTheme ? '!text-gray-800' : '!text-white')}`} onClick={() => {
-                router.push(routes.navegation.eventos);
+            <div className={`block text-sm/6 ${lightTheme ? 'text-gray-600 hover:text-gray-800' : 'text-white/50 hover:text-white'} focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer focus:text-white active:text-white font-normal transition-all duration-200 ${path == 'events' ||  path.includes(routes.navegation.eventos) && (lightTheme ? '!text-gray-800' : '!text-white')} ${loadingLink === 'eventos' ? 'opacity-60 cursor-wait' : ''}`} onClick={() => {
+                handleLinkClick(routes.navegation.eventos, 'eventos');
               }}>
-                  Eventos
+                  {loadingLink === 'eventos' ? 'Cargando...' : 'Eventos'}
                 {path == 'events' || path.includes(routes.navegation.eventos) && (
                   <svg
                     width="100%"
@@ -188,14 +204,14 @@ const IndexHeader = ({ user, toggleNav, where, showNav, lightTheme = false }: Pr
             <a href="/account" ref={linkRef} style={{ display: 'none' }}>
               Ir a Cuenta
             </a>
-            <div className={`block text-sm/6 ${lightTheme ? 'text-gray-600 hover:text-gray-800' : 'text-white/50 hover:text-white'} focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer focus:text-white active:text-white font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && (lightTheme ? '!text-gray-800' : '!text-white')}`} onClick={() => {
+            <div className={`block text-sm/6 ${lightTheme ? 'text-gray-600 hover:text-gray-800' : 'text-white/50 hover:text-white'} focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer focus:text-white active:text-white font-normal transition-all duration-200 ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail) && (lightTheme ? '!text-gray-800' : '!text-white')} ${loadingLink === 'cuenta' ? 'opacity-60 cursor-wait' : ''}`} onClick={() => {
                     if(!auth.user) {
-                      router.push('/login')
+                      handleLinkClick('/login', 'cuenta');
                     }
                     else handleClick();
 
                   }}>
-                  Cuenta
+                  {loadingLink === 'cuenta' ? 'Cargando...' : 'Cuenta'}
                   {(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.perfil || path == '/account') && (
                   <svg
                     width="100%"

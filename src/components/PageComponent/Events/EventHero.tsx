@@ -14,6 +14,7 @@ interface Props {
   diasRestantes: number | null;
   onBuyTicket: () => void;
   loading: boolean;
+  esProgramaTransformacional?: boolean;
 }
 
 const EventHero: React.FC<Props> = ({ 
@@ -22,7 +23,8 @@ const EventHero: React.FC<Props> = ({
   eventoTerminado, 
   diasRestantes, 
   onBuyTicket, 
-  loading 
+  loading,
+  esProgramaTransformacional = false
 }) => {
   
   

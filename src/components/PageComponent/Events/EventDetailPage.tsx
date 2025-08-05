@@ -6,6 +6,7 @@ import EventHero from './EventHero';
 import EventOverview from './EventOverview';
 import EventDescription from './EventDescription';
 import EventCTA from './EventCTA';
+import ProgramaTransformacionalInfo from './ProgramaTransformacionalInfo';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import MainSideBar from '../../MainSidebar/MainSideBar';
@@ -21,6 +22,9 @@ const EventDetailPage: React.FC<Props> = ({ evento }) => {
   const [precioActual, setPrecioActual] = useState<any>(null);
   const [eventoTerminado, setEventoTerminado] = useState(false);
   const [diasRestantes, setDiasRestantes] = useState<number | null>(null);
+
+  // Detectar si es un programa transformacional
+  const esProgramaTransformacional = evento.esProgramaTransformacional || false;
 
   // Calcular precio actual y estado del evento
   useEffect(() => {
@@ -134,6 +138,7 @@ const EventDetailPage: React.FC<Props> = ({ evento }) => {
             diasRestantes={diasRestantes}
             onBuyTicket={handleBuyTicket}
             loading={loading}
+            esProgramaTransformacional={esProgramaTransformacional}
           />
 
           {/* Overview Section */}
@@ -143,7 +148,13 @@ const EventDetailPage: React.FC<Props> = ({ evento }) => {
             eventoTerminado={eventoTerminado}
             diasRestantes={diasRestantes}
             onBuyTicket={handleBuyTicket}
+            esProgramaTransformacional={esProgramaTransformacional}
           />
+
+          {/* Programa Transformacional Info - Solo si es programa transformacional */}
+          {esProgramaTransformacional && (
+            <ProgramaTransformacionalInfo evento={evento} />
+          )}
 
           {/* Description Section */}
           <EventDescription evento={evento} />
@@ -155,6 +166,7 @@ const EventDetailPage: React.FC<Props> = ({ evento }) => {
             eventoTerminado={eventoTerminado}
             onBuyTicket={handleBuyTicket}
             loading={loading}
+            esProgramaTransformacional={esProgramaTransformacional}
           />
         </main>
         <Footer />

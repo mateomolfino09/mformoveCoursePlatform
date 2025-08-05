@@ -39,6 +39,48 @@ const productSchema = new mongoose.Schema({
     default: [],
   },
 
+  // --- Programas Transformacionales (extensión de eventos) ---
+  esProgramaTransformacional: { type: Boolean, default: false },
+  programaTransformacional: {
+    duracionSemanas: { type: Number, default: 8 },
+    fechaFin: { type: Date }, // Fecha de finalización del programa
+    cupoDisponible: { type: Number }, // Cupo actual disponible
+    estadoCohorte: { type: String, enum: ['abierta', 'cerrada', 'en_curso', 'finalizada'], default: 'abierta' },
+    semanas: [{
+      numero: { type: Number, required: true },
+      titulo: { type: String, required: true },
+      descripcion: { type: String },
+      contenido: [{
+        tipo: { type: String, enum: ['video', 'pdf', 'audio', 'tarea', 'practica', 'reflexion'] },
+        titulo: { type: String, required: true },
+        url: { type: String },
+        duracion: { type: Number }, // en minutos
+        descripcion: { type: String },
+        orden: { type: Number, default: 0 }
+      }],
+      desbloqueado: { type: Boolean, default: false },
+      fechaDesbloqueo: { type: Date }
+    }],
+    sesionesEnVivo: [{
+      fecha: { type: Date, required: true },
+      titulo: { type: String, required: true },
+      descripcion: { type: String },
+      linkZoom: { type: String },
+      grabacionUrl: { type: String },
+      duracion: { type: Number }, // en minutos
+      tipo: { type: String, enum: ['q&a', 'practica', 'reflexion', 'comunidad'], default: 'q&a' }
+    }],
+    comunidad: {
+      grupoWhatsapp: { type: String },
+      grupoTelegram: { type: String },
+      foroUrl: { type: String },
+      descripcion: { type: String }
+    },
+    resultadosEsperados: [{ type: String }], // Qué logrará el alumno
+    requisitosPrevios: [{ type: String }], // Qué necesita saber antes
+    materialesNecesarios: [{ type: String }] // Qué necesita tener
+  },
+
   // --- Recursos descargables ---
   archivoUrl: { type: String }, // PDF, video, audio, etc.
   tipoArchivo: { type: String, enum: ['pdf', 'video', 'audio', 'zip'] },
