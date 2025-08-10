@@ -19,6 +19,7 @@ export enum EmailType {
   WELCOME_MEMBERSHIP = 'welcome_membership',
   COURSE_COMPLETION = 'course_completion',
   REMINDER_EMAIL = 'reminder_email',
+  TRANSFORMATIONAL_PROGRAM_WEEK = 'transformational_program_week',
   EVENT_CONFIRMATION = 'event_confirmation',
   PRODUCT_CONFIRMATION = 'product_confirmation',
   ADMIN_NOTIFICATION = 'admin_notification'
@@ -483,6 +484,58 @@ const emailTemplates = {
 
       <p style="font-size: 14px; color: ${colors.text.tertiary}; text-align: center; margin-top: 20px;">
         <strong>ID de compra:</strong> ${data.sessionId}
+      </p>
+    `;
+    return getBaseTemplate(content);
+  },
+
+  [EmailType.TRANSFORMATIONAL_PROGRAM_WEEK]: (data: EmailData) => {
+    const content = `
+      <h2 style="color: ${colors.primary.blue}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Nuevo Contenido Disponible!</h2>
+      
+      <p style="font-size: 16px; color: ${colors.text.secondary}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
+        ¡Hola <strong>${data.name}</strong>! Tu contenido de la <strong>Semana ${data.semana}</strong> ya está disponible.
+      </p>
+
+      <div style="background-color: ${colors.background.tertiary}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 15px 0; font-size: 18px; text-align: center;">Esta Semana: ${data.titulo}</h3>
+        <p style="margin: 8px 0; color: ${colors.text.secondary}; text-align: center; line-height: 1.6;">
+          Es momento de continuar tu viaje de transformación. Tu nuevo contenido ya está disponible y listo para que lo explores.
+        </p>
+      </div>
+
+      <div style="background-color: ${colors.background.tertiary}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h4 style="color: ${colors.text.primary}; margin: 0 0 15px 0; font-size: 16px; text-align: center;">🎯 Lo que aprenderás esta semana:</h4>
+        <ul style="margin: 0; padding-left: 20px; text-align: left;">
+          <li style="margin: 8px 0; color: ${colors.text.secondary};">Fundamentos sólidos para tu práctica</li>
+          <li style="margin: 8px 0; color: ${colors.text.secondary};">Ejercicios específicos para tu nivel</li>
+          <li style="margin: 8px 0; color: ${colors.text.secondary};">Reflexiones para profundizar tu conexión</li>
+        </ul>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="https://mateomove.com/programa-transformacional/semana-${data.semana}" 
+           style="background-color: ${colors.primary.blue}; color: ${colors.text.inverse}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+          🎬 Ver Contenido de la Semana ${data.semana}
+        </a>
+      </div>
+
+      <div style="background-color: ${colors.background.tertiary}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 10px 0; font-size: 16px; text-align: center;">💡 Recuerda:</h3>
+        <p style="margin: 5px 0; color: ${colors.text.secondary}; text-align: center; line-height: 1.6;">
+          La consistencia es clave. Dedica al menos 30 minutos diarios a tu práctica para obtener los mejores resultados.
+        </p>
+      </div>
+
+      <div style="background-color: ${colors.background.tertiary}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 10px 0; font-size: 16px; text-align: center;">👥 Comunidad</h3>
+        <p style="margin: 5px 0; color: ${colors.text.secondary}; text-align: center; line-height: 1.6;">
+          ¡No estás solo en este viaje! Únete a la comunidad para compartir experiencias y recibir apoyo.
+        </p>
+      </div>
+
+      <p style="font-size: 14px; color: ${colors.text.tertiary}; text-align: center; margin-top: 20px;">
+        ¡Nos vemos en la próxima sesión en vivo!
       </p>
     `;
     return getBaseTemplate(content);

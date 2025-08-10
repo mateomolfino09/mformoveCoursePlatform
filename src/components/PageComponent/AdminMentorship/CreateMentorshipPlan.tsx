@@ -178,135 +178,192 @@ const CreateMentorshipPlan = () => {
       </Head>
       <div className='relative flex w-full min-h-screen flex-col md:items-center md:justify-center'>
         <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
-          <div className='w-full flex pt-12 justify-between items-center'>
-            <h1 className='text-4xl font-light'>{isEditing ? 'Editar Plan de Mentoría' : 'Crear un Plan de Mentoría'}</h1>
-            <p>{isEditing ? 'Modificar plan existente' : 'Paso único'}</p>
+          {/* Header mejorado */}
+          <div className='w-full flex pt-8 justify-between items-center mb-8'>
+            <div>
+              <h1 className='text-3xl font-bold text-white mb-2'>{isEditing ? 'Editar Plan de Mentoría' : 'Crear un Plan de Mentoría'}</h1>
+              <p className='text-gray-200'>{isEditing ? 'Modifica la información del plan existente' : 'Completa la información para crear tu nuevo plan'}</p>
+            </div>
+            <div className='flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-lg'>
+              <div className='w-3 h-3 bg-blue-500 rounded-full'></div>
+              <span className='text-blue-700 font-medium'>Paso único</span>
+            </div>
           </div>
+
+          {/* Formulario principal con mejor estructura */}
           <form
-            className='relative mt-16 space-y-4 rounded px-8 md:min-w-[40rem] md:px-14 font-montserrat'
+            className='relative space-y-6 rounded-xl bg-white shadow-lg px-8 py-8 md:min-w-[50rem] md:px-12 md:py-10 font-montserrat'
             autoComplete='nope'
             onSubmit={handleSubmit}
           >
-            <div className='space-y-8'>
-              <label className='flex flex-col space-y-3 w-full'>
-                <p>Elige un nombre para el plan</p>
-                <input
-                  type='text'
-                  name='name'
-                  placeholder='Nombre'
-                  value={form.name}
-                  className='input font-montserrat'
-                  onChange={handleChange}
-                  required
-                />
-              </label>
-              <div className='flex flex-row space-x-2 justify-center items-start'>
-                <label className='inline-block w-full'>
-                  <p className='mb-2 font-semibold font-montserrat'>Precio del plan</p>
-                  <input
-                    type='number'
-                    name='price'
-                    placeholder='Precio'
-                    className='input font-montserrat'
-                    value={form.price || ''}
-                    onChange={handleChange}
-                    min={0}
-                    step={1}
-                    required
-                    onKeyDown={(e) => (e.key === '-' ? e.preventDefault() : null)}
-                  />
-                </label>
-                <label className='inline-block w-full'>
-                  <p className='mb-2 font-semibold font-montserrat'>Moneda</p>
+            {/* Sección: Información Básica */}
+            <div className='border-b border-gray-200 pb-6'>
+              <h2 className='text-xl font-semibold text-gray-900 mb-6 flex items-center'>
+                <div className='w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3'>
+                  <span className='text-blue-600 font-bold text-sm'>1</span>
+                </div>
+                Información Básica
+              </h2>
+              
+              <div className='space-y-6'>
+                <label className='flex flex-col space-y-2'>
+                  <p className='text-sm font-medium text-gray-700'>Nombre del plan</p>
                   <input
                     type='text'
-                    name='currency'
-                    placeholder='Moneda'
-                    className='input font-montserrat'
-                    value='US$'
-                    readOnly
-                  />
-                </label>
-              </div>
-              <div className='space-y-4'>
-                <p className='font-semibold font-montserrat'>Elige el intervalo del plan</p>
-                <select
-                  name='interval'
-                  value={form.interval}
-                  onChange={handleChange}
-                  className='input font-montserrat'
-                  disabled
-                >
-                  <option value='trimestral'>Trimestral</option>
-                </select>
-                <p className='text-xs text-[#A7B6C2] font-montserrat'>Se crean anuales con 15% de descuento</p>
-              </div>
-              <div className='space-y-4'>
-                <p className='font-semibold font-montserrat'>Elige el nivel del plan</p>
-                <RadioGroup value={selectedLevel} onChange={handleLevelChange} className='flex flex-row gap-4'>
-                  {mentorshipLevels.map((level) => (
-                    <Radio
-                      key={level.value}
-                      value={level}
-                      className={({ checked }) =>
-                        `group font-montserrat relative flex cursor-pointer rounded-lg border px-4 py-2 text-sm shadow-md transition focus:outline-none
-                        ${checked ? 'bg-[#333] border-blue-500' : 'bg-[#333] border-gray-700'}`
-                      }
-                    >
-                      <div className='flex items-center'>
-                        <span className='font-semibold text-white'>{level.label}</span>
-                        {selectedLevel.value === level.value && (
-                          <CheckCircleIcon className='w-5 h-5 ml-2 text-[#234C8C]' />
-                        )}
-                      </div>
-                    </Radio>
-                  ))}
-                </RadioGroup>
-              </div>
-              <div className='flex flex-col justify-center items-start'>
-                <label className='inline-block w-full'>
-                  <p className='mb-2 font-semibold font-montserrat'>Descripción del plan</p>
-                  <textarea
-                    name='description'
-                    placeholder='Descripción'
-                    className='input font-montserrat'
-                    value={form.description}
+                    name='name'
+                    placeholder='Ingresa el nombre del plan'
+                    value={form.name}
+                    className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors font-montserrat'
                     onChange={handleChange}
-                    rows={3}
                     required
                   />
                 </label>
-                <div className='flex flex-row justify-center items-center space-x-2'>
-                  <p className='font-light text-xs text-[gray] font-montserrat'>Largo mínimo 30 caracteres</p>
-                  {descriptionLength < 30 ? (
-                    <RxCrossCircled className='text-xs text-red-600' />
-                  ) : (
-                    <AiOutlineCheckCircle className='text-xs text-green-600' />
-                  )}
+                
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  <label className='flex flex-col space-y-2'>
+                    <p className='text-sm font-medium text-gray-700'>Precio del plan (USD)</p>
+                    <input
+                      type='number'
+                      name='price'
+                      placeholder='0.00'
+                      className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors font-montserrat'
+                      value={form.price || ''}
+                      onChange={handleChange}
+                      min={0}
+                      step={0.01}
+                      required
+                      onKeyDown={(e) => (e.key === '-' ? e.preventDefault() : null)}
+                    />
+                  </label>
+                  <label className='flex flex-col space-y-2'>
+                    <p className='text-sm font-medium text-gray-700'>Moneda</p>
+                    <input
+                      type='text'
+                      name='currency'
+                      placeholder='Moneda'
+                      className='input border-gray-300 bg-gray-50 font-montserrat'
+                      value='USD'
+                      readOnly
+                    />
+                  </label>
+                </div>
+                <div className='space-y-4'>
+                  <p className='text-sm font-medium text-gray-700'>Intervalo del plan</p>
+                  <select
+                    name='interval'
+                    value={form.interval}
+                    onChange={handleChange}
+                    className='input border-gray-300 bg-gray-50 font-montserrat'
+                    disabled
+                  >
+                    <option value='trimestral'>Trimestral</option>
+                  </select>
+                  <p className='text-xs text-gray-500 font-montserrat'>Se crean anuales con 15% de descuento</p>
                 </div>
               </div>
-              <div className='flex flex-col justify-center items-start'>
-                <label className='inline-block w-full'>
-                  <p className='mb-2 font-semibold font-montserrat'>Características (separadas por coma)</p>
-                  <textarea
-                    name='features'
-                    placeholder='Sesión inicial de evaluación personal, Plan de entrenamiento personalizado, 2 sesiones de mentoría por mes...'
-                    className='input font-montserrat'
-                    value={form.features}
-                    onChange={handleChange}
-                    rows={2}
-                  />
-                </label>
+            </div>
+
+            {/* Sección: Configuración del Plan */}
+            <div className='border-b border-gray-200 pb-6'>
+              <h2 className='text-xl font-semibold text-gray-900 mb-6 flex items-center'>
+                <div className='w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3'>
+                  <span className='text-green-600 font-bold text-sm'>2</span>
+                </div>
+                Configuración del Plan
+              </h2>
+              
+              <div className='space-y-6'>
+                <div className='space-y-4'>
+                  <p className='text-sm font-medium text-gray-700'>Nivel del plan</p>
+                  <RadioGroup value={selectedLevel} onChange={handleLevelChange} className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                    {mentorshipLevels.map((level) => (
+                      <Radio
+                        key={level.value}
+                        value={level}
+                        className={({ checked }) =>
+                          `${
+                            checked ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-900 border-gray-200'
+                          } relative flex cursor-pointer rounded-lg px-5 py-4 shadow-sm border-2 focus:outline-none transition-all duration-200 hover:shadow-md`
+                        }
+                      >
+                        {({ checked }) => (
+                          <>
+                            <div className='flex w-full items-center justify-between'>
+                              <div className='flex items-center'>
+                                <div className='text-sm'>
+                                  <p
+                                    className={`font-medium ${
+                                      checked ? 'text-white' : 'text-gray-900'
+                                    }`}
+                                  >
+                                    {level.label}
+                                  </p>
+                                </div>
+                              </div>
+                              {checked && (
+                                <div className='shrink-0 text-white'>
+                                  <CheckCircleIcon className='h-6 w-6' />
+                                </div>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </Radio>
+                    ))}
+                  </RadioGroup>
+                </div>
+
+                <div className='space-y-4'>
+                  <label className='flex flex-col space-y-2'>
+                    <p className='text-sm font-medium text-gray-700'>Descripción del plan</p>
+                    <textarea
+                      name='description'
+                      placeholder='Describe las características y beneficios del plan'
+                      className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors font-montserrat min-h-[100px]'
+                      value={form.description}
+                      onChange={handleChange}
+                      rows={3}
+                      required
+                    />
+                  </label>
+                  <div className='flex flex-row justify-between items-center'>
+                    <p className='font-light text-xs text-gray-500 font-montserrat'>Largo mínimo 30 caracteres</p>
+                    <div className='flex items-center space-x-2'>
+                      <span className='text-xs text-gray-500'>{descriptionLength}/30</span>
+                      {descriptionLength < 30 ? (
+                        <RxCrossCircled className='text-xs text-red-500' />
+                      ) : (
+                        <AiOutlineCheckCircle className='text-xs text-green-500' />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className='space-y-4'>
+                  <label className='flex flex-col space-y-2'>
+                    <p className='text-sm font-medium text-gray-700'>Características del plan</p>
+                    <textarea
+                      name='features'
+                      placeholder='Sesión inicial de evaluación personal, Plan de entrenamiento personalizado, 2 sesiones de mentoría por mes...'
+                      className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors font-montserrat min-h-[80px]'
+                      value={form.features}
+                      onChange={handleChange}
+                      rows={2}
+                    />
+                    <p className='text-xs text-gray-500'>Separa las características con comas</p>
+                  </label>
+                </div>
               </div>
-              <div className='flex flex-row justify-end'>
-                <button
-                  type='submit'
-                  className='bg-[#234C8C] text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-[#1a3763] transition-all duration-300 shadow-lg'
-                  disabled={loading}
-                >
-                  {loading ? (isEditing ? 'Actualizando...' : 'Creando...') : (isEditing ? 'Actualizar Plan' : 'Crear Plan')}
-                </button>
-              </div>
+            </div>
+
+            {/* Botón de envío mejorado */}
+            <div className='pt-6 border-t border-gray-200'>
+              <button
+                type='submit'
+                className='w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-4 px-8 rounded-xl text-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg transform hover:scale-[1.02] active:scale-[0.98]'
+                disabled={loading}
+              >
+                {loading ? (isEditing ? 'Actualizando...' : 'Creando...') : (isEditing ? 'Actualizar Plan' : 'Crear Plan')}
+              </button>
             </div>
           </form>
         </div>

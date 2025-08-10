@@ -17,143 +17,185 @@ interface Props {
 
 const CreateClassStepOne = ({ step0ToStep1, types }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
-  const createClassReducer = useAppSelector(
-    (state) => state.classesModalReducer.value
-  );
+  
+  // Estados del formulario
+  const [name, setName] = useState<string>('');
+  const [typeId, setTypeId] = useState<string | null>(null);
+  const [typeName, setTypeName] = useState<string>('');
+  const [files, setFiles] = useState<File[]>([]);
 
-  const { name: nameOr, typeId: typeIdOr, files: filesOr } = createClassReducer;
-  const [name, setName] = useState(nameOr);
-  const [typeId, setTypeId] = useState(typeIdOr);
-  const [typeName, setTypeName] = useState('');
-  const [files, setFiles] = useState<any[]>(
-    filesOr ? [...filesOr] : []
-  );
-
-  const colourStyles: StylesConfig<any> = {
-    control: (styles) => ({
-      ...styles,
-      backgroundColor: '#333',
-      height: 55,
-      borderRadius: 6,
-      padding: 0,
-    }),
-    option: (styles) => ({ ...styles, color: '#808080' }),
-    input: (styles) => ({ ...styles, backgroundColor: '', color: '#fff' }),
-    placeholder: (styles) => ({ ...styles, color: '#fff' }),
-    singleValue: (styles) => ({ ...styles, color: '#808080' }),
-  };
-
-  const mapTypes = types[0].values.map((v) => ({
-    value: v.value,
-    label: v.label,
+  // Mapear tipos para el Select
+  const mapTypes = types.map((type) => ({
+    value: type._id,
+    label: type.name
   }));
 
-  const { getRootProps, getInputProps } = useDropzone({
+  // Dropzone para imágenes
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => {
-      const serializedFiles = acceptedFiles.map((file) => ({
-        name: file.name,
-        path: file.webkitRelativePath || file.name,
-        size: file.size,
-        type: file.type,
-        preview: URL.createObjectURL(file),
-      }));
-      setFiles(serializedFiles);
+      setFiles(acceptedFiles);
     },
-    multiple: false,
-    accept: { 'image/*': [] },
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png']
+    },
+    multiple: false
   });
 
-  const images = files.map((file: any) => (
-    <img
-      src={file.preview}
-      key={file.name}
-      alt="image"
-      className="cursor-pointer object-cover w-full h-full absolute"
-    />
+  // Renderizar imágenes
+  const images = files.map((file, index) => (
+    <div key={index} className="relative">
+      <img
+        src={URL.createObjectURL(file)}
+        alt={`Preview ${index + 1}`}
+        className="max-w-full h-auto rounded-lg"
+        style={{ maxHeight: '200px' }}
+      />
+    </div>
   ));
 
+  // Función de envío del formulario
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name.length < 5) {
-      toast.error('El Nombre de la clase debe tener al menos 5 caracteres');
-      return;
-    } else if (!typeId) {
-      toast.error('Debe seleccionar un tipo de clase');
-      return;
-    } else if (files.length === 0) {
-      toast.error('Debe subir una imagen para la clase');
+    
+    if (!name.trim()) {
+      toast.error('El nombre de la clase es requerido');
       return;
     }
-    dispatch(addStepOne({ name, typeId, files }));
+    
+    if (!typeId) {
+      toast.error('Debes seleccionar un tipo de clase');
+      return;
+    }
+    
+    if (files.length === 0) {
+      toast.error('Debes subir una imagen de portada');
+      return;
+    }
+
+    // Enviar datos al Redux
+    dispatch(addStepOne({
+      name,
+      typeId,
+      typeName,
+      files
+    }));
+
+    // Continuar al siguiente paso
     step0ToStep1();
   };
 
   return (
-    <div className="relative flex w-full min-h-screen flex-col bg-transparent md:items-center md:justify-center md:bg-transparent">
+    <div className="relative flex w-full min-h-screen flex-col md:items-center md:justify-center">
       <div className="h-full w-full relative flex flex-col md:items-center md:justify-center">
-        <div className="w-full flex pt-12 justify-between items-center">
-          <h1 className="text-4xl font-light">Agregar una Clase</h1>
-          <p>Paso 1</p>
+        {/* Header mejorado */}
+        <div className="w-full flex pt-8 justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Agregar una Clase</h1>
+            <p className="text-gray-200">Completa la información básica de la clase</p>
+          </div>
+          <div className="flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-lg">
+            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+            <span className="text-blue-700 font-medium">Paso 1</span>
+          </div>
         </div>
+
+        {/* Formulario principal con mejor estructura */}
         <form
-          className="relative mt-16 space-y-4 rounded px-8 md:min-w-[40rem] md:px-14"
+          className="relative space-y-6 rounded-xl bg-white shadow-lg px-8 py-8 md:min-w-[50rem] md:px-12 md:py-10"
           autoComplete="off"
           onSubmit={handleSubmit}
         >
-          <div className="space-y-8">
-            <label className="flex flex-col space-y-3 w-full">
-              <p>Elige un nombre para la clase</p>
-              <input
-                type="text"
-                placeholder="Nombre"
-                value={name}
-                className="input"
-                onChange={(e) => setName(e.target.value)}
-              />
-            </label>
-            <label className="flex flex-col space-y-3 w-full">
-              <p>Elige el tipo de Clase</p>
-              <Select
-                options={mapTypes}
-                styles={colourStyles}
-                placeholder={typeName || 'Tipo de Clase'}
-                className="w-full sm:w-full"
-                onChange={(e) => {
-                  setTypeName(e?.label || '');
-                  setTypeId(e?.value || null);
-                }}
-              />
-            </label>
-            <p>Selecciona la Portada para la clase</p>
-            {files.length > 0 ? (
-              <div
-                className="grid place-items-center input h-80 border-dashed border-2 border-white/80 relative"
-                {...getRootProps()}
-              >
-                <label className="w-full">
-                  <input {...getInputProps()} />
-                  <DocumentIcon className="flex justify-center items-center h-12 w-12 my-0 mx-auto text-white/60 mb-8" />
-                </label>
-                {images}
+          {/* Sección: Información Básica */}
+          <div className="border-b border-gray-200 pb-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                <span className="text-blue-600 font-bold text-sm">1</span>
               </div>
-            ) : (
-              <div
-                className="grid place-items-center input h-80 border-dashed border-2 border-white/80 !mt-3"
-                {...getRootProps()}
-              >
-                <label className="w-full">
-                  <input {...getInputProps()} />
-                  <ArrowUpTrayIcon className="flex justify-center items-center h-12 w-12 my-0 mx-auto text-white/60" />
-                </label>
+              Información Básica
+            </h2>
+            
+            <div className="space-y-6">
+              <label className="flex flex-col space-y-2">
+                <p className="text-sm font-medium text-gray-700">Nombre de la clase</p>
+                <input
+                  type="text"
+                  placeholder="Ingresa el nombre de la clase"
+                  value={name}
+                  className="input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors"
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </label>
+              
+              <label className="flex flex-col space-y-2">
+                <p className="text-sm font-medium text-gray-700">Tipo de clase</p>
+                <Select
+                  options={mapTypes}
+                  styles={{
+                    control: (styles) => ({
+                      ...styles,
+                      backgroundColor: 'white',
+                      borderColor: '#d1d5db',
+                      borderRadius: '6px',
+                      height: '44px',
+                      '&:hover': {
+                        borderColor: '#3b82f6'
+                      }
+                    }),
+                    option: (styles, { isFocused }) => ({
+                      ...styles,
+                      backgroundColor: isFocused ? '#f3f4f6' : 'white',
+                      color: '#374151'
+                    }),
+                    input: (styles) => ({ ...styles, color: '#374151' }),
+                    placeholder: (styles) => ({ ...styles, color: '#9ca3af' }),
+                    singleValue: (styles) => ({ ...styles, color: '#374151' })
+                  }}
+                  placeholder={typeName || 'Selecciona el tipo de clase'}
+                  className="w-full"
+                  onChange={(e: any) => {
+                    setTypeName(e?.label || '');
+                    setTypeId(e?.value || null);
+                  }}
+                />
+              </label>
+              
+              <div className="space-y-4">
+                <p className="text-sm font-medium text-gray-700">Imagen de portada</p>
+                {files.length > 0 ? (
+                  <div
+                    className="border-2 border-dashed border-blue-300 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 bg-blue-50 hover:bg-blue-100 relative h-80"
+                    {...getRootProps()}
+                  >
+                    <input {...getInputProps()} />
+                    <ArrowUpTrayIcon className="w-12 h-12 text-blue-400 mb-4" />
+                    <span className="text-blue-600 text-sm text-center mb-2">Imagen cargada</span>
+                    <span className="text-xs text-blue-500 text-center">Click para cambiar la imagen</span>
+                    {images}
+                  </div>
+                ) : (
+                  <div
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 bg-gray-50 hover:border-blue-400 hover:bg-blue-50 h-80"
+                    {...getRootProps()}
+                  >
+                    <input {...getInputProps()} />
+                    <ArrowUpTrayIcon className="w-12 h-12 text-gray-400 mb-4" />
+                    <span className="text-gray-600 text-sm text-center mb-2">Arrastra la imagen aquí o haz click</span>
+                    <span className="text-xs text-gray-500 text-center">Formatos: JPG, PNG</span>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
-          <button
-            type="submit"
-            className="w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold"
-          >
-            Siguiente
-          </button>
+
+          {/* Botón de envío mejorado */}
+          <div className="pt-6 border-t border-gray-200">
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-4 px-8 rounded-xl text-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Siguiente
+            </button>
+          </div>
         </form>
       </div>
     </div>
