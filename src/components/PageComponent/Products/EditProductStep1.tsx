@@ -156,6 +156,10 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
     tipo: 'q&a'
   });
 
+  // Estados para edición de semanas
+  const [semanaEditando, setSemanaEditando] = useState<any>(null);
+  const [modalEditarSemana, setModalEditarSemana] = useState<boolean>(false);
+
   // Debug: ver los valores inicializados
   console.log('Valores inicializados:', {
     name, description, price, currency, tipo, fecha,
@@ -366,19 +370,80 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
     setSesionesEnVivo(sesionesEnVivo.filter((_, i) => i !== index));
   };
 
+  // Función para calcular fecha de finalización automáticamente
+  const calcularFechaFinalizacion = () => {
+    if (fecha && duracionSemanas) {
+      const fechaInicio = new Date(fecha);
+      const fechaFinalizacion = new Date(fechaInicio);
+      fechaFinalizacion.setDate(fechaFinalizacion.getDate() + (duracionSemanas * 7));
+      // Mantener la misma hora que la fecha de inicio
+      fechaFinalizacion.setHours(fechaInicio.getHours());
+      fechaFinalizacion.setMinutes(fechaInicio.getMinutes());
+      setFechaFin(fechaFinalizacion.toISOString().slice(0, 16));
+    }
+  };
+
+  // Efecto para calcular fecha de finalización cuando cambie fecha o duración
+  useEffect(() => {
+    calcularFechaFinalizacion();
+  }, [fecha, duracionSemanas]);
+
   const generarSemanasAutomaticas = () => {
+    // Verificar si hay fecha de inicio
+    if (!fecha) {
+      toast.error('Debes configurar una fecha de inicio antes de generar las semanas automáticamente');
+      return;
+    }
+
+    const fechaInicio = new Date(fecha);
     const semanasGeneradas = [];
+    
     for (let i = 1; i <= duracionSemanas; i++) {
+      // Calcular fecha de desbloqueo: fecha de inicio + (i-1) semanas
+      const fechaDesbloqueo = new Date(fechaInicio);
+      fechaDesbloqueo.setDate(fechaDesbloqueo.getDate() + ((i - 1) * 7));
+      // Mantener la misma hora que la fecha de inicio
+      fechaDesbloqueo.setHours(fechaInicio.getHours());
+      fechaDesbloqueo.setMinutes(fechaInicio.getMinutes());
+      
       semanasGeneradas.push({
         numero: i,
         titulo: `Semana ${i}`,
         descripcion: `Descripción de la semana ${i}`,
         contenido: [],
         desbloqueado: i === 1,
-        fechaDesbloqueo: i === 1 ? fecha : undefined
+        fechaDesbloqueo: fechaDesbloqueo.toISOString()
       });
     }
+    
     setSemanas(semanasGeneradas);
+    toast.success(`Se generaron ${duracionSemanas} semanas automáticamente`);
+  };
+
+  // Funciones para edición de semanas
+  const abrirModalEditarSemana = (semana: any) => {
+    setSemanaEditando({ ...semana });
+    setModalEditarSemana(true);
+  };
+
+  const cerrarModalEditarSemana = () => {
+    setSemanaEditando(null);
+    setModalEditarSemana(false);
+  };
+
+  const guardarSemanaEditada = () => {
+    if (!semanaEditando) return;
+    
+    const nuevasSemanas = [...semanas];
+    const index = nuevasSemanas.findIndex(s => s.numero === semanaEditando.numero);
+    
+    if (index !== -1) {
+      nuevasSemanas[index] = { ...semanaEditando };
+      setSemanas(nuevasSemanas);
+      toast.success('Semana actualizada correctamente');
+    }
+    
+    cerrarModalEditarSemana();
   };
 
   const handleSubmitLocal = (e: any) => {
@@ -510,272 +575,375 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
   };
 
   return (
-    <div className='relative mt-16 space-y-4 rounded px-8 md:min-w-[40rem] md:px-14'>
-      <form
-        className='relative mt-16 space-y-4 rounded px-8 md:min-w-[40rem] md:px-14'
-        autoComplete='nope'
-        onSubmit={handleSubmitLocal}
-      >
-        <div className='space-y-8'>
-          <label className='flex flex-col space-y-3 w-full'>
-            <p className='text-white'>Nombre del producto</p>
-            <input
-              type='text'
-              placeholder='Nombre'
-              value={name}
-              className='input text-white'
-              onChange={(e) => setName(e.target.value)}
-            />
-          </label>
-          
-          <label className='flex flex-col space-y-3 w-full'>
-            <p className='text-white'>Descripción</p>
-            <textarea
-              placeholder='Descripción'
-              className='input text-white'
-              onChange={(e) => {
-                setDescriptionLength(e.target.value.length);
-                setDescription(e.target.value);
-              }}
-              value={description}
-            />
-            <div className='flex flex-row justify-center items-center space-x-2'>
-              <p className='font-light text-xs text-[gray]'>Largo mínimo 20 caracteres</p>
-              {descriptionLength < 20 ? (
-                <RxCrossCircled className='text-xs text-red-600' />
-              ) : (
-                <AiOutlineCheckCircle className='text-xs text-green-600' />
-              )}
-            </div>
-          </label>
-          
-          <label className='flex flex-col space-y-3 w-full'>
-            <p className='text-white'>Tipo de producto</p>
-            <select className='input text-white' value={tipo} onChange={e => setTipo(e.target.value)}>
-              <option value='curso'>Curso</option>
-              <option value='bundle'>Bundle de cursos</option>
-              <option value='evento'>Evento</option>
-              <option value='programa_transformacional'>Programa Transformacional</option>
-              <option value='recurso'>Recurso descargable</option>
-            </select>
-          </label>
+    <div className='relative flex w-full min-h-screen flex-col md:items-center md:justify-center'>
+      <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}>
+        {/* Header mejorado */}
+        <div className='w-full flex pt-8 justify-between items-center mb-8'>
+          <div>
+            <h1 className='text-3xl font-bold text-white mb-2'>Editar Producto</h1>
+            <p className='text-gray-200'>Modifica la información de tu producto</p>
+          </div>
+          <div className='flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-lg'>
+            <div className='w-3 h-3 bg-blue-500 rounded-full'></div>
+            <span className='text-blue-700 font-medium'>Paso único</span>
+          </div>
+        </div>
 
-          {/* Checkbox para marcar como programa transformacional */}
-          {tipo === 'evento' && (
-            <label className='flex items-center space-x-3 w-full'>
-              <input
-                type='checkbox'
-                checked={esProgramaTransformacional}
-                onChange={e => setEsProgramaTransformacional(e.target.checked)}
-                className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'
-              />
-              <span className='text-sm text-white'>
-                Es un programa transformacional de 8 semanas
-              </span>
-            </label>
-          )}
-
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            <label className='flex flex-col space-y-3 w-full'>
-              <p className='text-white'>Precio</p>
-              <input
-                type='number'
-                placeholder='0.00'
-                min='0'
-                step='0.01'
-                value={price}
-                className='input text-white'
-                onChange={(e) => setPrice(Number(e.target.value))}
-              />
-            </label>
+        {/* Formulario principal con mejor estructura */}
+        <form
+          className='relative space-y-6 rounded-xl bg-white shadow-lg px-8 py-8 md:min-w-[50rem] md:px-12 md:py-10'
+          autoComplete='nope'
+          onSubmit={handleSubmitLocal}
+        >
+          {/* Sección: Información Básica */}
+          <div className='border-b border-gray-200 pb-6'>
+            <h2 className='text-xl font-semibold text-gray-900 mb-6 flex items-center'>
+              <div className='w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3'>
+                <span className='text-blue-600 font-bold text-sm'>1</span>
+              </div>
+              Información Básica
+            </h2>
             
-            <label className='flex flex-col space-y-3 w-full'>
-              <p className='text-white'>Moneda</p>
-              <select className='input text-white' value={currency} onChange={e => setCurrency(e.target.value)}>
-                <option value='USD'>USD</option>
-                <option value='EUR'>EUR</option>
-                <option value='ARS'>ARS</option>
-              </select>
-            </label>
+            <div className='space-y-6'>
+              <label className='flex flex-col space-y-2'>
+                <p className='text-sm font-medium text-gray-700'>Nombre del producto</p>
+                <input
+                  type='text'
+                  placeholder='Ingresa el nombre de tu producto'
+                  value={name}
+                  className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </label>
+              
+              <label className='flex flex-col space-y-2'>
+                <p className='text-sm font-medium text-gray-700'>Descripción</p>
+                <textarea
+                  placeholder='Describe tu producto de manera clara y atractiva'
+                  className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors min-h-[100px]'
+                  onChange={(e) => {
+                    setDescriptionLength(e.target.value.length);
+                    setDescription(e.target.value);
+                  }}
+                  value={description}
+                />
+                <div className='flex flex-row justify-between items-center'>
+                  <p className='font-light text-xs text-gray-500'>Largo mínimo 20 caracteres</p>
+                  <div className='flex items-center space-x-2'>
+                    <span className='text-xs text-gray-500'>{descriptionLength}/20</span>
+                    {descriptionLength < 20 ? (
+                      <RxCrossCircled className='text-xs text-red-500' />
+                    ) : (
+                      <AiOutlineCheckCircle className='text-xs text-green-500' />
+                    )}
+                  </div>
+                </div>
+              </label>
+              
+              <label className='flex flex-col space-y-2'>
+                <p className='text-sm font-medium text-gray-700'>Tipo de producto</p>
+                <select 
+                  className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors' 
+                  value={tipo} 
+                  onChange={e => setTipo(e.target.value)}
+                >
+                  <option value='curso'>Curso</option>
+                  <option value='bundle'>Bundle de cursos</option>
+                  <option value='evento'>Evento</option>
+                  <option value='programa_transformacional'>Programa Transformacional</option>
+                  <option value='recurso'>Recurso descargable</option>
+                </select>
+              </label>
+
+              {/* Checkbox para marcar como programa transformacional */}
+              {tipo === 'evento' && (
+                <label className='flex items-center space-x-3 w-full'>
+                  <input
+                    type='checkbox'
+                    checked={esProgramaTransformacional}
+                    onChange={e => setEsProgramaTransformacional(e.target.checked)}
+                    className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'
+                  />
+                  <span className='text-sm text-gray-700'>
+                    Es un programa transformacional de 8 semanas
+                  </span>
+                </label>
+              )}
+
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                <label className='flex flex-col space-y-2'>
+                  <p className='text-sm font-medium text-gray-700'>Precio</p>
+                  <input
+                    type='number'
+                    placeholder='0.00'
+                    min='0'
+                    step='0.01'
+                    value={price}
+                    className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                    onChange={(e) => setPrice(Number(e.target.value))}
+                  />
+                </label>
+                
+                <label className='flex flex-col space-y-2'>
+                  <p className='text-sm font-medium text-gray-700'>Moneda</p>
+                  <select className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors' value={currency} onChange={e => setCurrency(e.target.value)}>
+                    <option value='USD'>USD</option>
+                    <option value='EUR'>EUR</option>
+                    <option value='ARS'>ARS</option>
+                  </select>
+                </label>
+              </div>
+            </div>
           </div>
 
-          {/* Imagen de portada actual */}
-          {product.portada && (
-            <label className='flex flex-col space-y-3 w-full'>
-              <p className='text-white'>Imagen de portada actual</p>
-              <div className='border rounded p-4 bg-[#333]'>
-                <div 
-                  className="cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={() => product.portada && openImageModal(product.portada, 'Imagen de Portada')}
-                >
-                  <CldImage
-                    src={product.portada}
-                    alt="Portada actual"
-                    width={200}
-                    height={150}
-                    className="rounded"
-                  />
+          {/* Sección: Configuración de Precios (para eventos y programas) */}
+          {(tipo === 'evento' || tipo === 'programa_transformacional') && (
+            <div className='border-b border-gray-200 pb-6'>
+              <h2 className='text-xl font-semibold text-gray-900 mb-6 flex items-center'>
+                <div className='w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3'>
+                  <span className='text-green-600 font-bold text-sm'>2</span>
                 </div>
-                <p className='text-sm text-gray-400 mt-2'>Click en la imagen para ver en tamaño grande. Para cambiar la imagen, sube una nueva abajo</p>
-              </div>
-            </label>
-          )}
-
-          {/* Imagen de portada móvil actual */}
-          {product.portadaMobile && (
-            <label className='flex flex-col space-y-3 w-full'>
-              <p className='text-white'>Imagen de portada móvil actual</p>
-              <div className='border rounded p-4 bg-[#333]'>
-                <div 
-                  className="cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={() => product.portadaMobile && openImageModal(product.portadaMobile, 'Imagen de Portada Móvil')}
-                >
-                  <CldImage
-                    src={product.portadaMobile}
-                    alt="Portada móvil actual"
-                    width={200}
-                    height={150}
-                    className="rounded"
-                  />
-                </div>
-                <p className='text-sm text-gray-400 mt-2'>Click en la imagen para ver en tamaño grande. Para cambiar la imagen, sube una nueva abajo</p>
-              </div>
-            </label>
-          )}
-
-          {/* Campos dinámicos según tipo */}
-          {tipo === 'bundle' && (
-            <label className='flex flex-col space-y-3 w-full'>
-              <p className='text-white'>IDs de cursos incluidos (separados por coma)</p>
-              <input
-                type='text'
-                placeholder='Ej: 64a1..., 64a2..., 64a3...'
-                value={cursosIncluidos}
-                className='input text-white'
-                onChange={e => setCursosIncluidos(e.target.value)}
-              />
-            </label>
-          )}
-
-          {tipo === 'evento' && (
-            <div className='flex flex-col space-y-3 w-full'>
-              {/* Imagen de portada para evento como dropzone */}
-              <label className='flex flex-col space-y-3 w-full'>
-                <p className='text-white'>Nueva imagen de portada (opcional)</p>
-                <div
-                  {...getRootPropsPortrait()}
-                  className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${isDragActivePortrait ? 'border-black bg-gray-100' : 'border-gray-300 bg-white hover:border-black'}`}
-                >
-                  <input {...getInputPropsPortrait()} />
-                  <span className='text-gray-500 mb-2'>Arrastra la imagen aquí o haz click para seleccionar</span>
-                  <span className='text-xs text-gray-400'>Formatos permitidos: JPG, PNG. Solo una imagen.</span>
-                  {portraitImageArray[0] && (
-                    <div 
-                      className="cursor-pointer hover:opacity-80 transition-opacity"
-                      onClick={() => openImageModal(portraitImageArray[0].preview || URL.createObjectURL(portraitImageArray[0]), 'Nueva Imagen de Portada')}
-                    >
-                      <img
-                        src={portraitImageArray[0].preview || URL.createObjectURL(portraitImageArray[0])}
-                        alt='Portada'
-                        className='w-32 h-32 object-cover mt-2 rounded'
+                Configuración de Precios
+              </h2>
+              
+              <div className='space-y-6'>
+                {/* Early Bird */}
+                <div className='border rounded p-4 bg-gray-50'>
+                  <h3 className='font-semibold text-gray-900 mb-4'>Early Bird</h3>
+                  <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                    <label className='flex flex-col space-y-2'>
+                      <p className='text-sm font-medium text-gray-700'>Precio</p>
+                      <input
+                        type='number'
+                        placeholder='0.00'
+                        min='0'
+                        step='0.01'
+                        value={earlyBirdPrice}
+                        className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                        onChange={(e) => setEarlyBirdPrice(Number(e.target.value))}
                       />
-                    </div>
-                  )}
-                </div>
-              </label>
-
-              {/* Imagen de portada móvil para evento como dropzone */}
-              <label className='flex flex-col space-y-3 w-full'>
-                <p className='text-white'>Nueva imagen de portada móvil (opcional)</p>
-                <div
-                  {...getRootPropsPortraitMobile()}
-                  className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${isDragActivePortraitMobile ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-white hover:border-blue-500'}`}
-                >
-                  <input {...getInputPropsPortraitMobile()} />
-                  <span className='text-gray-500 mb-2'>Arrastra la imagen aquí o haz click para seleccionar</span>
-                  <span className='text-xs text-gray-400'>Formatos permitidos: JPG, PNG. Solo una imagen. Recomendado: 9:16 ratio.</span>
-                  {portraitMobileImageArray[0] && (
-                    <div 
-                      className="cursor-pointer hover:opacity-80 transition-opacity"
-                      onClick={() => openImageModal(portraitMobileImageArray[0].preview || URL.createObjectURL(portraitMobileImageArray[0]), 'Nueva Imagen de Portada Móvil')}
-                    >
-                      <img
-                        src={portraitMobileImageArray[0].preview || URL.createObjectURL(portraitMobileImageArray[0])}
-                        alt='Portada Móvil'
-                        className='w-32 h-32 object-cover mt-2 rounded'
+                    </label>
+                    <label className='flex flex-col space-y-2'>
+                      <p className='text-sm font-medium text-gray-700'>Fecha inicio</p>
+                      <input
+                        type='datetime-local'
+                        value={earlyBirdStart}
+                        className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                        onChange={(e) => setEarlyBirdStart(e.target.value)}
                       />
-                    </div>
-                  )}
-                </div>
-              </label>
-
-              {/* PDF de presentación (opcional) */}
-              <label>
-                <p className='text-white'>PDF de presentación (opcional)</p>
-                
-                {/* Mostrar PDF actual si existe */}
-                {product.pdfPresentacionUrl && !pdfPresentacion && (
-                  <div className='mb-4 p-4 border rounded bg-[#333]'>
-                    <div className='flex items-center justify-between'>
-                      <div className='flex items-center space-x-2'>
-                        <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-                        </svg>
-                        <span className='text-white'>PDF actual: {product.nombre || product.name}-informacion.pdf</span>
-                      </div>
-                      <button
-                        type='button'
-                        onClick={() => {
-                          if (product.pdfPresentacionUrl) {
-                            const link = document.createElement('a');
-                            link.href = product.pdfPresentacionUrl;
-                            link.download = `${product.nombre || product.name}-informacion.pdf`;
-                            link.target = '_blank';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                          }
-                        }}
-                        className='px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors'
-                      >
-                        Descargar
-                      </button>
-                    </div>
-                    <p className='text-sm text-gray-400 mt-2'>Para cambiar el PDF, sube uno nuevo abajo</p>
+                    </label>
+                    <label className='flex flex-col space-y-2'>
+                      <p className='text-sm font-medium text-gray-700'>Fecha fin</p>
+                      <input
+                        type='datetime-local'
+                        value={earlyBirdEnd}
+                        className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                        onChange={(e) => setEarlyBirdEnd(e.target.value)}
+                      />
+                    </label>
                   </div>
-                )}
-                
-                <div
-                  {...getRootPropsPdfPresentacion()}
-                  className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${isDragActivePdfPresentacion ? 'border-black bg-gray-100' : 'border-gray-300 bg-white hover:border-black'}`}
-                >
-                  <input {...getInputPropsPdfPresentacion()} />
-                  <span className='text-gray-500 mb-2'>
-                    {pdfPresentacion ? 'PDF seleccionado' : 'Arrastra el PDF aquí o haz click para seleccionar'}
-                  </span>
-                  <span className='text-xs text-gray-400'>Solo formato PDF.</span>
-                  {pdfPresentacion && (
-                    <span className='mt-2 text-sm text-black font-semibold'>
-                      {pdfPresentacion.name}
-                    </span>
+                </div>
+
+                {/* General */}
+                <div className='border rounded p-4 bg-gray-50'>
+                  <h3 className='font-semibold text-gray-900 mb-4'>General</h3>
+                  <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                    <label className='flex flex-col space-y-2'>
+                      <p className='text-sm font-medium text-gray-700'>Precio</p>
+                      <input
+                        type='number'
+                        placeholder='0.00'
+                        min='0'
+                        step='0.01'
+                        value={generalPrice}
+                        className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                        onChange={(e) => setGeneralPrice(Number(e.target.value))}
+                      />
+                    </label>
+                    <label className='flex flex-col space-y-2'>
+                      <p className='text-sm font-medium text-gray-700'>Fecha inicio</p>
+                      <input
+                        type='datetime-local'
+                        value={generalStart}
+                        className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                        onChange={(e) => setGeneralStart(e.target.value)}
+                      />
+                    </label>
+                    <label className='flex flex-col space-y-2'>
+                      <p className='text-sm font-medium text-gray-700'>Fecha fin</p>
+                      <input
+                        type='datetime-local'
+                        value={generalEnd}
+                        className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                        onChange={(e) => setGeneralEnd(e.target.value)}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Last Tickets */}
+                <div className='border rounded p-4 bg-gray-50'>
+                  <h3 className='font-semibold text-gray-900 mb-4'>Last Tickets</h3>
+                  <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                    <label className='flex flex-col space-y-2'>
+                      <p className='text-sm font-medium text-gray-700'>Precio</p>
+                      <input
+                        type='number'
+                        placeholder='0.00'
+                        min='0'
+                        step='0.01'
+                        value={lastTicketsPrice}
+                        className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                        onChange={(e) => setLastTicketsPrice(Number(e.target.value))}
+                      />
+                    </label>
+                    <label className='flex flex-col space-y-2'>
+                      <p className='text-sm font-medium text-gray-700'>Fecha inicio</p>
+                      <input
+                        type='datetime-local'
+                        value={lastTicketsStart}
+                        className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                        onChange={(e) => setLastTicketsStart(e.target.value)}
+                      />
+                    </label>
+                    <label className='flex flex-col space-y-2'>
+                      <p className='text-sm font-medium text-gray-700'>Fecha fin</p>
+                      <input
+                        type='datetime-local'
+                        value={lastTicketsEnd}
+                        className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                        onChange={(e) => setLastTicketsEnd(e.target.value)}
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sección: Detalles del Evento/Programa */}
+          {(tipo === 'evento' || tipo === 'programa_transformacional') && (
+            <div className='border-b border-gray-200 pb-6'>
+              <h2 className='text-xl font-semibold text-gray-900 mb-6 flex items-center'>
+                <div className='w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-3'>
+                  <span className='text-orange-600 font-bold text-sm'>3</span>
+                </div>
+                Detalles del Evento
+              </h2>
+              
+              <div className='space-y-6'>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  <label className='flex flex-col space-y-2'>
+                    <p className='text-sm font-medium text-gray-700'>Fecha del evento</p>
+                    <input
+                      type='datetime-local'
+                      value={fecha}
+                      className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                      onChange={(e) => setFecha(e.target.value)}
+                    />
+                  </label>
+                  <label className='flex flex-col space-y-2'>
+                    <p className='text-sm font-medium text-gray-700'>Cupo</p>
+                    <input
+                      type='number'
+                      placeholder='50'
+                      min='1'
+                      value={cupo}
+                      className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                      onChange={(e) => setCupo(Number(e.target.value))}
+                    />
+                  </label>
+                </div>
+
+                <div className='space-y-4'>
+                  <label className='flex items-center space-x-3'>
+                    <input
+                      type='checkbox'
+                      checked={online}
+                      onChange={(e) => setOnline(e.target.checked)}
+                      className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'
+                    />
+                    <span className='text-sm font-medium text-gray-700'>Evento online</span>
+                  </label>
+                  
+                  {online && (
+                    <label className='flex flex-col space-y-2'>
+                      <p className='text-sm font-medium text-gray-700'>Link del evento</p>
+                      <input
+                        type='url'
+                        placeholder='https://meet.google.com/...'
+                        value={linkEvento}
+                        className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                        onChange={(e) => setLinkEvento(e.target.value)}
+                      />
+                    </label>
+                  )}
+                  
+                  {!online && (
+                    <div className='space-y-4'>
+                      <label className='flex flex-col space-y-2'>
+                        <p className='text-sm font-medium text-gray-700'>Ubicación</p>
+                        <input
+                          type='text'
+                          placeholder='Buscar ubicación...'
+                          value={ubicacion}
+                          className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                          onChange={handleUbicacionInput}
+                        />
+                        {ubicacionSugerencias.length > 0 && (
+                          <div className='border border-gray-300 rounded-md bg-white shadow-lg max-h-40 overflow-y-auto'>
+                            {ubicacionSugerencias.map((sug, index) => (
+                              <div
+                                key={index}
+                                className='px-3 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0'
+                                onClick={() => handleSelectUbicacion(sug)}
+                              >
+                                {sug.display_name}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </label>
+                    </div>
                   )}
                 </div>
-              </label>
+              </div>
+            </div>
+          )}
 
-              {/* Beneficios del evento */}
-              <label>
-                <p className='text-white'>Beneficios incluidos</p>
+          {/* Sección: Contenido y Beneficios */}
+          {(tipo === 'evento' || tipo === 'programa_transformacional') && (
+            <div className='border-b border-gray-200 pb-6'>
+              <h2 className='text-xl font-semibold text-gray-900 mb-6 flex items-center'>
+                <div className='w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3'>
+                  <span className='text-purple-600 font-bold text-sm'>4</span>
+                </div>
+                Contenido y Beneficios
+              </h2>
+              
+              <div className='space-y-6'>
+                {/* Beneficios */}
                 <div className='space-y-3'>
-                  {/* Lista de beneficios actuales */}
+                  <p className='text-sm font-medium text-gray-700'>Beneficios incluidos</p>
                   <div className='space-y-2'>
                     {beneficios.map((beneficio, index) => (
-                      <div key={index} className='flex items-center space-x-2'>
-                        <div className='w-2 h-2 bg-white rounded-full'></div>
-                        <span className='flex-1 text-white'>{beneficio}</span>
+                      <div key={index} className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'>
+                        <div className='w-2 h-2 bg-green-500 rounded-full flex-shrink-0'></div>
+                        <input
+                          type='text'
+                          placeholder='Beneficio del evento'
+                          value={beneficio}
+                          className='flex-1 bg-transparent border-none focus:ring-0 text-gray-700'
+                          onChange={(e) => {
+                            const nuevosBeneficios = [...beneficios];
+                            nuevosBeneficios[index] = e.target.value;
+                            setBeneficios(nuevosBeneficios);
+                          }}
+                        />
                         <button
                           type='button'
                           onClick={() => eliminarBeneficio(index)}
-                          className='text-red-400 hover:text-red-300 text-sm'
+                          className='text-red-500 hover:text-red-700 text-sm px-2 py-1 rounded hover:bg-red-50 transition-colors'
                         >
                           Eliminar
                         </button>
@@ -783,719 +951,390 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
                     ))}
                   </div>
                   
-                  {/* Agregar nuevo beneficio */}
                   <div className='flex space-x-2'>
                     <input
                       type='text'
-                      value={nuevoBeneficio}
-                      onChange={(e) => setNuevoBeneficio(e.target.value)}
                       placeholder='Agregar nuevo beneficio...'
-                      className='input text-white flex-1'
+                      className='input border-gray-300 focus:border-green-500 focus:ring-green-500 transition-colors flex-1'
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), agregarBeneficio())}
                     />
                     <button
                       type='button'
                       onClick={agregarBeneficio}
-                      className='px-4 py-2 bg-white text-black rounded hover:bg-gray-100 transition-colors'
+                      className='px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium'
                     >
                       Agregar
                     </button>
                   </div>
                 </div>
-              </label>
-              {/* Aprendizajes del evento */}
-              <label>
-                <p className='text-white'>¿Qué vas a aprender? (uno por línea)</p>
+
+                {/* Aprendizajes */}
                 <div className='space-y-3'>
-                  {/* Lista de aprendizajes actuales */}
+                  <p className='text-sm font-medium text-gray-700'>¿Qué vas a aprender?</p>
                   <div className='space-y-2'>
-                    {aprendizajes.map((apr, index) => (
-                      <div key={index} className='flex items-center space-x-2'>
-                        <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
-                        <span className='flex-1 text-white'>{apr}</span>
+                    {aprendizajes.map((aprendizaje, index) => (
+                      <div key={index} className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'>
+                        <div className='w-2 h-2 bg-blue-500 rounded-full flex-shrink-0'></div>
+                        <input
+                          type='text'
+                          placeholder='Lo que aprenderás'
+                          value={aprendizaje}
+                          className='flex-1 bg-transparent border-none focus:ring-0 text-gray-700'
+                          onChange={(e) => {
+                            const nuevosAprendizajes = [...aprendizajes];
+                            nuevosAprendizajes[index] = e.target.value;
+                            setAprendizajes(nuevosAprendizajes);
+                          }}
+                        />
                         <button
                           type='button'
                           onClick={() => eliminarAprendizaje(index)}
-                          className='text-red-400 hover:text-red-300 text-sm'
+                          className='text-red-500 hover:text-red-700 text-sm px-2 py-1 rounded hover:bg-red-50 transition-colors'
                         >
                           Eliminar
                         </button>
                       </div>
                     ))}
                   </div>
-                  {/* Agregar nuevo aprendizaje */}
+                  
                   <div className='flex space-x-2'>
                     <input
                       type='text'
-                      value={nuevoAprendizaje}
-                      onChange={(e) => setNuevoAprendizaje(e.target.value)}
                       placeholder='Agregar nuevo aprendizaje...'
-                      className='input text-white flex-1'
+                      className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors flex-1'
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), agregarAprendizaje())}
                     />
                     <button
                       type='button'
                       onClick={agregarAprendizaje}
-                      className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
+                      className='px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium'
                     >
                       Agregar
                     </button>
                   </div>
                 </div>
-              </label>
 
-              {/* Para quién es este evento */}
-              <label>
-                <p className='text-white'>¿Para quién es este evento? (uno por línea)</p>
+                {/* Para quién */}
                 <div className='space-y-3'>
-                  {/* Lista de paraQuien actuales */}
+                  <p className='text-sm font-medium text-gray-700'>¿Para quién es este {tipo === 'programa_transformacional' ? 'programa' : 'evento'}?</p>
                   <div className='space-y-2'>
-                    {paraQuien.map((pq, index) => (
-                      <div key={index} className='flex items-center space-x-2'>
-                        <div className='w-2 h-2 bg-[#234C8C] rounded-full'></div>
-                        <span className='flex-1 text-white'>{pq}</span>
+                    {paraQuien.map((item, index) => (
+                      <div key={index} className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'>
+                        <div className='w-2 h-2 bg-[#234C8C] rounded-full flex-shrink-0'></div>
+                        <input
+                          type='text'
+                          placeholder='Dirigido a...'
+                          value={item}
+                          className='flex-1 bg-transparent border-none focus:ring-0 text-gray-700'
+                          onChange={(e) => {
+                            const nuevosParaQuien = [...paraQuien];
+                            nuevosParaQuien[index] = e.target.value;
+                            setParaQuien(nuevosParaQuien);
+                          }}
+                        />
                         <button
                           type='button'
                           onClick={() => eliminarParaQuien(index)}
-                          className='text-red-400 hover:text-red-300 text-sm'
+                          className='text-red-500 hover:text-red-700 text-sm px-2 py-1 rounded hover:bg-red-50 transition-colors'
                         >
                           Eliminar
                         </button>
                       </div>
                     ))}
                   </div>
-                  {/* Agregar nuevo paraQuien */}
+                  
                   <div className='flex space-x-2'>
                     <input
                       type='text'
-                      value={nuevoParaQuien}
-                      onChange={(e) => setNuevoParaQuien(e.target.value)}
                       placeholder='Agregar nuevo destinatario...'
-                      className='input text-white flex-1'
+                      className='input border-gray-300 focus:border-[#234C8C] focus:ring-[#234C8C] transition-colors flex-1'
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), agregarParaQuien())}
                     />
                     <button
                       type='button'
                       onClick={agregarParaQuien}
-                      className='px-4 py-2 bg-[#234C8C] text-white rounded hover:bg-blue-600 transition-colors'
+                      className='px-4 py-2 bg-[#234C8C] text-white rounded-lg hover:bg-[#1a3a6b] transition-colors font-medium'
                     >
                       Agregar
                     </button>
                   </div>
                 </div>
-              </label>
-
-              {/* Galería de imágenes actuales */}
-              {existingGalleryImages && existingGalleryImages.length > 0 && (
-                <label className='flex flex-col space-y-3 w-full'>
-                  <p className='text-white'>Imágenes de galería actuales</p>
-                  <div className='flex flex-wrap gap-2 border rounded p-4 bg-[#333]'>
-                    {existingGalleryImages.map((img, idx) => (
-                      <div key={"galeria-"+idx} className='relative w-20 h-20'>
-                        <CldImage
-                          src={img}
-                          alt={`Imagen galería ${idx+1}`}
-                          width={80}
-                          height={80}
-                          className='object-cover w-full h-full rounded cursor-pointer hover:opacity-80 transition-opacity'
-                          onClick={() => openImageModal(img, `Imagen galería ${idx+1}`)}
-                        />
-                        <button
-                          type='button'
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setExistingGalleryImages(prev => prev.filter((_, i) => i !== idx));
-                          }}
-                          className='absolute top-0 right-0 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600'
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <p className='text-sm text-gray-400 mt-2'>Las imágenes aquí se mantendrán salvo que las elimines o subas nuevas.</p>
-                </label>
-              )}
-
-              {/* Galería de imágenes (opcional) */}
-              <label>
-                <p className='text-white'>Galería de imágenes (opcional)</p>
-                <div
-                  {...getRootPropsImagenes()}
-                  className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${isDragActiveImagenes ? 'border-black bg-gray-100' : 'border-gray-300 bg-white hover:border-black'}`}
-                >
-                  <input {...getInputPropsImagenes()} />
-                  <span className='text-gray-500 mb-2'>Arrastra imágenes aquí o haz click para seleccionar</span>
-                  <span className='text-xs text-gray-400'>Formatos permitidos: JPG, PNG, etc. Puedes subir varias.</span>
-                  <div className='flex flex-wrap gap-2 mt-2'>
-                    {/* Imágenes nuevas (archivos locales) */}
-                    {galleryImageArray.map((img, idx) => (
-                      <div key={"new-"+idx} className='relative w-20 h-20'>
-                        <img 
-                          src={img.preview || URL.createObjectURL(img)} 
-                          alt={`img-nuevo-${idx}`} 
-                          className='object-cover w-full h-full rounded cursor-pointer hover:opacity-80 transition-opacity'
-                          onClick={() => openImageModal(img.preview || URL.createObjectURL(img), `Imagen nueva ${idx + 1}`)}
-                        />
-                        <button 
-                          type='button' 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            eliminarImagen(idx);
-                          }} 
-                          className='absolute top-0 right-0 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600'
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                    {/* Imágenes existentes (Cloudinary) */}
-                    {existingGalleryImages.map((img, idx) => (
-                      <div key={"existente-"+idx} className='relative w-20 h-20'>
-                        <img 
-                          src={img} 
-                          alt={`img-existente-${idx}`} 
-                          className='object-cover w-full h-full rounded cursor-pointer hover:opacity-80 transition-opacity'
-                          onClick={() => openImageModal(img, `Imagen existente ${idx + 1}`)}
-                        />
-                        <button 
-                          type='button' 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            eliminarImagen(galleryImageArray.length + idx);
-                          }} 
-                          className='absolute top-0 right-0 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600'
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </label>
-
-              {/* Precios y fechas escalonados */}
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                {/* Early Bird */}
-                <div className='flex flex-col border rounded p-3'>
-                  <p className='font-bold mb-1 text-white'>Early Bird</p>
-                  <label>
-                    <span className='text-white'>Precio (USD)</span>
-                    <input type='number' className='input text-white' min={0} value={earlyBirdPrice} onChange={e => setEarlyBirdPrice(Number(e.target.value))} />
-                  </label>
-                  <label>
-                    <span className='text-white'>Desde</span>
-                    <input type='datetime-local' className='input text-white' value={earlyBirdStart} onChange={e => setEarlyBirdStart(e.target.value)} />
-                  </label>
-                  <label>
-                    <span className='text-white'>Hasta</span>
-                    <input type='datetime-local' className='input text-white' value={earlyBirdEnd} onChange={e => setEarlyBirdEnd(e.target.value)} />
-                  </label>
-                </div>
-                {/* General */}
-                <div className='flex flex-col border rounded p-3'>
-                  <p className='font-bold mb-1 text-white'>General</p>
-                  <label>
-                    <span className='text-white'>Precio (USD)</span>
-                    <input type='number' className='input text-white' min={0} value={generalPrice} onChange={e => setGeneralPrice(Number(e.target.value))} />
-                  </label>
-                  <label>
-                    <span className='text-white'>Desde</span>
-                    <input type='datetime-local' className='input text-white' value={generalStart} onChange={e => setGeneralStart(e.target.value)} />
-                  </label>
-                  <label>
-                    <span className='text-white'>Hasta</span>
-                    <input type='datetime-local' className='input text-white' value={generalEnd} onChange={e => setGeneralEnd(e.target.value)} />
-                  </label>
-                </div>
-                {/* Last Tickets */}
-                <div className='flex flex-col border rounded p-3'>
-                  <p className='font-bold mb-1 text-white'>Last Tickets</p>
-                  <label>
-                    <span className='text-white'>Precio (USD)</span>
-                    <input type='number' className='input text-white' min={0} value={lastTicketsPrice} onChange={e => setLastTicketsPrice(Number(e.target.value))} />
-                  </label>
-                  <label>
-                    <span className='text-white'>Desde</span>
-                    <input type='datetime-local' className='input text-white' value={lastTicketsStart} onChange={e => setLastTicketsStart(e.target.value)} />
-                  </label>
-                  <label>
-                    <span className='text-white'>Hasta</span>
-                    <input type='datetime-local' className='input text-white' value={lastTicketsEnd} onChange={e => setLastTicketsEnd(e.target.value)} />
-                  </label>
-                </div>
               </div>
-
-              {/* Fecha y hora del evento */}
-              <label>
-                <p className='text-white'>Fecha y hora</p>
-                <input type='datetime-local' className='input text-white' value={fecha} onChange={e => setFecha(e.target.value)} />
-              </label>
-
-              {/* ¿Es online? */}
-              <label>
-                <p className='text-white'>¿Es online?</p>
-                <input type='checkbox' checked={online} onChange={e => setOnline(e.target.checked)} />
-              </label>
-
-              {/* Autocomplete de ubicación */}
-              {!online ? (
-                <label className='relative'>
-                  <p className='text-white'>Ubicación</p>
-                  <input
-                    type='text'
-                    className='input text-white'
-                    value={ubicacionInput}
-                    onChange={handleUbicacionInput}
-                    placeholder='Buscar ciudad, dirección, lugar...'
-                    autoComplete='off'
-                  />
-                  {ubicacionSugerencias.length > 0 && (
-                    <ul className='absolute z-10 bg-white border border-gray-300 rounded w-full mt-1 max-h-40 overflow-y-auto shadow'>
-                      {ubicacionSugerencias.map((sug, idx) => (
-                        <li
-                          key={idx}
-                          className='px-3 py-2 hover:bg-gray-100 cursor-pointer text-black text-sm'
-                          onClick={() => handleSelectUbicacion(sug)}
-                        >
-                          {sug.display_name}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </label>
-              ) : (
-                <label>
-                  <p className='text-white'>Link del evento</p>
-                  <input
-                    type='url'
-                    className='input text-white'
-                    value={linkEvento}
-                    onChange={e => setLinkEvento(e.target.value)}
-                    placeholder='https://zoom.us/j/...'
-                  />
-                </label>
-              )}
-
-              {/* Cupo */}
-              <label>
-                <p className='text-white'>Cupo</p>
-                <input
-                  type='number'
-                  className='input text-white'
-                  value={cupo || ''}
-                  onChange={e => setCupo(Number(e.target.value))}
-                  placeholder='Número de cupos'
-                  min='1'
-                />
-              </label>
             </div>
           )}
 
-          {tipo === 'recurso' && (
-            <div className='flex flex-col space-y-3 w-full'>
-              <label>
-                <p className='text-white'>Archivo del recurso</p>
-                <div
-                  {...getRootPropsArchivo()}
-                  className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${isDragActiveArchivo ? 'border-black bg-gray-100' : 'border-gray-300 bg-white hover:border-black'}`}
-                >
-                  <input {...getInputPropsArchivo()} />
-                  <span className='text-gray-500 mb-2'>Arrastra el archivo aquí o haz click para seleccionar</span>
-                  <span className='text-xs text-gray-400'>Formatos permitidos: PDF, ZIP, MP4, MP3, etc.</span>
-                  {archivo && (
-                    <span className='mt-2 text-sm text-black font-semibold'>
-                      {archivo.name}
-                    </span>
-                  )}
+          {/* Sección: Configuración del Programa Transformacional */}
+          {(tipo === 'programa_transformacional' || esProgramaTransformacional) && (
+            <div className='border-b border-gray-200 pb-6'>
+              <h2 className='text-xl font-semibold text-gray-900 mb-6 flex items-center'>
+                <div className='w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center mr-3'>
+                  <span className='text-indigo-600 font-bold text-sm'>5</span>
                 </div>
-              </label>
-            
-              <label className='flex flex-col space-y-3 w-full'>
-                <p className='text-white'>Tipo de archivo</p>
-                <select className='input text-white' value={tipoArchivo} onChange={e => setTipoArchivo(e.target.value)}>
-                  <option value='pdf'>PDF</option>
-                  <option value='video'>Video</option>
-                  <option value='audio'>Audio</option>
-                  <option value='zip'>ZIP</option>
-                </select>
-              </label>
-            </div>
-          )}
-
-          {/* Campos específicos para Programas Transformacionales */}
-          {esProgramaTransformacional && (
-            <div className='border rounded p-6 mt-6 bg-blue-50'>
-              <h3 className='text-lg font-bold text-blue-900 mb-4'>Configuración del Programa Transformacional</h3>
+                Configuración del Programa Transformacional
+              </h2>
               
-              {/* Información básica del programa */}
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
-                <label>
-                  <span>Duración en semanas</span>
-                  <input
-                    type='number'
-                    className='input'
-                    min={1}
-                    max={52}
-                    value={duracionSemanas}
-                    onChange={e => setDuracionSemanas(Number(e.target.value))}
-                  />
-                </label>
-                <label>
-                  <span>Cupo disponible</span>
-                  <input
-                    type='number'
-                    className='input'
-                    min={1}
-                    value={cupoDisponible}
-                    onChange={e => setCupoDisponible(Number(e.target.value))}
-                  />
-                </label>
-                <label>
-                  <span>Estado de la cohorte</span>
-                  <select className='input' value={estadoCohorte} onChange={e => setEstadoCohorte(e.target.value)}>
-                    <option value='abierta'>Abierta</option>
-                    <option value='cerrada'>Cerrada</option>
-                    <option value='en_curso'>En Curso</option>
-                    <option value='finalizada'>Finalizada</option>
-                  </select>
-                </label>
-                <label>
-                  <span>Fecha de finalización (opcional)</span>
-                  <input
-                    type='datetime-local'
-                    className='input'
-                    value={fechaFin}
-                    onChange={e => setFechaFin(e.target.value)}
-                  />
-                </label>
-              </div>
-
-              {/* Generar semanas automáticamente */}
-              <div className='mb-6'>
-                <button
-                  type='button'
-                  onClick={generarSemanasAutomaticas}
-                  className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors'
-                >
-                  Generar {duracionSemanas} semanas automáticamente
-                </button>
-              </div>
-
-              {/* Resultados esperados */}
-              <div className='mb-6'>
-                <label>
-                  <span>Resultados esperados</span>
-                  <div className='flex space-x-2'>
-                    <input
-                      type='text'
-                      className='input flex-1'
-                      value={nuevoResultado}
-                      onChange={e => setNuevoResultado(e.target.value)}
-                      placeholder='Ej: Mayor consciencia corporal'
-                    />
-                    <button
-                      type='button'
-                      onClick={agregarResultado}
-                      className='px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700'
-                    >
-                      Agregar
-                    </button>
-                  </div>
-                </label>
-                <div className='mt-2 space-y-1'>
-                  {resultadosEsperados.map((resultado, index) => (
-                    <div key={index} className='flex items-center space-x-2'>
-                      <div className='w-2 h-2 bg-green-500 rounded-full'></div>
-                      <span className='flex-1'>{resultado}</span>
-                      <button
-                        type='button'
-                        onClick={() => eliminarResultado(index)}
-                        className='text-red-500 hover:text-red-700 text-sm'
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Requisitos previos */}
-              <div className='mb-6'>
-                <label>
-                  <span>Requisitos previos</span>
-                  <div className='flex space-x-2'>
-                    <input
-                      type='text'
-                      className='input flex-1'
-                      value={nuevoRequisito}
-                      onChange={e => setNuevoRequisito(e.target.value)}
-                      placeholder='Ej: No se requiere experiencia previa'
-                    />
-                    <button
-                      type='button'
-                      onClick={agregarRequisito}
-                      className='px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700'
-                    >
-                      Agregar
-                    </button>
-                  </div>
-                </label>
-                <div className='mt-2 space-y-1'>
-                  {requisitosPrevios.map((requisito, index) => (
-                    <div key={index} className='flex items-center space-x-2'>
-                      <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
-                      <span className='flex-1'>{requisito}</span>
-                      <button
-                        type='button'
-                        onClick={() => eliminarRequisito(index)}
-                        className='text-red-500 hover:text-red-700 text-sm'
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Materiales necesarios */}
-              <div className='mb-6'>
-                <label>
-                  <span>Materiales necesarios</span>
-                  <div className='flex space-x-2'>
-                    <input
-                      type='text'
-                      className='input flex-1'
-                      value={nuevoMaterial}
-                      onChange={e => setNuevoMaterial(e.target.value)}
-                      placeholder='Ej: Espacio cómodo para moverte'
-                    />
-                    <button
-                      type='button'
-                      onClick={agregarMaterial}
-                      className='px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700'
-                    >
-                      Agregar
-                    </button>
-                  </div>
-                </label>
-                <div className='mt-2 space-y-1'>
-                  {materialesNecesarios.map((material, index) => (
-                    <div key={index} className='flex items-center space-x-2'>
-                      <div className='w-2 h-2 bg-orange-500 rounded-full'></div>
-                      <span className='flex-1'>{material}</span>
-                      <button
-                        type='button'
-                        onClick={() => eliminarMaterial(index)}
-                        className='text-red-500 hover:text-red-700 text-sm'
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Sesiones en vivo */}
-              <div className='mb-6'>
-                <h4 className='font-semibold mb-3'>Sesiones en vivo</h4>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-3'>
-                  <input
-                    type='datetime-local'
-                    className='input'
-                    value={nuevaSesion.fecha}
-                    onChange={e => setNuevaSesion({...nuevaSesion, fecha: e.target.value})}
-                    placeholder='Fecha y hora'
-                  />
-                  <input
-                    type='text'
-                    className='input'
-                    value={nuevaSesion.titulo}
-                    onChange={e => setNuevaSesion({...nuevaSesion, titulo: e.target.value})}
-                    placeholder='Título de la sesión'
-                  />
-                  <input
-                    type='text'
-                    className='input'
-                    value={nuevaSesion.descripcion}
-                    onChange={e => setNuevaSesion({...nuevaSesion, descripcion: e.target.value})}
-                    placeholder='Descripción'
-                  />
-                  <select
-                    className='input'
-                    value={nuevaSesion.tipo}
-                    onChange={e => setNuevaSesion({...nuevaSesion, tipo: e.target.value})}
-                  >
-                    <option value='q&a'>Q&A</option>
-                    <option value='practica'>Práctica</option>
-                    <option value='reflexion'>Reflexión</option>
-                    <option value='comunidad'>Comunidad</option>
-                  </select>
-                </div>
-                <button
-                  type='button'
-                  onClick={agregarSesionEnVivo}
-                  className='px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700'
-                >
-                  Agregar Sesión
-                </button>
-                <div className='mt-3 space-y-2'>
-                  {sesionesEnVivo.map((sesion, index) => (
-                    <div key={index} className='flex items-center justify-between p-3 bg-white rounded border'>
-                      <div>
-                        <div className='font-medium'>{sesion.titulo}</div>
-                        <div className='text-sm text-gray-600'>
-                          {new Date(sesion.fecha).toLocaleDateString('es-ES')} - {sesion.tipo}
-                        </div>
-                      </div>
-                      <button
-                        type='button'
-                        onClick={() => eliminarSesionEnVivo(index)}
-                        className='text-red-500 hover:text-red-700'
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Comunidad */}
-              <div className='mb-6'>
-                <h4 className='font-semibold mb-3'>Información de comunidad</h4>
+              <div className='space-y-6'>
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <label>
-                    <span>Grupo de WhatsApp (opcional)</span>
+                  <label className='flex flex-col space-y-2'>
+                    <p className='text-sm font-medium text-gray-700'>Duración en semanas</p>
                     <input
-                      type='url'
-                      className='input'
-                      value={comunidad.grupoWhatsapp || ''}
-                      onChange={e => setComunidad({...comunidad, grupoWhatsapp: e.target.value})}
-                      placeholder='https://chat.whatsapp.com/...'
+                      type='number'
+                      placeholder='8'
+                      min='1'
+                      max='52'
+                      value={duracionSemanas}
+                      className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                      onChange={(e) => setDuracionSemanas(Number(e.target.value))}
                     />
                   </label>
-                  <label>
-                    <span>Grupo de Telegram (opcional)</span>
+                  
+                  <label className='flex flex-col space-y-2'>
+                    <p className='text-sm font-medium text-gray-700'>Estado de la cohorte</p>
+                    <select 
+                      className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors' 
+                      value={estadoCohorte} 
+                      onChange={e => setEstadoCohorte(e.target.value)}
+                    >
+                      <option value='abierta'>Abierta</option>
+                      <option value='en_progreso'>En progreso</option>
+                      <option value='cerrada'>Cerrada</option>
+                      <option value='completada'>Completada</option>
+                      <option value='cancelada'>Cancelada</option>
+                      <option value='pendiente'>Pendiente</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  <label className='flex flex-col space-y-2'>
+                    <p className='text-sm font-medium text-gray-700'>Cupo disponible</p>
                     <input
-                      type='url'
-                      className='input'
-                      value={comunidad.grupoTelegram || ''}
-                      onChange={e => setComunidad({...comunidad, grupoTelegram: e.target.value})}
-                      placeholder='https://t.me/...'
+                      type='number'
+                      placeholder='50'
+                      min='1'
+                      value={cupoDisponible}
+                      className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                      onChange={(e) => setCupoDisponible(Number(e.target.value))}
                     />
                   </label>
-                  <label className='md:col-span-2'>
-                    <span>Descripción de la comunidad</span>
-                    <textarea
-                      className='input'
-                      rows={3}
-                      value={comunidad.descripcion || ''}
-                      onChange={e => setComunidad({...comunidad, descripcion: e.target.value})}
-                      placeholder='Describe cómo funciona la comunidad...'
+                  
+                  <label className='flex flex-col space-y-2'>
+                    <p className='text-sm font-medium text-gray-700'>Fecha de finalización</p>
+                    <input
+                      type='datetime-local'
+                      value={fechaFin}
+                      className='input border-gray-300 bg-gray-50 text-gray-600'
+                      readOnly
                     />
+                    <p className='text-xs text-gray-500'>Se calcula automáticamente basada en la fecha de inicio y duración</p>
                   </label>
+                </div>
+
+                {/* Generar semanas automáticamente */}
+                <div className='mb-6'>
+                  <button
+                    type='button'
+                    onClick={generarSemanasAutomaticas}
+                    className='px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium'
+                  >
+                    Generar {duracionSemanas} semanas automáticamente
+                  </button>
+                  <p className='text-xs text-gray-500 mt-2'>Esto generará automáticamente la estructura de semanas basada en la duración configurada</p>
+                </div>
+
+                {/* Semanas del programa */}
+                <div className='space-y-4'>
+                  <div className='flex items-center justify-between'>
+                    <p className='text-sm font-medium text-gray-700'>Semanas del programa</p>
+                    <button
+                      type='button'
+                      onClick={() => setSemanas([...semanas, {
+                        numero: semanas.length + 1,
+                        titulo: `Semana ${semanas.length + 1}`,
+                        descripcion: '',
+                        contenido: [],
+                        desbloqueado: false,
+                        fechaDesbloqueo: undefined
+                      }])}
+                      className='px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors'
+                    >
+                      + Agregar semana
+                    </button>
+                  </div>
+                  
+                  <div className='space-y-3'>
+                    {semanas.map((semana, index) => (
+                      <div key={index} className='border border-gray-200 rounded-lg p-4 bg-gray-50'>
+                        <div className='flex items-center justify-between mb-3'>
+                          <h4 className='font-medium text-gray-900'>Semana {semana.numero}</h4>
+                          <div className='flex items-center space-x-2'>
+                            <button
+                              type='button'
+                              onClick={() => abrirModalEditarSemana(semana)}
+                              className='text-blue-500 hover:text-blue-700 text-sm px-2 py-1 rounded hover:bg-blue-50 transition-colors'
+                            >
+                              Editar
+                            </button>
+                            <button
+                              type='button'
+                              onClick={() => setSemanas(semanas.filter((_, i) => i !== index))}
+                              className='text-red-500 hover:text-red-700 text-sm px-2 py-1 rounded hover:bg-red-50 transition-colors'
+                            >
+                              Eliminar
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                          <label className='flex flex-col space-y-2'>
+                            <p className='text-sm font-medium text-gray-700'>Título</p>
+                            <input
+                              type='text'
+                              placeholder='Título de la semana'
+                              value={semana.titulo}
+                              className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                              onChange={(e) => {
+                                const nuevasSemanas = [...semanas];
+                                nuevasSemanas[index].titulo = e.target.value;
+                                setSemanas(nuevasSemanas);
+                              }}
+                            />
+                          </label>
+                          
+                          <label className='flex flex-col space-y-2'>
+                            <p className='text-sm font-medium text-gray-700'>Fecha de desbloqueo</p>
+                            <input
+                              type='datetime-local'
+                              value={semana.fechaDesbloqueo || ''}
+                              className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                              onChange={(e) => {
+                                const nuevasSemanas = [...semanas];
+                                nuevasSemanas[index].fechaDesbloqueo = e.target.value;
+                                setSemanas(nuevasSemanas);
+                              }}
+                            />
+                          </label>
+                        </div>
+                        
+                        <label className='flex flex-col space-y-2 mt-4'>
+                          <p className='text-sm font-medium text-gray-700'>Descripción</p>
+                          <textarea
+                            placeholder='Descripción de la semana'
+                            value={semana.descripcion}
+                            className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors min-h-[80px]'
+                            onChange={(e) => {
+                              const nuevasSemanas = [...semanas];
+                              nuevasSemanas[index].descripcion = e.target.value;
+                              setSemanas(nuevasSemanas);
+                            }}
+                          />
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Código de descuento */}
-          <div className='space-y-4'>
-            <h4 className='font-bold text-white'>Código de descuento (opcional)</h4>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-              <label className='flex flex-col space-y-3 w-full'>
-                <p className='text-white'>Código</p>
-                <input
-                  type='text'
-                  placeholder='Ej: FAMILIA20'
-                  value={codigoDescuento}
-                  className='input text-white'
-                  onChange={e => setCodigoDescuento(e.target.value)}
-                />
-              </label>
-              
-              <label className='flex flex-col space-y-3 w-full'>
-                <p className='text-white'>Porcentaje de descuento</p>
-                <input
-                  type='number'
-                  placeholder='20'
-                  min='1'
-                  max='100'
-                  value={descuentoPorcentaje}
-                  className='input text-white'
-                  onChange={e => setDescuentoPorcentaje(Number(e.target.value))}
-                />
-              </label>
-              
-              <label className='flex flex-col space-y-3 w-full'>
-                <p className='text-white'>Máximo de usos</p>
-                <input
-                  type='number'
-                  placeholder='100'
-                  min='1'
-                  value={descuentoMaxUsos}
-                  className='input text-white'
-                  onChange={e => setDescuentoMaxUsos(Number(e.target.value))}
-                />
-              </label>
-              
-              <label className='flex flex-col space-y-3 w-full'>
-                <p className='text-white'>Fecha de expiración</p>
-                <input
-                  type='datetime-local'
-                  value={descuentoExpiracion}
-                  className='input text-white'
-                  onChange={e => setDescuentoExpiracion(e.target.value)}
-                />
-              </label>
-            </div>
-          </div>
-
-          {/* Botones */}
-          <div className='flex justify-end space-x-4 pt-6'>
-            <button
-              type='button'
-              onClick={() => window.history.back()}
-              className='px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors'
-            >
-              Cancelar
-            </button>
+          {/* Botón de envío mejorado */}
+          <div className='pt-6 border-t border-gray-200'>
             <button
               type='submit'
-              className='px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors'
+              className='w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-4 px-8 rounded-xl text-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg transform hover:scale-[1.02] active:scale-[0.98]'
             >
               Actualizar Producto
             </button>
           </div>
-        </div>
-      </form>
-
-      {/* Modal de imagen grande */}
-      {imageModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-          <div className="relative max-w-4xl max-h-[90vh] bg-white rounded-lg p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{imageModal.title}</h3>
-              <button
-                onClick={closeImageModal}
-                className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
-              >
-                ×
-              </button>
-            </div>
-            <div className="flex justify-center">
-              <CldImage
-                src={imageModal.imageUrl}
-                alt={imageModal.title}
-                width={800}
-                height={600}
-                className="max-w-full max-h-[70vh] object-contain rounded"
+        </form>
+      </div>
+          {modalEditarSemana && semanaEditando && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+        <div className="relative max-w-2xl w-full mx-4 bg-white rounded-lg p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-semibold text-gray-900">Editar {semanaEditando.titulo}</h3>
+            <button
+              onClick={cerrarModalEditarSemana}
+              className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+            >
+              ×
+            </button>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Título de la semana
+              </label>
+              <input
+                type="text"
+                value={semanaEditando.titulo}
+                onChange={(e) => setSemanaEditando({...semanaEditando, titulo: e.target.value})}
+                className="w-full input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors"
+                placeholder="Título de la semana"
               />
             </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Descripción
+              </label>
+              <textarea
+                value={semanaEditando.descripcion}
+                onChange={(e) => setSemanaEditando({...semanaEditando, descripcion: e.target.value})}
+                className="w-full input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors min-h-[100px]"
+                placeholder="Descripción detallada de la semana"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Fecha de desbloqueo
+              </label>
+              <input
+                type="datetime-local"
+                value={semanaEditando.fechaDesbloqueo ? semanaEditando.fechaDesbloqueo.slice(0, 16) : ''}
+                onChange={(e) => setSemanaEditando({...semanaEditando, fechaDesbloqueo: e.target.value})}
+                className="w-full input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors"
+              />
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="desbloqueado"
+                checked={semanaEditando.desbloqueado}
+                onChange={(e) => setSemanaEditando({...semanaEditando, desbloqueado: e.target.checked})}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="desbloqueado" className="text-sm font-medium text-gray-700">
+                Semana desbloqueada
+              </label>
+            </div>
+          </div>
+          
+          <div className="flex justify-end space-x-3 mt-8 pt-6 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={cerrarModalEditarSemana}
+              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={guardarSemanaEditada}
+              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Guardar cambios
+            </button>
           </div>
         </div>
-      )}
+      </div>
+    )}
     </div>
+
+
   );
 };
 

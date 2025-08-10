@@ -11,7 +11,7 @@ const ubicacionSchema = new mongoose.Schema({
 const productSchema = new mongoose.Schema({
   nombre: { type: String, required: true },
   descripcion: { type: String, required: true, minLength: 20 },
-  tipo: { type: String, enum: ['curso', 'bundle', 'evento', 'recurso'], required: true },
+  tipo: { type: String, enum: ['curso', 'bundle', 'evento', 'programa_transformacional', 'recurso'], required: true },
   precio: { type: Number, required: true },
   moneda: { type: String, default: 'USD' },
   imagenes: [{ type: String }], // URLs de imágenes
@@ -46,10 +46,26 @@ const productSchema = new mongoose.Schema({
     fechaFin: { type: Date }, // Fecha de finalización del programa
     cupoDisponible: { type: Number }, // Cupo actual disponible
     estadoCohorte: { type: String, enum: ['abierta', 'cerrada', 'en_curso', 'finalizada'], default: 'abierta' },
+    
+    // Automatización de contenido
+    automatizacion: {
+      activa: { type: Boolean, default: false },
+      emailsAutomaticos: { type: Boolean, default: true },
+      contenidoVimeo: { type: Boolean, default: true }
+    },
+    
     semanas: [{
       numero: { type: Number, required: true },
       titulo: { type: String, required: true },
       descripcion: { type: String },
+      fechaDesbloqueo: { type: Date, required: true }, // Fecha específica para desbloquear
+      vimeoVideoId: { type: String }, // ID del video de Vimeo para esta semana
+      emailTemplate: {
+        asunto: { type: String },
+        contenido: { type: String }, // HTML del email
+        enviado: { type: Boolean, default: false },
+        fechaEnvio: { type: Date }
+      },
       contenido: [{
         tipo: { type: String, enum: ['video', 'pdf', 'audio', 'tarea', 'practica', 'reflexion'] },
         titulo: { type: String, required: true },
@@ -58,8 +74,7 @@ const productSchema = new mongoose.Schema({
         descripcion: { type: String },
         orden: { type: Number, default: 0 }
       }],
-      desbloqueado: { type: Boolean, default: false },
-      fechaDesbloqueo: { type: Date }
+      desbloqueado: { type: Boolean, default: false }
     }],
     sesionesEnVivo: [{
       fecha: { type: Date, required: true },

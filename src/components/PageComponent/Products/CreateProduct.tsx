@@ -186,9 +186,9 @@ const CreateProduct = () => {
         diplomaUrl = diplomaData.public_id;
       }
 
-      // Armar objeto de precios escalonados para eventos
+      // Armar objeto de precios escalonados para eventos y programas transformacionales
       let precios = undefined;
-      if (productType === 'evento') {
+      if (productType === 'evento' || productType === 'programa_transformacional') {
         precios = {
           earlyBird: {
             price: earlyBirdPrice,
@@ -224,8 +224,8 @@ const CreateProduct = () => {
         tipo: productType,
         productVimeoId,
         diplomaUrl,
-        // Campos de evento
-        ...(productType === 'evento' && {
+        // Campos de evento y programa transformacional
+        ...((productType === 'evento' || productType === 'programa_transformacional') && {
           fecha,
           ubicacion: ubicacionObj,
           online,
@@ -236,7 +236,7 @@ const CreateProduct = () => {
           paraQuien: paraQuien || [],
         }),
         // Programa Transformacional
-        ...(esProgramaTransformacional && {
+        ...(productType === 'programa_transformacional' && {
           esProgramaTransformacional: true,
           programaTransformacional: programaTransformacionalData
         }),
@@ -247,7 +247,7 @@ const CreateProduct = () => {
 
 
       let response;
-      if (productType === 'evento' && pdfPresentacion) {
+      if ((productType === 'evento' || productType === 'programa_transformacional') && pdfPresentacion) {
         // Usar FormData para enviar archivos
         const formData = new FormData();
         formData.append('data', JSON.stringify(productData));

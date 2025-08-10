@@ -1,29 +1,30 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
-import { Configuration, OpenAIApi } from 'openai'
+import OpenAI from 'openai';
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
-type Data = {
-    name: string
-}
-
-export default async function POST (request: NextApiRequest) {
+export async function POST(request: Request) {
     try {
-        const response = await openai.createCompletion({
-            prompt: 'Dame un chiste para programador',
-            model: 'text-davinci-003',
+        const response = await openai.chat.completions.create({
+            messages: [
+                {
+                    role: 'user',
+                    content: 'Dame un chiste para programador'
+                }
+            ],
+            model: 'gpt-3.5-turbo',
             temperature: 0.7,
             max_tokens: 60,
-        })
-        return NextResponse.json({ message: 'hola'})
+        });
+        
+        return NextResponse.json({ 
+            message: response.choices[0]?.message?.content || 'No se pudo generar el chiste'
+        });
     } catch (error: any) {
-        }
-
-    
+        return NextResponse.json({ error: 'Error procesando la solicitud' }, { status: 500 });
+    }
 }
 
 // export default async function handler(

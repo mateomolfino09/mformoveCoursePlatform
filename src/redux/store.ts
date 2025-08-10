@@ -8,9 +8,10 @@ import { classApi } from "./services/classApi";
 import { individualClassApi } from "./services/individualClassApi";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import registerReducer from './features/register'
-
 import productIdReducer from "./features/productId"
 import oneTymePaymentReducer from "./features/oneTimePayment"
+import instagramVideosReducer from './features/instagramVideosSlice';
+
 export const store = configureStore({
   reducer: {
     classesModalReducer,
@@ -20,11 +21,10 @@ export const store = configureStore({
     filterProduct,
     headerHomeReducer,
     [classApi.reducerPath]: classApi.reducer,
-
     [individualClassApi.reducerPath]: individualClassApi.reducer,
     productIdReducer,
-
-    oneTymePaymentReducer
+    oneTymePaymentReducer,
+    instagramVideos: instagramVideosReducer
   },
   middleware: (getDefaultMiddleware: any) => getDefaultMiddleware().concat([classApi.middleware, individualClassApi.middleware])
 })

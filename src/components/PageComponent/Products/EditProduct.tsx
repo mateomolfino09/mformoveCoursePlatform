@@ -252,11 +252,7 @@ const EditProduct = ({ product }: Props) => {
 
   return (
     <AdmimDashboardLayout>
-      <div className="p-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-white">Editar Producto</h1>
-          <p className="text-gray-200 mt-2">Modifica los datos del producto "{product.nombre || product.name}"</p>
-        </div>
+      <div className="">
         <EditProductStep1 handleSubmit={handleSubmit} product={product} />
       </div>
     </AdmimDashboardLayout>

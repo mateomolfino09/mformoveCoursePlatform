@@ -15,7 +15,7 @@ import React, { useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
-import { BookOpenIcon } from '@heroicons/react/24/outline';
+import { BookOpenIcon, SparklesIcon } from '@heroicons/react/24/outline';
 
 interface Props {
   user: User;
@@ -93,11 +93,18 @@ const Index = () => {
                 <p>Memberships</p>
               </div>
             </Link>
-
-            {/* <Link href={'#'}>
+            <Link href={'/admin/transformational-programs'}>
               <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
+                <SparklesIcon className='w-24' />
+                <p>Programas Transformacionales</p>
               </div>
-            </Link> */}
+            </Link>
+            <Link href={'/admin/ai-management'}>
+              <div className='rounded bg-gradient-to-r from-purple-500 to-pink-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
+                <SparklesIcon className='w-24 text-white' />
+                <p className='text-white font-medium'>Gestión de IA</p>
+              </div>
+            </Link>
           </div>
           <div className='grid col-1 bg-gray-500 h-96 shadow-sm' />
         </div>
