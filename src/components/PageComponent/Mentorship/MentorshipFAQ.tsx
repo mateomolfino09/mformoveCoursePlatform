@@ -13,7 +13,7 @@ const MentorshipFAQ = () => {
     },
     {
       question: "¿Por qué es tan cara la mentoría?",
-      answer: "La mentoría no es solo un servicio, es una inversión en transformación personal. El precio refleja la atención personalizada, el tiempo dedicado exclusivamente a tu progreso, y la experiencia de Mateo Molfino. No es un producto masivo, sino un servicio premium para personas serias sobre su transformación."
+      answer: "La mentoría no es solo un servicio, es una inversión en transformación personal. El precio refleja la atención personalizada, el tiempo dedicado exclusivamente a tu progreso, y la experiencia de Mateo Molfino. No es un producto masivo, sino un servicio para personas serias sobre su transformación."
     },
     {
       question: "¿Qué pasa si no puedo mantener el compromiso trimestral?",

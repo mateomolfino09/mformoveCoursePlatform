@@ -34,7 +34,6 @@ import { useSnapshot } from 'valtio';
 import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import { error } from 'console';
-import HeaderHome from '../../HeaderHome';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
 import ClassData from './ClassData';

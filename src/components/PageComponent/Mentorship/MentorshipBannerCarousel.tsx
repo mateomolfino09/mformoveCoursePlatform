@@ -63,7 +63,7 @@ const MentorshipBannerCarousel = ({ hideText = false }: { hideText?: boolean }) 
             width={1920}
             height={1080}
             alt={`Mentoría banner ${current + 1}`}
-            className="object-cover object-center select-none pointer-events-none opacity-70 w-full h-full"
+            className="object-cover object-center select-none pointer-events-none opacity-50 w-full h-full"
             preserveTransformations
             loader={imageLoader}
           />

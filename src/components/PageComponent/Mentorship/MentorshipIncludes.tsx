@@ -2,7 +2,13 @@ import React from 'react';
 import { UserGroupIcon, AcademicCapIcon, VideoCameraIcon, ChatBubbleLeftRightIcon, CheckCircleIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 
-const benefits = [
+type Benefit = {
+  icon: any;
+  title: string;
+  desc: string;
+};
+
+const benefits: Benefit[] = [
   {
     icon: UserGroupIcon,
     title: 'Acompañamiento 1:1',
@@ -41,8 +47,8 @@ const cardVariants = {
     opacity: 1,
     scale: 1,
     transition: {
-      duration: 0.9,
-      delay: i * 0.12,
+      duration: 0.6,
+      delay: i * 0.08,
       ease: [0.4, 0, 0.2, 1],
     },
   }),
@@ -52,9 +58,10 @@ const MentorshipIncludes = () => {
   return (
     <section className="py-16 bg-white font-montserrat">
       <div className="max-w-6xl mx-auto px-6">
-        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center" style={{ color: 'black' }}>
+        <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center" style={{ color: 'black' }}>
           ¿Qué incluye la mentoría?
         </h2>
+
         <div className="grid md:grid-cols-3 gap-8">
           {benefits.map((b, idx) => (
             <motion.div
@@ -65,11 +72,9 @@ const MentorshipIncludes = () => {
               viewport={{ once: true, amount: 0.3 }}
               variants={cardVariants}
               custom={idx}
-              whileHover={{ scale: 1.025, transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] } }}
+              whileHover={{ scale: 1.015, transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] } }}
             >
-              {/* Background gradient on hover */}
               <div className="absolute inset-0 bg-gradient-to-br from-[#234C8C]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              {/* Icon container with background */}
               <div className="relative z-10 mb-6 p-4 rounded-full bg-gradient-to-br from-[#234C8C]/10 to-[#5fa8e9]/10 group-hover:from-[#234C8C]/20 group-hover:to-[#5fa8e9]/20 transition-all duration-300">
                 <b.icon className="w-12 h-12" style={{ color: 'rgb(35, 76, 140)' }} />
               </div>
@@ -81,7 +86,6 @@ const MentorshipIncludes = () => {
                   {b.desc}
                 </p>
               </div>
-              {/* Subtle border accent */}
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#234C8C]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </motion.div>
           ))}
