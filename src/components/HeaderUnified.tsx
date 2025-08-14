@@ -145,8 +145,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav }: Props) => {
 										className="block mx-auto mt-0 relative bottom-1 left-1/2 -translate-x-1/2"
 										style={{ minWidth: '100%', maxWidth: '100%' }}
 									>
-										<ellipse cx="60" cy="4" rx="60" ry="3" fill={isLightText ? 'white' : '#234C8C'} />
-									</svg>
+										<ellipse cx="50" cy="2" rx="65" ry="1" fill={isLightText ? 'white' : '#234C8C'} />
+										</svg>
 								)}
 							</div>
 							<div className={`${linkBase} ${(path == 'events' || path.includes(routes.navegation.eventos)) ? linkActive : linkMuted}`}
@@ -160,7 +160,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav }: Props) => {
 										className="block mx-auto mt-0 relative bottom-1 left-1/2 -translate-x-1/2"
 										style={{ minWidth: '100%', maxWidth: '100%' }}
 									>
-										<ellipse cx="60" cy="4" rx="60" ry="3" fill={isLightText ? 'white' : '#234C8C'} />
+										<ellipse cx="50" cy="2" rx="50" ry="1" fill={isLightText ? 'white' : '#234C8C'} />
 									</svg>
 								)}
 							</div>
@@ -181,8 +181,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav }: Props) => {
 										className="block mx-auto mt-0 relative bottom-1 left-1/2 -translate-x-1/2"
 										style={{ minWidth: '100%', maxWidth: '100%' }}
 									>
-										<ellipse cx="60" cy="4" rx="60" ry="3" fill={isLightText ? 'white' : '#234C8C'} />
-									</svg>
+										<ellipse cx="50" cy="2" rx="65" ry="1" fill={isLightText ? 'white' : '#234C8C'} />
+										</svg>
 								)}
 							</div>
 						</div>
