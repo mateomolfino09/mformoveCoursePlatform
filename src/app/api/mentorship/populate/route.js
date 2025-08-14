@@ -104,7 +104,7 @@ export async function POST() {
       },
       {
         name: "Mentoría Practitioner Anual",
-        description: "Plan anual premium para practicantes que buscan un compromiso a largo plazo con su desarrollo.",
+        description: "Plan anual para practicantes que buscan un compromiso a largo plazo con su desarrollo.",
         level: "practitioner",
         features: [
           "Evaluación avanzada de movimientos",

@@ -14,7 +14,8 @@
     "format": "prettier --write .",
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "lint:fix": "eslint ./ --fix",
-    "create-mentorship-plans": "node scripts/createMentorshipPlans.js"
+    "create-mentorship-plans": "node scripts/createMentorshipPlans.js",
+    "migrate:mentorship": "node scripts/migrateMentorshipStudents.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.58.0",

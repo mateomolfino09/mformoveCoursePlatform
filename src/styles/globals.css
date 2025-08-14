@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    font-size: 16px;
+  }
+  @media (min-width: 1024px) {
+    html { font-size: 15px; }
+  }
   body {
     font-family: 'Poppins', sans-serif;
     @apply bg-[#141414] text-white;
@@ -22,12 +28,12 @@
   .headerLink.active::after {
     content: '';
     position: absolute;
-    left: 0;
-    right: 0;
+    left: 20%;
+    right: 20%;
     bottom: 0.1em;
-    height: 2px;
+    height: 1px;
     background: #234C8C;
-    border-radius: 2px;
+    border-radius: 1px;
     transition: all 0.2s;
   }
   .ck-content p {

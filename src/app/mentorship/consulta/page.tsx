@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { CldImage } from 'next-cloudinary';
 import { motion, AnimatePresence } from 'framer-motion';
+import MainSideBar from '../../../components/MainSidebar/MainSideBar';
+import Footer from '../../../components/Footer';
 
 interface FormState {
   nombre: string;
@@ -25,6 +27,9 @@ interface RadioOption {
   value: string;
   label: string;
   description: string;
+  monthlyFromTrimestral?: number | null;
+  monthlyFromAnual?: number | null;
+  discountPercent?: number;
 }
 
 interface Pregunta {
@@ -259,11 +264,13 @@ export default function MentorshipConsultaPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [mentorshipPlans, setMentorshipPlans] = useState<MentorshipPlan[]>([]);
+  const [budgetOptions, setBudgetOptions] = useState<RadioOption[]>([]);
   const [plansLoaded, setPlansLoaded] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<{[key: string]: boolean}>({});
 
   const preguntaActual = preguntas[step];
+  const isPresupuestoStep = preguntaActual.name === 'presupuesto';
 
   // Función para cargar los planes de mentoría
   const loadMentorshipPlans = async () => {
@@ -287,22 +294,33 @@ export default function MentorshipConsultaPage() {
           const options = activePlans.map((plan: MentorshipPlan) => {
             const trimestralPrice = plan.prices?.find((p: PlanPrice) => p.interval === 'trimestral');
             const anualPrice = plan.prices?.find((p: PlanPrice) => p.interval === 'anual');
-            
-            let label = `MENTORÍA ${plan.level.toUpperCase()}`;
-            if (trimestralPrice && anualPrice) {
-              label += ` ($${trimestralPrice.price}/${trimestralPrice.interval} - $${anualPrice.price}/${anualPrice.interval})`;
-            } else if (trimestralPrice) {
-              label += ` ($${trimestralPrice.price}/${trimestralPrice.interval})`;
+
+            const monthlyFromTrimestral = trimestralPrice ? Math.round(trimestralPrice.price / 3) : null;
+            const monthlyFromAnual = anualPrice ? Math.round(anualPrice.price / 12) : null;
+            let discountPercent = 0;
+            if (monthlyFromTrimestral !== null && monthlyFromAnual !== null && monthlyFromAnual < monthlyFromTrimestral) {
+              discountPercent = Math.max(0, Math.round((1 - (monthlyFromAnual / monthlyFromTrimestral)) * 100));
             }
-            
+
+            let label = `MENTORÍA ${plan.level.toUpperCase()}`;
+            if (monthlyFromTrimestral !== null) {
+              label += ` (U$${monthlyFromTrimestral}/mes)`;
+            } else if (monthlyFromAnual !== null) {
+              label += ` (U$${monthlyFromAnual}/mes)`;
+            }
+
             return {
               value: plan.level,
               label: label,
-              description: plan.description
+              description: plan.description,
+              monthlyFromTrimestral,
+              monthlyFromAnual,
+              discountPercent
             };
           });
           
           console.log('Opciones generadas:', options);
+          setBudgetOptions(options);
           presupuestoPregunta.options = options;
         }
         
@@ -486,7 +504,8 @@ export default function MentorshipConsultaPage() {
 
   if (enviado) {
     return (
-      <div className="relative min-h-screen flex items-center justify-center font-montserrat" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+      <MainSideBar where={'mentorship'}>
+      <div className="relative min-h-screen flex items-center justify-center font-montserrat pt-28">
         {/* Fondo Cloudinary con overlay */}
         <div className="fixed inset-0 z-0">
           <CldImage
@@ -502,7 +521,7 @@ export default function MentorshipConsultaPage() {
         </div>
         
         <motion.div
-          className="relative z-10 w-full max-w-xl mx-auto flex items-center justify-center font-montserrat min-h-[60vh] px-2 md:px-0"
+          className="relative z-10 w-full max-w-xl mx-auto flex items-center justify-center font-montserrat min-h-[60vh] px-2 pb-4 md:px-0"
           variants={boxVariants}
           initial="hidden"
           animate="visible"
@@ -521,7 +540,7 @@ export default function MentorshipConsultaPage() {
             
             <motion.h2
               className="text-2xl md:text-3xl font-bold mb-4"
-              style={{ color: '#234C8C', fontFamily: 'Montserrat, sans-serif' }}
+              style={{ color: '#234C8C'}}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -560,28 +579,46 @@ export default function MentorshipConsultaPage() {
           </div>
         </motion.div>
       </div>
+      <Footer />
+      </MainSideBar>
     );
   }
 
   // Render pregunta actual
   return (
-    <div className="relative min-h-screen flex items-center justify-center font-montserrat" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+    <MainSideBar where={'mentorship'}>
+    <div className={`relative min-h-screen flex ${isPresupuestoStep ? 'items-start' : 'items-center'} justify-center font-montserrat pt-28`}>
       {/* Fondo Cloudinary con overlay */}
       <div className="fixed inset-0 z-0">
-        <CldImage
-          src="my_uploads/plaza/DSC03350_vgjrrh"
-          width={1600}
-          height={900}
-          alt="Fondo mentoría"
-          className="w-full h-full object-cover object-center"
-          style={{ filter: 'brightness(0.6) blur(2px)' }}
-          priority
-        />
+        {/* Fondo desktop */}
+        <div className="hidden md:block absolute inset-0">
+          <CldImage
+            src="my_uploads/plaza/DSC03350_vgjrrh"
+            width={1600}
+            height={900}
+            alt="Fondo mentoría"
+            className="w-full h-full object-cover object-center"
+            style={{ filter: 'brightness(0.6) blur(2px)' }}
+            priority
+          />
+        </div>
+        {/* Fondo mobile */}
+        <div className="block md:hidden absolute inset-0">
+          <CldImage
+            src="my_uploads/f6iqsxi2c1ewelopg9ak"
+            width={800}
+            height={1200}
+            alt="Fondo mentoría móvil"
+            className="w-full h-full object-cover object-center"
+            style={{ filter: 'brightness(0.9) blur(2px)' }}
+            priority
+          />
+        </div>
         <div className="absolute inset-0 bg-black/70" />
       </div>
       
-      {/* Formulario centrado con animación */}
-      <div className="relative z-10 w-full max-w-xl mx-auto flex items-center justify-center font-montserrat min-h-[60vh] px-2 md:px-0">
+      {/* Formulario con animación */}
+      <div className={`relative z-10 w-full max-w-xl mx-auto mb-8  flex items-center justify-center font-montserrat min-h-[60vh] px-2 md:px-0 ${isPresupuestoStep ? 'mt-2 md:mt-4' : ''}`}>
         <motion.form
           onSubmit={handleSubmit}
           className="space-y-6 w-full bg-white/90 rounded-2xl shadow-2xl p-6 md:p-12 backdrop-blur-xl border border-[#234C8C]/20"
@@ -591,23 +628,26 @@ export default function MentorshipConsultaPage() {
           exit="hidden"
         >
           <motion.h1
-            className="text-3xl md:text-4xl font-bold text-center tracking-tight font-montserrat"
-            style={{ color: '#234C8C', fontFamily: 'Montserrat, sans-serif', letterSpacing: '-0.5px' }}
+            className="text-[3rem] md:text-6xl font-medium text-center tracking-tight leading-[1.0] pb-1 font-montserrat bg-gradient-to-r from-[#234C8C] to-[#5FA8E9] bg-clip-text text-transparent"
+            style={{ letterSpacing: '-0.8px' }}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
           >
             Entrena Conmigo
           </motion.h1>
-          <motion.h3
-            className="text-lg md:text-xl mb-4 text-center font-montserrat tracking-tight !mt-2" 
-            style={{ color: 'black', fontFamily: 'Montserrat, sans-serif', letterSpacing: '-0.5px' }}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
-            Si querés entrenar conmigo y que te acompañe a alcanzar tus objetivos con un plan adaptado a tu tiempo, nivel y recursos, completá este formulario. Me pondré en contacto para contarte todos los detalles y ver si es para vos.
-          </motion.h3>
+          <div className="mx-auto !mt-1 mb-3 h-1 w-20 bg-gradient-to-r from-[#234C8C] to-[#5FA8E9] rounded"></div>
+          {step === 0 && (
+            <motion.h3
+              className="text-base md:text-lg mb-4 text-center font-montserrat tracking-tight !mt-2" 
+              style={{ color: 'black', letterSpacing: '-0.5px' }}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+            >
+              Si querés entrenar conmigo y que te acompañe a alcanzar tus objetivos con un plan adaptado a tu tiempo, nivel y recursos, completá este formulario. Me pondré en contacto para contarte todos los detalles y ver si es para vos.
+            </motion.h3>
+          )}
           
           <AnimatePresence mode="wait">
             <motion.div
@@ -616,9 +656,9 @@ export default function MentorshipConsultaPage() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="w-full"
+              className={`w-full ${preguntaActual.name === 'presupuesto' ? 'my-6 md:my-8' : ''}`}
             >
-              <label className="block font-semibold mb-2 text-black text-lg md:text-xl" style={{ color: '#234C8C', fontFamily: 'Montserrat, sans-serif' }}>{preguntaActual.label}</label>
+              <label className="block font-semibold mb-2 text-black text-lg md:text-xl" style={{ color: '#234C8C' }}>{preguntaActual.label}</label>
               
               {preguntaActual.type === "text" && (
                 <div>
@@ -629,15 +669,20 @@ export default function MentorshipConsultaPage() {
                     onChange={handleChange}
                     onBlur={() => handleBlur(preguntaActual.name)}
                     required={preguntaActual.required}
-                    className={`w-full border rounded px-3 py-2 text-black bg-white/90 focus:outline-none focus:ring-2 font-montserrat ${
+                    className={`w-full border-0 rounded-xl px-4 py-3 text-black bg-white/95 backdrop-blur-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#234C8C]/20 focus:shadow-lg transition-all duration-300 font-montserrat ${
                       errors[preguntaActual.name] && touched[preguntaActual.name]
-                        ? 'border-red-500 focus:ring-red-500'
-                        : 'border-[#234C8C]/30 focus:ring-[#234C8C]'
+                        ? 'ring-2 ring-red-500/50 focus:ring-red-500/70'
+                        : 'ring-1 ring-gray-200/50 hover:ring-[#234C8C]/30'
                     }`}
                     autoFocus
                   />
                   {errors[preguntaActual.name] && touched[preguntaActual.name] && (
-                    <p className="text-red-600 text-sm mt-1 font-montserrat">{errors[preguntaActual.name]}</p>
+                    <p className="text-red-600 text-sm mt-2 font-montserrat flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {errors[preguntaActual.name]}
+                    </p>
                   )}
                 </div>
               )}
@@ -651,15 +696,20 @@ export default function MentorshipConsultaPage() {
                     onChange={handleChange}
                     onBlur={() => handleBlur(preguntaActual.name)}
                     required={preguntaActual.required}
-                    className={`w-full border rounded px-3 py-2 text-black bg-white/90 focus:outline-none focus:ring-2 font-montserrat ${
+                    className={`w-full border-0 rounded-xl px-4 py-3 text-black bg-white/95 backdrop-blur-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#234C8C]/20 focus:shadow-lg transition-all duration-300 font-montserrat ${
                       errors[preguntaActual.name] && touched[preguntaActual.name]
-                        ? 'border-red-500 focus:ring-red-500'
-                        : 'border-[#234C8C]/30 focus:ring-[#234C8C]'
+                        ? 'ring-2 ring-red-500/50 focus:ring-red-500/70'
+                        : 'ring-1 ring-gray-200/50 hover:ring-[#234C8C]/30'
                     }`}
                     autoFocus
                   />
                   {errors[preguntaActual.name] && touched[preguntaActual.name] && (
-                    <p className="text-red-600 text-sm mt-1 font-montserrat">{errors[preguntaActual.name]}</p>
+                    <p className="text-red-600 text-sm mt-2 font-montserrat flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {errors[preguntaActual.name]}
+                    </p>
                   )}
                 </div>
               )}
@@ -673,10 +723,10 @@ export default function MentorshipConsultaPage() {
                     onBlur={() => handleBlur(preguntaActual.name)}
                     required={preguntaActual.required}
                     rows={4}
-                    className={`w-full border rounded px-3 py-2 text-black bg-white/90 focus:outline-none focus:ring-2 font-montserrat resize-none ${
+                    className={`w-full border-0 rounded-xl px-4 py-3 text-black bg-white/95 backdrop-blur-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#234C8C]/20 focus:shadow-lg transition-all duration-300 font-montserrat resize-none ${
                       errors[preguntaActual.name] && touched[preguntaActual.name]
-                        ? 'border-red-500 focus:ring-red-500'
-                        : 'border-[#234C8C]/30 focus:ring-[#234C8C]'
+                        ? 'ring-2 ring-red-500/50 focus:ring-red-500/70'
+                        : 'ring-1 ring-gray-200/50 hover:ring-[#234C8C]/30'
                     }`}
                     autoFocus
                   />
@@ -687,27 +737,37 @@ export default function MentorshipConsultaPage() {
               )}
               
               {preguntaActual.type === "select" && Array.isArray(preguntaActual.options) && (
-                <div>
+                <div className="relative">
                   <select
                     name={preguntaActual.name}
                     value={form[preguntaActual.name as keyof FormState] as string}
                     onChange={handleChange}
                     onBlur={() => handleBlur(preguntaActual.name)}
                     required={preguntaActual.required}
-                    className={`w-full border rounded px-3 py-2 text-black bg-white/90 focus:outline-none focus:ring-2 font-montserrat ${
+                    className={`w-full border-0 rounded-xl px-4 py-3 pr-12 text-black bg-white/95 backdrop-blur-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#234C8C]/20 focus:shadow-lg transition-all duration-300 font-montserrat appearance-none cursor-pointer ${
                       errors[preguntaActual.name] && touched[preguntaActual.name]
-                        ? 'border-red-500 focus:ring-red-500'
-                        : 'border-[#234C8C]/30 focus:ring-[#234C8C]'
+                        ? 'ring-2 ring-red-500/50 focus:ring-red-500/70'
+                        : 'ring-1 ring-gray-200/50 hover:ring-[#234C8C]/30'
                     }`}
                     autoFocus
                   >
-                    <option value="">Selecciona una opción</option>
+                    <option value="" className="text-gray-500">Selecciona una opción</option>
                     {preguntaActual.options.map((opt: any) => (
-                      <option key={opt} value={opt}>{opt}</option>
+                      <option key={opt} value={opt} className="text-black">{opt}</option>
                     ))}
                   </select>
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none transition-transform duration-200">
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                   {errors[preguntaActual.name] && touched[preguntaActual.name] && (
-                    <p className="text-red-600 text-sm mt-1 font-montserrat">{errors[preguntaActual.name]}</p>
+                    <p className="text-red-600 text-sm mt-2 font-montserrat flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {errors[preguntaActual.name]}
+                    </p>
                   )}
                 </div>
               )}
@@ -724,31 +784,42 @@ export default function MentorshipConsultaPage() {
                           checked={(form[preguntaActual.name as keyof FormState] as string[] || []).includes(opt)}
                           onChange={handleChange}
                           onBlur={() => handleBlur(preguntaActual.name)}
-                          className="w-4 h-4 text-[#234C8C] border-[#234C8C]/30 rounded focus:ring-[#234C8C]"
+                          className="w-5 h-5 text-[#234C8C] border-0 rounded-md bg-white/95 shadow-sm focus:ring-2 focus:ring-[#234C8C]/20 focus:shadow-lg transition-all duration-300"
                         />
                         <span className="text-gray-800 font-montserrat">{opt}</span>
                       </label>
                     ))}
                   </div>
                   {errors[preguntaActual.name] && touched[preguntaActual.name] && (
-                    <p className="text-red-600 text-sm mt-1 font-montserrat">{errors[preguntaActual.name]}</p>
+                    <p className="text-red-600 text-sm mt-2 font-montserrat flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {errors[preguntaActual.name]}
+                    </p>
                   )}
                 </div>
               )}
               
               {preguntaActual.type === "radio" && preguntaActual.name === "presupuesto" && !plansLoaded && (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#234C8C]"></div>
-                  <span className="ml-3 text-gray-600 font-montserrat">Cargando planes de mentoría...</span>
+                <div className="flex items-center justify-center py-12">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#234C8C]/20 border-t-[#234C8C]"></div>
+                    <span className="text-gray-600 font-montserrat text-lg">Cargando planes de mentoría...</span>
+                  </div>
                 </div>
               )}
               
-              {preguntaActual.type === "radio" && Array.isArray(preguntaActual.options) && preguntaActual.options.length > 0 && (
+              {preguntaActual.type === "radio" && preguntaActual.name === "presupuesto" && plansLoaded && budgetOptions.length === 0 && (
+                <div className="text-center text-gray-600 py-4">No hay planes activos disponibles en este momento.</div>
+              )}
+
+              {preguntaActual.type === "radio" && preguntaActual.name === "presupuesto" && budgetOptions.length > 0 && (
                 <div>
                   <div className="space-y-4">
-                    {(preguntaActual.options as any[]).map((opt: any) => (
+                    {budgetOptions.map((opt: any) => (
                     <label key={opt.value} className="block cursor-pointer">
-                      <div className="border border-[#234C8C]/30 rounded-lg p-4 hover:bg-[#234C8C]/5 transition-colors">
+                      <div className="border-0 ring-1 rounded-xl ring-[#234C8C]/10 p-4 hover:bg-[#234C8C]/5 hover:ring-[#234C8C]/30 transition-all duration-300 shadow-sm">
 
                         
                         <div className="flex items-start space-x-3">
@@ -758,7 +829,7 @@ export default function MentorshipConsultaPage() {
                             value={opt.value}
                             checked={form[preguntaActual.name as keyof FormState] === opt.value}
                             onChange={() => handleRadioChange(preguntaActual.name, opt.value)}
-                            className="w-4 h-4 text-[#234C8C] border-[#234C8C]/30 focus:ring-[#234C8C] mt-1"
+                            className="w-5 h-5 text-[#234C8C] border-0 bg-white/95 shadow-sm focus:ring-2 focus:ring-[#234C8C]/20 focus:shadow-lg transition-all duration-300 mt-1"
                           />
                           <div className="flex-1">
                             <div className={`font-semibold mb-2 ${
@@ -770,7 +841,14 @@ export default function MentorshipConsultaPage() {
                             }`}>
                               {opt.label}
                             </div>
-                            <div className={`text-sm ${
+                            {opt.discountPercent > 0 && (
+                              <div className="mt-1">
+                                <span className="inline-block bg-[#234C8C]/10 text-[#234C8C] text-xs font-medium px-3 py-1 rounded-full">
+                                  Ahorra {opt.discountPercent}% pagando anual
+                                </span>
+                              </div>
+                            )}
+                            <div className={`text-xs mt-1 ml-1 pr-6 font-montserrat ${
                               opt.value === "student" 
                                 ? "text-gray-800 font-medium" 
                                 : opt.value === "practitioner"
@@ -786,22 +864,36 @@ export default function MentorshipConsultaPage() {
                   ))}
                   </div>
                   {errors[preguntaActual.name] && touched[preguntaActual.name] && (
-                    <p className="text-red-600 text-sm mt-1 font-montserrat">{errors[preguntaActual.name]}</p>
+                    <p className="text-red-600 text-sm mt-2 font-montserrat flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {errors[preguntaActual.name]}
+                    </p>
                   )}
                 </div>
               )}
             </motion.div>
           </AnimatePresence>
           
-          {error && <p className="text-red-600 font-semibold font-montserrat">{error}</p>}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 mt-4">
+              <p className="text-red-700 font-medium font-montserrat flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {error}
+              </p>
+            </div>
+          )}
           
           {/* Botones de navegación */}
-          <div className="flex justify-between mt-8 gap-2 flex-col sm:flex-row">
+          <div className="flex justify-between mt-8 gap-3 flex-col sm:flex-row">
             {step > 0 && (
               <button
                 type="button"
                 onClick={handlePrev}
-                className="bg-gray-200 text-[#234C8C] px-6 py-3 rounded font-bold disabled:opacity-50 border border-[#234C8C]/30 font-montserrat w-full sm:w-auto mb-2 sm:mb-0 text-lg"
+                className="bg-white/95 backdrop-blur-sm text-[#234C8C] px-6 py-4 rounded-xl font-semibold disabled:opacity-50 ring-1 ring-gray-200/50 hover:ring-[#234C8C]/30 hover:bg-[#234C8C]/5 transition-all duration-300 font-montserrat w-full sm:w-auto mb-2 sm:mb-0 text-lg shadow-sm hover:shadow-md"
               >
                 Anterior
               </button>
@@ -811,7 +903,7 @@ export default function MentorshipConsultaPage() {
               <button
                 type="button"
                 onClick={handleNext}
-                className="bg-[#234C8C] text-white px-6 py-3 rounded font-bold hover:bg-[#1a3763] disabled:opacity-50 border border-[#234C8C]/30 font-montserrat w-full sm:w-auto text-lg"
+                className="bg-[#234C8C] text-white px-6 py-4 rounded-xl font-semibold hover:bg-[#1a3763] disabled:opacity-50 ring-1 ring-[#234C8C]/30 hover:ring-[#234C8C]/50 transition-all duration-300 font-montserrat w-full sm:w-auto text-lg shadow-sm hover:shadow-lg"
               >
                 Siguiente
               </button>
@@ -819,28 +911,34 @@ export default function MentorshipConsultaPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-[#234C8C] text-white px-6 py-3 rounded font-bold hover:bg-[#1a3763] disabled:opacity-50 border border-[#234C8C]/30 font-montserrat w-full sm:w-auto text-lg"
+                className="bg-[#234C8C] text-white px-6 py-4 rounded-xl font-semibold hover:bg-[#1a3763] disabled:opacity-50 ring-1 ring-[#234C8C]/30 hover:ring-[#234C8C]/50 transition-all duration-300 font-montserrat w-full sm:w-auto text-lg shadow-sm hover:shadow-lg"
               >
                 {loading ? "Enviando..." : "Enviar solicitud"}
               </button>
             )}
           </div>
           
-          {/* Indicador de progreso */}
+          {/* Indicador de progreso mejorado */}
           <div className="mt-6">
-            <div className="flex justify-between text-sm text-gray-600 mb-2">
-              <span>Paso {step + 1} de {preguntas.length}</span>
-              <span>{Math.round(((step + 1) / preguntas.length) * 100)}%</span>
+            <div className="flex items-center justify-between text-xs sm:text-sm text-gray-600 mb-2">
+              <span className="font-medium">Paso {step + 1} de {preguntas.length}</span>
+              <span className="font-semibold text-[#234C8C]">{Math.round(((step + 1) / preguntas.length) * 100)}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-[#234C8C] h-2 rounded-full transition-all duration-300"
+            <div className="relative w-full h-2 sm:h-3 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 overflow-hidden">
+              {/* Glow bajo la barra */}
+              <div className="absolute inset-0 opacity-30 blur-md bg-gradient-to-r from-[#234C8C] via-[#5FA8E9] to-[#234C8C]" />
+              {/* Barra de progreso */}
+              <div
+                className="relative h-full rounded-full bg-gradient-to-r from-[#234C8C] via-[#5FA8E9] to-[#234C8C] transition-all duration-500"
                 style={{ width: `${((step + 1) / preguntas.length) * 100}%` }}
-              ></div>
+              >
+              </div>
             </div>
           </div>
         </motion.form>
       </div>
     </div>
+    <Footer />
+    </MainSideBar>
   );
 } 

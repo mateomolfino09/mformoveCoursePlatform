@@ -1,6 +1,5 @@
 'use client'
 import Banner from './../IndexBanner';
-import IndexHeader from './../IndexHeader';
 import VolumeModal from './../VolumeModal';
 import { User } from '../../../typings';
 import state from '../../valtio';

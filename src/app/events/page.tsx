@@ -14,9 +14,15 @@ export default async function EventsPage() {
   await ensureConnection();
 
   // Obtener eventos de forma simple
+  const now = new Date();
   const eventosRaw = await Product.find({
     tipo: 'evento',
-    activo: true
+    activo: true,
+    // No mostrar finalizados: solo con fecha futura (o sin fecha definida)
+    $or: [
+      { fecha: { $gte: now } },
+      { fecha: { $exists: false } }
+    ]
   }).sort({ fecha: 1 }).lean();
 
   // Asegurar que es un array válido y serializar
