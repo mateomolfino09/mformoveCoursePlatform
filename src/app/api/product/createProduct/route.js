@@ -33,9 +33,7 @@ export async function POST(req) {
     let data = {};
     let imagenes = [];
     let archivo = null;
-    let pdfPresentacion = null;
     let imagenesUrls = [];
-    let pdfPresentacionUrl = undefined;
 
     // Verificar el tamaño del contenido
     const contentLength = req.headers.get('content-length');
@@ -74,12 +72,10 @@ export async function POST(req) {
       
       imagenes = data.imagenes || []; // Extraer imágenes del JSON, no del FormData
       archivo = formData.get('archivo');
-      pdfPresentacion = formData.get('pdfPresentacion');
     } else {
       data = await req.json();
       imagenes = data.imagenes || [];
       archivo = data.archivo || null;
-      pdfPresentacion = data.pdfPresentacion || null;
     }
 
 
@@ -122,10 +118,8 @@ export async function POST(req) {
     
 
 
-    // Subir PDF de presentación si viene en FormData
-    if (tipo === 'evento' && pdfPresentacion && pdfPresentacion instanceof File) {
-      pdfPresentacionUrl = await uploadToCloudinary(pdfPresentacion, 'productos/pdfPresentacion');
-    }
+    // El PDF ya se subió desde el frontend, solo usar la URL
+    const pdfPresentacionUrl = data.pdfPresentacionUrl;
 
     // Subir archivo de recurso si corresponde
     let archivoUrl = undefined;
@@ -205,7 +199,7 @@ export async function POST(req) {
         imagenes: imagenesUrls,
         portada: data.portada,
         portadaMobile: data.portadaMobile,
-        pdfPresentacionUrl: tipo === 'evento' ? pdfPresentacionUrl : undefined,
+        pdfPresentacionUrl: tipo === 'evento' ? (pdfPresentacionUrl || data.pdfPresentacionUrl) : undefined,
         cursosIncluidos: tipo === 'bundle' ? cursosIncluidos : undefined,
         fecha: tipo === 'evento' ? fecha : undefined,
         ubicacion: tipo === 'evento' ? ubicacion : undefined,
@@ -281,7 +275,7 @@ export async function POST(req) {
         imagenes: imagenesUrls,
         portada: data.portada,
         portadaMobile: data.portadaMobile,
-        pdfPresentacionUrl: tipo === 'evento' ? pdfPresentacionUrl : undefined,
+        pdfPresentacionUrl: tipo === 'evento' ? (pdfPresentacionUrl || data.pdfPresentacionUrl) : undefined,
         cursosIncluidos: tipo === 'bundle' ? cursosIncluidos : undefined,
         fecha: tipo === 'evento' ? fecha : undefined,
         ubicacion: tipo === 'evento' ? ubicacion : undefined,

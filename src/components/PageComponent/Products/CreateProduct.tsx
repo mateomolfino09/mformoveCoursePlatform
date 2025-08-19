@@ -189,6 +189,17 @@ const CreateProduct = () => {
       return;
     }
 
+    // Validar PDF si existe
+    if (pdfPresentacion) {
+      const pdfSize = pdfPresentacion.size / 1000000; // MB
+      if (pdfSize > 5) {
+        toast.error(`El PDF es demasiado grande (${pdfSize.toFixed(1)}MB). Máximo 5MB.`);
+        setLoading(false);
+        return;
+      }
+      console.log('📄 Tamaño del PDF:', pdfSize.toFixed(2), 'MB');
+    }
+
     try {
       const config = {
         headers: {
@@ -311,22 +322,37 @@ const CreateProduct = () => {
 
 
 
-      let response;
+      // Subir PDF a Cloudinary si existe (antes de crear el producto)
+      let pdfPresentacionUrl = undefined;
       if ((productType === 'evento' || productType === 'programa_transformacional') && pdfPresentacion) {
-        // Usar FormData para enviar archivos
-        const formData = new FormData();
-        formData.append('data', JSON.stringify(productData));
-        formData.append('pdfPresentacion', pdfPresentacion);
+        console.log('📄 Subiendo PDF a Cloudinary...');
+        const pdfFormData = new FormData();
+        pdfFormData.append('file', pdfPresentacion);
+        pdfFormData.append('upload_preset', 'my_uploads');
         
-        response = await axios.post('/api/product/createProduct', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-      } else {
-        // Usar JSON para datos sin archivos
-        response = await axios.post('/api/product/createProduct', productData, config);
+        try {
+          const pdfResponse = await fetch(requests.fetchCloudinary, {
+            method: 'POST',
+            body: pdfFormData
+          });
+          const pdfData = await pdfResponse.json();
+          pdfPresentacionUrl = pdfData.public_id;
+          console.log('✅ PDF subido:', pdfPresentacionUrl);
+        } catch (pdfError) {
+          console.error('❌ Error subiendo PDF:', pdfError);
+          toast.error('Error al subir el PDF. Intenta con un archivo más pequeño.');
+          setLoading(false);
+          return;
+        }
       }
+
+      // Agregar la URL del PDF a los datos del producto
+      if (pdfPresentacionUrl) {
+        productData.pdfPresentacionUrl = pdfPresentacionUrl;
+      }
+
+      // Ahora enviar solo los datos JSON (sin archivos)
+      const response = await axios.post('/api/product/createProduct', productData, config);
 
       const { data } = response;
       setProductCreado(data.product);

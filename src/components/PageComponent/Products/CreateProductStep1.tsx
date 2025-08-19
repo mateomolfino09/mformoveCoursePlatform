@@ -427,7 +427,15 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
 
   // Dropzone para PDF de presentación (solo para evento)
   const onDropPdfPresentacion = (acceptedFiles: any[]) => {
-    setPdfPresentacion(acceptedFiles[0]);
+    const file = acceptedFiles[0];
+    const fileSizeMB = file.size / (1024 * 1024);
+    
+    if (fileSizeMB > 5) {
+      toast.error(`El PDF es demasiado grande (${fileSizeMB.toFixed(1)}MB). Máximo 5MB.`);
+      return;
+    }
+    
+    setPdfPresentacion(file);
   };
   const {
     getRootProps: getRootPropsPdfPresentacion,
@@ -951,6 +959,9 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                       <div className='mt-3 flex items-center space-x-2 bg-green-50 p-2 rounded-lg'>
                         <AiOutlineCheckCircle className='text-green-500' />
                         <span className='text-sm text-green-700 font-medium'>{pdfPresentacion.name}</span>
+                        <span className='text-xs text-gray-500'>
+                          ({(pdfPresentacion.size / (1024 * 1024)).toFixed(1)}MB)
+                        </span>
                       </div>
                     )}
                   </div>
