@@ -250,7 +250,7 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
         )}
         </div>
       </div>
-      
+
       {/* Tira Promocional Premium de Mentoría */}
       <div className="bg-black relative overflow-hidden">
         {/* Patrón de fondo sutil */}
