@@ -185,9 +185,9 @@ const CreateProduct = () => {
       totalSize += pdfPresentacion.size;
     }
     
-    // Verificar que el total no exceda 20MB (para acomodar PDFs grandes)
-    if (totalSize / 1000000 > 20) {
-      toast.error('El tamaño total de todos los archivos excede 20MB. Por favor, reduce el tamaño de los archivos.');
+    // Verificar que el total no exceda 15MB (para acomodar PDFs de hasta 10MB)
+    if (totalSize / 1000000 > 15) {
+      toast.error('El tamaño total de todos los archivos excede 15MB. Por favor, reduce el tamaño de los archivos.');
       setLoading(false);
       return;
     }
@@ -195,8 +195,8 @@ const CreateProduct = () => {
     // Validar PDF si existe
     if (pdfPresentacion) {
       const pdfSize = pdfPresentacion.size / 1000000; // MB
-      if (pdfSize > 20) {
-        toast.error(`El PDF es demasiado grande (${pdfSize.toFixed(1)}MB). Máximo 20MB.`);
+      if (pdfSize > 10) {
+        toast.error(`El PDF es demasiado grande (${pdfSize.toFixed(1)}MB). Máximo 10MB (límite de Cloudinary).`);
         setLoading(false);
         return;
       }
@@ -362,6 +362,19 @@ const CreateProduct = () => {
       auth.fetchUser();
 
       toast.success(data.message);
+      
+      // Revalidar caché de eventos si es un evento
+      if (productType === 'evento') {
+        try {
+          await fetch('/api/product/getProducts?tipo=evento', { 
+            method: 'GET',
+            headers: { 'Cache-Control': 'no-cache' }
+          });
+          console.log('✅ Caché de eventos revalidado');
+        } catch (cacheError) {
+          console.log('⚠️ Error revalidando caché:', cacheError);
+        }
+      }
       
       // Si el producto no es de tipo curso, redirigir directamente a la tabla de productos
       if (productType !== 'curso') {

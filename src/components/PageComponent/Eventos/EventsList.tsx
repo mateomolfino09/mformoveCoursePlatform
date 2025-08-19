@@ -28,6 +28,20 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
     eventosFiltrados = [eventos as ProductDB];
   }
 
+  // Función para revalidar eventos
+  const revalidarEventos = async () => {
+    try {
+      await fetch('/api/product/getProducts?tipo=evento', {
+        method: 'GET',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+      // Recargar la página para mostrar los nuevos eventos
+      window.location.reload();
+    } catch (error) {
+      console.log('Error revalidando eventos:', error);
+    }
+  };
+
   // Estados para el formulario de newsletter
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [newsletterLoading, setNewsletterLoading] = useState<boolean>(false);
@@ -159,14 +173,22 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
           <div className="space-y-8">
             {/* Header de resultados */}
             <div className="flex items-center justify-between">
-              <div>
+              <div className="flex items-center space-x-4">
                 <h3 className="text-3xl font-bold text-gray-900 font-montserrat">
                   Experiencias únicas
                 </h3>
-                <p className="text-gray-600 font-montserrat font-light mt-2">
-                  {eventosFiltrados.length} {eventosFiltrados.length === 1 ? 'evento' : 'eventos'}
-                </p>
+                <button
+                  onClick={revalidarEventos}
+                  className="px-3 py-1 text-sm bg-[#234C8C] text-white rounded-lg hover:bg-[#1a3a6b] transition-colors"
+                  title="Actualizar lista de eventos"
+                >
+                  🔄 Actualizar
+                </button>
               </div>
+              <p className="text-gray-600 font-montserrat font-light">
+                {eventosFiltrados.length} {eventosFiltrados.length === 1 ? 'evento' : 'eventos'}
+              </p>
+            </div>
               
               {/* Ordenamiento */}
               <div className="hidden md:flex items-center space-x-4">
@@ -177,7 +199,6 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
                   <option>Más popular</option>
                 </select>
               </div>
-            </div>
             
             {/* Grid de eventos */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
@@ -227,8 +248,9 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
             </div>
           </div>
         )}
-      </div>
         </div>
+      </div>
+
       {/* Tira Promocional Premium de Mentoría */}
       <div className="bg-black relative overflow-hidden">
         {/* Patrón de fondo sutil */}

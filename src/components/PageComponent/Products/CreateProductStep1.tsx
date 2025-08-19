@@ -430,8 +430,8 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     const file = acceptedFiles[0];
     const fileSizeMB = file.size / (1024 * 1024);
     
-    if (fileSizeMB > 20) {
-      toast.error(`El PDF es demasiado grande (${fileSizeMB.toFixed(1)}MB). Máximo 20MB.`);
+    if (fileSizeMB > 10) {
+      toast.error(`El PDF es demasiado grande (${fileSizeMB.toFixed(1)}MB). Máximo 10MB (límite de Cloudinary).`);
       return;
     }
     
