@@ -26,25 +26,26 @@ async function uploadToCloudinary(file, folder = 'productos') {
 
 export async function POST(req) {
   try {
-    // Configurar límite de body para esta ruta específica
-    const maxBodySize = 10 * 1024 * 1024; // 10MB
+    // Configurar límite de body más pequeño para Vercel
+    const maxBodySize = 4 * 1024 * 1024; // 4MB (límite de Vercel)
     
     const contentType = req.headers.get('content-type') || '';
     let data = {};
     let imagenes = [];
     let archivo = null;
-    let pdfPresentacion = null;
     let imagenesUrls = [];
-    let pdfPresentacionUrl = undefined;
 
     // Verificar el tamaño del contenido
     const contentLength = req.headers.get('content-length');
     console.log('📊 Tamaño de la petición:', contentLength ? `${(parseInt(contentLength) / 1024 / 1024).toFixed(2)}MB` : 'Desconocido');
     
     if (contentLength && parseInt(contentLength) > maxBodySize) {
-      console.error('❌ Petición demasiado grande:', contentLength);
+      console.error('❌ Petición demasiado grande:', `${(parseInt(contentLength) / 1024 / 1024).toFixed(2)}MB`);
       return NextResponse.json(
-        { error: 'El tamaño de la petición excede el límite permitido (10MB)' },
+        { 
+          error: `El tamaño de la petición (${(parseInt(contentLength) / 1024 / 1024).toFixed(2)}MB) excede el límite de Vercel (4MB). Por favor, reduce el tamaño de las imágenes.`,
+          code: '413'
+        },
         { status: 413 }
       );
     }
@@ -71,12 +72,10 @@ export async function POST(req) {
       
       imagenes = data.imagenes || []; // Extraer imágenes del JSON, no del FormData
       archivo = formData.get('archivo');
-      pdfPresentacion = formData.get('pdfPresentacion');
     } else {
       data = await req.json();
       imagenes = data.imagenes || [];
       archivo = data.archivo || null;
-      pdfPresentacion = data.pdfPresentacion || null;
     }
 
 
@@ -119,10 +118,8 @@ export async function POST(req) {
     
 
 
-    // Subir PDF de presentación si viene en FormData
-    if (tipo === 'evento' && pdfPresentacion && pdfPresentacion instanceof File) {
-      pdfPresentacionUrl = await uploadToCloudinary(pdfPresentacion, 'productos/pdfPresentacion');
-    }
+    // El PDF ya se subió desde el frontend, solo usar la URL
+    const pdfPresentacionUrl = data.pdfPresentacionUrl;
 
     // Subir archivo de recurso si corresponde
     let archivoUrl = undefined;
@@ -202,7 +199,7 @@ export async function POST(req) {
         imagenes: imagenesUrls,
         portada: data.portada,
         portadaMobile: data.portadaMobile,
-        pdfPresentacionUrl: tipo === 'evento' ? pdfPresentacionUrl : undefined,
+        pdfPresentacionUrl: tipo === 'evento' ? (pdfPresentacionUrl || data.pdfPresentacionUrl) : undefined,
         cursosIncluidos: tipo === 'bundle' ? cursosIncluidos : undefined,
         fecha: tipo === 'evento' ? fecha : undefined,
         ubicacion: tipo === 'evento' ? ubicacion : undefined,
@@ -278,7 +275,7 @@ export async function POST(req) {
         imagenes: imagenesUrls,
         portada: data.portada,
         portadaMobile: data.portadaMobile,
-        pdfPresentacionUrl: tipo === 'evento' ? pdfPresentacionUrl : undefined,
+        pdfPresentacionUrl: tipo === 'evento' ? (pdfPresentacionUrl || data.pdfPresentacionUrl) : undefined,
         cursosIncluidos: tipo === 'bundle' ? cursosIncluidos : undefined,
         fecha: tipo === 'evento' ? fecha : undefined,
         ubicacion: tipo === 'evento' ? ubicacion : undefined,

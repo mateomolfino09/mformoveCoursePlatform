@@ -19,19 +19,6 @@ interface Props {
 declare const process: any;
 
 const CreateProductStep1 = ({ handleSubmit }: Props) => {
-  // Cargar cities dinámicamente para evitar problemas de prerenderizado
-  const [cities, setCities] = useState<any[]>([]);
-  
-  useEffect(() => {
-    // Cargar el archivo JSON solo en el cliente
-    import('./world-cities.json').then((module) => {
-      const citiesData = module.default;
-      setCities(Array.isArray(citiesData) ? citiesData : []);
-    }).catch((error) => {
-      console.error('Error loading cities:', error);
-      setCities([]);
-    });
-  }, []);
 
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -63,11 +50,6 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   const [vimeoError, setVimeoError] = useState<string>('');
   const [pdfPresentacion, setPdfPresentacion] = useState<any>(null);
   const [ubicacionInput, setUbicacionInput] = useState<string>('');
-  const ubicacionTimeout = useRef<NodeJS.Timeout | null>(null);
-  const [ubicacionLat, setUbicacionLat] = useState<string>('');
-  const [ubicacionLon, setUbicacionLon] = useState<string>('');
-  const [ubicacionCiudad, setUbicacionCiudad] = useState<string>('');
-  const [ubicacionPais, setUbicacionPais] = useState<string>('');
 
   // Estados para código de descuento (familia y amigos)
   const [codigoDescuento, setCodigoDescuento] = useState<string>('');
@@ -94,7 +76,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   const [portraitImageArray, setPortraitImage] = useState<any>([]);
   const [portraitMobileImageArray, setPortraitMobileImage] = useState<any>([]);
   const [diplomaImageArray, setDiplomaImage] = useState<any>([]);
-  const [ubicacionSugerencias, setUbicacionSugerencias] = useState<any[]>([]);
+
 
   // Estados para Programas Transformacionales
   const [esProgramaTransformacional, setEsProgramaTransformacional] = useState<boolean>(false);
@@ -298,13 +280,9 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     let now = new Date().toISOString().slice(0, 16); // formato yyyy-MM-ddTHH:mm
     let earlyBirdStartValue = (tipo === 'evento' || tipo === 'programa_transformacional') ? (earlyBirdStart || now) : undefined;
     let lastTicketsEndValue = (tipo === 'evento' || tipo === 'programa_transformacional') ? (lastTicketsEnd || fecha) : undefined;
-    // Construir objeto ubicacion
+    // Construir objeto ubicacion simple
     const ubicacionObj = {
-      display_name: ubicacion,
-      lat: ubicacionLat,
-      lon: ubicacionLon,
-      ciudad: ubicacionCiudad,
-      pais: ubicacionPais
+      display_name: ubicacion
     };
 
     // Datos del programa transformacional
@@ -449,7 +427,15 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
 
   // Dropzone para PDF de presentación (solo para evento)
   const onDropPdfPresentacion = (acceptedFiles: any[]) => {
-    setPdfPresentacion(acceptedFiles[0]);
+    const file = acceptedFiles[0];
+    const fileSizeMB = file.size / (1024 * 1024);
+    
+    if (fileSizeMB > 5) {
+      toast.error(`El PDF es demasiado grande (${fileSizeMB.toFixed(1)}MB). Máximo 5MB.`);
+      return;
+    }
+    
+    setPdfPresentacion(file);
   };
   const {
     getRootProps: getRootPropsPdfPresentacion,
@@ -489,29 +475,11 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     />
   ));
 
-  // Autocomplete de ubicaciones con Nominatim
+  // Manejo simple de ubicación
   const handleUbicacionInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setUbicacionInput(value);
-    if (ubicacionTimeout.current) clearTimeout(ubicacionTimeout.current);
-    if (value.length < 3) {
-      setUbicacionSugerencias([]);
-      return;
-    }
-    ubicacionTimeout.current = setTimeout(async () => {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value)}&addressdetails=1&limit=5`);
-      const data = await res.json();
-      setUbicacionSugerencias(data);
-    }, 400);
-  };
-  const handleSelectUbicacion = (sug: any) => {
-    setUbicacionInput(sug.display_name);
-    setUbicacion(sug.display_name);
-    setUbicacionLat(sug.lat || '');
-    setUbicacionLon(sug.lon || '');
-    setUbicacionCiudad(sug.address?.city || sug.address?.town || sug.address?.village || '');
-    setUbicacionPais(sug.address?.country || '');
-    setUbicacionSugerencias([]);
+    setUbicacion(value);
   };
 
   const agregarBeneficio = () => {
@@ -522,7 +490,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   };
 
   const eliminarBeneficio = (index: number) => {
-    setBeneficios(beneficios.filter((_, i) => i !== index));
+    setBeneficios((prev) => Array.isArray(prev) ? prev.filter((_, i) => i !== index) : []);
   };
 
   const [aprendizajes, setAprendizajes] = useState<string[]>([]);
@@ -991,6 +959,9 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                       <div className='mt-3 flex items-center space-x-2 bg-green-50 p-2 rounded-lg'>
                         <AiOutlineCheckCircle className='text-green-500' />
                         <span className='text-sm text-green-700 font-medium'>{pdfPresentacion.name}</span>
+                        <span className='text-xs text-gray-500'>
+                          ({(pdfPresentacion.size / (1024 * 1024)).toFixed(1)}MB)
+                        </span>
                       </div>
                     )}
                   </div>
@@ -1274,22 +1245,9 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                         className='input border-gray-300 focus:border-purple-500 focus:ring-purple-500 transition-colors'
                         value={ubicacionInput}
                         onChange={handleUbicacionInput}
-                        placeholder='Buscar ciudad, dirección, lugar...'
-                        autoComplete='off'
+                        placeholder='Ej: Montevideo, Uruguay'
                       />
-                      {ubicacionSugerencias.length > 0 && (
-                        <ul className='absolute z-10 bg-white border border-gray-300 rounded-lg w-full mt-1 max-h-40 overflow-y-auto shadow-lg'>
-                          {ubicacionSugerencias.map((sug, idx) => (
-                            <li
-                              key={idx}
-                              className='px-3 py-2 hover:bg-purple-50 cursor-pointer text-gray-700 text-sm border-b border-gray-100 last:border-b-0'
-                              onClick={() => handleSelectUbicacion(sug)}
-                            >
-                              {sug.display_name}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+
                     </label>
                   ) : (
                     <label className='flex flex-col space-y-2'>
