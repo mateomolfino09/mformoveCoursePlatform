@@ -181,10 +181,13 @@ const CreateProduct = () => {
     if (galleryImageArray && galleryImageArray.length > 0) {
       galleryImageArray.forEach((img: any) => totalSize += img.size);
     }
+    if (pdfPresentacion) {
+      totalSize += pdfPresentacion.size;
+    }
     
-    // Verificar que el total no exceda 8MB
-    if (totalSize / 1000000 > 8) {
-      toast.error('El tamaño total de todas las imágenes excede 8MB. Por favor, reduce el tamaño de las imágenes.');
+    // Verificar que el total no exceda 20MB (para acomodar PDFs grandes)
+    if (totalSize / 1000000 > 20) {
+      toast.error('El tamaño total de todos los archivos excede 20MB. Por favor, reduce el tamaño de los archivos.');
       setLoading(false);
       return;
     }
@@ -192,8 +195,8 @@ const CreateProduct = () => {
     // Validar PDF si existe
     if (pdfPresentacion) {
       const pdfSize = pdfPresentacion.size / 1000000; // MB
-      if (pdfSize > 5) {
-        toast.error(`El PDF es demasiado grande (${pdfSize.toFixed(1)}MB). Máximo 5MB.`);
+      if (pdfSize > 20) {
+        toast.error(`El PDF es demasiado grande (${pdfSize.toFixed(1)}MB). Máximo 20MB.`);
         setLoading(false);
         return;
       }

@@ -430,8 +430,8 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     const file = acceptedFiles[0];
     const fileSizeMB = file.size / (1024 * 1024);
     
-    if (fileSizeMB > 5) {
-      toast.error(`El PDF es demasiado grande (${fileSizeMB.toFixed(1)}MB). Máximo 5MB.`);
+    if (fileSizeMB > 20) {
+      toast.error(`El PDF es demasiado grande (${fileSizeMB.toFixed(1)}MB). Máximo 20MB.`);
       return;
     }
     
