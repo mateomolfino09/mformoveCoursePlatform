@@ -650,7 +650,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
         {/* Header mejorado */}
         <div className='w-full flex pt-8 justify-between items-center mb-8'>
           <div>
-            <h1 className='text-3xl font-bold text-white mb-2'>Crear un Producto</h1>
+            <h1 className='text-3xl font-bold text-white mb-2'>Crear un Productos</h1>
             <p className='text-gray-200'>Completa la información para crear tu nuevo producto</p>
           </div>
           <div className='flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-lg'>

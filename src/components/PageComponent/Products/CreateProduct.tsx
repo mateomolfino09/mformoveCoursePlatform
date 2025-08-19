@@ -158,14 +158,14 @@ const CreateProduct = () => {
       setLoading(false);
       return;
     }
-    // Validar tamaño (máx 2MB para evitar problemas con Vercel)
-    if (portraitImageArray[0].size / 1000000 > 2) {
-      toast.error('La imagen de portada es demasiado grande (máx 2MB). Por favor, comprime la imagen.');
+    // Validar tamaño (máx 5MB por imagen)
+    if (portraitImageArray[0].size / 1000000 > 5) {
+      toast.error('La imagen de portada es demasiado grande (máx 5MB). Por favor, comprime la imagen.');
       setLoading(false);
       return;
     }
-    if (productType !== 'evento' && diplomaImageArray[0].size / 1000000 > 2) {
-      toast.error('La imagen de diploma es demasiado grande (máx 2MB). Por favor, comprime la imagen.');
+    if (productType !== 'evento' && diplomaImageArray[0].size / 1000000 > 5) {
+      toast.error('La imagen de diploma es demasiado grande (máx 5MB). Por favor, comprime la imagen.');
       setLoading(false);
       return;
     }
@@ -182,9 +182,9 @@ const CreateProduct = () => {
       galleryImageArray.forEach((img: any) => totalSize += img.size);
     }
     
-    // Verificar que el total no exceda 3MB
-    if (totalSize / 1000000 > 3) {
-      toast.error('El tamaño total de todas las imágenes excede 3MB. Por favor, reduce el tamaño de las imágenes.');
+    // Verificar que el total no exceda 8MB
+    if (totalSize / 1000000 > 8) {
+      toast.error('El tamaño total de todas las imágenes excede 8MB. Por favor, reduce el tamaño de las imágenes.');
       setLoading(false);
       return;
     }
@@ -371,7 +371,7 @@ const CreateProduct = () => {
     } catch (error: any) {
       if (error.response && error.response.data) {
         if (error.response.status === 413) {
-          toast.error('El tamaño de las imágenes es demasiado grande. Por favor, reduce el tamaño de las imágenes a menos de 2MB cada una.');
+          toast.error('El tamaño de las imágenes es demasiado grande. Por favor, reduce el tamaño de las imágenes a menos de 5MB cada una.');
         } else if (error.response.data.error) {
           toast.error(error.response.data.error);
         } else {
