@@ -306,6 +306,20 @@ export async function POST(req) {
       product = await Product.create(productoData);
     }
 
+    // Revalidar caché si es un evento
+    if (tipo === 'evento') {
+      try {
+        // Forzar revalidación del caché de eventos
+        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/product/getProducts?tipo=evento`, {
+          method: 'GET',
+          headers: { 'Cache-Control': 'no-cache' }
+        });
+        console.log('✅ Caché de eventos revalidado desde backend');
+      } catch (cacheError) {
+        console.log('⚠️ Error revalidando caché desde backend:', cacheError);
+      }
+    }
+
     return NextResponse.json(
       { message: 'Producto creado con éxito', product },
       { status: 200 }

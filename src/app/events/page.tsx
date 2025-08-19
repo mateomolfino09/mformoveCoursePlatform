@@ -35,4 +35,8 @@ export default async function EventsPage() {
   }
 
   return <EventsList eventos={eventos} />;
-} 
+}
+
+// Configuración para evitar caché en esta página
+export const dynamic = 'force-dynamic';
+export const revalidate = 0; 
