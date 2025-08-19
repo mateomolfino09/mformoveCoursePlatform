@@ -35,6 +35,12 @@ const nextConfig = {
       },
     ]
   },
+  // Configuración para aumentar el límite de body
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb'
+    }
+  },
   // Habilitar source maps en producción
   // productionBrowserSourceMaps: true
 };

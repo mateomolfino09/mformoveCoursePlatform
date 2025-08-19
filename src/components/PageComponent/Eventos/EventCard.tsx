@@ -7,6 +7,7 @@ import { CalendarDaysIcon, MapPinIcon, UsersIcon, CurrencyDollarIcon, ClockIcon,
 import { GlobeAltIcon, SparklesIcon, FireIcon, TrophyIcon } from '@heroicons/react/24/solid';
 import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { formatearPrecioEventoSync, formatearPrecioConDescuentoSync } from '../../../utils/currencyHelpers';
 
 interface Props {
   evento: ProductDB;
@@ -49,10 +50,17 @@ const EventCard: React.FC<Props> = ({ evento }) => {
     if (earlyBird?.price && earlyBird?.end) {
       const earlyBirdEnd = new Date(earlyBird.end);
       if (ahora <= earlyBirdEnd) {
+        const precioFormateado = formatearPrecioEventoSync(earlyBird.price, evento);
+        console.log(precioFormateado, 'precioFormateado');
+        const precioOriginal = general?.price || lastTickets?.price;
+        const descuento = precioOriginal ? formatearPrecioConDescuentoSync(earlyBird.price, precioOriginal, evento) : null;
+        
         return {
           precio: earlyBird.price,
+          precioFormateado,
           tipo: 'Early Bird',
           original: general?.price || lastTickets?.price,
+          descuento,
           urgencia: 'Precio especial'
         };
       }
@@ -62,10 +70,16 @@ const EventCard: React.FC<Props> = ({ evento }) => {
     if (general?.price && general?.end) {
       const generalEnd = new Date(general.end);
       if (ahora <= generalEnd) {
+        const precioFormateado = formatearPrecioEventoSync(general.price, evento);
+        const precioOriginal = lastTickets?.price;
+        const descuento = precioOriginal ? formatearPrecioConDescuentoSync(general.price, precioOriginal, evento) : null;
+        
         return {
           precio: general.price,
+          precioFormateado,
           tipo: 'Precio General',
           original: lastTickets?.price,
+          descuento,
           urgencia: lastTickets?.price ? 'Precio aumentará pronto' : null
         };
       }
@@ -73,10 +87,14 @@ const EventCard: React.FC<Props> = ({ evento }) => {
 
     // Last Tickets
     if (lastTickets?.price) {
+      const precioFormateado = formatearPrecioEventoSync(lastTickets.price, evento);
+      
       return {
         precio: lastTickets.price,
+        precioFormateado,
         tipo: 'Last Tickets',
         original: null,
+        descuento: null,
         urgencia: 'Últimos cupos'
       };
     }
@@ -282,20 +300,20 @@ const EventCard: React.FC<Props> = ({ evento }) => {
                     {precioActual.tipo}
                   </span>
                 </div>
-                {precioActual.original && (
+                {precioActual.descuento && (
                   <span className="text-xs bg-gray-200 text-gray-700 px-3 py-1 rounded-full font-montserrat font-semibold">
-                    Ahorra ${precioActual.original - precioActual.precio}
+                    Ahorra {precioActual.descuento.ahorro.textoCompleto}
                   </span>
                 )}
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-baseline space-x-2">
                   <span className="text-2xl font-bold text-gray-900 font-montserrat">
-                    ${precioActual.precio}
+                    {precioActual.precioFormateado.textoCompleto}
                   </span>
-                  {precioActual.original && (
+                  {precioActual.descuento && (
                     <span className="text-sm text-gray-500 line-through font-montserrat">
-                      ${precioActual.original}
+                      {precioActual.descuento.precioOriginal.textoCompleto}
                     </span>
                   )}
                 </div>

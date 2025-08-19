@@ -27,6 +27,7 @@ import ReactPlayer from 'react-player';
 import state from '../../../valtio';
 import { LoadingSpinner } from '../../LoadingSpinner';
 import { MiniLoadingSpinner } from './MiniSpinner';
+import { formatearPrecioEventoSync } from '../../../utils/currencyHelpers';
 
 interface Props {
   product: ProductDB;
@@ -237,13 +238,13 @@ const IndividualProduct = ({ product }: Props) => {
               {(() => { const { tipo } = product as any; return tipo === 'evento' && currentPriceInfo })() ? (
                 <div className='mb-2'>
                   <span className='text-lg font-bold text-black'>
-                    {currentPriceInfo?.label}: ${currentPriceInfo?.price} USD
+                    {currentPriceInfo?.label}: {formatearPrecioEventoSync(currentPriceInfo?.price, product).textoCompleto}
                   </span>
                 </div>
               ) : (
                 <div className='mb-2'>
                   <span className='text-lg font-bold text-black'>
-                    Precio: ${product.price} {product.currency}
+                    Precio: {formatearPrecioEventoSync(product.price, product).textoCompleto}
                   </span>
                 </div>
               )}
@@ -261,8 +262,8 @@ const IndividualProduct = ({ product }: Props) => {
                     <div className="absolute inset-0 w-0 bg-[#a38951] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
                     <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>
                       {(() => { const { tipo } = product as any; return tipo === 'evento' && currentPriceInfo })()
-                        ? `Comprar (${currentPriceInfo?.label} $${currentPriceInfo?.price} USD)`
-                        : `Comprar Ahora (${product.price} ${product.currency})`}
+                        ? `Comprar (${currentPriceInfo?.label} ${formatearPrecioEventoSync(currentPriceInfo?.price, product).textoCompleto})`
+                        : `Comprar Ahora (${formatearPrecioEventoSync(product.price, product).textoCompleto})`}
                     </span>
                   </>
                 )}

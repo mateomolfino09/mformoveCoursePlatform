@@ -268,6 +268,12 @@ const CreateProduct = () => {
       auth.fetchUser();
 
       toast.success(data.message);
+      
+      // Si el producto no es de tipo curso, redirigir directamente a la tabla de productos
+      if (productType !== 'curso') {
+        router.push('/admin/products/allProducts');
+      }
+      
       // Limpiar arrays de imágenes y estado tras éxito
       setProductCreado({});
       // Aquí podrías agregar lógica para limpiar el formulario en CreateProductStep1 usando un callback o estado global si lo deseas
