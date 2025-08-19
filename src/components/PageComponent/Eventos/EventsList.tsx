@@ -199,7 +199,6 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
                   <option>Más popular</option>
                 </select>
               </div>
-            </div>
             
             {/* Grid de eventos */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
@@ -249,8 +248,9 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
             </div>
           </div>
         )}
-      </div>
         </div>
+      </div>
+      
       {/* Tira Promocional Premium de Mentoría */}
       <div className="bg-black relative overflow-hidden">
         {/* Patrón de fondo sutil */}
