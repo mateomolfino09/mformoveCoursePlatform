@@ -19,6 +19,7 @@ const productSchema = new mongoose.Schema({
   portadaMobile: { type: String }, // URL de la imagen de portada para móviles
   precios: { type: Object }, // Objeto con earlyBird, general, lastTickets
   paymentLinks: { type: Object }, // Links de pago para cada precio
+  stripeProductId: { type: String }, // ID del producto en Stripe
   activo: { type: Boolean, default: true },
   destacado: { type: Boolean, default: false },
 

@@ -211,6 +211,7 @@ export async function POST(req) {
         paraQuien: tipo === 'evento' ? (paraQuien || []) : undefined,
         archivoUrl: tipo === 'recurso' ? archivoUrl : undefined,
         tipoArchivo: tipo === 'recurso' ? tipoArchivo : undefined,
+        stripeProductId: undefined, // Se asignará después con el resultado de Stripe
         descuento: data.descuento ? {
           ...data.descuento,
           stripeCouponId,
@@ -287,6 +288,7 @@ export async function POST(req) {
         paraQuien: tipo === 'evento' ? (paraQuien || []) : undefined,
         archivoUrl: tipo === 'recurso' ? archivoUrl : undefined,
         tipoArchivo: tipo === 'recurso' ? tipoArchivo : undefined,
+        stripeProductId: undefined, // Se asignará después si es necesario
         descuento: data.descuento ? {
           ...data.descuento,
           stripeCouponId,
