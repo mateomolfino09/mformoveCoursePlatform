@@ -26,6 +26,9 @@ async function uploadToCloudinary(file, folder = 'productos') {
 
 export async function POST(req) {
   try {
+    // Configurar límite de body para esta ruta específica
+    const maxBodySize = 10 * 1024 * 1024; // 10MB
+    
     const contentType = req.headers.get('content-type') || '';
     let data = {};
     let imagenes = [];
@@ -34,9 +37,38 @@ export async function POST(req) {
     let imagenesUrls = [];
     let pdfPresentacionUrl = undefined;
 
+    // Verificar el tamaño del contenido
+    const contentLength = req.headers.get('content-length');
+    console.log('📊 Tamaño de la petición:', contentLength ? `${(parseInt(contentLength) / 1024 / 1024).toFixed(2)}MB` : 'Desconocido');
+    
+    if (contentLength && parseInt(contentLength) > maxBodySize) {
+      console.error('❌ Petición demasiado grande:', contentLength);
+      return NextResponse.json(
+        { error: 'El tamaño de la petición excede el límite permitido (10MB)' },
+        { status: 413 }
+      );
+    }
+
     if (contentType.includes('multipart/form-data')) {
       const formData = await req.formData();
-      data = JSON.parse(formData.get('data'));
+      const dataString = formData.get('data');
+      
+      if (!dataString) {
+        return NextResponse.json(
+          { error: 'Datos del formulario no encontrados' },
+          { status: 400 }
+        );
+      }
+      
+      try {
+        data = JSON.parse(dataString);
+      } catch (parseError) {
+        return NextResponse.json(
+          { error: 'Error al parsear los datos del formulario' },
+          { status: 400 }
+        );
+      }
+      
       imagenes = data.imagenes || []; // Extraer imágenes del JSON, no del FormData
       archivo = formData.get('archivo');
       pdfPresentacion = formData.get('pdfPresentacion');
@@ -60,15 +92,27 @@ export async function POST(req) {
       );
     }
 
-    // Subir imágenes a Cloudinary si vienen en FormData
-    if (imagenes && imagenes.length > 0 && imagenes[0] instanceof File) {
-      for (const img of imagenes) {
-        const url = await uploadToCloudinary(img, 'productos/imagenes');
-        imagenesUrls.push(url);
+    // Procesar imágenes - optimizar para reducir el tamaño del payload
+    if (imagenes && imagenes.length > 0) {
+      if (imagenes[0] instanceof File) {
+        // Si vienen archivos, subirlos a Cloudinary
+        for (const img of imagenes) {
+          const url = await uploadToCloudinary(img, 'productos/imagenes');
+          imagenesUrls.push(url);
+        }
+      } else if (typeof imagenes[0] === 'string') {
+        // Si vienen strings, verificar si son URLs completas o public_ids
+        imagenesUrls = imagenes.map(img => {
+          // Si es una URL completa de Cloudinary, convertir a public_id
+          if (img.includes('cloudinary.com')) {
+            const urlParts = img.split('/');
+            const publicId = urlParts[urlParts.length - 1].split('.')[0];
+            return publicId;
+          }
+          // Si ya es un public_id, usarlo directamente
+          return img;
+        });
       }
-    } else if (imagenes && imagenes.length > 0) {
-      // Si las imágenes ya están subidas a Cloudinary (public_id), usarlas directamente
-      imagenesUrls = imagenes;
     } else {
       imagenesUrls = [];
     }

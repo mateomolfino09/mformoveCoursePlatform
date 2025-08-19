@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { ProductDB } from '../../../../typings';
 import { CheckCircleIcon, StarIcon, FireIcon, ArrowRightIcon, SparklesIcon, AcademicCapIcon, UserIcon, TrophyIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
+import { formatearPrecioEvento, formatearPrecioConDescuento, PrecioFormateado } from '../../../utils/currencyHelpers';
 
 interface Props {
   evento: ProductDB;
@@ -30,30 +31,94 @@ const EventCTA: React.FC<Props> = ({
     seconds: 0
   });
 
-  // Función para calcular el tiempo restante
+  // Estado para los precios formateados
+  const [precioFormateado, setPrecioFormateado] = useState<PrecioFormateado | null>(null);
+  const [precioOriginalFormateado, setPrecioOriginalFormateado] = useState<PrecioFormateado | null>(null);
+  const [ahorroFormateado, setAhorroFormateado] = useState<PrecioFormateado | null>(null);
+  const [cargandoPrecios, setCargandoPrecios] = useState(true);
+
+  // Cargar precios desde Stripe
+  useEffect(() => {
+    const cargarPrecios = async () => {
+      if (!precioActual) {
+        setCargandoPrecios(false);
+        return;
+      }
+
+      try {
+        setCargandoPrecios(true);
+        
+        // Formatear precio actual
+        const precioActualFormateado = await formatearPrecioEvento(precioActual.precio, evento);
+        setPrecioFormateado(precioActualFormateado);
+
+        // Si hay precio original, formatear también
+        if (precioActual.original) {
+          const precioOriginal = await formatearPrecioEvento(precioActual.original, evento);
+          setPrecioOriginalFormateado(precioOriginal);
+
+          // Calcular ahorro
+          const ahorro = await formatearPrecioEvento(precioActual.original - precioActual.precio, evento);
+          setAhorroFormateado(ahorro);
+        }
+      } catch (error) {
+        console.error('Error cargando precios desde Stripe:', error);
+      } finally {
+        setCargandoPrecios(false);
+      }
+    };
+
+    cargarPrecios();
+  }, [precioActual, evento]);
+
+  // Función para calcular el tiempo restante hasta que vence el precio actual
   useEffect(() => {
     const calculateTimeLeft = () => {
-      if (!evento.fecha) return;
+      if (!evento.precios || !precioActual) return;
       
-      const now = new Date().getTime();
-      const eventDate = new Date(evento.fecha).getTime();
-      const difference = eventDate - now;
-
-      if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000)
-        });
+      // Obtener la fecha actual
+      const now = new Date();
+      
+      // Determinar la fecha de vencimiento del precio actual
+      let priceEndDate: Date | null = null;
+      
+      if (precioActual.tipo === 'Early Bird' && evento.precios.earlyBird?.end) {
+        priceEndDate = new Date(evento.precios.earlyBird.end);
+      } else if (precioActual.tipo === 'Precio General' && evento.precios.general?.end) {
+        priceEndDate = new Date(evento.precios.general.end);
+      } else if (precioActual.tipo === 'Last Tickets' && evento.fecha) {
+        // Para Last Tickets, usar la fecha del evento como fecha de vencimiento
+        priceEndDate = new Date(evento.fecha);
       }
+      
+      if (!priceEndDate) return;
+      
+      // Función helper para calcular la diferencia de tiempo de manera más precisa
+      const calculateTimeDifference = (targetDate: Date, currentDate: Date) => {
+        const diffMs = targetDate.getTime() - currentDate.getTime();
+        
+        if (diffMs <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+        
+        const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+        
+        return { days, hours, minutes, seconds };
+      };
+      
+
+      // Calcular el tiempo restante usando la función helper
+      const timeLeft = calculateTimeDifference(priceEndDate, now);
+            
+      setTimeLeft(timeLeft);
     };
 
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, [evento.fecha]);
+  }, [evento.fecha, evento.precios, precioActual]);
 
   // Variantes para animaciones
   const fadeInUp = (delay = 0) => ({
@@ -93,8 +158,15 @@ const EventCTA: React.FC<Props> = ({
               <span className="bg-gradient-to-r from-[#234C8C] to-[#5FA8E9] bg-clip-text text-transparent"> esperando</span>
             </h2>
             <p className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-montserrat font-light px-4">
-              Rompé con lo convencional. Desafia las normas establecidas y 
-              <span className="text-white font-medium"> redescubrí la libertad que existe en tu cuerpo.</span>
+            ¿Alguna vez recordaste 
+            <span className="text-white font-medium"> tu inocencia curiosa con cariño?</span>
+            <br />  
+            La aventura, el juego, la curiosidad y la adrenalina a flor de piel...
+            <br />
+            Esa inocencia de <span className="text-white font-medium">exponerte sin sobrepensar en las consecuencias.</span>
+            <br />
+            <span className="text-white font-medium">   {evento.nombre} es una invitación a volver a lo simple.</span>
+      
             </p>
           </motion.div>
 
@@ -225,37 +297,45 @@ const EventCTA: React.FC<Props> = ({
                      {/* Header del CTA */}
                      <div>
                        <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2 md:mb-3 font-montserrat">
-                         Tu transformación espera
+                         {evento.nombre} te espera
                        </h3>
                        <p className="text-sm md:text-base lg:text-lg text-gray-300 font-montserrat">
                          Cupos limitados
                        </p>
                      </div>
+                     Rompé con lo convencional. Desafia las normas establecidas y redescubrí la libertad que existe en tu cuerpo.
 
-                                         {/* Precio */}
+
+
                      <div className="bg-gradient-to-br from-[#234C8C]/20 to-[#5FA8E9]/20 rounded-2xl p-4 md:p-6 lg:p-8 border border-[#234C8C]/30">
                        <p className="text-gray-300 text-xs md:text-sm lg:text-base mb-2 font-montserrat">{precioActual.tipo}</p>
                        <div className="flex items-center justify-center space-x-2 md:space-x-3 lg:space-x-4 mb-2">
-                         <span className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">
-                           ${precioActual.precio}
-                         </span>
-                         {precioActual.original && (
+                         {cargandoPrecios ? (
+                           <span className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+                             Cargando...
+                           </span>
+                         ) : (
+                           <span className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+                             {precioFormateado?.textoCompleto}
+                           </span>
+                         )}
+                         {precioActual.original && precioOriginalFormateado && (
                            <span className="text-xl md:text-2xl lg:text-3xl text-gray-400 line-through">
-                             ${precioActual.original}
+                             {precioOriginalFormateado.textoCompleto}
                            </span>
                          )}
                        </div>
-                       {precioActual.original && (
+                       {precioActual.original && ahorroFormateado && (
                          <p className="text-[#5FA8E9] font-semibold font-montserrat text-sm md:text-base lg:text-lg">
-                           Ahorras ${precioActual.original - precioActual.precio}
+                           Ahorras {ahorroFormateado.textoCompleto}
                          </p>
                        )}
                        
-                       {/* Countdown */}
-                       <div className="mt-4 pt-4 border-t border-[#234C8C]/20">
-                         <p className="text-gray-300 text-xs md:text-sm lg:text-base mb-3 font-montserrat text-center">
-                           El precio aumenta en:
-                         </p>
+                                               {/* Countdown */}
+                        <div className="mt-4 pt-4 border-t border-[#234C8C]/20">
+                          <p className="text-gray-300 text-xs md:text-sm lg:text-base mb-3 font-montserrat text-center">
+                            {precioActual.tipo === 'Last Tickets' ? 'El evento comienza en:' : 'El precio aumenta en:'}
+                          </p>
                          <div className="grid grid-cols-4 gap-2 lg:gap-3">
                                                         <div className="text-center">
                                <div className="bg-white/10 rounded-lg p-2 lg:p-3">
@@ -316,7 +396,7 @@ const EventCTA: React.FC<Props> = ({
                         </>
                       ) : (
                         <>
-                          <span>Liberar mi cuerpo</span>
+                          <span>Quiero Ir</span>
                           <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
                         </>
                       )}
@@ -342,7 +422,7 @@ const EventCTA: React.FC<Props> = ({
                           evento.beneficios.map((beneficio, index) => (
                                                      <li key={index} className="flex items-center space-x-2 md:space-x-3 lg:space-x-4">
                            <CheckCircleIcon className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-[#5FA8E9] flex-shrink-0" />
-                           <span className="font-montserrat">{beneficio}</span>
+                           <span className="font-montserrat text-left">{beneficio}</span>
                          </li>
                           ))
                         ) : (

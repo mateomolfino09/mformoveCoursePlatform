@@ -106,13 +106,38 @@ const emailTemplates = {
       <p style="font-size: 16px; color: ${colors.text.secondary}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
         Hola <strong>${data.nombre}</strong>, hemos revisado tu solicitud de mentoría y estamos listos para comenzar.
       </p>
-      <p style="font-size: 16px; color: ${colors.text.secondary}; line-height: 1.6; margin-bottom: 30px; text-align: center;">
-        Agenda tu llamada de consulta inicial para evaluar tus objetivos y crear tu plan personalizado:
+      <p style="font-size: 16px; color: ${colors.text.secondary}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
+        Para preparar tu consulta inicial, te comparto el documento de evaluaciones que necesitarás completar:
+      </p>
+      
+      <div style="background-color: ${colors.background.tertiary}; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 15px 0; font-size: 18px;">📋 Evaluación Inicial</h3>
+        <p style="margin: 8px 0; color: ${colors.text.secondary}; line-height: 1.6;">
+          Descarga y completa este documento antes de nuestra primera sesión. Nos ayudará a crear tu plan personalizado.
+        </p>
+                 <a href="https://asset.cloudinary.com/dbeem2avp/f6931c6ea72bb31622b8872d47b7ec5e" 
+            style="background-color: ${colors.primary.blue}; color: ${colors.text.inverse}; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; display: inline-block; margin-top: 10px;">
+           📄 Descargar Evaluación
+         </a>
+       </div>
+       
+       <p style="font-size: 16px; color: ${colors.text.secondary}; line-height: 1.6; margin-bottom: 30px; text-align: center;">
+        Una vez completado, agenda tu llamada de consulta inicial para evaluar tus objetivos y crear tu plan personalizado:
       </p>
       <div style="text-align: center; margin: 30px 0;">
         <a href="${data.calendlyLink || 'https://calendly.com/mformovers/consulta-mentoria'}" style="background-color: ${colors.primary.blue}; color: ${colors.text.inverse}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Agendar Consulta
         </a>
+      </div>
+      
+      <div style="background-color: ${colors.background.tertiary}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 10px 0; font-size: 16px; text-align: center;">💡 Próximos pasos:</h3>
+        <ol style="margin: 0; padding-left: 20px; color: ${colors.text.secondary}; text-align: left;">
+          <li style="margin: 5px 0;">Descarga y completa la evaluación inicial</li>
+          <li style="margin: 5px 0;">Agenda tu consulta de 30 minutos</li>
+          <li style="margin: 5px 0;">Recibe tu plan personalizado</li>
+          <li style="margin: 5px 0;">¡Comienza tu transformación!</li>
+        </ol>
       </div>
     `;
     return getBaseTemplate(content);
@@ -288,17 +313,31 @@ const emailTemplates = {
       <p style="font-size: 16px; color: ${colors.text.secondary}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
         ¡Hola <strong>${data.name}</strong>! Nos emociona que hayas decidido comenzar tu viaje de transformación con nuestro programa de mentoría.
       </p>
+      
+      <div style="background-color: ${colors.background.tertiary}; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+        <h3 style="color: ${colors.text.primary}; margin: 0 0 15px 0; font-size: 18px;">📋 Evaluación Inicial</h3>
+        <p style="margin: 8px 0; color: ${colors.text.secondary}; line-height: 1.6;">
+          Para comenzar, descarga y completa este documento de evaluación. Nos ayudará a crear tu plan personalizado.
+        </p>
+                 <a href="https://asset.cloudinary.com/dbeem2avp/f6931c6ea72bb31622b8872d47b7ec5e" 
+            style="background-color: ${colors.primary.blue}; color: ${colors.text.inverse}; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; display: inline-block; margin-top: 10px;">
+           📄 Descargar Evaluación
+         </a>
+      </div>
+      
       <div style="background-color: ${colors.background.tertiary}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
         <h3 style="color: ${colors.text.primary}; margin: 0 0 10px 0; font-size: 18px;">Próximos pasos:</h3>
-        <ul style="margin: 0; padding-left: 20px; color: ${colors.text.secondary};">
+        <ol style="margin: 0; padding-left: 20px; color: ${colors.text.secondary}; text-align: left;">
+          <li style="margin: 5px 0;">Descarga y completa la evaluación inicial</li>
           <li style="margin: 5px 0;">Agenda tu primera llamada de consulta</li>
-          <li style="margin: 5px 0;">Completa tu evaluación inicial</li>
           <li style="margin: 5px 0;">Recibe tu plan personalizado</li>
-        </ul>
+          <li style="margin: 5px 0;">¡Comienza tu transformación!</li>
+        </ol>
       </div>
+      
       <div style="text-align: center; margin: 30px 0;">
         <a href="${data.calendlyLink || 'https://calendly.com/mformovers/consulta-mentoria'}" style="background-color: ${colors.primary.blue}; color: ${colors.text.inverse}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
-          Agendar Primera Consulta
+          📅 Agendar Primera Consulta
         </a>
       </div>
     `;

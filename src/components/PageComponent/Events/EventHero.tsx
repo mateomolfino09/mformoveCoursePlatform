@@ -6,6 +6,7 @@ import { CldImage } from 'next-cloudinary';
 import { CalendarDaysIcon, MapPinIcon, UsersIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import { GlobeAltIcon, SparklesIcon, FireIcon, TrophyIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
+import { formatearPrecioEventoSync } from '../../../utils/currencyHelpers';
 
 interface Props {
   evento: ProductDB;
@@ -149,7 +150,9 @@ const EventHero: React.FC<Props> = ({
             <CurrencyDollarIcon className="h-6 w-6 text-white" />
           </div>
           <div>
-            <div className="text-white font-bold text-base">${precioActual.precio}</div>
+            <div className="text-white font-bold text-base">
+              {formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}
+            </div>
             <div className="text-xs text-gray-300">Precio</div>
           </div>
         </motion.div>
@@ -379,11 +382,11 @@ const EventHero: React.FC<Props> = ({
                     <p className="text-white/80 text-sm mb-2">{precioActual.tipo}</p>
                     <div className="flex items-center justify-center space-x-3">
                       <span className="text-3xl md:text-5xl font-bold text-white">
-                        ${precioActual.precio}
+                        {formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}
                       </span>
                       {precioActual.original && (
                         <span className="text-lg md:text-2xl text-white/60 line-through">
-                          ${precioActual.original}
+                          {formatearPrecioEventoSync(precioActual.original, evento).textoCompleto}
                         </span>
                       )}
                     </div>
