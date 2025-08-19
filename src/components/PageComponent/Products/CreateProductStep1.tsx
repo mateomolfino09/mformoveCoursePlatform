@@ -305,7 +305,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       description,
       vimeoGallery, // productVimeoId
       tipo,         // productType
-      'USD',        // currency
+      currency,     // currency
       price,
       portraitImageArray,
       portraitMobileImageArray,

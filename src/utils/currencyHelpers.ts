@@ -43,22 +43,58 @@ export async function obtenerTipoCambioStripe(): Promise<number> {
  * Determina la moneda y símbolo según la ubicación del evento
  */
 export function determinarMonedaEvento(evento: any): { simbolo: string; moneda: string } {
+  console.log('🔍 [DEBUG] Determinando moneda para evento:', {
+    nombre: evento.nombre,
+    online: evento.online,
+    ubicacion: evento.ubicacion,
+    display_name: evento.ubicacion?.display_name,
+    pais: evento.ubicacion?.pais
+  });
+
   // Si el evento es online, usar USD
   if (evento.online) {
+    console.log('🌐 [DEBUG] Evento online, usando USD');
     return { simbolo: 'US$', moneda: 'USD' };
   }
 
   // Si es presencial, verificar ubicación
   if (evento.ubicacion?.pais) {
     const pais = evento.ubicacion.pais.toLowerCase();
+    console.log('🌍 [DEBUG] País encontrado en campo separado:', pais);
     
     // Eventos presenciales en Uruguay
     if (pais === 'uruguay' || pais === 'uy') {
+      console.log('🇺🇾 [DEBUG] Evento en Uruguay, usando UYU');
       return { simbolo: '$', moneda: 'UYU' };
+    }
+    
+    // Eventos presenciales en Argentina
+    if (pais === 'argentina' || pais === 'ar') {
+      console.log('🇦🇷 [DEBUG] Evento en Argentina, usando ARS');
+      return { simbolo: '$', moneda: 'ARS' };
+    }
+  }
+
+  // Si no hay campo pais separado, buscar en display_name
+  if (evento.ubicacion?.display_name) {
+    const displayName = evento.ubicacion.display_name.toLowerCase();
+    console.log('📍 [DEBUG] Buscando país en display_name:', displayName);
+    
+    // Eventos presenciales en Uruguay
+    if (displayName.includes('uruguay') || displayName.includes('montevideo') || displayName.includes('punta del este')) {
+      console.log('🇺🇾 [DEBUG] Evento en Uruguay (detectado por display_name), usando UYU');
+      return { simbolo: '$', moneda: 'UYU' };
+    }
+    
+    // Eventos presenciales en Argentina
+    if (displayName.includes('argentina') || displayName.includes('buenos aires') || displayName.includes('córdoba')) {
+      console.log('🇦🇷 [DEBUG] Evento en Argentina (detectado por display_name), usando ARS');
+      return { simbolo: '$', moneda: 'ARS' };
     }
   }
 
   // Por defecto, usar USD
+  console.log('💵 [DEBUG] No se detectó ubicación específica, usando USD por defecto');
   return { simbolo: 'US$', moneda: 'USD' };
 }
 
@@ -72,7 +108,14 @@ export function formatearPrecioEventoSync(precio: number, evento: any): PrecioFo
   let precioConvertido = precio;
   if (moneda === 'UYU') {
     // Tasa de conversión fija (actualizada al tipo de cambio actual)
-    const tasaCambio = 42; // Tasa actual aproximada USD/UYU
+    const tasaCambio = 40; // Tasa actual aproximada USD/UYU
+    precioConvertido = Math.round(precio * tasaCambio);
+  }
+  
+  // Si la moneda es argentina, convertir de USD a pesos argentinos
+  if (moneda === 'ARS') {
+    // Tasa de conversión fija (actualizada al tipo de cambio actual)
+    const tasaCambio = 1000; // Tasa actual aproximada USD/ARS
     precioConvertido = Math.round(precio * tasaCambio);
   }
   
@@ -97,6 +140,15 @@ export async function formatearPrecioEvento(precio: number, evento: any): Promis
     const tasaCambio = await obtenerTipoCambioStripe();
     precioConvertido = Math.round(precio * tasaCambio);
     console.log(`💱 [FRONTEND] Conversión completada: ${precio} USD × ${tasaCambio} = ${precioConvertido} UYU`);
+  }
+  
+  // Si la moneda es argentina, convertir de USD a pesos argentinos
+  if (moneda === 'ARS') {
+    console.log(`💰 [FRONTEND] Convirtiendo ${precio} USD → ARS para evento: ${evento.nombre}`);
+    // Por ahora usar tasa fija, pero se puede implementar API de tipo de cambio
+    const tasaCambio = 1000; // Tasa actual aproximada USD/ARS
+    precioConvertido = Math.round(precio * tasaCambio);
+    console.log(`💱 [FRONTEND] Conversión completada: ${precio} USD × ${tasaCambio} = ${precioConvertido} ARS`);
   }
   
   const resultado = {
