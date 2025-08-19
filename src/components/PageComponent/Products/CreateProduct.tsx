@@ -38,6 +38,54 @@ const CreateProduct = () => {
 
   const auth = useAuth();
 
+  // Función para comprimir imágenes
+  const compressImage = (file: File, maxSizeMB: number = 1, quality: number = 0.8): Promise<File> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      img.onload = () => {
+        // Calcular nuevas dimensiones manteniendo proporción
+        let { width, height } = img;
+        const maxDimension = 1920; // Máxima dimensión
+
+        if (width > height && width > maxDimension) {
+          height = (height * maxDimension) / width;
+          width = maxDimension;
+        } else if (height > maxDimension) {
+          width = (width * maxDimension) / height;
+          height = maxDimension;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Dibujar imagen redimensionada
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        // Convertir a blob
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: file.type,
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          },
+          file.type,
+          quality
+        );
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   useEffect(() => {
     const cookies: any = Cookies.get('userToken');
 
@@ -110,14 +158,33 @@ const CreateProduct = () => {
       setLoading(false);
       return;
     }
-    // Validar tamaño (máx 10MB)
-    if (portraitImageArray[0].size / 1000000 > 10) {
-      toast.error('La imagen de portada es demasiado grande (máx 10MB)');
+    // Validar tamaño (máx 2MB para evitar problemas con Vercel)
+    if (portraitImageArray[0].size / 1000000 > 2) {
+      toast.error('La imagen de portada es demasiado grande (máx 2MB). Por favor, comprime la imagen.');
       setLoading(false);
       return;
     }
-    if (productType !== 'evento' && diplomaImageArray[0].size / 1000000 > 10) {
-      toast.error('La imagen de diploma es demasiado grande (máx 10MB)');
+    if (productType !== 'evento' && diplomaImageArray[0].size / 1000000 > 2) {
+      toast.error('La imagen de diploma es demasiado grande (máx 2MB). Por favor, comprime la imagen.');
+      setLoading(false);
+      return;
+    }
+    
+    // Validar tamaño total del payload
+    let totalSize = portraitImageArray[0].size;
+    if (productType !== 'evento' && diplomaImageArray[0]) {
+      totalSize += diplomaImageArray[0].size;
+    }
+    if (portraitMobileImageArray && portraitMobileImageArray[0]) {
+      totalSize += portraitMobileImageArray[0].size;
+    }
+    if (galleryImageArray && galleryImageArray.length > 0) {
+      galleryImageArray.forEach((img: any) => totalSize += img.size);
+    }
+    
+    // Verificar que el total no exceda 3MB
+    if (totalSize / 1000000 > 3) {
+      toast.error('El tamaño total de todas las imágenes excede 3MB. Por favor, reduce el tamaño de las imágenes.');
       setLoading(false);
       return;
     }
@@ -129,11 +196,10 @@ const CreateProduct = () => {
         }
       };
 
-      // Subir portada
+      // Comprimir y subir portada
+      const compressedPortraitFile = await compressImage(portraitImageArray[0], 1, 0.8);
       const formData = new FormData();
-      for (const file of portraitImageArray) {
-        formData.append('file', file);
-      }
+      formData.append('file', compressedPortraitFile);
       formData.append('upload_preset', 'my_uploads');
       const portraitData = await fetch(requests.fetchCloudinary, {
         method: 'POST',
@@ -141,13 +207,12 @@ const CreateProduct = () => {
       }).then((r) => r.json());
       const portada = portraitData.public_id;
 
-      // Subir portada móvil (opcional)
+      // Comprimir y subir portada móvil (opcional)
       let portadaMobile = null;
       if (portraitMobileImageArray && portraitMobileImageArray[0]) {
+        const compressedMobileFile = await compressImage(portraitMobileImageArray[0], 1, 0.8);
         const mobileFormData = new FormData();
-        for (const file of portraitMobileImageArray) {
-          mobileFormData.append('file', file);
-        }
+        mobileFormData.append('file', compressedMobileFile);
         mobileFormData.append('upload_preset', 'my_uploads');
         const mobilePortraitData = await fetch(requests.fetchCloudinary, {
           method: 'POST',
@@ -278,8 +343,16 @@ const CreateProduct = () => {
       setProductCreado({});
       // Aquí podrías agregar lógica para limpiar el formulario en CreateProductStep1 usando un callback o estado global si lo deseas
     } catch (error: any) {
-      if (error.response && error.response.data && error.response.data.error) {
-        toast.error(error.response.data.error);
+      if (error.response && error.response.data) {
+        if (error.response.status === 413) {
+          toast.error('El tamaño de las imágenes es demasiado grande. Por favor, reduce el tamaño de las imágenes a menos de 2MB cada una.');
+        } else if (error.response.data.error) {
+          toast.error(error.response.data.error);
+        } else {
+          toast.error('Ocurrió un error inesperado al crear el producto.');
+        }
+      } else if (error.message && error.message.includes('413')) {
+        toast.error('El tamaño de las imágenes es demasiado grande. Por favor, reduce el tamaño de las imágenes.');
       } else {
         toast.error('Ocurrió un error inesperado al crear el producto.');
       }

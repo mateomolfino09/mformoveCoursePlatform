@@ -1,9 +1,16 @@
 {
   "functions": {
     "src/app/api/product/createProduct/route.js": {
-      "maxDuration": 30
+      "maxDuration": 30,
+      "memory": 3008
     }
   },
+  "rewrites": [
+    {
+      "source": "/api/product/createProduct",
+      "destination": "/api/product/createProduct"
+    }
+  ],
   "headers": [
     {
       "source": "/api/product/createProduct",
