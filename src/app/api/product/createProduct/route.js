@@ -26,8 +26,8 @@ async function uploadToCloudinary(file, folder = 'productos') {
 
 export async function POST(req) {
   try {
-    // Configurar límite de body más pequeño para Vercel
-    const maxBodySize = 4 * 1024 * 1024; // 4MB (límite de Vercel)
+    // Configurar límite de body estándar
+    const maxBodySize = 10 * 1024 * 1024; // 10MB
     
     const contentType = req.headers.get('content-type') || '';
     let data = {};
@@ -43,7 +43,7 @@ export async function POST(req) {
       console.error('❌ Petición demasiado grande:', `${(parseInt(contentLength) / 1024 / 1024).toFixed(2)}MB`);
       return NextResponse.json(
         { 
-          error: `El tamaño de la petición (${(parseInt(contentLength) / 1024 / 1024).toFixed(2)}MB) excede el límite de Vercel (4MB). Por favor, reduce el tamaño de las imágenes.`,
+          error: `El tamaño de la petición (${(parseInt(contentLength) / 1024 / 1024).toFixed(2)}MB) excede el límite permitido (10MB). Por favor, reduce el tamaño de las imágenes.`,
           code: '413'
         },
         { status: 413 }
