@@ -123,12 +123,12 @@ const EventCTA: React.FC<Props> = ({
   // Variantes para animaciones
   const fadeInUp = (delay = 0) => ({
     hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, delay } }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, delay } }
   });
 
   const scaleIn = (delay = 0) => ({
     hidden: { opacity: 0, scale: 0.9 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.6, delay } }
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.3, delay } }
   });
 
   return (
