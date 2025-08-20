@@ -29,10 +29,10 @@ const EventHero: React.FC<Props> = ({
 }) => {
   
   
-  // Variantes para animación scroll
+  // Variantes para animación scroll optimizadas
   const fadeUp = (delay = 0) => ({
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.7, delay } }
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, delay } }
   });
 
   // Countdown para cambio de precio
@@ -77,15 +77,15 @@ const EventHero: React.FC<Props> = ({
 
   const fadeIn = (delay = 0) => ({
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.6, delay } }
+    visible: { opacity: 1, transition: { duration: 0.3, delay } }
   });
 
   // Componente solo para mobile: info clave vertical
   const EventHeroInfoMobile = ({ evento, precioActual }: { evento: ProductDB, precioActual: any }) => (
-    <div className="grid grid-cols-2 gap-4 w-full md:hidden mt-8">
+    <div className="grid grid-cols-2 gap-4 w-full md:hidden mt-8 pt-16 md:pt-0">
       <motion.div
         className="flex items-center bg-white/10 rounded-2xl p-4 gap-3"
-        variants={fadeIn(0.1)}
+        variants={fadeIn(0.05)}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
@@ -102,7 +102,7 @@ const EventHero: React.FC<Props> = ({
       </motion.div>
       <motion.div
         className="flex items-center bg-white/10 rounded-2xl p-4 gap-3"
-        variants={fadeIn(0.2)}
+        variants={fadeIn(0.1)}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
@@ -124,7 +124,7 @@ const EventHero: React.FC<Props> = ({
       {evento.cupo && (
         <motion.div
           className="flex items-center bg-white/10 rounded-2xl p-4 gap-3"
-          variants={fadeIn(0.3)}
+          variants={fadeIn(0.15)}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
@@ -141,7 +141,7 @@ const EventHero: React.FC<Props> = ({
       {precioActual && (
         <motion.div
           className="flex items-center bg-white/10 rounded-2xl p-4 gap-3"
-          variants={fadeIn(0.4)}
+          variants={fadeIn(0.2)}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
@@ -202,7 +202,7 @@ const EventHero: React.FC<Props> = ({
       </div>
 
       {/* Contenido principal */}
-      <div className="relative z-10 max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-0 mt-8 md:mt-16 pb-16 md:pb-0 animate-fade-in">
+      <div className="relative z-10 max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-0 mt-8 md:mt-16 pt-8 md:pt-0 pb-16 md:pb-0 animate-fade-in">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
           
           {/* Columna izquierda - Información */}
@@ -210,7 +210,7 @@ const EventHero: React.FC<Props> = ({
             {/* Badges superiores */}
             <motion.div 
               className="flex flex-wrap gap-2 md:gap-3"
-              variants={fadeUp(0.1)}
+              variants={fadeUp(0.05)}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.2 }}
@@ -253,7 +253,7 @@ const EventHero: React.FC<Props> = ({
             {/* Título principal */}
             <motion.div 
               className="space-y-3 md:space-y-4"
-              variants={fadeUp(0.3)}
+              variants={fadeUp(0.1)}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.2 }}
@@ -274,7 +274,7 @@ const EventHero: React.FC<Props> = ({
               {/* Botón de reserva para mobile */}
               {precioActual && !eventoTerminado && (
                 <motion.div
-                  variants={fadeUp(0.6)}
+                  variants={fadeUp(0.15)}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.2 }}
@@ -316,7 +316,7 @@ const EventHero: React.FC<Props> = ({
             {/* Desktop: grid info clave */}
             <motion.div 
               className="hidden md:grid grid-cols-4 gap-6 mt-8"
-              variants={fadeUp(0.5)}
+              variants={fadeUp(0.1)}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.2 }}
@@ -370,7 +370,7 @@ const EventHero: React.FC<Props> = ({
           {/* Columna derecha - CTA */}
           <motion.div 
             className="flex justify-center lg:justify-end"
-            variants={fadeUp(0.7)}
+            variants={fadeUp(0.2)}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}

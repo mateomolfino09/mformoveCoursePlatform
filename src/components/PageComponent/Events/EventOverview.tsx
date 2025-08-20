@@ -77,10 +77,10 @@ const EventOverview: React.FC<Props> = ({
     });
   };
 
-  // Variantes para animación
+  // Variantes para animación optimizadas
   const fadeIn = (delay = 0) => ({
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.6, delay } }
+    visible: { opacity: 1, transition: { duration: 0.3, delay } }
   });
 
   return (
@@ -100,7 +100,7 @@ const EventOverview: React.FC<Props> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Modalidad */}
           <motion.div 
-            variants={fadeIn(0.1)}
+            variants={fadeIn(0.05)}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
@@ -133,7 +133,7 @@ const EventOverview: React.FC<Props> = ({
           {/* Cupo */}
           {evento.cupo && (
             <motion.div 
-              variants={fadeIn(0.2)}
+              variants={fadeIn(0.1)}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.2 }}
@@ -161,7 +161,7 @@ const EventOverview: React.FC<Props> = ({
           {/* Precio */}
           {precioActual && (
             <motion.div 
-              variants={fadeIn(0.3)}
+              variants={fadeIn(0.15)}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.2 }}
@@ -222,7 +222,7 @@ const EventOverview: React.FC<Props> = ({
 
           {/* Duración estimada */}
           <motion.div 
-            variants={fadeIn(0.4)}
+            variants={fadeIn(0.2)}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
@@ -248,7 +248,7 @@ const EventOverview: React.FC<Props> = ({
 
           {/* Estado del evento */}
           <motion.div 
-            variants={fadeIn(0.5)}
+            variants={fadeIn(0.25)}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
@@ -277,7 +277,7 @@ const EventOverview: React.FC<Props> = ({
           {/* Transferencia Bancaria - Solo para eventos presenciales */}
           {!evento.online && (
             <motion.div 
-              variants={fadeIn(0.6)}
+              variants={fadeIn(0.3)}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.2 }}
