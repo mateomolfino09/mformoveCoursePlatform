@@ -2,10 +2,11 @@ import connectDB from '../../../../config/connectDB';
 import Product from '../../../../models/productModel';
 import { NextResponse } from 'next/server';
 
-connectDB();
-
 export async function GET(req) {
   try {
+    // Conectar a la base de datos
+    await connectDB();
+    
     const { searchParams } = new URL(req.url);
     const name = searchParams.get('name');
     const userEmail = searchParams.get('userEmail'); // Nuevo parámetro para verificar compra
@@ -17,18 +18,28 @@ export async function GET(req) {
       );
     }
 
+    // Validar que el nombre sea una cadena válida
+    if (typeof name !== 'string' || name.trim().length === 0) {
+      return NextResponse.json(
+        { error: 'El nombre del evento debe ser una cadena válida' },
+        { status: 400 }
+      );
+    }
+
     // Buscar el evento por nombre (case insensitive)
     let evento = await Product.findOne({
-      nombre: { $regex: new RegExp(name, 'i') },
-      tipo: 'evento'
+      nombre: { $regex: new RegExp(name.trim(), 'i') },
+      tipo: 'evento',
+      activo: { $ne: false } // Solo eventos activos
     }).lean();
 
     // Si no se encuentra, intentar buscar convirtiendo guiones a espacios
     if (!evento) {
       const nameWithSpaces = name.replace(/-/g, ' ');
       evento = await Product.findOne({
-        nombre: { $regex: new RegExp(nameWithSpaces, 'i') },
-        tipo: 'evento'
+        nombre: { $regex: new RegExp(nameWithSpaces.trim(), 'i') },
+        tipo: 'evento',
+        activo: { $ne: false }
       }).lean();
     }
 
@@ -36,14 +47,18 @@ export async function GET(req) {
     if (!evento) {
       const searchPattern = name.replace(/-/g, '.*');
       evento = await Product.findOne({
-        nombre: { $regex: new RegExp(searchPattern, 'i') },
-        tipo: 'evento'
+        nombre: { $regex: new RegExp(searchPattern.trim(), 'i') },
+        tipo: 'evento',
+        activo: { $ne: false }
       }).lean();
     }
 
     if (!evento) {
-      // Listar todos los eventos disponibles para debug
-      const allEvents = await Product.find({ tipo: 'evento' }).select('nombre').lean();
+      // Listar todos los eventos disponibles para debug (solo en desarrollo)
+      if (process.env.NODE_ENV === 'development') {
+        const allEvents = await Product.find({ tipo: 'evento' }).select('nombre activo').lean();
+        console.log('Eventos disponibles:', allEvents);
+      }
       
       return NextResponse.json(
         { error: 'Evento no encontrado' },
@@ -68,6 +83,7 @@ export async function GET(req) {
         // Por ahora, retornamos false para ser conservadores
         hasPurchased = false;
       } catch (error) {
+        console.error('Error verificando compra:', error);
         // Si hay error en la verificación, no mostrar el link por seguridad
         hasPurchased = false;
       }
@@ -88,8 +104,14 @@ export async function GET(req) {
     );
   } catch (error) {
     console.error('Error al obtener evento por nombre:', error);
+    
+    // Retornar un error genérico en producción para no exponer detalles internos
+    const errorMessage = process.env.NODE_ENV === 'development' 
+      ? error.message 
+      : 'Error interno del servidor';
+    
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

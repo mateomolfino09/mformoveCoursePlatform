@@ -7,6 +7,8 @@ import { SparklesIcon, FireIcon, TrophyIcon } from '@heroicons/react/24/solid';
 import { CldImage } from 'next-cloudinary';
 import MainSideBar from '../../../../components/MainSidebar/MainSideBar';
 import Footer from '../../../../components/Footer';
+import ErrorBoundary from '../../../../components/ErrorBoundary';
+import { getLocationDisplayName } from '../../../../utils/locationHelpers';
 
 interface EventSuccessProps {
   params: {
@@ -14,21 +16,33 @@ interface EventSuccessProps {
   };
 }
 
-const EventSuccessPage: React.FC<EventSuccessProps> = ({ params }) => {
+const EventSuccessPageContent: React.FC<EventSuccessProps> = ({ params }) => {
   const [evento, setEvento] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || !params?.name) return;
+
     const fetchEvento = async () => {
       try {
-    
+        setLoading(true);
+        setError(null);
+        
+        // Validar que el nombre del evento existe
+        if (!params.name || typeof params.name !== 'string') {
+          throw new Error('Nombre del evento inválido');
+        }
         
         // Intentar buscar por nombre limpio primero
         let response = await fetch(`/api/product/getEventByName?name=${encodeURIComponent(params.name)}`);
         
         if (!response.ok) {
-
           // Si no se encuentra, intentar buscar por nombre original
           const searchPattern = params.name.replace(/-/g, ' ');
           response = await fetch(`/api/product/getEventByName?name=${encodeURIComponent(searchPattern)}`);
@@ -36,8 +50,12 @@ const EventSuccessPage: React.FC<EventSuccessProps> = ({ params }) => {
         
         if (response.ok) {
           const data = await response.json();
-
-          setEvento(data.evento);
+          
+          if (data.evento) {
+            setEvento(data.evento);
+          } else {
+            throw new Error('No se encontró información del evento');
+          }
         } else {
           console.error('❌ No se pudo cargar la información del evento');
           setError('No se pudo cargar la información del evento');
@@ -51,7 +69,16 @@ const EventSuccessPage: React.FC<EventSuccessProps> = ({ params }) => {
     };
 
     fetchEvento();
-  }, [params.name]);
+  }, [params.name, mounted]);
+
+  // Mostrar loading mientras se monta el componente
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#234C8C]"></div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -325,7 +352,9 @@ const EventSuccessPage: React.FC<EventSuccessProps> = ({ params }) => {
                           <MapPinIcon className="h-6 w-6 text-white" />
                           <div>
                             <p className="text-sm text-gray-200 font-semibold">Ubicación</p>
-                            <p className="text-white font-medium">{evento.ubicacion}</p>
+                            <p className="text-white font-medium">
+                              {getLocationDisplayName(evento.ubicacion)}
+                            </p>
                           </div>
                         </div>
                       )}
@@ -349,7 +378,7 @@ const EventSuccessPage: React.FC<EventSuccessProps> = ({ params }) => {
                     </div>
 
                     {/* Beneficios */}
-                    {evento.beneficios && evento.beneficios.length > 0 && (
+                    {evento.beneficios && Array.isArray(evento.beneficios) && evento.beneficios.length > 0 && (
                       <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                         <h4 className="font-bold text-white mb-3 flex items-center">
                           <TrophyIcon className="h-5 w-5 mr-2" />
@@ -396,6 +425,14 @@ const EventSuccessPage: React.FC<EventSuccessProps> = ({ params }) => {
       </div>
       <Footer />
     </MainSideBar>
+  );
+};
+
+const EventSuccessPage: React.FC<EventSuccessProps> = ({ params }) => {
+  return (
+    <ErrorBoundary>
+      <EventSuccessPageContent params={params} />
+    </ErrorBoundary>
   );
 };
 

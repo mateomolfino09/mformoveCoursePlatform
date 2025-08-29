@@ -8,8 +8,8 @@ import { BoldFont, MontserratFont } from "../utils/customFonts"
 
 export const metadata = {
   title: 'MForMove',
-  description: 'Bienvenido a mformove!',
-  keywords: "movimiento, fitness, yoga, meditacion, calistenia, workout, training"
+  description: 'Descubre el poder del movimiento consciente. Clases online, eventos presenciales y programas transformacionales para conectar cuerpo, mente y espíritu.',
+  keywords: "movimiento, fitness, yoga, meditacion, calistenia, workout, training, bienestar, transformacion personal"
 }
 
 
