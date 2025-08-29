@@ -5,6 +5,7 @@ import { ProductDB } from '../../../../typings';
 import { GlobeAltIcon, MapPinIcon, UsersIcon, CurrencyDollarIcon, ClockIcon, SparklesIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { formatearPrecioEvento, formatearPrecioConDescuento, PrecioFormateado } from '../../../utils/currencyHelpers';
+import { getLocationCity } from '../../../utils/locationHelpers';
 
 interface Props {
   evento: ProductDB;
@@ -123,9 +124,9 @@ const EventOverview: React.FC<Props> = ({
             <p className="text-gray-800 font-medium">
               {evento.online ? 'Online' : 'Presencial'}
             </p>
-            {!evento.online && evento.ubicacion?.ciudad && (
+            {!evento.online && (
               <p className="text-gray-500 text-sm mt-1">
-                {evento.ubicacion.ciudad}
+                {getLocationCity(evento.ubicacion)}
               </p>
             )}
           </motion.div>

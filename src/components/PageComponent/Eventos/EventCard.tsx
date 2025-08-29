@@ -8,6 +8,7 @@ import { GlobeAltIcon, SparklesIcon, FireIcon, TrophyIcon } from '@heroicons/rea
 import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { formatearPrecioEventoSync, formatearPrecioConDescuentoSync } from '../../../utils/currencyHelpers';
+import { getLocationCity } from '../../../utils/locationHelpers';
 
 interface Props {
   evento: ProductDB;
@@ -254,7 +255,7 @@ const EventCard: React.FC<Props> = ({ evento }) => {
               <>
                 <MapPinIcon className="h-4 w-4 text-gray-600 flex-shrink-0" />
                 <span className="text-sm text-gray-700 font-montserrat font-medium truncate">
-                  {evento.ubicacion?.ciudad || evento.ubicacion?.display_name?.split(',')[0] || 'Por confirmar'}
+                  {getLocationCity(evento.ubicacion)}
                 </span>
               </>
             )}
