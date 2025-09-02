@@ -159,6 +159,8 @@ const EventOverview: React.FC<Props> = ({
             </motion.div>
           )}
 
+
+
           {/* Precio */}
           {precioActual && (
             <motion.div 
