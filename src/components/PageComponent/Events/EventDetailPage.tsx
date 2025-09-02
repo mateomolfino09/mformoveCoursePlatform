@@ -29,14 +29,14 @@ const EventDetailPage: React.FC<Props> = ({ evento }) => {
   // Calcular precio actual y estado del evento
   useEffect(() => {
     if (evento.precios) {
-      // Obtener el precio actual basado en fechas
       const ahora = new Date();
       const { earlyBird, general, lastTickets } = evento.precios;
 
       // Verificar Early Bird
-      if (earlyBird?.price && earlyBird?.end) {
+      if (earlyBird?.price && earlyBird?.start && earlyBird?.end) {
+        const earlyBirdStart = new Date(earlyBird.start);
         const earlyBirdEnd = new Date(earlyBird.end);
-        if (ahora <= earlyBirdEnd) {
+        if (ahora >= earlyBirdStart && ahora <= earlyBirdEnd) {
           setPrecioActual({
             precio: earlyBird.price,
             tipo: 'Early Bird',
@@ -49,9 +49,10 @@ const EventDetailPage: React.FC<Props> = ({ evento }) => {
       }
 
       // Verificar General
-      if (general?.price && general?.end) {
+      if (general?.price && general?.start && general?.end) {
+        const generalStart = new Date(general.start);
         const generalEnd = new Date(general.end);
-        if (ahora <= generalEnd) {
+        if (ahora >= generalStart && ahora <= generalEnd) {
           setPrecioActual({
             precio: general.price,
             tipo: 'Precio General',
@@ -64,14 +65,18 @@ const EventDetailPage: React.FC<Props> = ({ evento }) => {
       }
 
       // Last Tickets
-      if (lastTickets?.price) {
-        setPrecioActual({
-          precio: lastTickets.price,
-          tipo: 'Last Tickets',
-          original: null,
-          urgencia: 'Últimos cupos',
-          stripePriceId: (evento as any).stripePrices?.lastTickets
-        });
+      if (lastTickets?.price && lastTickets?.start && lastTickets?.end) {
+        const lastTicketsStart = new Date(lastTickets.start);
+        const lastTicketsEnd = new Date(lastTickets.end);
+        if (ahora >= lastTicketsStart && ahora <= lastTicketsEnd) {
+          setPrecioActual({
+            precio: lastTickets.price,
+            tipo: 'Last Tickets',
+            original: null,
+            urgencia: 'Últimos cupos',
+            stripePriceId: (evento as any).stripePrices?.lastTickets
+          });
+        }
       }
     }
 

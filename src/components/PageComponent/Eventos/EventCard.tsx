@@ -48,9 +48,10 @@ const EventCard: React.FC<Props> = ({ evento }) => {
     const { earlyBird, general, lastTickets } = evento.precios;
 
     // Verificar Early Bird
-    if (earlyBird?.price && earlyBird?.end) {
+    if (earlyBird?.price && earlyBird?.start && earlyBird?.end) {
+      const earlyBirdStart = new Date(earlyBird.start);
       const earlyBirdEnd = new Date(earlyBird.end);
-      if (ahora <= earlyBirdEnd) {
+      if (ahora >= earlyBirdStart && ahora <= earlyBirdEnd) {
         const precioFormateado = formatearPrecioEventoSync(earlyBird.price, evento);
         console.log(precioFormateado, 'precioFormateado');
         const precioOriginal = general?.price || lastTickets?.price;
@@ -68,9 +69,10 @@ const EventCard: React.FC<Props> = ({ evento }) => {
     }
 
     // Verificar General
-    if (general?.price && general?.end) {
+    if (general?.price && general?.start && general?.end) {
+      const generalStart = new Date(general.start);
       const generalEnd = new Date(general.end);
-      if (ahora <= generalEnd) {
+      if (ahora >= generalStart && ahora <= generalEnd) {
         const precioFormateado = formatearPrecioEventoSync(general.price, evento);
         const precioOriginal = lastTickets?.price;
         const descuento = precioOriginal ? formatearPrecioConDescuentoSync(general.price, precioOriginal, evento) : null;
@@ -87,17 +89,21 @@ const EventCard: React.FC<Props> = ({ evento }) => {
     }
 
     // Last Tickets
-    if (lastTickets?.price) {
-      const precioFormateado = formatearPrecioEventoSync(lastTickets.price, evento);
-      
-      return {
-        precio: lastTickets.price,
-        precioFormateado,
-        tipo: 'Last Tickets',
-        original: null,
-        descuento: null,
-        urgencia: 'Últimos cupos'
-      };
+    if (lastTickets?.price && lastTickets?.start && lastTickets?.end) {
+      const lastTicketsStart = new Date(lastTickets.start);
+      const lastTicketsEnd = new Date(lastTickets.end);
+      if (ahora >= lastTicketsStart && ahora <= lastTicketsEnd) {
+        const precioFormateado = formatearPrecioEventoSync(lastTickets.price, evento);
+        
+        return {
+          precio: lastTickets.price,
+          precioFormateado,
+          tipo: 'Last Tickets',
+          original: null,
+          descuento: null,
+          urgencia: 'Últimos cupos'
+        };
+      }
     }
 
     return null;

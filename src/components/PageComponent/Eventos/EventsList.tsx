@@ -172,18 +172,12 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
         {Array.isArray(eventosFiltrados) && eventosFiltrados.length > 0 ? (
           <div className="space-y-8">
             {/* Header de resultados */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-col md:flex-row">
               <div className="flex items-center space-x-4">
                 <h3 className="text-3xl font-bold text-gray-900 font-montserrat">
                   Experiencias únicas
                 </h3>
-                <button
-                  onClick={revalidarEventos}
-                  className="px-3 py-1 text-sm bg-[#234C8C] text-white rounded-lg hover:bg-[#1a3a6b] transition-colors"
-                  title="Actualizar lista de eventos"
-                >
-                  🔄 Actualizar
-                </button>
+      
               </div>
               <p className="text-gray-600 font-montserrat font-light">
                 {eventosFiltrados.length} {eventosFiltrados.length === 1 ? 'evento' : 'eventos'}
