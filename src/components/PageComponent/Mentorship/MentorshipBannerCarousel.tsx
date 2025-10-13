@@ -69,44 +69,38 @@ const MentorshipBannerCarousel = ({ hideText = false }: { hideText?: boolean }) 
           />
         </motion.div>
       </AnimatePresence>
-      {/* Título y subtítulo centrados */}
+      {/* Título y subtítulo centrados - Estilo moderno minimalista */}
       {!hideText && (
         <div className={`absolute inset-0 flex flex-col items-center justify-center z-20 ${isMobile ? 'justify-start pb-32' : ''}`}>
-          <div className="px-6 py-8 rounded-xl to-transparent">
-            {/* Contenedor relativo para el título y el subrayado */}
-            <div className="relative inline-block w-full">
-              <h1 className="text-5xl md:text-7xl font-bold text-white drop-shadow-2xl mb-6 font-montserrat text-center relative z-10">
-                Mentoría Online
-              </h1>
-            </div>
-            <p className="text-xl md:text-3xl text-white font-light drop-shadow-xl max-w-2xl mx-auto font-montserrat text-center mb-8">
+          <motion.div 
+            className="px-6 py-8 max-w-5xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            {/* Título con tipografía grande y moderna */}
+            <h1 className="text-7xl leading-[4rem] md:text-8xl font-bold text-white mb-8 font-montserrat text-center tracking-tight">
+              Mentoría Online
+            </h1>
+            
+            {/* Subtítulo con mejor jerarquía visual */}
+            <p className="text-xl md:text-3xl text-white/95 font-light max-w-3xl mx-auto font-montserrat text-center mb-12 leading-relaxed">
               Programa personalizado guiado por <span className="font-semibold">Mateo Molfino</span>
             </p>
             
-            {/* Botón de Agendar Consulta */}
-            <div className="flex justify-center">
+            {/* Botón moderno con fondo gris transparente */}
+            <div className="flex justify-center gap-4">
               <motion.button
                 onClick={() => router.push('/mentorship/consulta')}
-                className="relative bg-gradient-to-r from-[#234C8C] to-[#1a3763] text-white px-8 py-3 rounded-full font-bold text-base md:text-lg hover:from-[#1a3763] hover:to-[#234C8C] transition-all duration-500 transform hover:scale-105 shadow-2xl font-montserrat border-2 border-white/20 backdrop-blur-sm overflow-hidden group"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
+                className="bg-white/20 backdrop-blur-md text-white px-8 md:px-12 py-4 md:py-5 font-semibold text-base md:text-lg hover:bg-white hover:text-black transition-all duration-300 font-montserrat rounded-xl border border-white/30 shadow-2xl"
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2 }}
               >
-                {/* Efecto de brillo */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                
-                {/* Contenido del botón */}
-                <span className="relative z-10 flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  Agendar Consulta
-                </span>
+                Agendar Consulta
               </motion.button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
