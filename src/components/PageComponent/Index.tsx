@@ -54,7 +54,7 @@ const Index = () => {
             <Banner />
           </main>
             <div className='absolute w-full top-1/2 flex justify-center items-center' >
-                <button className='w-48 h-12 md:w-56 md:h-14 md:text-lg rounded-3xl border-white hover:bg-[#234C8C] hover:text-white border text-base font-thin transition-all duration-300 transform hover:scale-105 shadow-lg' >
+                <button className='w-48 h-12 md:w-56 md:h-14 md:text-lg rounded-3xl border-white hover:text-white border text-base font-thin transition-all duration-300 transform hover:scale-105 shadow-lg' >
                   <a href={routes.navegation.mentorship}>
                   Movete Conmigo 
                   </a>

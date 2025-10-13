@@ -1,13 +1,11 @@
 'use client'
 import React from 'react';
 import { motion } from 'framer-motion';
-import { UserIcon, ClipboardDocumentListIcon, VideoCameraIcon, ChatBubbleLeftRightIcon, ChartBarIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 import { CldImage } from 'next-cloudinary';
 
 const MentorshipProcess = () => {
   const steps = [
     {
-      icon: UserIcon,
       title: "Evaluación Inicial",
       description: "Comenzamos con una evaluación completa de tu estado actual, objetivos y limitaciones. Esta es la base de todo el proceso.",
       details: [
@@ -18,7 +16,6 @@ const MentorshipProcess = () => {
       ]
     },
     {
-      icon: ClipboardDocumentListIcon,
       title: "Diseño Personalizado",
       description: "Creamos un plan único adaptado específicamente a tu cuerpo, objetivos y circunstancias de vida.",
       details: [
@@ -29,7 +26,6 @@ const MentorshipProcess = () => {
       ]
     },
     {
-      icon: VideoCameraIcon,
       title: "Seguimiento Continuo",
       description: "Acompañamiento regular con feedback personalizado y ajustes según tu progreso y necesidades.",
       details: [
@@ -40,7 +36,6 @@ const MentorshipProcess = () => {
       ]
     },
     {
-      icon: ChatBubbleLeftRightIcon,
       title: "Llamadas 1:1",
       description: "Sesiones de mentoría directa con Mateo para profundizar en conceptos y resolver dudas específicas.",
       details: [
@@ -51,7 +46,6 @@ const MentorshipProcess = () => {
       ]
     },
     {
-      icon: ChartBarIcon,
       title: "Evaluación de Progreso",
       description: "Revisión periódica de tus avances, ajustes del programa y establecimiento de nuevos objetivos.",
       details: [
@@ -62,7 +56,6 @@ const MentorshipProcess = () => {
       ]
     },
     {
-      icon: AcademicCapIcon,
       title: "Formación Continua",
       description: "Educación constante sobre anatomía funcional, biomecánica y principios del movimiento consciente.",
       details: [
@@ -75,24 +68,34 @@ const MentorshipProcess = () => {
   ];
 
   return (
-    <section className="py-20 bg-black font-montserrat">
+    <section className="py-10 bg-black font-montserrat">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="mb-16 relative"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{ color: '#fff' }}>
-            El Proceso de Mentoría
+          {/* DNA Helix en absolute - grande y sutil */}
+          <div className="absolute -top-10 -right-4 w-40 h-40 md:w-96 md:h-96 opacity-50 pointer-events-none">
+            <img 
+              src="/images/svg/dnahelix.svg" 
+              alt="DNA Helix"
+              className="w-full h-full object-contain filter invert"
+            />
+          </div>
+          
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white relative z-10">
+            Hablemos de estructura...
           </h2>
-          <p className="text-xl max-w-3xl mx-auto" style={{ color: 'white' }}>
-            Un camino estructurado hacia la transformación personal a través del movimiento consciente
+          <p className="text-lg md:text-xl text-white/70 font-light max-w-3xl leading-relaxed relative z-10">
+            Todo camino empieza en un punto. Tenemos que trazar estas lineas entre nodos para que el camino sea coherente. <br/> <br/>
+            Te presento el mapa que va a acompañarte en este proceso.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {steps.map((step, index) => (
             <motion.div
               key={index}
@@ -100,22 +103,27 @@ const MentorshipProcess = () => {
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
               viewport={{ once: true }}
-              className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border hover:bg-white/10 transition-all duration-300"
-              style={{ borderColor: '#B0B8C1' }}
+              className="group bg-white/5 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10 hover:bg-white/10 transition-all duration-300"
             >
-              {/* Step Number */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-[#23272F] border-2 border-[#B0B8C1] rounded-full flex items-center justify-center text-[#B0B8C1] font-bold text-lg">
+              {/* Step Number and Icosahedron */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-12 h-12 bg-white/10 border-2 border-white/30 rounded-full flex items-center justify-center text-white font-semibold text-lg">
                   {index + 1}
                 </div>
-                <step.icon className="w-8 h-8" style={{ color: '#B0B8C1' }} />
+                <div className="w-16 h-16 relative opacity-60 group-hover:opacity-80 transition-opacity duration-300">
+                  <img 
+                    src="/images/svg/icosahedron2.svg" 
+                    alt={step.title}
+                    className="w-full h-full object-contain filter invert"
+                  />
+                </div>
               </div>
 
               {/* Step Content */}
-              <h3 className="text-xl font-semibold mb-3" style={{ color: '#5fa8e9' }}>
+              <h3 className="text-xl md:text-2xl font-semibold mb-3 text-white">
                 {step.title}
               </h3>
-              <p className="text-sm mb-4 leading-relaxed" style={{ color: '#fff' }}>
+              <p className="text-sm md:text-base mb-4 leading-relaxed text-white/70 font-light">
                 {step.description}
               </p>
 
@@ -123,8 +131,8 @@ const MentorshipProcess = () => {
               <div className="space-y-2">
                 {step.details.map((detail, detailIndex) => (
                   <div key={detailIndex} className="flex items-start space-x-2">
-                    <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ background: '#A6B1C2' }}></div>
-                    <span className="text-xs leading-relaxed" style={{ color: '#A6B1C2' }}>
+                    <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0 bg-white/40"></div>
+                    <span className="text-xs md:text-sm leading-relaxed text-white/50 font-light">
                       {detail}
                     </span>
                   </div>
@@ -136,39 +144,37 @@ const MentorshipProcess = () => {
 
         {/* Bottom CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
           viewport={{ once: true }}
           className="mt-16 text-center"
         >
-          <div className="relative rounded-2xl p-12 md:p-16 overflow-hidden" style={{ minHeight: '340px' }}>
-            {/* Imagen de fondo Cloudinary con overlay */}
+          <div className="relative rounded-2xl p-12 md:p-16 overflow-hidden border border-white/10" style={{ minHeight: '300px' }}>
+            {/* Imagen de fondo con overlay oscuro */}
             <CldImage
               src="my_uploads/plaza/DSC03350_vgjrrh"
               width={1200}
               height={600}
-              alt="Mentoría fondo inspirador"
+              alt="Mentoría fondo"
               className="absolute inset-0 w-full h-full object-cover object-center z-0"
-              style={{ filter: 'brightness(0.45) blur(2px)' }}
+              style={{ filter: 'brightness(0.3) grayscale(100%)' }}
             />
             <div className="relative z-10">
-              <h3 className="text-2xl font-bold mb-4" style={{ color: '#fff' }}>
-                ¿Listo para comenzar tu transformación?
+              <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-white">
+                ¿Te interesa este proceso?
               </h3>
-              <p className="mb-6 max-w-2xl mx-auto" style={{ color: 'white' }}>
-                Este proceso requiere compromiso, pero los resultados son transformadores. 
-                No solo cambiarás tu cuerpo, cambiarás tu relación con el movimiento para siempre.
+              <p className="mb-8 max-w-2xl mx-auto text-white/80 font-light leading-relaxed text-sm md:text-base">
+                Si lo que leíste hasta acá resuena con vos, revisá los planes disponibles.
               </p>
               <button 
                 onClick={() => {
                   const element = document.getElementById('mentorship-plans');
                   element?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="font-bold py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
-                style={{ background: 'linear-gradient(90deg, #234C8C, #5fa8e9)', color: 'white' }}
+                className="bg-white text-black px-8 py-3 font-medium text-sm md:text-base hover:bg-black hover:text-white transition-all duration-300 font-montserrat rounded-xl border border-white"
               >
-                Ver Planes
+                Ver planes
               </button>
             </div>
           </div>
