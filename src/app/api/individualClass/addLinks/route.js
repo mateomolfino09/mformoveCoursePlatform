@@ -10,7 +10,7 @@ export async function PUT(req) {
   const {
     links, userId, claseId
     } = await req.json(); 
-    const MAX_LINKS = 5
+    const MAX_LINKS = 5;
   try { 
       if (req.method === 'PUT') {
           const user = await User.findOne({ _id: userId });
