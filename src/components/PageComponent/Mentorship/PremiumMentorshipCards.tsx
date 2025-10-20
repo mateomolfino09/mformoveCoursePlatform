@@ -76,18 +76,18 @@ const PremiumMentorshipCards = ({ plans, interval, onPlanSelect, loadingPlanId, 
 
         {/* Comparison Table */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
           viewport={{ once: true }}
           className="mb-16"
           data-table-section
         >
           <div className="bg-gray-900/5 rounded-2xl border border-black/10 overflow-hidden">
             <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
               viewport={{ once: true }}
               className="p-6 md:p-8 border-b border-black/10"
             >
@@ -172,8 +172,8 @@ const PremiumMentorshipCards = ({ plans, interval, onPlanSelect, loadingPlanId, 
         {/* Interval Filters */}
         {setInterval && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
             viewport={{ once: true }}
             className="flex justify-center mb-12"
@@ -219,7 +219,7 @@ const PremiumMentorshipCards = ({ plans, interval, onPlanSelect, loadingPlanId, 
                 key={plan._id + '-' + interval}
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
+                transition={{ duration: 0.3 }}
                 viewport={{ once: true }}
                 className="group bg-gray-900/5 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-black/10 hover:bg-gray-900/10 transition-all duration-300 flex flex-col"
               >
@@ -314,9 +314,9 @@ const PremiumMentorshipCards = ({ plans, interval, onPlanSelect, loadingPlanId, 
 
         {/* Bottom CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
           viewport={{ once: true }}
           className="mt-16"
         >

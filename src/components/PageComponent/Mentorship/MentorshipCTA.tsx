@@ -7,9 +7,9 @@ const MentorshipCTA = () => {
     <section className="pt-6 pb-20 bg-white font-montserrat">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
           viewport={{ once: true }}
         >
           {/* Main CTA */}
@@ -27,13 +27,7 @@ const MentorshipCTA = () => {
             </div>
 
             {/* CTA Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              viewport={{ once: true }}
-              className="flex justify-center mb-8"
-            >
+            <div className="flex justify-center mb-8">
               <button 
                 onClick={() => {
                   const element = document.getElementById('mentorship-plans');
@@ -51,7 +45,7 @@ const MentorshipCTA = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
-            </motion.div>
+            </div>
 
             {/* FOMO note - Dentro del bloque */}
             <div className="text-center pt-6 border-t border-black/10">

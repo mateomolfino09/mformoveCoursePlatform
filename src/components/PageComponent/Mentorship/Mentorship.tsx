@@ -55,8 +55,9 @@ const Mentorship = ({ plans, origin }: MentorshipProps) => {
       <MainSideBar where={'mentorship'}>
         <MentorshipIntro />
         <MentorshipIsForYou />
-        <MentorshipIncludes />
         <MentorshipBio />
+        <MentorshipIncludes />
+
         {/* <MentorshipPhilosophy /> */}
         <MentorshipProcess />
         <MentorshipPlans plans={plans} origin={origin} />

@@ -2,30 +2,27 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const positives = [
-  'Buscas una transformación en el movimiento de tu cuerpo.',
-  'Estás dispuesto/a a comprometerte con el proceso y tu desarrollo personal.',
-  'Valoras el acompañamiento 1 a 1 y el feedback personalizado.',
-  'Te motiva aprender a moverte mejor y entender tu cuerpo.',
+  'Buscas explorar, mejorar y entender el movimiento.',
+  'Estás dispuesto/a a comprometerte con tu proceso.',
+  'Valorás el acompañamiento 1 a 1 y el feedback personalizado.',
+  'Te motiva aprender, intercambiar y dialogar más que seguir una rutina vacía.',
 ];
 
 const negatives = [
-  'Buscas resultados rápidos o mágicos.',
+  'Buscas resultados mágicos.',
   'No estás dispuesto/a a comprometerte al menos un trimestre.',
-  'Preferís pagar poco a un proceso de calidad.',
-  'No te interesa aprender ni profundizar en el proceso.'
+  'Preferís pagar poco a sumergirte en un proceso profundo.',
+  'No te interesa aprender ni profundizar.'
 ];
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i: number) => ({
+  hidden: { opacity: 0 },
+  visible: {
     opacity: 1,
-    y: 0,
     transition: {
-      duration: 0.7,
-      delay: i * 0.15,
-      ease: 'easeOut',
+      duration: 0.3,
     },
-  }),
+  },
 };
 
 const MentorshipIsForYou = () => {
@@ -86,7 +83,7 @@ const MentorshipIsForYou = () => {
         </motion.div>
 
         <p className="text-lg md:text-xl text-gray-600 font-light mb-16 max-w-5xl leading-relaxed">
-          Esta mentoría está pensada para personas <strong className="text-black font-medium">realmente comprometidas con su desarrollo</strong>. No es un servicio para cualquiera, ni para quienes buscan <strong className="text-black font-medium">soluciones rápidas</strong>. Priorizamos la <strong className="text-black font-medium">calidad</strong>, la <strong className="text-black font-medium">dedicación</strong> y el <strong className="text-black font-medium">acompañamiento cercano</strong>. Si valoras tu <strong className="text-black font-medium">tiempo</strong>, <strong className="text-black font-medium">energía</strong> y querés invertirlos en un proceso <strong className="text-black font-medium">profundo y transformador</strong>, seguí leyendo. Si no, te ahorras tiempo y energía sabiendo esto desde el principio.
+          Esta mentoría está pensada para personas <strong className="text-black font-medium"> comprometidas con su desarrollo</strong>. No es un servicio para cualquiera, ni para quienes buscan <strong className="text-black font-medium">soluciones rápidas</strong>. Priorizo la <strong className="text-black font-medium">calidad</strong>, la <strong className="text-black font-medium">dedicación</strong> y el <strong className="text-black font-medium">acompañamiento cercano</strong>. No te quiero hacer perder el <strong className="text-black font-medium">tiempo</strong>, si querés invertirlo en un proceso <strong className="text-black font-medium">profundo</strong>, seguí leyendo. Si no, mejor que lo sepas desde el principio.
         </p>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -95,9 +92,8 @@ const MentorshipIsForYou = () => {
               key={i}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
+              viewport={{ once: true }}
               variants={cardVariants}
-              custom={i}
             >
               <div className="bg-gray-900/5 backdrop-blur-sm rounded-2xl p-8 md:p-10 flex flex-col h-full hover:bg-gray-900/10 transition-all duration-300 border border-black/10">
                 <h3 className="text-2xl md:text-3xl font-medium mb-10 text-black">
