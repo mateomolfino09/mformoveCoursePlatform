@@ -2,6 +2,8 @@ import connectDB from '../../../../config/connectDB';
 import Product from '../../../../models/productModel';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req) {
   try {
     // Conectar a la base de datos

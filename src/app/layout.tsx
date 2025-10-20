@@ -1,3 +1,4 @@
+import React from 'react';
 import '../styles/globals.css';
 import { ProviderAuth } from '../hooks/useAuth';
 import ToasterProvider from '../hooks/toastProvider';
@@ -7,6 +8,7 @@ import GoogleCaptchaWrapper from '../hooks/RecaptchaProvider';
 import { BoldFont, MontserratFont } from "../utils/customFonts"
 
 export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.mateomove.com'),
   title: 'MForMove',
   description: 'Descubre el poder del movimiento consciente. Clases online, eventos presenciales y programas transformacionales para conectar cuerpo, mente y espíritu.',
   keywords: "movimiento, fitness, yoga, meditacion, calistenia, workout, training, bienestar, transformacion personal"

@@ -1,4 +1,4 @@
-import { verify } from 'jsonwebtoken';
+import jwt, { verify } from 'jsonwebtoken';
 import connectDB from '../../../../config/connectDB';
 import Plan from '../../../../models/planModel';
 import { NextResponse } from 'next/server';
@@ -8,7 +8,6 @@ import { generateMd5 } from '../../helper/generateMd5';
 import User from '../../../../models/userModel';
 import { generatePassword } from '../../assets/randomPasswordGenerator';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import mailchimp from "@mailchimp/mailchimp_marketing";
 
 connectDB();

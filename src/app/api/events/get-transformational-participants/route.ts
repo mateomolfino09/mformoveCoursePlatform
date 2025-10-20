@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '../../../../config/connectDB';
 import ProgramaTransformacionalUser from '../../../../models/programaTransformacionalUserModel';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     await connectDB();

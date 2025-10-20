@@ -1,12 +1,11 @@
 'use client';
 
 import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
-import { PlusCircleIcon, TableCellsIcon, CogIcon, UsersIcon } from '@heroicons/react/24/outline';
+import { PlusCircleIcon, TableCellsIcon, CogIcon, UsersIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { Link, useRouter } from 'next13-progressbar';
 import { useAuth } from '../../../hooks/useAuth';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
-import { SparklesIcon } from '@heroicons/react/24/outline';
 
 const Index = () => {
   const router = useRouter();

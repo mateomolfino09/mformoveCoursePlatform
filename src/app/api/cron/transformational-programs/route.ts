@@ -4,6 +4,8 @@ import Product from '../../../../models/productModel';
 import ProgramaTransformacionalUser from '../../../../models/programaTransformacionalUserModel';
 import { EmailService, EmailType } from '../../../../services/email/emailService';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     // Verificar que es una llamada autorizada (puedes agregar un token secreto)

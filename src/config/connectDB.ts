@@ -18,6 +18,9 @@ const connectDB = async (): Promise<void> => {
       throw new Error('MONGODB_URI environment variable is not defined');
     }
     
+    // Configurar strictQuery para evitar warnings
+    mongoose.set('strictQuery', false);
+    
     // Conectar a MongoDB
     await mongoose.connect(process.env.MONGODB_URI);
     
