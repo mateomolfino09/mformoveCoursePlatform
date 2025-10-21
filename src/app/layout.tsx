@@ -6,6 +6,8 @@ import ProgressBarProvider from '../hooks/progressBar';
 import Providers from '../redux/providers';
 import GoogleCaptchaWrapper from '../hooks/RecaptchaProvider';
 import { BoldFont, MontserratFont } from "../utils/customFonts"
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/react"
 
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.mateomove.com'),
@@ -33,6 +35,8 @@ export default function RootLayout({
             </ToasterProvider>
           </Providers>
       </ProviderAuth>
+      <SpeedInsights />
+      <Analytics />
       </body>
     </html>
   )
