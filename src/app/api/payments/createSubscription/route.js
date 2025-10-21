@@ -7,7 +7,6 @@ import dLocalApi from '../dlocalConfig';
 import absoluteUrl from 'next-absolute-url';
 import mailchimp from "@mailchimp/mailchimp_marketing";
 import { generateMd5 } from '../../helper/generateMd5'
-import jwt from 'jsonwebtoken';
 import { getLatestSubscriptionByEmail } from '../stripe/getLatestSubscriptionByMail';
 import { subscribeUserToMailchimp } from '../mailchimp/subscribeUserToMailchimp';
 

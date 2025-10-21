@@ -3,6 +3,8 @@ import connectDB from '../../../../../config/connectDB';
 import Product from '../../../../../models/productModel';
 import ProgramaTransformacionalUser from '../../../../../models/programaTransformacionalUserModel';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     await connectDB();

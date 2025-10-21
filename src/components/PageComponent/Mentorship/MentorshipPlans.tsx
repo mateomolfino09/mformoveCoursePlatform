@@ -86,9 +86,9 @@ const MentorshipPlans = ({ plans, origin }: MentorshipProps) => {
       <div className="max-w-6xl mx-auto px-6">
         {/* Header Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
           viewport={{ once: true }}
           className="mb-16"
         >

@@ -78,21 +78,23 @@ const EventOverview: React.FC<Props> = ({
     });
   };
 
-  // Variantes para animación optimizadas
-  const fadeIn = (delay = 0) => ({
+  // Variantes para animación simplificadas
+  const fadeIn = () => ({
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.3, delay } }
+    visible: { opacity: 1, transition: { duration: 0.3 } }
   });
 
   return (
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header de la sección */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-16 relative">
+          {/* Animal decorativo sutil */}
+          
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 relative z-10">
             Detalles del Evento
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light relative z-10">
             Toda la información que necesitas para tomar la mejor decisión
           </p>
         </div>
@@ -101,27 +103,26 @@ const EventOverview: React.FC<Props> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Modalidad */}
           <motion.div 
-            variants={fadeIn(0.05)}
+            variants={fadeIn()}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            whileHover={{ scale: 1.03 }} 
-            className="bg-white/80 rounded-2xl p-6 border border-gray-200 shadow-sm transition-transform duration-300"
+            viewport={{ once: true }}
+            className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 hover:bg-gray-900/10 transition-colors duration-200"
           >
             <div className="flex items-center space-x-4 mb-4">
-              <div className="w-12 h-12 bg-[#234C8C]/10 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-black/5 rounded-xl flex items-center justify-center">
                 {evento.online ? (
-                  <GlobeAltIcon className="h-6 w-6" style={{ color: '#234C8C' }} />
+                  <GlobeAltIcon className="h-6 w-6 opacity-80 text-black" />
                 ) : (
-                  <MapPinIcon className="h-6 w-6" style={{ color: '#234C8C' }} />
+                  <MapPinIcon className="h-6 opacity-80 w-6 text-black" />
                 )}
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Modalidad</h3>
+                <h3 className="text-lg font-light text-gray-900">Modalidad</h3>
                 <p className="text-sm text-gray-500">Cómo se realizará</p>
               </div>
             </div>
-            <p className="text-gray-800 font-medium">
+            <p className="text-gray-800 font-light">
               {evento.online ? 'Online' : 'Presencial'}
             </p>
             {!evento.online && (
@@ -134,23 +135,26 @@ const EventOverview: React.FC<Props> = ({
           {/* Cupo */}
           {evento.cupo && (
             <motion.div 
-              variants={fadeIn(0.1)}
+              variants={fadeIn()}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              whileHover={{ scale: 1.03 }} 
-              className="bg-white/80 rounded-2xl p-6 border border-gray-200 shadow-sm transition-transform duration-300"
+              viewport={{ once: true }}
+              className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 hover:bg-gray-900/10 transition-colors duration-200"
             >
               <div className="flex items-center space-x-4 mb-4">
-                <div className="w-12 h-12 bg-[#234C8C]/10 rounded-xl flex items-center justify-center">
-                  <UsersIcon className="h-6 w-6" style={{ color: '#234C8C' }} />
+                <div className="w-12 h-12 bg-black/5 rounded-xl flex items-center  opacity-70 justify-center">
+                <img
+                  src="/images/svg/noun-gorilla-651014.svg"
+                  alt=""
+                  className="w-9 text-white h-9 object-contain"
+                />   
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Cupo</h3>
+                  <h3 className="text-lg font-light text-gray-900">Cupo</h3>
                   <p className="text-sm text-gray-500">Plazas disponibles</p>
                 </div>
               </div>
-              <p className="text-gray-800 font-medium">
+              <p className="text-gray-800 font-light">
                 {evento.cupo} personas
               </p>
               <p className="text-gray-500 text-sm mt-1">
@@ -164,27 +168,26 @@ const EventOverview: React.FC<Props> = ({
           {/* Precio */}
           {precioActual && (
             <motion.div 
-              variants={fadeIn(0.15)}
+              variants={fadeIn()}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              whileHover={{ scale: 1.03 }} 
-              className="bg-white/80 rounded-2xl p-6 border border-gray-200 shadow-sm transition-transform duration-300"
+              viewport={{ once: true }}
+              className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 hover:bg-gray-900/10 transition-colors duration-200"
             >
               <div className="flex items-center space-x-4 mb-4">
-                <div className="w-12 h-12 bg-[#234C8C]/10 rounded-xl flex items-center justify-center">
-                  <CurrencyDollarIcon className="h-6 w-6" style={{ color: '#234C8C' }} />
+                <div className="w-12 h-12 bg-black/5 rounded-xl flex items-center justify-center">
+                  <CurrencyDollarIcon className="h-6 w-6 text-black" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Precio</h3>
+                  <h3 className="text-lg font-light text-gray-900">Precio</h3>
                   <p className="text-sm text-gray-500">{precioActual.tipo}</p>
                 </div>
               </div>
               <div className="flex items-baseline space-x-2">
                 {cargandoPrecios ? (
-                  <span className="text-2xl font-bold text-gray-900">Cargando...</span>
+                  <span className="text-2xl font-light text-gray-900">Cargando...</span>
                 ) : (
-                  <span className="text-2xl font-bold text-gray-900">
+                  <span className="text-2xl font-light text-gray-900">
                     {precioFormateado?.textoCompleto}
                   </span>
                 )}
@@ -195,23 +198,21 @@ const EventOverview: React.FC<Props> = ({
                 )}
               </div>
               {precioActual.original && ahorroFormateado && (
-                <p className="text-[#234C8C] font-medium text-sm mt-1">
+                <p className="text-gray-700 font-light text-sm mt-1">
                   Ahorras {ahorroFormateado.textoCompleto}
                 </p>
               )}
               {precioActual.urgencia && (
-                <div className="mt-3 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#234C8C]/10 text-[#234C8C]">
+                <div className="mt-3 inline-flex items-center px-3 py-1 rounded-full text-sm font-light bg-black/5 text-black">
                   <SparklesIcon className="h-4 w-4 mr-1" />
                   {precioActual.urgencia}
                 </div>
               )}
               
               {/* Botón CTA Discreto */}
-              <motion.button
+              <button
                 onClick={onBuyTicket}
-                className="w-full mt-3 bg-white/80 text-[#234C8C] py-2 px-4 rounded-lg font-medium text-sm border border-[#234C8C]/20 hover:bg-[#234C8C]/5 hover:border-[#234C8C]/40 transition-all duration-300 group"
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
+                className="w-full mt-3 bg-black text-white py-2 px-4 rounded-lg font-light text-sm hover:bg-gray-800 transition-colors duration-200 group flex items-center justify-center space-x-1"
               >
                 <span className="flex items-center justify-center space-x-1">
                   <span>Reservar lugar</span>
@@ -219,29 +220,46 @@ const EventOverview: React.FC<Props> = ({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 </span>
-              </motion.button>
+              </button>
             </motion.div>
           )}
 
           {/* Duración estimada */}
           <motion.div 
-            variants={fadeIn(0.2)}
+            variants={fadeIn()}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            whileHover={{ scale: 1.03 }} 
-            className="bg-white/80 rounded-2xl p-6 border border-gray-200 shadow-sm transition-transform duration-300"
+            viewport={{ once: true }}
+            className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 hover:bg-gray-900/10 transition-colors duration-200"
           >
             <div className="flex items-center space-x-4 mb-4">
-              <div className="w-12 h-12 bg-[#234C8C]/10 rounded-xl flex items-center justify-center">
-                <ClockIcon className="h-6 w-6" style={{ color: '#234C8C' }} />
+              <div className="w-12 h-12 bg-black/5 rounded-xl flex items-center justify-center">
+              <svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 100 100"
+  className="w-6 h-6 text-black"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="6"
+>
+  {/* Círculo incompleto — flujo y paso del tiempo */}
+  <path
+    d="M50 10
+       a40 40 0 1 1 -28.28 11.72"
+    stroke="black"
+    strokeLinecap="round"
+    strokeOpacity="1"
+  />
+  {/* Punto central — presencia, duración, continuidad */}
+  <circle cx="50" cy="50" r="4" fill="black" />
+</svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Duración</h3>
+                <h3 className="text-lg font-light text-gray-900">Duración</h3>
                 <p className="text-sm text-gray-500">Tiempo estimado</p>
               </div>
             </div>
-            <p className="text-gray-800 font-medium">
+            <p className="text-gray-800 font-light">
               2-3 horas
             </p>
             <p className="text-gray-500 text-sm mt-1">
@@ -251,23 +269,37 @@ const EventOverview: React.FC<Props> = ({
 
           {/* Estado del evento */}
           <motion.div 
-            variants={fadeIn(0.25)}
+            variants={fadeIn()}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            whileHover={{ scale: 1.03 }} 
-            className={`rounded-2xl p-6 border shadow-sm bg-white/80 border-gray-200 transition-transform duration-300`}
+            viewport={{ once: true }}
+            className={`rounded-2xl p-6 border shadow-sm bg-gray-900/5 border-black/10 hover:bg-gray-900/10 transition-colors duration-200`}
           >
             <div className="flex items-center space-x-4 mb-4">
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-[#234C8C]/10`}>
-                <SparklesIcon className="h-6 w-6" style={{ color: '#234C8C' }} />
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center bg-black/5 p-2`}>
+              <div className="relative w-6 h-6 flex items-center justify-center">
+      {/* Círculo exterior (contención) */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 100 100"
+        className="absolute w-full h-full text-black"
+        fill="none"
+        stroke="black"
+        strokeWidth="4"
+      >
+        <circle cx="50" cy="50" r="30" />
+      </svg>
+
+      {/* Círculo interno (pulso del estado) */}
+      <div className="w-2.5 h-2.5 bg-black rounded-full animate-pulse-smooth" />
+    </div>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Estado</h3>
+                <h3 className="text-lg font-light text-gray-900">Estado</h3>
                 <p className="text-sm text-gray-500">Disponibilidad</p>
               </div>
             </div>
-            <p className={`font-medium text-gray-800`}>
+            <p className={`font-light text-gray-800`}>
               {eventoTerminado ? 'Evento finalizado' : 'Inscripciones abiertas'}
             </p>
             {!eventoTerminado && (
@@ -280,21 +312,20 @@ const EventOverview: React.FC<Props> = ({
           {/* Transferencia Bancaria - Solo para eventos presenciales */}
           {!evento.online && (
             <motion.div 
-              variants={fadeIn(0.3)}
+              variants={fadeIn()}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              whileHover={{ scale: 1.03 }} 
-              className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-4 border border-orange-200 shadow-sm transition-transform duration-300"
+              viewport={{ once: true }}
+              className="bg-gray-900/5 rounded-2xl p-4 border border-black/10 hover:bg-gray-900/10 transition-colors duration-200"
             >
               <div className="flex items-center space-x-3 mb-3">
-                <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
                   <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-gray-900">Transferencia Bancaria</h3>
+                  <h3 className="text-base font-light text-gray-900">Transferencia Bancaria</h3>
                   <p className="text-xs text-gray-600">Pago directo sin comisiones</p>
                 </div>
               </div>
@@ -302,25 +333,25 @@ const EventOverview: React.FC<Props> = ({
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-gray-600">Banco:</span>
-                  <span className="text-sm font-semibold text-gray-900">Itaú Uruguay</span>
+                  <span className="text-sm font-light text-gray-900">Itaú Uruguay</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-gray-600">Cuenta Pesos:</span>
-                  <span className="text-sm font-mono font-semibold text-gray-900">3228196</span>
+                  <span className="text-sm font-mono font-light text-gray-900">3228196</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-gray-600">Cuenta Dólares:</span>
-                  <span className="text-sm font-mono font-semibold text-gray-900">3228188</span>
+                  <span className="text-sm font-mono font-light text-gray-900">3228188</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-gray-600">Titular:</span>
-                  <span className="text-sm font-semibold text-gray-900">Mateo Molfino</span>
+                  <span className="text-sm font-light text-gray-900">Mateo Molfino</span>
                 </div>
               </div>
               
-              <div className="mt-3 pt-3 border-t border-orange-200">
+              <div className="mt-3 pt-3 border-t border-black/10">
                 <p className="text-xs text-gray-600">
-                  <span className="font-semibold">Importante:</span> Envía el comprobante a info@mateomove.com
+                  <span className="font-light">Importante:</span> Envía el comprobante a info@mateomove.com
                 </p>
               </div>
             </motion.div>

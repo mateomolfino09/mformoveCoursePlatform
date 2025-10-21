@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Estructura de tensegridad - basada en principios de biotensegridad -->
+  <defs>
+    <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+      <path d="M 10 0 L 0 0 0 10" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
+    </pattern>
+  </defs>
+  
+  <!-- Elementos de compresión (barras) -->
+  <line x1="20" y1="20" x2="80" y2="80" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+  <line x1="80" y1="20" x2="20" y2="80" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+  <line x1="50" y1="10" x2="50" y2="90" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+  <line x1="10" y1="50" x2="90" y2="50" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+  
+  <!-- Elementos de tensión (cables) - representados como líneas curvas -->
+  <path d="M 20 20 Q 50 30 80 20" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+  <path d="M 80 20 Q 70 50 80 80" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+  <path d="M 80 80 Q 50 70 20 80" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+  <path d="M 20 80 Q 30 50 20 20" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+  
+  <!-- Puntos de conexión -->
+  <circle cx="20" cy="20" r="2" fill="currentColor" opacity="0.8"/>
+  <circle cx="80" cy="20" r="2" fill="currentColor" opacity="0.8"/>
+  <circle cx="80" cy="80" r="2" fill="currentColor" opacity="0.8"/>
+  <circle cx="20" cy="80" r="2" fill="currentColor" opacity="0.8"/>
+  <circle cx="50" cy="50" r="3" fill="currentColor" opacity="0.9"/>
+</svg>

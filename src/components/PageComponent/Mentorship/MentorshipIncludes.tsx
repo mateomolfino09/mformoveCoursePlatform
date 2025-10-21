@@ -42,21 +42,18 @@ const benefits: Benefit[] = [
 ];
 
 const cardVariants = {
-  hidden: { opacity: 0, scale: 0.98 },
-  visible: (i: number) => ({
+  hidden: { opacity: 0 },
+  visible: {
     opacity: 1,
-    scale: 1,
     transition: {
-      duration: 0.6,
-      delay: i * 0.08,
-      ease: [0.4, 0, 0.2, 1],
+      duration: 0.3,
     },
-  }),
+  },
 };
 
 const MentorshipIncludes = () => {
   return (
-    <section className="py-20 pt-6 bg-white font-montserrat">
+    <section className="py-20 pt-12 bg-white font-montserrat">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div 
           className="mb-16"
@@ -69,7 +66,8 @@ const MentorshipIncludes = () => {
             ¿Qué incluye la mentoría?
           </h2>
           <p className="text-lg md:text-xl text-gray-600 font-light max-w-3xl leading-relaxed">
-            Te acompaño desde el principio, primero con evaluaciones, luego encontramos la metodología perfecta para tu cuerpo, y vamos coocreando semana a semana, para que avances con claridad, seguridad y propósito.
+          Tenemos entendimiento inherente de nuestra propia continuidad estructural porque la auto emergemos nosotros mismos... ¡y sabemos que el movimiento es una forma de expresión de esa continuidad!
+
           </p>
         </motion.div>
 
@@ -80,9 +78,8 @@ const MentorshipIncludes = () => {
               className="group bg-gray-900/5 backdrop-blur-sm rounded-2xl p-8 hover:bg-gray-900/10 transition-all duration-300 flex flex-col items-start text-left border border-black/10"
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
+              viewport={{ once: true }}
               variants={cardVariants}
-              custom={idx}
             >
               <div className="mb-6 p-3 rounded-full bg-black/5 group-hover:bg-black/10 transition-all duration-300">
                 <b.icon className="w-8 h-8 text-black" />

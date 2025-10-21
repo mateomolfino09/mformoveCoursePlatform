@@ -8,9 +8,9 @@ const MentorshipBio = () => {
         
         {/* Intro personal breve */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
           viewport={{ once: true }}
           className="mb-8"
         >
@@ -39,14 +39,23 @@ Mi nombre es Mateo, siempre fui apasionado por el movimiento y la ciencia. Estud
           </div>
         </motion.div>
 
+                        {/* Hexagonal Focus SVG */}
+                        <div className="mt-6 mb-6 flex justify-center">
+              <img 
+                src="/images/svg/HexgaonalFocus3.svg" 
+                alt=""
+                className="w-full h-full opacity-60 invert"
+              />
+            </div>
+
         {/* Filosofía y ciencia */}
         <div className="grid md:grid-cols-2 gap-8">
           
           {/* Filosofía */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
             viewport={{ once: true }}
             className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10"
           >
@@ -61,13 +70,15 @@ Mi nombre es Mateo, siempre fui apasionado por el movimiento y la ciencia. Estud
                 Trabajo desde la cocreación. Si algo no funciona, lo ajustamos. Si necesitás más tiempo, te lo doy. Si estás listo para más, avanzamos. La mentoría es tu proceso, no el mío.
               </p>
             </div>
+            
+   
           </motion.div>
 
           {/* Ciencia detrás */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
             viewport={{ once: true }}
             className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10"
           >

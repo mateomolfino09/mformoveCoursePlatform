@@ -3,6 +3,8 @@ import connectDB from '../../../../config/connectDB';
 import Product from '../../../../models/productModel';
 import { stripe } from '../../payments/stripe/stripeConfig';
 
+export const dynamic = 'force-dynamic';
+
 connectDB();
 
 export async function GET(req: Request) {

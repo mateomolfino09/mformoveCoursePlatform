@@ -7,62 +7,60 @@ const MentorshipProcess = () => {
   const steps = [
     {
       title: "Evaluación Inicial",
-      description: "Comenzamos con una evaluación completa de tu estado actual, objetivos y limitaciones. Esta es la base de todo el proceso.",
+      description: "Necesito entender tu estructura corporal actual. Analizo tus patrones de movimiento y limitaciones para diseñar un enfoque personalizado.",
       details: [
-        "Análisis de movilidad y fuerza",
-        "Identificación de objetivos personales",
-        "Evaluación de estilo de vida y disponibilidad",
+        "Análisis de tu estructura corporal",
+        "Evaluación de patrones de movimiento",
+        "Identificación de compensaciones corporales",
         "Historial de lesiones y limitaciones"
       ]
     },
     {
       title: "Diseño Personalizado",
-      description: "Creamos un plan único adaptado específicamente a tu cuerpo, objetivos y circunstancias de vida.",
+      description: "Creo un programa único para vos.",
       details: [
-        "Programa de entrenamiento individualizado",
-        "Secuencia de progresión personalizada",
-        "Adaptaciones para tu estilo de vida",
-        "Objetivos específicos y medibles"
+        "Programa adaptado a vos",
+        "Progresión del movimiento",
+        "Objetivos medibles y específicos"
       ]
     },
     {
-      title: "Seguimiento Continuo",
-      description: "Acompañamiento regular con feedback personalizado y ajustes según tu progreso y necesidades.",
+      title: "Seguimiento Técnico",
+      description: "Reviso tu práctica. Analizo tu técnica, identifico compensaciones y te guío hacia movimientos más eficientes.",
       details: [
-        "Revisión de videos de práctica",
-        "Feedback detallado y constructivo",
-        "Ajustes del programa según progreso",
-        "Soporte para dudas y consultas"
+        "Análisis de tu práctica",
+        "Corrección de compensaciones",
+        "Optimización de patrones de movimiento",
+        "Feedback sobre tu movimiento"
       ]
     },
     {
-      title: "Llamadas 1:1",
-      description: "Sesiones de mentoría directa con Mateo para profundizar en conceptos y resolver dudas específicas.",
+      title: "Mentoría 1:1",
+      description: "En nuestras sesiones profundizamos.",
       details: [
-        "Llamadas programadas según tu plan",
-        "Análisis profundo de tu progreso",
-        "Ajustes estratégicos del programa",
-        "Mentoría en conceptos avanzados"
+        "Sesiones de mentoría programadas",
+        "Educación y formación",
+        "Principios de prácrica de movimiento"
       ]
     },
     {
-      title: "Evaluación de Progreso",
-      description: "Revisión periódica de tus avances, ajustes del programa y establecimiento de nuevos objetivos.",
+      title: "Evaluación Continua",
+      description: "Medimos tu progreso. Evaluamos mejoras en tu estructura, eficiencia de movimiento y capacidad de carga.",
       details: [
-        "Medición de progreso en objetivos",
-        "Identificación de áreas de mejora",
-        "Ajustes del programa según resultados",
-        "Establecimiento de nuevos desafíos"
+        "Medición de progreso estructural",
+        "Evaluación de eficiencia de movimiento",
+        "Análisis de capacidad de carga",
+        "Ajustes según resultados"
       ]
     },
     {
-      title: "Formación Continua",
-      description: "Educación constante sobre anatomía funcional, biomecánica y principios del movimiento consciente.",
+      title: "Formación",
+      description: "Te educo en los principios fundamentales del movimiento humano. Anatomía, fisiología, biotensegridad y cómo aplicarlos en tu práctica diaria.",
       details: [
-        "Material educativo personalizado",
-        "Conceptos de anatomía funcional",
-        "Principios de biomecánica aplicada",
-        "Preparación para enseñanza (nivel avanzado)"
+        "Educación en anatomía funcional",
+        "Principios de biotensegridad",
+        "Fisiología del movimiento",
+        "Preparación para enseñanza avanzada"
       ]
     }
   ];
@@ -71,16 +69,16 @@ const MentorshipProcess = () => {
     <section className="py-10 bg-black font-montserrat">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
           viewport={{ once: true }}
-          className="mb-16 relative"
+          className="mb-0 relative"
         >
           {/* DNA Helix en absolute - grande y sutil */}
           <div className="absolute -top-10 -right-4 w-40 h-40 md:w-96 md:h-96 opacity-50 pointer-events-none">
             <img 
-              src="/images/svg/dnahelix.svg" 
+              src="/images/svg/dnahelix3.svg" 
               alt="DNA Helix"
               className="w-full h-full object-contain filter invert"
             />
@@ -91,7 +89,6 @@ const MentorshipProcess = () => {
           </h2>
           <p className="text-lg md:text-xl text-white/70 font-light max-w-3xl leading-relaxed relative z-10">
             Todo camino empieza en un punto. Tenemos que trazar estas lineas entre nodos para que el camino sea coherente. <br/> <br/>
-            Te presento el mapa que va a acompañarte en este proceso.
           </p>
         </motion.div>
 
@@ -101,20 +98,17 @@ const MentorshipProcess = () => {
               key={index}
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
+              transition={{ duration: 0.3 }}
               viewport={{ once: true }}
               className="group bg-white/5 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10 hover:bg-white/10 transition-all duration-300"
             >
-              {/* Step Number and Icosahedron */}
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-12 h-12 bg-white/10 border-2 border-white/30 rounded-full flex items-center justify-center text-white font-semibold text-lg">
-                  {index + 1}
-                </div>
-                <div className="w-16 h-16 relative opacity-60 group-hover:opacity-80 transition-opacity duration-300">
+              {/* Icosahedron with Number */}
+              <div className="mb-6">
+                <div className="w-16 h-16 relative flex items-center justify-center flex-shrink-0 overflow-hidden">
                   <img 
-                    src="/images/svg/icosahedron2.svg" 
-                    alt={step.title}
-                    className="w-full h-full object-contain filter invert"
+                    src={`/images/svg/icosahedro${index + 1}.svg`}
+                    alt=""
+                    className="w-full h-full object-contain filter invert transform scale-150"
                   />
                 </div>
               </div>
@@ -144,9 +138,9 @@ const MentorshipProcess = () => {
 
         {/* Bottom CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
           viewport={{ once: true }}
           className="mt-16 text-center"
         >
@@ -165,7 +159,7 @@ const MentorshipProcess = () => {
                 ¿Te interesa este proceso?
               </h3>
               <p className="mb-8 max-w-2xl mx-auto text-white/80 font-light leading-relaxed text-sm md:text-base">
-                Si lo que leíste hasta acá resuena con vos, revisá los planes disponibles.
+                Si esto que te conté te hace sentido, dale una mirada a los planes que tengo disponibles y hablamos.
               </p>
               <button 
                 onClick={() => {

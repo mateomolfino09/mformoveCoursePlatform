@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '../../../../../../config/connectDB';
-const MentorshipRequest = require('../../../../../../models/mentorshipRequestModel');
 import mailchimp from '@mailchimp/mailchimp_transactional';
+const MentorshipRequest = require('../../../../../../models/mentorshipRequestModel');
 
 const CALENDLY_LINK = 'https://calendly.com/mformovers/consulta-mentoria';
 

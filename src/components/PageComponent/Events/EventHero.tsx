@@ -29,10 +29,10 @@ const EventHero: React.FC<Props> = ({
 }) => {
   
   
-  // Variantes para animación scroll optimizadas
-  const fadeUp = (delay = 0) => ({
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, delay } }
+  // Variantes para animación simplificadas
+  const fadeIn = (delay = 0) => ({
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.3, delay } }
   });
 
   // Countdown para cambio de precio
@@ -75,11 +75,6 @@ const EventHero: React.FC<Props> = ({
     return () => clearInterval(timer);
   }, [precioActual, evento]);
 
-  const fadeIn = (delay = 0) => ({
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.3, delay } }
-  });
-
   // Componente solo para mobile: info clave vertical
   const EventHeroInfoMobile = ({ evento, precioActual }: { evento: ProductDB, precioActual: any }) => (
     <div className="grid grid-cols-2 gap-4 w-full md:hidden mt-8 pt-16 md:pt-0">
@@ -88,13 +83,13 @@ const EventHero: React.FC<Props> = ({
         variants={fadeIn(0.05)}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true }}
       >
-        <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+        <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
           <CalendarDaysIcon className="h-6 w-6 text-white" />
         </div>
         <div>
-          <div className="text-white font-bold text-base">
+          <div className="text-white font-light text-base">
             {evento.fecha ? new Date(evento.fecha).toLocaleDateString('es-ES', { month: 'short', day: 'numeric' }) : 'Por confirmar'}
           </div>
           <div className="text-xs text-gray-300">Fecha</div>
@@ -102,12 +97,12 @@ const EventHero: React.FC<Props> = ({
       </motion.div>
       <motion.div
         className="flex items-center bg-white/10 rounded-2xl p-4 gap-3"
-        variants={fadeIn(0.1)}
+        variants={fadeIn()}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true }}
       >
-        <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+        <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
           {evento.online ? (
             <GlobeAltIcon className="h-6 w-6 text-white" />
           ) : (
@@ -115,7 +110,7 @@ const EventHero: React.FC<Props> = ({
           )}
         </div>
         <div>
-          <div className="text-white font-bold text-base">
+          <div className="text-white font-light text-base">
             {evento.online ? 'Online' : 'Presencial'}
           </div>
           <div className="text-xs text-gray-300">Modalidad</div>
@@ -124,16 +119,19 @@ const EventHero: React.FC<Props> = ({
       {evento.cupo && (
         <motion.div
           className="flex items-center bg-white/10 rounded-2xl p-4 gap-3"
-          variants={fadeIn(0.15)}
+          variants={fadeIn()}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: true }}
         >
-          <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-            <UsersIcon className="h-6 w-6 text-white" />
-          </div>
+          <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+          <img
+                  src="/images/svg/whiteGorilla2.svg"
+                  alt=""
+                  className="w-full text-white h-full object-contain"
+                />          </div>
           <div>
-            <div className="text-white font-bold text-base">{evento.cupo} personas</div>
+            <div className="text-white font-light text-base">{evento.cupo} personas</div>
             <div className="text-xs text-gray-300">Cupo</div>
           </div>
         </motion.div>
@@ -141,16 +139,16 @@ const EventHero: React.FC<Props> = ({
       {precioActual && (
         <motion.div
           className="flex items-center bg-white/10 rounded-2xl p-4 gap-3"
-          variants={fadeIn(0.2)}
+          variants={fadeIn()}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: true }}
         >
-          <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
             <CurrencyDollarIcon className="h-6 w-6 text-white" />
           </div>
           <div>
-            <div className="text-white font-bold text-base">
+            <div className="text-white font-light text-base">
               {formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}
             </div>
             <div className="text-xs text-gray-300">Precio</div>
@@ -210,13 +208,13 @@ const EventHero: React.FC<Props> = ({
             {/* Badges superiores */}
             <motion.div 
               className="flex flex-wrap gap-2 md:gap-3"
-              variants={fadeUp(0.05)}
+              variants={fadeIn()}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
+              viewport={{ once: true }}
             >
               {/* Badge de modalidad */}
-              <div className="inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-semibold bg-white/20 backdrop-blur-sm text-white border border-white/30 hover:bg-white/30 transition-all duration-300">
+              <div className="inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-light bg-white/10 backdrop-blur-sm text-white border border-white/20">
                 {evento.online ? (
                   <>
                     <GlobeAltIcon className="h-4 w-4 mr-2" />
@@ -232,18 +230,18 @@ const EventHero: React.FC<Props> = ({
               
               {/* Badge de urgencia */}
               {precioActual?.urgencia === 'Precio aumentará pronto' && countdown && (
-                <div className="inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-semibold bg-white/20 backdrop-blur-sm text-white border border-white/30 hover:bg-white/30 transition-all duration-300">
-                    <p>Precio sube en <span className="font-bold"> {` ${countdown}`}</span></p>    
+                <div className="inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-light bg-white/10 backdrop-blur-sm text-white border border-white/20">
+                    <p>Precio sube en <span className="font-light"> {` ${countdown}`}</span></p>    
                 </div>
                   )}
               
               {/* Badge de estado */}
               {eventoTerminado ? (
-                <div className="inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-semibold bg-white/20 backdrop-blur-sm text-white border border-white/30 hover:bg-white/30 transition-all duration-300">
+                <div className="inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-light bg-white/10 backdrop-blur-sm text-white border border-white/20">
                   Finalizado
                 </div>
               ) : diasRestantes && diasRestantes <= 7 && diasRestantes > 0 && (
-                <div className="inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-semibold bg-white/20 backdrop-blur-sm text-white border border-white/30 hover:bg-white/30 transition-all duration-300">
+                <div className="inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-light bg-white/10 backdrop-blur-sm text-white border border-white/20">
                   <SparklesIcon className="h-4 w-4 mr-2" />
                   {diasRestantes === 1 ? 'Mañana' : `${diasRestantes} días`}
                 </div>
@@ -252,16 +250,25 @@ const EventHero: React.FC<Props> = ({
 
             {/* Título principal */}
             <motion.div 
-              className="space-y-3 md:space-y-4"
-              variants={fadeUp(0.1)}
+              className="space-y-3 md:space-y-4 relative"
+              variants={fadeIn()}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
+              viewport={{ once: true }}
             >
-              <h1 className="text-5xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+              {/* Animal decorativo sutil */}
+              <div className="absolute -top-8 -right-8 w-24 h-24 md:w-32 md:h-32 opacity-10 pointer-events-none">
+                <img 
+                  src="/images/svg/owl.svg" 
+                  alt=""
+                  className="w-full h-full object-contain filter invert"
+                />
+              </div>
+              
+              <h1 className="text-5xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight relative z-10">
                 {evento.nombre}
               </h1>
-              <p className="text-base sm:text-lg md:text-2xl text-gray-200 font-light max-w-2xl leading-relaxed">
+              <p className="text-base sm:text-lg md:text-2xl text-gray-200 font-light max-w-2xl leading-relaxed relative z-10">
                 {evento.descripcion}
               </p>
             </motion.div>
@@ -274,67 +281,56 @@ const EventHero: React.FC<Props> = ({
               {/* Botón de reserva para mobile */}
               {precioActual && !eventoTerminado && (
                 <motion.div
-                  variants={fadeUp(0.15)}
+                  variants={fadeIn()}
                   initial="hidden"
                   whileInView="visible"
-                  viewport={{ once: true, amount: 0.2 }}
+                  viewport={{ once: true }}
                   className="mt-8"
                 >
-                  <motion.button
+                  <button
                     onClick={onBuyTicket}
                     disabled={loading}
-                    className="w-full bg-gradient-to-br from-[#234C8C] via-[#1a3d73] to-[#234C8C] text-white py-3 px-6 rounded-2xl font-bold text-base shadow-xl shadow-[#234C8C]/40 border border-white/20 backdrop-blur-sm hover:shadow-2xl hover:shadow-[#234C8C]/60 transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
-                    whileHover={{ scale: 1.05, y: -3 }}
-                    whileTap={{ scale: 0.95 }}
+                    className="w-full bg-black text-white py-3 px-6 rounded-xl font-light text-base hover:bg-gray-800 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 group"
                   >
-                    {/* Efecto de brillo premium */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                    
-                    {/* Efecto de borde brillante */}
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/20 via-transparent to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    {/* Contenido del botón */}
-                    <span className="relative z-10 flex items-center justify-center space-x-3">
-                      {loading ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          <span>Procesando...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Reservar mi lugar</span>
-                          <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                          </svg>
-                        </>
-                      )}
-                    </span>
-                  </motion.button>
+                    {loading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Procesando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Reservar mi lugar</span>
+                        <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
                 </motion.div>
               )}
             </div>
             {/* Desktop: grid info clave */}
             <motion.div 
               className="hidden md:grid grid-cols-4 gap-6 mt-8"
-              variants={fadeUp(0.1)}
+              variants={fadeIn()}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
+              viewport={{ once: true }}
             >
-              <div className="text-center flex flex-col items-center transform hover:scale-105 transition-transform duration-300">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-3 hover:bg-white/30 transition-colors duration-300">
+              <div className="text-center flex flex-col items-center">
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-3">
                   <CalendarDaysIcon className="h-6 w-6 text-white" />
                 </div>
                 <p className="text-sm text-gray-300 mb-1">Fecha</p>
-                <p className="text-white font-semibold text-sm">
+                <p className="text-white font-light text-sm">
                   {evento.fecha ? new Date(evento.fecha).toLocaleDateString('es-ES', {
                     month: 'short',
                     day: 'numeric'
                   }) : 'Por confirmar'}
                 </p>
               </div>
-              <div className="text-center flex flex-col items-center transform hover:scale-105 transition-transform duration-300">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-3 hover:bg-white/30 transition-colors duration-300">
+              <div className="text-center flex flex-col items-center">
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-3">
                   {evento.online ? (
                     <GlobeAltIcon className="h-6 w-6 text-white" />
                   ) : (
@@ -342,26 +338,26 @@ const EventHero: React.FC<Props> = ({
                   )}
                 </div>
                 <p className="text-sm text-gray-300 mb-1">Modalidad</p>
-                <p className="text-white font-semibold text-sm">
+                <p className="text-white font-light text-sm">
                   {evento.online ? 'Online' : 'Presencial'}
                 </p>
               </div>
               {evento.cupo && (
-                <div className="text-center flex flex-col items-center transform hover:scale-105 transition-transform duration-300">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-3 hover:bg-white/30 transition-colors duration-300">
+                <div className="text-center flex flex-col items-center">
+                  <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-3">
                     <UsersIcon className="h-6 w-6 text-white" />
                   </div>
                   <p className="text-sm text-gray-300 mb-1">Cupo</p>
-                  <p className="text-white font-semibold text-sm">{evento.cupo} personas</p>
+                  <p className="text-white font-light text-sm">{evento.cupo} personas</p>
                 </div>
               )}
               {precioActual && (
-                <div className="text-center flex flex-col items-center transform hover:scale-105 transition-transform duration-300">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-3 hover:bg-white/30 transition-colors duration-300">
+                <div className="text-center flex flex-col items-center">
+                  <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-3">
                     <CurrencyDollarIcon className="h-6 w-6 text-white" />
                   </div>
                   <p className="text-sm text-gray-300 mb-1">Precio</p>
-                  <p className="text-white font-semibold text-sm">${precioActual.precio}</p>
+                  <p className="text-white font-light text-sm">${precioActual.precio}</p>
                 </div>
               )}
             </motion.div>
@@ -370,18 +366,18 @@ const EventHero: React.FC<Props> = ({
           {/* Columna derecha - CTA */}
           <motion.div 
             className="flex justify-center lg:justify-end"
-            variants={fadeUp(0.2)}
+            variants={fadeIn()}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true }}
           >
-            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-4 md:p-8 border hidden md:block border-white/20 w-full max-w-md hover:bg-white/15 transition-all duration-300 hover:scale-105">
+            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-4 md:p-8 border hidden md:block border-white/20 w-full max-w-md">
               {precioActual && !eventoTerminado ? (
                 <div className="text-center space-y-6">
                   <div>
                     <p className="text-white/80 text-sm mb-2">{precioActual.tipo}</p>
                     <div className="flex items-center justify-center space-x-3">
-                      <span className="text-3xl md:text-5xl font-bold text-white">
+                      <span className="text-3xl md:text-5xl font-light text-white">
                         {formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}
                       </span>
                       {precioActual.original && (
@@ -392,29 +388,36 @@ const EventHero: React.FC<Props> = ({
                     </div>
                   </div>
 
-                  <motion.button
+                  <button
                     onClick={onBuyTicket}
                     disabled={loading}
-                    className="w-full bg-white text-black py-3 md:py-4 px-6 md:px-8 rounded-2xl font-bold text-base md:text-lg hover:bg-gray-100 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    className="w-full bg-white text-black py-3 md:py-4 px-6 md:px-8 rounded-2xl font-light text-base md:text-lg hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 group"
                   >
-                    {loading ? 'Procesando...' : 'Reservar mi lugar →'}
-                  </motion.button>
+                    {loading ? (
+                      <span>Procesando...</span>
+                    ) : (
+                      <>
+                        <span>Reservar mi lugar</span>
+                        <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
                   
                   {precioActual.urgencia === 'Precio aumentará pronto' && countdown && (
-                    <p className="text-center text-sm text-[white] font-semibold">
-                      Precio sube en <span className="font-bold">{countdown}</span>
+                    <p className="text-center text-sm text-[white] font-light">
+                      Precio sube en <span className="font-light">{countdown}</span>
                     </p>
                   )}
                   {precioActual.urgencia && precioActual.urgencia !== 'Precio aumentará pronto' && (
-                    <p className="text-center text-sm text-white font-semibold">
+                    <p className="text-center text-sm text-white font-light">
                         {precioActual.urgencia}
                     </p>
                   )}
 
                   <div className="pt-6 border-t border-white/20">
-                    <h3 className="font-semibold text-white mb-4">Incluye:</h3>
+                    <h3 className="font-light text-white mb-4">Incluye:</h3>
                     <ul className="space-y-3 text-sm text-white/80">
                       {evento.beneficios && evento.beneficios.length > 0 ? (
                         evento.beneficios.map((beneficio, index) => (
@@ -442,12 +445,12 @@ const EventHero: React.FC<Props> = ({
                 </div>
               ) : eventoTerminado ? (
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-white mb-4">Evento finalizado</p>
+                  <p className="text-2xl font-light text-white mb-4">Evento finalizado</p>
                   <p className="text-white/80">Este evento ya ha terminado</p>
                 </div>
               ) : (
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-white mb-4">Próximamente</p>
+                  <p className="text-2xl font-light text-white mb-4">Próximamente</p>
                   <p className="text-white/80">Los tickets estarán disponibles pronto</p>
                 </div>
               )}

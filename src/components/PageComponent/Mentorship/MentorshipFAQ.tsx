@@ -61,9 +61,9 @@ const MentorshipFAQ = () => {
     <section className="pt-6 pb-10 bg-white font-montserrat">
       <div className="max-w-4xl mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
           viewport={{ once: true }}
           className="mb-12"
         >
@@ -81,7 +81,7 @@ const MentorshipFAQ = () => {
               key={index}
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
+              transition={{ duration: 0.3 }}
               viewport={{ once: true }}
               className="bg-gray-900/5 rounded-xl border border-black/10 overflow-hidden"
             >

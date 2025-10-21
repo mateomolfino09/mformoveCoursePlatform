@@ -29,17 +29,17 @@ const MentorshipTestimonials = () => {
       <div className="max-w-6xl mx-auto px-6">
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
           viewport={{ once: true }}
           className="mb-12"
         >
           <h2 className="text-3xl md:text-5xl font-bold mb-6 text-black">
-            Lo que dicen quienes entrenan conmigo
+            Testimonios de alumnos
           </h2>
           <p className="text-lg md:text-xl text-gray-600 font-light max-w-3xl leading-relaxed">
-            Testimonios reales de personas que decidieron invertir en su desarrollo y transformación
+          Lo que dicen quienes entrenan conmigo
           </p>
         </motion.div>
 
@@ -50,7 +50,7 @@ const MentorshipTestimonials = () => {
               key={index}
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
+              transition={{ duration: 0.3 }}
               viewport={{ once: true }}
               className="bg-gray-900/5 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-black/10 hover:bg-gray-900/10 transition-all duration-300 flex flex-col"
             >

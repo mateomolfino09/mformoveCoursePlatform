@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { CheckCircleIcon, CalendarDaysIcon, MapPinIcon, GlobeAltIcon, UsersIcon, CurrencyDollarIcon } from '@heroicons/react/24/solid';
-import { SparklesIcon, FireIcon, TrophyIcon } from '@heroicons/react/24/solid';
+import { CheckCircleIcon, CalendarDaysIcon, MapPinIcon, GlobeAltIcon, UsersIcon, CurrencyDollarIcon, SparklesIcon, FireIcon, TrophyIcon } from '@heroicons/react/24/solid';
 import { CldImage } from 'next-cloudinary';
 import MainSideBar from '../../../../components/MainSidebar/MainSideBar';
 import Footer from '../../../../components/Footer';

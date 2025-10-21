@@ -11,10 +11,10 @@ interface Props {
 }
 
 const EventDescription: React.FC<Props> = ({ evento }) => {
-  // Variante fade in para animaciones on scroll
-  const fadeIn = (delay = 0) => ({
+  // Variante fade in simplificada
+  const fadeIn = () => ({
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.7, delay } }
+    visible: { opacity: 1, transition: { duration: 0.3 } }
   });
 
   return (
@@ -26,10 +26,10 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
           <div className="lg:col-span-2">
             <motion.div 
               className="md:bg-white bg-gray-50 rounded-3xl p-8 shadow-sm"
-              variants={fadeIn(0.1)}
+              variants={fadeIn()}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
+              viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
                 Sobre este evento
@@ -38,10 +38,10 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
               {/* Descripción principal */}
               <motion.div 
                 className="prose prose-lg max-w-none mb-8"
-                variants={fadeIn(0.2)}
+                variants={fadeIn()}
                 initial="hidden"
                 whileInView="visible"
-                viewport={{ once: true, amount: 0.2 }}
+                viewport={{ once: true }}
               >
                 <p className="text-gray-700 leading-relaxed text-lg">
                   {evento.descripcion}
@@ -52,10 +52,10 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
               {(evento.imagenes && evento.imagenes.length > 0 ? evento.imagenes[0] : evento.portada) && (
                 <motion.div 
                   className="mb-8"
-                  variants={fadeIn(0.3)}
+                  variants={fadeIn()}
                   initial="hidden"
                   whileInView="visible"
-                  viewport={{ once: true, amount: 0.2 }}
+                  viewport={{ once: true }}
                 >
                   <div className="relative rounded-2xl overflow-hidden">
                     <CldImage
@@ -74,10 +74,10 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
               <div className="space-y-8">
                 {/* Qué aprenderás */}
                 <motion.div 
-                  variants={fadeIn(0.4)}
+                  variants={fadeIn()}
                   initial="hidden"
                   whileInView="visible"
-                  viewport={{ once: true, amount: 0.2 }}
+                  viewport={{ once: true }}
                 >
                   <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-8 flex items-center">
                     ¿Qué vas a aprender?
@@ -88,39 +88,40 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
                         {evento.aprendizajes.map((apr, idx) => (
                           <motion.div 
                             key={idx} 
-                            className="group flex items-center space-x-4 p-4 bg-gradient-to-r from-white to-gray-50/50 border border-gray-100 rounded-2xl hover:border-[#234C8C]/20 hover:shadow-lg hover:shadow-[#234C8C]/5 transition-all duration-300 transform hover:-translate-y-1"
+                            className="group flex items-center space-x-4 p-4 bg-gray-900/5 border border-black/10 rounded-2xl hover:bg-gray-900/10 transition-colors duration-200"
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
-                            transition={{ duration: 0.7, delay: idx * 0.1 }}
-                            viewport={{ once: true, amount: 0.2 }}
+                            transition={{ duration: 0.3 }}
+                            viewport={{ once: true }}
                           >
-                            <div className="w-10 h-10 bg-gradient-to-br from-[#234C8C] to-[black] rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-sm">
-                              <span className="text-white font-bold text-sm">{idx + 1}</span>
+                            <div className="w-16 h-16 relative flex items-center justify-center flex-shrink-0 overflow-hidden">
+                              <img 
+                                src={`/images/svg/icosahedro${idx + 1}.svg`}
+                                alt=""
+                                className="w-24 h-24 object-contain scale-150"
+                              />
                             </div>
                             <div className="flex-1">
-                              <span className="text-gray-800 font-medium text-lg leading-relaxed group-hover:text-[#234C8C] transition-colors duration-300">
+                              <span className="text-gray-800 font-light text-lg leading-relaxed">
                                 {apr}
                               </span>
-                            </div>
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                              <CheckCircleIcon className="h-5 w-5 text-[#234C8C]" />
                             </div>
                           </motion.div>
                         ))}
                       </div>
                     ) : (
                       <motion.div 
-                        className="group flex items-center space-x-4 p-4 bg-gradient-to-r from-white to-gray-50/50 border border-gray-100 rounded-2xl hover:border-[#234C8C]/20 hover:shadow-lg hover:shadow-[#234C8C]/5 transition-all duration-300"
+                        className="group flex items-center space-x-4 p-4 bg-gray-900/5 border border-black/10 rounded-2xl"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
-                        transition={{ duration: 0.7 }}
-                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ duration: 0.3 }}
+                        viewport={{ once: true }}
                       >
-                        <div className="w-10 h-10 bg-gradient-to-br from-[#234C8C] to-[#5FA8E9] rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
-                          <span className="text-white font-bold text-sm">1</span>
+                        <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-light text-sm">1</span>
                         </div>
                         <div className="flex-1">
-                          <span className="text-gray-700 font-medium text-lg">Próximamente...</span>
+                          <span className="text-gray-700 font-light text-lg">Próximamente...</span>
                         </div>
                       </motion.div>
                     )}
@@ -129,12 +130,14 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
 
                 {/* Para quién es este evento */}
                 <motion.div 
-                  variants={fadeIn(0.5)}
+                  variants={fadeIn()}
                   initial="hidden"
                   whileInView="visible"
-                  viewport={{ once: true, amount: 0.2 }}
+                  viewport={{ once: true }}
+                  className="relative"
                 >
-                  <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-8 flex items-center">
+
+                  <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-8 flex items-center relative z-10">
                     ¿Para quién es este evento?
                   </h3>
                   <div className="max-w-4xl">
@@ -143,54 +146,44 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
                         {evento.paraQuien.map((pq, idx) => (
                           <motion.div 
                             key={idx} 
-                            className="group relative overflow-hidden bg-gradient-to-br from-white via-gray-50/30 to-white border border-gray-200 rounded-2xl p-6 hover:border-[#234C8C]/30 hover:shadow-xl hover:shadow-[#234C8C]/10 transition-all duration-500 transform hover:-translate-y-2"
+                            className="bg-gray-900/5 border border-black/10 rounded-2xl p-6 hover:bg-gray-900/10 transition-colors duration-200"
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
-                            transition={{ duration: 0.7, delay: idx * 0.1 }}
-                            viewport={{ once: true, amount: 0.2 }}
+                            transition={{ duration: 0.3 }}
+                            viewport={{ once: true }}
                           >
-                            {/* Fondo decorativo */}
-                            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#234C8C]/5 to-transparent rounded-full -translate-y-10 translate-x-10 group-hover:scale-150 transition-transform duration-500"></div>
-                            
-                            <div className="relative z-10">
-                              <div className="flex items-start space-x-4 mb-4">
-                                <div className="w-12 h-12 bg-gradient-to-br from-[#234C8C] to-[black] rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
-                                  <UserIcon className="h-6 w-6 text-white" />
-                                </div>
-                                <div className="flex-1">
-                                  <span className="text-gray-800 font-semibold text-lg leading-relaxed group-hover:text-[#234C8C] transition-colors duration-300">
-                                    {pq}
-                                  </span>
-                                </div>
+                            <div className="flex items-start space-x-4">
+                              <div className="w-12 h-12  rounded-xl flex items-center justify-center flex-shrink-0">
+                                <img 
+                                  src="/images/svg/noun-gorilla-651014.svg"
+                                  alt=""
+                                  className="h-12 opacity-60 w-12 object-contain"
+                                />
                               </div>
-                              
-                              {/* Línea decorativa */}
-                              <div className="w-full h-0.5 bg-gradient-to-r from-[#234C8C]/20 to-transparent group-hover:from-[#234C8C]/40 transition-all duration-300"></div>
+                              <div className="flex-1">
+                                <span className="text-gray-800 font-light text-lg leading-relaxed">
+                                  {pq}
+                                </span>
+                              </div>
                             </div>
                           </motion.div>
                         ))}
                       </div>
                     ) : (
                       <motion.div 
-                        className="group relative overflow-hidden bg-gradient-to-br from-white via-gray-50/30 to-white border border-gray-200 rounded-2xl p-6 hover:border-[#234C8C]/30 hover:shadow-xl hover:shadow-[#234C8C]/10 transition-all duration-500"
+                        className="bg-gray-900/5 border border-black/10 rounded-2xl p-6"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
-                        transition={{ duration: 0.7 }}
-                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ duration: 0.3 }}
+                        viewport={{ once: true }}
                       >
-                        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#234C8C]/5 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
-                        
-                        <div className="relative z-10">
-                          <div className="flex items-start space-x-4 mb-4">
-                            <div className="w-12 h-12 bg-gradient-to-br from-[#234C8C] to-[#5FA8E9] rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                              <UserIcon className="h-6 w-6 text-white" />
-                            </div>
-                            <div className="flex-1">
-                              <span className="text-gray-700 font-semibold text-lg">Próximamente...</span>
-                            </div>
+                        <div className="flex items-start space-x-4">
+                          <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center flex-shrink-0">
+                            <UserIcon className="h-6 w-6 text-white" />
                           </div>
-                          
-                          <div className="w-full h-0.5 bg-gradient-to-r from-[#234C8C]/20 to-transparent"></div>
+                          <div className="flex-1">
+                            <span className="text-gray-700 font-light text-lg">Próximamente...</span>
+                          </div>
                         </div>
                       </motion.div>
                     )}
@@ -200,10 +193,10 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
 
                 {/* Lo que incluye */}
                 <motion.div 
-                  variants={fadeIn(0.6)}
+                  variants={fadeIn()}
                   initial="hidden"
                   whileInView="visible"
-                  viewport={{ once: true, amount: 0.2 }}
+                  viewport={{ once: true }}
                 >
                   <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
                     ¿Qué incluye tu inscripción?
@@ -211,15 +204,15 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {evento.beneficios && evento.beneficios.length > 0 ? (
                       evento.beneficios.map((beneficio, idx) => (
-                        <div key={idx} className="flex items-center space-x-3 p-4 bg-white/80 border border-gray-200 rounded-xl">
-                          <CheckCircleIcon className="h-5 w-5 text-green-600 flex-shrink-0" />
-                          <span className="text-gray-700 font-medium">{beneficio}</span>
+                        <div key={idx} className="flex items-center space-x-3 p-4 bg-gray-900/5 border border-black/10 rounded-xl">
+                          <CheckCircleIcon className="h-5 w-5 text-black/60 flex-shrink-0" />
+                          <span className="text-gray-700 font-light">{beneficio}</span>
                         </div>
                       ))
                     ) : (
-                      <div className="flex items-center space-x-3 p-4 bg-white/80 border border-gray-200 rounded-xl">
-                        <CheckCircleIcon className="h-5 w-5 text-green-600 flex-shrink-0" />
-                        <span className="text-gray-700 font-medium">Acceso completo al evento</span>
+                      <div className="flex items-center space-x-3 p-4 bg-gray-900/5 border border-black/10 rounded-xl">
+                        <CheckCircleIcon className="h-5 w-5 text-black/60 flex-shrink-0" />
+                        <span className="text-gray-700 font-light">Acceso completo al evento</span>
                       </div>
                     )}
                   </div>
@@ -227,10 +220,10 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
 
                 {/* Información adicional */}
                 <motion.div 
-                  variants={fadeIn(0.7)}
+                  variants={fadeIn()}
                   initial="hidden"
                   whileInView="visible"
-                  viewport={{ once: true, amount: 0.2 }}
+                  viewport={{ once: true }}
                 >
                   <h3 className="text-2xl font-bold text-gray-900 mb-4">
                     Información adicional
@@ -252,22 +245,22 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
             {/* Card de instructor */}
             <motion.div 
               className="bg-white rounded-2xl p-6 shadow-sm flex flex-col items-center"
-              variants={fadeIn(0.2)}
+              variants={fadeIn()}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
+              viewport={{ once: true }}
             >
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Instructor</h3>
+              <h3 className="text-xl font-light text-gray-900 mb-4">Instructor</h3>
               <div className="text-center">
-                <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden border-4 border-[#234C8C]/30 shadow-lg">
+                <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden border-2 border-black/10">
                   <img
                     src="https://res.cloudinary.com/dbeem2avp/image/upload/v1751917144/my_uploads/plaza/IMG_0333_mheawa.jpg"
                     alt="Mateo Molfino"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover grayscale-[30%]"
                     style={{ objectPosition: 'center 10%' }}
                   />
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Mateo Molfino</h4>
+                <h4 className="font-light text-gray-900 mb-2">Mateo Molfino</h4>
                 <p className="text-gray-600 text-sm mb-4">
                   Especialista en movimiento consciente, biomecánica y entrenamiento funcional
                 </p>
@@ -282,13 +275,13 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
 
             {/* Card premium personalizada */}
             <motion.div 
-              className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200 flex flex-col items-center"
-              variants={fadeIn(0.3)}
+              className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 flex flex-col items-center"
+              variants={fadeIn()}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
+              viewport={{ once: true }}
             >
-              <h3 className="text-xl font-bold text-gray-900 mb-4 flex justify-center items-center text-center">
+              <h3 className="text-xl font-light text-gray-900 mb-4 flex justify-center items-center text-center">
                 Material de estudio
               </h3>
               <p className="text-gray-700 text-sm text-center">

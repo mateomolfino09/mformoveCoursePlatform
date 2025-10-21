@@ -10,15 +10,15 @@ export async function PUT(req) {
   const {
     links, userId, claseId
     } = await req.json(); 
-    const MAX_LINKS = 5
+    const MAX_LINKS = 5;
   try { 
       if (req.method === 'PUT') {
           const user = await User.findOne({ _id: userId });
           const clase = await IndividualClass.findOne({ _id: claseId });
           
-          if(user.rol != 'Admin') return res.status(422).json({ error: 'Usted no puede agregar links' });
+          if(user.rol != 'Admin') return NextResponse.json({ error: 'Usted no puede agregar links' }, { status: 422 });
           if(clase?.links?.length >= MAX_LINKS || clase?.links?.length + links.length >= MAX_LINKS) 
-            return res.status(422).json({ error: `No puedes agregar más de ${MAX_LINKS} links`});
+            return NextResponse.json({ error: `No puedes agregar más de ${MAX_LINKS} links`}, { status: 422 });
 
          
           const lastId = clase?.links?.length ? clase?.links?.length : 0;
