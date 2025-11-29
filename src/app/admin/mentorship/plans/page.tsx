@@ -69,11 +69,11 @@ export default function AdminMentorshipPlansPage() {
     }
   }, [auth.user]);
 
-  // Fetch all plans
+  // Fetch all plans (including inactive ones for admin)
   const fetchPlans = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/payments/getPlans?type=mentorship");
+      const res = await fetch("/api/payments/getPlans?type=mentorship&all=true");
       const data = await res.json();
       setPlans(data);
     } catch (error) {
@@ -128,12 +128,15 @@ export default function AdminMentorshipPlansPage() {
           <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
               <div className="overflow-hidden">
-                <div className="flex justify-between items-center mb-8">
-                  <h1 className="text-white text-3xl font-bold mt-4 mb-4 font-montserrat">
-                    Planes de Mentoría
-                  </h1>
+                <div className="flex justify-between items-center mb-8 mt-8">
+                  <div>
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-montserrat">
+                      Planes de Mentoría
+                    </h1>
+                    <p className='text-gray-600 text-lg font-montserrat'>Gestiona todos tus planes de mentoría</p>
+                  </div>
                   <Link href="/admin/mentorship/createPlan">
-                    <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md hover:bg-[#FFD600] hover:text-[#1A1A1A] flex items-center space-x-2 font-montserrat transition-colors duration-300">
+                    <button className="bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#4F7CCF] text-white px-6 py-3 rounded-xl hover:shadow-xl transition-all duration-300 flex items-center space-x-2 font-montserrat font-semibold shadow-lg">
                       <PlusCircleIcon className="w-5 h-5" />
                       <span>Crear Plan</span>
                     </button>
@@ -182,7 +185,17 @@ export default function AdminMentorshipPlansPage() {
                           </span>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 text-[#A7B6C2]">{plan.stripePriceId}</td>
-                        <td className="whitespace-nowrap px-6 py-4 text-[#1A1A1A]">{plan.active ? "Sí" : "No"}</td>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          {plan.active ? (
+                            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-600 border border-green-500">
+                              Activo
+                            </span>
+                          ) : (
+                            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-gray-300/20 text-gray-600 border border-gray-300">
+                              Inactivo
+                            </span>
+                          )}
+                        </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="flex item-center justify-center border-solid border-transparent border border-collapse text-base">
                             <div className="w-6 mr-2 transform hover:text-[#A7B6C2] hover:scale-110 cursor-pointer">

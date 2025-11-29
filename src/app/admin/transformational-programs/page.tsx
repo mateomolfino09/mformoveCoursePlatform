@@ -48,7 +48,7 @@ const Index = () => {
       <div className='bg-gray-700 w-full md:h-[100vh]'>
         <div className="flex items-center justify-between mb-8">
           <div>
-            <p className='text-white font-boldFont text-3xl font-bold'>
+            <p className='text-white font-montserrat text-3xl font-bold'>
               Programas Transformacionales
             </p>
             <p className='text-gray-300 text-sm mt-2'>

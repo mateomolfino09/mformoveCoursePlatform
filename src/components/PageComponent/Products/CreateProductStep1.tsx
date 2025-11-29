@@ -263,7 +263,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
 
 
     // Validación de descuento
-    let descuentoObj = undefined;
+    let descuentoObj;
     if (codigoDescuento) {
       if (!descuentoPorcentaje || descuentoPorcentaje < 1 || descuentoPorcentaje > 100) {
         toast.error('El porcentaje de descuento debe ser un número entre 1 y 100');
@@ -648,14 +648,14 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     <div className='relative flex w-full min-h-screen flex-col md:items-center md:justify-center '>
       <div className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}>
         {/* Header mejorado */}
-        <div className='w-full flex pt-8 justify-between items-center mb-8'>
+        <div className='w-full flex pt-8 justify-between items-center mb-8 px-8'>
           <div>
-            <h1 className='text-3xl font-bold text-white mb-2'>Crear un Productos</h1>
-            <p className='text-gray-200'>Completa la información para crear tu nuevo producto</p>
+            <h1 className='text-4xl md:text-5xl font-bold text-gray-900 mb-2 font-montserrat'>Crear un Producto</h1>
+            <p className='text-gray-600 text-lg font-montserrat'>Completa la información para crear tu nuevo producto</p>
           </div>
-          <div className='flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-lg'>
-            <div className='w-3 h-3 bg-blue-500 rounded-full'></div>
-            <span className='text-blue-700 font-medium'>Paso único</span>
+          <div className='flex items-center space-x-2 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm'>
+            <div className='w-3 h-3 bg-[#4F7CCF] rounded-full' />
+            <span className='text-gray-700 font-medium font-montserrat'>Paso único</span>
           </div>
         </div>
 
@@ -973,7 +973,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                   <div className='space-y-2'>
                     {beneficios.map((beneficio, index) => (
                       <div key={index} className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'>
-                        <div className='w-2 h-2 bg-green-500 rounded-full flex-shrink-0'></div>
+                        <div className='w-2 h-2 bg-green-500 rounded-full flex-shrink-0' />
                         <span className='flex-1 text-gray-700'>{beneficio}</span>
                         <button
                           type='button'
@@ -1011,7 +1011,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                   <div className='space-y-2'>
                     {aprendizajes.map((apr, index) => (
                       <div key={index} className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'>
-                        <div className='w-2 h-2 bg-blue-500 rounded-full flex-shrink-0'></div>
+                        <div className='w-2 h-2 bg-blue-500 rounded-full flex-shrink-0' />
                         <span className='flex-1 text-gray-700'>{apr}</span>
                         <button
                           type='button'
@@ -1049,7 +1049,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                   <div className='space-y-2'>
                     {paraQuien.map((pq, index) => (
                       <div key={index} className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'>
-                        <div className='w-2 h-2 bg-[#234C8C] rounded-full flex-shrink-0'></div>
+                        <div className='w-2 h-2 bg-[#234C8C] rounded-full flex-shrink-0' />
                         <span className='flex-1 text-gray-700'>{pq}</span>
                         <button
                           type='button'
@@ -1088,7 +1088,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                     {/* Early Bird */}
                     <div className='flex flex-col border border-gray-200 rounded-lg p-4 bg-gradient-to-br from-green-50 to-green-100'>
                       <div className='flex items-center mb-3'>
-                        <div className='w-3 h-3 bg-green-500 rounded-full mr-2'></div>
+                        <div className='w-3 h-3 bg-green-500 rounded-full mr-2' />
                         <p className='font-semibold text-green-800'>Early Bird</p>
                       </div>
                       <div className='space-y-3'>
@@ -1126,7 +1126,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                     {/* General */}
                     <div className='flex flex-col border border-gray-200 rounded-lg p-4 bg-gradient-to-br from-blue-50 to-blue-100'>
                       <div className='flex items-center mb-3'>
-                        <div className='w-3 h-3 bg-blue-500 rounded-full mr-2'></div>
+                        <div className='w-3 h-3 bg-blue-500 rounded-full mr-2' />
                         <p className='font-semibold text-blue-800'>General</p>
                       </div>
                       <div className='space-y-3'>
@@ -1164,7 +1164,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                     {/* Last Tickets */}
                     <div className='flex flex-col border border-gray-200 rounded-lg p-4 bg-gradient-to-br from-orange-50 to-orange-100'>
                       <div className='flex items-center mb-3'>
-                        <div className='w-3 h-3 bg-orange-500 rounded-full mr-2'></div>
+                        <div className='w-3 h-3 bg-orange-500 rounded-full mr-2' />
                         <p className='font-semibold text-orange-800'>Last Tickets</p>
                       </div>
                       <div className='space-y-3'>
@@ -1535,7 +1535,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                   <div className='mt-2 space-y-1'>
                     {resultadosEsperados.map((resultado, index) => (
                       <div key={index} className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'>
-                        <div className='w-2 h-2 bg-green-500 rounded-full flex-shrink-0'></div>
+                        <div className='w-2 h-2 bg-green-500 rounded-full flex-shrink-0' />
                         <span className='flex-1 text-gray-700'>{resultado}</span>
                         <button
                           type='button'
@@ -1573,7 +1573,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                   <div className='mt-2 space-y-1'>
                     {requisitosPrevios.map((requisito, index) => (
                       <div key={index} className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'>
-                        <div className='w-2 h-2 bg-blue-500 rounded-full flex-shrink-0'></div>
+                        <div className='w-2 h-2 bg-blue-500 rounded-full flex-shrink-0' />
                         <span className='flex-1 text-gray-700'>{requisito}</span>
                         <button
                           type='button'
@@ -1611,7 +1611,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                   <div className='mt-2 space-y-1'>
                     {materialesNecesarios.map((material, index) => (
                       <div key={index} className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'>
-                        <div className='w-2 h-2 bg-orange-500 rounded-full flex-shrink-0'></div>
+                        <div className='w-2 h-2 bg-orange-500 rounded-full flex-shrink-0' />
                         <span className='flex-1 text-gray-700'>{material}</span>
                         <button
                           type='button'

@@ -58,7 +58,7 @@ const MentorshipFAQ = () => {
   };
 
   return (
-    <section className="pt-6 pb-10 bg-white font-montserrat">
+    <section className="pt-6 pb-10 bg-[#FAF8F3] font-montserrat">
       <div className="max-w-4xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0 }}
@@ -67,6 +67,7 @@ const MentorshipFAQ = () => {
           viewport={{ once: true }}
           className="mb-12"
         >
+          <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-500 mb-3">Preguntas frecuentes</p>
           <h2 className="text-3xl md:text-5xl font-bold mb-6 text-black">
             Preguntas frecuentes
           </h2>
@@ -83,17 +84,17 @@ const MentorshipFAQ = () => {
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
               viewport={{ once: true }}
-              className="bg-gray-900/5 rounded-xl border border-black/10 overflow-hidden"
+              className="bg-gradient-to-br from-white via-[#FAF8F3]/50 to-[#F5F1E8]/30 rounded-2xl border border-[#AF50E5]/20 overflow-hidden shadow-[0_4px_20px_rgba(175,80,229,0.08)] hover:shadow-[0_8px_30px_rgba(175,80,229,0.15)] transition-all duration-300"
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-900/10 transition-colors duration-200"
+                className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-[#FAF8F3]/80 transition-colors duration-200"
               >
                 <h3 className="text-base md:text-lg font-medium pr-4 text-black">
                   {faq.question}
                 </h3>
                 <ChevronDownIcon
-                  className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 text-gray-400 ${openIndex === index ? 'rotate-180' : ''}`}
+                  className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 text-[#AF50E5] ${openIndex === index ? 'rotate-180' : ''}`}
                 />
               </button>
 
@@ -106,7 +107,7 @@ const MentorshipFAQ = () => {
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="px-6 pb-4 pt-2 border-t border-black/10">
+                    <div className="px-6 pb-4 pt-2 border-t border-[#AF50E5]/20">
                       <p className="text-sm md:text-base leading-relaxed text-gray-700 font-light">
                         {faq.answer}
                       </p>

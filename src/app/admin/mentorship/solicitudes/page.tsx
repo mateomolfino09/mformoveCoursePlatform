@@ -161,7 +161,7 @@ export default function SolicitudesMentoriaAdmin() {
             {solicitudesNuevas > 0 && (
               <>
                 <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-2">
-                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"/>
                   {solicitudesNuevas} {solicitudesNuevas === 1 ? 'nueva' : 'nuevas'}
                 </div>
                 <button
@@ -193,7 +193,7 @@ export default function SolicitudesMentoriaAdmin() {
                     {s.nombre}
                     {!s.vista && (
                       <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full animate-pulse flex items-center justify-center" style={{ height: '100%' }}>
-                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-red-500 rounded-full"/>
                       </div>
                     )}
                   </td>

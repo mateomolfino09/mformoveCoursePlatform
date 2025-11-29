@@ -10,8 +10,7 @@ export const routes = {
 
     },
     navegation: {
-        membresia: (isMember: boolean) => isMember ? '/home' : '/select-plan',
-        selectPlan: '/select-plan',
+        membresia: (isMember: boolean) => isMember ? '/home' : '/move-crew',
         membresiaHome: '/home',
         mentorship: '/mentorship',
         mentoria: '/mentorship', // Mantener para compatibilidad

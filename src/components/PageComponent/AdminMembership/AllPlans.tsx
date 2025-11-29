@@ -105,74 +105,93 @@ const AllPlans = ({ plans }: Props) => {
               <div className='overflow-x-auto sm:-mx-6 lg:-mx-8'>
                 <div className='inline-block min-w-full py-2 sm:px-6 lg:px-8'>
                   <div className='overflow-hidden'>
-                    <h1 className='text-2xl font-boldFont mt-4 mb-4'>Planes</h1>
-                    <table className='min-w-full text-left text-sm font-light'>
-                      <thead className='border-b font-medium dark:border-neutral-500'>
-                        <tr>
-                          <th scope='col' className='px-6 py-4'>
-                            Nombre
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Id
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Precio
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Tipo
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Fecha
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Activo
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Acciones
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {elementos?.map((plan: Plan) => (
-                          <tr
-                            key={plan._id}
-                            ref={ref}
-                            className='border-b dark:border-neutral-500'
-                          >
-                            <td className='whitespace-nowrap px-6 py-4 font-medium'>
-                              {plan.name}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {plan.id}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {plan.amount} {plan.currency}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {plan.frequency_label}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {new Date(plan.createdAt).toLocaleDateString(
-                                'es-ES'
-                              )}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {plan.active ? 'Si' : 'No'}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              <div className='flex item-center justify-center border-solid border-transparent border border-collapse text-base'>
-                                <div className='w-6 mr-2 transform hover:text-[#234C8C] hover:scale-110 cursor-pointer'>
-                                  <PencilIcon onClick={() => openEdit(plan)}/>
-                                </div>
-                                <div className='w-6 mr-2 transform hover:text-red-500 hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse '>
-                                  <TrashIcon onClick={() => openModalDelete(plan)}/>
-                                </div>
-                              </div>
-                            </td>
+                    <div className='mb-8 mt-8'>
+                      <h1 className='text-4xl md:text-5xl font-bold text-gray-900 font-montserrat mb-4'>Planes</h1>
+                      <p className='text-gray-600 text-lg font-montserrat'>Gestiona tus planes de membresía</p>
+                    </div>
+                    <div className='bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden'>
+                      <table className='min-w-full text-left text-sm font-light font-montserrat'>
+                        <thead className='border-b font-medium border-gray-200 bg-gray-50'>
+                          <tr>
+                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
+                              Nombre
+                            </th>
+                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
+                              Id
+                            </th>
+                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
+                              Precio
+                            </th>
+                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
+                              Tipo
+                            </th>
+                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
+                              Fecha
+                            </th>
+                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
+                              Activo
+                            </th>
+                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
+                              Acciones
+                            </th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {elementos?.map((plan: Plan) => (
+                            <tr
+                              key={plan._id}
+                              ref={ref}
+                              className='border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200'
+                            >
+                              <td className='whitespace-nowrap px-6 py-4 font-medium text-gray-900'>
+                                {plan.name}
+                              </td>
+                              <td className='whitespace-nowrap px-6 py-4 text-gray-600'>
+                                {plan.id}
+                              </td>
+                              <td className='whitespace-nowrap px-6 py-4 text-gray-900 font-semibold'>
+                                {plan.amount} {plan.currency}
+                              </td>
+                              <td className='whitespace-nowrap px-6 py-4 text-gray-600'>
+                                {plan.frequency_label}
+                              </td>
+                              <td className='whitespace-nowrap px-6 py-4 text-gray-600'>
+                                {new Date(plan.createdAt).toLocaleDateString(
+                                  'es-ES'
+                                )}
+                              </td>
+                              <td className='whitespace-nowrap px-6 py-4'>
+                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                                  plan.active 
+                                    ? 'bg-green-100 text-green-800 border border-green-300' 
+                                    : 'bg-red-100 text-red-800 border border-red-300'
+                                }`}>
+                                  {plan.active ? 'Sí' : 'No'}
+                                </span>
+                              </td>
+                              <td className='whitespace-nowrap px-6 py-4'>
+                                <div className='flex items-center justify-center gap-3'>
+                                  <button
+                                    onClick={() => openEdit(plan)}
+                                    className='text-[#4F7CCF] hover:text-[#234C8C] hover:scale-110 cursor-pointer transition-all duration-200'
+                                    title='Editar'
+                                  >
+                                    <PencilIcon className='w-5 h-5'/>
+                                  </button>
+                                  <button
+                                    onClick={() => openModalDelete(plan)}
+                                    className='text-red-600 hover:text-red-700 hover:scale-110 cursor-pointer transition-all duration-200'
+                                    title='Eliminar'
+                                  >
+                                    <TrashIcon className='w-5 h-5'/>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>

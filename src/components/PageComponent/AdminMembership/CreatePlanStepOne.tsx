@@ -90,59 +90,67 @@ const CreatePlanStepOne = ({ handleSubmit }: Props) => {
       <div
         className={`h-full w-full relative flex flex-col md:items-center md:justify-center`}
       >
-        {/* Logo position */}
-        <div className='w-full flex pt-12 justify-between items-center'>
-          <h1 className='text-4xl font-light '>Crear un Plan</h1>
-          <p>Paso único</p>
+        {/* Header modernizado */}
+        <div className='w-full flex pt-8 justify-between items-center mb-8 px-8'>
+          <div>
+            <h1 className='text-4xl md:text-5xl font-bold text-gray-900 mb-2 font-montserrat'>Crear un Plan de Membresía</h1>
+            <p className='text-gray-600 text-lg font-montserrat'>Completa la información para crear tu nuevo plan</p>
+          </div>
+          <div className='flex items-center space-x-2 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm'>
+            <div className='w-3 h-3 bg-[#4F7CCF] rounded-full' />
+            <span className='text-gray-700 font-medium font-montserrat'>Paso único</span>
+          </div>
         </div>
         <form
-          className='relative mt-16 space-y-4 rounded px-8 md:min-w-[40rem] md:px-14'
+          className='relative space-y-6 rounded-2xl bg-white backdrop-blur-sm border border-gray-200 shadow-xl px-8 py-8 md:min-w-[40rem] md:px-12 md:py-10 font-montserrat mb-8'
           autoComplete='nope'
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmitLocal}
         >
-          <div className='space-y-8'>
-            <label className='flex flex-col space-y-3 w-full'>
-              <p>Elige un nombre para el plan</p>
-
+          <div className='space-y-6'>
+            <label className='flex flex-col space-y-2 w-full'>
+              <p className='text-sm font-medium text-gray-700 font-montserrat'>Nombre del plan *</p>
               <input
-                type='nombre'
-                placeholder='Nombre'
+                type='text'
+                placeholder='Ej: Plan Básico'
                 value={name}
-                className='input'
+                className='w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat'
                 onChange={(e) => setName(e.target.value)}
+                required
               />
             </label>
             {selected.name != "stripe" && (
-              <div className='space-y-4'>
-              <p>Elige el tipo de plan</p>
-              <Select
-                options={planFrequencys}
-                styles={colourStyles}
-                placeholder={frequencyType || 'Nivel de clase'}
-                className='w-full sm:w-full'
-                value={frequencyType}
-                onChange={(e) => {
-                  setFrequencyType(e.label);
-                  setFrequency(e.value);
-                }}
-              />
-            </div>
+              <div className='space-y-2'>
+                <p className='text-sm font-medium text-gray-700 font-montserrat'>Tipo de plan *</p>
+                <Select
+                  options={planFrequencys}
+                  styles={colourStyles}
+                  placeholder={frequencyType || 'Selecciona el tipo de plan'}
+                  className='w-full sm:w-full'
+                  value={frequencyType}
+                  onChange={(e) => {
+                    setFrequencyType(e.label);
+                    setFrequency(e.value);
+                  }}
+                />
+              </div>
             )}
 
-            <div className='flex flex-col justify-center items-start'>
+            <div className='flex flex-col space-y-2 w-full'>
               <label className='inline-block w-full'>
+                <p className='text-sm font-medium text-gray-700 font-montserrat mb-2'>Descripción *</p>
                 <textarea
-                  placeholder='Descripción'
-                  className='input'
+                  placeholder='Describe las características y beneficios del plan'
+                  className='w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat min-h-[120px]'
                   onChange={(e) => {
                     setDescriptionLength(e.target.value.length);
                     setDescription(e.target.value);
                   }}
                   value={description}
+                  required
                 />
               </label>
-              <div className='flex flex-row justify-center items-center space-x-2'>
-                <p className='font-light text-xs text-[gray]'>
+              <div className='flex flex-row justify-between items-center'>
+                <p className='font-light text-xs text-gray-600 font-montserrat'>
                   Largo mínimo 30 caracteres{' '}
                 </p>
                 {descriptionLength <= 30 ? (
@@ -185,7 +193,7 @@ const CreatePlanStepOne = ({ handleSubmit }: Props) => {
                 <input
                   type='number'
                   placeholder='Precio mensual'
-                  className='input'
+                  className='w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat'
                   key={'price'}
                   autoComplete='off'
                   onChange={(e) => {
@@ -201,7 +209,7 @@ const CreatePlanStepOne = ({ handleSubmit }: Props) => {
                 <input
                   type='text'
                   placeholder='Moneda'
-                  className='input'
+                  className='w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat'
                   key={'price'}
                   autoComplete='off'
                   value={'US$'}
@@ -214,7 +222,7 @@ const CreatePlanStepOne = ({ handleSubmit }: Props) => {
                 <input
                   type='number'
                   placeholder='Precio anual'
-                  className='input'
+                  className='w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat'
                   key={'priceAnual'}
                   autoComplete='off'
                   onChange={(e) => {
@@ -230,7 +238,7 @@ const CreatePlanStepOne = ({ handleSubmit }: Props) => {
                 <input
                   type='text'
                   placeholder='Moneda'
-                  className='input'
+                  className='w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat'
                   key={'priceAnual'}
                   autoComplete='off'
                   value={'US$'}
@@ -247,7 +255,7 @@ const CreatePlanStepOne = ({ handleSubmit }: Props) => {
                 <input
                   type='number'
                   placeholder='Precio'
-                  className='input'
+                  className='w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat'
                   key={'price'}
                   autoComplete='off'
                   onChange={(e) => {
@@ -263,7 +271,7 @@ const CreatePlanStepOne = ({ handleSubmit }: Props) => {
                 <input
                   type='text'
                   placeholder='Moneda'
-                  className='input'
+                  className='w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat'
                   key={'price'}
                   autoComplete='off'
                   value={'US$'}
@@ -275,20 +283,22 @@ const CreatePlanStepOne = ({ handleSubmit }: Props) => {
           )}
 
           </div>
-          <button
-            onClick={(e) => handleSubmitLocal(e)}
-            className='w-full bg-black/10 border border-white rounded-md transition duration-500 hover:bg-black py-3 font-semibold'
-          >
-            Crear{' '}
-          </button>
-          <div className='text-[gray]'>
-            Volver al Inicio
-            <Link href={'/mentorship'}>
-              <button type='button' className='text-white hover:underline ml-2'>
-                {' '}
-                Volver
+          <div className='flex justify-end space-x-4 pt-6 border-t border-gray-200'>
+            <Link href={'/admin/memberships'}>
+              <button
+                type='button'
+                className='px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-300 font-montserrat border border-gray-200'
+              >
+                Cancelar
               </button>
             </Link>
+            <button
+              type='submit'
+              onClick={(e) => handleSubmitLocal(e)}
+              className='px-8 py-3 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#4F7CCF] text-white font-semibold rounded-xl hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg font-montserrat'
+            >
+              Crear Plan
+            </button>
           </div>
         </form>
       </div>

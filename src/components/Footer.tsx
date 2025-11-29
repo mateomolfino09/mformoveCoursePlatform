@@ -103,7 +103,7 @@ const onSubmit = async (data: any) => {
           </a>
         </div>
         <div className='text-black md:max-w-[33%] flex flex-col space-y-12 pt-12 !mx-0 px-8 overflow-x-hidden md:items-center md:left-7 relative'>
-        <Link href={`${path === routes.navegation.selectPlan ? routes.navegation.membresiaHome : path === routes.navegation.membresiaHome ? "/" : "/"}`}>
+        <Link href="/">
               <img
                 alt='icon image'
                 src='/images/MFORMOVE_v2.negro03.png'

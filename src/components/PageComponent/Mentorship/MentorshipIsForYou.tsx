@@ -2,10 +2,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const positives = [
-  'Buscas explorar, mejorar y entender el movimiento.',
-  'Estás dispuesto/a a comprometerte con tu proceso.',
+  'Buscas potenciar, sanar y entender el movimiento.',
+  'Estás dispuesto/a a comprometerte al 100% con tu proceso.',
   'Valorás el acompañamiento 1 a 1 y el feedback personalizado.',
-  'Te motiva aprender, intercambiar y dialogar más que seguir una rutina vacía.',
+  'Te motiva aprender y cocrear más que seguir una rutina vacía.',
 ];
 
 const negatives = [
@@ -70,8 +70,8 @@ const MentorshipIsForYou = () => {
   };
 
   return (
-    <section className="pb-20 pt-2 bg-white font-montserrat">
-      <div className="max-w-6xl mx-auto px-6">
+    <section className="pb-20 pt-2 bg-[#FAF8F3] font-montserrat">
+      <div className="max-w-6xl mx-auto pt-4 px-6">
         {/* Título principal */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -80,6 +80,8 @@ const MentorshipIsForYou = () => {
           viewport={{ once: true }}
           className="mb-12"
         >
+          <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-500 mb-3">Para quién es</p>
+          <h2 className="text-3xl md:text-5xl font-bold text-black">¿Es para vos esta mentoría?</h2>
         </motion.div>
 
         <p className="text-lg md:text-xl text-gray-600 font-light mb-16 max-w-5xl leading-relaxed">
@@ -95,7 +97,7 @@ const MentorshipIsForYou = () => {
               viewport={{ once: true }}
               variants={cardVariants}
             >
-              <div className="bg-gray-900/5 backdrop-blur-sm rounded-2xl p-8 md:p-10 flex flex-col h-full hover:bg-gray-900/10 transition-all duration-300 border border-black/10">
+              <div className="bg-gradient-to-br from-white via-[#FAF8F3]/50 to-[#F5F1E8]/30 backdrop-blur-sm rounded-3xl p-8 md:p-10 flex flex-col h-full hover:bg-gradient-to-br hover:from-white hover:via-[#FAF8F3] hover:to-[#F5F1E8] transition-all duration-300 border border-[#AF50E5]/20 shadow-[0_4px_20px_rgba(175,80,229,0.08)] hover:shadow-[0_8px_30px_rgba(175,80,229,0.15)]">
                 <h3 className="text-2xl md:text-3xl font-medium mb-10 text-black">
                   {i === 0 ? 'Entrenar conmigo es para ti si…' : 'No es para ti si…'}
                 </h3>

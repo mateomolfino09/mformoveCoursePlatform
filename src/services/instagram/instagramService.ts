@@ -136,6 +136,7 @@ const MATEO_PERSONAL_INFO = {
 };
 
 class InstagramService {
+  // eslint-disable-next-line no-use-before-define
   private static instance: InstagramService;
   private accessToken: string | null = null;
   private userId: string | null = null;
@@ -612,7 +613,9 @@ class InstagramService {
     medium: number;
     long: number;
   } {
-    let short = 0, medium = 0, long = 0;
+    let short = 0;
+    let medium = 0;
+    let long = 0;
     
     captions.forEach(caption => {
       const wordCount = caption.split(/\s+/).length;

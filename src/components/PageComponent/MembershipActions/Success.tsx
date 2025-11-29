@@ -1,92 +1,35 @@
 'use client';
 
-import { toast } from 'react-toastify';
+import { motion } from 'framer-motion';
+import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
-import { Plan, User } from '../../../../typings';
 import { useAuth } from '../../../hooks/useAuth';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
 import { toggleScroll } from '../../../redux/features/headerHomeSlice';
 import Footer from '../../Footer';
-import { LoadingSpinner } from '../../LoadingSpinner';
 import MainSideBar from '../../MainSidebar/MainSideBar';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import { motion as m } from 'framer-motion';
-import Image from 'next/image';
-import Link from 'next/link';
-import React, { useEffect, useState, useRef } from 'react';
-import { AiFillCheckCircle } from 'react-icons/ai';
-import Select, { StylesConfig } from 'react-select';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Cookies from 'js-cookie';
-import { Button, Transition } from '@headlessui/react';
-import { MiniLoadingSpinner } from '../Products/MiniSpinner';
+import { ArrowRightIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Props {}
 
 const Success = () => {
   const dispatch = useAppDispatch();
   const auth = useAuth();
-  const [loading, setLoading] = useState(false);
-  const router =  useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [created, setCreated] = useState<boolean | null>(false);
-  const searchParams = useSearchParams();
-  const external_id = searchParams.get('external_id');  // Capturamos el external_id
-  const subCalled = useRef(false);
-  let [isShowing, setIsShowing] = useState(false)
+  const router = useRouter();
 
   useEffect(() => {
-    if (!auth.user) {
+    // Actualizar usuario para reflejar cambios del webhook
+    if (auth.user) {
       auth.fetchUser();
     }
   }, [auth]);
 
   useEffect(() => {
-    if (!subCalled.current && auth.user && !user?.subscription && !created) {
-      handleSub();
-    }
-  }, [auth.user]);
+    // Resetear el estado de scroll al montar el componente
+    dispatch(toggleScroll(false));
 
-  useEffect(() => {
-    if(!loading) {
-      setIsShowing(false)
-      setTimeout(() => setIsShowing(true), 500)    
-    }
-  }, [loading])
-
-  const handleSub = async () => {
-    subCalled.current = true; // Previene llamadas futuras al subscribe
-    setLoading(true);
-    
-    const planId = Cookies.get('planToken');
-
-    if (!external_id || !planId) {
-      toast.error(`No tienes token de subscripcion, te redireccionaremos al inicio...`);
-      // router.push('/select-plan');
-      return;
-    }
-    else {
-    try {
-        const data = await auth.newSub(external_id, planId);
-        if (data.error && !created) {
-          toast.error(`${data?.error}`);
-        } else {
-          setUser(data.user);
-          await auth.fetchUser();
-          toast.success(`Subscriptor creado con éxito`);
-          setCreated(true);
-        }
-      } catch (error: any) {
-        toast.error(`${error?.error ?? 'Hubo un error'}`);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-
-  };
-
-  useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY === 0) {
         dispatch(toggleScroll(false));
@@ -95,61 +38,150 @@ const Success = () => {
       }
     };
 
+    // Verificar el estado inicial del scroll
+    if (window.scrollY === 0) {
+      dispatch(toggleScroll(false));
+    }
+
     window.addEventListener('scroll', handleScroll);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      // Resetear al desmontar también
+      dispatch(toggleScroll(false));
     };
   }, [dispatch]);
 
   return (
     <MainSideBar where={''}>
-      <div className='h-[100vh]  w-full bg-transparent items-center justify-center relative flex overflow-x-hidden'>
-        <div className='absolute top-0 left-0 h-full w-screen -z-10'>
-          <Image
-            src='/images/image00006.jpeg'
-            alt={'image'}
-            fill={true}
+      <section className="relative w-full h-[100vh] md:h-screen flex items-center justify-center overflow-hidden">
+        {/* Imágenes de fondo - mismo estilo que MoveCrewHero */}
+        <div className="absolute inset-0">
+          <CldImage
+            src="my_uploads/fondos/DSC01526_hcas98"
+            alt="Move Crew Success"
+            fill
+            priority
+            className="hidden md:block object-cover opacity-60"
+            style={{ objectPosition: 'center top' }}
+            preserveTransformations
             loader={imageLoader}
-            className='object-cover opacity-50 '
           />
+          <CldImage
+            src="my_uploads/fondos/fondo3_jwv9x4"
+            alt="Move Crew Success"
+            fill
+            priority
+            className="md:hidden object-cover opacity-60"
+            style={{ objectPosition: 'center top' }}
+            preserveTransformations
+            loader={imageLoader}
+          />
+          {/* Overlay sutil para mejor legibilidad */}
         </div>
-        {loading ? (
-          <>
-          <LoadingSpinner/>
-          </>
-        ) : (
-          <Transition show={isShowing}>
-          <div
-            className='w-96 relative lg:w-[38rem] bottom-24 rounded-xl transition duration-1000
-                data-[closed]:scale-50 data-[closed]:rotate-[-120deg] data-[closed]:opacity-0
-                data-[leave]:duration-200 data-[leave]:ease-in-out
-                data-[leave]:data-[closed]:scale-95 data-[leave]:data-[closed]:rotate-[0deg]'
+
+        {/* Contenido principal */}
+        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center text-white font-montserrat">
+          {/* Icono de éxito animado */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ 
+              duration: 0.6, 
+              delay: 0.2,
+              type: "spring",
+              stiffness: 200,
+              damping: 15
+            }}
+            className="flex justify-center mb-2"
           >
-            <div className='flex'>
-              <h1 className='text-4xl md:text-5xl font-normal mb-6 font-montserrat'>
-                Bienvenido a la Membresía de MforMove
-              </h1>
-              <AiFillCheckCircle className='h-32 w-32 text-green-500' />
+            <div className="relative">
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, -5, 0]
+                }}
+                transition={{ 
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatDelay: 3
+                }}
+                className="absolute inset-0 bg-green-500/20 rounded-full blur-2xl"
+              />
+              <CheckCircleIcon className="relative h-24 w-24 md:h-32 md:w-32 text-green-400 drop-shadow-2xl" />
             </div>
-            <p className='text-base md:text-lg italic font-light font-montserrat'>
-              Eleva tu práctica: Enriquecida con presencia. Integra movimiento, ejercicios de respiración y entrenamiento basado en capacidades orgánicas.
+          </motion.div>
+
+          {/* Título principal */}
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-5xl md:text-7xl lg:text-8xl font-bold text-white font-montserrat mb-6 tracking-tight drop-shadow-2xl"
+          >
+            ¡Bienvenido a Move Crew!
+          </motion.h1>
+
+          {/* Mensaje principal */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="max-w-4xl mx-auto mb-8"
+          >
+            <p className="text-xl md:text-2xl lg:text-3xl text-white font-light max-w-3xl mx-auto mb-6 leading-relaxed drop-shadow-lg">
+              Tu pago se ha procesado correctamente. Tu membresía está siendo activada y recibirás un email de confirmación en breve.
             </p>
-            <p className='text-xs md:text-normal font-montserrat font-bold mt-2'>Mateo Molfino</p>
 
-            {/* <div className='flex px-24 py-3 mt-6 border-white border rounded-full justify-center items-center w-full group cursor-pointer hover:bg-white hover:text-black'> */}
-            <Button onClick={() => router.push('/home')} className="  gap-2 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-rich-black/50 data-[open]:bg-rich-black data-[focus]:outline-1 data-[focus]:outline-white mt-4 flex px-24 py-3 transition-all duration-700 font-montserrat border-white border rounded-full justify-center items-center w-full group cursor-pointer">
-            Empezar
-            <ArrowRightIcon className='w-4 h-4 relative left-4' />
-            </Button>
-              {/* 
-            </div> */}
-          </div>
-          </Transition>
-        )}
+          </motion.div>
 
+          {/* Mensaje secundario */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="max-w-2xl mx-auto mb-12"
+          >
+            <p className="text-base md:text-lg text-white/80 font-light italic leading-relaxed drop-shadow-md">
+              Simple, claro y sostenible. <span className="font-semibold text-white">Al servicio de tu vida.</span>
+            </p>
+            <p className="text-sm md:text-base text-white/70 font-light mt-4">
+              — Mateo Molfino
+            </p>
+          </motion.div>
 
+          {/* Botón CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="flex justify-center"
+          >
+            <motion.button
+              onClick={() => router.push('/home')}
+              className="bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md text-white px-8 md:px-12 py-4 md:py-5 font-semibold text-base md:text-lg hover:from-amber-400/30 hover:via-orange-400/30 hover:to-rose-400/30 hover:text-white transition-all duration-300 font-montserrat rounded-2xl border border-amber-300/40 shadow-2xl shadow-amber-500/10 flex items-center gap-3 group"
+              whileHover={{ y: -2, scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+            >
+              Empezar ahora
+              <ArrowRightIcon className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform duration-300" />
+            </motion.button>
+          </motion.div>
+
+          {/* Indicador de carga sutil */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1 }}
+            className="mt-8"
+          >
+            <p className="text-sm text-white/60 font-light">
+              Tu membresía se activará automáticamente en los próximos minutos
+            </p>
+          </motion.div>
       </div>
+      </section>
       <Footer />
     </MainSideBar>
   );

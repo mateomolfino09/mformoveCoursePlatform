@@ -15,7 +15,9 @@
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "lint:fix": "eslint ./ --fix",
     "create-mentorship-plans": "node scripts/createMentorshipPlans.js",
-    "migrate:mentorship": "node scripts/migrateMentorshipStudents.js"
+    "migrate:mentorship": "node scripts/migrateMentorshipStudents.js",
+    "seed:courses": "npx tsx scripts/seedCourses.js",
+    "seed:courses:fresh": "npx tsx scripts/seedCourses.js --fresh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.58.0",
@@ -83,6 +85,7 @@
     "nodemailer": "^6.9.0",
     "nookies": "^2.5.2",
     "openai": "^5.12.1",
+    "phosphor-react": "^1.4.1",
     "react": "^18.2.0",
     "react-canvas-confetti": "^1.3.0",
     "react-confetti": "^6.1.0",

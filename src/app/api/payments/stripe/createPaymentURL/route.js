@@ -28,7 +28,7 @@ export async function POST(req) {
           return NextResponse.json({ message: 'Ya estas subscripto y tus pagos se realizaron con éxito.', type: 'error', success: false}, { status: 401 })
         }
     
-        let url = await createCheckoutSession(planId, email)
+        let url = await createCheckoutSession(planId, email, planId)
 
         const planToken = jwt.sign(
           { planId: planId },

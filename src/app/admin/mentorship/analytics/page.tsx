@@ -30,7 +30,7 @@ export default function AdminMentorshipAnalyticsPage() {
     <AdmimDashboardLayout>
       <div className="bg-gray-700 w-full md:h-[100vh] p-8">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-white font-boldFont text-3xl mb-8 font-bold">
+          <h1 className="text-white font-montserrat text-3xl mb-8 font-bold">
             Analytics de Mentoría
           </h1>
           

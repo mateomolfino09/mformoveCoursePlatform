@@ -165,7 +165,7 @@ const CreateClass = ({ classTypes }: Props) => {
       );
   
       toast.success(data.message);
-      router.push('/admin/classes');
+      router.push('/admin/memberships/classes');
       dispatch(clearData());
     } catch (error: any) {
       console.error(error);

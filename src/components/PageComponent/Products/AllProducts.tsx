@@ -130,10 +130,13 @@ const AllProducts = ({ products }: Props) => {
           <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
               <div className="overflow-hidden">
-                <div className="flex justify-between items-center mb-8">
-                  <h1 className="text-white text-3xl font-bold mt-4 mb-4 font-montserrat">
-                    Productos
-                  </h1>
+                <div className="flex justify-between items-center mb-8 mt-8">
+                  <div>
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-montserrat">
+                      Productos
+                    </h1>
+                    <p className='text-gray-600 text-lg font-montserrat'>Gestiona todos tus productos</p>
+                  </div>
                   <Link href="/admin/products/createProduct">
                     <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md hover:bg-[#234C8C] hover:text-white flex items-center space-x-2 font-montserrat transition-colors duration-300">
                       <PlusCircleIcon className="w-5 h-5" />

@@ -9,9 +9,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useSnapshot } from 'valtio';
 import { Menu } from '@headlessui/react';
 import { CiMenuFries } from 'react-icons/ci';
+import { LuSettings } from 'react-icons/lu';
 import { useAppSelector } from '../redux/hooks';
 import { useAuth } from '../hooks/useAuth';
 import { routes } from '../constants/routes';
+import { GoTools } from 'react-icons/go';
 
 interface Props {
 	user: User | null;
@@ -36,18 +38,23 @@ const HeaderUnified = ({ user, toggleNav, where, showNav }: Props) => {
 	);
 
     const isMentorship = path === routes.navegation.mentorship;
+    const isMoveCrew = path === '/move-crew';
+    const isPaymentSuccess = path === '/payment/success';
     const isAccount = path === routes.user.perfil || path.startsWith('/account');
 	const isMembershipHome = path === routes.navegation.membresiaHome;
-	const isSelectPlan = path === routes.navegation.selectPlan;
-	const isInfoLight = path === '/faq' || path === '/about' || path === '/privacy' || isSelectPlan;
+	const isInfoLight = path === '/faq' || path === '/about' || path === '/privacy';
 	const isEvents = path === routes.navegation.eventos || path.includes(routes.navegation.eventos);
 	const isAuth = path === routes.user.login || path === routes.user.forget || path === routes.user.forgetEmail || path === routes.user.register;
 	const isIndex = path === routes.navegation.index;
 
 	const transparentUntilScroll = !isInfoLight;
-	const scrolled = isScrolled || headerScroll;
+	// Para la página de success, solo usar isScrolled local, no headerScroll del Redux
+	const scrolled = isPaymentSuccess ? isScrolled : (isScrolled || headerScroll);
 
 	useEffect(() => {
+		// Inicializar el estado de scroll al montar
+		setIsScrolled(window.scrollY > 0);
+
 		const handleScroll = () => {
 			let scroll = (window.scrollY);
 			if (scroll > 0) {
@@ -61,7 +68,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav }: Props) => {
 		return () => {
 			window.removeEventListener('scroll', handleScroll);
 		};
-	}, [router]);
+	}, [router, path]); // Agregar path como dependencia para resetear cuando cambia la ruta
 
 	useEffect(() => {
 		setDomLoaded(true);
@@ -122,7 +129,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav }: Props) => {
 					className={`fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${where === 'home' ? 'mt-28' : ''} ${headerBgClass}`}
 				>
 					<div className=''>
-						<Link href={`${path === routes.navegation.selectPlan ? routes.navegation.membresiaHome : path === routes.navegation.membresiaHome ? '/' : '/'}`}>
+						<Link href="/">
 							<img
 								alt='icon image'
 								src={logoSrc}
@@ -146,6 +153,21 @@ const HeaderUnified = ({ user, toggleNav, where, showNav }: Props) => {
 										style={{ minWidth: '100%', maxWidth: '100%' }}
 									>
 										<ellipse cx="50" cy="2" rx="65" ry="1" fill={isLightText ? 'white' : '#234C8C'} />
+										</svg>
+								)}
+							</div>
+                            <div className={`${linkBase} ${isMoveCrew ? linkActive : linkMuted}`}
+								onClick={() => handleLinkClick('/move-crew', 'movecrew')}>
+								{loadingLink === 'movecrew' ? 'Cargando...' : 'Move Crew'}
+								{isMoveCrew && (
+									<svg
+										width="100%"
+										height="3"
+										viewBox="0 0 120 5"
+										className="block mx-auto mt-0 relative bottom-1 left-1/2 -translate-x-1/2"
+										style={{ minWidth: '100%', maxWidth: '100%' }}
+									>
+										<ellipse cx="50" cy="2" rx="76" ry="1" fill={isLightText ? 'white' : '#234C8C'} />
 										</svg>
 								)}
 							</div>
@@ -189,9 +211,24 @@ const HeaderUnified = ({ user, toggleNav, where, showNav }: Props) => {
 					</div>
 					<div className='flex items-center pr-4 md:pr-16'>
 						<Menu as='div' className='relative inline-block text-left'>
-							<div>
-								<Menu.Button className={'inline-flex w-full justify-center items-center'}>
-									<CiMenuFries className={`h-6 w-6 ${isLightText ? 'text-white' : 'text-black'}`} onClick={toggleNav}/>
+							<div className='flex items-center gap-3'>
+								{auth.user?.rol === 'Admin' && (
+									<button
+										type='button'
+										onClick={() => router.push('/admin')}
+										className={`rounded-full p-1 transition-colors ${isLightText ? 'text-white hover:text-white/80' : 'text-black hover:text-gray-700'}`}
+										aria-label='Ir al panel de administración'
+									>
+										<GoTools className='h-6 w-6' />
+									</button>
+								)}
+								<Menu.Button
+									as='button'
+									type='button'
+									className='inline-flex w-full justify-center items-center'
+									onClick={toggleNav}
+								>
+									<CiMenuFries className={`h-6 w-6 ${isLightText ? 'text-white' : 'text-black'}`} />
 								</Menu.Button>
 							</div>
 						</Menu>

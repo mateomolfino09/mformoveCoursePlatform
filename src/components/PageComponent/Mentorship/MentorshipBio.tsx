@@ -14,9 +14,10 @@ const MentorshipBio = () => {
           viewport={{ once: true }}
           className="mb-8"
         >
+          <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-400 mb-3">Sobre mí</p>
           <div className="flex flex-col md:flex-row items-start gap-8 md:gap-12">
             {/* Foto */}
-            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border border-white/20 flex-shrink-0">
+            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border border-[#AF50E5]/30 flex-shrink-0">
               <img 
                 src="https://res.cloudinary.com/dbeem2avp/image/upload/v1751917144/my_uploads/plaza/IMG_0333_mheawa.jpg" 
                 alt="Mateo Molfino" 
@@ -30,7 +31,7 @@ const MentorshipBio = () => {
               <h2 className="text-3xl md:text-3xl font-semibold mb-4 text-white">
                 El origen de mi metodología
               </h2>
-              <p className="text-base md:text-lg text-white/70 font-light leading-relaxed mb-4">
+              <p className="text-base md:text-lg text-white/80 font-light leading-relaxed mb-4">
 Mi nombre es Mateo, siempre fui apasionado por el movimiento y la ciencia. Estudié ingeniería, soy profesor de yoga y me apasiona el funcionamiento del cuerpo y el mundo. Creo fuertemente que hay una relación entre el movimiento y la vida, asi como entre el cuerpo y el mundo. <br/> <br/>
               
                 Mi misión es entender el funcionamiento de tu cuerpo en profundidad y construir estrategias sólidas para enriquecer su movimiento, entendiendolo como expresión única del diálogo con el entorno, desde el día en que naciste hasta el día de hoy.
@@ -38,15 +39,6 @@ Mi nombre es Mateo, siempre fui apasionado por el movimiento y la ciencia. Estud
             </div>
           </div>
         </motion.div>
-
-                        {/* Hexagonal Focus SVG */}
-                        <div className="mt-6 mb-6 flex justify-center">
-              <img 
-                src="/images/svg/HexgaonalFocus3.svg" 
-                alt=""
-                className="w-full h-full opacity-60 invert"
-              />
-            </div>
 
         {/* Filosofía y ciencia */}
         <div className="grid md:grid-cols-2 gap-8">
@@ -57,7 +49,7 @@ Mi nombre es Mateo, siempre fui apasionado por el movimiento y la ciencia. Estud
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
             viewport={{ once: true }}
-            className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10"
+            className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10 hover:border-[#AF50E5]/30 transition-all duration-300"
           >
             <h3 className="text-xl md:text-2xl font-semibold mb-4 text-white">
               Filosofía
@@ -80,7 +72,7 @@ Mi nombre es Mateo, siempre fui apasionado por el movimiento y la ciencia. Estud
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
             viewport={{ once: true }}
-            className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10"
+            className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10 hover:border-[#AF50E5]/30 transition-all duration-300"
           >
             <h3 className="text-xl md:text-2xl font-semibold mb-4 text-white">
               El método (y su ciencia)

@@ -179,14 +179,14 @@ const CreateMentorshipPlan = () => {
       <div className='relative flex w-full min-h-screen flex-col md:items-center md:justify-center'>
         <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
           {/* Header mejorado */}
-          <div className='w-full flex pt-8 justify-between items-center mb-8'>
+          <div className='w-full flex pt-8 justify-between items-center mb-8 px-8'>
             <div>
-              <h1 className='text-3xl font-bold text-white mb-2'>{isEditing ? 'Editar Plan de Mentoría' : 'Crear un Plan de Mentoría'}</h1>
-              <p className='text-gray-200'>{isEditing ? 'Modifica la información del plan existente' : 'Completa la información para crear tu nuevo plan'}</p>
+              <h1 className='text-4xl md:text-5xl font-bold text-gray-900 mb-2 font-montserrat'>{isEditing ? 'Editar Plan de Mentoría' : 'Crear un Plan de Mentoría'}</h1>
+              <p className='text-gray-600 text-lg font-montserrat'>{isEditing ? 'Modifica la información del plan existente' : 'Completa la información para crear tu nuevo plan'}</p>
             </div>
-            <div className='flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-lg'>
-              <div className='w-3 h-3 bg-blue-500 rounded-full'></div>
-              <span className='text-blue-700 font-medium'>Paso único</span>
+            <div className='flex items-center space-x-2 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm'>
+              <div className='w-3 h-3 bg-[#4F7CCF] rounded-full' />
+              <span className='text-gray-700 font-medium font-montserrat'>Paso único</span>
             </div>
           </div>
 
@@ -213,7 +213,7 @@ const CreateMentorshipPlan = () => {
                     name='name'
                     placeholder='Ingresa el nombre del plan'
                     value={form.name}
-                    className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors font-montserrat'
+                    className='w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat'
                     onChange={handleChange}
                     required
                   />
@@ -226,7 +226,7 @@ const CreateMentorshipPlan = () => {
                       type='number'
                       name='price'
                       placeholder='0.00'
-                      className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors font-montserrat'
+                      className='w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat'
                       value={form.price || ''}
                       onChange={handleChange}
                       min={0}
@@ -241,7 +241,7 @@ const CreateMentorshipPlan = () => {
                       type='text'
                       name='currency'
                       placeholder='Moneda'
-                      className='input border-gray-300 bg-gray-50 font-montserrat'
+                      className='w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat cursor-not-allowed'
                       value='USD'
                       readOnly
                     />
@@ -253,7 +253,7 @@ const CreateMentorshipPlan = () => {
                     name='interval'
                     value={form.interval}
                     onChange={handleChange}
-                    className='input border-gray-300 bg-gray-50 font-montserrat'
+                    className='w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat cursor-not-allowed'
                     disabled
                   >
                     <option value='trimestral'>Trimestral</option>

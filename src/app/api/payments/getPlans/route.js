@@ -13,6 +13,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const planType = searchParams.get('type') || 'membership';
     const planId = searchParams.get('id');
+    const getAll = searchParams.get('all') === 'true'; // Para admin: obtener todos los planes
     
     let plans;
     
@@ -21,9 +22,13 @@ export async function GET(request) {
         // Si se proporciona un ID específico, buscar ese plan
         plans = await MentorshipPlan.findById(planId);
         plans = plans ? [plans] : [];
+      } else if (getAll) {
+        // Si se solicita todos (para admin), obtener todos los planes ordenados por fecha de creación
+        plans = await MentorshipPlan.find({}).sort({ createdAt: -1 });
       } else {
-        // Si no hay ID, obtener todos los planes activos
-        plans = await MentorshipPlan.find({ active: true }).sort({ createdAt: -1 });
+        // Si no hay ID y no es admin, obtener solo el plan activo más reciente (el último creado)
+        const activePlan = await MentorshipPlan.findOne({ active: true }).sort({ createdAt: -1 });
+        plans = activePlan ? [activePlan] : [];
       }
     } else {
       if (planId) {
