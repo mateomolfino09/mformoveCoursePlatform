@@ -305,8 +305,8 @@ const emailTemplates = {
               <p style="margin: 0; color: rgba(255, 255, 255, 0.7); font-size: 13px;">${data.subject || 'Sin asunto'}</p>
             </div>
           </div>
-        </div>
-
+      </div>
+      
         <!-- Mensaje -->
         <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%); padding: 20px 16px; border-radius: 12px; margin-bottom: 18px; border: 1px solid rgba(59, 130, 246, 0.2);">
           <h3 style="color: #ffffff; font-size: 16px; font-weight: 600; margin: 0 0 16px 0; text-align: center; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; padding-bottom: 10px; border-bottom: 2px solid rgba(59, 130, 246, 0.4);">
@@ -462,7 +462,7 @@ const emailTemplates = {
         <!-- Mensaje de reactivación -->
         <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 24px 0; text-align: center; font-weight: 300; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
           Si en algún momento querés retomar tu proceso con nosotros, estaremos acá. Las puertas de Move Crew siempre están abiertas.
-        </p>
+      </p>
 
         <!-- Botón CTA para reactivar -->
         <div style="text-align: center; margin: 28px 0 0;">
@@ -539,7 +539,7 @@ const emailTemplates = {
       <div style="padding: 28px 20px;">
         <p style="font-size: 16px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
           ¡Hola <strong style="font-weight: 600;">${data.name}</strong>! Notamos que hubo un inconveniente al procesar tu pago.
-        </p>
+      </p>
 
         <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
           Esto puede suceder por diferentes motivos: datos de tarjeta incorrectos, fondos insuficientes, o restricciones de tu banco. No te preocupes, estamos acá para ayudarte.
@@ -563,7 +563,7 @@ const emailTemplates = {
         <div style="background: #f9fafb; padding: 24px 20px; border-radius: 12px; margin: 24px 0;">
           <p style="font-size: 15px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 0 16px 0; text-align: center; font-weight: 400; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
             Si necesitás ayuda o querés contarnos qué pasó, estamos acá para escucharte. Tu feedback nos ayuda a mejorar y a poder ayudar a más personas.
-          </p>
+      </p>
           
           <div style="text-align: center; margin: 20px 0 0;">
             <a href="${feedbackUrl}" 
@@ -719,7 +719,7 @@ el bienestar fisico y emocional.
                     border: 1px solid rgba(245, 158, 11, 0.2);
                     box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);">
             Empezar ahora
-          </a>
+        </a>
         </div>
       </div>
     `;
@@ -1422,8 +1422,8 @@ export class EmailService {
       type: EmailType.CONTACT_FORM,
       to: adminEmail,
       subject: data.subject,
-      data,
-      cc: [data.email] // Copiar al usuario para que tenga registro
+      data
+      // NO enviar copia al usuario - este email es solo para el administrador
     });
   }
 

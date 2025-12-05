@@ -122,7 +122,6 @@ const MoveCrewCommunitySlider = () => {
                   alt={image.alt}
                   fill
                   className="object-cover"
-                  preserveTransformations
                   loader={imageLoader}
                   priority={index === 0 || index === 1}
                   loading={index < 2 ? 'eager' : 'lazy'}

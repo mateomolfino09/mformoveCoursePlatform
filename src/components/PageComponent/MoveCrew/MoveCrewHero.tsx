@@ -19,7 +19,6 @@ const MoveCrewHero = () => {
           priority
           className="hidden md:block object-cover  opacity-60"
           style={{ objectPosition: 'center top' }}
-          preserveTransformations
           loader={imageLoader}
         />
         <CldImage
@@ -29,7 +28,6 @@ const MoveCrewHero = () => {
           priority
           className="md:hidden object-cover opacity-60"
           style={{ objectPosition: 'center top' }}
-          preserveTransformations
           loader={imageLoader}
         />
         {/* <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/20 to-black/50" /> */}

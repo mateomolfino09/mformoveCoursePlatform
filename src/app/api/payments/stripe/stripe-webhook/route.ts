@@ -32,7 +32,7 @@ export const POST = async (req: NextRequest) => {
     try {
       switch (event.type) {
         case 'checkout.session.completed': {
-          const session = event.data.object as Stripe.Checkout.Session;
+    const session = event.data.object as Stripe.Checkout.Session;
           
           // Verificar si es una membresía
           const isMembership = session.metadata?.type === 'membership';
@@ -53,7 +53,7 @@ export const POST = async (req: NextRequest) => {
           const subscription = event.data.object as Stripe.Subscription;
           const customerId = subscription.customer as string;
           const customer = await stripe.customers.retrieve(customerId);
-          const email = (customer as Stripe.Customer).email;
+      const email = (customer as Stripe.Customer).email;
           
           // Verificar si es una membresía desde el metadata de la suscripción
           const isMembership = subscription.metadata?.type === 'membership';
@@ -110,10 +110,8 @@ export const POST = async (req: NextRequest) => {
                   console.error(`❌ Error enviando notificación al administrador:`, adminEmailErr);
                 }
                 
-                // Mantener el email de estado para el admin (solo si es trialing)
-                if (status === "trialing") {
-                  await sendSubscriptionEmail(status, "mateomolfino09@gmail.com", origin);
-                }
+                // NO enviar email genérico al admin para membresías - ya tenemos emails específicos
+                // El email genérico solo se envía al usuario si es necesario
               } else {
                 console.error(`❌ Error al crear membresía para: ${email}`);
               }
@@ -125,20 +123,20 @@ export const POST = async (req: NextRequest) => {
             const status = await getLatestSubscriptionStatusByEmail(email);
             
             if(status != null) {
-              try {
+            try {
                 const user = await createStripeSubscription(email);
-                if (status === "trialing") {
-                  await sendSubscriptionEmail(status, "mateomolfino09@gmail.com", origin);
-                }
-              } catch (err) {
-                console.error("Error al procesar la subscripción creada:", err);
+              if (status === "trialing") {
+                await sendSubscriptionEmail(status, "mateomolfino09@gmail.com", origin);
               }
+            } catch (err) {
+              console.error("Error al procesar la subscripción creada:", err);
+            }
             }
           }
-          break;
-        }
-      
-        case 'customer.subscription.updated': {
+            break;
+          }
+        
+          case 'customer.subscription.updated': {
           const subscription = event.data.object as Stripe.Subscription;
           const customerId = subscription.customer as string;
           const customer = await stripe.customers.retrieve(customerId);
@@ -152,7 +150,11 @@ export const POST = async (req: NextRequest) => {
               
               //al cancelar el estado se mantiene hasta el fin del periodo, por eso chequeamos isCanceled
               if (updatedSubscription?.isCanceled && (status == "trialing" || status == "active")) {
-                await sendSubscriptionEmail("canceled", "mateomolfino09@gmail.com", origin);
+                // NO enviar email genérico al admin si es una membresía - ya tenemos emails específicos
+                // Si NO es membresía, enviar email genérico al admin
+                if (!isMembership) {
+                  await sendSubscriptionEmail("canceled", "mateomolfino09@gmail.com", origin);
+                }
                 
                 // Si es una membresía, enviar email de cancelación al usuario
                 if (isMembership && email) {
@@ -214,17 +216,20 @@ export const POST = async (req: NextRequest) => {
                   }
                 }
               } else {
-                await sendSubscriptionEmail(status, "mateomolfino09@gmail.com", origin);
+                // Solo enviar email genérico si NO es una membresía (las membresías tienen emails específicos)
+                if (!isMembership) {
+                  await sendSubscriptionEmail(status, "mateomolfino09@gmail.com", origin);
+                }
               }
 
             } catch (err) {
               console.error("Error al procesar la subscripción actualizada:", err);
             }
           }
-          break;
-        }
-      
-        case 'customer.subscription.deleted': {
+            break;
+          }
+        
+          case 'customer.subscription.deleted': {
           const subscription = event.data.object as Stripe.Subscription;
           const customerId = subscription.customer as string;
           const customer = await stripe.customers.retrieve(customerId);
@@ -282,11 +287,11 @@ export const POST = async (req: NextRequest) => {
                 console.error(`❌ Error enviando email de cancelación a ${email}:`, emailErr);
               }
             }
-            // Aquí podrías revocar acceso a contenido premium
+          // Aquí podrías revocar acceso a contenido premium
           }
-          break;
-        }
-
+            break;
+          }
+        
         case 'invoice.payment_failed': {
           const invoice = event.data.object as Stripe.Invoice;
           const customerId = invoice.customer as string;

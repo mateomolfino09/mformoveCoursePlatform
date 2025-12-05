@@ -17,8 +17,8 @@ const highlights = [
   },
   {
     icon: PiCircleLight,
-    title: 'Retos de movimiento',
-    description: 'Diseñados para que te motives y te ayuden a progresar más rápido en tu práctica.'
+    title: 'Desafíos Focalizados y Aceleradores',
+    description: 'Retos para romper la monotonía. Te dan un empujón de motivación para acelerar tu progreso en habilidades específicas.'
   },
   {
     icon: PiTriangleLight,
@@ -28,7 +28,7 @@ const highlights = [
   {
     icon: PiSquareLight,
     title: 'Acceso directo y comunidad',
-    description: 'Tenés acceso directo a mí y a una comunidad de movimiento donde compartimos el entrenamiento y la práctica.'
+    description: 'Tenés acceso al chat grupal. Te doy mi guía directa para asegurar que tu práctica semanal sea correcta, evitando errores.'
   },
   {
     icon: PiDiamondLight,

@@ -127,7 +127,6 @@ const MoveCrewResultsSlider = () => {
                       alt={image.alt}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      preserveTransformations
                       loader={imageLoader}
                       priority={index < 3}
                       loading="eager"

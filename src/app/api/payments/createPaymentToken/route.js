@@ -23,7 +23,8 @@ export async function POST(req) {
           return NextResponse.json({ message: 'Usuario no encontrado'}, { status: 404 })
         }
 
-        if(user?.subscription != null && user?.subscription.active) {
+        // Permitir suscribirse si la suscripción está cancelada, incluso si aún está activa hasta el fin del período
+        if(user?.subscription != null && user?.subscription.active && !user?.subscription.isCanceled) {
           return NextResponse.json({ message: 'Ya estas subscripto y tus pagos se realizaron con éxito.', type: 'error', success: false}, { status: 401 })
         }
     
