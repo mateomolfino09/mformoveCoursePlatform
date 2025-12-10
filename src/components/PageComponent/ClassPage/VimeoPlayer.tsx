@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import Player from '@vimeo/player';
-import { Container } from '@mui/material';
 
 const VimeoPlayer = ({ videoId }: { videoId: string }) => {
   const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -28,13 +27,12 @@ const VimeoPlayer = ({ videoId }: { videoId: string }) => {
   }, [videoId]);
 
   return (
-    <div className="h-full w-full flex items-center justify-center">
-      <Container className="!h-full !px-0">
-        <div
-          ref={playerContainerRef}
-          className="video-container w-full h-full min-h-[20rem] top-16 lg:min-h-[60vh] relative"
-        />
-      </Container>
+    <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+      <div
+        ref={playerContainerRef}
+        className="w-full h-full absolute inset-0"
+        style={{ aspectRatio: '16/9' }}
+      />
     </div>
   );
 };

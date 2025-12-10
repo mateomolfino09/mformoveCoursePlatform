@@ -174,7 +174,6 @@ function useProvideAuth() {
 			  })
 
 			const data = await res.json()
-			debugger;
 			// signOut()
 			setUser(data.user)
 			return data

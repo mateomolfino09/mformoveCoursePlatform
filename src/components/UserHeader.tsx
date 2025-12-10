@@ -101,7 +101,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
           className={`bg-transparent fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${(isScrolled || headerScroll) && 'bg-white/80'} ${where === "home" ? "mt-28" : ""}`}
         >
           <div className=''>
-            <Link href="/">
+            <Link href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/home' : '/'}>
             <>
               {showNav ? (
                 <>

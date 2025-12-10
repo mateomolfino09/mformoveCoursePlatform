@@ -12,8 +12,9 @@ const state = proxy({
   searchBar: false,
   searchToggle: false,
   searchInput: '',
-  classHeaders: 'Temario',
-  loginForm: false
+  classHeaders: 'Preguntas',
+  loginForm: false,
+  activeVideoId: null // ID del video activo actualmente (string | null)
 });
 
 export default state;

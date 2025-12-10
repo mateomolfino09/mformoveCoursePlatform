@@ -38,19 +38,21 @@ const [searchClasses, setSearchClasses] = useState<null | IndividualClass[]>(nul
         animationInput.start({
             width: window.innerWidth < 768 ? window.innerWidth < 500 ? '60%' : '70%' : '16rem',
             transition: {
-              delay: 0.05,
-              ease: 'linear',
-              duration: 0.25,
-              stiffness: 0
+              delay: 0,
+              ease: [0.4, 0, 0.2, 1],
+              duration: 0.4,
+              stiffness: 300,
+              damping: 25
             }
           });
       animationIcon.start({
         x: -40,
         transition: {
-          delay: 0.05,
-          ease: 'linear',
-          duration: 0.25,
-          stiffness: 0
+          delay: 0,
+          ease: [0.4, 0, 0.2, 1],
+          duration: 0.4,
+          stiffness: 300,
+          damping: 25
         }
       });
       if (inputRef && inputRef.current) inputRef.current.focus();
@@ -59,18 +61,20 @@ const [searchClasses, setSearchClasses] = useState<null | IndividualClass[]>(nul
         animationInput.start({
             width: '3rem',
             transition: {
-              delay: 0.05,
-              ease: 'linear',
-              duration: 0.25,
-              stiffness: 0
+              delay: 0,
+              ease: [0.4, 0, 0.2, 1],
+              duration: 0.35,
+              stiffness: 300,
+              damping: 25
             }
           });
       animationIcon.start({
         x: 0,
         transition: {
-          ease: 'linear',
-          duration: 0,
-          stiffness: 0
+          ease: [0.4, 0, 0.2, 1],
+          duration: 0.35,
+          stiffness: 300,
+          damping: 25
         }
       });
     }
@@ -131,11 +135,11 @@ const [searchClasses, setSearchClasses] = useState<null | IndividualClass[]>(nul
                 <p className=''>Todos</p>
             </span>
             {filtersDB[0].values.map((f: ValuesFilters) => (
-              <>
+              <div key={f.id}>
                   <span key={f.id} onClick={() => handleChange(f.value)} className={`${classType === f.value ? "bg-white rounded-full text-black " : ""} cursor-pointer p-3 md:mr-0 mr-1 font-thin text-sm md:text-base h-7 text-center flex justify-center items-center hover:bg-white hover:rounded-full hover:text-black`}>
                   <p className=''>{f.label}</p>
                   </span>
-              </>
+              </div>
             ))}
         </div>
         <div className='flex flex-col justify-end items-baseline overflow-visible'>
@@ -181,9 +185,9 @@ const [searchClasses, setSearchClasses] = useState<null | IndividualClass[]>(nul
               </div>
             )}
           </m.div>
-              <div onClick={() => dispatch(toggleNav(true))} className='bg-[#a38951] group ml-8 hover:bg-light-cream flex justify-center space-x-2 items-center py-1 px-5 rounded-full cursor-pointer'>
-                  <p className='text-white group-hover:text-black'>Filter</p>
-                  <VscTools className='text-white group-hover:text-black'/>
+              <div onClick={() => dispatch(toggleNav(true))} className='bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md group ml-8 hover:from-amber-400/30 hover:via-orange-400/30 hover:to-rose-400/30 flex justify-center space-x-2 items-center py-1 px-5 rounded-full cursor-pointer transition-all border border-amber-300/40 shadow-md hover:shadow-lg'>
+                  <p className='text-white font-montserrat'>Filtrar</p>
+                  <VscTools className='text-white'/>
 
               </div>
           </div>

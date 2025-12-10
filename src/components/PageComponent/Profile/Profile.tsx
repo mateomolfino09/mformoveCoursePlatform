@@ -18,6 +18,7 @@ import {
   ArrowRightIcon,
   ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
+import GorillaLevelDisplay from '../Bitacora/GorillaLevelDisplay';
 
 function Profile() {
   const router = useRouter();
@@ -30,6 +31,7 @@ function Profile() {
   const [plan, setPlan] = useState(null)
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
+  const [coherenceTracking, setCoherenceTracking] = useState<any>(null)
 
   function open() {
     setIsOpen(true)
@@ -49,6 +51,25 @@ function Profile() {
     if(!auth.user) {
       auth.fetchUser()
     }
+
+    // Obtener tracking de coherencia
+    const fetchCoherenceTracking = async () => {
+      try {
+        const response = await fetch('/api/coherence/tracking', {
+          credentials: 'include',
+          cache: 'no-store'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.tracking) {
+            setCoherenceTracking(data.tracking);
+          }
+        }
+      } catch (error) {
+        console.error('Error obteniendo tracking de coherencia:', error);
+      }
+    };
+    fetchCoherenceTracking();
 
     let plan: any = null
 
@@ -211,6 +232,35 @@ function Profile() {
                 </div>
               </div>
             </motion.div>
+
+            {/* Progreso del Gorila */}
+            {coherenceTracking && (
+              <motion.div
+                variants={itemVariants}
+                className='bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow duration-300'
+              >
+                <div className='flex items-center gap-3 mb-6'>
+                  <div className='p-2 bg-gray-100 rounded-lg'>
+                    <span className='text-2xl'>🦍</span>
+                  </div>
+                  <h2 className='text-xl md:text-2xl font-semibold text-black'>
+                    Mi Progreso
+                  </h2>
+                </div>
+                <div className='flex justify-center'>
+                  <GorillaLevelDisplay
+                    level={coherenceTracking.level || 1}
+                    gorillaIcon={coherenceTracking.gorillaIcon || '🦍'}
+                    evolutionName={coherenceTracking.evolutionName || 'Gorila Bebé'}
+                    progressToNextLevel={coherenceTracking.progressToNextLevel || 0}
+                    monthsCompleted={coherenceTracking.monthsCompleted || 0}
+                    size="md"
+                    showProgressBar={true}
+                    showLevel={true}
+                  />
+                </div>
+              </motion.div>
+            )}
 
             {/* Membresía */}
             <Membership user={auth.user} handleVisibility={open} plan={plan} loading={loading}/>

@@ -6,7 +6,8 @@ import {
   HomeIcon,
   PlusCircleIcon,
   TableCellsIcon,
-  UserIcon
+  UserIcon,
+  XMarkIcon
 } from '@heroicons/react/24/solid';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import Link from 'next/link';

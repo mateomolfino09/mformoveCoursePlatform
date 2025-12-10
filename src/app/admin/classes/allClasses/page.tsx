@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { IndividualClass } from '../../../../../typings';
-import AllClasses from '../../../../../components/AllClasses';
+import AllClasses from '../../../../components/AllClasses';
 import { MiniLoadingSpinner } from '../../../../components/PageComponent/Products/MiniSpinner';
 
 export default function Page() {

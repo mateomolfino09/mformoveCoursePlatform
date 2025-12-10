@@ -18,7 +18,13 @@
     "src/app/api/**/*.{js,ts}": {
       "maxDuration": 60
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/weekly-logbook",
+      "schedule": "0 9 * * 1"
+    }
+  ]
 }
 
 

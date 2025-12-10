@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import connectDB from '../../../../../../config/connectDB';
-import VirtualClass from '../../../../../../models/virtualClassModel';
+import connectDB from '../../../../../config/connectDB';
+import VirtualClass from '../../../../../models/virtualClassModel';
 
 export const fetchCache = 'force-no-store';
 export const revalidate = 0;

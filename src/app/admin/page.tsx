@@ -16,6 +16,7 @@ import { useAuth } from '../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
 import { BookOpenIcon, SparklesIcon, CalendarDaysIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
+import MoveCrewQuickAccessAdminLight from '../../components/PageComponent/MoveCrew/MoveCrewQuickAccessAdminLight';
 
 interface Props {
   user: User;
@@ -50,13 +51,16 @@ const Index = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
         <div className='w-full md:h-[100vh]'>
-          <div className='mb-12 mt-8'>
-            <h1 className='text-4xl md:text-5xl font-bold text-gray-900 font-montserrat mb-4'>
+          <div className='mb-8 mt-8'>
+            <h1 className='text-4xl md:text-5xl font-light text-gray-900 font-montserrat mb-4'>
               Bienvenido al Dashboard
             </h1>
-            <p className='text-gray-600 text-lg font-montserrat'>
+            <p className='text-gray-600 text-lg font-montserrat mb-6'>
               Gestiona tu plataforma de movimiento
             </p>
+            
+            {/* Quick Access para Admins */}
+            <MoveCrewQuickAccessAdminLight />
           </div>
 
           <div className='grid lg:grid-cols-3 gap-6 mb-8'>
@@ -66,7 +70,7 @@ const Index = () => {
                 <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
                   <UserIcon className='w-12 h-12 text-white transition-colors duration-300' />
                 </div>
-                <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Usuarios</p>
+                <p className='text-gray-900 font-light text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Usuarios</p>
               </div>
             </Link>
             <Link href={'/admin/mentorship'}>

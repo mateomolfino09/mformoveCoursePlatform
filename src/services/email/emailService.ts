@@ -25,7 +25,8 @@ export enum EmailType {
   ADMIN_NOTIFICATION = 'admin_notification',
   ADMIN_MEMBERSHIP_NOTIFICATION = 'admin_membership_notification',
   ADMIN_SUBSCRIPTION_CANCELLED = 'admin_subscription_cancelled',
-  ADMIN_PAYMENT_FAILED = 'admin_payment_failed'
+  ADMIN_PAYMENT_FAILED = 'admin_payment_failed',
+  WEEKLY_LOGBOOK_RELEASE = 'weekly_logbook_release'
 }
 
 // Interfaz para datos de email
@@ -1333,6 +1334,59 @@ el bienestar fisico y emocional.
       </div>
     `;
     return getBaseTemplateAdmin(content);
+  },
+
+  [EmailType.WEEKLY_LOGBOOK_RELEASE]: (data: EmailData) => {
+    const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    const monthName = monthNames[(data.month || 1) - 1];
+    
+    const content = `
+      <!-- Header minimalista -->
+      <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
+        <div style="color: #000000; font-size: 32px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: -0.3px; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif !important; line-height: 1.2; mso-line-height-rule: exactly; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; display: block; text-align: center;">El Camino del Gorila</div>
+        <div style="color: rgba(0, 0, 0, 0.6); font-size: 18px; font-weight: 500; margin: 0; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif !important;">
+          Semana ${data.weekNumber}
+        </div>
+      </div>
+
+      <!-- Contenido principal -->
+      <div style="padding: 28px 20px;">
+        <p style="font-size: 16px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
+          ¡Hola <strong style="font-weight: 600;">${data.name}</strong>! Tu contenido semanal del Camino del Gorila está listo.
+        </p>
+
+        <!-- Sección de texto semanal -->
+        <div style="background: #f9fafb; padding: 20px 16px; border-radius: 12px; margin: 24px 0; border-left: 4px solid #F59E0B;">
+          <div style="color: rgba(0, 0, 0, 0.7); font-size: 15px; line-height: 1.7; font-weight: 300; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly; white-space: pre-wrap;">
+            ${data.text || 'Tu contenido semanal está disponible en la plataforma.'}
+          </div>
+        </div>
+
+        <!-- Mensaje motivacional -->
+        <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 24px 0; text-align: center; font-weight: 500; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
+          Premia la constancia, porque ahí están los resultados en el movimiento.
+        </p>
+
+        <!-- Botón CTA para ir a la bitácora -->
+        <div style="text-align: center; margin: 28px 0 0;">
+          <a href="${data.bitacoraLink || 'https://mateomove.com/bitacora'}" 
+             style="display: inline-block; 
+                    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(249, 115, 22, 0.1) 50%, rgba(251, 113, 133, 0.1) 100%); 
+                    color: #000000; 
+                    padding: 14px 32px; 
+                    text-decoration: none; 
+                    border-radius: 12px; 
+                    font-size: 16px; 
+                    font-weight: 600; 
+                    font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+                    border: 1px solid rgba(245, 158, 11, 0.2);
+                    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);">
+            Ver Bitácora Completa
+          </a>
+        </div>
+      </div>
+    `;
+    return getBaseTemplateUser(content);
   }
 };
 

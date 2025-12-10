@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '../../../../config/connectDB';
 import Plan from '../../../../models/planModel';
 import MentorshipPlan from '../../../../models/mentorshipPlanModel';
+import Promocion from '../../../../models/promocionModel';
 import { revalidateTag } from 'next/cache';
 
 // Conectar a la base de datos
@@ -41,8 +42,24 @@ export async function GET(request) {
       }
     }
     
+    // Obtener promociones activas para membresías
+    let promociones = [];
+    if (planType === 'membership') {
+      const now = new Date();
+      promociones = await Promocion.find({
+        activa: true,
+        fechaFin: { $gte: now },
+        fechaInicio: { $lte: now }
+      }).sort({ createdAt: -1 });
+    }
+    
     revalidateTag('plans');
-    return NextResponse.json(plans, {
+    
+    // Si hay promociones, devolver objeto con plans y promociones
+    // Si no hay promociones, devolver solo plans para compatibilidad hacia atrás
+    const response = promociones.length > 0 ? { plans, promociones } : plans;
+    
+    return NextResponse.json(response, {
         status: 200,
         headers: { 
           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',

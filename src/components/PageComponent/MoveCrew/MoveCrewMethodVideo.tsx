@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { PlayIcon } from '@heroicons/react/24/solid';
+import MoveCrewQuickAccess from './MoveCrewQuickAccess';
 
 const MoveCrewMethodVideo = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -27,7 +28,7 @@ const MoveCrewMethodVideo = () => {
         >
           <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-500 mb-3">Así funciona</p>
           <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black mb-4">
-            Así se ve entrar en la Move Crew
+            Así se siente entrar en la Move Crew
           </h2>
           <p className="text-sm md:text-base lg:text-lg text-gray-600 font-light max-w-2xl mx-auto">
             Te muestro una mirada interna a comenzar tu camino en el movimiento conmigo.

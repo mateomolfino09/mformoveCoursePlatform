@@ -211,7 +211,7 @@ const Header = ({
   return (
     <header className={`${isScrolled && 'bg-[#141414]'}`}>
       <div className='flex items-center space-x-2 md:space-x-10'>
-        <Link href={'/'}>
+        <Link href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/home' : '/'}>
           <img
             alt='icon image'
             src='/images/MFORMOVE_v2.negro03.png'

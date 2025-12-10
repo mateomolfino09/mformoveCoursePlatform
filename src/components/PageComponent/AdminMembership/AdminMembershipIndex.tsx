@@ -12,6 +12,7 @@ import React, { useEffect } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
+import { BiTable } from 'react-icons/bi';
 
 
 const AdminMembershipIndex = () => {
@@ -52,7 +53,7 @@ const AdminMembershipIndex = () => {
             </p>
           </div>
 
-          <div className='grid lg:grid-cols-3 gap-6 mb-8'>
+          <div className='grid lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-8'>
             <Link href={'/admin/memberships/createPlan'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
@@ -71,6 +72,17 @@ const AdminMembershipIndex = () => {
                 <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Planes</p>
               </div>
             </Link>
+            <Link href={'/admin/memberships/promociones'}>
+              <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#ae9359]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
+                <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#ae9359] via-[#c9a86a] to-[#ae9359] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+                <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#ae9359] transition-all duration-300 mb-4'>
+                  <svg className='w-12 h-12 text-white transition-colors duration-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
+                  </svg>
+                </div>
+                <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#ae9359] transition-colors duration-300'>Promociones</p>
+              </div>
+            </Link>
             <Link href={'/admin/memberships/classes'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
@@ -78,6 +90,18 @@ const AdminMembershipIndex = () => {
                   <BookOpenIcon className='w-12 h-12 text-white transition-colors duration-300' />
                 </div>
                 <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Clases</p>
+              </div>
+            </Link>
+          </div>
+              <div className='grid lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-8'>
+     
+            <Link href={'/admin/memberships/bitacora'}>
+              <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
+                <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+                <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
+                  <BiTable className='w-12 h-12 text-white transition-colors duration-300' />
+                </div>
+                <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Bitácora</p>
               </div>
             </Link>
           </div>

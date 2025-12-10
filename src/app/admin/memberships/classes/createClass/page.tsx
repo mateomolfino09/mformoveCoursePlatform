@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
-import CreateClass from '../../../../components/PageComponent/CreateClass/CreateClass';
-import { MiniLoadingSpinner } from '../../../../components/PageComponent/Products/MiniSpinner';
+import CreateClass from '../../../../../components/PageComponent/CreateClass/CreateClass';
+import { MiniLoadingSpinner } from '../../../../../components/PageComponent/Products/MiniSpinner';
 import { ClassTypes } from '../../../../../typings';
 
 // Variable global declarada fuera del componente

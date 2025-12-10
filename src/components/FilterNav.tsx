@@ -45,19 +45,21 @@ const FilterNav = ({ showNav }: Props) => {
           animation.start({
             x: 0,
             transition: {
-              damping: 5,
-              stiffness: 40,
+              damping: 30,
+              stiffness: 300,
               restDelta: 0.001,
-              duration: 0.2,
+              duration: 0.5,
+              ease: [0.4, 0, 0.2, 1],
             }
           });
           animationPhones.start({
             x: 0,
             transition: {
-              damping: 5,
-              stiffness: 40,
+              damping: 30,
+              stiffness: 300,
               restDelta: 0.001,
-              duration: 0.2,
+              duration: 0.5,
+              ease: [0.4, 0, 0.2, 1],
             }
           });
       }, []);
@@ -116,8 +118,8 @@ const FilterNav = ({ showNav }: Props) => {
                 </div>
                 <div className='mt-28 flex items-center justify-start flex-col w-full'>
                   {filters?.filter(x => x.type === 'multiple').map((f, i) => (
-                    <>
-                    <div key={i} className={`${i === 0 && 'hidden'} w-full px-6 flex flex-col justify-center items-start`} >
+                    <React.Fragment key={i}>
+                    <div className={`${i === 0 && 'hidden'} w-full px-6 flex flex-col justify-center items-start`} >
                       <hr className={`${i == 1 ? 'border-[0.5px] border-solid border-white/75 md:border-black/75 w-full my-3' : 'hidden'}`}/>
                       <div className='w-full flex justify-between items-center' onClick={() => {
                           expand === i 
@@ -142,19 +144,40 @@ const FilterNav = ({ showNav }: Props) => {
                             </>
                           )}
                           <m.div
-                            className={`${expand === i ? 'rotate-180' : 'rotate-0'} cursor-pointer ml-auto group/item w-8 h-8 border-white border-[0.5px] rounded-full flex justify-center items-center transition hover:border-neutral-300 mr-2`}>
+                            animate={{
+                              rotate: expand === i ? 180 : 0,
+                            }}
+                            transition={{
+                              duration: 0.3,
+                              ease: [0.4, 0, 0.2, 1],
+                            }}
+                            className='cursor-pointer ml-auto group/item w-8 h-8 border-white border-[0.5px] rounded-full flex justify-center items-center transition hover:border-neutral-300 mr-2'
+                          >
                           <IoIosArrowDown className='w-5 h-5 md:text-black text-white cursor-pointer'/>
                           </m.div>
                   
                         </div>
                       </div>
-                      <div className={`${expand === i ? 'max-h-[500px]' : 'max-h-0'} w-full px-2 transition-all duration-500 overflow-hidden`} >
+                      <m.div 
+                        initial={false}
+                        animate={{
+                          maxHeight: expand === i ? 500 : 0,
+                          opacity: expand === i ? 1 : 0,
+                        }}
+                        transition={{
+                          duration: 0.4,
+                          ease: [0.4, 0, 0.2, 1],
+                        }}
+                        className={`w-full px-2 overflow-hidden`}
+                      >
                       <div className="w-full flex flex-wrap justify-start items-center gap-x-3 gap-y-2 py-2">
   {filters[i].values.map((val) => (
-    <div
+    <m.div
       key={val.id}
       onClick={() => handleFilterChange(filters[i], val)}
-      className={`rounded-full max-w-[100px] flex justify-center items-center min-h-[15px] px-2 py-1 border mt-2 transition-all duration-200 ${
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className={`rounded-full max-w-[100px] flex justify-center items-center min-h-[15px] px-2 py-1 border mt-2 transition-all duration-300 ease-[0.4,0,0.2,1] ${
         filterClassSlice[
           Object.keys(filterClassSlice)[
             Object.keys(filterClassSlice).findIndex((x) => x === f.name.toLowerCase())
@@ -166,7 +189,7 @@ const FilterNav = ({ showNav }: Props) => {
       style={{ flex: '1 0 calc(33.33% - 12px)' }} // 33.33% para 3 elementos por fila, ajustando el espacio con el gap
     >
       <p
-        className={`transition-all duration-200 ${
+        className={`transition-all duration-300 ease-[0.4,0,0.2,1] ${
           filterClassSlice[
             Object.keys(filterClassSlice)[
               Object.keys(filterClassSlice).findIndex((x) => x === f.name.toLowerCase())
@@ -178,35 +201,36 @@ const FilterNav = ({ showNav }: Props) => {
       >
         {val.label}
       </p>
-    </div>
+    </m.div>
   ))}
 </div>
-                      </div>  
+                      </m.div>  
                       <hr className='border-[0.5px] border-solid border-white/75 md:border-black/75 w-full my-3'/>
                     </div>
-                    </>
+                    </React.Fragment>
                   ))}
                   {filters?.filter(x => x.type === 'two').map((f, i) => (
-                    <>
-                    <div key={i} className={`w-full px-6 flex flex-col justify-center items-start`}>
+                    <React.Fragment key={i}>
+                    <div className={`w-full px-6 flex flex-col justify-center items-start`}>
                       <hr className={`${i == 1 ? 'border-[0.5px] border-solid border-white/75 md:border-black/75 w-full my-3' : 'hidden'}`}/>
                       <div className='w-full flex justify-between items-center'>
                         <p className='text-white md:text-black'>{f.name.toUpperCase()}</p>
                           <label htmlFor="check" className='border-black border-[1.2px] relative w-16 h-8 rounded-full'>
                             <input type="checkbox" id='check' className='sr-only peer' onChange={(e) => handleCheckboxChange(f, e)}/>
-                            <span className='w-2/5 h-4/5 bg-black/90 absolute rounded-full left-[1.5px] top-1 peer-checked:bg-orange-300 peer-checked:left-[2.15rem] transition-all duration-500'>
-
-                            </span>
+                            <span className='w-2/5 h-4/5 bg-black/90 absolute rounded-full left-[1.5px] top-1 peer-checked:bg-orange-300 peer-checked:left-[2.15rem] transition-all duration-500' />
                           </label>
                       </div>
                       <hr className='border-[0.5px] border-solid border-white/75 md:border-black/75 w-full my-3'/>
                     </div>
-                    </>
+                    </React.Fragment>
                   ))}
                 </div>
                 <div className='mt-28 flex items-center justify-start flex-col w-full h-full'>
-                    <button className='bg-white md:bg-black w-52 h-12 rounded-full'>
-                      <p className='text-black md:text-white font-light text-lg hover:scale-105 transition duration-200' onClick={() => dispatch(toggleNav(false))}>VER CLASES</p>
+                    <button 
+                      className='bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md group w-52 h-12 hover:from-amber-400/30 hover:via-orange-400/30 hover:to-rose-400/30 flex justify-center space-x-2 items-center rounded-full cursor-pointer transition-all duration-300 border border-amber-300/40 shadow-md hover:shadow-lg'
+                      onClick={() => dispatch(toggleNav(false))}
+                    >
+                      <p className='text-white font-montserrat text-lg'>VER CLASES</p>
                     </button>
 
                     <button className=' w-22 h-12 rounded-full mt-2 '>

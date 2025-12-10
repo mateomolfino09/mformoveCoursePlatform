@@ -10,8 +10,19 @@ import { toast } from 'react-toastify';
 import { useState, useEffect } from 'react';
 import { MiniLoadingSpinner } from '../Products/MiniSpinner';
 
+interface Promocion {
+  _id: string;
+  nombre: string;
+  descripcion?: string;
+  porcentajeDescuento: number;
+  frecuenciasAplicables: string[];
+  fechaFin: string;
+  codigoPromocional?: string;
+}
+
 interface MoveCrewPlansProps {
   plans: Plan[];
+  promociones?: Promocion[];
 }
 
 const formatPrice = (currency: string, amount: number) => {
@@ -26,11 +37,53 @@ const formatPrice = (currency: string, amount: number) => {
   }
 };
 
-const MoveCrewPlans = ({ plans }: MoveCrewPlansProps) => {
+const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
   const router = useRouter();
   const auth = useAuth();
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
   const activePlans = plans.filter((plan) => plan.active);
+
+  // Función para obtener la promoción aplicable a un plan
+  const getPromocionAplicable = (plan: Plan): Promocion | null => {
+    if (!promociones || promociones.length === 0) return null;
+    
+    const ahora = new Date();
+    const promocionesValidas = promociones.filter((p: Promocion) => {
+      const fechaFin = new Date(p.fechaFin);
+      return fechaFin > ahora;
+    });
+
+    // Mapear frequency_label y frequency_type a frecuencias de promoción
+    const frecuenciaPlan = plan.frequency_label?.toLowerCase() || '';
+    const frequencyType = plan.frequency_type?.toLowerCase() || '';
+    let frecuenciaPromocion = '';
+    
+    if (frecuenciaPlan.includes('mensual') || 
+        frequencyType === 'month' || 
+        frequencyType === 'monthly' ||
+        frequencyType === 'mensual') {
+      frecuenciaPromocion = 'mensual';
+    } else if (frecuenciaPlan.includes('trimestral') || 
+               frequencyType === 'quarter' || 
+               frequencyType === 'quarterly' ||
+               frequencyType === 'trimestral') {
+      frecuenciaPromocion = 'trimestral';
+    } else if (frecuenciaPlan.includes('anual') || 
+               frequencyType === 'year' || 
+               frequencyType === 'yearly' ||
+               frequencyType === 'anual') {
+      // Los planes anuales pueden aplicar a promociones trimestrales o ambas
+      frecuenciaPromocion = 'trimestral';
+    }
+
+    // Buscar promoción que aplique a esta frecuencia
+    const promocionAplicable = promocionesValidas.find((p: Promocion) => {
+      return p.frecuenciasAplicables.includes(frecuenciaPromocion) || 
+             p.frecuenciasAplicables.includes('ambas');
+    });
+
+    return promocionAplicable || null;
+  };
 
   useEffect(() => {
     if (!auth.user) {
@@ -157,29 +210,56 @@ const MoveCrewPlans = ({ plans }: MoveCrewPlansProps) => {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 gap-8">
-            {activePlans.map((plan, index) => (
+            {activePlans.map((plan, index) => {
+              const promocionPlan = getPromocionAplicable(plan);
+              const precioConDescuento = promocionPlan
+                ? plan.amount * (1 - promocionPlan.porcentajeDescuento / 100)
+                : null;
+              
+              return (
               <motion.div
+                id={`plan-card-${plan._id}`}
                 key={plan._id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="relative border border-amber-200/40 rounded-3xl p-8 bg-gradient-to-br from-gray-50 via-amber-50/20 to-orange-50/10 overflow-hidden"
+                className="relative border border-amber-200/40 rounded-3xl p-8 bg-gradient-to-br from-gray-50 via-amber-50/20 to-orange-50/10 overflow-hidden flex flex-col h-full min-h-[600px] transition-all duration-300"
               >
                 {/* Decoración sutil de fondo */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-200/10 to-orange-200/5 rounded-full blur-3xl" />
                 
-                <div className="relative z-10">
-                <p className="text-xs uppercase tracking-[0.3em] text-gray-500">{plan.frequency_label}</p>
-                <h3 className="text-2xl md:text-3xl font-semibold mt-2 mb-3 text-black">{plan.name}</h3>
-                <p className="text-sm md:text-base text-gray-600 mb-6 font-light">{plan.description}</p>
-                <div className="mb-6">
-                  <p className="text-4xl font-bold text-black">{formatPrice(plan.currency, plan.amount)}</p>
-                  <p className="text-gray-500 text-sm font-light mt-1">
-                    Facturación {plan.frequency_label?.toLowerCase()}
-                  </p>
-                </div>
-                <div className="space-y-3 text-sm md:text-base text-gray-700 font-light mb-8">
+                <div className="relative z-10 flex flex-col flex-grow">
+                      {promocionPlan && (
+                        <div className="mb-3 bg-gradient-to-r from-amber-700 to-orange-700 text-white px-4 py-2 rounded-lg inline-block shadow-lg shadow-amber-500/20">
+                          <p className="text-sm font-semibold">{promocionPlan.porcentajeDescuento}% OFF - {promocionPlan.nombre}</p>
+                        </div>
+                      )}
+                      <p className="text-xs uppercase tracking-[0.3em] text-gray-500">{plan.frequency_label}</p>
+                      <h3 className="text-2xl md:text-3xl font-semibold mt-2 mb-3 text-black">{plan.name}</h3>
+                      <p className="text-sm md:text-base text-gray-600 mb-6 font-light">{plan.description}</p>
+                      <div className="mb-6">
+                        {promocionPlan && precioConDescuento ? (
+                          <>
+                            <p className="text-2xl line-through text-gray-400">{formatPrice(plan.currency, plan.amount)}</p>
+                            <p className="text-4xl font-bold text-amber-700 mt-1">{formatPrice(plan.currency, Math.round(precioConDescuento))}</p>
+                            <p className="text-gray-500 text-sm font-light mt-1">
+                              Facturación {plan.frequency_label?.toLowerCase()}
+                            </p>
+                            <p className="text-amber-700 text-sm font-semibold mt-1">
+                              Ahorras {formatPrice(plan.currency, Math.round(plan.amount - precioConDescuento))}
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-4xl font-bold text-black">{formatPrice(plan.currency, plan.amount)}</p>
+                            <p className="text-gray-500 text-sm font-light mt-1">
+                              Facturación {plan.frequency_label?.toLowerCase()}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                <div className="space-y-3 text-sm md:text-base text-gray-700 font-light mb-8 flex-grow">
                   <p>• Acceso completo a prácticas y biblioteca de recursos.</p>
                   <p>• Comunidad privada y desafíos trimestrales.</p>
                   <p>• Material educativo y recordatorios para sostener tu proceso.</p>
@@ -187,7 +267,7 @@ const MoveCrewPlans = ({ plans }: MoveCrewPlansProps) => {
                 <button
                   onClick={() => handleSelect(plan)}
                   disabled={loadingPlanId === plan._id}
-                  className="w-full bg-gradient-to-r from-amber-700 to-orange-700 text-white rounded-2xl py-3 font-semibold text-sm md:text-base hover:from-amber-800 hover:to-orange-800 transition-all duration-300 shadow-lg shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-amber-700 to-orange-700 text-white rounded-2xl py-3 font-semibold text-sm md:text-base hover:from-amber-800 hover:to-orange-800 transition-all duration-300 shadow-lg shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-auto"
                 >
                   {loadingPlanId === plan._id ? (
                     <>
@@ -200,7 +280,8 @@ const MoveCrewPlans = ({ plans }: MoveCrewPlansProps) => {
                 </button>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         )}
 

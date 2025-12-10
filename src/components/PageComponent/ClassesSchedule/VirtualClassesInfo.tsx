@@ -21,17 +21,20 @@ const VirtualClassesInfo: React.FC<Props> = ({ classes }) => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const router = useRouter();
 
+  // Asegurar que classes sea un array
+  const safeClasses = Array.isArray(classes) ? classes : [];
+
   // Obtener tipos únicos de clases
   const classTypes = useMemo(() => {
-    const types = new Set(classes.map(clase => clase.type));
+    const types = new Set(safeClasses.map(clase => clase.type));
     return Array.from(types);
-  }, [classes]);
+  }, [safeClasses]);
 
   // Filtrar clases por tipo seleccionado
   const filteredClasses = useMemo(() => {
-    if (!selectedType) return classes;
-    return classes.filter(clase => clase.type === selectedType);
-  }, [classes, selectedType]);
+    if (!selectedType) return safeClasses;
+    return safeClasses.filter(clase => clase.type === selectedType);
+  }, [safeClasses, selectedType]);
 
   // Agrupar clases por tipo
   const classesByType = useMemo(() => {
@@ -60,7 +63,7 @@ const VirtualClassesInfo: React.FC<Props> = ({ classes }) => {
     return 'Duración variable';
   };
 
-  if (classes.length === 0) {
+  if (safeClasses.length === 0) {
     return (
       <div className="bg-dark-soft rounded-lg p-8 text-center">
         <h2 className="text-2xl font-bold text-white font-boldFont mb-4">

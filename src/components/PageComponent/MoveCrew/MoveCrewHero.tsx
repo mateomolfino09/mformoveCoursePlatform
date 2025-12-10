@@ -1,13 +1,38 @@
 'use client'
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 import { CldImage } from 'next-cloudinary';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../../../hooks/useAuth';
 import imageLoader from '../../../../imageLoader';
 
 const MoveCrewHero = () => {
+  const router = useRouter();
+  const auth = useAuth();
+
+  useEffect(() => {
+    // Cargar usuario si no está disponible
+    if (!auth.user) {
+      auth.fetchUser();
+    }
+  }, [auth.user]);
+
   const scrollToPlans = () => {
     const target = document.getElementById('move-crew-plans');
     target?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const handleButtonClick = () => {
+    // Si el usuario tiene suscripción activa, redirigir a /home
+    if (auth.user?.subscription?.active) {
+      router.push('/home');
+    } else {
+      // Si no tiene suscripción activa, scroll a planes
+      scrollToPlans();
+    }
+  };
+
+  const buttonText = auth.user?.subscription?.active ? 'Empezar' : 'Ver planes disponibles';
 
   return (
     <section className="relative w-full h-[100vh] md:h-screen flex items-center justify-center overflow-hidden">
@@ -33,7 +58,7 @@ const MoveCrewHero = () => {
         {/* <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/20 to-black/50" /> */}
       </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center text-white font-montserrat">
+      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center text-white font-montserrat bottom-10 md:bottom-0">
 
         <motion.h1           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -64,13 +89,13 @@ const MoveCrewHero = () => {
           className="flex justify-center"
         >
           <motion.button
-            onClick={scrollToPlans}
+            onClick={handleButtonClick}
             className="bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md text-white px-8 md:px-12 py-4 md:py-5 font-semibold text-base md:text-lg hover:from-amber-400/30 hover:via-orange-400/30 hover:to-rose-400/30 hover:text-white transition-all duration-300 font-montserrat rounded-2xl border border-amber-300/40 shadow-2xl shadow-amber-500/10"
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
           >
-            Ver planes disponibles
+            {buttonText}
           </motion.button>
         </motion.div>
       </div>
