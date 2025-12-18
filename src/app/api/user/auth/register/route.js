@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import connectDB from '../../../../../config/connectDB';
-import { sendEmail } from '../../../../../helpers/sendEmail';
+import { emailService } from '../../../../../services/email/emailService';
 import Users from '../../../../../models/userModel';
 import validateCaptcha from '../../validateCaptcha';
 import {validateRecaptcha} from '../../../recaptcha/validate';
@@ -82,30 +82,13 @@ export async function POST(request) {
 
       let origin = getCurrentURL();
         const link = `${origin}/email/${token}`;
-      const title = `<h1>Confirma tu email</h1>`;
-
-      const message = `
-          <div>     
-          <div>
-          <button style="background-color:black; border:none;border-radius: 4px;width:100%; padding:14px 0px; margin-bottom:15px">
-           <a style="color:white; text-decoration: none; font-weight:700; font-size:14px" href="${link}">Confirmar email </a>
-          </button>
-          </div>
-          <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de Video Stream.</p>
-          <hr style="height:2px;background-color:#221f1f;border:none">       
-         </div>`;
-
-      let resp = sendEmail({
-        title: title,
-        name: `Hola, ${newUser.name}:`,
-        content:
-          'Confirma tu email para poder empezar a disfrutar de Video Stream.',
-        message: message,
-        to: [{
-          email: newUser.email,
-          name: newUser.name
-        }], 
-        subject: 'Confirmar Mail'
+      await emailService.sendWelcomeEmail({
+        email: newUser.email,
+        name: newUser.name,
+        confirmLink: link,
+        buttonText: 'Confirmar email',
+        message: 'registro completado. Confirmá tu email para activar tu cuenta.',
+        secondaryMessage: 'Si no solicitaste este acceso, ignorá este correo.'
       });
 
       return NextResponse.json({ message: `Email enviado a ${newUser.email}, porfavor chequea tu correo.`, token}, { status: 200 })

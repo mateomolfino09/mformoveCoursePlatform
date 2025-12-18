@@ -27,6 +27,13 @@ export async function POST(req) {
       recurring: { interval: 'year', interval_count: 1 },
       product_data: { name: `${name} (Anual)` },
     });
+    
+    // Desactivar todos los planes anteriores antes de crear el nuevo
+    await MentorshipPlan.updateMany(
+      { active: true },
+      { $set: { active: false } }
+    );
+    
     // Guardar en la base de datos
     const plan = await MentorshipPlan.create({
       name,

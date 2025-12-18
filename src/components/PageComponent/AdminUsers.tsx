@@ -120,11 +120,15 @@ const AdminUsers = ({ initialData }: Props) => {
 
   return (
     <AdmimDashboardLayout>
-      <div className='w-full h-auto min-h-screen'>
-        <h1 className='text-2xl mt-4 mb-4'>Usuarios</h1>
+      <div className='w-full h-auto min-h-screen p-8'>
+        <div className='mb-12 mt-8'>
+          <h1 className='text-4xl md:text-5xl font-bold text-gray-900 font-montserrat mb-4'>Usuarios</h1>
+          <p className='text-gray-600 text-lg font-montserrat'>Gestiona todos los usuarios de la plataforma</p>
+        </div>
 
         {/* Selector de Filtros */}
-        <div className='mb-4'>
+        <div className='mb-6'>
+          <label className='block text-sm font-medium text-gray-700 mb-2 font-montserrat'>Filtrar por:</label>
           <select
             id='filter-select'
             value={filter}
@@ -136,10 +140,10 @@ const AdminUsers = ({ initialData }: Props) => {
               setFilter(selectedFilter);
               fetchUsers(1, selectedFilter);
             }}
-            className='bg-gray-800 text-white px-3 py-2 rounded-md'
+            className='w-full md:w-64 px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat'
           >
-            <option value='ALL'>Todos</option>
-            <option value='VIP'>VIP</option>
+            <option value='ALL'>Todos los usuarios</option>
+            <option value='VIP'>Solo VIP</option>
             <option value='NON_VIP'>No VIP</option>
           </select>
         </div>
@@ -198,25 +202,23 @@ const AdminUsers = ({ initialData }: Props) => {
         />
 
         {isOpenRemoveVIP && (
-          <div className='fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50'>
-            <div className='bg-white p-6 rounded-lg shadow-lg text-black'>
-              {' '}
-              {/* Se agregó text-black */}
-              <h2 className='text-lg font-semibold mb-4'>Confirmar</h2>
-              <p>
+          <div className='fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50'>
+            <div className='bg-white p-6 rounded-xl shadow-2xl border border-gray-200 max-w-md w-full mx-4'>
+              <h2 className='text-xl font-bold text-gray-900 mb-4 font-montserrat'>Confirmar</h2>
+              <p className='text-gray-700 mb-6 font-montserrat'>
                 ¿Seguro que quieres quitar la suscripción VIP a{' '}
-                {userSelected?.name}?
+                <span className='font-semibold'>{userSelected?.name}</span>?
               </p>
-              <div className='mt-4 flex justify-end space-x-2'>
+              <div className='flex justify-end space-x-3'>
                 <button
                   onClick={() => setIsOpenRemoveVIP(false)}
-                  className='px-4 py-2 bg-gray-300 rounded'
+                  className='px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-300 font-montserrat border border-gray-200'
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={removeVIP}
-                  className='px-4 py-2 bg-red-500 text-white rounded'
+                  className='px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-all duration-300 font-montserrat'
                 >
                   Confirmar
                 </button>

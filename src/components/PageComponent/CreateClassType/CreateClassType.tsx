@@ -98,7 +98,7 @@ const CreateClassType = () => {
       auth.fetchUser();
 
       toast.success(data.message);
-      router.push('/admin/classes')
+      router.push('/admin/memberships/classes')
     } catch (error: any) {
       toast.error(error.response.data.error);
     }

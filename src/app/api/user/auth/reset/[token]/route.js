@@ -35,6 +35,17 @@ export async function PUT(req, { params }) {
       if (user) {
         user.password = await bcrypt.hash(password, 12);
 
+        // Si el usuario no había verificado su email, marcarlo como verificado al usar el enlace
+        if (user.validEmail !== 'yes') {
+          user.validEmail = 'yes';
+          user.emailToken = undefined;
+          user.notifications.push({
+            title: 'Cuenta verificada',
+            message: 'Tu cuenta fue verificada al confirmar tu nueva contraseña.',
+            status: 'green'
+          });
+        }
+
         user.resetToken = undefined;
         user.notifications.push({
           title: 'Password reseteada',
@@ -42,10 +53,15 @@ export async function PUT(req, { params }) {
           status: 'green'
         });
         await user.save();
+
+        const hasActiveSub = user?.subscription?.active;
+        const redirectUrl = hasActiveSub ? '/home' : '/move-crew';
+
         return NextResponse.json(
           {
-            message: 'Se ha actualizado tu contraseña con éxito!',
-            user: user
+            message: 'Se ha actualizado tu contraseña con éxito! Tu cuenta quedó verificada.',
+            user: user,
+            redirect: redirectUrl
           },
           { status: 200 }
         );

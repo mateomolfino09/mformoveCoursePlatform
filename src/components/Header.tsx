@@ -211,7 +211,7 @@ const Header = ({
   return (
     <header className={`${isScrolled && 'bg-[#141414]'}`}>
       <div className='flex items-center space-x-2 md:space-x-10'>
-        <Link href={'/'}>
+        <Link href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/home' : '/'}>
           <img
             alt='icon image'
             src='/images/MFORMOVE_v2.negro03.png'
@@ -224,7 +224,7 @@ const Header = ({
         <ul className='hidden space-x-4 md:flex'>
           <li 
             className={`headerLink transition-all duration-200 ${loadingLink === 'home' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
-            onClick={() => handleLinkClick(routes.navegation.membresiaHome, 'home')}
+            onClick={() => handleLinkClick(routes.navegation.membership.home, 'home')}
           >
             {loadingLink === 'home' ? 'Cargando...' : 'Home'}
           </li>
@@ -257,7 +257,7 @@ const Header = ({
           ) : (
             <li 
               className={`headerLink transition-all duration-200 ${loadingLink === 'nuevo' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
-              onClick={() => handleLinkClick(routes.navegation.membresiaHome, 'nuevo')}
+              onClick={() => handleLinkClick(routes.navegation.membership.home, 'nuevo')}
             >
               {loadingLink === 'nuevo' ? 'Cargando...' : 'Nuevo'}
             </li>
@@ -269,7 +269,7 @@ const Header = ({
           ) : (
             <li 
               className={`headerLink transition-all duration-200 ${loadingLink === 'miLista' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
-              onClick={() => handleLinkClick(routes.navegation.membresiaHome, 'miLista')}
+              onClick={() => handleLinkClick(routes.navegation.membership.home, 'miLista')}
             >
               {loadingLink === 'miLista' ? 'Cargando...' : 'Mi Lista'}
             </li>

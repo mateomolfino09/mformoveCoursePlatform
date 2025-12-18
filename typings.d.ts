@@ -593,3 +593,107 @@ export interface FAQ {
   category?: string;
   order?: number;
 }
+
+export interface InPersonClassSchedule {
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  timezone: string;
+}
+
+export interface InPersonClassLocation {
+  name: string;
+  address: string;
+  city: string;
+  country: string;
+  coordinates?: {
+    lat: string;
+    lon: string;
+  };
+}
+
+export interface InPersonClassPrice {
+  amount: number;
+  currency: string;
+  type: 'clase_suelta' | 'mensual' | 'trimestral' | 'anual';
+}
+
+export interface InPersonClassAdditionalPrice {
+  label: string;
+  amount: number;
+  currency: string;
+}
+
+export interface InPersonClassFrequencyPrices {
+  oncePerWeek: VirtualClassPriceFrequency;
+  twicePerWeek: VirtualClassPriceFrequency;
+  threeTimesPerWeek: VirtualClassPriceFrequency;
+}
+
+export interface InPersonClass {
+  _id: string;
+  id: number;
+  name: string;
+  description: string;
+  instructor: string;
+  location: InPersonClassLocation;
+  schedules: InPersonClassSchedule[];
+  duration: number;
+  capacity: number | null;
+  currentEnrollments: number;
+  level: 'Principiante' | 'Intermedio' | 'Avanzado' | 'Todos los niveles';
+  classType: 'personalizado' | 'comun';
+  price: InPersonClassPrice;
+  frequencyPrices?: InPersonClassFrequencyPrices;
+  additionalPrices?: InPersonClassAdditionalPrice[];
+  image_url: string;
+  active: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface VirtualClassSchedule {
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  timezone: string;
+}
+
+export interface VirtualClassPriceFrequency {
+  amount: number;
+  currency: string;
+}
+
+export interface VirtualClassPrices {
+  oncePerWeek: VirtualClassPriceFrequency;
+  twicePerWeek: VirtualClassPriceFrequency;
+  threeTimesPerWeek: VirtualClassPriceFrequency;
+}
+
+export interface VirtualClassAdditionalPrice {
+  label: string;
+  amount: number;
+  currency: string;
+}
+
+export interface VirtualClass {
+  _id: string;
+  id: number;
+  name: string;
+  description: string;
+  instructor: string;
+  platform: 'Zoom' | 'Google Meet' | 'Microsoft Teams' | 'Otro';
+  meetingLink: string;
+  schedules: VirtualClassSchedule[];
+  duration: number;
+  capacity: number | null;
+  currentEnrollments: number;
+  level: 'Principiante' | 'Intermedio' | 'Avanzado' | 'Todos los niveles';
+  classType: 'personalizado' | 'comun';
+  prices: VirtualClassPrices;
+  additionalPrices?: VirtualClassAdditionalPrice[];
+  image_url: string;
+  active: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}

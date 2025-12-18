@@ -50,6 +50,13 @@ const endpoints = {
     createFreeSubscription: `/api/payments/createFreeSubscription`,
     createPaymentToken: `/api/payments/createPaymentToken`,
     cancelSubscription: (id:string) => `/api/payments/cancelSubscription/${id}`,
+    promocion: {
+      create: `/api/payments/promocion/create`,
+      edit: (id: string) => `/api/payments/promocion/${id}`,
+      getActive: `/api/payments/promocion/getActive`,
+      get: (id: string) => `/api/payments/promocion/${id}`,
+      delete: (id: string) => `/api/payments/promocion/${id}`,
+    },
     stripe: {
       createPaymentURL: `/api/payments/stripe/createPaymentURL`,
     }

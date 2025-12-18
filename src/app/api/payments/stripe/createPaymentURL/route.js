@@ -7,6 +7,8 @@ import { NextResponse } from 'next/server';
 import connectDB from '../../../../../config/connectDB';
 import mailchimp from "@mailchimp/mailchimp_marketing";
 import { createCheckoutSession } from '../createCheckoutSession';
+import Plan from '../../../../../models/planModel';
+import Promocion from '../../../../../models/promocionModel';
 
 export async function POST(req) {
     connectDB();
@@ -15,6 +17,7 @@ export async function POST(req) {
       server: process.env.MAILCHIMP_API_SERVER,
     });
     const { email, planId } = await req.json();
+    
     try {
       if (req.method === 'POST') {
 
@@ -24,11 +27,64 @@ export async function POST(req) {
           return NextResponse.json({ message: 'Usuario no encontrado'}, { status: 404 })
         }
 
-        if(user?.subscription != null && user?.subscription.active) {
+        if(user?.subscription != null && user?.subscription.active && !user?.subscription.isCanceled) {
           return NextResponse.json({ message: 'Ya estas subscripto y tus pagos se realizaron con éxito.', type: 'error', success: false}, { status: 401 })
         }
     
-        let url = await createCheckoutSession(planId, email)
+        // planId puede ser _id de MongoDB o stripePriceId (plan_token)
+        let plan = null;
+        
+        if (planId && planId.startsWith('price_')) {
+          plan = await Plan.findOne({ plan_token: planId });
+        } else {
+          try {
+            plan = await Plan.findById(planId);
+            if (!plan) {
+              plan = await Plan.findOne({ plan_token: planId });
+            }
+          } catch (error) {
+            if (error.name === 'CastError') {
+              plan = await Plan.findOne({ plan_token: planId });
+            } else {
+              throw error;
+            }
+          }
+        }
+        
+        let promocionId = null;
+        
+        if (plan) {
+          let frecuenciaPlan = '';
+          if (plan.frequency_type === 'month' || plan.frequency_type === 'monthly' || plan.frequency_type === 'mensual') {
+            frecuenciaPlan = 'mensual';
+          } else if (plan.frequency_type === 'quarter' || plan.frequency_type === 'quarterly' || plan.frequency_type === 'trimestral') {
+            frecuenciaPlan = 'trimestral';
+          } else if (plan.frequency_type === 'year' || plan.frequency_type === 'yearly' || plan.frequency_type === 'anual') {
+            frecuenciaPlan = 'trimestral';
+          }
+          
+          if (frecuenciaPlan) {
+            const now = new Date();
+            const promocionesActivas = await Promocion.find({
+              activa: true,
+              fechaInicio: { $lte: now },
+              fechaFin: { $gte: now },
+              $or: [
+                { frecuenciasAplicables: frecuenciaPlan },
+                { frecuenciasAplicables: 'ambas' }
+              ]
+            }).sort({ createdAt: -1 }).limit(1);
+            
+            if (promocionesActivas.length > 0) {
+              const promocion = promocionesActivas[0];
+              if (promocion.stripeCouponId) {
+                promocionId = promocion._id.toString();
+              }
+            }
+          }
+        }
+    
+        const url = await createCheckoutSession(plan?.plan_token || planId, email, plan?._id?.toString() || planId, promocionId);
 
         const planToken = jwt.sign(
           { planId: planId },
@@ -48,6 +104,10 @@ export async function POST(req) {
         return NextResponse.json({ message: 'Error inesperado, vuelva a intentar', type: 'error'}, { status: 401 })
       }
     } catch (error) {
-        return NextResponse.json({ message: 'Error inesperado, vuelva a intentar', type: 'error'}, { status: 500 })
+        return NextResponse.json({ 
+          message: 'Error inesperado, vuelva a intentar', 
+          type: 'error',
+          details: error instanceof Error ? error.message : 'Error desconocido'
+        }, { status: 500 })
     }
   };

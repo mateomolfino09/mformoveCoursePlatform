@@ -3,9 +3,7 @@
 import imageLoader from '../../../../imageLoader';
 import { routes } from '../../../constants/routes';
 import { useAuth } from '../../../hooks/useAuth';
-import ErrorComponent from '../../AlertComponent';
 import { MiniLoadingSpinner } from '../../MiniLoadingSpinner';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -18,10 +16,13 @@ import AlertComponent from '../../AlertComponent';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import LoginModalForm from './AccountForm';
 import NewsletterF from '../Index/NewsletterForm';
+import { CldImage } from 'next-cloudinary';
 
 function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<any>([]);
+  const [verifyInfo, setVerifyInfo] = useState<{ email: string; message?: string } | null>(null);
+  const [cooldown, setCooldown] = useState(0);
   const auth = useAuth();
   const router = useRouter();
   const [capsLock, setCapsLock] = useState<boolean>(false);
@@ -52,136 +53,151 @@ function LoginForm() {
 
     auth.signIn(email, password).then((res: any) => {
       if (res.type != 'error') {
-          router.push('/mentorship');
+          const hasActiveSub = res?.user?.subscription?.active || auth.user?.subscription?.active;
+          router.push(hasActiveSub ? '/home' : '/move-crew');
       } else {
-        setMessage((current: any) => [
-          ...current,
-          {
-            message: res.message,
-            type: alertTypes.error.type
-          }
-        ]);
+        if (res.validate) {
+          setVerifyInfo({ email, message: res.message });
+          setMessage([]);
+        } else {
+          setMessage((current: any) => [
+            ...current,
+            {
+              message: res.message,
+              type: alertTypes.error.type
+            }
+          ]);
+        }
         setLoading(false);
       }
     });
   };
 
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setInterval(() => setCooldown((s) => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(t);
+  }, [cooldown]);
+
+  const handleResendVerification = async () => {
+    if (!verifyInfo?.email || cooldown > 0) return;
+    try {
+      setLoading(true);
+      const res = await fetch('/api/user/auth/register/resendEmail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: verifyInfo.email })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCooldown(10);
+        setMessage([]);
+      } else {
+        setMessage([{ message: data?.error || 'No pudimos reenviar el correo.', type: alertTypes.error.type }]);
+      }
+    } catch (error: any) {
+      setMessage([{ message: error?.response?.data?.error || 'Error al reenviar.', type: alertTypes.error.type }]);
+    }
+    setLoading(false);
+  };
+
   return (
     <div>
-      <MainSideBar where={"index"}>
-      <div className='main-container background-gradient-right'>
-        {/* <div className='background-image background-gradient'>
-        <Image
-            src='/images/image00029.jpeg'
-            // src={srcImg}
-            alt={'image'}
-            fill={true}
-            loader={imageLoader}
-            className='image-gradient'
-          />
-          <div className='left-container'>
-            <h1 className='title font-boldFont'>MForMove Platform</h1>
-            <p className='text !mt-0'>Moverse es el medio para reconocerse</p>
-            <div className='about-us-btn-container'>
-              <a
-                href='/mentorship'
-                className='about-us-btn !py-3 rounded-full font-light font-montserrat !px-3'
-              >
-                Membresias
-              </a>
-            </div>
+      <MainSideBar where={'index'}>
+        <section className="relative min-h-screen bg-black text-white font-montserrat overflow-hidden">
+          <div className="absolute inset-0">
+            <CldImage
+              src="my_uploads/fondos/DSC01436_sy7os9"
+              alt="Login MFM"
+              fill
+              priority
+              className="hidden md:block object-cover opacity-65"
+              style={{ objectPosition: 'center top' }}
+              loader={imageLoader}
+            />
+            <CldImage
+              src="my_uploads/fondos/DSC01429_kbgawc"
+              alt="Login MFM mobile"
+              fill
+              priority
+              className="md:hidden object-cover opacity-65"
+              style={{ objectPosition: 'center top' }}
+              loader={imageLoader}
+            />
+            <div className="absolute inset-0 bg-black/50" />
           </div>
-        </div> */}
-        <div className='right-container'>
-          <div className='right-card-container'>
-          <Image
-            src='/images/image00029.jpeg'
-            // src={srcImg}
-            alt={'image'}
-            fill={true}
-            loader={imageLoader}
-            className='image-gradient-right max-h-screen'
-          />
-            <LoginModalForm submitFunction={signinUser} buttonTitle={"Ingresar"} showEmail={true} showPassword={true} title='Ingresar al sitio' showForget={true} showLogIn={false}/>
-            {/* <form className='form-container' action={signinUser}>
-              <h1 className='sub-title font-boldFont'>Sign In</h1>
-              <p className='sub-p'>
-                Te damos la bienvenida al mundo del movimiento :)
-              </p>
-              <div className='input-container mb-8'>
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  className='h-5 w-5 text-gray-400'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  stroke='currentColor'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth='2'
-                    d='M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207'
-                  />
-                </svg>
-                <input
-                  id='email'
-                  className='input-login'
-                  type='email'
-                  name='email'
-                  placeholder='Email Address'
-                />
-              </div>
-              <div className='input-container mb-2'>
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  className='h-5 w-5 text-gray-400'
-                  viewBox='0 0 20 20'
-                  fill='currentColor'
-                >
-                  <path
-                    fillRule='evenodd'
-                    d='M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z'
-                    clipRule='evenodd'
-                  />
-                </svg>
-                <input
-                  className='input-login'
-                  type='password'
-                  name='password'
-                  id='password'
-                  placeholder='Password'
-                />
-              </div>
-              <p className={`capslock ${!capsLock && 'hidden'}`}>
-                Bloq Mayús Activado
-              </p>
-              <div className='relative'>
-                <button type='submit' className='login-btn'>
-                  Login{' '}
-                </button>
-                {loading && <MiniLoadingSpinner />}
-              </div>
-              <div className='links-container flex flex-col md:flex-row md:justify-between mt-4 text-sm text-gray-500'>
-              <Link href={routes.user.forget}>
-                <span className='links text-center'>
-                  ¿Olvidaste tu contraseña?
-                </span>
-              </Link>
-              <Link href={routes.user.register}>
-    <span className='links text-center mt-2 md:mt-0'>¿No tienes una cuenta todavía?</span>
-  </Link>
-            </div>
-            </form> */}
-          </div>
-          {message?.map((mes: any) => (
-            <AlertComponent type={mes.type} message={mes.message} />
-          ))}
-        </div>
-      </div>
-      <NewsletterF/>
-      <Footer />
-      </MainSideBar>
 
+          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 pt-28 md:py-24 md:pt-32">
+            <div className="grid gap-10 justify-items-center">
+              <div className="text-center max-w-2xl space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/80 text-xs uppercase tracking-[0.2em]">
+                  <span>Acceso seguro</span>
+                </div>
+  
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-white drop-shadow-2xl">
+                  Ingresá a tu cuenta
+                </h1>
+                <p className="text-sm sm:text-base text-white/70 font-light">
+                  Si no tenés cuenta, registrate para empezar.
+                </p>
+              </div>
+
+              <div className="w-full max-w-md">
+                <div className="relative rounded-3xl  overflow-hidden backdrop-blur">
+                  <div className="absolute inset-0 pointer-events-none" />
+      
+                    <LoginModalForm
+                      submitFunction={signinUser}
+                      buttonTitle={'Ingresar'}
+                      showEmail={true}
+                      showPassword={true}
+                      title=""
+                      showForget={true}
+                      showLogIn={false}
+                      isLoading={loading}
+                    />
+                    {message?.map((mes: any) => (
+                      <AlertComponent key={mes.message} type={mes.type} message={mes.message} />
+                    ))}
+                    {verifyInfo && (
+                      <div className="mt-2 rounded-2xl border border-amber-300/30 bg-amber-500/10 text-amber-50 p-4 space-y-2">
+                        <div className="flex items-start gap-3">
+                          <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-amber-500/20 border border-amber-300/40 text-amber-100 text-sm font-bold">!</span>
+                          <div className="text-sm leading-snug flex-1">
+                            <p className="font-semibold">Confirma tu cuenta</p>
+                            <p className="text-amber-100/80">{verifyInfo.message || 'Necesitas validar tu email antes de ingresar.'}</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                          <button
+                            type="button"
+                            disabled={cooldown > 0 || loading}
+                            onClick={handleResendVerification}
+                            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-amber-300/60 text-amber-50 py-2.5 px-4 text-sm font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {cooldown > 0 ? `Reenviar en ${cooldown}s` : 'Reenviar verificación'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setVerifyInfo(null);
+                              setMessage([]);
+                              setCooldown(0);
+                            }}
+                            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-white text-black py-2.5 px-4 text-sm font-semibold shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all"
+                          >
+                            Cambiar correo
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <Footer />
+      </MainSideBar>
     </div>
   );
 }

@@ -18,15 +18,73 @@ import { CheckmarkIcon } from 'react-hot-toast';
 import Select, { StylesConfig } from 'react-select';
 import { toast } from 'react-toastify';
 import './SelectYourPlan.css'
+interface Promocion {
+  _id: string;
+  nombre: string;
+  descripcion?: string;
+  porcentajeDescuento: number;
+  frecuenciasAplicables: string[];
+  fechaFin: string;
+  codigoPromocional?: string;
+}
+
 interface Props {
   plans: Plan[];
+  promociones?: Promocion[];
   select: string;
   origin: string;
 }
 
-const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
+const SelectYourPlan = ({ plans, promociones = [], select = "", origin }: Props) => {
     const [planSelected, setPlanSelected] = useState<Plan | null | undefined>(plans[0] ?? null)
     const [loading, setLoading] = useState<boolean>(false)
+
+    // Función para obtener la promoción aplicable a un plan
+    const getPromocionAplicable = (plan: Plan | null | undefined): Promocion | null => {
+      if (!plan || !promociones || promociones.length === 0) return null;
+      
+      const ahora = new Date();
+      const promocionesValidas = promociones.filter((p: Promocion) => {
+        const fechaFin = new Date(p.fechaFin);
+        return fechaFin > ahora;
+      });
+
+      // Mapear frequency_label y frequency_type a frecuencias de promoción
+      const frecuenciaPlan = plan.frequency_label?.toLowerCase() || '';
+      const frequencyType = plan.frequency_type?.toLowerCase() || '';
+      let frecuenciaPromocion = '';
+      
+      if (frecuenciaPlan.includes('mensual') || 
+          frequencyType === 'month' || 
+          frequencyType === 'monthly' ||
+          frequencyType === 'mensual') {
+        frecuenciaPromocion = 'mensual';
+      } else if (frecuenciaPlan.includes('trimestral') || 
+                 frequencyType === 'quarter' || 
+                 frequencyType === 'quarterly' ||
+                 frequencyType === 'trimestral') {
+        frecuenciaPromocion = 'trimestral';
+      } else if (frecuenciaPlan.includes('anual') || 
+                 frequencyType === 'year' || 
+                 frequencyType === 'yearly' ||
+                 frequencyType === 'anual') {
+        // Los planes anuales pueden aplicar a promociones trimestrales o ambas
+        frecuenciaPromocion = 'trimestral';
+      }
+
+      // Buscar promoción que aplique a esta frecuencia
+      const promocionAplicable = promocionesValidas.find((p: Promocion) => {
+        return p.frecuenciasAplicables.includes(frecuenciaPromocion) || 
+               p.frecuenciasAplicables.includes('ambas');
+      });
+
+      return promocionAplicable || null;
+    };
+
+    const promocionPlan = getPromocionAplicable(planSelected);
+    const precioConDescuento = promocionPlan && planSelected
+      ? planSelected.amount * (1 - promocionPlan.porcentajeDescuento / 100)
+      : null;
 
     const auth = useAuth()
     const router = useRouter()
@@ -235,17 +293,24 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
         className='flex md:items-end md:justify-end right-0 mt-10
     '
       >
-        <Select
-            options={planSelect}
-            styles={colourStyles}
-            placeholder={planSelectedValue || '¡Elegí tu plan!'}
-            className='w-72 mr-5'
-            value={planSelectedValue}
-            onChange={(e) => {
-                setPlanSelected(plans.find(x => x.name === e.label && x.active))
-                setPlanSelectedValue(e.value)
-            }}
-        />
+        <div className='relative'>
+          {promocionPlan && (
+            <div className='absolute -top-8 right-0 bg-gradient-to-r from-[#ae9359] to-[#c9a86a] text-white px-3 py-1 rounded-full text-xs font-semibold z-10'>
+              {promocionPlan.porcentajeDescuento}% OFF
+            </div>
+          )}
+          <Select
+              options={planSelect}
+              styles={colourStyles}
+              placeholder={planSelectedValue || '¡Elegí tu plan!'}
+              className='w-72 mr-5'
+              value={planSelectedValue}
+              onChange={(e) => {
+                  setPlanSelected(plans.find(x => x.name === e.label && x.active))
+                  setPlanSelectedValue(e.value)
+              }}
+          />
+        </div>
       </div>
       {!auth.user && (
         <div className='w-full flex justify-end'>
@@ -292,7 +357,26 @@ const SelectYourPlan = ({ plans, select = "", origin }: Props) => {
     ) : (
         <>
             <div className='w-full md:w-96 flex flex-col justify-center items-center space-y-4 mt-5 text-center text-xs md:text-sm font-light'>
+              {promocionPlan && precioConDescuento ? (
+                <>
+                  <div className='bg-gradient-to-r from-[#ae9359] to-[#c9a86a] text-white px-4 py-2 rounded-lg mb-2'>
+                    <p className='font-semibold text-base'>{promocionPlan.porcentajeDescuento}% OFF - {promocionPlan.nombre}</p>
+                  </div>
+                  <div className='space-y-1'>
+                    <p className='line-through text-gray-400'>
+                      {planSelected?.amount} {planSelected?.currency}
+                    </p>
+                    <p className='text-lg font-semibold text-[#ae9359]'>
+                      {Math.round(precioConDescuento)} {planSelected?.currency} facturado {planSelected?.frequency_label}
+                    </p>
+                    <p className='text-xs text-gray-400'>
+                      Ahorras {Math.round(planSelected?.amount - precioConDescuento)} {planSelected?.currency}
+                    </p>
+                  </div>
+                </>
+              ) : (
                 <p>{planSelected?.amount} {planSelected?.currency} facturado {planSelected?.frequency_label} {planSelected?.frequency_label === "Anual" && `(ahorra ${Math.round(-planSelected?.amount + 12 * (plans.find(x => x.frequency_label != planSelected?.frequency_label && x.frequency_value)?.amount ?? 0))} ${planSelected?.currency})`} facturado hoy.</p>
+              )}
                 <p>Enviamos recordatorio antes de facturar para evitar pagos no deseados.</p>
             </div>
         </>

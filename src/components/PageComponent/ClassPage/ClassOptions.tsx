@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 import { useSnapshot } from 'valtio';
+import { motion } from 'framer-motion';
 
 interface Props {
   clase: IndividualClass;
@@ -23,47 +24,41 @@ const ClassOptions = ({ clase }: Props) => {
   };
 
   return (
-    <div className='w-full h-full flex-row mt-8 justify-between bg-dark px-2 lg:w-2/3 hidden'>
-      <div
-        className='w-full h-full flex flex-col justify-center items-center'
+    <div className='w-full flex flex-row gap-2 border-b border-gray-800/50 pb-1'>
+      <button
         onClick={handleClickRecursos}
+        className={`relative px-6 py-3 font-montserrat font-medium text-sm md:text-base transition-all duration-300 ${
+          snap.classHeaders === 'Recursos'
+            ? 'text-white'
+            : 'text-gray-400 hover:text-gray-300'
+        }`}
       >
-        <button
-          className={`font-semibold ${
-            snap.classHeaders === 'Recursos' ? 'text-white' : 'text-gray-300/60'
-          }`}
-        >
-          Recursos
-        </button>
-        <hr
-          className={`w-full border ${
-            snap.classHeaders === 'Recursos'
-              ? 'border-white'
-              : 'border-gray-500/40'
-          }`}
-        />
-      </div>
-      <div
-        className='w-full h-full flex flex-col justify-center items-center'
+        Recursos
+        {snap.classHeaders === 'Recursos' && (
+          <motion.div
+            layoutId="activeTab"
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500"
+            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+          />
+        )}
+      </button>
+      <button
         onClick={handleClickPreguntas}
+        className={`relative px-6 py-3 font-montserrat font-medium text-sm md:text-base transition-all duration-300 ${
+          snap.classHeaders === 'Preguntas'
+            ? 'text-white'
+            : 'text-gray-400 hover:text-gray-300'
+        }`}
       >
-        <button
-          className={`font-semibold ${
-            snap.classHeaders === 'Preguntas'
-              ? 'text-white'
-              : 'text-gray-300/60'
-          }`}
-        >
-          Preguntas
-        </button>
-        <hr
-          className={`w-full border ${
-            snap.classHeaders === 'Preguntas'
-              ? 'border-white'
-              : 'border-gray-500/40'
-          }`}
-        />
-      </div>
+        Preguntas
+        {(snap.classHeaders === 'Preguntas' || !snap.classHeaders || snap.classHeaders === 'Temario') && (
+          <motion.div
+            layoutId="activeTab"
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500"
+            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+          />
+        )}
+      </button>
     </div>
   );
 };

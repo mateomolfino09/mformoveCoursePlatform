@@ -1,35 +1,82 @@
-import React, { useEffect, useState } from 'react';
-import MentorshipBannerCarousel from './MentorshipBannerCarousel';
+'use client'
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CldImage } from 'next-cloudinary';
+import imageLoader from '../../../../imageLoader';
 
 const MentorshipPlansLoading = ({ show }: { show: boolean }) => {
-  // Transición fade out cuando show pasa a false
-  const [visible, setVisible] = useState(show);
-  useEffect(() => {
-    if (!show) {
-      const timeout = setTimeout(() => setVisible(false), 500);
-      return () => clearTimeout(timeout);
-    } else {
-      setVisible(true);
-    }
-  }, [show]);
+  const [isExiting, setIsExiting] = useState(false);
 
-  if (!visible) return null;
+  useEffect(() => {
+    if (!show && !isExiting) {
+      setIsExiting(true);
+    }
+    if (show) {
+      setIsExiting(false);
+    }
+  }, [show, isExiting]);
 
   return (
-    <div className={`fixed inset-0 z-50 transition-opacity duration-500 ${show ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-      <MentorshipBannerCarousel hideText={true} />
-      <div className="absolute inset-0 flex flex-col items-center justify-center z-50">
-        <div className="px-6 py-8 rounded-xl to-transparent flex flex-col items-center">
-          <h1 className="text-5xl md:text-7xl font-bold text-white drop-shadow-2xl mb-6 font-montserrat text-center">
-            Mentoría Online
-          </h1>
-          <p className="text-xl md:text-3xl text-white font-light drop-shadow-xl max-w-2xl mx-auto font-montserrat text-center mb-8">
-            Programa personalizado guiado por Mateo Molfino
-          </p>
-          <div className="loading-spinner" />
-        </div>
-      </div>
-    </div>
+    <AnimatePresence mode="wait" onExitComplete={() => setIsExiting(false)}>
+      {show && (
+        <motion.div
+          key="loading-screen"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="fixed inset-0 bg-black z-[9999]"
+        >
+          <div className="absolute inset-0">
+            <CldImage
+              src="my_uploads/fondos/DSC01437_ds4vxz"
+              alt="Mentoría Online"
+              fill
+              priority
+              className="hidden md:block object-cover opacity-50"
+              style={{ objectPosition: 'center top' }}
+              preserveTransformations
+              loader={imageLoader}
+            />
+            <CldImage
+              src="my_uploads/fondos/DSC01559_elui2h"
+              alt="Mentoría Online"
+              fill
+              priority
+              className="md:hidden object-cover opacity-50"
+              style={{ objectPosition: 'center top' }}
+              preserveTransformations
+              loader={imageLoader}
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80" />
+          </div>
+
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-white font-montserrat">
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="text-sm uppercase tracking-[0.4em] text-white/70 mb-4"
+            >
+              cargando
+            </motion.p>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-4xl md:text-6xl font-bold mb-6"
+            >
+              Mentoría Online
+            </motion.h1>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+              className="h-10 w-10 border-2 border-white/30 border-t-white rounded-full animate-spin"
+            />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

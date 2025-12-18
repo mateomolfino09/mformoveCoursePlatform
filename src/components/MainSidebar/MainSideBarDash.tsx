@@ -6,7 +6,8 @@ import {
   HomeIcon,
   PlusCircleIcon,
   TableCellsIcon,
-  UserIcon
+  UserIcon,
+  XMarkIcon
 } from '@heroicons/react/24/solid';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import Link from 'next/link';
@@ -78,7 +79,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
       <div className='w-full h-full relative top-40 md:top-28 right-12 flex flex-col space-y-4 md:space-y-4 justify-start lg:items-end mr-12 lg:mr-24'>
         {!IS_MEMBERSHIP_PAUSED && (
           <Link
-            href={`${routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip)}`}
+            href={`${routes.navegation.membership.entry(auth?.user?.subscription?.active || auth?.user?.isVip)}`}
           >
             <m.div
               initial={{ color: '#fff', x: 700 }}
@@ -96,6 +97,22 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             </m.div>
           </Link>
         )}
+        <Link href="/move-crew">
+          <m.div
+            initial={{ color: '#fff', x: 700 }}
+            animate={+windowWidth < 768 ? animationPhones : animation}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#fff';
+            }}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
+            className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+          >
+            <h2 className='font-light lg:text-xl'>Membresía Online</h2>
+            <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
+            Move Crew
+            </h1>
+          </m.div>
+        </Link>
         <Link href="/mentorship">
           <m.div
             initial={{ color: '#fff', x: 700 }}
@@ -108,7 +125,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
           >
             <h2 className='font-light lg:text-xl'>Mentoría</h2>
             <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
-              Entrenamiento Personal
+              Entrena 1 a 1
             </h1>
           </m.div>
         </Link>
@@ -122,9 +139,9 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
             className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
           >
-            <h2 className='font-light lg:text-xl'>Eventos</h2>
+            <h2 className='font-light lg:text-xl'>Talleres y Eventos</h2>
             <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
-              Experiencias únicas
+              Experiencias Únicas
             </h1>
           </m.div>
         </Link>
@@ -201,7 +218,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
           </>
         )}
 
-        <Link href="/faq">
+        {/* <Link href="/faq">
           <m.div
             initial={{ color: '#fff', x: 700 }}
             animate={+windowWidth < 768 ? animationPhones : animation}
@@ -216,7 +233,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
               Preguntas Frecuentes
             </h1>
           </m.div>
-        </Link>
+        </Link> */}
 
         {auth.user && auth.user.rol === 'Admin' && (
           <>

@@ -40,7 +40,7 @@ const AdmimDashboardLayout = ({ children }: Props) => {
   }, []);
 
   return (
-    <div className=''>
+    <div className='bg-gray-50 min-h-screen'>
       <AdminDashboardTopBar
         showNav={showNav}
         setShowNav={setShowNav}
@@ -59,11 +59,11 @@ const AdmimDashboardLayout = ({ children }: Props) => {
         <AdminDashboardSideBar />
       </Transition>
       <main
-        className={`bg-gray-700 min-h-screen rounded-sm h-full pt-16 transition-all duration-[400ms] ${
+        className={`bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 min-h-screen h-full pt-16 transition-all duration-[400ms] ${
           showNav && !isMobile ? 'pl-56' : ''
         }`}
       >
-        <div className='flex flex-col justify-center items-center px-4 md:px-16 rounded-sm h-full w-full overflow-hidden pb-4'>
+        <div className='flex flex-col justify-start items-start px-4 md:px-16 rounded-sm h-full w-full overflow-hidden pb-8'>
           {children}
         </div>
       </main>

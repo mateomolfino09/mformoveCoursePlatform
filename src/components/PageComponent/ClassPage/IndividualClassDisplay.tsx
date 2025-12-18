@@ -17,7 +17,7 @@ import { XCircleIcon } from '@heroicons/react/24/outline';
 import { ChevronRightIcon, FlagIcon } from '@heroicons/react/24/solid';
 import MuiModal from '@mui/material/Modal';
 import axios from 'axios';
-import { useAnimation } from 'framer-motion';
+import { useAnimation, motion } from 'framer-motion';
 import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
@@ -41,6 +41,8 @@ import ClassDescription from './ClassDescription';
 import Footer from '../../Footer';
 import VimeoPlayer from './VimeoPlayer';
 import { routes } from '../../../constants/routes';
+import MoveCrewLoading from '../MoveCrew/MoveCrewLoading';
+import RecommendedClasses from './RecommendedClasses';
 
 interface Props {
   clase: IndividualClass;
@@ -55,6 +57,7 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
   const [resumeModal, setResumeModal] = useState<boolean>(false);
   const [hasWindow, setHasWindow] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [playerRef, setPlayerRef] = useState<RefObject<ReactPlayer> | null>(
     null
   );
@@ -73,11 +76,13 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setHasWindow(true);
-
       setWindowWidth(window.innerWidth);
+      
+      // Finalizar loading inicial después de un pequeño delay
+      setTimeout(() => {
+        setInitialLoading(false);
+      }, 500);
     }
-
-    
   }, []);
 
   const handleClose = () => {
@@ -107,7 +112,10 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
     //   );
     }, MINUTE_MS);
 
-    window.innerWidth > 768 ? (state.classHeaders = 'Recursos') : null;
+    // Asegurar que 'Preguntas' sea el valor por defecto al cargar la página
+    if (!state.classHeaders || state.classHeaders === 'Temario') {
+      state.classHeaders = 'Preguntas';
+    }
 
     return () => clearInterval(interval);
   }, []);
@@ -137,30 +145,42 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
   }, [showNav]);
 
   useEffect(() => {
-    const cookies: any = Cookies.get('userToken')
-    
-    if (!cookies && !clase?.isFree) {
-      router.push('/login');
+    const cookies: any = Cookies.get('userToken');
+    const hasCookie = !!cookies;
+
+    // Si la clase es gratuita, no aplicamos gating
+    if (clase?.isFree) {
+      if (typeof window !== 'undefined') setHasWindow(true);
+      return;
     }
 
-    if(!auth.user && !clase?.isFree || (!auth?.user?.subscription?.active && auth?.user?.rol != 'Admin' && !auth?.user?.isVip && !clase?.isFree)) {
-      router.push('/mentorship')
+    // Sin cookie -> redirigir
+    if (!hasCookie) {
+      router.push('/move-crew');
+      return;
     }
 
-    if(!auth.user) {
-      auth.fetchUser()
-      state.loginForm = true
+    // Tenemos cookie pero todavía no se cargó el usuario: intentar fetch y esperar
+    if (!auth.user || typeof auth.user.subscription === 'undefined') {
+      auth.fetchUser();
+      return;
     }
-    else {
-      state.loginForm = false
+
+    // Con usuario cargado, validar acceso
+    const hasAccess =
+      auth.user.subscription?.active ||
+      auth.user.isVip ||
+      auth.user.rol === 'Admin';
+
+    if (!hasAccess) {
+      router.push('/move-crew');
+      return;
     }
-    
 
     if (typeof window !== 'undefined') {
       setHasWindow(true);
     }
-
-  }, [router, auth.user, snap.loginForm]);
+  }, [router, auth.user, clase?.isFree, auth]);
 
   useEffect(() => {
     // Function to handle scroll event
@@ -184,101 +204,145 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
   }, []);
 
   return (
-    <MainSideBar where={'index'}>
-        <div className='relative h-full bg-dark overflow-x-clip md:pt-12 pt-0'>
-        <main
-            className={`relative flex flex-col bg-dark md:pl-11 md:top-16 lg:top-0 ${
-            showNav ? '' : ''
-            }`}
-        >
-            <div className='w-full h-full flex flex-row'> 
-            {hasWindow && (
-                <>
-                <div className='w-full h-full lg:w-2/3'>
-                    {/* <VideoPlayer
-                    url={clase.link}
+    <>
+      <MoveCrewLoading show={initialLoading} />
+      <MainSideBar where={'index'}>
+        <div className='relative min-h-screen bg-black overflow-x-hidden font-montserrat'>
+        <main className='relative flex flex-col bg-black'>
+          {/* Sección del Video */}
+          <section className='relative w-full bg-black pt-20 md:pt-16'>
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12'>
+              {hasWindow && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className='relative w-full rounded-2xl md:rounded-3xl overflow-hidden bg-black border border-gray-800/50 shadow-[0_15px_45px_rgba(0,0,0,0.6)]'
+                >
+                  <VimeoPlayer videoId={clase.link} />
+                </motion.div>
+              )}
+            </div>
+          </section>
+
+          {/* Contenido Principal */}
+          <section className='relative w-full bg-black py-8 md:py-12'>
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12'>
+              <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12'>
+                {/* Columna Principal */}
+                <div className='lg:col-span-2 space-y-8'>
+                  {/* Título y Tags */}
+                  <ClassData
                     clase={clase}
-                    img={clase.image_url}
-                    courseUser={courseUser}
-                    setPlayerRef={(val: any) => setPlayerRef(val)}
-                    play={play}
-                    /> */}
-                    <VimeoPlayer
-                    videoId={clase.link}
+                    setForward={setForward}
+                    setTime={setTime}
+                    playerRef={playerRef}
                   />
+
+                  {/* Descripción */}
+                  <ClassThumbnail clase={clase} />
+
+                  {/* Tabs de Navegación */}
+                  <ClassOptions clase={clase} />
+
+                  {/* Contenido según tab seleccionado */}
+                  <div className='w-full min-h-[400px]'>
+                    {snap.classHeaders === 'Recursos' ? (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4 }}
+                      >
+                        <ClassResources clase={clase} />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4 }}
+                      >
+                        <ClassQuestions
+                          user={auth.user}
+                          clase={clase}
+                          questionsDB={questions ? questions : []}
+                        />
+                      </motion.div>
+                    )}
+                  </div>
                 </div>
-                </>
-            )}
+
+                {/* Sidebar - Preguntas en Desktop */}
+                {windowWidth > 1024 && (
+                  <div className='lg:col-span-1'>
+                    <div className='sticky top-24'>
+                      <ClassQuestions 
+                        user={auth.user} 
+                        clase={clase} 
+                        questionsDB={questions ? questions : []} 
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-            {windowWidth > 1024 && (
-            <div className='w-1/3 absolute right-0 hidden lg:block md:mt-12'>
-                <ClassQuestions user={auth.user} clase={clase} questionsDB={questions ? questions : []} />
-            </div>
-            )}
-            <ClassData
-            clase={clase}
-            setForward={setForward}
-            setTime={setTime}
-            playerRef={playerRef}
-            />
-            <ClassThumbnail clase={clase} />
-            <ClassOptions clase={clase} />
-            <div className='w-full h-full hidden'>
-            {snap.classHeaders === 'Recursos' && (
-                <>
-                <ClassResources clase={clase} />
-                </>
-            )}
-            {snap.classHeaders === 'Preguntas' && (
-                <>
-                <ClassQuestions
-                    user={auth.user}
-                    clase={clase}
-                    questionsDB={questions ? questions : []}
-                />
-                </>
-            )}
-            </div>
-            
+          </section>
+
+          {/* Clases Recomendadas */}
+          <RecommendedClasses 
+            currentClassId={clase._id || clase.id} 
+            currentClassType={clase.type}
+          />
         </main>
         {resumeModal && (
-            <MuiModal
+          <MuiModal
             open={resumeModal}
             onClose={handleClose}
-            className='fixed z-50 m-auto w-full max-w-md md:max-w-xl max-h-48 overflow-hidden overflow-y-scroll rounded-md scrollbar-hide bg-[#181818]/90 shadow-2xl'
+            className='fixed z-50 flex items-center justify-center p-4'
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+              className='relative w-full max-w-md md:max-w-xl bg-gradient-to-br from-black/95 via-gray-900/95 to-black/95 backdrop-blur-md border border-amber-300/20 rounded-2xl md:rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden'
             >
-            <>
-                <button
+              <button
                 onClick={handleClose}
-                className='modalButton absolute right-0 top-2 !z-40 h-9 w-9 border-none'
-                >
+                className='absolute right-4 top-4 z-40 h-8 w-8 flex items-center justify-center text-white/70 hover:text-white transition-colors'
+              >
                 <XCircleIcon className='h-6 w-6' />
-                </button>
-                <div className='flex w-full h-full justify-center items-center p-12 relative bottom-6'>
-                <h3 className='text-lg md:text-xl flex text-center'>
-                    Esta clase ya fue empezada, desea continuar viendo desde el
-                    minuto
+              </button>
+              
+              <div className='p-8 md:p-12'>
+                <h3 className='text-xl md:text-2xl font-montserrat font-semibold text-white mb-8 text-center'>
+                  Esta clase ya fue empezada, ¿deseas continuar viendo desde donde quedaste?
                 </h3>
+                
+                <div className='flex flex-col sm:flex-row gap-4 justify-center'>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className='bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 text-white px-8 py-3 rounded-full font-montserrat font-medium hover:border-amber-300/60 hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300'
+                  >
+                    Continuar
+                  </motion.button>
+                  <motion.button
+                    onClick={handleClose}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className='bg-black/80 border border-gray-700/50 text-white px-8 py-3 rounded-full font-montserrat font-medium hover:border-gray-600/70 hover:bg-black/90 transition-all duration-300'
+                  >
+                    Empezar desde el inicio
+                  </motion.button>
                 </div>
-                <button
-                className='modalButton absolute left-12 top-32 !z-40 h-8 w-24 md:w-32 bg-gray-200 text-black hover:scale-105 transition duration-300 shadow-2xl'
-                >
-                <h3 className='text-sm md:text-sm'>Continuar</h3>
-                </button>
-                <button
-                onClick={handleClose}
-                className='modalButton absolute right-12 top-32 !z-40 h-8 w-24 md:w-32 shadow-2xl
-                    bg-black hover:scale-105 transition duration-300'
-                >
-                <h3 className='text-sm md:text-sm'>Descartar</h3>
-                </button>
-            </>
-            </MuiModal>
+              </div>
+            </motion.div>
+          </MuiModal>
         )}
         <Footer />
         </div>
-    </MainSideBar>
-
+      </MainSideBar>
+    </>
   );
 }
 

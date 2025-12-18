@@ -101,7 +101,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
           className={`bg-transparent fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${(isScrolled || headerScroll) && 'bg-white/80'} ${where === "home" ? "mt-28" : ""}`}
         >
           <div className=''>
-            <Link href={`${path === routes.navegation.selectPlan ? routes.navegation.membresiaHome : path === routes.navegation.membresiaHome ? "/" : "/"}`}>
+            <Link href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/home' : '/'}>
             <>
               {showNav ? (
                 <>
@@ -143,9 +143,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
                     <p className="text-black/50 font-light -mt-1">Kinetic</p>
                   </a>
                 </div>
-                <div>
-
-                </div>
+                <div />
               </PopoverPanel>
             </Popover>
             <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${path == routes.navegation.mentorship && '!text-black'}`} onClick={() => {
@@ -205,7 +203,13 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
             </div>
           </div>
         </div>
-          <div className='flex items-center pr-4 md:pr-16'>
+          <div className='flex items-center pr-4 md:pr-16 gap-3'>
+            {auth.user?.rol === 'Admin' && (
+              <Cog8ToothIcon
+                className={`h-6 w-6 cursor-pointer ${showNav ? 'text-white' : 'text-black/80'} hover:text-black`}
+                onClick={() => router.push('/admin')}
+              />
+            )}
             <Menu as='div' className='relative inline-block text-left'>
               <div>
                 <MenuButton className='inline-flex w-full justify-center items-center'>

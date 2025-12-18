@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '../../../../config/connectDB';
 import Plan from '../../../../models/planModel';
 import MentorshipPlan from '../../../../models/mentorshipPlanModel';
+import Promocion from '../../../../models/promocionModel';
 import { revalidateTag } from 'next/cache';
 
 // Conectar a la base de datos
@@ -13,6 +14,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const planType = searchParams.get('type') || 'membership';
     const planId = searchParams.get('id');
+    const getAll = searchParams.get('all') === 'true'; // Para admin: obtener todos los planes
     
     let plans;
     
@@ -21,9 +23,13 @@ export async function GET(request) {
         // Si se proporciona un ID específico, buscar ese plan
         plans = await MentorshipPlan.findById(planId);
         plans = plans ? [plans] : [];
+      } else if (getAll) {
+        // Si se solicita todos (para admin), obtener todos los planes ordenados por fecha de creación
+        plans = await MentorshipPlan.find({}).sort({ createdAt: -1 });
       } else {
-        // Si no hay ID, obtener todos los planes activos
-        plans = await MentorshipPlan.find({ active: true }).sort({ createdAt: -1 });
+        // Si no hay ID y no es admin, obtener solo el plan activo más reciente (el último creado)
+        const activePlan = await MentorshipPlan.findOne({ active: true }).sort({ createdAt: -1 });
+        plans = activePlan ? [activePlan] : [];
       }
     } else {
       if (planId) {
@@ -36,8 +42,24 @@ export async function GET(request) {
       }
     }
     
+    // Obtener promociones activas para membresías
+    let promociones = [];
+    if (planType === 'membership') {
+      const now = new Date();
+      promociones = await Promocion.find({
+        activa: true,
+        fechaFin: { $gte: now },
+        fechaInicio: { $lte: now }
+      }).sort({ createdAt: -1 });
+    }
+    
     revalidateTag('plans');
-    return NextResponse.json(plans, {
+    
+    // Si hay promociones, devolver objeto con plans y promociones
+    // Si no hay promociones, devolver solo plans para compatibilidad hacia atrás
+    const response = promociones.length > 0 ? { plans, promociones } : plans;
+    
+    return NextResponse.json(response, {
         status: 200,
         headers: { 
           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',

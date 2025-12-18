@@ -294,7 +294,7 @@ const EventHero: React.FC<Props> = ({
                   >
                     {loading ? (
                       <>
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/>
                         <span>Procesando...</span>
                       </>
                     ) : (
@@ -422,19 +422,19 @@ const EventHero: React.FC<Props> = ({
                       {evento.beneficios && evento.beneficios.length > 0 ? (
                         evento.beneficios.map((beneficio, index) => (
                           <li key={index} className='flex items-center space-x-2 md:space-x-3 hover:text-white transition-colors duration-200 text-xs md:text-sm'>
-                            <div className='w-2 h-2 bg-white rounded-full'></div>
+                            <div className='w-2 h-2 bg-white rounded-full'/>
                             <span>{beneficio}</span>
                           </li>
                         ))
                       ) : (
                         <>
                           <li className="flex items-center space-x-2 md:space-x-3 hover:text-white transition-colors duration-200 text-xs md:text-sm">
-                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                            <div className="w-2 h-2 bg-white rounded-full"/>
                             <span>Acceso completo al evento</span>
                           </li>
                           {evento.online && (
                             <li className="flex items-center space-x-2 md:space-x-3 hover:text-white transition-colors duration-200 text-xs md:text-sm">
-                              <div className="w-2 h-2 bg-white rounded-full"></div>
+                              <div className="w-2 h-2 bg-white rounded-full"/>
                               <span>Grabación del evento</span>
                             </li>
                           )}
@@ -463,7 +463,7 @@ const EventHero: React.FC<Props> = ({
       <div className="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2">
         <div className="animate-bounce">
           <div className="w-4 h-7 md:w-6 md:h-10 border-2 border-white/30 rounded-full flex justify-center">
-            <div className="w-1 h-2 md:w-1 md:h-3 bg-white/60 rounded-full mt-1 md:mt-2 animate-pulse"></div>
+            <div className="w-1 h-2 md:w-1 md:h-3 bg-white/60 rounded-full mt-1 md:mt-2 animate-pulse"/>
           </div>
         </div>
       </div>

@@ -1,148 +1,74 @@
-import { useRouter, usePathname } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
-import { AiOutlineCheckCircle } from 'react-icons/ai';
-import Select, { StylesConfig } from 'react-select';
+import React from 'react';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { useAppSelector } from '../../../redux/hooks';
 import './registerStyle.css';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
-
-const colourStyles: StylesConfig<any> = {
-  control: (styles) => ({
-    ...styles,
-    backgroundColor: '#333',
-    height: 55,
-    borderRadius: 6,
-    padding: 0
-  }),
-  option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    return { ...styles, color: '#808080' };
-  },
-  input: (styles) => ({ ...styles, backgroundColor: '', color: '#fff' }),
-  placeholder: (styles) => ({ ...styles, color: '#fff' }),
-  singleValue: (styles, { data }) => ({ ...styles, color: '#808080' })
-};
 
 interface Props {
   signUp: any;
   recaptchaRef: any;
-  step3ToStep2: any
+  step3ToStep2: any;
 }
 
 const RegisterStepThree = ({ signUp, recaptchaRef, step3ToStep2 }: Props) => {
-  const router = useRouter();
   const user = useAppSelector(
     (state) => state.registerReducer.value
   );
-
-  useEffect(() => {
-    recaptchaRef.re
-  }, [])
-  
-
-  const key =
-    process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY != undefined
-      ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-      : '';
 
   const handleClickBack = () => {
     step3ToStep2();
   };
 
   function onChangeCaptcha(value: any) {
-    //custom fetch and at the end do a reset
-   if (recaptchaRef && recaptchaRef.current && recaptchaRef.current.reset) {
-        recaptchaRef.current.reset()
+    if (recaptchaRef && recaptchaRef.current && recaptchaRef.current.reset) {
+      recaptchaRef.current.reset();
     }
-}
+  }
+
+  const rows = [
+    { label: 'Email', value: user.email },
+    { label: 'Nombre', value: user.firstname },
+    { label: 'Apellido', value: user.lastname },
+    { label: 'Género', value: user.gender },
+    { label: 'País', value: user.country },
+    { label: 'Password', value: user.password },
+  ];
 
   return (
-    <div>
-      {/* Logo position */}
-      <div className='flex flex-col items-center justify-center relative mt-24 sm:mt-24 space-y-4 rounded py-12'>
-        <AiOutlineCheckCircle className='text-light-red w-12 h-12' />
-        <p className='step'>PASO 3 DE 3</p>
-        <h1 className='title-step-one'>
-          Solo resta que confirmes tus datos!
-        </h1>
-      </div>
-      <div className='inputs-container'>
-        <div className='input-container overflow-visible'>
-          <label className='text-white text-base text-start w-24 '>
-            Email:
-          </label>
-          <input
-            className='input-step-three'
-            type='text'
-            value={user.email}
-            readOnly
-          />
+    <div className="w-full flex justify-center md:min-w-[500px]">
+      <div className="w-full max-w-lg mx-auto bg-[#0f1115]/85 text-white shadow-2xl px-4 rounded-3xl overflow-hidden backdrop-blur p-6 md:p-8 space-y-6">
+        <div className="space-y-2 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/80 text-xs uppercase tracking-[0.2em]">
+            <span>Paso 3 de 3</span>
+          </div>
+          <h1 className="text-3xl md:text-5xl font-bold leading-tight">Confirma tus datos</h1>
+          <p className="text-sm md:text-lg text-white/70">Revisa que todo esté correcto antes de enviar.</p>
         </div>
-        <div className='input-container'>
-          <label className='label-step-three'>
-            Nombre:
-          </label>
-          <input
-            className='input-step-three'
-            type='text'
-            value={user.firstname}
-            readOnly
-          />
-        </div>
-        <div className='input-container'>
-          <label className='label-step-three'>
-            Apellido:
-          </label>
-          <input
-            className='input-step-three'
-            type='text'
-            value={user.lastname}
-            readOnly
-          />
-        </div>
-        <div className='input-container'>
-          <label className='label-step-three'>
-            Género:
-          </label>
-          <input
-            className='input-step-three'
-            type='text'
-            value={user.gender}
-            readOnly
-          />
-        </div>
-        <div className='input-container'>
-          <label className='label-step-three'>País:</label>
-          <input
-            className='input-step-three'
-            type='text'
-            value={user.country}
-            readOnly
-          />
-        </div>
-        <div className='input-container'>
-          <label className='label-step-three'>
-            Password:
-          </label>
-          <input
-            className='input-step-three'
-            type='text'
-            value={user.password}
-            readOnly
-          />
-        </div>
-      </div>
-      <div className='w-full flex justify-center items-center space-x-4 mt-3 pb-12'>
-      <div onClick={() =>  handleClickBack()} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
-                <p className='text-white group-hover:text-black'>Volver</p>
 
-        </div>
-        <div onClick={(e) => signUp(e)} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
-            <p className='text-white group-hover:text-black'>Registrarme</p>
-            <ArrowRightIcon className='w-4 group-hover:text-black ml-2 group-hover:translate-x-1 transition-all duration-500'/>
-
+        <div className="space-y-3">
+          {rows.map((item) => (
+            <div key={item.label} className="flex flex-col gap-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+              <span className="text-xs uppercase tracking-wide text-white/60">{item.label}</span>
+              <span className="text-sm md:text-base text-white break-words">{item.value}</span>
             </div>
+          ))}
+        </div>
+
+        <div className='flex flex-col sm:flex-row sm:justify-between gap-3 pt-2'>
+          <button
+            type='button'
+            onClick={handleClickBack}
+            className='w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 text-white py-3 px-6 text-base font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all'
+          >
+            Volver
+          </button>
+          <button
+            type='button'
+            onClick={(e) => signUp(e)}
+            className='w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-white via-[#f7f7f7] to-[#eaeaea] text-black py-3 px-6 text-base font-semibold shadow-lg shadow-black/25 border border-white/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-black/40 hover:scale-[1.01]'
+          >
+            Registrarme <ArrowRightIcon className='w-4' />
+          </button>
+        </div>
       </div>
     </div>
   );

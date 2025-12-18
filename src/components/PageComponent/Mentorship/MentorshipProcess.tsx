@@ -2,6 +2,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
+import Image from 'next/image';
+import imageLoader from '../../../../imageLoader';
 
 const MentorshipProcess = () => {
   const steps = [
@@ -66,7 +68,7 @@ const MentorshipProcess = () => {
   ];
 
   return (
-    <section className="py-10 bg-black font-montserrat">
+    <section className="py-10 bg-[#FAF8F3] font-montserrat">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0 }}
@@ -75,19 +77,11 @@ const MentorshipProcess = () => {
           viewport={{ once: true }}
           className="mb-0 relative"
         >
-          {/* DNA Helix en absolute - grande y sutil */}
-          <div className="absolute -top-10 -right-4 w-40 h-40 md:w-96 md:h-96 opacity-50 pointer-events-none">
-            <img 
-              src="/images/svg/dnahelix3.svg" 
-              alt="DNA Helix"
-              className="w-full h-full object-contain filter invert"
-            />
-          </div>
-          
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white relative z-10">
+          <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-500 mb-3">El proceso</p>
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-black relative z-10">
             Hablemos de estructura...
           </h2>
-          <p className="text-lg md:text-xl text-white/70 font-light max-w-3xl leading-relaxed relative z-10">
+          <p className="text-lg md:text-xl text-gray-600 font-light max-w-3xl leading-relaxed relative z-10">
             Todo camino empieza en un punto. Tenemos que trazar estas lineas entre nodos para que el camino sea coherente. <br/> <br/>
           </p>
         </motion.div>
@@ -100,24 +94,28 @@ const MentorshipProcess = () => {
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
               viewport={{ once: true }}
-              className="group bg-white/5 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10 hover:bg-white/10 transition-all duration-300"
+              className="group bg-gradient-to-br from-white via-[#FAF8F3]/50 to-[#F5F1E8]/30 backdrop-blur-sm rounded-3xl p-6 md:p-8 border border-[#AF50E5]/20 hover:bg-gradient-to-br hover:from-white hover:via-[#FAF8F3] hover:to-[#F5F1E8] transition-all duration-300 shadow-[0_4px_20px_rgba(175,80,229,0.08)] hover:shadow-[0_24px_48px_-12px_rgba(175,80,229,0.2)]"
             >
               {/* Icosahedron with Number */}
-              <div className="mb-6">
-                <div className="w-16 h-16 relative flex items-center justify-center flex-shrink-0 overflow-hidden">
-                  <img 
+              <div className="mb-3">
+                <div className="w-20 h-20 md:w-28 md:h-28 relative flex items-center justify-center flex-shrink-0 overflow-visible rounded-2xl bg-gradient-to-br from-[#AF50E5]/10 via-[#AF50E5]/5 to-[#F5F1E8]/40 border border-[#AF50E5]/20">
+                  <Image
                     src={`/images/svg/icosahedro${index + 1}.svg`}
+                    width={500}
+                    height={500}
+                    loader={imageLoader}
                     alt=""
-                    className="w-full h-full object-contain filter invert transform scale-150"
+                    className="w-32 h-32 md:w-24 md:h-24"
+                    style={{ filter: 'brightness(0) saturate(100%) invert(27%) sepia(95%) saturate(1352%) hue-rotate(261deg) brightness(95%) contrast(90%)' }}
                   />
                 </div>
               </div>
 
               {/* Step Content */}
-              <h3 className="text-xl md:text-2xl font-semibold mb-3 text-white">
+              <h3 className="text-xl md:text-2xl font-semibold mb-3 text-black">
                 {step.title}
               </h3>
-              <p className="text-sm md:text-base mb-4 leading-relaxed text-white/70 font-light">
+              <p className="text-sm md:text-base mb-4 leading-relaxed text-gray-600 font-light">
                 {step.description}
               </p>
 
@@ -125,8 +123,8 @@ const MentorshipProcess = () => {
               <div className="space-y-2">
                 {step.details.map((detail, detailIndex) => (
                   <div key={detailIndex} className="flex items-start space-x-2">
-                    <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0 bg-white/40"></div>
-                    <span className="text-xs md:text-sm leading-relaxed text-white/50 font-light">
+                    <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0 bg-gradient-to-r from-[#AF50E5] to-[#AF50E5]/60" />
+                    <span className="text-xs md:text-sm leading-relaxed text-gray-700 font-light">
                       {detail}
                     </span>
                   </div>
@@ -144,21 +142,21 @@ const MentorshipProcess = () => {
           viewport={{ once: true }}
           className="mt-16 text-center"
         >
-          <div className="relative rounded-2xl p-12 md:p-16 overflow-hidden border border-white/10" style={{ minHeight: '300px' }}>
-            {/* Imagen de fondo con overlay oscuro */}
+          <div className="relative rounded-3xl p-12 md:p-16 overflow-hidden border border-[#AF50E5]/20 bg-gradient-to-br from-[#F5F1E8] via-[#FAF8F3] to-white shadow-[0_25px_60px_0_rgba(175,80,229,0.15)]" style={{ minHeight: '300px' }}>
+            {/* Imagen de fondo con overlay */}
             <CldImage
               src="my_uploads/plaza/DSC03350_vgjrrh"
               width={1200}
               height={600}
               alt="Mentoría fondo"
-              className="absolute inset-0 w-full h-full object-cover object-center z-0"
-              style={{ filter: 'brightness(0.3) grayscale(100%)' }}
+              className="absolute inset-0 w-full h-full object-cover object-center z-0 opacity-20"
+              style={{ filter: 'brightness(0.8) grayscale(30%)' }}
             />
             <div className="relative z-10">
-              <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-white">
+              <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-black">
                 ¿Te interesa este proceso?
               </h3>
-              <p className="mb-8 max-w-2xl mx-auto text-white/80 font-light leading-relaxed text-sm md:text-base">
+              <p className="mb-8 max-w-2xl mx-auto text-gray-600 font-light leading-relaxed text-sm md:text-base">
                 Si esto que te conté te hace sentido, dale una mirada a los planes que tengo disponibles y hablamos.
               </p>
               <button 
@@ -166,9 +164,9 @@ const MentorshipProcess = () => {
                   const element = document.getElementById('mentorship-plans');
                   element?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="bg-white text-black px-8 py-3 font-medium text-sm md:text-base hover:bg-black hover:text-white transition-all duration-300 font-montserrat rounded-xl border border-white"
+                className="bg-black/80 text-white px-8 py-3 font-medium text-sm md:text-base hover:bg-[#9A3FD4] transition-all duration-300 font-montserrat rounded-xl border border-black shadow-lg hover:shadow-xl"
               >
-                Ver planes
+                Entrenar conmigo
               </button>
             </div>
           </div>

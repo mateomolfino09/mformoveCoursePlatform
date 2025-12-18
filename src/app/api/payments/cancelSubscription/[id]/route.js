@@ -7,6 +7,7 @@ import dLocalApi from '../../dlocalConfig';
 import { ObjectId } from 'mongodb';
 import mailchimp from '@mailchimp/mailchimp_transactional';
 import { cancelStripeSubscription } from '../cancelStripeSubscription';
+import { updateStripeSubscription } from '../../updateSubscription/updateStripeSubscription';
 
 const mailchimpClient = mailchimp(process.env.MAILCHIMP_TRANSACTIONAL_API_KEY);
 connectDB();
@@ -25,8 +26,16 @@ export async function PUT(req) {
     if(plan.provider == "stripe") {
       let sub = await cancelStripeSubscription(user.subscription.id)
 
-      user.subscription ? user.subscription.isCanceled = true : null;
-      await user.save()
+      // Actualizar la suscripción completa desde Stripe para tener todos los datos actualizados (incluyendo isCanceled)
+      const updatedSubscription = await updateStripeSubscription(user.email);
+      if (updatedSubscription) {
+        user.subscription = updatedSubscription;
+        await user.save();
+      } else {
+        // Fallback: si no se puede actualizar, al menos marcar como cancelada
+        user.subscription ? user.subscription.isCanceled = true : null;
+        await user.save();
+      }
 
       return NextResponse.json({ message: `Se ha desactivado tu subscripción. Lamentamos verte partir. Puedes seguir disfrutando de los beneficios hasta el final del período actual.`, success: true, user }, { status: 200 })
     } else {

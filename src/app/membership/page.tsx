@@ -8,6 +8,7 @@ const IS_MEMBERSHIP_PAUSED = true;
 
 export default function Page() {
   const [plans, setPlans] = useState([]);
+  const [promociones, setPromociones] = useState([]);
   const origin = process.env.NODE_ENV !== 'production'
     ? 'https://checkout-sbx.dlocalgo.com'
     : 'https://checkout.dlocalgo.com';
@@ -26,7 +27,14 @@ export default function Page() {
           },
         });
         const data = await res.json();
-        setPlans(data);
+        // Manejar compatibilidad: puede ser array de planes o objeto con plans y promociones
+        if (Array.isArray(data)) {
+          setPlans(data);
+          setPromociones([]);
+        } else {
+          setPlans(data.plans || []);
+          setPromociones(data.promociones || []);
+        }
       } catch (err) {
         console.error('Error fetching plans:', err);
       }
@@ -37,5 +45,5 @@ export default function Page() {
   if (IS_MEMBERSHIP_PAUSED) {
     return <MembershipPaused />;
   }
-  return <Membership plans={plans} origin={origin} />;
+  return <Membership plans={plans} promociones={promociones} origin={origin} />;
 }

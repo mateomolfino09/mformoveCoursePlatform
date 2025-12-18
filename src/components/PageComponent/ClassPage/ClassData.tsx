@@ -3,6 +3,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import React from 'react';
+import { motion as m } from 'framer-motion';
 
 interface Props {
   clase: IndividualClass;
@@ -21,21 +22,30 @@ const ClassData = ({
 
 
   return (
-    <div className='w-full h-full flex flex-col mt-8 md:mt-24 lg:pb-8 justify-between bg-dark lg:w-2/3 md:h-auto '>
-      <h2 className='text-2xl px-2 md:px-0 font-boldFont md:text-3xl ml-2 mb-4 md:mb-1 font-light'>
+    <m.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className='w-full flex flex-col space-y-6'
+    >
+      <h1 className='text-3xl md:text-4xl lg:text-5xl font-extrabold text-white font-montserrat tracking-tight leading-tight'>
         {clase?.name}
-      </h2>
-      <div className='mt-4 min-w-[5rem] space-x-2 px-2 flex flex-wrap mr-4 rounded-lg'>
-        {clase?.tags.map(tag => (
-          <div
-            key={tag.id}
-            className='bg-white cursor-pointer transition-all duration-300 hover:scale-105 w-auto px-2 py-1 flex justify-center items-center rounded-full mb-2'
-          >
-            <p className='text-black text-center text-xs font-montserrat'>{tag.title}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+      </h1>
+      {clase?.tags && clase.tags.length > 0 && (
+        <div className='flex flex-wrap gap-2'>
+          {clase.tags.map(tag => (
+            <m.div
+              key={tag.id}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className='bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/30 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 hover:border-amber-300/50 hover:shadow-lg hover:shadow-amber-500/10'
+            >
+              <p className='text-white text-sm font-montserrat font-medium'>{tag.title}</p>
+            </m.div>
+          ))}
+        </div>
+      )}
+    </m.div>
   );
   
 };

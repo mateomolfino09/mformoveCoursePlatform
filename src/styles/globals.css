@@ -532,3 +532,78 @@
 .whatsapp-message {
   animation: whatsappSlideIn 0.3s ease-out;
 }
+
+/* Estilos para el slider de audio en bitácora - minimalista */
+.slider-minimal {
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+  height: 4px;
+}
+
+.slider-minimal::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #1f2937;
+  cursor: pointer;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  margin-top: -4px;
+  position: relative;
+  z-index: 1;
+}
+
+.slider-minimal::-webkit-slider-thumb:hover {
+  width: 14px;
+  height: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-top: -5px;
+}
+
+.slider-minimal::-webkit-slider-thumb:active {
+  width: 13px;
+  height: 13px;
+  margin-top: -4.5px;
+}
+
+.slider-minimal::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #1f2937;
+  cursor: pointer;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.slider-minimal::-moz-range-thumb:hover {
+  width: 14px;
+  height: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider-minimal::-moz-range-thumb:active {
+  width: 13px;
+  height: 13px;
+}
+
+.slider-minimal::-moz-range-track {
+  background: transparent;
+  height: 4px;
+  border-radius: 9999px;
+}
+
+.slider-minimal::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 4px;
+  border-radius: 9999px;
+}

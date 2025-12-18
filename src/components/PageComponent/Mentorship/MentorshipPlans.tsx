@@ -82,23 +82,9 @@ const MentorshipPlans = ({ plans, origin }: MentorshipProps) => {
   };
 
   return (
-    <div id="mentorship-plans" className="py-10 bg-white font-montserrat">
+    <div id="mentorship-plans" className="py-10 bg-[#FAF8F3] font-montserrat">
       <div className="max-w-6xl mx-auto px-6">
         {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          viewport={{ once: true }}
-          className="mb-16"
-        >
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-black">
-            Estos son los planes disponibles
-          </h2>
-          <p className="text-lg md:text-xl text-gray-600 font-light max-w-3xl leading-relaxed">
-            Tres niveles de acompañamiento diseñados para distintos momentos de tu vida. 
-          </p>
-        </motion.div>
 
         {/* Cards Component */}
         <PremiumMentorshipCards 
