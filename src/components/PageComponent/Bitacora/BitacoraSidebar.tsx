@@ -80,6 +80,7 @@ const BitacoraSidebar = ({
   completedDays,
   onClose
 }: Props) => {
+  console.log('logbook', logbook);
   const router = useRouter();
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
   
@@ -94,17 +95,29 @@ const BitacoraSidebar = ({
 
   const auth = useAuth();
   const isAdmin = auth.user?.rol === 'Admin';
+  const maxWeekNumber = useMemo(
+    () => Math.max(...(logbook.weeklyContents?.map(w => w.weekNumber) || [0])),
+    [logbook.weeklyContents]
+  );
 
-  const isContentUnlocked = (publishDate: string) => {
-    // Los administradores pueden ver todo el contenido
-    if (isAdmin) return true;
-    
-    const now = new Date();
+  const isPublishDateToday = (publishDate: string) => {
+    const today = new Date();
     const publish = new Date(publishDate);
     publish.setHours(0, 0, 0, 0);
-    now.setHours(0, 0, 0, 0);
-    // Desbloquear solo si la fecha es menor o igual a hoy (no futura)
-    return publish.getTime() <= now.getTime();
+    today.setHours(0, 0, 0, 0);
+    return publish.getTime() === today.getTime();
+  };
+
+  const isContentUnlocked = (week: WeeklyContent) => {
+    // Los administradores pueden ver todo el contenido
+    if (isAdmin) return true;
+
+    console.log('week.isPublished', week.isPublished, week);
+    console.log('week.isUnlocked', week.isUnlocked, week);
+    
+    // Solo liberamos si el cron (o admin) marcó published/unlocked
+    if (week.isPublished || week.isUnlocked) return true;
+    return week.dailyContents?.some(day => day.isPublished || day.isUnlocked) || false;
   };
 
   const toggleModule = (moduleName: string) => {
@@ -264,7 +277,10 @@ const BitacoraSidebar = ({
                       const weekKey = `${logbook._id}-${week.weekNumber}`;
                       const isWeekCompleted = completedWeeks.has(weekKey);
                       const isWeekSelected = selectedWeek === week.weekNumber;
-                      const isWeekUnlocked = isContentUnlocked(week.publishDate);
+                      const isWeekUnlocked = isContentUnlocked(week);
+                      console.log('isWeekUnlocked', isWeekUnlocked);
+                      const isLastWeek = week.weekNumber === maxWeekNumber;
+                      const isLastWeekReleaseDay = isLastWeek && isWeekUnlocked && isPublishDateToday(week.publishDate);
                       const hasVideo = (week.dailyContents?.some(day => day.visualContent?.type === 'video' && day.visualContent.videoUrl)) || 
                                       (week.videoUrl && (!week.dailyContents || week.dailyContents.length === 0));
                       const hasAudio = (week.dailyContents?.some(day => day.audioTextContent?.audioUrl || day.audioTextContent?.text)) ||
@@ -303,6 +319,11 @@ const BitacoraSidebar = ({
                                 {week.weekTitle}
                               </p>
                             )}
+                            {isLastWeekReleaseDay && (
+                              <p className='text-xs text-amber-700 font-montserrat font-semibold'>
+                                Última semana liberada hoy
+                              </p>
+                            )}
                             <div className='flex items-center gap-2 text-xs text-gray-600'>
                               <CalendarIcon className='h-3 w-3' />
                               <span className='font-light'>{formatPublishDate(week.publishDate)}</span>
@@ -316,11 +337,7 @@ const BitacoraSidebar = ({
                               <button
                                 onClick={() => {
                                   if (!isWeekUnlocked && !isAdmin) return;
-                                  // Si tiene contenido diario, tomar el primer día con video, sino null
-                                  const firstDayWithVideo = week.dailyContents?.find(day => 
-                                    day.visualContent?.type === 'video' && day.visualContent.videoUrl
-                                  );
-                                  onSelect(week.weekNumber, firstDayWithVideo?.dayNumber || null, 'visual');
+                                  onSelect(week.weekNumber, null, 'visual');
                                 }}
                                 disabled={!isWeekUnlocked && !isAdmin}
                                 className={`w-full p-2.5 rounded-xl text-left transition-all ${
@@ -345,11 +362,7 @@ const BitacoraSidebar = ({
                               <button
                                 onClick={() => {
                                   if (!isWeekUnlocked && !isAdmin) return;
-                                  // Si tiene contenido diario, tomar el primer día con audio, sino null
-                                  const firstDayWithAudio = week.dailyContents?.find(day => 
-                                    day.audioTextContent?.audioUrl || day.audioTextContent?.text
-                                  );
-                                  onSelect(week.weekNumber, firstDayWithAudio?.dayNumber || null, 'audioText');
+                                  onSelect(week.weekNumber, null, 'audioText');
                                 }}
                                 disabled={!isWeekUnlocked && !isAdmin}
                                 className={`w-full p-2.5 rounded-xl text-left transition-all ${

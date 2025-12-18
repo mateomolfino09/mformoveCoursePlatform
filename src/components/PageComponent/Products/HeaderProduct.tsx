@@ -60,7 +60,7 @@ const ProductHeader = ({ user, toggleNav }: Props) => {
             className={` w-full h-full flex justify-between items-center`}
             >
             <div className='pl-4 md:pl-16'>
-                <a href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/home' : (pathname != routes.navegation.membresiaHome ? routes.navegation.membresiaHome : `/`)}>
+                <a href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/home' : (pathname != routes.navegation.membership.home ? routes.navegation.membership.home : `/`)}>
                 <img
                     alt='icon image'
                     src='/images/MFORMOVE_v2.negro03.png'

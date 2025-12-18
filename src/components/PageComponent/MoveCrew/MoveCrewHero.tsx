@@ -78,7 +78,7 @@ const MoveCrewHero = () => {
             <strong className="font-semibold text-white"> (¡y sin dolor!)</strong>.
           </p>
           <p className="text-lg md:text-xl lg:text-2xl text-white/95 font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-md">
-            Simple, claro y sostenible. <span className="font-semibold">Al servicio de tu vida.</span>
+            Simple, claro y sostenible. <span className="font-semibold">Hecho para acompañar tu día a día.</span>
           </p>
         </motion.div>
 

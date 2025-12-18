@@ -10,6 +10,38 @@ import { getLatestSubscriptionStatusByEmail } from '../getSubscriptionStatusByMa
 import connectDB from '../../../../../config/connectDB';
 import User from '../../../../../models/userModel.js';
 import { EmailService } from '../../../../../services/email/emailService';
+import CoherenceTracking from '../../../../../models/coherenceTrackingModel';
+
+// Helper robusto para inicializar tracking incluso si el método estático no está disponible
+const ensureCoherenceTracking = async (userId: any) => {
+  const Model: any = CoherenceTracking;
+  // Si el método existe, úsalo
+  if (Model?.getOrCreate) {
+    return Model.getOrCreate(userId);
+  }
+  // Fallback manual
+  let tracking = await Model.findOne({ userId });
+  if (!tracking) {
+    tracking = new Model({
+      userId,
+      totalUnits: 0,
+      currentStreak: 0,
+      longestStreak: 0,
+      achievements: [],
+      level: 1,
+      monthsCompleted: 0,
+      characterEvolution: 0,
+      completedMonths: [],
+      weeklyCompletions: [],
+      completedDays: [],
+      completedWeeks: [],
+      completedVideos: [],
+      completedAudios: []
+    });
+    await tracking.save();
+  }
+  return tracking;
+};
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
 connectDB();
@@ -70,6 +102,14 @@ export const POST = async (req: NextRequest) => {
                 console.log(`✅ Membresía creada exitosamente para: ${email}`);
                 console.log(`👤 Usuario encontrado: ${user.name || 'Sin nombre'} (${user.email})`);
                 console.log(`📊 Estado de suscripción: ${status}`);
+
+                // Inicializar tracking de coherencia para Move Crew
+                try {
+                  await ensureCoherenceTracking(user._id);
+                  console.log(`🦍 Tracking inicial de coherencia creado para: ${user.email}`);
+                } catch (trackingErr) {
+                  console.error(`❌ Error creando tracking de coherencia para ${user.email}:`, trackingErr);
+                }
                 
                 const emailService = EmailService.getInstance();
                 

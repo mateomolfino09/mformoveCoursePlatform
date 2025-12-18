@@ -163,7 +163,7 @@ const CoherenceInfoModal = ({
                       borderLeftColor: SALMON
                     }}
                   >
-                    <p className="text-xs font-light font-montserrat leading-relaxed text-center" style={{ color: EARTH_BROWN }}>
+                    <p className="text-base font-light font-montserrat leading-relaxed text-center" style={{ color: EARTH_BROWN }}>
                       {tip}
                     </p>
                   </motion.div>
@@ -181,12 +181,7 @@ const CoherenceInfoModal = ({
                       borderColor: `${SALMON}20`
                     }}
                   >
-                    <p className="text-xs font-light font-montserrat leading-relaxed text-center" style={{ color: EARTH_BROWN }}>
-                      <span className="font-medium">Sistema de Constancia:</span> Para fomentar la constancia semanal, 
-                      cada semana adicional del programa completada en la misma semana calendario 
-                      solo otorga 1 U.C. en total (aunque completes video y audio). 
-                      La primera semana del programa en cada semana calendario puede otorgar hasta 2 U.C. (1 video + 1 audio).
-                    </p>
+                    <p className="text-base font-light font-montserrat leading-relaxed text-center" style={{ color: EARTH_BROWN }}> Distribuyendo tu práctica a lo largo de la semana, no solo maximizas U.C. sino también RESULTADOS.</p>
                   </motion.div>
                 )}
 

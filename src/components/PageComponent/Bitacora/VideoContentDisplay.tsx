@@ -284,12 +284,12 @@ const VideoContentDisplay = ({
       className='w-full space-y-6'
     >
       {title && (
-        <h2 className='text-2xl md:text-3xl font-bold text-gray-900 font-montserrat tracking-tight'>
+        <h2 className='text-3xl mt-8 md:text-5xl md:mb-4 font-bold text-gray-900 font-montserrat tracking-tight'>
           {title}
         </h2>
       )}
 
-      <div className='relative w-full rounded-2xl md:rounded-3xl overflow-hidden bg-black border border-gray-800/50 shadow-[0_15px_45px_rgba(0,0,0,0.6)]'>
+      <div className='relative w-full rounded-2xl md:rounded-3xl overflow-hidden bg-black border border-gray-800/50 shadow-[0_15px_45px_rgba(0,0,0,0.6)] md:!mt-0 !mt-4'>
         {isVimeo && vimeoId ? (
           <div 
             ref={playerContainerRef}
@@ -313,24 +313,24 @@ const VideoContentDisplay = ({
       </div>
 
       {title && (
-        <h3 className='text-gray-800 text-xl md:text-xl font-montserrat font-normal leading-relaxed'>
+        <h3 className='text-gray-800 text-2xl md:text-3xl font-montserrat !mt-8 font-normal leading-relaxed'>
           {title}
         </h3>
       )}
 
       {description && (
-        <p className='text-gray-400 text-sm md:text-base font-montserrat font-light leading-relaxed'>
+        <p className='text-gray-400 text-sm md:text-base font-montserrat !mt-3 font-light leading-relaxed'>
           {description}
         </p>
       )}
 
       {onComplete && (
-        <div className='flex justify-center'>
+        <div className='flex justify-start md:justify-center'>
           <button
             onClick={handleCompleteClick}
             disabled={!canComplete || isCompleting || isCompleted}
             className={`
-              flex items-center gap-2 px-6 py-3 rounded-full font-montserrat font-medium transition-all duration-300
+              flex items-center gap-2 px-6 py-3 rounded-full w-full font-montserrat font-medium transition-all duration-300
               ${isCompleted
                 ? 'bg-green-500/20 border border-green-500/40 text-green-700 cursor-default'
                 : canComplete

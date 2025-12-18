@@ -12,9 +12,15 @@ import Link from 'next/link';
 
 interface WeekContent {
   weekNumber: number;
+  moduleName?: string;
   videoUrl: string;
   videoId?: string;
+  videoName?: string;
+  videoThumbnail?: string;
+  videoDuration?: number;
   audioUrl: string;
+  audioTitle?: string;
+  audioDuration?: number;
   text: string;
   publishDate: string;
   isPublished: boolean;
@@ -31,40 +37,20 @@ export default function CreateBitacoraPage() {
   const [title, setTitle] = useState('Camino del Gorila');
   const [description, setDescription] = useState('');
   
-  const [weeks, setWeeks] = useState<WeekContent[]>([
-    {
-      weekNumber: 1,
-      videoUrl: '',
-      audioUrl: '',
-      text: '',
-      publishDate: '',
-      isPublished: false
-    },
-    {
-      weekNumber: 2,
-      videoUrl: '',
-      audioUrl: '',
-      text: '',
-      publishDate: '',
-      isPublished: false
-    },
-    {
-      weekNumber: 3,
-      videoUrl: '',
-      audioUrl: '',
-      text: '',
-      publishDate: '',
-      isPublished: false
-    },
-    {
-      weekNumber: 4,
-      videoUrl: '',
-      audioUrl: '',
-      text: '',
-      publishDate: '',
-      isPublished: false
-    }
-  ]);
+  const [weeks, setWeeks] = useState<WeekContent[]>(Array.from({ length: 4 }).map((_, idx) => ({
+    weekNumber: idx + 1,
+    moduleName: '',
+    videoUrl: '',
+    videoName: '',
+    videoThumbnail: '',
+    videoDuration: undefined,
+    audioUrl: '',
+    audioTitle: '',
+    audioDuration: undefined,
+    text: '',
+    publishDate: '',
+    isPublished: false
+  })));
 
   useEffect(() => {
     const cookies: any = Cookies.get('userToken');
@@ -88,6 +74,7 @@ export default function CreateBitacoraPage() {
     
     // Calcular fechas de publicación automáticamente (cada lunes del mes)
     calculatePublishDates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth.user, router, month, year]);
 
   const calculatePublishDates = () => {
@@ -144,15 +131,23 @@ export default function CreateBitacoraPage() {
           year,
           title,
           description,
-          weeklyContents: weeks.map(week => ({
-            weekNumber: week.weekNumber,
-            videoUrl: week.videoUrl,
-            videoId: week.videoId || null,
-            audioUrl: week.audioUrl,
-            text: week.text,
-            publishDate: new Date(week.publishDate).toISOString(),
-            isPublished: week.isPublished
-          }))
+            weeklyContents: weeks.map(week => ({
+              weekNumber: week.weekNumber,
+              moduleName: week.moduleName?.trim() || undefined,
+              weekTitle: `Semana ${week.weekNumber}`,
+              videoUrl: week.videoUrl,
+              videoId: week.videoId || null,
+              videoName: week.videoName?.trim() || `Semana ${week.weekNumber}`,
+              videoThumbnail: week.videoThumbnail || '',
+              videoDuration: week.videoDuration || undefined,
+              audioUrl: week.audioUrl,
+              audioTitle: (week.audioTitle || `Semana ${week.weekNumber}`).trim(),
+              audioDuration: week.audioDuration || undefined,
+              text: week.text,
+              publishDate: new Date(week.publishDate).toISOString(),
+              isPublished: week.isPublished,
+              isUnlocked: false
+            }))
         })
       });
 
@@ -176,7 +171,7 @@ export default function CreateBitacoraPage() {
     return (
       <AdmimDashboardLayout>
         <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
         </div>
       </AdmimDashboardLayout>
     );
@@ -302,6 +297,26 @@ export default function CreateBitacoraPage() {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2 font-montserrat">
+                        Nombre del módulo (opcional)
+                      </label>
+                      <input
+                        type="text"
+                        value={week.moduleName || ''}
+                        onChange={(e) => updateWeek(index, 'moduleName', e.target.value)}
+                        placeholder="Módulo 1, Bloque A..."
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F7CCF] focus:border-[#4F7CCF] font-montserrat bg-white text-gray-900 placeholder-gray-400 mb-3"
+                      />
+                      <label className="block text-sm font-medium text-gray-700 mb-2 font-montserrat">
+                        Nombre del Video
+                      </label>
+                      <input
+                        type="text"
+                        value={week.videoName || ''}
+                        onChange={(e) => updateWeek(index, 'videoName', e.target.value)}
+                        placeholder="Ej: Video Intro, Video Práctica..."
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F7CCF] focus:border-[#4F7CCF] font-montserrat bg-white text-gray-900 placeholder-gray-400 mb-3"
+                      />
+                      <label className="block text-sm font-medium text-gray-700 mb-2 font-montserrat">
                         URL del Video *
                       </label>
                       <input
@@ -310,11 +325,21 @@ export default function CreateBitacoraPage() {
                         onChange={(e) => updateWeek(index, 'videoUrl', e.target.value)}
                         placeholder="https://..."
                         required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F7CCF] focus:border-[#4F7CCF] font-montserrat bg-white text-gray-900 placeholder-gray-400"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F7CCF] focus:border-[#4F7CCF] font-montserrat bg-white text-gray-900 placeholder-gray-400 mb-3"
                       />
                     </div>
 
                     <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2 font-montserrat">
+                        Nombre del Audio
+                      </label>
+                      <input
+                        type="text"
+                        value={week.audioTitle || ''}
+                        onChange={(e) => updateWeek(index, 'audioTitle', e.target.value)}
+                        placeholder="Ej: Audio Reflexión, Audio Guía..."
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F7CCF] focus:border-[#4F7CCF] font-montserrat bg-white text-gray-900 placeholder-gray-400 mb-3"
+                      />
                       <label className="block text-sm font-medium text-gray-700 mb-2 font-montserrat">
                         URL del Audio *
                       </label>
@@ -324,7 +349,7 @@ export default function CreateBitacoraPage() {
                         onChange={(e) => updateWeek(index, 'audioUrl', e.target.value)}
                         placeholder="https://..."
                         required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F7CCF] focus:border-[#4F7CCF] font-montserrat bg-white text-gray-900 placeholder-gray-400"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F7CCF] focus:border-[#4F7CCF] font-montserrat bg-white text-gray-900 placeholder-gray-400 mb-3"
                       />
                     </div>
                   </div>
@@ -361,7 +386,7 @@ export default function CreateBitacoraPage() {
               >
                 {submitting ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
                     <span>Creando...</span>
                   </>
                 ) : (

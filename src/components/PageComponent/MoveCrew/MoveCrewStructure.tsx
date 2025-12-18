@@ -4,23 +4,40 @@ import { motion } from 'framer-motion';
 const MoveCrewStructure = () => {
   const pillars = [
     {
-      title: 'Plan trimestral',
+      title: 'Camino del Gorila',
       description:
-        'Tres meses para ordenar tu práctica, integrar nuevas progresiones y darle tiempo al cuerpo para adaptarse sin dolor.',
+        'Te doy clases de 15-25 minutos y audios cortos para que avances a tu ritmo.',
       bullets: [
-        'Ritmo semanal con bloques cortos',
-        'Seguimiento general y recordatorios',
-        'Desafío activo para mantener motivación'
+        '1 clase y 1 audio de reflexión/meditación nuevo cada semana',
+        'Progresiones pensadas para principiantes, intermedios y avanzados',
       ]
     },
     {
-      title: 'Plan anual',
+      title: 'Filosofía',
       description:
-        'Pensado para quienes quieren sostener el hábito todo el año, ahorrar y combinar bloques de movilidad, fuerza y exploración.',
+        'Busco tu constancia, autoconocimiento y exploración. Las U.C. premian tu camino en el movimiento.',
       bullets: [
-        'Acceso a todas las planificaciones trimestrales',
-        'Mayor profundidad en los contenidos educativos',
-        'Espacios extra para revisar avances cada trimestre'
+        'U.C. (Unidades de Coherencia) por completar semanas',
+        'Acceso a canjes y programas especiales al sostener tu racha de entrenamiento'
+      ]
+    },
+    {
+      title: 'Dedicación semanal',
+      description:
+        'Queremos cumplir la semana sin quemarte.',
+      bullets: [
+        'Planificación pensada para agenda real',
+        'Bloques breves y acumulativos',
+      ]
+    },
+    {
+      title: 'Soporte y Q&A',
+      description:
+        'Te respondo por Telegram y grabamos un Q&A cada miércoles para cuidar tu tiempo.',
+      bullets: [
+        'Telegram para dudas rápidas y feedback',
+        'Q&A semanal grabado (los miércoles)',
+        'Enfoque asíncrono para no bloquear tu agenda'
       ]
     }
   ];
@@ -36,9 +53,9 @@ const MoveCrewStructure = () => {
           className="mb-12"
         >
           <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-white/50 mb-3">Cómo funciona</p>
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">Un ritmo pensado para tu vida real</h2>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">Un ritmo pensado para servir a tu vida</h2>
           <p className="text-base md:text-xl text-white/70 max-w-3xl font-light">
-            Trabajo por ciclos de tres meses porque tu cuerpo necesita tiempo para integrar cambios. Si querés ir más allá, el plan anual te deja sumar cuatro ciclos completos con foco en constancia, no en urgencias.
+            Te llevo semana a semana con el Camino del Gorila. Te doy el tiempo justo para progresar sin quemarte, y te acompaño con ciclos que sostienen tu constancia y tus canjes de U.C.
           </p>
         </motion.div>
 

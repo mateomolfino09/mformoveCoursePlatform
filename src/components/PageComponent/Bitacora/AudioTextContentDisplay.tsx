@@ -82,6 +82,20 @@ const AudioTextContentDisplay = ({
     };
   }, [audioUrl, isCompleted]);
 
+  // Fallback por si algún navegador limita timeupdate
+  useEffect(() => {
+    if (!isPlaying) return;
+    const tick = setInterval(() => {
+      const audioElement = audioRef.current;
+      if (!audioElement || audioElement.duration === 0) return;
+      const progress = (audioElement.currentTime / audioElement.duration) * 100;
+      setAudioProgress(progress);
+      setCurrentTime(audioElement.currentTime);
+      setCanComplete(progress >= 95);
+    }, 500);
+    return () => clearInterval(tick);
+  }, [isPlaying, isCompleted]);
+
   const handlePlayPause = () => {
     if (!audioRef.current) return;
     
@@ -133,7 +147,7 @@ const AudioTextContentDisplay = ({
     >
       {/* Audio Player Section */}
       {audioUrl && (
-        <div className='relative rounded-3xl border border-amber-200/40 bg-gradient-to-br from-white via-gray-50/50 to-amber-50/30 backdrop-blur-sm p-6 md:p-8 overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.04)]'>
+        <div className='relative rounded-3xl  backdrop-blur-sm p-6 md:p-8 overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.04)]'>
           <div className='absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-200/10 to-orange-200/5 rounded-full blur-3xl' />
           
           <div className='relative z-10 space-y-6'>
@@ -141,7 +155,7 @@ const AudioTextContentDisplay = ({
             {(title || subtitle) && (
               <div>
                 {title && (
-                  <h3 className='text-2xl md:text-3xl font-bold text-gray-900 font-montserrat mb-2 tracking-tight'>
+                  <h3 className='text-3xl md:text-5xl font-bold text-gray-900 font-montserrat mb-2 tracking-tight'>
                     {title}
                   </h3>
                 )}
@@ -181,7 +195,7 @@ const AudioTextContentDisplay = ({
                       onChange={handleSeek}
                       className='w-full h-1 bg-gray-300 rounded-full appearance-none cursor-pointer slider-minimal'
                       style={{
-                        background: `linear-gradient(to right, #1f2937 0% 0% / ${audioProgress}% 100% no-repeat, #d1d5db)`
+                        background: `linear-gradient(to right, #1f2937 0%, #1f2937 ${audioProgress}%, #d1d5db ${audioProgress}%, #d1d5db 100%)`
                       }}
                     />
                   </div>
@@ -211,6 +225,14 @@ const AudioTextContentDisplay = ({
                     }
                   }}
                   className='hidden'
+                  onTimeUpdate={() => {
+                    const audioElement = audioRef.current;
+                    if (!audioElement || audioElement.duration === 0) return;
+                    const progress = (audioElement.currentTime / audioElement.duration) * 100;
+                    setAudioProgress(progress);
+                    setCurrentTime(audioElement.currentTime);
+                    setCanComplete(progress >= 95);
+                  }}
                   preload='metadata'
                 />
               </div>
@@ -218,12 +240,12 @@ const AudioTextContentDisplay = ({
 
             {/* Botón Completar Clase */}
             {onComplete && (
-              <div className='flex justify-center'>
+              <div className='flex justify-start'>
                 <button
                   onClick={handleCompleteClick}
                   disabled={!canComplete || isCompleting || isCompleted}
                   className={`
-                    flex items-center gap-2 px-6 py-3 rounded-full font-montserrat font-medium transition-all duration-300
+                    flex items-center w-full gap-2 px-6 py-3 rounded-full font-montserrat font-medium transition-all duration-300
                     ${isCompleted
                       ? 'bg-green-500/20 border border-green-500/40 text-green-700 cursor-default'
                       : canComplete

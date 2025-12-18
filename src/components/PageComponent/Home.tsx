@@ -324,7 +324,7 @@ const Home = ({ classesDB, filters }: Props) => {
             {/* Imagen de fondo */}
             <div className='absolute inset-0 z-0'>
               <CldImage
-                src="my_uploads/fondos/DSC01526_hcas98"
+                src="my_uploads/fondos/DSC01753_qdv9o0"
                 alt="Move Crew Background"
                 fill
                 priority
@@ -339,7 +339,7 @@ const Home = ({ classesDB, filters }: Props) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className='relative z-10 w-full h-[45vh] min-h-[450px] max-h-[550px] flex flex-col justify-center px-8 lg:px-16 xl:px-24 2xl:px-32'
+              className='relative z-10 w-full h-[45vh] min-h-[650px] max-h-[750px] flex flex-col justify-center px-8 lg:px-16 xl:px-24 2xl:px-32'
               style={{ paddingTop: '64px' }}
             >
               <motion.h1
@@ -348,7 +348,7 @@ const Home = ({ classesDB, filters }: Props) => {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className='text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white mb-5 lg:mb-6 font-montserrat tracking-tight drop-shadow-2xl max-w-5xl'
               >
-                ¡Bienvenido a Move Crew!
+                ¡Bienvenido a la Move Crew!
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -356,7 +356,7 @@ const Home = ({ classesDB, filters }: Props) => {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className='text-xl lg:text-2xl xl:text-3xl text-white/95 font-light max-w-4xl leading-relaxed mb-5 lg:mb-6 drop-shadow-lg'
               >
-                Este es tu espacio para dejar de sentirte rígido/a, desarrollar fuerza real, dominar tu movilidad y moverte con mayor libertad.
+                Acá vas a encontrar la biblioteca de clases para que dejes de sentirte rígido/a, desarrolles fuerza real, domines tu movilidad y te muevas con mayor libertad.
               </motion.p>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -364,29 +364,30 @@ const Home = ({ classesDB, filters }: Props) => {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className='text-lg lg:text-xl text-white/85 font-light max-w-3xl drop-shadow-md mb-8 lg:mb-10'
               >
-                Simple, claro y sostenible. Al servicio de tu vida.
+                Simple, claro y sostenible. Hecho para acompañar tu día a día.
               </motion.p>
-              
-    
-            </motion.div>
-          </section>
-
-          {/* Menú de Features Web - Separado del banner */}
-          <section className='hidden md:block relative w-full bg-black py-8'>
-            <div className='max-w-7xl mx-auto px-6 sm:px-8 md:px-6 lg:px-8'>
+              <div className='w-full px-6 py-6 md:py-0 sm:px-8 md:px-0 lg:px-0 flex justify-start items-start'>
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className='rounded-2xl border border-amber-300/20 backdrop-blur-md p-6 mb-4'
+                className=' mb-4 flex justify-center'
               >
                 <MoveCrewFeaturesNav 
                   coherenceStreak={coherenceStreak}
                   hasBitacoraContent={hasBitacoraContent}
+                  isMember={isMember}
+                  isVip={!!auth.user?.isVip}
+                  hasActiveSubscription={!!auth.user?.subscription?.active}
+                  onlyGorila
                 />
               </motion.div>
             </div>
+    
+            </motion.div>
           </section>
+
+    
 
           {/* Banner Mobile - Fuera del main para que se vea detrás del header */}
           <section className='md:hidden relative overflow-hidden w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] bg-black' style={{ marginTop: 0, marginBottom: '2rem' }}>
@@ -405,86 +406,76 @@ const Home = ({ classesDB, filters }: Props) => {
 
             {/* Contenido sobre la imagen */}
             <div className='relative z-10' style={{ paddingTop: '64px' }}>
-              <div className='mx-auto px-6 sm:px-8'>
+              <div className='mx-auto px-6 sm:px-8 py-12 md:py-0'>
+              <motion.h1
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                        className='text-[2.55rem] leading-9 sm:text-3xl font-extrabold text-white mb-5 text-center font-montserrat tracking-tight drop-shadow-2xl mt-4'
+                      >
+                        Biblioteca Move Crew
+                      </motion.h1>
                   {/* Espacio negro arriba del menú */}
 
                 {/* Menú de Features de Membresía */}
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className='relative rounded-2xl border border-amber-300/20 backdrop-blur-none p-4 z-20 mb-6'
-                >
-                  <MoveCrewFeaturesNav 
-                    coherenceStreak={coherenceStreak}
-                    hasBitacoraContent={hasBitacoraContent}
-                  />
-                </motion.div>
-
                 {/* Banner de Bienvenida - Mobile */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 }}
-                  className='mb-8'
+                  className='mb-1'
                 >
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className='relative rounded-2xl border border-amber-300/20 bg-white/5 backdrop-blur-none p-6 overflow-hidden z-20'
+                    className='relative rounded-2xl p-0 overflow-hidden z-20 text-center'
                   >
-                    {/* Decoración de fondo */}
-                    <div className='absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-amber-400/10 to-orange-400/5 rounded-full blur-3xl z-[1]' />
-                    <div className='absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-amber-200/10 to-orange-200/5 rounded-full blur-3xl z-[1]' />
                     
                     <div className='relative z-10'>
-                      <motion.h1
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
-                        className='text-2xl sm:text-3xl font-extrabold text-white mb-3 font-montserrat tracking-tight drop-shadow-2xl'
-                      >
-                        ¡Bienvenido a Move Crew!
-                      </motion.h1>
+       
                       <motion.p
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.4 }}
-                        className='text-base sm:text-lg text-white font-light max-w-3xl leading-relaxed mb-4 drop-shadow-lg'
+                        className='text-lg sm:text-lg text-white font-light max-w-3xl leading-relaxed mb-4 drop-shadow-lg'
                       >
-                        Este es tu espacio para dejar de sentirte rígido/a, desarrollar fuerza real, dominar tu movilidad y moverte con mayor libertad.
+                        Acá vas a encontrar la biblioteca de clases para que dejes de sentirte rígido/a, desarrolles fuerza real, domines tu movilidad y te muevas con mayor libertad.
                       </motion.p>
                       <motion.p
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.5 }}
-                        className='text-sm sm:text-base text-white/95 font-light max-w-2xl drop-shadow-md mb-6'
+                        className='text-base sm:text-base text-white/95 font-light max-w-2xl drop-shadow-md mb-5'
                       >
-                        Simple, claro y sostenible. Al servicio de tu vida.
+                        Simple, claro y sostenible. Hecho para acompañar tu día a día.
                       </motion.p>
                       
-                      {/* Quick Access Bar - Acceso compacto a todas las features de Move Crew */}
-                      {(isMember && (auth.user?.subscription?.active || auth.user?.isVip)) && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.5, delay: 0.6 }}
-                        >
-                          <MoveCrewQuickAccess 
-                            coherenceStreak={coherenceStreak}
-                            hasBitacoraContent={hasBitacoraContent}
-                          />
-                        </motion.div>
-                      )}
+
                     </div>
                   </motion.div>
                 </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className='relative rounded-2xl backdrop-blur-none z-20 mb-12'
+                >
+                  <MoveCrewFeaturesNav 
+                    coherenceStreak={coherenceStreak}
+                    hasBitacoraContent={hasBitacoraContent}
+                    isMember={isMember}
+                    isVip={!!auth.user?.isVip}
+                    hasActiveSubscription={!!auth.user?.subscription?.active}
+                    onlyGorila
+                  />
+                </motion.div>
+
               </div>
             </div>
           </section>
 
-          <main className='relative mt-20 md:mt-0 bg-black'>
+          <main className='relative mt-16 md:mt-0 bg-black'>
             {/* Filters Section */}
             <section className='px-3 sm:px-4 md:px-6 lg:px-8 mb-6 md:mb-12 bg-black -mt-12 pt-12'>
               <div className='max-w-7xl mx-auto'>

@@ -119,7 +119,7 @@ const Success = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-5xl md:text-7xl lg:text-8xl font-bold text-white font-montserrat mb-6 tracking-tight drop-shadow-2xl"
           >
-            ¡Bienvenido a Move Crew!
+            ¡Bienvenido a la Move Crew!
           </motion.h1>
 
           {/* Mensaje principal */}
@@ -143,7 +143,7 @@ const Success = () => {
             className="max-w-2xl mx-auto mb-12"
           >
             <p className="text-base md:text-lg text-white/80 font-light italic leading-relaxed drop-shadow-md">
-              Simple, claro y sostenible. <span className="font-semibold text-white">Al servicio de tu vida.</span>
+              Simple, claro y sostenible. <span className="font-semibold text-white">Hecho para acompañar tu día a día.</span>
             </p>
             <p className="text-sm md:text-base text-white/70 font-light mt-4">
               — Mateo Molfino

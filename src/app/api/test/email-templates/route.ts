@@ -1,9 +1,172 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { EmailService, EmailType } from '../../../../services/email/emailService';
+import connectDB from '../../../../config/connectDB';
+import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
 
 export async function POST(req: NextRequest) {
   try {
-    const { testEmail } = await req.json();
+    const body = await req.json();
+    const { testEmail, type, subject, data, preview } = body || {};
+
+    const emailService = EmailService.getInstance();
+
+    if (preview && type === EmailType.WEEKLY_LOGBOOK_RELEASE) {
+      const to = data?.email || testEmail || 'preview@example.com';
+
+      let simulatedWeek: any = null;
+      if (data?.simulateFromLogbookId) {
+        try {
+          await connectDB();
+          const logbook = await WeeklyLogbook.findById(data.simulateFromLogbookId).lean();
+          if (logbook?.weeklyContents?.length) {
+            const now = new Date(); now.setHours(0,0,0,0);
+            const sorted = [...logbook.weeklyContents].sort((a:any,b:any)=> new Date(a.publishDate).getTime() - new Date(b.publishDate).getTime());
+            simulatedWeek = sorted.find((w:any)=> new Date(w.publishDate).setHours(0,0,0,0) <= now.getTime()) || sorted[0];
+            if (simulatedWeek) {
+              const firstVideoDay = simulatedWeek.dailyContents?.find((d:any)=> d.visualContent?.type === 'video' && d.visualContent?.videoUrl);
+              const firstAudioDay = simulatedWeek.dailyContents?.find((d:any)=> d.audioTextContent?.audioUrl || d.audioTextContent?.text);
+              simulatedWeek.coverImage =
+                firstVideoDay?.visualContent?.thumbnailUrl ||
+                simulatedWeek.thumbnailUrl ||
+                simulatedWeek.videoThumbnail ||
+                data?.coverImage;
+              simulatedWeek.videoDurationSeconds =
+                firstVideoDay?.visualContent?.duration ||
+                simulatedWeek.videoDuration ||
+                data?.videoDurationSeconds ||
+                0;
+              simulatedWeek.text = simulatedWeek.text || firstAudioDay?.audioTextContent?.text || data?.text;
+              simulatedWeek.audioUrl = firstAudioDay?.audioTextContent?.audioUrl || data?.audioUrl;
+              simulatedWeek.audioTitle = firstAudioDay?.audioTextContent?.nombre || simulatedWeek.weekTitle || data?.audioTitle;
+              simulatedWeek.weekNumber = simulatedWeek.weekNumber || data?.weekNumber;
+              simulatedWeek.month = logbook.month;
+              simulatedWeek.year = logbook.year;
+              simulatedWeek.logbookTitle = logbook.title || data?.logbookTitle;
+            }
+          }
+        } catch (err) {
+          console.warn('No se pudo simular desde bitácora:', err);
+        }
+      }
+
+      const defaultData = {
+        name: data?.name || 'Usuario de Prueba',
+        email: to,
+        weekNumber: simulatedWeek?.weekNumber || data?.weekNumber || 1,
+        month: simulatedWeek?.month || data?.month || 1,
+        year: simulatedWeek?.year || data?.year || 2025,
+        text: (simulatedWeek?.text || data?.text || 'Contenido de prueba para la semana.'),
+        audioUrl: simulatedWeek?.audioUrl || data?.audioUrl || '',
+        audioTitle: simulatedWeek?.audioTitle || data?.audioTitle || 'Audio de la semana',
+        coverImage: simulatedWeek?.coverImage || data?.coverImage || 'https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png',
+        videoDurationSeconds: simulatedWeek?.videoDurationSeconds || data?.videoDurationSeconds || 0,
+        bitacoraLink: data?.bitacoraLink || 'https://mateomove.com/bitacora',
+        logbookTitle: simulatedWeek?.logbookTitle || data?.logbookTitle || 'Camino del Gorila'
+      };
+
+      console.log('Preview WEEKLY_LOGBOOK_RELEASE', {
+        to,
+        weekNumber: defaultData.weekNumber,
+        coverImage: defaultData.coverImage,
+        videoDurationSeconds: defaultData.videoDurationSeconds,
+        hasText: !!defaultData.text,
+        simulated: !!simulatedWeek
+      });
+
+      const html = EmailService.renderTemplate(EmailType.WEEKLY_LOGBOOK_RELEASE, defaultData);
+      return NextResponse.json({
+        success: true,
+        preview: true,
+        to,
+        subject: subject || `El Camino del Gorila - Semana ${defaultData.weekNumber} está disponible`,
+        html
+      });
+    }
+
+    // Envío directo de template específico (p.ej. bitácora)
+    if (type === EmailType.WEEKLY_LOGBOOK_RELEASE) {
+      if (!data?.email && !testEmail) {
+        return NextResponse.json(
+          { success: false, message: 'Email requerido (data.email o testEmail)' },
+          { status: 400 }
+        );
+      }
+
+      const to = data?.email || testEmail;
+
+      // Opcional: simular desde bitácora real también en envío (no solo preview)
+      let simulatedWeek: any = null;
+      if (data?.simulateFromLogbookId) {
+        try {
+          await connectDB();
+          const logbook = await WeeklyLogbook.findById(data.simulateFromLogbookId).lean();
+          if (logbook?.weeklyContents?.length) {
+            const now = new Date(); now.setHours(0,0,0,0);
+            const sorted = [...logbook.weeklyContents].sort((a:any,b:any)=> new Date(a.publishDate).getTime() - new Date(b.publishDate).getTime());
+            simulatedWeek = sorted.find((w:any)=> new Date(w.publishDate).setHours(0,0,0,0) <= now.getTime()) || sorted[0];
+            if (simulatedWeek) {
+              const firstVideoDay = simulatedWeek.dailyContents?.find((d:any)=> d.visualContent?.type === 'video' && d.visualContent?.videoUrl);
+              const firstAudioDay = simulatedWeek.dailyContents?.find((d:any)=> d.audioTextContent?.audioUrl || d.audioTextContent?.text);
+              simulatedWeek.coverImage =
+                firstVideoDay?.visualContent?.thumbnailUrl ||
+                simulatedWeek.thumbnailUrl ||
+                simulatedWeek.videoThumbnail ||
+                data?.coverImage;
+              simulatedWeek.videoDurationSeconds =
+                firstVideoDay?.visualContent?.duration ||
+                simulatedWeek.videoDuration ||
+                data?.videoDurationSeconds ||
+                0;
+              simulatedWeek.text = simulatedWeek.text || firstAudioDay?.audioTextContent?.text || data?.text;
+              simulatedWeek.audioUrl = firstAudioDay?.audioTextContent?.audioUrl || data?.audioUrl;
+              simulatedWeek.audioTitle = firstAudioDay?.audioTextContent?.nombre || simulatedWeek.weekTitle || data?.audioTitle;
+              simulatedWeek.weekNumber = simulatedWeek.weekNumber || data?.weekNumber;
+              simulatedWeek.month = logbook.month;
+              simulatedWeek.year = logbook.year;
+              simulatedWeek.logbookTitle = logbook.title || data?.logbookTitle;
+            }
+          }
+        } catch (err) {
+          console.warn('No se pudo simular desde bitácora (send):', err);
+        }
+      }
+
+      const defaultData = {
+        name: data?.name || 'Usuario de Prueba',
+        email: to,
+        weekNumber: simulatedWeek?.weekNumber || data?.weekNumber || 1,
+        month: simulatedWeek?.month || data?.month || 1,
+        year: simulatedWeek?.year || data?.year || 2025,
+        text: simulatedWeek?.text || data?.text || 'Contenido de prueba para la semana.',
+        audioUrl: simulatedWeek?.audioUrl || data?.audioUrl || '',
+        audioTitle: simulatedWeek?.audioTitle || data?.audioTitle || 'Audio de la semana',
+        coverImage: simulatedWeek?.coverImage || data?.coverImage || 'https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png',
+        videoDurationSeconds: simulatedWeek?.videoDurationSeconds || data?.videoDurationSeconds || 0,
+        bitacoraLink: data?.bitacoraLink || 'https://mateomove.com/bitacora',
+        logbookTitle: simulatedWeek?.logbookTitle || data?.logbookTitle || 'Camino del Gorila'
+      };
+
+      try {
+        const result = await emailService.sendEmail({
+          type: EmailType.WEEKLY_LOGBOOK_RELEASE,
+          to,
+          subject: subject || `El Camino del Gorila - Semana ${defaultData.weekNumber} está disponible`,
+          data: defaultData
+        });
+
+        return NextResponse.json({
+          success: result.success,
+          message: result.message,
+          type: 'WEEKLY_LOGBOOK_RELEASE',
+          to
+        });
+      } catch (error: any) {
+        return NextResponse.json(
+          { success: false, message: 'Error enviando WEEKLY_LOGBOOK_RELEASE', error: error?.message },
+          { status: 500 }
+        );
+      }
+    }
 
     if (!testEmail) {
       return NextResponse.json(
@@ -12,7 +175,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const emailService = EmailService.getInstance();
     const results: any[] = [];
 
     // Test email de bienvenida de membresía
@@ -20,7 +182,8 @@ export async function POST(req: NextRequest) {
       const result = await emailService.sendWelcomeMembership({
         email: testEmail,
         name: 'Usuario de Prueba',
-        dashboardUrl: 'https://mateomove.com/home'
+        dashboardUrl: 'https://mateomove.com/home',
+        telegramInviteUrl: 'https://t.me/+_9hJulwT690yNWFh'
       });
       results.push({
         emailType: 'WELCOME_MEMBERSHIP',

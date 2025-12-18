@@ -37,8 +37,14 @@ export async function POST(req) {
 
     console.log('[bitacora/complete-month] Completando mes', { userId, logbookId, month, year });
 
-    // Obtener el tracking del usuario
-    const tracking = await CoherenceTracking.getOrCreate(userId);
+    // Obtener tracking existente (se crea al suscribirse)
+    const tracking = await CoherenceTracking.findOne({ userId });
+    if (!tracking) {
+      return NextResponse.json(
+        { error: 'Tracking no inicializado para este usuario' },
+        { status: 404 }
+      );
+    }
     
     // Completar el mes (esto subirá de nivel si corresponde)
     const result = tracking.completeMonth(month, year, logbookId);
@@ -87,4 +93,6 @@ export async function POST(req) {
     );
   }
 }
+
+
 

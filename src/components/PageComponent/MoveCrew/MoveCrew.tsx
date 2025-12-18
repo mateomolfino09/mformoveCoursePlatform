@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import FooterProfile from '../Profile/FooterProfile';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
@@ -37,10 +37,37 @@ interface MoveCrewProps {
 const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
   const dispatch = useAppDispatch();
   const [promocionActiva, setPromocionActiva] = useState<Promocion | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     dispatch(toggleScroll(false));
   }, [dispatch]);
+
+  // Propaga el scroll del contenedor a un evento global para que el header reaccione
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+
+    const emitScrollEvent = () => {
+      window.dispatchEvent(
+        new CustomEvent('movecrew-scroll', {
+          detail: {
+            scrollTop: el.scrollTop,
+            scrollHeight: el.scrollHeight,
+            clientHeight: el.clientHeight,
+          },
+        })
+      );
+    };
+
+    // Emitir una vez al montar para establecer el estado inicial
+    emitScrollEvent();
+
+    el.addEventListener('scroll', emitScrollEvent, { passive: true });
+    return () => {
+      el.removeEventListener('scroll', emitScrollEvent);
+    };
+  }, []);
 
   useEffect(() => {
     // Obtener la promoción más reciente y activa
@@ -65,21 +92,12 @@ const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
     }
   };
 
-  const handleScroll = (event: any) => {
-    const isTop = event.target.scrollTop === 0;
-    dispatch(toggleScroll(!isTop));
-    
-    // Disparar evento personalizado para que PromocionFooter lo detecte
-    const customEvent = new CustomEvent('movecrew-scroll', {
-      detail: { scrollTop: event.target.scrollTop, scrollHeight: event.target.scrollHeight, clientHeight: event.target.clientHeight }
-    });
-    window.dispatchEvent(customEvent);
-  };
+
 
   return (
     <div
+      ref={scrollContainerRef}
       className="relative lg:h-full min-h-screen overflow-scroll overflow-x-hidden bg-black"
-      onScroll={handleScroll}
     >
       <MainSideBar where={'move-crew'}>
         {/* 1. Hero - Hook emocional inicial */}

@@ -32,7 +32,22 @@ export async function POST(req) {
       );
     }
 
-    const userId = decoded.userId;
+    const userId = decoded?.userId 
+      || decoded?._id 
+      || decoded?.id 
+      || decoded?.user?._id 
+      || decoded?.user?.id 
+      || null;
+
+    if (!userId) {
+      console.warn('[bitacora/complete] Token decodificado sin userId', {
+        decodedKeys: Object.keys(decoded || {})
+      });
+      return NextResponse.json(
+        { error: 'No autorizado: userId no encontrado en el token' },
+        { status: 401 }
+      );
+    }
 
     // Obtener el body de la petición
     const body = await req.json();
@@ -96,8 +111,14 @@ export async function POST(req) {
       }
     }
 
-    // Obtener o crear el tracking del usuario usando el método estático
-    const tracking = await CoherenceTracking.getOrCreate(userId);
+    // Obtener tracking existente (debe haberse creado al suscribirse)
+    const tracking = await CoherenceTracking.findOne({ userId });
+    if (!tracking) {
+      return NextResponse.json(
+        { error: 'Tracking no inicializado para este usuario' },
+        { status: 404 }
+      );
+    }
 
     // Generar las claves de completado - SEPARADAS por tipo de contenido
     const dayKey = dayNumber && weekNumber ? `${logbookId}-${weekNumber}-${dayNumber}` : null;

@@ -95,77 +95,71 @@ export async function PUT(req, { params }) {
     }
 
     // Mapear y preparar los datos para actualizar
-    const mappedWeeklyContents = weeklyContents.map(wc => {
+    const fetchVimeoMeta = async (videoUrl) => {
+      try {
+        if (!videoUrl) return { thumbnail: '', duration: undefined };
+        const resp = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(videoUrl)}`);
+        if (!resp.ok) return { thumbnail: '', duration: undefined };
+        const data = await resp.json();
+        return {
+          thumbnail: data.thumbnail_url || '',
+          duration: data.duration || undefined
+        };
+      } catch {
+        return { thumbnail: '', duration: undefined };
+      }
+    };
+
+    const fetchCloudinaryAudioMeta = async (audioUrl) => {
+      try {
+        if (!audioUrl?.includes('res.cloudinary.com')) return { duration: undefined };
+        const url = new URL(audioUrl);
+        const parts = url.pathname.split('/');
+        const last = parts.pop() || '';
+        const extIndex = last.lastIndexOf('.');
+        const baseName = extIndex >= 0 ? last.substring(0, extIndex) : last;
+        const jsonPath = [...parts, `${baseName}.json`].join('/');
+        const metaUrl = `${url.origin}${jsonPath}${url.search}`;
+        const resp = await fetch(metaUrl);
+        if (!resp.ok) return { duration: undefined };
+        const data = await resp.json();
+        return { duration: data.duration || data.audio?.duration || undefined };
+      } catch {
+        return { duration: undefined };
+      }
+    };
+
+    const mappedWeeklyContents = await Promise.all(weeklyContents.map(async wc => {
+      const meta = await fetchVimeoMeta(wc.videoUrl);
+      const audioMeta = await fetchCloudinaryAudioMeta(wc.audioUrl);
+      const videoThumbnail = wc.videoThumbnail || wc.thumbnailUrl || meta.thumbnail || '';
+      const videoDuration = wc.videoDuration || wc.duration || meta.duration || undefined;
+      const audioDuration = wc.audioDuration || audioMeta.duration || undefined;
+
       const mappedWc = {
         weekNumber: wc.weekNumber,
         moduleName: (wc.moduleName?.trim() || ''),
         weekTitle: wc.weekTitle || `Semana ${wc.weekNumber}`,
         weekDescription: wc.weekDescription || '',
-        // Contenido legacy (semanal)
         videoUrl: wc.videoUrl || '',
         videoId: wc.videoId || '',
+        videoName: wc.videoName?.trim() || wc.weekTitle || '',
+        videoThumbnail,
+        videoDuration,
         audioUrl: wc.audioUrl || '',
+        audioTitle: wc.audioTitle?.trim() || wc.weekTitle || '',
+        audioDuration,
         text: wc.text || '',
-        // Contenido diario - procesar correctamente los campos nombre
-        dailyContents: (wc.dailyContents || []).map(dc => {
-          const mappedDc = {
-            dayNumber: dc.dayNumber || 1,
-            dayTitle: dc.dayTitle || '',
-            visualContent: dc.visualContent ? {
-              type: dc.visualContent.type || 'video',
-              nombre: (dc.visualContent.nombre?.trim() || ''),
-              videoUrl: dc.visualContent.videoUrl || '',
-              videoId: dc.visualContent.videoId || '',
-              thumbnailUrl: dc.visualContent.thumbnailUrl || '',
-              duration: dc.visualContent.duration || undefined,
-              title: dc.visualContent.title || '',
-              description: dc.visualContent.description || ''
-            } : {
-              type: 'none',
-              nombre: '',
-              videoUrl: '',
-              videoId: '',
-              thumbnailUrl: '',
-              duration: undefined,
-              title: '',
-              description: ''
-            },
-            audioTextContent: dc.audioTextContent ? {
-              nombre: (dc.audioTextContent.nombre?.trim() || ''),
-              audioUrl: dc.audioTextContent.audioUrl || '',
-              audioDuration: dc.audioTextContent.audioDuration || undefined,
-              text: dc.audioTextContent.text || '',
-              title: dc.audioTextContent.title || '',
-              subtitle: dc.audioTextContent.subtitle || ''
-            } : {
-              nombre: '',
-              audioUrl: '',
-              audioDuration: undefined,
-              text: '',
-              title: '',
-              subtitle: ''
-            },
-            publishDate: new Date(dc.publishDate),
-            isPublished: dc.isPublished || false,
-            isUnlocked: dc.isUnlocked || false
-          };
-          
-          // DEBUG: Log de los nombres procesados
-          console.log(`Semana ${wc.weekNumber} - Video nombre procesado:`, mappedDc.visualContent.nombre);
-          console.log(`Semana ${wc.weekNumber} - Audio nombre procesado:`, mappedDc.audioTextContent.nombre);
-          
-          return mappedDc;
-        }),
+        dailyContents: [],
         publishDate: new Date(wc.publishDate),
         isPublished: wc.isPublished || false,
         isUnlocked: wc.isUnlocked || false
       };
       
-      // DEBUG: Log del moduleName procesado
       console.log(`Semana ${wc.weekNumber} - ModuleName procesado:`, mappedWc.moduleName);
       
       return mappedWc;
-    });
+    }));
 
     // DEBUG: Log antes de asignar
     console.log('Bitácora antes de asignar:');

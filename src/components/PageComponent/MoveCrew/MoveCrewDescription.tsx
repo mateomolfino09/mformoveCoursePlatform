@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 const paragraphs = [
   'Move Crew es mi membresía online para que dejes de sentirte rígido/a, te recuperes más rápido de lesiones, desarrolles fuerza real, domines la movilidad y te muevas sin dolor.',
-  'Diseñé un programa trimestral y anual que combina práctica guiada, educación y una comunidad privada donde semana a semana traigo contenido nuevo, desafíos y acompañamiento.',
+  'Diseñé un método mensual que combina práctica guiada, recompensas por constancia, educación de movimiento y una comunidad privada donde semana a semana traigo contenido nuevo, desafíos y acompañamiento.',
   'No es una mentoría ni un seguimiento 1:1. Es un espacio accesible y claro donde te acompaño a avanzar sin abrumarte, sostener hábitos reales y sentirte respaldado sin depender de soluciones hiper personalizadas.'
 ];
 

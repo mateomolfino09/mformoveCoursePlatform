@@ -404,7 +404,7 @@ const PromocionFooter: React.FC<PromocionFooterProps> = ({ promocion, onCtaClick
   return (
     <div 
       data-promocion-footer
-      className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-amber-500/30 via-orange-500/30 to-rose-500/30 backdrop-blur-md text-white shadow-2xl border-t border-amber-300/40 transition-opacity duration-300"
+      className="fixed bottom-0 md:bottom-0 left-0 right-0 z-50 bg-gradient-to-r  from-amber-500/30 via-orange-500/30 to-rose-500/30 backdrop-blur-md text-white shadow-2xl border-t border-amber-300/40 transition-opacity duration-300"
       style={{ opacity: scrollOpacity }}
     >
       <div className="container mx-auto px-4 md:px-12 py-2 md:py-2">

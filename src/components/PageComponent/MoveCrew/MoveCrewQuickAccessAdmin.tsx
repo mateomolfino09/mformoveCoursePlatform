@@ -29,7 +29,7 @@ const MoveCrewQuickAccessAdmin = ({
     {
       name: 'Bitácora',
       description: 'Camino del Gorila',
-      href: '/bitacora',
+      href: routes.navegation.membership.bitacora,
       icon: FireIcon,
       color: 'from-orange-500 to-amber-500',
       available: hasBitacoraContent && isMember,
@@ -38,7 +38,7 @@ const MoveCrewQuickAccessAdmin = ({
     {
       name: 'Clases',
       description: 'Entrenamientos',
-      href: routes.navegation.membresiaHome,
+      href: routes.navegation.membership.home,
       icon: VideoCameraIcon,
       color: 'from-blue-500 to-indigo-500',
       available: isMember

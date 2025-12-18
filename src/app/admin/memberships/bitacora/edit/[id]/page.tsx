@@ -18,7 +18,7 @@ interface WeekContent {
   videoName?: string;
   videoDescription?: string;
   audioUrl: string;
-  audioName?: string;
+  audioTitle?: string;
   text: string;
   publishDate: string;
   isPublished: boolean;
@@ -132,7 +132,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
             videoName: firstDailyVideo?.visualContent?.nombre || week.videoName || '',
             videoDescription: firstDailyVideo?.visualContent?.description || '',
             audioUrl: firstDailyAudio?.audioTextContent?.audioUrl || week.audioUrl || '',
-            audioName: firstDailyAudio?.audioTextContent?.nombre || week.audioName || '',
+            audioTitle: firstDailyAudio?.audioTextContent?.nombre || week.audioTitle || '',
             text: firstDailyAudio?.audioTextContent?.text || week.text || '',
             publishDate: publishDate,
             isPublished: firstDailyVideo?.isPublished !== undefined ? firstDailyVideo.isPublished : (firstDailyAudio?.isPublished !== undefined ? firstDailyAudio.isPublished : (week.isPublished || false))
@@ -208,7 +208,9 @@ export default function EditBitacoraPage({ params }: PageProps) {
             // Contenido legacy (semanal)
             videoUrl: week.videoUrl,
             videoId: week.videoId || '',
+            videoName: week.videoName?.trim() || `Semana ${week.weekNumber}`,
             audioUrl: week.audioUrl,
+            audioTitle: week.audioTitle?.trim() || `Semana ${week.weekNumber}`,
             text: week.text,
             // Para contenido diario, crear un día con video y audio
             dailyContents: week.videoUrl || week.audioUrl || week.text ? [{
@@ -228,7 +230,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
                 description: ''
               },
               audioTextContent: (week.audioUrl || week.text) ? {
-                nombre: week.audioName?.trim() || '',
+                nombre: week.audioTitle?.trim() || '',
                 audioUrl: week.audioUrl || '',
                 text: week.text || ''
               } : {
@@ -466,8 +468,8 @@ export default function EditBitacoraPage({ params }: PageProps) {
                       </label>
                       <input
                         type="text"
-                        value={week.audioName || ''}
-                        onChange={(e) => updateWeek(index, 'audioName', e.target.value)}
+                      value={week.audioTitle || ''}
+                      onChange={(e) => updateWeek(index, 'audioTitle', e.target.value)}
                         placeholder="Nombre del audio"
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat mb-4 text-black bg-white"
                       />

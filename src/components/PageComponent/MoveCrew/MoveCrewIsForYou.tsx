@@ -5,8 +5,8 @@ const positives = [
   'Querés volver a moverte sin dolor y sin sentirte oxidado/a.',
   'Preferís prácticas guiadas pero flexibles, que puedas adaptar a tus tiempos.',
   'Buscás claridad para sostener el hábito y aprender a cuidar tu cuerpo.',
-  'Te motiva formar parte de una comunidad que comparte el proceso.',
-  'Queres moverte como un gorila, leopardo o tigre de manera fluida y segura.'
+  'Te motiva formar parte de una comunidad que comparte el movimiento.',
+  'No te sobra el tiempo para moverte, solo necesitás 2 o 3 veces por semana.'
 ];
 
 const negatives = [
@@ -71,7 +71,7 @@ const MoveCrewIsForYou = () => {
           className="mb-12"
         >
           <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-500 mb-3">Para quién es</p>
-          <h2 className="text-3xl md:text-5xl font-bold text-black">Un espacio pensado para gente real</h2>
+          <h2 className="text-3xl md:text-5xl font-bold text-black">Un espacio pensado para que obtener resultados parezca fácil</h2>
           <p className="text-base md:text-xl text-gray-600 max-w-3xl font-light mt-4">
             Acompaño a personas que quieren mejorar su movilidad, sentirse fuertes y disfrutar del movimiento. Valoro tu tiempo asi que, si necesitás algo distinto, te lo digo de una.
           </p>

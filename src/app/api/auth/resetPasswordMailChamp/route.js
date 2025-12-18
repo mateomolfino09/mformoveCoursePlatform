@@ -33,29 +33,62 @@ export async function POST(req) {
     const link = `${origin}/reset/${token}`;
 
     const message = `
-  <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
-    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-      <h2 style="color: #333333; text-align: center;">Restablecer Contraseña</h2>
-      <p style="font-size: 16px; color: #666666; text-align: center;">
-        Has solicitado restablecer tu contraseña. Haz clic en el botón de abajo para proceder:
-      </p>
-      <div style="text-align: center; margin: 20px 0;">
-        <a href="${link}" style="background-color: #000000; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 4px; font-size: 16px; font-weight: bold; display: inline-block;">
-          Restablecer Contraseña
-        </a>
+<!doctype html>
+<html lang="es" style="margin:0;padding:0;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');
+    </style>
+  </head>
+  <body style="margin:0; padding:0; background:#f5f7fb; font-family:'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
+    <div style="background:#f5f7fb; padding:24px 12px;">
+      <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(15,23,42,0.12); border:1px solid #e5e7eb;">
+        
+        <!-- Header con acento Move Crew -->
+        <div style="padding:28px 24px; text-align:center; background:linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(249, 115, 22, 0.06) 50%, rgba(251, 113, 133, 0.06) 100%);">
+          <div style="color:#000000; font-size:26px; font-weight:800; margin:0 0 6px 0; letter-spacing:-0.3px;">Restablecer contraseña</div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div style="padding:26px 22px;">
+          <p style="font-size:15px; color:rgba(0,0,0,0.78); line-height:1.6; margin:0 0 18px 0; text-align:center; font-weight:400;">
+            Si hiciste esta solicitud, tocá el botón para crear tu nueva contraseña.
+          </p>
+
+          <div style="text-align:center; margin:10px 0 16px;">
+            <a href="${link}" style="
+              display:inline-block;
+              background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(249, 115, 22, 0.1) 50%, rgba(251, 113, 133, 0.1) 100%);
+              color:#000000;
+              padding:14px 26px;
+              text-decoration:none;
+              border-radius:12px;
+              font-size:15px;
+              font-weight:700;
+              font-family:'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;
+              border:1px solid rgba(245, 158, 11, 0.2);
+              box-shadow:0 2px 10px rgba(245, 158, 11, 0.12);
+            ">
+              Restablecer contraseña
+            </a>
+          </div>
+
+          <p style="font-size:13px; color:rgba(0,0,0,0.6); line-height:1.5; margin:12px 0 0 0; text-align:center; font-weight:400;">
+            Si no solicitaste este cambio, ignorá este correo. Tu contraseña actual seguirá funcionando.
+          </p>
+        </div>
+
+        <!-- Footer -->
+        <div style="padding:18px 22px 22px; text-align:center; border-top:1px solid #e5e7eb; background:#f9fafb;">
+          <p style="font-size:12px; color:rgba(0,0,0,0.55); margin:0 0 6px 0; font-weight:400;">El equipo de MForMove</p>
+          <p style="font-size:11px; color:rgba(0,0,0,0.45); margin:0; font-weight:400;">© 2025 MForMove. Todos los derechos reservados.</p>
+        </div>
       </div>
-      <p style="font-size: 14px; color: #999999; text-align: center;">
-        Si no solicitaste este cambio, puedes ignorar este correo.
-      </p>
-      <p style="font-size: 14px; color: #999999; text-align: center; margin-top: 30px;">
-        El equipo de MForMove
-      </p>
-      <hr style="border: none; border-top: 1px solid #eeeeee; margin: 20px 0;">
-      <p style="font-size: 12px; color: #999999; text-align: center;">
-        © 2025 MForMove. Todos los derechos reservados.
-      </p>
     </div>
-  </div>
+  </body>
+</html>
 `;
 
 

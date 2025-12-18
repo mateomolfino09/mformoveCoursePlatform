@@ -14,6 +14,12 @@ const SALMON_SOFT = '#FED7AA'; // Salmón suave para fondos
 const EARTH_BROWN = '#8B4513'; // Marrón tierra para textos
 const NATURAL_GRAY = '#6B7280'; // Gris natural
 
+const shapeIcon = (seed: string | number) => {
+  const shapes = ['▲', '■', '●', '◆', '▴', '▢'];
+  const code = typeof seed === 'number' ? seed : seed.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  return shapes[code % shapes.length];
+};
+
 interface CoherenceCelebrationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -352,7 +358,7 @@ const CoherenceCelebrationModal = ({
                               backgroundColor: `${SALMON_SOFT}20`
                             }}
                           >
-                            <span className="text-3xl">{achievement.icon}</span>
+                            <span className="text-3xl">{shapeIcon(achievement.name || index)}</span>
                             <div className="text-center">
                               <p className="text-sm font-medium font-montserrat mb-1" style={{ color: EARTH_BROWN }}>
                                 {achievement.name}

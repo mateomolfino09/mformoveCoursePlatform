@@ -7,32 +7,32 @@ const faqs = [
   {
     question: '¿Qué diferencia a Move Crew de la mentoría?',
     answer:
-      'En la mentoría trabajo 100% de manera personalizada y con seguimiento 1:1. Move Crew es mi membresía grupal: te doy práctica guiada, educación simple y soporte básico, pero sin encuentros privados. Ideal si querés avanzar acompañado sin necesitar un plan a medida.'
+      'En la mentoría voy 1:1 y personalizo todo. Move Crew es grupal: seguís el Camino del Gorila semanal, con clases de 15-25 minutos, audios, U.C. y soporte asíncrono. Ideal si querés avanzar acompañado sin un plan a medida.'
   },
   {
     question: '¿Necesito experiencia previa?',
     answer:
-      'No. Las progresiones que diseño están pensadas para todos los niveles y siempre podés ajustar la intensidad de cada bloque. Lo único que te pido es comprometerte a practicar al menos dos veces por semana.'
+      'No. Uso el Triple Filtro de Exploración: hay opciones para principiantes, intermedios y avanzados. Ajustás intensidad y progresiones según tu nivel.'
   },
   {
     question: '¿Cuánto tiempo tengo que dedicar?',
     answer:
-      'Los bloques que propongo duran entre 20 y 45 minutos. Podés combinar sesiones cortas durante la semana y profundizar el fin de semana. La idea es que el entrenamiento se adapte a tu vida, no al revés.'
+      '2 horas semanales maximo. Las clases duran 15-25 minutos; podés repartirlas en la semana y cerrar con un bloque un poco más largo si querés.'
   },
   {
-    question: '¿Cómo funciona la comunidad en WhatsApp?',
+    question: '¿Cómo funciona el soporte?',
     answer:
-      'Tenemos un canal privado donde te comparto clases nuevas, recordatorios, reflexiones y correcciones generales. También abrimos espacios para que compartas avances y hagas preguntas rápidas junto a la comunidad.'
+      'Es asíncrono por Telegram: preguntas rápidas y feedback sin atarte a horarios. Además, cada miércoles grabo un Q&A para responder lo que vaya surgiendo.'
   },
   {
     question: '¿Qué pasa si me pierdo una semana?',
     answer:
-      'Las planificaciones quedan guardadas para que retomes cuando puedas. Además, cada trimestre reinicio el ciclo para que vuelvas a empezar sin culpa.'
+      'Las semanas quedan guardadas. Si frenás, retomás donde te quedaste. Reinicio ciclos para que puedas volver sin culpa.'
   },
   {
-    question: '¿Qué incluye el soporte básico?',
+    question: '¿Cómo funcionan las U.C. y los canjes?',
     answer:
-      'Acceso a mis recordatorios, indicaciones generales y respuestas dentro de la comunidad. Si necesitás ajustes específicos o feedback técnico individual, la mentoría es la mejor opción.'
+      'Completá semanas y desafíos para sumar U.C. (Unidades de Coherencia). A los 3 meses sostenidos ganás la insignia “Núcleo Estable” y podés canjear U.C. por programas o futuras piezas de merch.'
   },
   {
     question: '¿Hay garantía?',

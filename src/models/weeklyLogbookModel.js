@@ -110,9 +110,27 @@ const weeklyContentSchema = new mongoose.Schema({
   videoId: {
     type: String // Para Vimeo u otro proveedor
   },
+  videoName: {
+    type: String,
+    default: ''
+  },
+  videoThumbnail: {
+    type: String,
+    default: ''
+  },
+  videoDuration: {
+    type: Number // Duración en segundos (legacy semanal o derivada del primer día con video)
+  },
   audioUrl: {
     type: String,
     default: ''
+  },
+  audioTitle: {
+    type: String,
+    default: ''
+  },
+  audioDuration: {
+    type: Number
   },
   text: {
     type: String,
@@ -153,6 +171,11 @@ const weeklyLogbookSchema = new mongoose.Schema({
     default: ''
   },
   weeklyContents: [weeklyContentSchema],
+  // Evita generar clases individuales duplicadas al publicar la última semana
+  individualClassesCreated: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now,

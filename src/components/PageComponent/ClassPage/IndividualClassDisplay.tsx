@@ -145,30 +145,42 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
   }, [showNav]);
 
   useEffect(() => {
-    const cookies: any = Cookies.get('userToken')
-    
-    // Si no hay cookies y la clase no es gratuita, redirigir a Move Crew
-    if (!cookies && !clase?.isFree) {
+    const cookies: any = Cookies.get('userToken');
+    const hasCookie = !!cookies;
+
+    // Si la clase es gratuita, no aplicamos gating
+    if (clase?.isFree) {
+      if (typeof window !== 'undefined') setHasWindow(true);
+      return;
+    }
+
+    // Sin cookie -> redirigir
+    if (!hasCookie) {
       router.push('/move-crew');
       return;
     }
 
-    // Si no hay usuario autenticado o no tiene suscripción activa (y no es Admin/VIP) y la clase no es gratuita
-    if((!auth.user || (!auth?.user?.subscription?.active && auth?.user?.rol !== 'Admin' && !auth?.user?.isVip)) && !clase?.isFree) {
-      router.push('/move-crew');
-      return;
-    }
-
-    // Si no hay usuario, intentar obtenerlo pero sin abrir modal
-    if(!auth.user) {
+    // Tenemos cookie pero todavía no se cargó el usuario: intentar fetch y esperar
+    if (!auth.user || typeof auth.user.subscription === 'undefined') {
       auth.fetchUser();
+      return;
+    }
+
+    // Con usuario cargado, validar acceso
+    const hasAccess =
+      auth.user.subscription?.active ||
+      auth.user.isVip ||
+      auth.user.rol === 'Admin';
+
+    if (!hasAccess) {
+      router.push('/move-crew');
+      return;
     }
 
     if (typeof window !== 'undefined') {
       setHasWindow(true);
     }
-
-  }, [router, auth.user, clase?.isFree]);
+  }, [router, auth.user, clase?.isFree, auth]);
 
   useEffect(() => {
     // Function to handle scroll event

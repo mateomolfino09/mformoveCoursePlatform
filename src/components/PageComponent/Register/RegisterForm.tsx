@@ -54,6 +54,7 @@ function Register() {
   });
   const { stepCero, stepOne, stepTwo, stepThree, resend } = state;
   const [registered, setRegistered] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   // const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const router = useRouter();
   const recaptchaRef = useRef<any>();
@@ -128,6 +129,14 @@ function Register() {
       });
     }
   }, [state]);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setInterval(() => {
+      setResendCooldown((s) => Math.max(0, s - 1));
+    }, 1000);
+    return () => clearInterval(t);
+  }, [resendCooldown]);
 
   const clearData = () => {
     setState({
@@ -204,19 +213,10 @@ function Register() {
       })
 
       const data = await res.json()
-      const token = data.token
-
       if (res.ok) {
-        await auth.signInPostRegister(token).then((res: any) => {
-          toast.success('¡Cuenta creada con éxito!')
-          setRegistered(true);
-          setState({ ...state, stepThree: false });
-
-          setTimeout(() => {
-            router.push('/mentorship')
-          }, 3000)
-
-        })
+        toast.success('¡Cuenta creada! Revisa tu correo para confirmar tu cuenta.');
+        setRegistered(true);
+        setState({ ...state, stepThree: false });
       }
 
       else if(data?.error) {
@@ -267,6 +267,30 @@ function Register() {
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.error); 
+    }
+    setLoading(false);
+  };
+
+  const handleResendFromSummary = async () => {
+    if (resendCooldown > 0 || loading) return;
+    try {
+      setLoading(true);
+      const res = await fetch(endpoints.auth.resend, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: register.email }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success('Reenviamos el correo de verificación.');
+        setResendCooldown(10);
+      } else {
+        toast.error(data?.error || 'No pudimos reenviar el correo.');
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || 'Error al reenviar.');
     }
     setLoading(false);
   };
@@ -382,31 +406,43 @@ function Register() {
         )}
 
         {registered && !loading && (
-          <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>
-            {/* Logo position */}
-            <img
-              src='/images/logo.png'
-              className='absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 transition duration-500 hover:scale-105'
-              width={150}
-              height={150}
-              alt='icon image'
-            />
-            <div className='relative top-48 md:top-0 space-y-8 rounded py-10 px-6 md:mt-0 md:max-w-lg md:px-14'>
-              <h1 className='text-4xl font-semibold font-montserrat'>
-                Hemos enviado un correo a tu cuenta.
-              </h1>
-              <div className='space-y-4'>
-                <label className='inline-block w-full'>
-                  <p>
-                  Tu cuenta ha sido creada con éxito
-                  </p>
-                </label>
-                  <button
-                    type='button'
-                    className='text-white underline cursor-pointer'
-                  >
-                    <a href="/login">Volver al Inicio</a>
-                  </button>
+          <div className='h-full w-full relative flex flex-col items-center justify-center px-4 py-12'>
+            <div className='w-full max-w-lg mx-auto bg-[#0f1115]/60 text-white shadow-2xl  rounded-3xl overflow-hidden backdrop-blur p-8 space-y-6'>
+              <div className="flex items-start justify-start gap-3">
+                <div className="text-left">
+                  <p className="text-sm text-white/70 uppercase tracking-[0.2em]">Paso final</p>
+                  <h1 className="text-2xl md:text-3xl font-bold leading-tight">Revisá tu correo</h1>
+                </div>
+              </div>
+
+              <p className="text-white/80 text-sm md:text-base leading-relaxed">
+                Te enviamos un correo para confirmar tu cuenta. Abrilo y seguí el enlace para activar tu acceso.
+              </p>
+
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2">
+                <p className="text-sm text-white/90 font-semibold">¿No lo ves?</p>
+                <ul className="text-sm text-white/70 list-disc pl-5 space-y-1">
+                  <li>Chequeá tu carpeta de spam o promociones.</li>
+                  <li>Esperá unos segundos y vuelve a actualizar.</li>
+                  <li>Si no llega, podés reenviarlo desde la opción de recuperar acceso.</li>
+                </ul>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a
+                  href="/login"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-white via-[#f7f7f7] to-[#eaeaea] text-black py-3 px-6 text-base font-semibold shadow-lg shadow-black/25 border border-white/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-black/40 hover:scale-[1.01]"
+                >
+                  Volver al inicio
+                </a>
+                <button
+                  type="button"
+                  onClick={handleResendFromSummary}
+                  disabled={resendCooldown > 0 || loading}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 text-white py-3 px-6 text-base font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {resendCooldown > 0 ? `Reenviar en ${resendCooldown}s` : 'Reenviar verificación'}
+                </button>
               </div>
             </div>
           </div>

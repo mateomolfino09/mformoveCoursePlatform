@@ -11,10 +11,14 @@ import HeaderUnified from '../HeaderUnified';
 
 interface Props {
   children: any;
-  where: any
+  where: any;
+  forceStandardHeader?: boolean;
+  onMenuClick?: () => void;
+  sidebarOpen?: boolean;
+  forceLightTheme?: boolean;
 }
 
-const MainSideBar = ({ children, where }: Props) => {  
+const MainSideBar = ({ children, where, forceStandardHeader = false, onMenuClick, sidebarOpen, forceLightTheme = false }: Props) => {  
   const auth = useAuth()
   const [showNav, setShowNav] = useState(false);
   const path = usePathname();
@@ -26,7 +30,16 @@ const MainSideBar = ({ children, where }: Props) => {
 
   return (
     <div className={`absolute w-full h-full`}>
-      <HeaderUnified user={auth.user} toggleNav={toggleNav} where={where} showNav={showNav} />
+      <HeaderUnified
+        user={auth.user}
+        toggleNav={toggleNav}
+        where={where}
+        showNav={showNav}
+        forceStandardHeader={forceStandardHeader}
+        onMenuClick={onMenuClick}
+        sidebarOpen={sidebarOpen}
+        forceLightTheme={forceLightTheme}
+      />
       {showNav ? (
         <MainSideBarDash showNav={showNav} where={where} toggleNav={toggleNav}/>
       ) : null}

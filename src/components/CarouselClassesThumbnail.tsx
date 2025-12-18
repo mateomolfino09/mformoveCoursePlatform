@@ -35,6 +35,7 @@ import { useRouter } from 'next/navigation';
 import { classFilters } from '../constants/classFilters';
 import { FaClock, FaLevelUpAlt } from 'react-icons/fa';
 import { PiClock, PiClockCounterClockwiseThin } from 'react-icons/pi';
+import { routes } from '../constants/routes';
 
 // Colores del botón FILTER para uso consistente en la página
 const FILTER_COLORS = {
@@ -174,7 +175,7 @@ function CarouselClassesThumbnail({
         </>
       ) : (
         <div onClick={() => {
-          checkLogin() ? router.push('/mentorship') : null;
+          checkLogin() ? router.push(routes.navegation.moveCrew) : null;
         }}>
             {children}
         </div>

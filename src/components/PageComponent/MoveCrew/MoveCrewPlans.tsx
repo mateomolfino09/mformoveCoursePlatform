@@ -183,7 +183,7 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
           <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-500 mb-3">Inversión</p>
           <h2 className="text-3xl md:text-5xl font-bold text-black">Elegí el ciclo que mejor va con vos</h2>
           <p className="text-base md:text-xl text-gray-600 max-w-3xl mx-auto font-light mt-4">
-            Te ofrezco planes trimestrales y anuales para que puedas sumarte cuando estés listo/a. Elijas el que elijas, vas a acceder a toda mi biblioteca, desafíos, comunidad y soporte.
+            Te ofrezco planes mensuales y trimestrales para que puedas sumarte cuando estés listo/a. Elijas el que elijas, vas a acceder a toda mi biblioteca, desafíos, comunidad y soporte.
           </p>
         </motion.div>
 

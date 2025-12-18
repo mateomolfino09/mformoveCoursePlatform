@@ -31,7 +31,7 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
         <div className='h-1 w-full bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5]' />
         
         <div className='flex justify-center mt-8 mb-12'>
-          <Link href={routes.navegation.membresiaHome}>
+          <Link href={routes.navegation.membership.home}>
             <picture>
               <img
                 alt='icon image'

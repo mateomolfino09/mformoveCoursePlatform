@@ -79,7 +79,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
       <div className='w-full h-full relative top-40 md:top-28 right-12 flex flex-col space-y-4 md:space-y-4 justify-start lg:items-end mr-12 lg:mr-24'>
         {!IS_MEMBERSHIP_PAUSED && (
           <Link
-            href={`${routes.navegation.membresia(auth?.user?.subscription?.active || auth?.user?.isVip)}`}
+            href={`${routes.navegation.membership.entry(auth?.user?.subscription?.active || auth?.user?.isVip)}`}
           >
             <m.div
               initial={{ color: '#fff', x: 700 }}

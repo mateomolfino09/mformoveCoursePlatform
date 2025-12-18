@@ -52,52 +52,75 @@ export async function POST(req) {
       );
     }
 
+    const fetchVimeoMeta = async (videoUrl) => {
+      try {
+        if (!videoUrl) return { thumbnail: '', duration: undefined };
+        const resp = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(videoUrl)}`);
+        if (!resp.ok) return { thumbnail: '', duration: undefined };
+        const data = await resp.json();
+        return {
+          thumbnail: data.thumbnail_url || '',
+          duration: data.duration || undefined
+        };
+      } catch {
+        return { thumbnail: '', duration: undefined };
+      }
+    };
+
+    const fetchCloudinaryAudioMeta = async (audioUrl) => {
+      try {
+        if (!audioUrl?.includes('res.cloudinary.com')) return { duration: undefined };
+        const url = new URL(audioUrl);
+        const parts = url.pathname.split('/');
+        const last = parts.pop() || '';
+        const extIndex = last.lastIndexOf('.');
+        const baseName = extIndex >= 0 ? last.substring(0, extIndex) : last;
+        const jsonPath = [...parts, `${baseName}.json`].join('/');
+        const metaUrl = `${url.origin}${jsonPath}${url.search}`;
+        const resp = await fetch(metaUrl);
+        if (!resp.ok) return { duration: undefined };
+        const data = await resp.json();
+        return { duration: data.duration || data.audio?.duration || undefined };
+      } catch {
+        return { duration: undefined };
+      }
+    };
+
+    const mapWeek = async (wc) => {
+      const vimeoMeta = await fetchVimeoMeta(wc.videoUrl);
+      const audioMeta = await fetchCloudinaryAudioMeta(wc.audioUrl);
+      const videoThumbnail = wc.videoThumbnail || wc.thumbnailUrl || vimeoMeta.thumbnail || '';
+      const videoDuration = wc.videoDuration || wc.duration || vimeoMeta.duration || undefined;
+      const audioDuration = wc.audioDuration || audioMeta.duration || undefined;
+
+      return {
+        weekNumber: wc.weekNumber,
+        moduleName: wc.moduleName?.trim() || undefined,
+        weekTitle: wc.weekTitle || `Semana ${wc.weekNumber}`,
+        weekDescription: wc.weekDescription || undefined,
+        videoUrl: wc.videoUrl || '',
+        videoId: wc.videoId || undefined,
+        videoName: wc.videoName?.trim() || wc.weekTitle || '',
+        videoThumbnail,
+        videoDuration,
+        audioUrl: wc.audioUrl || '',
+        audioTitle: wc.audioTitle?.trim() || wc.weekTitle || '',
+        audioDuration,
+        text: wc.text || '',
+        dailyContents: [],
+        publishDate: new Date(wc.publishDate),
+        isPublished: wc.isPublished || false,
+        isUnlocked: wc.isUnlocked || false
+      };
+    };
+
     // Crear la nueva bitácora
     const newLogbook = await WeeklyLogbook.create({
       month,
       year,
       title: title || 'Camino del Gorila',
       description: description || '',
-      weeklyContents: weeklyContents.map(wc => ({
-        weekNumber: wc.weekNumber,
-        moduleName: wc.moduleName?.trim() || undefined,
-        weekTitle: wc.weekTitle || `Semana ${wc.weekNumber}`,
-        weekDescription: wc.weekDescription || undefined,
-        // Contenido legacy (semanal)
-        videoUrl: wc.videoUrl || '',
-        videoId: wc.videoId || undefined,
-        audioUrl: wc.audioUrl || '',
-        text: wc.text || '',
-        // Contenido diario - procesar correctamente los campos nombre
-        dailyContents: (wc.dailyContents || []).map(dc => ({
-          dayNumber: dc.dayNumber || 1,
-          dayTitle: dc.dayTitle || '',
-          visualContent: dc.visualContent ? {
-            type: dc.visualContent.type || 'video',
-            nombre: dc.visualContent.nombre?.trim() || undefined,
-            videoUrl: dc.visualContent.videoUrl || '',
-            videoId: dc.visualContent.videoId || undefined,
-            thumbnailUrl: dc.visualContent.thumbnailUrl || undefined,
-            duration: dc.visualContent.duration || undefined,
-            title: dc.visualContent.title || undefined,
-            description: dc.visualContent.description || undefined
-          } : undefined,
-          audioTextContent: dc.audioTextContent ? {
-            nombre: dc.audioTextContent.nombre?.trim() || undefined,
-            audioUrl: dc.audioTextContent.audioUrl || '',
-            audioDuration: dc.audioTextContent.audioDuration || undefined,
-            text: dc.audioTextContent.text || '',
-            title: dc.audioTextContent.title || undefined,
-            subtitle: dc.audioTextContent.subtitle || undefined
-          } : undefined,
-          publishDate: new Date(dc.publishDate),
-          isPublished: dc.isPublished || false,
-          isUnlocked: dc.isUnlocked || false
-        })),
-        publishDate: new Date(wc.publishDate),
-        isPublished: wc.isPublished || false,
-        isUnlocked: wc.isUnlocked || false
-      }))
+      weeklyContents: await Promise.all(weeklyContents.map(mapWeek))
     });
 
     return NextResponse.json(

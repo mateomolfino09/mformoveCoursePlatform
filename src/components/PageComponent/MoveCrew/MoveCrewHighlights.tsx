@@ -12,28 +12,28 @@ import {
 const highlights = [
   {
     icon: PiHexagonLight,
-    title: 'Sesiones de entrenamiento semanales',
-    description: 'Propongo sesiones cortas, largas, educativas y prácticas. Para que entiendas y sostengas tu progreso.'
+    title: 'Camino del gorila',
+    description: 'Programa de entrenamiento mensual. Una clase y un audio de reflexión/meditación nuevo por semana, por cada clase seguida obtenés U.C. (Unidades de Coherencia), la moneda que premia la constancia.'
   },
   {
     icon: PiCircleLight,
-    title: 'Desafíos Focalizados y Aceleradores',
-    description: 'Retos para romper la monotonía. Te dan un empujón de motivación para acelerar tu progreso en habilidades específicas.'
+    title: 'Desafíos con recompensas',
+    description: 'Retos para romper la monotonía. Podes obtener U.C. (Unidades de Coherencia) por completar desafíos. Estos los podés canjear por programas, sesiones especiales, etc.'
   },
   {
     icon: PiTriangleLight,
-    title: 'Programas de 6 semanas',
-    description: 'Recibís 3 programas completos de 6 semanas. Otros entrenadores venden cada uno a miles de dolares, yo te los incluyo.'
+    title: 'Biblioteca de Clases',
+    description: 'Más de 50 clases grabadas y disponibles para ver en cualquier momento.'
   },
   {
     icon: PiSquareLight,
     title: 'Acceso directo y comunidad',
-    description: 'Tenés acceso al chat grupal. Te doy mi guía directa para asegurar que tu práctica semanal sea correcta, evitando errores.'
+    description: 'Tenés acceso al chat de telegram. Te doy mi guía directa para asegurar que tu práctica semanal sea correcta, evitando errores.'
   },
   {
     icon: PiDiamondLight,
-    title: 'Garantía con condiciones claras',
-    description: 'Garantía de devolución de 30 días si cumplís mínimos razonables (6 sesiones completadas, participación activa en comunidad). Protege a quienes realmente intentan.'
+    title: 'Llamada mensual y Q&A',
+    description: 'Resolvemos dudas y te damos feedback grupal, te doy mi guía para asegurar que tu práctica semanal sea correcta, evitando errores.'
   }
 ];
 

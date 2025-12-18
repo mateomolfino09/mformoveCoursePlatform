@@ -30,9 +30,27 @@ export async function GET(req) {
         { status: 401 }
       );
     }
-    
+
+    // Normalizar userId desde el token
+    const userId = decoded?.userId 
+      || decoded?._id 
+      || decoded?.id 
+      || decoded?.user?._id 
+      || decoded?.user?.id 
+      || null;
+
+    if (!userId) {
+      console.warn('[API /coherence/tracking] Token sin userId', {
+        decodedKeys: Object.keys(decoded || {})
+      });
+      return NextResponse.json(
+        { error: 'No autorizado: userId no encontrado en el token' },
+        { status: 401 }
+      );
+    }
+
     // Buscar usuario
-    const user = await Users.findOne({ _id: decoded.userId });
+    const user = await Users.findOne({ _id: userId });
     if (!user) {
       return NextResponse.json(
         { error: 'Usuario no encontrado' },
@@ -40,27 +58,16 @@ export async function GET(req) {
       );
     }
     
-    // Obtener o crear el tracking de coherencia
-    const tracking = await CoherenceTracking.getOrCreate(user._id);
+    // Obtener o crear el tracking de coherencia (si el usuario entra a bitácora sin tenerlo)
+    const tracking = await (CoherenceTracking.getOrCreate 
+      ? CoherenceTracking.getOrCreate(user._id) 
+      : (CoherenceTracking.schema?.statics?.getOrCreate 
+          ? CoherenceTracking.schema.statics.getOrCreate.call(CoherenceTracking, user._id)
+          : CoherenceTracking.findOne({ userId: user._id })));
     
-    console.log('[API /coherence/tracking] Tracking obtenido desde BD', {
-      userId: user._id,
-      totalUnits: tracking.totalUnits,
-      currentStreak: tracking.currentStreak,
-      longestStreak: tracking.longestStreak,
-      hasCompletedDays: !!tracking.completedDays,
-      hasCompletedWeeks: !!tracking.completedWeeks,
-      hasCompletedVideos: !!tracking.completedVideos,
-      hasCompletedAudios: !!tracking.completedAudios,
-      completedDays: tracking.completedDays,
-      completedWeeks: tracking.completedWeeks,
-      completedVideos: tracking.completedVideos,
-      completedAudios: tracking.completedAudios,
-      completedDaysType: typeof tracking.completedDays,
-      completedWeeksType: typeof tracking.completedWeeks,
-      completedVideosType: typeof tracking.completedVideos,
-      completedAudiosType: typeof tracking.completedAudios
-    });
+    if (!tracking) {
+      throw new Error('No se pudo inicializar el tracking de coherencia');
+    }
     
     // Calcular información de nivel y evolución
     const level = tracking.level || 1;
@@ -90,14 +97,6 @@ export async function GET(req) {
       completedVideos: tracking.completedVideos || [],
       completedAudios: tracking.completedAudios || []
     };
-    
-    console.log('[API /coherence/tracking] Datos enviados al cliente', {
-      totalUnits: responseData.tracking.totalUnits,
-      completedDaysCount: responseData.completedDays.length,
-      completedWeeksCount: responseData.completedWeeks.length,
-      completedVideosCount: responseData.completedVideos.length,
-      completedAudiosCount: responseData.completedAudios.length
-    });
     
     return NextResponse.json(responseData, { status: 200 });
     

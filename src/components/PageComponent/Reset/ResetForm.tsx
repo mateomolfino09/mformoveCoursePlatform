@@ -3,15 +3,13 @@
 import imageLoader from '../../../../imageLoader';
 import { routes } from '../../../constants/routes';
 import { useAuth } from '../../../hooks/useAuth';
-import ErrorComponent from '../../AlertComponent';
 import { MiniLoadingSpinner } from '../../MiniLoadingSpinner';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import './resetStyle.css';
 import { alertTypes } from '../../../constants/alertTypes';
 import AlertComponent from '../../AlertComponent';
+import { CldImage } from 'next-cloudinary';
 
 interface Props {
   token: string;
@@ -91,107 +89,106 @@ function ResetForm({ token }: Props) {
         }
       ]);
     }
+    setLoading(false);
   };
 
   return (
-    <div className="main-container">
-      <div className="background-image background-gradient">
-          <Image
-            src='/images/image00029.jpeg'
-            // src={srcImg}
-            alt={'image'}
-            fill={true}
-            loader={imageLoader}
-            className='image-gradient'
-          />
-        <div className="left-container">
-        <h1 className="title font-boldFont">MForMove Platform</h1>
-        <p className="text !mt-0">Moverse es el medio para reconocerse</p>
-        <div className='about-us-btn-container'>
-            <a
-              href='/mentorship'
-              className='about-us-btn !py-3 rounded-full font-light font-montserrat !px-3'
-            >
-              Membresias
-            </a>
+    <section className="relative min-h-screen bg-black text-white font-montserrat overflow-hidden">
+      <div className="absolute inset-0">
+        <CldImage
+          src="my_uploads/fondos/DSC01436_sy7os9"
+          alt="Reset password"
+          fill
+          priority
+          className="hidden md:block object-cover opacity-65"
+          style={{ objectPosition: 'center top' }}
+          loader={imageLoader}
+        />
+        <CldImage
+          src="my_uploads/fondos/DSC01429_kbgawc"
+          alt="Reset password mobile"
+          fill
+          priority
+          className="md:hidden object-cover opacity-65"
+          style={{ objectPosition: 'center top' }}
+          loader={imageLoader}
+        />
+        <div className="absolute inset-0 bg-black/50" />
+      </div>
+
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 pt-28 md:py-24 md:pt-32">
+        <div className="grid gap-10 justify-items-center">
+          <div className="text-center max-w-2xl space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/80 text-xs uppercase tracking-[0.2em]">
+              <span>Restablecer acceso</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-white drop-shadow-2xl">
+              Cambiá tu contraseña
+            </h1>
+            <p className="text-sm sm:text-base text-white/70 font-light">
+              Ingresa tu nueva contraseña y confirmala para continuar.
+            </p>
+          </div>
+
+          <div className="w-full max-w-md">
+            <div className="relative rounded-3xl bg-[#0f1115]/85 text-white shadow-2xl border border-white/15 overflow-hidden backdrop-blur">
+              <div className="absolute inset-0 pointer-events-none" />
+              <form className="relative z-10 p-6 md:p-8 space-y-4" onSubmit={(e) => { e.preventDefault(); changePassword(new FormData(e.currentTarget)); }}>
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.25em] text-white/60">Ingreso</p>
+                  <h2 className="text-2xl font-semibold text-white">Actualizá tu clave</h2>
+                  <p className="text-sm text-white/70">Usá una contraseña segura y recordable.</p>
+                </div>
+                <div className="space-y-3">
+                  <input
+                    id='password'
+                    className='w-full rounded-lg border-0 bg-white/5 py-2 px-3 text-sm text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30'
+                    type='password'
+                    name='password'
+                    placeholder='Contraseña'
+                    required
+                  />
+                  <input
+                    className='w-full rounded-lg border-0 bg-white/5 py-2 px-3 text-sm text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30'
+                    type='password'
+                    name='passwordCheck'
+                    id='passwordCheck'
+                    placeholder='Confirmar contraseña'
+                    required
+                  />
+                </div>
+                <p className={`text-xs text-amber-200 ${!capsLock && 'hidden'}`}>
+                  Bloq Mayús Activado
+                </p>
+                <button
+                  type='submit'
+                  disabled={loading}
+                  className='w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-white via-[#f7f7f7] to-[#eaeaea] text-black py-3 px-6 text-base font-semibold shadow-lg shadow-black/25 border border-white/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-black/40 hover:scale-[1.01] focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed'
+                >
+                  {loading && <span className="h-4 w-4 border-2 border-black/40 border-t-black rounded-full animate-spin" aria-hidden />}
+                  {loading ? 'Procesando...' : 'Cambiar contraseña'}
+                </button>
+                <div className='flex flex-col md:flex-row md:justify-between mt-2 text-sm text-white/80 space-y-2 md:space-y-0'>
+                  <Link href={routes.user.login}>
+                    <span className='links block text-center underline underline-offset-4 decoration-white/60'>
+                      Ingresar a mi cuenta
+                    </span>
+                  </Link>
+                  <Link href={routes.user.register}>
+                    <span className='links block text-center underline underline-offset-4 decoration-white/60'>
+                      Crear cuenta
+                    </span>
+                  </Link>
+                </div>
+              </form>
+              {message?.map((mes: any) => (
+                <AlertComponent key={mes.message} type={mes.type} message={mes.message} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
-      <div className='right-container'>
-        <div className='right-card-container'>
-          <form className='form-container' action={changePassword}>
-            <h1 className='sub-title'>Cambiar contraseña</h1>
-            <p className='sub-p'>Elige tus nuevas credenciales.</p>
-            <div className='input-container mb-8'>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                className='h-5 w-5 text-gray-400'
-                viewBox='0 0 20 20'
-                fill='currentColor'
-              >
-                <path
-                  fillRule='evenodd'
-                  d='M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z'
-                  clipRule='evenodd'
-                />
-              </svg>
-              <input
-                id='password'
-                className='input-login'
-                type='password'
-                name='password'
-                placeholder='Contraseña'
-              />
-            </div>
-            <div className='input-container mb-12'>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                className='h-5 w-5 text-gray-400'
-                viewBox='0 0 20 20'
-                fill='currentColor'
-              >
-                <path
-                  fillRule='evenodd'
-                  d='M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z'
-                  clipRule='evenodd'
-                />
-              </svg>
-              <input
-                className='input-login'
-                type='password'
-                name='passwordCheck'
-                id='passwordCheck'
-                placeholder='Confirmar contraseña'
-              />
-            </div>
-            <p className={`capslock ${!capsLock && 'hidden'}`}>
-              Bloq Mayús Activado
-            </p>
-            <div className='relative'>
-              <button type='submit' className='login-btn'>
-                Enviar{' '}
-              </button>
-              {loading && <MiniLoadingSpinner />}
-            </div>
-            <div className='flex flex-col md:flex-row md:justify-between mt-4 text-sm text-gray-500'>
-              <Link href={routes.user.login}>
-                <span className='links block text-center'>
-                  Ingresar a mi cuenta
-                </span>
-              </Link>
-              <Link href={routes.user.register}>
-                <span className='links block text-center mt-2 md:mt-0'>
-                  Recuperar acceso
-                </span>
-              </Link>
-            </div>
-          </form>
-        </div>
-        {message?.map((mes: any) => (
-          <AlertComponent type={mes.type} message={mes.message} />
-        ))}
-      </div>
-    </div>
+    </section>
   );
 }
 

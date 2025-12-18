@@ -80,12 +80,26 @@ function CarouselClasses({
           <h2 className='ml-2 md:ml-4 relative text-xl sm:text-2xl font-extrabold text-[#E5E5E5] transition duration-200 font-montserrat hover:text-white lg:text-2xl md:mb-4 -mb-3'>
             {title}
           </h2>
-          <div className='flex relative ml-2 mb-5 justify-center items-center w-auto'>
-              <BsExclamationCircle className='w-4 md:w-6 relative top-3 md:top-0 lg:w-7 cursor-pointer' onClick={() => setShowHelper(!showHelper)} onAbort={() => setShowHelper(false)}/>
-                <span className={`${showHelper ? 'block' : 'hidden'} rounded-md transition-all duration-200 w-[240px] left-9 top-0 z-[100] bg-[#fafafc] whitespace-nowrap text-black absolute before:border-[9px] before:border-transparent before:border-solid before:rounded-[5px] before:border-r-[#fafafc] before:left-[-15px] before:absolute before:top-[1px] text-xs md:text-sm font-light`}>
-                  <p className='w-[240px] break-words whitespace-normal h-full px-2 py-1'>{description}</p> 
-                </span>
+        <div className='flex relative ml-2 mb-5 justify-center items-center w-auto'>
+          <button
+            type="button"
+            aria-label="Información"
+            onClick={() => setShowHelper(!showHelper)}
+            onMouseEnter={() => setShowHelper(true)}
+            onMouseLeave={() => setShowHelper(false)}
+            className="p-1 text-white/80 hover:text-white transition"
+          >
+            <BsExclamationCircle className='w-4 md:w-6 lg:w-7' />
+          </button>
+          <div
+            className={`absolute left-0 sm:left-10 top-full mt-2 w-[240px] max-w-[80vw] z-[120] rounded-2xl bg-black/85 text-white border border-white/15 shadow-xl backdrop-blur px-3 py-2 text-xs sm:text-sm font-light transition-all duration-200 ${
+              showHelper ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-1 pointer-events-none'
+            }`}
+          >
+            <div className="absolute -top-2 left-6 sm:left-4 h-3 w-3 rotate-45 bg-black/85 border-l border-t border-white/15"></div>
+            <p className='break-words whitespace-normal'>{description}</p>
           </div>
+        </div>
 
         </div>
         <div className={`flex ml-2 md:ml-4 md:ml-0 mb-5 relative font-light text-xs md:text-sm group ${title == "Publicadas Recientemente" ? 'hidden' : ""}`} onClick={() => router.push(`/classes-category/${title?.toLowerCase()}`)}>

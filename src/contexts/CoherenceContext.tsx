@@ -64,32 +64,27 @@ export function CoherenceProvider({ children }: { children: React.ReactNode }) {
       }
 
       const data = await response.json();
-      console.log('[CoherenceContext] fetchCoherenceTracking: Datos recibidos', {
-        success: data.success,
-        totalUnits: data.tracking?.totalUnits,
-        completedDaysCount: data.completedDays?.length || 0,
-        completedWeeksCount: data.completedWeeks?.length || 0,
-        completedVideosCount: data.completedVideos?.length || 0,
-        completedAudiosCount: data.completedAudios?.length || 0,
-        completedDays: data.completedDays,
-        completedWeeks: data.completedWeeks,
-        completedVideos: data.completedVideos,
-        completedAudios: data.completedAudios
-      });
       
       if (data.success && data.tracking) {
+        const rawMonthsCompleted = data.tracking.monthsCompleted ?? 0;
+        const rawLevel = data.tracking.level ?? 0;
+        const displayLevel = rawMonthsCompleted > 0 ? (rawLevel || rawMonthsCompleted || 1) : 1;
+        const displayIcon = rawMonthsCompleted > 0 ? (data.tracking.gorillaIcon || '🦍') : '🦍';
+        const displayName = rawMonthsCompleted > 0 ? (data.tracking.evolutionName || 'Gorila Bebé') : 'Gorila Bebé';
+        const displayProgress = data.tracking.progressToNextLevel || 0;
+
         setCoherenceTracking({
           totalUnits: data.tracking.totalUnits || 0,
           currentStreak: data.tracking.currentStreak || 0,
           longestStreak: data.tracking.longestStreak || 0,
           achievements: data.tracking.achievements || [],
           lastCompletedDate: data.tracking.lastCompletedDate,
-          level: data.tracking.level || 1,
-          monthsCompleted: data.tracking.monthsCompleted || 0,
+          level: displayLevel,
+          monthsCompleted: rawMonthsCompleted,
           characterEvolution: data.tracking.characterEvolution || 0,
-          gorillaIcon: data.tracking.gorillaIcon || '🦍',
-          evolutionName: data.tracking.evolutionName || 'Gorila Bebé',
-          progressToNextLevel: data.tracking.progressToNextLevel || 0
+          gorillaIcon: displayIcon,
+          evolutionName: displayName,
+          progressToNextLevel: displayProgress
         });
         
         console.log('[CoherenceContext] fetchCoherenceTracking: Tracking actualizado', {
@@ -190,15 +185,33 @@ export function CoherenceProvider({ children }: { children: React.ReactNode }) {
     });
     
     setCoherenceTracking(prev => {
+      const rawMonthsCompleted = data.monthsCompleted ?? prev?.monthsCompleted ?? 0;
+      const rawLevel = data.level ?? prev?.level ?? 0;
+      const displayLevel = rawMonthsCompleted > 0 ? (rawLevel || rawMonthsCompleted || 1) : 1;
+      const displayIcon = rawMonthsCompleted > 0 ? (data.gorillaIcon || prev?.gorillaIcon || '🦍') : '🦍';
+      const displayName = rawMonthsCompleted > 0 ? (data.evolutionName || prev?.evolutionName || 'Gorila Bebé') : 'Gorila Bebé';
+      const displayProgress = data.progressToNextLevel ?? prev?.progressToNextLevel ?? 0;
+
       const nuevoTracking = !prev ? {
         totalUnits: data.totalUnits || 0,
         currentStreak: data.currentStreak || 0,
         longestStreak: data.longestStreak || 0,
         achievements: data.achievements || [],
-        lastCompletedDate: data.lastCompletedDate
+        lastCompletedDate: data.lastCompletedDate,
+        level: displayLevel,
+        monthsCompleted: rawMonthsCompleted,
+        gorillaIcon: displayIcon,
+        evolutionName: displayName,
+        progressToNextLevel: displayProgress,
+        characterEvolution: data.characterEvolution ?? 0
       } : {
         ...prev,
         ...data,
+        level: displayLevel,
+        monthsCompleted: rawMonthsCompleted,
+        gorillaIcon: displayIcon,
+        evolutionName: displayName,
+        progressToNextLevel: displayProgress,
         achievements: data.achievements !== undefined ? data.achievements : prev.achievements
       };
       

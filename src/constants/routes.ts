@@ -1,5 +1,12 @@
 import { payments } from "./payments";
 
+const membershipRoutes = {
+    home: '/home',
+    bitacora: '/bitacora',
+    moveCrew: '/move-crew',
+    entry: (isMember: boolean) => isMember ? '/home' : '/move-crew',
+};
+
 export const routes = {
     user: {
         login: '/login',
@@ -10,8 +17,12 @@ export const routes = {
 
     },
     navegation: {
-        membresia: (isMember: boolean) => isMember ? '/home' : '/move-crew',
-        membresiaHome: '/home',
+        membership: membershipRoutes,
+        // Aliases para compatibilidad hacia atrás
+        bitacora: membershipRoutes.bitacora,
+        moveCrew: membershipRoutes.moveCrew,
+        membresia: membershipRoutes.entry,
+        membresiaHome: membershipRoutes.home,
         mentorship: '/mentorship',
         mentoria: '/mentorship', // Mantener para compatibilidad
         mentorshipConsulta: '/mentorship/consulta',

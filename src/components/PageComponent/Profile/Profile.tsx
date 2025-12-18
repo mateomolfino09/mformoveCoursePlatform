@@ -19,6 +19,7 @@ import {
   ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 import GorillaLevelDisplay from '../Bitacora/GorillaLevelDisplay';
+import { TbMessageCircleCode } from 'react-icons/tb';
 
 function Profile() {
   const router = useRouter();
@@ -249,11 +250,11 @@ function Profile() {
                 </div>
                 <div className='flex justify-center'>
                   <GorillaLevelDisplay
-                    level={coherenceTracking.level || 1}
+                    level={coherenceTracking.level ?? 0}
                     gorillaIcon={coherenceTracking.gorillaIcon || '🦍'}
                     evolutionName={coherenceTracking.evolutionName || 'Gorila Bebé'}
-                    progressToNextLevel={coherenceTracking.progressToNextLevel || 0}
-                    monthsCompleted={coherenceTracking.monthsCompleted || 0}
+                    progressToNextLevel={coherenceTracking.progressToNextLevel ?? 0}
+                    monthsCompleted={coherenceTracking.monthsCompleted ?? 0}
                     size="md"
                     showProgressBar={true}
                     showLevel={true}
@@ -264,6 +265,39 @@ function Profile() {
 
             {/* Membresía */}
             <Membership user={auth.user} handleVisibility={open} plan={plan} loading={loading}/>
+
+            {/* Comunidad Move Crew */}
+            {(auth?.user?.subscription?.active || auth?.user?.isVip) && (
+              <motion.div
+                variants={itemVariants}
+                className='bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow duration-300'
+              >
+                <div className='flex items-center gap-3 mb-4'>
+                  <div className='p-2 bg-gray-100 rounded-lg'>
+                    <TbMessageCircleCode className='text-xl text-black w-6 h-6'/>
+                  </div>
+                  <h2 className='text-xl md:text-2xl font-semibold text-black'>
+                    Comunidad Move Crew
+                  </h2>
+                </div>
+                <p className='text-base text-gray-600 font-light mb-4'>
+                  Accedé al grupo privado de Telegram para soporte, avisos y novedades.
+                </p>
+                <a
+                  href='https://t.me/+_9hJulwT690yNWFh'
+                  target='_blank'
+                  rel='noreferrer'
+                  className='inline-flex items-center gap-2 px-5 py-3 rounded-xl text-base md:text-base transition-transform duration-200 active:scale-95 border w-full md:w-auto justify-center font-medium  text-center'
+                  style={{
+                    background: '#ffffff',
+                    color: '#229ED9',
+                    borderColor: 'rgba(34, 158, 217, 0.35)'
+                  }}
+                >
+                  Unirme a la comunidad
+                </a>
+              </motion.div>
+            )}
 
             {/* Detalles del Plan */}
             <motion.div

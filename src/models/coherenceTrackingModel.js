@@ -545,7 +545,7 @@ coherenceTrackingSchema.methods.addCoherenceUnit = async function(logbookId, con
         reason: 'ADDITIONAL_WEEK_LIMIT_REACHED',
         weekNumber,
         contentType: contentType,
-        tip: `Cuando completas una semana que no corresponde al calendario actual (completando todo en un día), solo obtenés 1 U.C. en total, sin importar si completas video y audio. Para maximizar tus U.C., es importante que completes 2 contenidos por semana (1 video + 1 audio) de la semana actual del programa, distribuyendo tu práctica a lo largo de la semana, no solo maximizas U.C. sino también RESULTADOS.`
+        tip: `Cuando completas una semana que no corresponde al calendario actual (completando todo en un día), solo obtenés 1 U.C. en total.`
       };
     }
   }
@@ -805,82 +805,92 @@ coherenceTrackingSchema.methods.getGorillaIcon = function() {
 
 // Método estático para obtener o crear tracking para un usuario
 coherenceTrackingSchema.statics.getOrCreate = async function(userId) {
-  let tracking = await this.findOne({ userId });
-  
-  if (!tracking) {
-    tracking = new this({
-      userId,
-      totalUnits: 0,
-      currentStreak: 0,
-      longestStreak: 0,
-      achievements: [],
-      level: 1,
-      monthsCompleted: 0,
-      characterEvolution: 0,
-      completedMonths: [],
-      weeklyCompletions: [],
-      completedDays: [],
-      completedWeeks: [],
-      completedVideos: [],
-      completedAudios: []
-    });
-    await tracking.save();
-  } else {
-    // Inicializar campos si no existen (para documentos creados antes de agregar estos campos)
-    let needsSave = false;
-    
-    if (!tracking.completedDays || !Array.isArray(tracking.completedDays)) {
-      tracking.completedDays = [];
-      needsSave = true;
+  // Evita race conditions usando upsert atómico
+  const defaults = {
+    userId,
+    totalUnits: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    achievements: [],
+    level: 1,
+    monthsCompleted: 0,
+    characterEvolution: 0,
+    completedMonths: [],
+    weeklyCompletions: [],
+    completedDays: [],
+    completedWeeks: [],
+    completedVideos: [],
+    completedAudios: []
+  };
+
+  let tracking = await this.findOneAndUpdate(
+    { userId },
+    { $setOnInsert: defaults },
+    {
+      new: true,
+      upsert: true,
+      setDefaultsOnInsert: true
     }
-    
-    if (!tracking.completedWeeks || !Array.isArray(tracking.completedWeeks)) {
-      tracking.completedWeeks = [];
-      needsSave = true;
-    }
-    
-    if (!tracking.completedVideos || !Array.isArray(tracking.completedVideos)) {
-      tracking.completedVideos = [];
-      needsSave = true;
-    }
-    
-    if (!tracking.completedAudios || !Array.isArray(tracking.completedAudios)) {
-      tracking.completedAudios = [];
-      needsSave = true;
-    }
-    
-    // Inicializar campos de nivel y evolución si no existen
-    if (tracking.level === undefined || tracking.level === null) {
-      tracking.level = tracking.monthsCompleted || 1;
-      needsSave = true;
-    }
-    if (tracking.monthsCompleted === undefined || tracking.monthsCompleted === null) {
-      tracking.monthsCompleted = tracking.completedMonths?.length || 0;
-      needsSave = true;
-    }
-    if (tracking.characterEvolution === undefined || tracking.characterEvolution === null) {
-      tracking.characterEvolution = Math.floor((tracking.level - 1) / 10);
-      needsSave = true;
-    }
-    if (!tracking.completedMonths || !Array.isArray(tracking.completedMonths)) {
-      tracking.completedMonths = [];
-      needsSave = true;
-    }
-    
-    if (needsSave) {
-      tracking.markModified('completedDays');
-      tracking.markModified('completedWeeks');
-      tracking.markModified('completedVideos');
-      tracking.markModified('completedAudios');
-      tracking.markModified('completedMonths');
-      await tracking.save();
-    }
+  );
+
+  // Sanitizar campos faltantes en documentos antiguos
+  let needsSave = false;
+  if (!tracking.completedDays || !Array.isArray(tracking.completedDays)) {
+    tracking.completedDays = [];
+    needsSave = true;
   }
-  
+  if (!tracking.completedWeeks || !Array.isArray(tracking.completedWeeks)) {
+    tracking.completedWeeks = [];
+    needsSave = true;
+  }
+  if (!tracking.completedVideos || !Array.isArray(tracking.completedVideos)) {
+    tracking.completedVideos = [];
+    needsSave = true;
+  }
+  if (!tracking.completedAudios || !Array.isArray(tracking.completedAudios)) {
+    tracking.completedAudios = [];
+    needsSave = true;
+  }
+  if (!tracking.completedMonths || !Array.isArray(tracking.completedMonths)) {
+    tracking.completedMonths = [];
+    needsSave = true;
+  }
+  if (tracking.level === undefined || tracking.level === null) {
+    tracking.level = tracking.monthsCompleted || 1;
+    needsSave = true;
+  }
+  if (tracking.monthsCompleted === undefined || tracking.monthsCompleted === null) {
+    tracking.monthsCompleted = tracking.completedMonths?.length || 0;
+    needsSave = true;
+  }
+  if (tracking.characterEvolution === undefined || tracking.characterEvolution === null) {
+    tracking.characterEvolution = Math.floor((tracking.level - 1) / 10);
+    needsSave = true;
+  }
+
+  if (needsSave) {
+    tracking.markModified('completedDays');
+    tracking.markModified('completedWeeks');
+    tracking.markModified('completedVideos');
+    tracking.markModified('completedAudios');
+    tracking.markModified('completedMonths');
+    await tracking.save();
+  }
+
   return tracking;
 };
 
-const CoherenceTracking = mongoose.models.CoherenceTracking || mongoose.model('CoherenceTracking', coherenceTrackingSchema);
+const attachStaticsIfMissing = (model) => {
+  // Asegura que las statics se encuentren incluso si el modelo ya existía
+  if (!model?.getOrCreate) {
+    model.schema.statics.getOrCreate = coherenceTrackingSchema.statics.getOrCreate;
+  }
+  return model;
+};
+
+const CoherenceTracking = attachStaticsIfMissing(
+  mongoose.models.CoherenceTracking || mongoose.model('CoherenceTracking', coherenceTrackingSchema)
+);
 
 export default CoherenceTracking;
 export { ACHIEVEMENTS, getGorillaIcon, getEvolutionName, getProgressToNextLevel, GORILLA_EVOLUTIONS, EVOLUTION_NAMES };

@@ -3,9 +3,6 @@
 import imageLoader from '../../../../imageLoader';
 import { routes } from '../../../constants/routes';
 import { useAuth } from '../../../hooks/useAuth';
-import ErrorComponent from '../../AlertComponent';
-import { MiniLoadingSpinner } from '../../MiniLoadingSpinner';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
@@ -16,8 +13,8 @@ import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { toast } from 'react-toastify';
 import LoginModalForm from '../Login/AccountForm';
 import MainSideBar from '../../MainSidebar/MainSideBar';
-import NewsletterF from '../Index/NewsletterForm';
 import Footer from '../../Footer';
+import { CldImage } from 'next-cloudinary';
 
 function ForgetForm() {
   const [message, setMessage] = useState<any>([]);
@@ -106,32 +103,68 @@ function ForgetForm() {
 
   return (
     <div>
-        <MainSideBar where={"index"}>
-          <div className='main-container background-gradient-right'>
-            <div className='right-container'>
-              <div className='right-card-container'>
-              <Image
-                  src='/images/image00029.jpeg'
-                  // src={srcImg}
-                  alt={'image'}
-                  fill={true}
-                  loader={imageLoader}
-                  className='image-gradient-right max-h-screen'
-                />
+      <MainSideBar where={'index'}>
+        <section className="relative min-h-screen bg-black text-white font-montserrat overflow-hidden">
+          <div className="absolute inset-0">
+            <CldImage
+              src="my_uploads/fondos/DSC01436_sy7os9"
+              alt="Recuperar contraseña"
+              fill
+              priority
+              className="hidden md:block object-cover opacity-65"
+              style={{ objectPosition: 'center top' }}
+              loader={imageLoader}
+            />
+            <CldImage
+              src="my_uploads/fondos/DSC01429_kbgawc"
+              alt="Recuperar contraseña mobile"
+              fill
+              priority
+              className="md:hidden object-cover opacity-65"
+              style={{ objectPosition: 'center top' }}
+              loader={imageLoader}
+            />
+            <div className="absolute inset-0 bg-black/50" />
+          </div>
 
-                  <LoginModalForm title={"Recuperar Contraseña"}  submitFunction={forget} buttonTitle={"Recuperar"} showEmail={true} showPassword={false} showForget={false} showLogIn={true}/>
+          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 pt-28 md:py-24 md:pt-32">
+            <div className="grid gap-10 justify-items-center">
+              <div className="text-center max-w-2xl space-y-3">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/80 text-xs uppercase tracking-[0.2em]">
+                  <span>Acceso seguro</span>
+                </div>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-white drop-shadow-2xl">
+                  Recuperá tu contraseña
+                </h1>
+                <p className="text-sm sm:text-base text-white/70 font-light">
+                  Ingresá tu correo y te enviamos el enlace de recuperación.
+                </p>
               </div>
-              {message?.map((mes: any) => (
-                <AlertComponent type={mes.type} message={mes.message} />
-              ))}
+
+              <div className="w-full max-w-md">
+                <div className="relative rounded-3xl bg-[#0f1115]/85 text-white shadow-2xl border border-white/15 overflow-hidden backdrop-blur">
+                  <div className="absolute inset-0 pointer-events-none" />
+                  <LoginModalForm
+                    submitFunction={forget}
+                    buttonTitle={'Recuperar'}
+                    showEmail={true}
+                    showPassword={false}
+                    title=""
+                    showForget={false}
+                    showLogIn={true}
+                    isLoading={loading}
+                  />
+                  {message?.map((mes: any) => (
+                    <AlertComponent key={mes.message} type={mes.type} message={mes.message} />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        <NewsletterF/>
+        </section>
         <Footer />
       </MainSideBar>
-
     </div>
-
   );
 }
 

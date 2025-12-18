@@ -13,6 +13,7 @@ export enum EmailType {
   PAYMENT_SUCCESS = 'payment_success',
   PAYMENT_FAILED = 'payment_failed',
   PASSWORD_RESET = 'password_reset',
+  ACCOUNT_CREATED = 'account_created',
   NEW_CLASS_NOTIFICATION = 'new_class_notification',
   WELCOME_EMAIL = 'welcome_email',
   WELCOME_MENTORSHIP = 'welcome_mentorship',
@@ -183,6 +184,18 @@ const getBaseTemplate = getBaseTemplateUser;
 // Templates específicos
 const emailTemplates = {
   [EmailType.MENTORSHIP_REQUEST_NOTIFICATION]: (data: EmailData) => {
+    const textClean = (data.text || '').trim();
+    const durationSec = Number(data.videoDurationSeconds || 0);
+    const formattedDuration = (() => {
+      if (!durationSec || durationSec <= 0) return '';
+      const hrs = Math.floor(durationSec / 3600);
+      const mins = Math.floor((durationSec % 3600) / 60);
+      const secs = Math.floor(durationSec % 60);
+      const two = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+      if (hrs > 0) return `${hrs}:${two(mins)}:${two(secs)}`;
+      return `${mins}:${two(secs)}`;
+    })();
+    
     const content = `
       <h2 style="color: #ffffff; text-align: center; font-size: 24px; margin-bottom: 20px;">Nueva Solicitud de Mentoría</h2>
       
@@ -346,18 +359,79 @@ const emailTemplates = {
 
   [EmailType.PASSWORD_RESET]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${colors.primary.blue}; text-align: center; font-size: 24px; margin-bottom: 20px;">Restablecer Contraseña</h2>
-      <p style="font-size: 16px; color: ${colors.text.secondary}; text-align: center; line-height: 1.6; margin-bottom: 30px;">
-        Has solicitado restablecer tu contraseña. Haz clic en el botón de abajo para proceder:
-      </p>
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.resetLink}" style="background-color: ${colors.primary.blue}; color: ${colors.text.inverse}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
-          Restablecer Contraseña
-        </a>
+      <!-- Header con acento Move Crew -->
+      <div style="padding: 32px 20px 20px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08); background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(249, 115, 22, 0.06) 50%, rgba(251, 113, 133, 0.06) 100%);">
+        <div style="color: #000000; font-size: 28px; font-weight: 800; margin: 0 0 8px 0; letter-spacing: -0.3px; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;">Restablecer contraseña</div>
+        <p style="color: rgba(0, 0, 0, 0.65); font-size: 14px; margin: 0; font-weight: 400; line-height: 1.6;">Recibimos una solicitud para actualizar tu acceso. Usá el enlace seguro para continuar.</p>
       </div>
-      <p style="font-size: 14px; color: ${colors.text.tertiary}; text-align: center; margin-top: 20px;">
-        Si no solicitaste este cambio, puedes ignorar este correo.
-      </p>
+
+      <!-- Contenido principal -->
+      <div style="padding: 26px 20px;">
+        <p style="font-size: 15px; color: rgba(0, 0, 0, 0.75); line-height: 1.6; margin: 0 0 20px 0; text-align: center; font-weight: 400;">
+          Si hiciste esta solicitud, tocá el botón para crear tu nueva contraseña. El enlace caduca en <strong style="font-weight: 600;">60 minutos</strong>.
+        </p>
+
+        <div style="text-align: center; margin: 10px 0 16px;">
+          <a href="${data.resetLink}" style="
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(249, 115, 22, 0.1) 50%, rgba(251, 113, 133, 0.1) 100%);
+            color: #000000;
+            padding: 14px 26px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.12);
+          ">
+            Restablecer contraseña
+          </a>
+        </div>
+
+        <p style="font-size: 13px; color: rgba(0, 0, 0, 0.6); line-height: 1.5; margin: 12px 0 0 0; text-align: center; font-weight: 400;">
+          Si no solicitaste este cambio, ignorá este correo. Tu contraseña actual seguirá funcionando.
+        </p>
+      </div>
+    `;
+    return getBaseTemplate(content);
+  },
+
+  [EmailType.ACCOUNT_CREATED]: (data: EmailData) => {
+    const content = `
+      <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
+        <div style="color: #000000; font-size: 30px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -0.3px;">Tu acceso</div>
+        <p style="color: rgba(0, 0, 0, 0.65); font-size: 14px; margin: 0; font-weight: 400;">Hola ${data.name || 'Mover'}, acá van tus datos de ingreso.</p>
+      </div>
+
+      <div style="padding: 24px 20px;">
+        <div style="background: #f9fafb; padding: 18px 16px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.06); margin-bottom: 18px;">
+          <h3 style="color: #000; margin: 0 0 12px 0; font-size: 16px; font-weight: 700; text-align:center;">Credenciales</h3>
+          <p style="margin: 6px 0; color: rgba(0,0,0,0.75); font-size: 14px; text-align:center;"><strong>Email:</strong> ${data.email}</p>
+          <p style="margin: 6px 0; color: rgba(0,0,0,0.75); font-size: 14px; text-align:center;"><strong>Contraseña temporal:</strong> ${data.password}</p>
+        </div>
+
+        <div style="text-align: center; margin: 22px 0 10px;">
+          <a href="${data.resetLink}" style="
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(249, 115, 22, 0.1) 50%, rgba(251, 113, 133, 0.1) 100%);
+            color: #000000;
+            padding: 14px 28px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);
+          ">
+            Cambiar mi contraseña
+          </a>
+        </div>
+
+        <p style="font-size: 13px; color: rgba(0,0,0,0.6); line-height: 1.5; margin: 10px 0 0 0; text-align: center;">
+          Te sugerimos actualizarla al ingresar. Si no solicitaste este usuario, ignorá este correo.
+        </p>
+      </div>
     `;
     return getBaseTemplate(content);
   },
@@ -387,18 +461,54 @@ const emailTemplates = {
   },
 
   [EmailType.WELCOME_EMAIL]: (data: EmailData) => {
+    const primaryActionLink = data.confirmLink || data.dashboardUrl || 'https://mateomove.com/account';
+    const primaryActionText = data.buttonText || (data.confirmLink ? 'Confirmar email' : 'Ir a mi cuenta');
+    const message = data.message || 'Gracias por completar tu registro. Activá tu acceso y seguí el flujo sin perder tiempo.';
+
     const content = `
-      <h2 style="color: ${colors.primary.blue}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Bienvenido a MForMove!</h2>
-      <p style="font-size: 16px; color: ${colors.text.secondary}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
-        ¡Hola <strong>${data.name}</strong>! Nos alegra darte la bienvenida a nuestra comunidad.
-      </p>
-      <p style="font-size: 16px; color: ${colors.text.secondary}; line-height: 1.6; margin-bottom: 30px; text-align: center;">
-        Estamos aquí para ayudarte a alcanzar tus objetivos de fitness y bienestar.
-      </p>
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.dashboardUrl || 'https://mateomove.com/account'}" style="background-color: ${colors.primary.blue}; color: ${colors.text.inverse}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
-          Ir a Mi Cuenta
-        </a>
+      <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
+        <div style="color: #000000; font-size: 30px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -0.3px;">¡Bienvenido!</div>
+        <p style="color: rgba(0, 0, 0, 0.65); font-size: 14px; margin: 0; font-weight: 400;">Hola ${data.name || 'Mover'}, ${message}</p>
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 18px auto 0; max-width: 420px; width: 100%;">
+          <tr>
+            <td style="text-align: center; padding: 0;">
+              <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764363987/my_uploads/mails/fondoMoveCrew_1_k98l1d.png" 
+                   alt="Bienvenida MForMove" 
+                   width="420"
+                   height="260"
+                   style="width: 100%; max-width: 420px; height: auto; border-radius: 14px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
+                   border="0" />
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="padding: 24px 20px;">
+        <div style="background: #f9fafb; padding: 18px 16px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.06); margin-bottom: 18px;">
+          <h3 style="color: #000; margin: 0 0 12px 0; font-size: 16px; font-weight: 700; text-align:center;">Tu acceso</h3>
+          ${data.email ? `<p style="margin: 6px 0; color: rgba(0,0,0,0.75); font-size: 14px; text-align:center;"><strong>Email:</strong> ${data.email}</p>` : ''}
+          ${data.password ? `<p style="margin: 6px 0; color: rgba(0,0,0,0.75); font-size: 14px; text-align:center;"><strong>Contraseña:</strong> ${data.password}</p>` : ''}
+          ${!data.password ? `<p style="margin: 6px 0; color: rgba(0,0,0,0.6); font-size: 13px; text-align:center;">Usá la clave que creaste durante el registro.</p>` : ''}
+        </div>
+
+        <div style="text-align: center; margin: 22px 0 10px;">
+          <a href="${primaryActionLink}" style="
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(249, 115, 22, 0.1) 50%, rgba(251, 113, 133, 0.1) 100%);
+            color: #000000;
+            padding: 14px 28px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);
+          ">
+            ${primaryActionText}
+          </a>
+        </div>
+
+        ${data.secondaryMessage ? `<p style="font-size: 13px; color: rgba(0,0,0,0.6); line-height: 1.5; margin: 10px 0 0 0; text-align: center;">${data.secondaryMessage}</p>` : ''}
       </div>
     `;
     return getBaseTemplate(content);
@@ -485,7 +595,7 @@ const emailTemplates = {
 
         <!-- Mensaje final -->
         <p style="font-size: 14px; color: rgba(0, 0, 0, 0.6); line-height: 1.6; margin: 24px 0 0; text-align: center; font-weight: 300; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
-          Simple, claro y sostenible. <strong style="font-weight: 600;">Al servicio de tu vida.</strong>
+          Simple, claro y sostenible. <strong style="font-weight: 600;">Hecho para acompañar tu día a día.</strong>
         </p>
       </div>
     `;
@@ -604,7 +714,7 @@ const emailTemplates = {
 
         <!-- Mensaje final -->
         <p style="font-size: 14px; color: rgba(0, 0, 0, 0.6); line-height: 1.6; margin: 24px 0 0; text-align: center; font-weight: 300; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
-          Simple, claro y sostenible. <strong style="font-weight: 600;">Al servicio de tu vida.</strong>
+          Simple, claro y sostenible. <strong style="font-weight: 600;">Hecho para acompañar tu día a día.</strong>
         </p>
       </div>
     `;
@@ -702,7 +812,7 @@ el bienestar fisico y emocional.
 
         <!-- Mensaje inspiracional -->
         <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 24px 0; text-align: center; font-weight: 500; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
-          Simple, claro y sostenible. <strong style="font-weight: 600;">Al servicio de tu vida.</strong>
+          Simple, claro y sostenible. <strong style="font-weight: 600;">Hecho para acompañar tu día a día.</strong>
         </p>
 
         <!-- Botón CTA estilo MoveCrew con gradiente sutil -->
@@ -721,6 +831,27 @@ el bienestar fisico y emocional.
                     box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);">
             Empezar ahora
         </a>
+        </div>
+
+        <!-- Invitación a la comunidad de Telegram -->
+        <div style="text-align: center; margin: 18px 0 0;">
+          <a href="${data.telegramInviteUrl || 'https://t.me/+_9hJulwT690yNWFh'}"
+             style="display: inline-block;
+                    background: linear-gradient(135deg, #229ED9 0%, #1a8dc5 100%);
+                    color: #ffffff;
+                    padding: 12px 24px;
+                    text-decoration: none;
+                    border-radius: 12px;
+                    font-size: 15px;
+                    font-weight: 600;
+                    font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+                    border: 1px solid rgba(34, 158, 217, 0.3);
+                    box-shadow: 0 2px 10px rgba(34, 158, 217, 0.25);">
+            Únite a la Comunidad
+          </a>
+          <p style="font-size: 13px; color: rgba(0, 0, 0, 0.6); line-height: 1.5; margin: 10px 0 0; text-align: center; font-weight: 400; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
+            Allí compartimos avisos, soporte y las novedades de la Move Crew.
+          </p>
         </div>
       </div>
     `;
@@ -1339,6 +1470,23 @@ el bienestar fisico y emocional.
   [EmailType.WEEKLY_LOGBOOK_RELEASE]: (data: EmailData) => {
     const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     const monthName = monthNames[(data.month || 1) - 1];
+    // Limpia nbsp y espacios múltiples
+    const textClean = (data.text || '')
+      .replace(/\u00A0/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const durationSec = Number(data.videoDurationSeconds || 0);
+    const formattedDuration = (() => {
+      if (!durationSec || durationSec <= 0) return '';
+      const hrs = Math.floor(durationSec / 3600);
+      const mins = Math.floor((durationSec % 3600) / 60);
+      const secs = Math.floor(durationSec % 60);
+      const two = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+      if (hrs > 0) return `${hrs}:${two(mins)}:${two(secs)}`;
+      return `${mins}:${two(secs)}`;
+    })();
+
+    console.log(textClean);
     
     const content = `
       <!-- Header minimalista -->
@@ -1355,16 +1503,56 @@ el bienestar fisico y emocional.
           ¡Hola <strong style="font-weight: 600;">${data.name}</strong>! Tu contenido semanal del Camino del Gorila está listo.
         </p>
 
-        <!-- Sección de texto semanal -->
-        <div style="background: #f9fafb; padding: 20px 16px; border-radius: 12px; margin: 24px 0; border-left: 4px solid #F59E0B;">
-          <div style="color: rgba(0, 0, 0, 0.7); font-size: 15px; line-height: 1.7; font-weight: 300; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly; white-space: pre-wrap;">
-            ${data.text || 'Tu contenido semanal está disponible en la plataforma.'}
+        ${data.coverImage ? `
+          <div style="margin: 8px 0 24px 0;">
+            <a href="${data.bitacoraLink || 'https://mateomove.com/bitacora'}" style="text-decoration: none; display: block; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; overflow: hidden; max-width: 560px; margin: 0 auto;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse;">
+                <tr>
+                  <td style="background-image: url(${data.coverImage}); background-size: cover; background-position: center; padding: 100px 0; position: relative; text-align: center;">
+                    <table role="presentation" align="center" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse; margin: 0 auto;">
+                      <tr>
+                        <td style="width: 74px; height: 74px; background: rgba(0,0,0,0.65); border-radius: 50%; box-shadow: 0 6px 18px rgba(0,0,0,0.25); text-align: center; vertical-align: middle;">
+                          <div style="width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 18px solid #ffffff; margin-left: 4px; display: inline-block;"></div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 3px 10px;text-align:center;">
+                    <div
+                      style="
+                        height:5px;
+                        width:100%;
+                        max-width:560px;
+                        margin:0 auto;
+                        background: linear-gradient(90deg, rgba(245,158,11,0.35) 0%, rgba(249,115,22,0.5) 50%, rgba(251,113,133,0.35) 100%);
+                        border-radius: 999px;
+                      "
+                    ></div>
+                  </td>
+                </tr>
+                ${formattedDuration ? `
+                <tr>
+                  <td style="padding: 6px 10px 10px 10px; text-align: right;">
+                    <span style="font-size: 12px; color: rgba(0,0,0,0.7); font-weight: 500; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;">0:00 / ${formattedDuration}</span>
+                  </td>
+                </tr>
+                ` : ''}
+              </table>
+            </a>
           </div>
-        </div>
+        ` : ''}
+
+        ${textClean ? `
+          <div style="font-size: 16px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 auto 24px auto; text-align: center; font-weight: 300; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly; white-space: normal; max-width: 640px;">
+            ${textClean.trim()}
+          </div>
+        ` : ''}
 
         <!-- Mensaje motivacional -->
         <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 24px 0; text-align: center; font-weight: 500; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
-          Premia la constancia, porque ahí están los resultados en el movimiento.
+          La constancia se recompensa, porque ahí están los resultados en el movimiento.
         </p>
 
         <!-- Botón CTA para ir a la bitácora -->
@@ -1408,6 +1596,14 @@ export class EmailService {
     return EmailService.instance as EmailService;
   }
 
+  public static renderTemplate(type: EmailType, data: EmailData): string {
+    const template = emailTemplates[type];
+    if (!template) {
+      throw new Error(`Template no encontrado para el tipo: ${type}`);
+    }
+    return template(data);
+  }
+
   // Método principal para enviar emails
   public async sendEmail(config: EmailConfig): Promise<{ success: boolean; message: string; error?: string }> {
     try {
@@ -1425,9 +1621,26 @@ export class EmailService {
 
       const allRecipients = [...toRecipients, ...ccRecipients, ...bccRecipients];
 
+      const personalTypes: EmailType[] = [
+        EmailType.WEEKLY_LOGBOOK_RELEASE,
+        EmailType.WELCOME_EMAIL,
+        EmailType.WELCOME_MEMBERSHIP,
+        EmailType.WELCOME_MENTORSHIP,
+        EmailType.COURSE_COMPLETION,
+        EmailType.TRANSFORMATIONAL_PROGRAM_WEEK,
+        EmailType.EVENT_CONFIRMATION,
+        EmailType.PRODUCT_CONFIRMATION,
+        EmailType.MENTORSHIP_APPROVAL,
+      ];
+
+      const sender =
+        personalTypes.includes(config.type)
+          ? { from_email: 'mateo@mateomove.com', from_name: 'Mateo Molfino' }
+          : { from_email: 'noreply@mateomove.com' };
+
       await mailchimpClient.messages.send({
         message: {
-          from_email: "noreply@mateomove.com",
+          ...sender,
           subject: config.subject,
           html: html,
           to: allRecipients,
@@ -1486,6 +1699,15 @@ export class EmailService {
       type: EmailType.PASSWORD_RESET,
       to: data.email,
       subject: 'Restablecer contraseña',
+      data
+    });
+  }
+
+  public async sendAccountCreated(data: EmailData) {
+    return this.sendEmail({
+      type: EmailType.ACCOUNT_CREATED,
+      to: data.email,
+      subject: 'Tu acceso a MForMove',
       data
     });
   }

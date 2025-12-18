@@ -13,38 +13,47 @@ import { routes } from '../../../constants/routes';
 interface MoveCrewFeaturesNavProps {
   coherenceStreak?: number | null;
   hasBitacoraContent?: boolean;
+  isMember?: boolean;
+  isVip?: boolean;
+  hasActiveSubscription?: boolean;
+  onlyGorila?: boolean;
 }
 
 const MoveCrewFeaturesNav = ({ 
   coherenceStreak = null, 
-  hasBitacoraContent = false 
+  hasBitacoraContent = false,
+  isMember = false,
+  isVip = false,
+  hasActiveSubscription = false,
+  onlyGorila = false
 }: MoveCrewFeaturesNavProps) => {
+  const canAccess = isVip || hasActiveSubscription || isMember;
+
   const features = [
     {
-      name: 'Bitácora',
-      href: '/bitacora',
+      name: 'Ir a Camino del Gorila',
+      href: routes.navegation.membership.bitacora,
       icon: FireIcon,
       available: true,
+      desc: 'Tu ruta semanal guiada y bitácora de progreso.',
       badge: coherenceStreak && coherenceStreak > 0 ? coherenceStreak : null
     },
-    {
-      name: 'Clases',
-      href: routes.navegation.membresiaHome,
-      icon: VideoCameraIcon,
-      available: true
-    },
-    {
-      name: 'Eventos',
-      href: routes.navegation.eventos,
-      icon: CalendarDaysIcon,
-      available: true
-    },
-    {
-      name: 'Cursos',
-      href: routes.navegation.products,
-      icon: BookOpenIcon,
-      available: true
-    }
+    ...(!onlyGorila ? [
+      {
+        name: 'Biblioteca de Clases',
+        href: routes.navegation.membership.home,
+        icon: VideoCameraIcon,
+        available: true,
+        desc: 'Clases on demand y programas listos para seguir cuando quieras.'
+      },
+      {
+        name: 'Comunidad',
+        href: routes.navegation.eventos,
+        icon: CalendarDaysIcon,
+        available: true,
+        desc: 'Eventos, Q&A y acompañamiento grupal para sostener tu proceso.'
+      }
+    ] : [])
   ];
 
   return (
@@ -66,32 +75,22 @@ const MoveCrewFeaturesNav = ({
             transition={{ duration: 0.3, delay: index * 0.05 }}
             whileHover={{ scale: isDisabled ? 1 : 1.05, y: -2 }}
           >
-            {isDisabled ? (
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800/50 border border-white/5 cursor-not-allowed opacity-50">
-                <Icon className="w-4 h-4 text-gray-400" />
-                <span className="text-sm font-light text-gray-400 font-montserrat">
+            <Link
+              href={canAccess ? feature.href : routes.navegation.membership.moveCrew}
+              className="group"
+            >
+              <div
+                className={`relative flex items-center justify-center px-4 py-2 rounded-full min-w-[190px] h-12 transition-all cursor-pointer shadow-md hover:shadow-lg ${
+                  canAccess
+                    ? 'bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 hover:from-amber-400/30 hover:via-orange-400/30 hover:to-rose-400/30'
+                    : 'bg-gray-800/50 border border-white/5 opacity-80 hover:opacity-100'
+                }`}
+              >
+                <span className={`text-sm font-semibold font-montserrat drop-shadow ${canAccess ? 'text-white' : 'text-gray-200'}`}>
                   {feature.name}
                 </span>
               </div>
-            ) : (
-              <Link href={feature.href}>
-                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 hover:from-amber-400/30 hover:via-orange-400/30 hover:to-rose-400/30 transition-all cursor-pointer group shadow-md hover:shadow-lg">
-                  <Icon className="w-4 h-4 text-white" />
-                  <span className="text-sm font-light text-white font-montserrat">
-                    {feature.name}
-                  </span>
-                  {feature.badge && (
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="text-xs font-light text-white bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-1 rounded-full shadow-md font-montserrat"
-                    >
-                      {feature.badge}
-                    </motion.span>
-                  )}
-                </div>
-              </Link>
-            )}
+            </Link>
           </motion.div>
         );
       })}

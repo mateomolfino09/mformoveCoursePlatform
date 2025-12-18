@@ -12,6 +12,8 @@ import { serialize } from 'cookie';
 import axios from 'axios';
 import { generateMd5 } from '../../../helper/generateMd5';
 import mailchimp from "@mailchimp/mailchimp_marketing";
+import { getCurrentURL } from '../../../assets/getCurrentURL';
+import { emailService, EmailType } from '../../../../../services/email/emailService';
 
 connectDB();
 mailchimp.setConfig({
@@ -114,27 +116,48 @@ export async function POST(request) {
       newUser.token = `${token}`
       await newUser.save()
 
+      // Enviar email con credenciales y link para cambiar contraseña
+      const origin = getCurrentURL();
+      const resetLink = `${origin}/reset/${token}`;
+      try {
+        await emailService.sendAccountCreated({
+          email,
+          name: name || 'Mover',
+          password,
+          resetLink
+        });
+      } catch (err) {
+        console.error('sendAccountCreated failed', err);
+      }
+
       //SUBSCRIBO A MAILCHIMP PLATFORa    
 
-      const responseNews = await fetch(customNewsletterUrl, {
-        method: "POST",
-        headers: {
-          Authorization: `apikey ${MailchimpKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email_address: email,
-          merge_fields: {
-              FNAME: name,
-              LNAME: "",
-              PASSWORD: password,
-              TOKEN:  newUser.token
-            },
-          status: "subscribed",
-          vip: false,
-          tags: ["PLATAFORMA", "RUTINA"]
-        }),
-      });
+      try {
+        const responseNews = await fetch(customNewsletterUrl, {
+          method: "POST",
+          headers: {
+            Authorization: `apikey ${MailchimpKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email_address: email,
+            merge_fields: {
+                FNAME: name,
+                LNAME: "",
+                PASSWORD: password,
+                TOKEN:  newUser.token
+              },
+            status: "subscribed",
+            vip: false,
+            tags: ["PLATAFORMA", "RUTINA"]
+          }),
+        });
+        if (!responseNews.ok) {
+          console.error('Mailchimp subscribe failed', await responseNews.text());
+        }
+      } catch (err) {
+        console.error('Mailchimp subscribe error', err);
+      }
 
       newUser.password = null;
 
@@ -142,7 +165,8 @@ export async function POST(request) {
       return NextResponse.json({ message: `Te registraste con éxito.`, newUser, token, ok: true }, { status: 200 })
     }
   } catch (error) {
-    return NextResponse.json({ message: `Error al enviar el mail. Porfavor vuelva a intentarlo`}, { status: 500 })
+    console.error('easyRegisterSubscribe error', error);
+    return NextResponse.json({ error: `Error al enviar el mail. Porfavor vuelva a intentarlo`}, { status: 500 })
   }
 };
 

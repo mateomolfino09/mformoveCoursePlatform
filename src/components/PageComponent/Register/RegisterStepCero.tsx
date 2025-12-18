@@ -97,68 +97,44 @@ const RegisterStepCero = ({ step0ToStep1, step0ToResend }: Props) => {
   };
 
   return (
-    <div
-      className={``}
-    >
-      {/* Logo position */}
+    <div className="w-full flex justify-center md:min-w-[500px]">
       {loading ? (
-        <>
+        <div className="py-16">
           <LoadingSpinner />
-        </>
+        </div>
       ) : (
-        <>
-          <div className='sub-container font-montserrat mt-8 md:px-24'>
-            <h1 className='px-12 font-bold md:px-80 text-2xl md:text-4xl shadow-2xl font-montserrat w-full md:text-center'>
-              ¿Pronto para aprender? Ingresa tu email para crear tu cuenta.
-            </h1>
+        <div className="w-full max-w-lg mx-auto bg-[#0f1115]/85 text-white shadow-2xl px-4 rounded-3xl overflow-hidden backdrop-blur p-6 md:p-8 space-y-6">
+          <div className="space-y-2 text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/80 text-xs uppercase tracking-[0.2em]">
+              <span>Crear cuenta</span>
+            </div>
+            <h1 className="text-3xl md:text-5xl font-bold leading-tight">Empecemos por tu email</h1>
+            <p className="text-sm md:text-lg text-white/70">
+              Ingresá tu correo para verificar si ya existe o crear tu acceso.
+            </p>
           </div>
-          <div className='main-input-container !px-12 md:!px-24'>
-            <div className='secondary-input-container'>
-            <Field>
+
+          <div className="space-y-4">
             <Input
-              className={
-                'block w-full rounded-lg border-none bg-white/5 py-1.5 px-3 text-sm/6 text-white focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 placeholder:text-white placeholder:text-sm shadow-lg'
-              }
+              className="block w-full rounded-lg border-0 bg-white/5 py-2 px-3 text-sm/6 text-white placeholder:text-white/60 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/30"
               placeholder='Correo electrónico'
               value={email}
               type='email'
               onChange={(e: any) => setEmailStep(e.target.value)}
               onKeyDown={keyDownHandler}
             />
-          </Field>
-              {/* <label className='inline-block w-full'>
-                <input
-                  type='email'
-                  id='email'
-                  placeholder='Email'
-                  className='input-email'
-                  value={email}
-                  onChange={(e) => setEmailStep(e.target.value)}
-                  onKeyDown={keyDownHandler}
-                  required
-                />
-              </label> */}
-            </div>
-                    <Button className="w-full md:w-80 text-center justify-center inline-flex items-center gap-2 rounded-md bg-white/5 py-1.5 px-3 text-sm font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-white/10 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white" type='button' onClick={() => handleClick()}>
-                    Empezar
-                    </Button>
-          </div>
-          <div className='capslock-container'>
-            <p className={`capslock ${!capsLock && 'hidden'}`}>
+            <Button
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-white via-[#f7f7f7] to-[#eaeaea] text-black py-3 px-6 text-base font-semibold shadow-lg shadow-black/25 border border-white/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-black/40 hover:scale-[1.01] focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-white/50"
+              type='button'
+              onClick={handleClick}
+            >
+              Empezar
+            </Button>
+            <p className={`text-xs text-amber-200 ${!capsLock && 'hidden'}`}>
               Bloq Mayús Activado
             </p>
           </div>
-          <div className='flex flex-col space-y-2 mt-12 md:px-24'>
-          <p className='px-12 font-normal text-sm font-montserrat md:text-xl w-full text-center'>
-            "El goce inmediato no da lugar a lo bello, puesto que la belleza de una cosa se manifiesta (mucho después), a la luz de otra, por la significatividad de una reminiscencia. Lo bello responde a la duración, a una síntesis contemplativa. Lo bello no es el resplandor o la atracción fugaz, sino una persistencia, una fosforescencia de las cosas. El aroma del tiempo es una manifestación de la duración.
-
-            </p>
-            <p className='px-12 w-full text-xs md:text-lg font-light italic font-montserrat text-center'>
-           Byung Chul Han - El aroma del tiempo
-
-            </p>
-          </div>
-        </>
+        </div>
       )}
     </div>
   );

@@ -16,9 +16,12 @@ interface WeekContent {
   videoUrl: string;
   videoId?: string;
   videoName?: string;
+  videoThumbnail?: string;
+  videoDuration?: number;
   videoDescription?: string;
   audioUrl: string;
-  audioName?: string;
+  audioTitle?: string;
+  audioDuration?: number;
   text: string;
   publishDate: string;
   isPublished: boolean;
@@ -35,56 +38,18 @@ export default function CreateBitacoraPage() {
   const [title, setTitle] = useState('Camino del Gorila');
   const [description, setDescription] = useState('');
   
-  const [weeks, setWeeks] = useState<WeekContent[]>([
-    {
-      weekNumber: 1,
-      moduleName: '',
-      videoUrl: '',
-      videoName: '',
-      videoDescription: '',
-      audioUrl: '',
-      audioName: '',
-      text: '',
-      publishDate: '',
-      isPublished: false
-    },
-    {
-      weekNumber: 2,
-      moduleName: '',
-      videoUrl: '',
-      videoName: '',
-      videoDescription: '',
-      audioUrl: '',
-      audioName: '',
-      text: '',
-      publishDate: '',
-      isPublished: false
-    },
-    {
-      weekNumber: 3,
-      moduleName: '',
-      videoUrl: '',
-      videoName: '',
-      videoDescription: '',
-      audioUrl: '',
-      audioName: '',
-      text: '',
-      publishDate: '',
-      isPublished: false
-    },
-    {
-      weekNumber: 4,
-      moduleName: '',
-      videoUrl: '',
-      videoName: '',
-      videoDescription: '',
-      audioUrl: '',
-      audioName: '',
-      text: '',
-      publishDate: '',
-      isPublished: false
-    }
-  ]);
+  const [weeks, setWeeks] = useState<WeekContent[]>(Array.from({ length: 4 }).map((_, idx) => ({
+    weekNumber: idx + 1,
+    moduleName: '',
+    videoUrl: '',
+    videoName: '',
+    videoDescription: '',
+    audioUrl: '',
+    audioTitle: '',
+    text: '',
+    publishDate: '',
+    isPublished: false
+  })));
 
   const getFirstMondayOfMonth = (year: number, month: number): Date => {
     const firstDay = new Date(year, month - 1, 1);
@@ -170,31 +135,15 @@ export default function CreateBitacoraPage() {
             weekNumber: week.weekNumber,
             moduleName: week.moduleName?.trim() || undefined,
             weekTitle: `Semana ${week.weekNumber}`,
-            // Contenido legacy (semanal)
             videoUrl: week.videoUrl,
             videoId: week.videoId || null,
+            videoName: week.videoName?.trim() || `Semana ${week.weekNumber}`,
+            videoThumbnail: week.videoThumbnail || '',
+            videoDuration: week.videoDuration || undefined,
             audioUrl: week.audioUrl,
+            audioTitle: week.audioTitle?.trim() || `Semana ${week.weekNumber}`,
+            audioDuration: week.audioDuration || undefined,
             text: week.text,
-            // Para contenido diario, crear un día con video y audio
-            dailyContents: week.videoUrl || week.audioUrl || week.text ? [{
-              dayNumber: 1,
-              dayTitle: `Semana ${week.weekNumber}`,
-              visualContent: week.videoUrl ? {
-                type: 'video',
-                nombre: week.videoName || undefined,
-                videoUrl: week.videoUrl,
-                videoId: week.videoId || undefined,
-                description: week.videoDescription || undefined
-              } : undefined,
-              audioTextContent: (week.audioUrl || week.text) ? {
-                nombre: week.audioName || undefined,
-                audioUrl: week.audioUrl || undefined,
-                text: week.text || undefined
-              } : undefined,
-              publishDate: week.publishDate,
-              isPublished: week.isPublished,
-              isUnlocked: false
-            }] : [],
             publishDate: new Date(week.publishDate).toISOString(),
             isPublished: week.isPublished,
             isUnlocked: false
@@ -400,8 +349,8 @@ export default function CreateBitacoraPage() {
                       </label>
                       <input
                         type="text"
-                        value={week.audioName || ''}
-                        onChange={(e) => updateWeek(index, 'audioName', e.target.value)}
+                        value={week.audioTitle || ''}
+                        onChange={(e) => updateWeek(index, 'audioTitle', e.target.value)}
                         placeholder="Ej: Audio Reflexión, Audio Guía..."
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat mb-3"
                       />
