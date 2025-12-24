@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 import connectDB from '../../../../config/connectDB';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
 import Users from '../../../../models/userModel';
@@ -111,9 +112,76 @@ export async function GET(req: NextRequest) {
   try {
     // Verificar que es una llamada autorizada (desde Vercel Cron)
     // Vercel automáticamente inyecta CRON_SECRET en el header Authorization
-    const authHeader = req.headers.get('Authorization');
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return NextResponse.json({ error: `No coincide ${authHeader} con ${'Bearer ' + process.env.CRON_SECRET}.`  }, { status: 401 });
+    // Intentar obtener el header de diferentes formas (case-insensitive)
+    // Método 1: Desde NextRequest (req.headers)
+    let authHeader = 
+      req.headers.get('Authorization') || 
+      req.headers.get('authorization') ||
+      req.headers.get('AUTHORIZATION');
+
+      console.log('authHeader', authHeader);
+      console.log('req.header', req.headers);
+    
+    // Método 2: Desde headers() de Next.js (alternativa)
+    if (!authHeader) {
+      try {
+        const headersList = await headers();
+        authHeader = 
+          headersList.get('Authorization') || 
+          headersList.get('authorization') ||
+          headersList.get('AUTHORIZATION');
+      } catch (e) {
+        // headers() puede fallar en algunos contextos, continuar con req.headers
+      }
+    }
+
+    console.log('authHeader 2', authHeader);
+    
+    // Método 3: Buscar en todos los headers (case-insensitive)
+    if (!authHeader) {
+      const allHeaders = Object.fromEntries(req.headers.entries());
+      const authKey = Object.keys(allHeaders).find(
+        key => key.toLowerCase() === 'authorization'
+      );
+      if (authKey) {
+        authHeader = allHeaders[authKey];
+      }
+    }
+
+    console.log('authHeader 3', authHeader);
+    
+    const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
+    
+    if (!authHeader) {
+      // Debug info para ayudar a identificar el problema
+      const allHeaders = Object.fromEntries(req.headers.entries());
+      return NextResponse.json({ 
+        error: 'No se encontró header Authorization',
+        debug: {
+          receivedHeaders: Object.keys(allHeaders),
+          headerKeys: Object.keys(allHeaders).map(k => k.toLowerCase()),
+          hasAuthHeader: !!req.headers.get('Authorization'),
+          hasAuthHeaderLower: !!req.headers.get('authorization'),
+          envSecretExists: !!process.env.CRON_SECRET,
+          envSecretLength: process.env.CRON_SECRET?.length || 0
+        }
+      }, { status: 401 });
+    }
+    
+    if (authHeader !== expectedAuth) {
+      return NextResponse.json({ 
+        error: 'Token de autorización inválido',
+        debug: {
+          received: authHeader.substring(0, 20) + '...',
+          receivedLength: authHeader.length,
+          expectedLength: expectedAuth.length,
+          secretExists: !!process.env.CRON_SECRET,
+          secretLength: process.env.CRON_SECRET?.length || 0,
+          // Comparación sin espacios al inicio/final
+          receivedTrimmed: authHeader.trim(),
+          expectedTrimmed: expectedAuth.trim()
+        }
+      }, { status: 401 });
     }
 
     await connectDB();
