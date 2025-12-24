@@ -113,7 +113,7 @@ export async function GET(req: NextRequest) {
     // Vercel automáticamente inyecta CRON_SECRET en el header Authorization
     const authHeader = req.headers.get('Authorization');
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return NextResponse.json({ error: 'Hubo un error con la clave de cron'  }, { status: 401 });
+      return NextResponse.json({ error: `No coincide ${authHeader} con ${'Bearer ' + process.env.CRON_SECRET}.`  }, { status: 401 });
     }
 
     await connectDB();
