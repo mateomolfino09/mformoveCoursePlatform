@@ -112,19 +112,38 @@ export async function GET(req: NextRequest) {
   try {
     // Verificar que es una llamada autorizada (desde Vercel Cron)
     // Vercel automáticamente inyecta CRON_SECRET en el header Authorization
-    // También aceptamos el token como query parameter para pruebas manuales
+    // También aceptamos el token como query parameter o header personalizado para pruebas manuales
     
     const { searchParams } = new URL(req.url);
     const tokenFromQuery = searchParams.get('token');
     
-    // Intentar obtener el header de diferentes formas (case-insensitive)
-    // Método 1: Desde NextRequest (req.headers)
-    let authHeader = 
-      req.headers.get('Authorization') || 
-      req.headers.get('authorization') ||
-      req.headers.get('AUTHORIZATION');
+    let authHeader: string | null = null;
     
-    // Método 2: Desde headers() de Next.js (alternativa)
+    // PRIORIDAD 1: Query parameter (más confiable para pruebas manuales)
+    if (tokenFromQuery) {
+      authHeader = `Bearer ${tokenFromQuery}`;
+    }
+    
+    // PRIORIDAD 2: Header personalizado x-cron-secret (Vercel no modifica headers custom)
+    if (!authHeader) {
+      const customHeader = 
+        req.headers.get('x-cron-secret') ||
+        req.headers.get('X-Cron-Secret') ||
+        req.headers.get('X-CRON-SECRET');
+      if (customHeader) {
+        authHeader = `Bearer ${customHeader}`;
+      }
+    }
+    
+    // PRIORIDAD 3: Header Authorization estándar (desde NextRequest)
+    if (!authHeader) {
+      authHeader = 
+        req.headers.get('Authorization') || 
+        req.headers.get('authorization') ||
+        req.headers.get('AUTHORIZATION');
+    }
+    
+    // PRIORIDAD 4: Desde headers() de Next.js (alternativa)
     if (!authHeader) {
       try {
         const headersList = await headers();
@@ -137,7 +156,7 @@ export async function GET(req: NextRequest) {
       }
     }
     
-    // Método 3: Buscar en todos los headers (case-insensitive)
+    // PRIORIDAD 5: Buscar en todos los headers (case-insensitive)
     if (!authHeader) {
       const allHeaders = Object.fromEntries(req.headers.entries());
       const authKey = Object.keys(allHeaders).find(
@@ -148,24 +167,27 @@ export async function GET(req: NextRequest) {
       }
     }
     
-    // Método 4: Extraer desde x-vercel-sc-headers (Vercel encapsula headers aquí)
+    // PRIORIDAD 6: Extraer desde x-vercel-sc-headers (solo si contiene nuestro CRON_SECRET)
+    // NOTA: Vercel inyecta su propio JWT aquí, así que verificamos si contiene nuestro secret
     if (!authHeader) {
       const vercelScHeaders = req.headers.get('x-vercel-sc-headers');
       if (vercelScHeaders) {
         try {
           const parsedHeaders = JSON.parse(vercelScHeaders);
-          if (parsedHeaders.Authorization || parsedHeaders.authorization) {
-            authHeader = parsedHeaders.Authorization || parsedHeaders.authorization;
+          const vercelAuth = parsedHeaders.Authorization || parsedHeaders.authorization;
+          // Verificar si el token contiene nuestro CRON_SECRET (puede estar en el Bearer token)
+          if (vercelAuth && process.env.CRON_SECRET) {
+            // Si el token de Vercel contiene nuestro secret, usarlo
+            // Pero normalmente Vercel inyecta su propio JWT, así que esto probablemente no funcione
+            // Solo lo usamos si realmente contiene nuestro secret
+            if (vercelAuth.includes(process.env.CRON_SECRET)) {
+              authHeader = vercelAuth;
+            }
           }
         } catch (e) {
           // Si no es JSON válido, continuar
         }
       }
-    }
-    
-    // Método 5: Si viene como query parameter (para pruebas manuales)
-    if (!authHeader && tokenFromQuery) {
-      authHeader = `Bearer ${tokenFromQuery}`;
     }
     
     const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
