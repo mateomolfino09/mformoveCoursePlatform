@@ -112,15 +112,17 @@ export async function GET(req: NextRequest) {
   try {
     // Verificar que es una llamada autorizada (desde Vercel Cron)
     // Vercel automáticamente inyecta CRON_SECRET en el header Authorization
+    // También aceptamos el token como query parameter para pruebas manuales
+    
+    const { searchParams } = new URL(req.url);
+    const tokenFromQuery = searchParams.get('token');
+    
     // Intentar obtener el header de diferentes formas (case-insensitive)
     // Método 1: Desde NextRequest (req.headers)
     let authHeader = 
       req.headers.get('Authorization') || 
       req.headers.get('authorization') ||
       req.headers.get('AUTHORIZATION');
-
-      console.log('authHeader', authHeader);
-      console.log('req.header', req.headers);
     
     // Método 2: Desde headers() de Next.js (alternativa)
     if (!authHeader) {
@@ -134,8 +136,6 @@ export async function GET(req: NextRequest) {
         // headers() puede fallar en algunos contextos, continuar con req.headers
       }
     }
-
-    console.log('authHeader 2', authHeader);
     
     // Método 3: Buscar en todos los headers (case-insensitive)
     if (!authHeader) {
@@ -147,8 +147,26 @@ export async function GET(req: NextRequest) {
         authHeader = allHeaders[authKey];
       }
     }
-
-    console.log('authHeader 3', authHeader);
+    
+    // Método 4: Extraer desde x-vercel-sc-headers (Vercel encapsula headers aquí)
+    if (!authHeader) {
+      const vercelScHeaders = req.headers.get('x-vercel-sc-headers');
+      if (vercelScHeaders) {
+        try {
+          const parsedHeaders = JSON.parse(vercelScHeaders);
+          if (parsedHeaders.Authorization || parsedHeaders.authorization) {
+            authHeader = parsedHeaders.Authorization || parsedHeaders.authorization;
+          }
+        } catch (e) {
+          // Si no es JSON válido, continuar
+        }
+      }
+    }
+    
+    // Método 5: Si viene como query parameter (para pruebas manuales)
+    if (!authHeader && tokenFromQuery) {
+      authHeader = `Bearer ${tokenFromQuery}`;
+    }
     
     const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
     
@@ -156,30 +174,33 @@ export async function GET(req: NextRequest) {
       // Debug info para ayudar a identificar el problema
       const allHeaders = Object.fromEntries(req.headers.entries());
       return NextResponse.json({ 
-        error: 'No se encontró header Authorization',
+        error: 'No se encontró header Authorization ni token en query',
         debug: {
           receivedHeaders: Object.keys(allHeaders),
           headerKeys: Object.keys(allHeaders).map(k => k.toLowerCase()),
           hasAuthHeader: !!req.headers.get('Authorization'),
           hasAuthHeaderLower: !!req.headers.get('authorization'),
           envSecretExists: !!process.env.CRON_SECRET,
-          envSecretLength: process.env.CRON_SECRET?.length || 0
+          envSecretLength: process.env.CRON_SECRET?.length || 0,
+          hasTokenQuery: !!tokenFromQuery
         }
       }, { status: 401 });
     }
     
-    if (authHeader !== expectedAuth) {
+    // Normalizar: remover espacios y comparar
+    const normalizedAuth = authHeader.trim();
+    const normalizedExpected = expectedAuth.trim();
+    
+    if (normalizedAuth !== normalizedExpected) {
       return NextResponse.json({ 
         error: 'Token de autorización inválido',
         debug: {
-          received: authHeader.substring(0, 20) + '...',
-          receivedLength: authHeader.length,
-          expectedLength: expectedAuth.length,
+          received: normalizedAuth.substring(0, 20) + '...',
+          receivedLength: normalizedAuth.length,
+          expectedLength: normalizedExpected.length,
           secretExists: !!process.env.CRON_SECRET,
           secretLength: process.env.CRON_SECRET?.length || 0,
-          // Comparación sin espacios al inicio/final
-          receivedTrimmed: authHeader.trim(),
-          expectedTrimmed: expectedAuth.trim()
+          matches: normalizedAuth === normalizedExpected
         }
       }, { status: 401 });
     }
