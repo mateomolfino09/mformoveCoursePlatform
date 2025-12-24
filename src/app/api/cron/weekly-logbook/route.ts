@@ -103,7 +103,6 @@ async function createIndividualClassesForLogbook(logbook: LogbookWithWeeks) {
 
     return { created: classesToInsert.length };
   } catch (error) {
-    console.error('Error creando clases individuales desde bitácora', error);
     return { created: 0, error: (error as Error).message };
   }
 }
@@ -286,15 +285,38 @@ export async function GET(req: NextRequest) {
           const emailText = content.text || '';
           const audioUrl = content.audioUrl || '';
           const audioTitle = content.weekTitle || `Semana ${content.weekNumber}`;
-          const coverImage = (content as any)?.videoThumbnail || (content as any)?.thumbnailUrl || null;
+          // Obtener imagen con mejor calidad
+          let coverImage = (content as any)?.videoThumbnail || (content as any)?.thumbnailUrl || null;
+          
+          // Mejorar calidad de imagen si es de Vimeo (reemplazar tamaño pequeño por Full HD)
+          if (coverImage && coverImage.includes('vimeocdn.com')) {
+            // Reemplazar tamaños pequeños por 1920x1080 (Full HD) para mejor calidad
+            // Formato: ...-d_295x166?region=us -> ...-d_1920x1080?region=us
+            // Intentar primero con Full HD (1920x1080), si no funciona Vimeo devolverá el más grande disponible
+            coverImage = coverImage
+              .replace(/-d_\d+x\d+/, '-d_1920x1080')  // Reemplazar cualquier tamaño por 1920x1080
+              .replace(/_295x166/, '_1920x1080')
+              .replace(/_640x360/, '_1920x1080')
+              .replace(/_1280x720/, '_1920x1080');
+          }
+          
+          // Mejorar calidad de imagen si es de YouTube (agregar maxresdefault)
+          if (coverImage && coverImage.includes('ytimg.com')) {
+            // Reemplazar diferentes tamaños de thumbnail por maxresdefault para mejor calidad
+            coverImage = coverImage
+              .replace(/\/hqdefault\.jpg/, '/maxresdefault.jpg')
+              .replace(/\/mqdefault\.jpg/, '/maxresdefault.jpg')
+              .replace(/\/sddefault\.jpg/, '/maxresdefault.jpg')
+              .replace(/\/default\.jpg/, '/maxresdefault.jpg');
+          }
+          
+          // Mejorar calidad si es de vumbnail.com (agregar parámetros de calidad)
+          if (coverImage && coverImage.includes('vumbnail.com')) {
+            // vumbnail.com ya proporciona buena calidad, pero podemos asegurar que no tenga parámetros de tamaño
+            coverImage = coverImage.split('?')[0]; // Remover query params si existen
+          }
+          
           const videoDurationSeconds = (content as any)?.videoDuration || null;
-
-          // Debug duraciones
-          console.log('Bitácora cron -> semana', content.weekNumber, {
-            coverImage,
-            videoDurationSeconds,
-            audioUrl: !!audioUrl
-          });
 
           // 3. Enviar email a cada miembro
           const baseUrl = process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://mateomove.com';
@@ -323,13 +345,14 @@ export async function GET(req: NextRequest) {
                   coverImage,
                   videoDurationSeconds,
                   bitacoraLink: bitacoraLink,
-                  logbookTitle: logbook.title || 'Camino del Gorila'
+                  logbookTitle: logbook.title || 'Camino del Gorila',
+                  isFirstWeek: content.weekNumber === 1 || content.weekNumber === '1'
                 }
               });
               
               emailsEnEstaBitacora++;
             } catch (error) {
-              console.error(`Error enviando email a ${usuario.email}:`, error);
+              // Error silencioso para no interrumpir el proceso
             }
           }
 
@@ -384,7 +407,6 @@ export async function GET(req: NextRequest) {
     });
     
   } catch (error) {
-    console.error('Error en cron job de bitácoras semanales:', error);
     return NextResponse.json(
       { error: 'Error interno del servidor', details: (error as Error).message },
       { status: 500 }

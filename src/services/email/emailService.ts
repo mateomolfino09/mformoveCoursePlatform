@@ -1486,7 +1486,8 @@ el bienestar fisico y emocional.
       return `${mins}:${two(secs)}`;
     })();
 
-    console.log(textClean);
+    const isFirstWeek = data.isFirstWeek || data.weekNumber === 1 || data.weekNumber === '1';
+    const buttonText = isFirstWeek ? 'Empezar Camino' : 'Ver Clases';
     
     const content = `
       <!-- Header minimalista -->
@@ -1508,7 +1509,7 @@ el bienestar fisico y emocional.
             <a href="${data.bitacoraLink || 'https://mateomove.com/bitacora'}" style="text-decoration: none; display: block; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; overflow: hidden; max-width: 560px; margin: 0 auto;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse;">
                 <tr>
-                  <td style="background-image: url(${data.coverImage}); background-size: cover; background-position: center; padding: 100px 0; position: relative; text-align: center;">
+                  <td style="background-image: url(${data.coverImage}); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 100px 0; position: relative; text-align: center;">
                     <table role="presentation" align="center" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse; margin: 0 auto;">
                       <tr>
                         <td style="width: 74px; height: 74px; background: rgba(0,0,0,0.65); border-radius: 50%; box-shadow: 0 6px 18px rgba(0,0,0,0.25); text-align: center; vertical-align: middle;">
@@ -1569,7 +1570,7 @@ el bienestar fisico y emocional.
                     font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
                     border: 1px solid rgba(245, 158, 11, 0.2);
                     box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);">
-            Ver Bitácora Completa
+            ${buttonText}
           </a>
         </div>
       </div>
