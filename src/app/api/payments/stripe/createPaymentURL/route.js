@@ -31,35 +31,84 @@ export async function POST(req) {
           return NextResponse.json({ message: 'Ya estas subscripto y tus pagos se realizaron con éxito.', type: 'error', success: false}, { status: 401 })
         }
     
-        // planId puede ser _id de MongoDB o stripePriceId (plan_token)
+        // planId puede ser _id de MongoDB, stripePriceId (plan_token), o el campo id del plan
         let plan = null;
+        let stripePriceId = planId;
         
         if (planId && planId.startsWith('price_')) {
-          plan = await Plan.findOne({ plan_token: planId });
+          // Si empieza con price_, buscar por plan_token o id
+          plan = await Plan.findOne({ 
+            $or: [
+              { plan_token: planId },
+              { id: planId }
+            ]
+          });
+          if (plan) {
+            stripePriceId = plan.plan_token || plan.id || planId;
+          }
         } else {
           try {
+            // Intentar buscar por _id de MongoDB primero
             plan = await Plan.findById(planId);
-            if (!plan) {
-              plan = await Plan.findOne({ plan_token: planId });
+            if (plan) {
+              stripePriceId = plan.plan_token || plan.id || planId;
+            } else {
+              // Si no se encuentra por _id, buscar por plan_token o id
+              plan = await Plan.findOne({ 
+                $or: [
+                  { plan_token: planId },
+                  { id: planId }
+                ]
+              });
+              if (plan) {
+                stripePriceId = plan.plan_token || plan.id || planId;
+              }
             }
           } catch (error) {
             if (error.name === 'CastError') {
-              plan = await Plan.findOne({ plan_token: planId });
+              // Si no es un ObjectId válido, buscar por plan_token o id
+              plan = await Plan.findOne({ 
+                $or: [
+                  { plan_token: planId },
+                  { id: planId }
+                ]
+              });
+              if (plan) {
+                stripePriceId = plan.plan_token || plan.id || planId;
+              }
             } else {
               throw error;
             }
           }
         }
         
+        // Si no se encontró el plan pero tenemos un planId que parece ser un priceId de Stripe, usarlo directamente
+        if (!plan && planId && planId.startsWith('price_')) {
+          stripePriceId = planId;
+        } else if (!plan) {
+          return NextResponse.json({ 
+            message: 'Plan no encontrado', 
+            type: 'error', 
+            success: false 
+          }, { status: 404 });
+        } else if (plan && !plan.active) {
+          return NextResponse.json({ 
+            message: 'El plan no está activo', 
+            type: 'error', 
+            success: false 
+          }, { status: 400 });
+        }
+        
         let promocionId = null;
         
         if (plan) {
           let frecuenciaPlan = '';
-          if (plan.frequency_type === 'month' || plan.frequency_type === 'monthly' || plan.frequency_type === 'mensual') {
+          const freqType = (plan.frequency_type || '').toLowerCase();
+          if (freqType === 'month' || freqType === 'monthly' || freqType === 'mensual') {
             frecuenciaPlan = 'mensual';
-          } else if (plan.frequency_type === 'quarter' || plan.frequency_type === 'quarterly' || plan.frequency_type === 'trimestral') {
+          } else if (freqType === 'quarter' || freqType === 'quarterly' || freqType === 'trimestral') {
             frecuenciaPlan = 'trimestral';
-          } else if (plan.frequency_type === 'year' || plan.frequency_type === 'yearly' || plan.frequency_type === 'anual') {
+          } else if (freqType === 'year' || freqType === 'yearly' || freqType === 'anual') {
             frecuenciaPlan = 'trimestral';
           }
           
@@ -84,7 +133,15 @@ export async function POST(req) {
           }
         }
     
-        const url = await createCheckoutSession(plan?.plan_token || planId, email, plan?._id?.toString() || planId, promocionId);
+        if (!stripePriceId || !stripePriceId.startsWith('price_')) {
+          return NextResponse.json({ 
+            message: 'ID de precio de Stripe inválido', 
+            type: 'error', 
+            success: false 
+          }, { status: 400 });
+        }
+
+        const url = await createCheckoutSession(stripePriceId, email, plan?._id?.toString() || planId, promocionId);
 
         const planToken = jwt.sign(
           { planId: planId },
@@ -107,7 +164,9 @@ export async function POST(req) {
         return NextResponse.json({ 
           message: 'Error inesperado, vuelva a intentar', 
           type: 'error',
-          details: error instanceof Error ? error.message : 'Error desconocido'
+          success: false,
+          details: error instanceof Error ? error.message : 'Error desconocido',
+          stack: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : undefined) : undefined
         }, { status: 500 })
     }
   };

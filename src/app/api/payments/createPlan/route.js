@@ -23,6 +23,11 @@ export async function POST(req) {
       // Determinar qué modelo usar basado en planType
       const PlanModel = planType === 'mentorship' ? MentorshipPlan : Plan;
       
+      if (planType !== 'mentorship') {
+        // Desactivar planes anteriores de membresía para dejar solo los nuevos como activos
+        await Plan.updateMany({ active: true }, { $set: { active: false } });
+      }
+
       if(useStripe) {
         //CASO STRIPE
         if (planType === 'mentorship') {
