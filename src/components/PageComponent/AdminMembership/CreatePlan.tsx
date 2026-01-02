@@ -50,34 +50,43 @@ const CreatePlan = () => {
 
   }, [auth.user]);
 
-  async function handleSubmit(name: string, description: string, currency: string = "USD", amount: number, amountAnual: number, frequency_type: string, useStripe: boolean) {
+  async function handleSubmit(
+    name: string,
+    description: string,
+    currency: string = "USD",
+    amount: number,
+    amountAnual: number,
+    frequency_type: string,
+    useStripe: boolean
+  ) {
     setLoading(true);
     try {
-      const config = {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      };
       const { data } = await axios.post(
-        '/api/payments/membership/createPlan',
+        '/api/payments/createPlan',
         {
           name,
           description,
-          features: [], // Puedes adaptar esto si tienes features
-          level: '', // Puedes adaptar esto si tienes niveles
-          price: amount,
           currency,
-          interval: frequency_type || 'month',
+          amount,
+          amountAnual,
+          frequency_type,
+          useStripe,
+          planType: 'membership',
         },
-        config
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       );
       auth.fetchUser();
       toast.success('Plan de membresía creado exitosamente');
       router.push('/admin/memberships');
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Error al crear el plan');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
 
