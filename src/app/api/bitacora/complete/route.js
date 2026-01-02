@@ -5,6 +5,16 @@ import mongoose from 'mongoose';
 import connectDB from '../../../../config/connectDB';
 import CoherenceTracking from '../../../../models/coherenceTrackingModel';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
+import Users from '../../../../models/userModel';
+
+// Función para obtener el número de semana del año
+function getWeekNumber(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return `${d.getUTCFullYear()}-W${Math.ceil((((d - yearStart) / 86400000) + 1) / 7)}`;
+}
 
 export async function POST(req) {
   try {
@@ -292,6 +302,44 @@ export async function POST(req) {
     // Usar el tracking actualizado para la respuesta
     const trackingParaRespuesta = trackingVerificado || trackingActualizado || tracking;
     
+    // Incrementar contador de prácticas semanales si se completó un video (no audio)
+    let necesitaReporte = false;
+    if (contentType === 'video') {
+      try {
+        const user = await Users.findById(userId);
+        if (user && user.subscription?.active) {
+          const semanaActual = getWeekNumber(new Date());
+          
+          user.subscription.onboarding = user.subscription.onboarding || {};
+          user.subscription.onboarding.practicasSemanales = user.subscription.onboarding.practicasSemanales || [];
+          
+          let semanaEntry = user.subscription.onboarding.practicasSemanales.find(
+            p => p.semana === semanaActual
+          );
+          
+          if (!semanaEntry) {
+            semanaEntry = {
+              semana: semanaActual,
+              cantidadPracticas: 0,
+              reporteCompletado: false
+            };
+            user.subscription.onboarding.practicasSemanales.push(semanaEntry);
+          }
+          
+          semanaEntry.cantidadPracticas = (semanaEntry.cantidadPracticas || 0) + 1;
+          
+          // Verificar si necesita reporte (2 prácticas y no completado)
+          if (semanaEntry.cantidadPracticas >= 2 && !semanaEntry.reporteCompletado) {
+            necesitaReporte = true;
+          }
+          
+          await user.save();
+        }
+      } catch (error) {
+        console.error('[bitacora/complete] Error incrementando práctica:', error);
+      }
+    }
+    
     // Construir mensaje según el resultado
     const esSemanaAdicional = ucResult?.esSemanaAdicional || false;
     const ucsOtorgadas = ucResult?.ucsOtorgadas || 1;
@@ -324,7 +372,8 @@ export async function POST(req) {
         esSemanaAdicional,
         ucsOtorgadas,
         weekNumber,
-        contentType
+        contentType,
+        necesitaReporte
       },
       { status: 200 }
     );

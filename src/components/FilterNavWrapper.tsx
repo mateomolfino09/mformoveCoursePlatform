@@ -25,10 +25,13 @@ const FilterNavWrapper = ({ children }: Props) => {
     );
   function handleResize() {
     if (innerWidth <= 640) {
-      dispatch(toggleNav(false));
+      // Solo cerrar el menú en mobile, no abrirlo automáticamente en desktop
+      if (filters.filterNav) {
+        dispatch(toggleNav(false));
+      }
       setIsMobile(true);
     } else {
-      dispatch(toggleNav(true));
+      // No abrir automáticamente el menú al cambiar a desktop
       setIsMobile(false);
     }
   }

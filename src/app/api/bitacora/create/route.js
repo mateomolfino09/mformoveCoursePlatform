@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { verify } from 'jsonwebtoken';
 import connectDB from '../../../../config/connectDB';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
+import Users from '../../../../models/userModel';
 
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
@@ -33,23 +34,50 @@ export async function POST(req) {
     }
 
     const body = await req.json();
-    const { month, year, title, description, weeklyContents } = body;
+    const { month, year, title, description, weeklyContents, isBaseBitacora, userEmail } = body;
 
     // Validar campos requeridos
-    if (!month || !year || !weeklyContents || !Array.isArray(weeklyContents)) {
+    if (!weeklyContents || !Array.isArray(weeklyContents)) {
       return NextResponse.json(
         { error: 'Faltan campos requeridos' },
         { status: 400 }
       );
     }
 
-    // Verificar si ya existe una bitácora para este mes/año
-    const existingLogbook = await WeeklyLogbook.findOne({ month, year });
+    // Si es bitácora base, no requiere month/year
+    if (!isBaseBitacora && (!month || !year)) {
+      return NextResponse.json(
+        { error: 'Month y year son requeridos para bitácoras regulares' },
+        { status: 400 }
+      );
+    }
+
+    // Verificar permisos de admin
+    if (userEmail) {
+      const user = await Users.findOne({ email: userEmail });
+      if (!user || user.rol !== 'Admin') {
+        return NextResponse.json(
+          { error: 'Solo administradores pueden crear bitácoras' },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Si es bitácora base, desactivar cualquier otra bitácora base existente
+    if (isBaseBitacora) {
+      await WeeklyLogbook.updateMany(
+        { isBaseBitacora: true },
+        { $set: { isBaseBitacora: false } }
+      );
+    } else {
+      // Verificar si ya existe una bitácora para este mes/año
+      const existingLogbook = await WeeklyLogbook.findOne({ month, year, isBaseBitacora: false });
     if (existingLogbook) {
       return NextResponse.json(
         { error: 'Ya existe una bitácora para este mes y año' },
         { status: 409 }
       );
+      }
     }
 
     const fetchVimeoMeta = async (videoUrl) => {
@@ -116,11 +144,12 @@ export async function POST(req) {
 
     // Crear la nueva bitácora
     const newLogbook = await WeeklyLogbook.create({
-      month,
-      year,
-      title: title || 'Camino del Gorila',
+      month: isBaseBitacora ? 1 : month, // Para bitácora base usar mes 1 como placeholder
+      year: isBaseBitacora ? new Date().getFullYear() : year, // Para bitácora base usar año actual
+      title: title || (isBaseBitacora ? 'Bitácora Base - Primer Círculo' : 'Camino del Gorila'),
       description: description || '',
-      weeklyContents: await Promise.all(weeklyContents.map(mapWeek))
+      weeklyContents: await Promise.all(weeklyContents.map(mapWeek)),
+      isBaseBitacora: isBaseBitacora || false
     });
 
     return NextResponse.json(

@@ -4,6 +4,7 @@ import { ClassTypes, IndividualClass } from '../../../typings';
 import Home from '../../components/PageComponent/Home';
 import { MiniLoadingSpinner } from '../../components/PageComponent/Products/MiniSpinner';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
+import OnboardingGuard from '../../components/OnboardingGuard';
 
 // Variables globales declaradas fuera del componente
 let filters: ClassTypes[] = [];
@@ -53,5 +54,9 @@ export default function Page() {
   }
 
   // Renderizar el componente Home solo después de que los datos estén disponibles
-  return <Home filters={filters} classesDB={classes} />;
+  return (
+    <OnboardingGuard>
+      <Home filters={filters} classesDB={classes} />
+    </OnboardingGuard>
+  );
 }

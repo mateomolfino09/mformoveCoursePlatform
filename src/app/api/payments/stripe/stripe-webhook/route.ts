@@ -113,15 +113,15 @@ export const POST = async (req: NextRequest) => {
                 
                 const emailService = EmailService.getInstance();
                 
-                // Enviar email de bienvenida al usuario
+                // Enviar email de bienvenida al usuario (onboarding)
                 try {
-                  console.log(`📨 Enviando email de bienvenida a: ${user.email}`);
-                  await emailService.sendWelcomeMembership({
+                  console.log(`📨 Enviando email de bienvenida (onboarding) a: ${user.email}`);
+                  await emailService.sendOnboardingWelcome({
                     email: user.email,
                     name: user.name || 'Miembro',
-                    dashboardUrl: `${origin}/home`
+                    onboardingLink: `${origin}/onboarding/bienvenida`
                   });
-                  console.log(`✅ Email de bienvenida enviado exitosamente a: ${user.email}`);
+                  console.log(`✅ Email de bienvenida (onboarding) enviado exitosamente a: ${user.email}`);
                 } catch (emailErr) {
                   console.error(`❌ Error enviando email de bienvenida a ${user.email}:`, emailErr);
                 }

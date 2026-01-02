@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { verify } from 'jsonwebtoken';
 import connectDB from '../../../../../config/connectDB';
 import WeeklyLogbook from '../../../../../models/weeklyLogbookModel';
+import Users from '../../../../../models/userModel';
 
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
@@ -42,7 +43,7 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json();
-    const { month, year, title, description, weeklyContents } = body;
+    const { month, year, title, description, weeklyContents, isBaseBitacora, userEmail } = body;
 
     // DEBUG: Log de los datos recibidos
     console.log('=== DEBUG BITÁCORA UPDATE ===');
@@ -63,11 +64,30 @@ export async function PUT(req, { params }) {
     }
 
     // Validar campos requeridos
-    if (!month || !year || !weeklyContents || !Array.isArray(weeklyContents)) {
+    if (!weeklyContents || !Array.isArray(weeklyContents)) {
       return NextResponse.json(
         { error: 'Faltan campos requeridos' },
         { status: 400 }
       );
+    }
+
+    // Si es bitácora base, no requiere month/year
+    if (!isBaseBitacora && (!month || !year)) {
+      return NextResponse.json(
+        { error: 'Month y year son requeridos para bitácoras regulares' },
+        { status: 400 }
+      );
+    }
+
+    // Verificar permisos de admin
+    if (userEmail) {
+      const user = await Users.findOne({ email: userEmail });
+      if (!user || user.rol !== 'Admin') {
+        return NextResponse.json(
+          { error: 'Solo administradores pueden actualizar bitácoras' },
+          { status: 403 }
+        );
+      }
     }
 
     // Buscar la bitácora existente
@@ -80,10 +100,20 @@ export async function PUT(req, { params }) {
       );
     }
 
-    // Verificar si hay conflicto con otra bitácora del mismo mes/año
+    // Si se está marcando como bitácora base, desactivar cualquier otra bitácora base existente
+    if (isBaseBitacora && !existingLogbook.isBaseBitacora) {
+      await WeeklyLogbook.updateMany(
+        { isBaseBitacora: true, _id: { $ne: id } },
+        { $set: { isBaseBitacora: false } }
+      );
+    }
+
+    // Verificar si hay conflicto con otra bitácora del mismo mes/año (solo para bitácoras regulares)
+    if (!isBaseBitacora) {
     const conflictingLogbook = await WeeklyLogbook.findOne({
       month,
       year,
+        isBaseBitacora: false,
       _id: { $ne: id }
     });
 
@@ -92,6 +122,7 @@ export async function PUT(req, { params }) {
         { error: 'Ya existe otra bitácora para este mes y año' },
         { status: 409 }
       );
+      }
     }
 
     // Mapear y preparar los datos para actualizar
@@ -167,19 +198,25 @@ export async function PUT(req, { params }) {
     console.log('VisualContent nombre semana 1:', mappedWeeklyContents[0]?.dailyContents[0]?.visualContent?.nombre);
     console.log('AudioTextContent nombre semana 1:', mappedWeeklyContents[0]?.dailyContents[0]?.audioTextContent?.nombre);
 
+    // Preparar datos de actualización
+    const updateData = {
+      title: title || (isBaseBitacora ? 'Bitácora Base - Primer Círculo' : 'Camino del Gorila'),
+      description: description || '',
+      weeklyContents: mappedWeeklyContents,
+      updatedAt: new Date(),
+      isBaseBitacora: isBaseBitacora || false
+    };
+
+    // Solo actualizar month/year si no es bitácora base
+    if (!isBaseBitacora) {
+      updateData.month = month;
+      updateData.year = year;
+    }
+
     // Actualizar la bitácora usando findByIdAndUpdate para asegurar que los cambios se guarden
     const updatedLogbook = await WeeklyLogbook.findByIdAndUpdate(
       id,
-      {
-        $set: {
-          month,
-          year,
-          title: title || 'Camino del Gorila',
-          description: description || '',
-          weeklyContents: mappedWeeklyContents,
-          updatedAt: new Date()
-        }
-      },
+      { $set: updateData },
       { new: true, runValidators: true }
     );
 

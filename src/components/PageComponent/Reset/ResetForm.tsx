@@ -181,10 +181,10 @@ function ResetForm({ token }: Props) {
                   </Link>
                 </div>
               </form>
+            </div>
               {message?.map((mes: any) => (
                 <AlertComponent key={mes.message} type={mes.type} message={mes.message} />
               ))}
-            </div>
           </div>
         </div>
       </div>

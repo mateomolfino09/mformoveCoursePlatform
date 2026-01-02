@@ -52,7 +52,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
     const isPaymentSuccess = path === '/payment/success';
     const isAccount = path === routes.user.perfil || path.startsWith('/account')
 	
-	const isBitacora = (path === '/bitacora' || path.startsWith('/bitacora'));
+	const isBitacora = (path === '/bitacora' || path.startsWith('/bitacora') || path === '/onboarding/bitacora-base' || path.startsWith('/onboarding/bitacora-base'));
 	const isMembershipHome = path === routes.navegation.membership.home;
 	const isInfoLight = path === '/faq' || path === '/about' || path === '/privacy';
 	const isEvents = path === routes.navegation.eventos || path.includes(routes.navegation.eventos);
@@ -68,39 +68,81 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	// Para la página de success, solo usar isScrolled local, no headerScroll del Redux
 	const scrolled = isPaymentSuccess ? isScrolled : (isScrolled || headerScroll);
 
+	// Usar useRef para evitar que el efecto se ejecute constantemente
+	const isMoveCrewRef = useRef(isMoveCrew);
+	const pathRef = useRef(path);
+	
+	// Actualizar refs cuando cambian
+	useEffect(() => {
+		isMoveCrewRef.current = isMoveCrew;
+		pathRef.current = path;
+	}, [isMoveCrew, path]);
+
 	useEffect(() => {
 		// Inicializar el estado de scroll al montar
-		setIsScrolled(window.scrollY > 0);
+		// Para Move Crew, esperar a que se emita el evento del contenedor
+		if (!isMoveCrew) {
+			const initialScroll = window.scrollY > 0;
+			setIsScrolled(initialScroll);
+		} else {
+			// Para Move Crew, inicializar en false y esperar el evento del contenedor
+			setIsScrolled(false);
+		}
 		setIsMobile(window.innerWidth < 1024);
 
 		const handleResize = () => setIsMobile(window.innerWidth < 1024);
 
+		// Throttle para el scroll de window
+		let scrollTimeout: NodeJS.Timeout | null = null;
 		const handleWindowScroll = () => {
-			let scroll = (window.scrollY);
-			if (scroll > 0) {
-				setIsScrolled(true);
-			} else {
-				setIsScrolled(false);
+			// Solo manejar scroll de window si no estamos en Move Crew
+			if (!isMoveCrewRef.current) {
+				if (scrollTimeout) return;
+				scrollTimeout = setTimeout(() => {
+					let scroll = (window.scrollY);
+					setIsScrolled(scroll > 0);
+					scrollTimeout = null;
+				}, 10);
 			}
 		};
 
-		// Para Move Crew, también escuchar el evento personalizado del contenedor
+		// Throttle para el evento de Move Crew, pero sin delay cuando scrollTop es 0
+		let moveCrewScrollTimeout: NodeJS.Timeout | null = null;
 		const handleMoveCrewScroll = (event: Event) => {
 			const detail = (event as CustomEvent).detail;
 			const scrollTop = detail?.scrollTop ?? 0;
-			setIsScrolled(scrollTop > 0);
+			const isAtTop = scrollTop === 0;
+			
+			// Si está en el top, actualizar inmediatamente sin throttle
+			if (isAtTop) {
+				if (moveCrewScrollTimeout) {
+					clearTimeout(moveCrewScrollTimeout);
+					moveCrewScrollTimeout = null;
+				}
+				setIsScrolled(false);
+				return;
+			}
+			
+			// Para otros valores, usar throttle
+			if (moveCrewScrollTimeout) return;
+			moveCrewScrollTimeout = setTimeout(() => {
+				setIsScrolled(scrollTop > 0);
+				moveCrewScrollTimeout = null;
+			}, 10);
 		};
 
-		window.addEventListener('scroll', handleWindowScroll);
+		window.addEventListener('scroll', handleWindowScroll, { passive: true });
 		window.addEventListener('movecrew-scroll', handleMoveCrewScroll);
 		window.addEventListener('resize', handleResize);
 		
 		return () => {
+			if (scrollTimeout) clearTimeout(scrollTimeout);
+			if (moveCrewScrollTimeout) clearTimeout(moveCrewScrollTimeout);
 			window.removeEventListener('scroll', handleWindowScroll);
 			window.removeEventListener('movecrew-scroll', handleMoveCrewScroll);
 			window.removeEventListener('resize', handleResize);
 		};
-	}, [router, path]); // Agregar path como dependencia para resetear cuando cambia la ruta
+	}, []); // Solo ejecutar una vez al montar
 
 	useEffect(() => {
 		setDomLoaded(true);
@@ -167,8 +209,13 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
     const isLightText = forceLight ? true : isLightTextBase;
 
     // Si el texto es claro y hay scroll, aplicar fondo difuminado para contraste
+    // Para Move Crew, usar un fondo más opaco para mejor visibilidad
     if (scrolled && isLightText) {
-        headerBgClass = 'bg-black/40 backdrop-blur-md';
+        if (isMoveCrew) {
+            headerBgClass = 'bg-black/60 backdrop-blur-md';
+        } else {
+            headerBgClass = 'bg-black/40 backdrop-blur-md';
+        }
     }
 	const textColorMain = (isLightText ? 'text-white' : (isAuth || isIndex ? 'text-gray-200' : 'text-gray-800'));
 	const textColorMuted = (isLightText ? 'text-white/60 hover:text-white' : (isAuth || isIndex ? 'text-gray-300 hover:text-gray-100' : 'text-gray-600 hover:text-gray-800'));

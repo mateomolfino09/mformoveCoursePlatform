@@ -95,7 +95,8 @@ function Profile() {
       fetchData();
 
       const fetchSubscriptionPeriod = async (plan:Plan) => {
-        if(plan.provider == "stripe") {
+        // Validar que plan existe y tiene provider antes de acceder
+        if(plan && plan.provider == "stripe") {
           setLoadingDates(true)
           try {
             const data = await fetch(endpoints.user.getSubscriptionPeriod(auth?.user?.subscription?.id), {

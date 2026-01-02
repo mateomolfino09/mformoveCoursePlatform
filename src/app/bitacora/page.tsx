@@ -24,6 +24,7 @@ import GorillaLevelDisplay from '../../components/PageComponent/Bitacora/Gorilla
 import VideoHeaderGorilla from '../../components/PageComponent/Bitacora/VideoHeaderGorilla';
 import BitacoraLoading from '../../components/PageComponent/MoveCrew/BitacoraLoading';
 import FooterProfile from '../../components/PageComponent/Profile/FooterProfile';
+import WeeklyReportModal from '../../components/WeeklyReportModal';
 
 import Footer from '../../components/Footer';
 import Link from 'next/link';
@@ -78,6 +79,8 @@ interface DailyContent {
     type: 'video' | 'none';
     videoUrl?: string;
     videoId?: string;
+    videoName?: string;
+    nombre?: string;
     thumbnailUrl?: string;
     duration?: number;
     title?: string;
@@ -86,6 +89,8 @@ interface DailyContent {
   audioTextContent?: {
     audioUrl?: string;
     audioDuration?: number;
+    audioTitle?: string;
+    nombre?: string;
     text?: string;
     title?: string;
     subtitle?: string;
@@ -106,7 +111,9 @@ interface WeeklyContent {
   // Legacy fields para compatibilidad
   videoUrl?: string;
   videoId?: string;
+  videoName?: string;
   audioUrl?: string;
+  audioTitle?: string;
   text?: string;
   isLocked?: boolean;
 }
@@ -145,6 +152,7 @@ function BitacoraPageContent() {
   const [selectedContentType, setSelectedContentType] = useState<'visual' | 'audioText' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [isChangingContent, setIsChangingContent] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false); // Cerrado por defecto (especialmente en mobile)
   const [isDesktop, setIsDesktop] = useState(false);
   const [openTooltip, setOpenTooltip] = useState<'menu' | 'progress' | 'uc' | null>(null);
@@ -158,6 +166,7 @@ function BitacoraPageContent() {
   // Estados para los modales de celebración e información
   const [showCelebrationModal, setShowCelebrationModal] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const [celebrationData, setCelebrationData] = useState<{
     ucsOtorgadas: number;
     totalUnits: number;
@@ -227,6 +236,17 @@ function BitacoraPageContent() {
       if (auth.user && auth.user.rol !== 'Admin' && !auth.user.subscription?.active && !auth.user.isVip) {
         router.push('/move-crew');
         return;
+      }
+
+      // Verificar acceso al Camino del Gorila (solo requiere contrato aceptado)
+      // La Bitácora Base es opcional (se puede saltear pero se pierden U.C.)
+      if (auth.user && auth.user.rol !== 'Admin') {
+        const contratoAceptado = auth.user.subscription?.onboarding?.contratoAceptado || false;
+
+        if (!contratoAceptado) {
+          router.push('/onboarding/bienvenida');
+          return;
+        }
       }
 
       fetchBitacora();
@@ -373,23 +393,70 @@ function BitacoraPageContent() {
   const fetchBitacora = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/bitacora/month', {
+      // Obtener parámetros de la URL
+      const searchParams = new URLSearchParams(window.location.search);
+      const id = searchParams.get('id');
+      const month = searchParams.get('month');
+      const year = searchParams.get('year');
+      
+      // Construir URL con parámetros si existen
+      let url = '/api/bitacora/month';
+      if (id) {
+        url += `?id=${id}`;
+      } else if (month && year) {
+        url += `?month=${month}&year=${year}`;
+      }
+      
+      const response = await fetch(url, {
         credentials: 'include',
         cache: 'no-store'
       });
 
       if (!response.ok) {
         const errorData = await response.json();
+        // Si es un 404, intentar obtener la bitácora más reciente sin parámetros
+        if (response.status === 404 && (id || month || year)) {
+          // Si había parámetros específicos, intentar sin ellos
+          const fallbackResponse = await fetch('/api/bitacora/month', {
+            credentials: 'include',
+            cache: 'no-store'
+          });
+          if (fallbackResponse.ok) {
+            const fallbackData = await fallbackResponse.json();
+            // Procesar el logbook del fallback igual que el normal
+            processLogbookData(fallbackData.logbook);
+            setInitialLoading(false);
+            setLoading(false);
+            return;
+          }
+        }
         throw new Error(errorData.error || 'Error al obtener la bitácora');
       }
 
       const data = await response.json();
-      setLogbook(data.logbook);
       
       // Procesar semanas y días para determinar qué está desbloqueado
-      if (data.logbook && data.logbook.weeklyContents) {
+      processLogbookData(data.logbook);
+      
+      setInitialLoading(false);
+    } catch (err: any) {
+      console.error('Error obteniendo bitácora:', err);
+      setError(err.message || 'Error al cargar la bitácora');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const processLogbookData = (logbookData: Logbook | null) => {
+    if (!logbookData) {
+      return;
+    }
+    
+    setLogbook(logbookData);
+    
+    if (logbookData && logbookData.weeklyContents) {
         // Actualizar estados de desbloqueo basado solo en flags semanales (cron) y admin
-        const processedWeeks = data.logbook.weeklyContents.map((week: WeeklyContent) => {
+        const processedWeeks = logbookData.weeklyContents.map((week: WeeklyContent) => {
           const isWeekUnlocked =
             isAdmin ||
             week.isPublished ||
@@ -401,46 +468,38 @@ function BitacoraPageContent() {
           return week;
         });
         
-        data.logbook.weeklyContents = processedWeeks;
-        setLogbook(data.logbook);
-        
-        // Seleccionar automáticamente la semana desbloqueada más reciente (sin dailyContents)
-        const unlockedWeeks = processedWeeks.filter((week: WeeklyContent) => week.isUnlocked);
-        if (unlockedWeeks.length > 0) {
-          const sortedUnlockedWeeks = unlockedWeeks.sort((a: WeeklyContent, b: WeeklyContent) => {
-            const dateA = new Date(a.publishDate).getTime();
-            const dateB = new Date(b.publishDate).getTime();
-            return dateB - dateA;
-          });
-          const mostRecentUnlockedWeek = sortedUnlockedWeeks[0];
-          setSelectedWeek(mostRecentUnlockedWeek.weekNumber);
-          setSelectedDay(null);
-          if (mostRecentUnlockedWeek.videoUrl) {
-            setSelectedContentType('visual');
-          } else if (mostRecentUnlockedWeek.audioUrl || mostRecentUnlockedWeek.text) {
-            setSelectedContentType('audioText');
-          } else {
-            setSelectedContentType(null);
-          }
+      logbookData.weeklyContents = processedWeeks;
+      setLogbook(logbookData);
+      
+      // Seleccionar automáticamente la semana desbloqueada más reciente (sin dailyContents)
+      const unlockedWeeks = processedWeeks.filter((week: WeeklyContent) => week.isUnlocked);
+      if (unlockedWeeks.length > 0) {
+        const sortedUnlockedWeeks = unlockedWeeks.sort((a: WeeklyContent, b: WeeklyContent) => {
+          const dateA = new Date(a.publishDate).getTime();
+          const dateB = new Date(b.publishDate).getTime();
+          return dateB - dateA;
+        });
+        const mostRecentUnlockedWeek = sortedUnlockedWeeks[0];
+        setSelectedWeek(mostRecentUnlockedWeek.weekNumber);
+        setSelectedDay(null);
+        if (mostRecentUnlockedWeek.videoUrl) {
+          setSelectedContentType('visual');
+        } else if (mostRecentUnlockedWeek.audioUrl || mostRecentUnlockedWeek.text) {
+          setSelectedContentType('audioText');
         } else {
-          setSelectedWeek(processedWeeks[0]?.weekNumber || null);
-          setSelectedDay(null);
-          if (processedWeeks[0]?.videoUrl) {
-            setSelectedContentType('visual');
-          } else if (processedWeeks[0]?.audioUrl || processedWeeks[0]?.text) {
-            setSelectedContentType('audioText');
-          } else {
-            setSelectedContentType(null);
-          }
+          setSelectedContentType(null);
+        }
+      } else {
+        setSelectedWeek(processedWeeks[0]?.weekNumber || null);
+        setSelectedDay(null);
+        if (processedWeeks[0]?.videoUrl) {
+          setSelectedContentType('visual');
+        } else if (processedWeeks[0]?.audioUrl || processedWeeks[0]?.text) {
+          setSelectedContentType('audioText');
+        } else {
+          setSelectedContentType(null);
         }
       }
-      
-      setInitialLoading(false);
-    } catch (err: any) {
-      console.error('Error obteniendo bitácora:', err);
-      setError(err.message || 'Error al cargar la bitácora');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -452,9 +511,20 @@ function BitacoraPageContent() {
   };
 
   const handleSelect = (weekNumber: number, dayNumber: number | null, contentType: 'visual' | 'audioText' | null) => {
-    setSelectedWeek(weekNumber);
-    setSelectedDay(dayNumber);
-    setSelectedContentType(contentType);
+    // Activar loading
+    setIsChangingContent(true);
+    
+    // Pequeño delay para mostrar el loading y luego cambiar el contenido
+    setTimeout(() => {
+      setSelectedWeek(weekNumber);
+      setSelectedDay(dayNumber);
+      setSelectedContentType(contentType);
+      
+      // Desactivar loading después de que el contenido haya comenzado a renderizarse
+      setTimeout(() => {
+        setIsChangingContent(false);
+      }, 300);
+    }, 150);
   };
 
   const handleComplete = async () => {
@@ -648,15 +718,20 @@ function BitacoraPageContent() {
       const ucsOtorgadas = data.ucsOtorgadas || 1;
       const currentStreak = data.tracking?.currentStreak || coherence.coherenceTracking?.currentStreak || 0;
       
-      // Configurar datos del modal de celebración
-      setCelebrationData({
-        ucsOtorgadas,
-        totalUnits,
-        currentStreak,
-        esSemanaAdicional,
-        newAchievements: data.newAchievements || []
-      });
-      setShowCelebrationModal(true);
+      // Verificar si necesita reporte semanal
+      if (data.necesitaReporte) {
+        setShowReportModal(true);
+      } else {
+        // Configurar datos del modal de celebración
+        setCelebrationData({
+          ucsOtorgadas,
+          totalUnits,
+          currentStreak,
+          esSemanaAdicional,
+          newAchievements: data.newAchievements || []
+        });
+        setShowCelebrationModal(true);
+      }
 
     } catch (err: any) {
       console.error('Error completando:', err);
@@ -703,7 +778,7 @@ function BitacoraPageContent() {
         type: 'visual' as const,
         videoUrl: week.videoUrl,
         videoId,
-        title: week.weekTitle || `Semana ${week.weekNumber}`,
+        title: week.videoName || week.weekTitle || `Semana ${week.weekNumber}`,
         duration: (week as any).videoDuration
       };
     };
@@ -714,7 +789,7 @@ function BitacoraPageContent() {
         type: 'audioText' as const,
         audioUrl: week.audioUrl,
         text: week.text,
-        title: week.weekTitle || `Semana ${week.weekNumber}`
+        title: week.audioTitle || week.weekTitle || `Semana ${week.weekNumber}`
       };
     };
 
@@ -737,7 +812,7 @@ function BitacoraPageContent() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 font-montserrat">
         <div className="text-center max-w-md px-6">
           <h1 className="text-2xl font-normal text-gray-900 mb-4 font-montserrat">
-            No hay bitácora disponible
+            No hay camino disponible
           </h1>
           <p className="text-gray-700/90 mb-6 font-montserrat font-light">
             {error || 'No hay contenido disponible. Pronto estará disponible.'}
@@ -1148,42 +1223,86 @@ function BitacoraPageContent() {
                   return isWeekUnlocked;
                 })()
               ) ? (
-                <AnimatePresence mode="wait">
-                  {selectedContent.type === 'visual' ? (
-                    <VideoContentDisplay
-                      key={`visual-${selectedWeek}-${selectedDay}`}
-                      videoUrl={selectedContent.videoUrl}
-                      videoId={selectedContent.videoId}
-                      thumbnailUrl={'thumbnailUrl' in selectedContent ? selectedContent.thumbnailUrl : undefined}
-                      title={selectedContent.title}
-                      description={'description' in selectedContent ? selectedContent.description : undefined}
-                      duration={'duration' in selectedContent ? selectedContent.duration : undefined}
-                      onComplete={handleComplete}
-                      isCompleted={selectedDay 
-                        ? coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-video`) 
-                        : coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-week-video`)}
-                      logbookId={logbook?._id}
-                      weekNumber={selectedWeek || undefined}
-                      dayNumber={selectedDay || undefined}
-                    />
-                  ) : (
-                    <AudioTextContentDisplay
-                      key={`audioText-${selectedWeek}-${selectedDay}`}
-                      audioUrl={'audioUrl' in selectedContent ? selectedContent.audioUrl : undefined}
-                      audioDuration={'audioDuration' in selectedContent ? selectedContent.audioDuration : undefined}
-                      text={'text' in selectedContent ? selectedContent.text : undefined}
-                      title={selectedContent.title}
-                      subtitle={'subtitle' in selectedContent ? selectedContent.subtitle : undefined}
-                      onComplete={handleComplete}
-                      isCompleted={selectedDay 
-                        ? coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-audio`) 
-                        : coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-week-audio`)}
-                      logbookId={logbook?._id}
-                      weekNumber={selectedWeek || undefined}
-                      dayNumber={selectedDay || undefined}
-                    />
-                  )}
-                </AnimatePresence>
+                <div className="relative">
+                  {/* Overlay de loading durante la transición */}
+                  <AnimatePresence>
+                    {isChangingContent && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-3xl"
+                      >
+                        <div className="flex flex-col items-center gap-4">
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="w-12 h-12 border-4 border-amber-300/30 border-t-amber-600 rounded-full"
+                          />
+                          <motion.p
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-sm text-gray-700 font-montserrat font-medium"
+                          >
+                            Cargando contenido...
+                          </motion.p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  
+                  <AnimatePresence mode="wait">
+                    {selectedContent.type === 'visual' ? (
+                      <motion.div
+                        key={`visual-${selectedWeek}-${selectedDay}`}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                      >
+                        <VideoContentDisplay
+                          videoUrl={selectedContent.videoUrl}
+                          videoId={selectedContent.videoId}
+                          thumbnailUrl={'thumbnailUrl' in selectedContent ? selectedContent.thumbnailUrl : undefined}
+                          title={selectedContent.title}
+                          description={'description' in selectedContent ? selectedContent.description : undefined}
+                          duration={'duration' in selectedContent ? selectedContent.duration : undefined}
+                          onComplete={handleComplete}
+                          isCompleted={selectedDay 
+                            ? coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-video`) 
+                            : coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-week-video`)}
+                          logbookId={logbook?._id}
+                          weekNumber={selectedWeek || undefined}
+                          dayNumber={selectedDay || undefined}
+                        />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key={`audioText-${selectedWeek}-${selectedDay}`}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                      >
+                        <AudioTextContentDisplay
+                          audioUrl={'audioUrl' in selectedContent ? selectedContent.audioUrl : undefined}
+                          audioDuration={'audioDuration' in selectedContent ? selectedContent.audioDuration : undefined}
+                          text={'text' in selectedContent ? selectedContent.text : undefined}
+                          title={selectedContent.title}
+                          subtitle={'subtitle' in selectedContent ? selectedContent.subtitle : undefined}
+                          onComplete={handleComplete}
+                          isCompleted={selectedDay 
+                            ? coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-audio`) 
+                            : coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-week-audio`)}
+                          logbookId={logbook?._id}
+                          weekNumber={selectedWeek || undefined}
+                          dayNumber={selectedDay || undefined}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               ) : selectedWeekData && !selectedWeekData.isUnlocked && auth.user?.rol !== 'Admin' ? (
                 <div className="relative rounded-3xl border border-gray-200 bg-white p-10 text-left sm:text-center shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
                   <div className="relative z-10">
@@ -1346,6 +1465,24 @@ function BitacoraPageContent() {
           contentType={infoModalData.contentType}
         />
       )}
+
+      {/* Modal de Reporte Semanal */}
+      <WeeklyReportModal
+        isOpen={showReportModal}
+        onClose={() => {
+          setShowReportModal(false);
+          // Mostrar modal de celebración después de cerrar el reporte
+          if (celebrationData) {
+            setShowCelebrationModal(true);
+          }
+        }}
+        onComplete={() => {
+          // Mostrar modal de celebración después de completar el reporte
+          if (celebrationData) {
+            setShowCelebrationModal(true);
+          }
+        }}
+      />
 
       {renderMobileTooltip()}
     </>

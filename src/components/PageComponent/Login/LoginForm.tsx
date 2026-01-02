@@ -51,10 +51,65 @@ function LoginForm() {
     const email = data.get('email') as string;
     const password = data.get('password') as string;
 
-    auth.signIn(email, password).then((res: any) => {
+    try {
+      const res = await auth.signIn(email, password);
+      
       if (res.type != 'error') {
-          const hasActiveSub = res?.user?.subscription?.active || auth.user?.subscription?.active;
+        // Mostrar mensaje de éxito
+        setMessage((current: any) => [
+          ...current,
+          {
+            message: '¡Login exitoso! Redirigiendo...',
+            type: alertTypes.success.type
+          }
+        ]);
+        setLoading(false);
+
+        // Verificar estado de onboarding solo si el usuario tiene suscripción activa
+        try {
+          const onboardingRes = await fetch('/api/onboarding/status', {
+            credentials: 'include'
+          });
+          
+          if (onboardingRes.ok) {
+            const onboardingData = await onboardingRes.json();
+            
+            // Si el usuario no tiene suscripción, no necesita onboarding
+            if (onboardingData.sinSuscripcion) {
+              setTimeout(() => {
+                router.push('/move-crew');
+              }, 1000);
+              return;
+            }
+            
+            // Si necesita onboarding (tiene suscripción activa pero no completó el onboarding)
+            if (onboardingData.necesitaOnboarding) {
+              // Si no aceptó el contrato, ir a la pantalla de bienvenida
+              if (!onboardingData.contratoAceptado) {
+                setTimeout(() => {
+                  router.push('/onboarding/bienvenida');
+                }, 1000);
+                return;
+              } 
+              // Si aceptó el contrato pero no completó la bitácora base
+              else if (!onboardingData.bitacoraBaseCompletada) {
+                setTimeout(() => {
+                  router.push('/onboarding/bitacora-base');
+                }, 1000);
+                return;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error verificando onboarding:', error);
+          // Si hay error, continuar con el flujo normal de login
+        }
+
+        // Si el onboarding está completo o no es necesario, redirigir normalmente
+        const hasActiveSub = res?.user?.subscription?.active || auth.user?.subscription?.active;
+        setTimeout(() => {
           router.push(hasActiveSub ? '/home' : '/move-crew');
+        }, 1000);
       } else {
         if (res.validate) {
           setVerifyInfo({ email, message: res.message });
@@ -70,7 +125,17 @@ function LoginForm() {
         }
         setLoading(false);
       }
-    });
+    } catch (error: any) {
+      console.error('Error en login:', error);
+      setMessage((current: any) => [
+        ...current,
+        {
+          message: error?.message || 'Error al iniciar sesión',
+          type: alertTypes.error.type
+        }
+      ]);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

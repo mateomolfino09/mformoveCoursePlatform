@@ -20,12 +20,14 @@ interface DailyContent {
   visualContent?: {
     type: 'video' | 'none';
     nombre?: string;
+    videoName?: string;
     videoUrl?: string;
     videoId?: string;
     title?: string;
   };
   audioTextContent?: {
     nombre?: string;
+    audioTitle?: string;
     audioUrl?: string;
     text?: string;
     title?: string;
@@ -46,7 +48,9 @@ interface WeeklyContent {
   isUnlocked: boolean;
   // Legacy fields para compatibilidad
   videoUrl?: string;
+  videoName?: string;
   audioUrl?: string;
+  audioTitle?: string;
   text?: string;
 }
 
@@ -294,10 +298,16 @@ const BitacoraSidebar = ({
                         day.audioTextContent?.audioUrl || day.audioTextContent?.text
                       );
                       
-                      // Para contenido legacy, no tenemos nombres en el nivel semanal, así que usar "Video" y "Audio + Texto"
-                      // Para contenido diario, usar los nombres si existen
-                      const videoName = firstDayWithVideo?.visualContent?.nombre || 'Clase';
-                      const audioName = firstDayWithAudio?.audioTextContent?.nombre || 'Reproducción de Audio';
+                      // Para contenido diario, usar los nombres de dailyContents si existen
+                      // Para contenido legacy, usar videoName y audioTitle directamente del objeto de la semana
+                      const videoName = firstDayWithVideo?.visualContent?.videoName 
+                        || firstDayWithVideo?.visualContent?.nombre 
+                        || (week as any).videoName 
+                        || 'Clase';
+                      const audioName = firstDayWithAudio?.audioTextContent?.audioTitle 
+                        || firstDayWithAudio?.audioTextContent?.nombre 
+                        || (week as any).audioTitle 
+                        || 'Reproducción de Audio';
 
                       return (
                         <div key={week.weekNumber} className='pl-8 pr-4 py-3 border-b border-amber-200/20 last:border-b-0'>
@@ -334,13 +344,15 @@ const BitacoraSidebar = ({
                           <div className='flex flex-col gap-2'>
                             {/* Botón Video */}
                             {hasVideo && (
-                              <button
+                              <motion.button
                                 onClick={() => {
                                   if (!isWeekUnlocked && !isAdmin) return;
                                   onSelect(week.weekNumber, null, 'visual');
                                 }}
                                 disabled={!isWeekUnlocked && !isAdmin}
-                                className={`w-full p-2.5 rounded-xl text-left transition-all ${
+                                whileHover={isWeekUnlocked || isAdmin ? { scale: 1.02 } : {}}
+                                whileTap={isWeekUnlocked || isAdmin ? { scale: 0.98 } : {}}
+                                className={`w-full p-2.5 rounded-xl text-left transition-all relative overflow-hidden ${
                                   !isWeekUnlocked
                                     ? 'opacity-50 cursor-not-allowed'
                                     : isWeekSelected && selectedContentType === 'visual'
@@ -348,24 +360,26 @@ const BitacoraSidebar = ({
                                     : 'hover:bg-amber-50/70 border border-transparent'
                                 }`}
                               >
-                                <div className='flex items-center gap-2'>
+                                <div className='flex items-center gap-2 relative z-10'>
                                   <PlayIcon className='h-4 w-4 text-amber-700' />
                                   <span className='text-sm text-gray-900 font-montserrat font-medium'>
                                     {videoName}
                                   </span>
                                 </div>
-                              </button>
+                              </motion.button>
                             )}
 
                             {/* Botón Audio + Texto */}
                             {hasAudio && (
-                              <button
+                              <motion.button
                                 onClick={() => {
                                   if (!isWeekUnlocked && !isAdmin) return;
                                   onSelect(week.weekNumber, null, 'audioText');
                                 }}
                                 disabled={!isWeekUnlocked && !isAdmin}
-                                className={`w-full p-2.5 rounded-xl text-left transition-all ${
+                                whileHover={isWeekUnlocked || isAdmin ? { scale: 1.02 } : {}}
+                                whileTap={isWeekUnlocked || isAdmin ? { scale: 0.98 } : {}}
+                                className={`w-full p-2.5 rounded-xl text-left transition-all relative overflow-hidden ${
                                   !isWeekUnlocked
                                     ? 'opacity-50 cursor-not-allowed'
                                     : isWeekSelected && selectedContentType === 'audioText'
@@ -373,12 +387,12 @@ const BitacoraSidebar = ({
                                     : 'hover:bg-amber-50/70 border border-transparent'
                                 }`}
                               >
-                                <div className='flex items-center gap-2'>
+                                <div className='flex items-center gap-2 relative z-10'>
                                   <span className='text-sm text-gray-900 font-montserrat font-medium'>
                                     {audioName}
                                   </span>
                                 </div>
-                              </button>
+                              </motion.button>
                             )}
                           </div>
                         </div>

@@ -36,6 +36,7 @@ export default function CreateBitacoraPage() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [title, setTitle] = useState('Camino del Gorila');
   const [description, setDescription] = useState('');
+  const [isBaseBitacora, setIsBaseBitacora] = useState(false);
   
   const [weeks, setWeeks] = useState<WeekContent[]>(Array.from({ length: 4 }).map((_, idx) => ({
     weekNumber: idx + 1,
@@ -131,6 +132,8 @@ export default function CreateBitacoraPage() {
           year,
           title,
           description,
+          isBaseBitacora,
+          userEmail: auth.user?.email,
             weeklyContents: weeks.map(week => ({
               weekNumber: week.weekNumber,
               moduleName: week.moduleName?.trim() || undefined,
@@ -267,6 +270,23 @@ export default function CreateBitacoraPage() {
                 placeholder="Descripción del mes..."
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F7CCF] focus:border-[#4F7CCF] font-montserrat bg-white text-gray-900 placeholder-gray-400 resize-y"
               />
+            </div>
+
+            {/* Checkbox para Bitácora Base */}
+            <div className="flex items-center gap-3 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
+              <input
+                type="checkbox"
+                id="isBaseBitacora"
+                checked={isBaseBitacora}
+                onChange={(e) => setIsBaseBitacora(e.target.checked)}
+                className="h-5 w-5 text-[#4F7CCF] focus:ring-[#4F7CCF] border-gray-300 rounded cursor-pointer"
+              />
+              <label htmlFor="isBaseBitacora" className="text-sm font-medium text-gray-700 cursor-pointer font-montserrat">
+                <span className="font-bold text-yellow-700">Bitácora Base (Primer Círculo)</span>
+                <p className="text-xs text-gray-600 mt-1">
+                  Marca esta opción si esta es la bitácora base para el onboarding. Solo puede haber una bitácora base activa.
+                </p>
+              </label>
             </div>
 
             {/* Semanas */}

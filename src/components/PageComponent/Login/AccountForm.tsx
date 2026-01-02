@@ -38,8 +38,14 @@ export default function AccountForm({ submitFunction, title, buttonTitle, showEm
         }
       }
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    await submitFunction(formData);
+  };
+
   return (
-    <form className="w-full max-w-lg font-montserrat text-white" action={submitFunction}>
+    <form className="w-full max-w-lg font-montserrat text-white" onSubmit={handleSubmit}>
       <Fieldset className="space-y-6 rounded-xl p-4 bg-white/5 border border-white/10 shadow-sm sm:p-10">
         <Legend className="text-3xl font-semibold text-white">{title}</Legend>
         <Field className={`${!showEmail && 'hidden'}`}>
@@ -81,7 +87,7 @@ export default function AccountForm({ submitFunction, title, buttonTitle, showEm
         <p className={`capslock ${!capsLock && 'hidden'}`}>
                 Bloq Mayús Activado
         </p>
-        <div className='links-container md:items-center flex flex-col md:flex-row md:justify-between mt-4 text-sm text-white justify-around space-y-2 md:space-y-0 items-start underline underline-offset-4 decoration-white/60'>
+        <div className='links-container md:items-center flex flex-row md:flex-row md:justify-between mt-4 text-sm text-white justify-around space-y-0 md:space-y-0 items-start underline underline-offset-4 decoration-white/60'>
           <Link href={routes.user.login} className={`${!showLogIn && 'hidden'}`}>
             <span className=" text-center text-white">
               Ingresar al sitio

@@ -3,6 +3,12 @@ import { colors } from '../../constants/colors';
 
 const mailchimpClient = mailchimp(process.env.MAILCHIMP_TRANSACTIONAL_API_KEY || "");
 
+// URLs de logos de la marca (fácil de modificar si cambian)
+const LOGO_URLS = {
+  DARK: 'https://res.cloudinary.com/dbeem2avp/image/upload/v1767042950/logo/MFORMOVE_v2.negro_rwdtje.png',
+  LIGHT: 'https://res.cloudinary.com/dbeem2avp/image/upload/v1767043250/logo/MFORMOVE_blanco_e4wxoj.png'
+} as const;
+
 // Tipos de email disponibles
 export enum EmailType {
   MENTORSHIP_REQUEST_NOTIFICATION = 'mentorship_request_notification',
@@ -27,7 +33,9 @@ export enum EmailType {
   ADMIN_MEMBERSHIP_NOTIFICATION = 'admin_membership_notification',
   ADMIN_SUBSCRIPTION_CANCELLED = 'admin_subscription_cancelled',
   ADMIN_PAYMENT_FAILED = 'admin_payment_failed',
-  WEEKLY_LOGBOOK_RELEASE = 'weekly_logbook_release'
+  WEEKLY_LOGBOOK_RELEASE = 'weekly_logbook_release',
+  ONBOARDING_WELCOME = 'onboarding_welcome',
+  BITACORA_BASE_COMPLETED = 'bitacora_base_completed'
 }
 
 // Interfaz para datos de email
@@ -136,6 +144,20 @@ const getBaseTemplateUser = (content: string) => `
   <body style="margin: 0; padding: 0; background-color: #f9fafb; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
     <div style="background-color: #f9fafb; padding: 20px 10px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 0; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);">
+        <!-- Logo de la marca -->
+        <div style="padding: 20px 20px 16px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto; width: 100%;">
+            <tr>
+              <td style="text-align: center; padding: 0;">
+                <img src="${LOGO_URLS.DARK}" 
+                     alt="MforMove" 
+                     width="60"
+                     style="max-width: 60px; height: auto; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; opacity: 0.85;"
+                     border="0" />
+              </td>
+            </tr>
+          </table>
+        </div>
       ${content}
         <div style="padding: 24px 20px; text-align: center; border-top: 1px solid rgba(0, 0, 0, 0.08);">
           <p style="font-size: 13px; color: rgba(0, 0, 0, 0.6); margin: 0 0 8px 0; font-weight: 300; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;">
@@ -163,6 +185,20 @@ const getBaseTemplateAdmin = (content: string) => `
   <body style="margin: 0; padding: 0; background-color: #000000; font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;">
     <div style="background-color: #000000; padding: 20px 10px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #141414; padding: 0; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
+        <!-- Logo de la marca -->
+        <div style="padding: 20px 20px 16px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto; width: 100%;">
+            <tr>
+              <td style="text-align: center; padding: 0;">
+                <img src="${LOGO_URLS.LIGHT}" 
+                     alt="MforMove" 
+                     width="60"
+                     style="max-width: 60px; height: auto; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; opacity: 0.85;"
+                     border="0" />
+              </td>
+            </tr>
+          </table>
+        </div>
         ${content}
         <div style="padding: 24px 20px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.1);">
           <p style="font-size: 13px; color: rgba(255, 255, 255, 0.6); margin: 0 0 8px 0; font-weight: 300; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;">
@@ -847,7 +883,7 @@ el bienestar fisico y emocional.
                     font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
                     border: 1px solid rgba(34, 158, 217, 0.3);
                     box-shadow: 0 2px 10px rgba(34, 158, 217, 0.25);">
-            Únite a la Comunidad
+            Comunidad Telegram
           </a>
           <p style="font-size: 13px; color: rgba(0, 0, 0, 0.6); line-height: 1.5; margin: 10px 0 0; text-align: center; font-weight: 400; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
             Allí compartimos avisos, soporte y las novedades de la Move Crew.
@@ -1576,6 +1612,128 @@ el bienestar fisico y emocional.
       </div>
     `;
     return getBaseTemplateUser(content);
+  },
+
+  [EmailType.ONBOARDING_WELCOME]: (data: EmailData) => {
+    const content = `
+      <!-- Header minimalista -->
+      <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
+        <div style="color: #000000; font-size: 32px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: -0.3px; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif !important; line-height: 1.2; mso-line-height-rule: exactly; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; display: block; text-align: center;">¡Bienvenido a Move Crew!</div>
+        <div style="color: rgba(0, 0, 0, 0.6); font-size: 18px; font-weight: 500; margin: 0; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif !important;">
+          El Primer Círculo
+        </div>
+      </div>
+
+      <!-- Contenido principal -->
+      <div style="padding: 28px 20px;">
+        <p style="font-size: 16px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
+          ¡Hola <strong style="font-weight: 600;">${data.name}</strong>! Tu viaje en Move Crew comienza ahora.
+        </p>
+
+        <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
+          Antes de acceder al contenido semanal, necesitás completar el Primer Círculo: una serie de fundamentos que te prepararán para aprovechar al máximo tu experiencia.
+        </p>
+
+        <!-- Mensaje motivacional -->
+        <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 24px 0; text-align: center; font-weight: 500; font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; mso-line-height-rule: exactly;">
+          La constancia se recompensa, porque ahí están los resultados en el movimiento.
+        </p>
+
+        <!-- Botón CTA para comenzar onboarding -->
+        <div style="text-align: center; margin: 28px 0 0;">
+          <a href="${data.onboardingLink || 'https://mateomove.com/onboarding/bienvenida'}" 
+             style="display: inline-block; 
+                    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(249, 115, 22, 0.1) 50%, rgba(251, 113, 133, 0.1) 100%); 
+                    color: #000000; 
+                    padding: 14px 32px; 
+                    text-decoration: none; 
+                    border-radius: 12px; 
+                    font-size: 16px; 
+                    font-weight: 600; 
+                    font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+                    border: 1px solid rgba(245, 158, 11, 0.2);
+                    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);">
+            Comenzar Primer Círculo
+          </a>
+        </div>
+
+        <!-- Link a Telegram -->
+        <div style="text-align: center; margin: 24px 0 0; padding-top: 24px; border-top: 1px solid rgba(0, 0, 0, 0.08);">
+          <p style="font-size: 14px; color: rgba(0, 0, 0, 0.7); margin: 0 0 12px 0; font-weight: 500;">
+            Unite a la Crew en Telegram
+          </p>
+          <a href="${data.telegramInviteUrl || 'https://t.me/+_9hJulwT690yNWFh'}" 
+             target="_blank"
+             rel="noopener noreferrer"
+             style="display: inline-block; 
+                    background: #0088cc; 
+                    color: #ffffff; 
+                    padding: 12px 24px; 
+                    text-decoration: none; 
+                    border-radius: 8px; 
+                    font-size: 14px; 
+                    font-weight: 600; 
+                    font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;">
+            Unite a la Crew (Telegram)
+          </a>
+          <p style="font-size: 12px; color: rgba(0, 0, 0, 0.6); margin: 8px 0 0 0; line-height: 1.4;">
+            Acceso directo al grupo privado para soporte, avisos y novedades.
+          </p>
+        </div>
+      </div>
+    `;
+    return getBaseTemplateUser(content);
+  },
+
+  [EmailType.BITACORA_BASE_COMPLETED]: (data: EmailData) => {
+    const primaryActionLink = data.dashboardLink || 'https://mateomove.com/home';
+    const primaryActionText = data.buttonText || 'Ir al Dashboard';
+
+    const content = `
+      <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
+        <div style="color: #000000; font-size: 30px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -0.3px;">¡Primer Círculo Completado!</div>
+        <p style="color: rgba(0, 0, 0, 0.65); font-size: 14px; margin: 0; font-weight: 400;">Hola ${data.name || 'Mover'}, has completado los fundamentos. Ahora podés acceder a todo el contenido.</p>
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 18px auto 0; max-width: 420px; width: 100%;">
+          <tr>
+            <td style="text-align: center; padding: 0;">
+              <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764363987/my_uploads/mails/fondoMoveCrew_1_k98l1d.png" 
+                   alt="Camino Base Completado" 
+                   width="420"
+                   height="260"
+                   style="width: 100%; max-width: 420px; height: auto; border-radius: 14px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
+                   border="0" />
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="padding: 24px 20px;">
+        <div style="background: #f9fafb; padding: 18px 16px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.06); margin-bottom: 18px;">
+          <h3 style="color: #000; margin: 0 0 12px 0; font-size: 16px; font-weight: 700; text-align:center;">¡Ahora tenés acceso completo!</h3>
+          <p style="margin: 6px 0; color: rgba(0,0,0,0.75); font-size: 14px; text-align:center;">Podés acceder a la Senda de la Semana, la Biblioteca de Movimiento y el Grupo de Telegram.</p>
+        </div>
+
+        <div style="text-align: center; margin: 22px 0 10px;">
+          <a href="${primaryActionLink}" style="
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(249, 115, 22, 0.1) 50%, rgba(251, 113, 133, 0.1) 100%);
+            color: #000000;
+            padding: 14px 28px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);
+          ">
+            ${primaryActionText}
+          </a>
+        </div>
+
+        <p style="font-size: 13px; color: rgba(0,0,0,0.6); line-height: 1.5; margin: 10px 0 0 0; text-align: center;">Simple, claro y sostenible. <strong>Hecho para acompañar tu día a día.</strong></p>
+      </div>
+    `;
+    return getBaseTemplate(content);
   }
 };
 
@@ -1625,6 +1783,8 @@ export class EmailService {
       const personalTypes: EmailType[] = [
         EmailType.WEEKLY_LOGBOOK_RELEASE,
         EmailType.WELCOME_EMAIL,
+        EmailType.ONBOARDING_WELCOME,
+        EmailType.BITACORA_BASE_COMPLETED,
         EmailType.WELCOME_MEMBERSHIP,
         EmailType.WELCOME_MENTORSHIP,
         EmailType.COURSE_COMPLETION,
@@ -1771,7 +1931,25 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.WELCOME_MEMBERSHIP,
       to: data.email,
-      subject: '¡Bienvenido a la Membresía MForMove!',
+      subject: '¡Bienvenido a la Move Crew!',
+      data
+    });
+  }
+
+  public async sendOnboardingWelcome(data: EmailData) {
+    return this.sendEmail({
+      type: EmailType.ONBOARDING_WELCOME,
+      to: data.email,
+      subject: '¡Bienvenido a Move Crew! - El Primer Círculo',
+      data
+    });
+  }
+
+  public async sendBitacoraBaseCompleted(data: EmailData) {
+    return this.sendEmail({
+      type: EmailType.BITACORA_BASE_COMPLETED,
+      to: data.email,
+      subject: '¡Primer Círculo Completado! - Acceso Completo',
       data
     });
   }

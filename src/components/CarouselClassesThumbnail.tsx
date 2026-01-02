@@ -143,13 +143,6 @@ function CarouselClassesThumbnail({
     const extractedId = extractVimeoId(c.link);
     setVideoId(extractedId);
     
-    // Debug: verificar que se extraiga el ID correctamente
-    if (extractedId) {
-      console.log('Video ID extraído:', extractedId, 'para clase:', c.name);
-    } else {
-      console.log('No se pudo extraer Video ID de:', c.link, 'para clase:', c.name);
-    }
-    
     // Priorizar image_base_link si existe y es una URL válida, sino usar thumbnail de Vimeo
     if (c.image_base_link) {
       // Verificar si es una URL completa o solo un public_id

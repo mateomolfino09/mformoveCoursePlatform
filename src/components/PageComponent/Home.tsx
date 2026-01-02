@@ -43,11 +43,10 @@ import { Toaster } from 'react-hot-toast';
 import Link from 'next/link';
 import { useSnapshot as useSnapshotValtio } from 'valtio';
 import { FireIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
-import MoveCrewQuickAccess from './MoveCrew/MoveCrewQuickAccess';
 import MoveCrewLoading from './MoveCrew/MoveCrewLoading';
-import MoveCrewFeaturesNav from './MoveCrew/MoveCrewFeaturesNav';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../imageLoader';
+import BitacoraMenuTutorial from './Home/BitacoraMenuTutorial';
 
 interface Props {
   classesDB: IndividualClass[];
@@ -67,6 +66,7 @@ const Home = ({ classesDB, filters }: Props) => {
   );
   const [coherenceStreak, setCoherenceStreak] = useState<number | null>(null);
   const [hasBitacoraContent, setHasBitacoraContent] = useState<boolean>(false);
+  const [showBitacoraTutorial, setShowBitacoraTutorial] = useState<boolean>(false);
   const router = useRouter();
   const snap = useSnapshotValtio(state);
 
@@ -92,6 +92,17 @@ const Home = ({ classesDB, filters }: Props) => {
       setIsMember(true);
       fetchCoherenceTracking();
       checkBitacoraContent();
+      
+      // Verificar si debe mostrar el tutorial de bitácora
+      const contratoAceptado = auth.user.subscription?.onboarding?.contratoAceptado || false;
+      const tutorialCompletado = auth.user.subscription?.onboarding?.tutorialBitacoraCompletado || false;
+      
+      if (contratoAceptado && !tutorialCompletado) {
+        // Esperar un poco para que la página cargue completamente
+        setTimeout(() => {
+          setShowBitacoraTutorial(true);
+        }, 1000);
+      }
     }
     
     setReload(true);
@@ -293,7 +304,7 @@ const Home = ({ classesDB, filters }: Props) => {
         setHasBitacoraContent(data.logbook && data.weeklyContent && data.weeklyContent.isPublished);
       }
     } catch (err) {
-      console.error('Error verificando bitácora:', err);
+      console.error('Error verificando camino:', err);
       setHasBitacoraContent(false);
     }
   };
@@ -358,6 +369,25 @@ const Home = ({ classesDB, filters }: Props) => {
               >
                 Acá vas a encontrar la biblioteca de clases para que dejes de sentirte rígido/a, desarrolles fuerza real, domines tu movilidad y te muevas con mayor libertad.
               </motion.p>
+              {/* Banner informativo sobre Bitácora Base */}
+              {auth.user && !auth.user.subscription?.onboarding?.bitacoraBaseCompletada && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  className='max-w-4xl mb-5 lg:mb-6'
+                >
+                  <div className='bg-amber-500/10 border border-amber-400/30 rounded-xl px-4 py-3 backdrop-blur-sm'>
+                    <p className='text-sm lg:text-base text-amber-200 font-light leading-relaxed'>
+                      💡 <strong className='font-semibold'>Tip:</strong> Completá la{' '}
+                      <Link href="/onboarding/bitacora-base" className='underline hover:text-amber-100 transition-colors'>
+                        Camino Base
+                      </Link>
+                      {' '}para ganar U.C. desde el inicio. Es opcional, pero si la saltás te perdés esas U.C. que podrías canjear después.
+                    </p>
+                  </div>
+                </motion.div>
+              )}
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -367,21 +397,6 @@ const Home = ({ classesDB, filters }: Props) => {
                 Simple, claro y sostenible. Hecho para acompañar tu día a día.
               </motion.p>
               <div className='w-full px-6 py-6 md:py-0 sm:px-8 md:px-0 lg:px-0 flex justify-start items-start'>
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className=' mb-4 flex justify-center'
-              >
-                <MoveCrewFeaturesNav 
-                  coherenceStreak={coherenceStreak}
-                  hasBitacoraContent={hasBitacoraContent}
-                  isMember={isMember}
-                  isVip={!!auth.user?.isVip}
-                  hasActiveSubscription={!!auth.user?.subscription?.active}
-                  onlyGorila
-                />
-              </motion.div>
             </div>
     
             </motion.div>
@@ -442,6 +457,25 @@ const Home = ({ classesDB, filters }: Props) => {
                       >
                         Acá vas a encontrar la biblioteca de clases para que dejes de sentirte rígido/a, desarrolles fuerza real, domines tu movilidad y te muevas con mayor libertad.
                       </motion.p>
+                      {/* Banner informativo sobre Bitácora Base - Mobile */}
+                      {auth.user && !auth.user.subscription?.onboarding?.bitacoraBaseCompletada && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: 0.55 }}
+                          className='mb-4'
+                        >
+                          <div className='bg-amber-500/10 border border-amber-400/30 rounded-xl px-3 py-2.5 backdrop-blur-sm'>
+                            <p className='text-xs sm:text-sm text-amber-200 font-light leading-relaxed'>
+                              💡 <strong className='font-semibold'>Tip:</strong> Completá la{' '}
+                              <Link href="/onboarding/bitacora-base" className='underline hover:text-amber-100 transition-colors'>
+                                Camino Base
+                              </Link>
+                              {' '}para ganar U.C. Es opcional, pero si la saltás te perdés esas U.C.
+                            </p>
+                          </div>
+                        </motion.div>
+                      )}
                       <motion.p
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -454,21 +488,6 @@ const Home = ({ classesDB, filters }: Props) => {
 
                     </div>
                   </motion.div>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className='relative rounded-2xl backdrop-blur-none z-20 mb-12'
-                >
-                  <MoveCrewFeaturesNav 
-                    coherenceStreak={coherenceStreak}
-                    hasBitacoraContent={hasBitacoraContent}
-                    isMember={isMember}
-                    isVip={!!auth.user?.isVip}
-                    hasActiveSubscription={!!auth.user?.subscription?.active}
-                    onlyGorila
-                  />
                 </motion.div>
 
               </div>
@@ -560,6 +579,18 @@ const Home = ({ classesDB, filters }: Props) => {
           <Toaster />
         </FilterNavWrapper>
       </MainSideBar>
+      
+      {/* Tutorial de Bitácora */}
+      <BitacoraMenuTutorial
+        isOpen={showBitacoraTutorial}
+        onComplete={() => {
+          setShowBitacoraTutorial(false);
+          // Refrescar datos del usuario
+          if (auth.user) {
+            auth.fetchUser();
+          }
+        }}
+      />
     </div>
     </>
   );

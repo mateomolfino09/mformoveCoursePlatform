@@ -36,6 +36,7 @@ interface CoherenceCelebrationModalProps {
   newLevel?: number;
   evolution?: boolean;
   gorillaIcon?: string;
+  isFirstTime?: boolean; // Nueva prop para primera vez
 }
 
 const CoherenceCelebrationModal = ({
@@ -49,7 +50,8 @@ const CoherenceCelebrationModal = ({
   levelUp = false,
   newLevel,
   evolution = false,
-  gorillaIcon
+  gorillaIcon,
+  isFirstTime = false
 }: CoherenceCelebrationModalProps) => {
   const [showAchievements, setShowAchievements] = useState(false);
 
@@ -65,15 +67,15 @@ const CoherenceCelebrationModal = ({
     }
   }, [isOpen]);
 
-  // Auto-cerrar después de 5 segundos
+  // Auto-cerrar después de 5 segundos (solo si NO es primera vez)
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !isFirstTime) {
       const timer = setTimeout(() => {
         onClose();
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isFirstTime]);
 
   return (
     <AnimatePresence>
@@ -94,7 +96,7 @@ const CoherenceCelebrationModal = ({
           />
 
           {/* Modal principal */}
-          <div className="fixed inset-0 flex items-center justify-center z-[201] pointer-events-none">
+          <div className="fixed inset-0 flex items-center justify-center z-[201] pointer-events-none p-4 overflow-y-auto">
             <motion.div
               initial={{ scale: 0.5, opacity: 0, y: 50 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -105,7 +107,7 @@ const CoherenceCelebrationModal = ({
                 damping: 25,
                 duration: 0.6
               }}
-              className="pointer-events-auto relative w-full max-w-md mx-4"
+              className="pointer-events-auto relative w-full max-w-md mx-auto my-auto max-h-[90vh] overflow-y-auto"
             >
               {/* Contenedor principal minimalista y natural */}
               <div 
@@ -152,7 +154,7 @@ const CoherenceCelebrationModal = ({
                 </div>
 
                 {/* Contenido */}
-                <div className="relative p-8 text-center">
+                        <div className="relative p-4 md:p-8 text-center">
                   {/* Icono natural y orgánico - semilla/hoja */}
                   <motion.div
                     initial={{ scale: 0, rotate: -180 }}
@@ -163,7 +165,7 @@ const CoherenceCelebrationModal = ({
                       damping: 20,
                       delay: 0.2
                     }}
-                    className="flex justify-center mb-6"
+                            className="flex justify-center mb-4 md:mb-6"
                   >
                     <div className="relative">
                       {/* Círculo orgánico con gradiente análogo a Completados/U.C */}
@@ -176,7 +178,7 @@ const CoherenceCelebrationModal = ({
                           repeat: Infinity,
                           ease: 'easeInOut'
                         }}
-                        className="w-20 h-20 rounded-full flex items-center justify-center backdrop-blur-sm border"
+                                className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center backdrop-blur-sm border"
                         style={{
                           background: `linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(249, 115, 22, 0.3) 50%, rgba(225, 29, 72, 0.3) 100%)`,
                           borderColor: 'rgba(251, 191, 36, 0.4)',
@@ -194,7 +196,7 @@ const CoherenceCelebrationModal = ({
                             repeat: Infinity,
                             ease: 'easeInOut'
                           }}
-                          className="text-4xl"
+                                  className="text-3xl md:text-4xl"
                         >
                           🌱
                         </motion.div>
@@ -239,19 +241,19 @@ const CoherenceCelebrationModal = ({
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="text-3xl font-light font-montserrat tracking-wide mb-3"
+                    className="text-2xl md:text-3xl font-light font-montserrat tracking-wide mb-2 md:mb-3"
                     style={{ color: EARTH_BROWN }}
                   >
-                    {levelUp ? (evolution ? '¡Evolución del Gorila!' : '¡Subiste de Nivel!') : 'Unidad de Coherencia'}
+                    {isFirstTime ? '¡Tu Primera U.C.!' : (levelUp ? (evolution ? '¡Evolución del Gorila!' : '¡Subiste de Nivel!') : 'Unidad de Coherencia')}
                   </motion.h2>
                   <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}
-                    className="text-sm font-montserrat font-light mb-4"
+                    className="text-xs md:text-sm font-montserrat font-light mb-3 md:mb-4"
                     style={{ color: NATURAL_GRAY }}
                   >
-                    {levelUp ? (evolution ? `Tu gorila evoluciona al nivel ${newLevel}` : `Ahora eres nivel ${newLevel}`) : 'Cultivada con constancia'}
+                    {isFirstTime ? '¡Felicidades por empezar tu camino!' : (levelUp ? (evolution ? `Tu gorila evoluciona al nivel ${newLevel}` : `Ahora eres nivel ${newLevel}`) : 'Cultivada con constancia')}
                   </motion.p>
 
                   {/* Mostrar icono del gorila si hay evolución */}
@@ -276,19 +278,19 @@ const CoherenceCelebrationModal = ({
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
-                    className="mb-6"
+                    className="mb-4 md:mb-6"
                   >
                     <div 
-                      className="inline-flex items-center gap-3 px-8 py-4 rounded-full"
+                      className="inline-flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full"
                       style={{
                         background: `linear-gradient(135deg, ${SALMON_SOFT} 0%, ${SALMON_SOFT}80 100%)`,
                         border: `1px solid ${SALMON}30`
                       }}
                     >
-                      <span className="text-3xl font-light font-montserrat" style={{ color: SALMON_DARK }}>
+                      <span className="text-2xl md:text-3xl font-light font-montserrat" style={{ color: SALMON_DARK }}>
                         +{ucsOtorgadas}
                       </span>
-                      <span className="text-lg font-light font-montserrat tracking-wide" style={{ color: EARTH_BROWN }}>
+                      <span className="text-base md:text-lg font-light font-montserrat tracking-wide" style={{ color: EARTH_BROWN }}>
                         U.C.
                       </span>
                     </div>
@@ -299,16 +301,48 @@ const CoherenceCelebrationModal = ({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.7 }}
-                    className="space-y-3 mb-5"
+                    className="space-y-2 md:space-y-3 mb-4 md:mb-5"
                   >
-                    <div className="flex items-center justify-center gap-4">
-                      <p className="text-base font-light font-montserrat" style={{ color: EARTH_BROWN }}>
+                    {isFirstTime ? (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.8 }}
+                        className="space-y-4"
+                      >
+                        <div className="p-5 rounded-lg border" style={{
+                          backgroundColor: `${SALMON_SOFT}20`,
+                          borderColor: `${SALMON}30`
+                        }}>
+                          <h3 className="text-lg font-medium font-montserrat mb-3 text-center" style={{ color: EARTH_BROWN }}>
+                            ¿Qué es una U.C.?
+                          </h3>
+                          <div className="space-y-3 text-sm font-light font-montserrat leading-relaxed" style={{ color: EARTH_BROWN }}>
+                            <p>
+                              <strong style={{ color: SALMON_DARK }}>U.C.</strong> significa <strong style={{ color: SALMON_DARK }}>Unidad de Coherencia</strong>. Es tu sistema de puntos en Move Crew.
+                            </p>
+                            <p>
+                              <strong style={{ color: SALMON_DARK }}>¿Cuándo se te da?</strong> Cada vez que completás una práctica del Camino del Gorila. Idealmente, ganás 2 U.C. por semana: 1 por completar el video y 1 por completar el audio.
+                            </p>
+                            <p>
+                              <strong style={{ color: SALMON_DARK }}>¿Para qué sirve?</strong> Acumulás U.C. para canjearlas por programas especiales, elementos, material o ropa que vamos creando. También subís de nivel y desbloqueás logros.
+                            </p>
+                            <p className="text-center mt-4 pt-3 border-t" style={{ borderColor: `${SALMON}20` }}>
+                              <span className="font-medium" style={{ color: SALMON_DARK }}>Total actual: {totalUnits} U.C.</span>
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-center gap-3 md:gap-4 flex-wrap">
+                          <p className="text-sm md:text-base font-light font-montserrat" style={{ color: EARTH_BROWN }}>
                         Total: <span className="font-medium" style={{ color: SALMON_DARK }}>{totalUnits} U.C.</span>
                       </p>
                       {currentStreak > 0 && (
                         <>
-                          <span className="text-sm" style={{ color: SALMON_SOFT }}>•</span>
-                          <p className="text-base font-light font-montserrat" style={{ color: EARTH_BROWN }}>
+                              <span className="text-xs md:text-sm" style={{ color: SALMON_SOFT }}>•</span>
+                              <p className="text-sm md:text-base font-light font-montserrat" style={{ color: EARTH_BROWN }}>
                             Racha: <span className="font-medium" style={{ color: SALMON_DARK }}>{currentStreak}</span>
                           </p>
                         </>
@@ -330,6 +364,8 @@ const CoherenceCelebrationModal = ({
                           Completa 2 U.C. por semana (1 video + 1 audio) para maximizar tus puntos.
                         </p>
                       </motion.div>
+                        )}
+                      </>
                     )}
                   </motion.div>
 
@@ -379,7 +415,7 @@ const CoherenceCelebrationModal = ({
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1 }}
                     onClick={onClose}
-                    className="mt-6 w-full font-light font-montserrat py-3 px-6 rounded-full transition-all duration-300 hover:scale-105 backdrop-blur-sm border"
+                            className="mt-4 md:mt-6 w-full font-light font-montserrat py-2.5 md:py-3 px-4 md:px-6 rounded-full transition-all duration-300 hover:scale-105 backdrop-blur-sm border text-sm md:text-base"
                     style={{
                       background: `linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(249, 115, 22, 0.3) 50%, rgba(225, 29, 72, 0.3) 100%)`,
                       borderColor: 'rgba(251, 191, 36, 0.4)',

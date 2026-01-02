@@ -15,7 +15,7 @@ const MoveCrewStructure = () => {
     {
       title: 'Filosofía',
       description:
-        'Busco tu constancia, autoconocimiento y exploración. Las U.C. premian tu camino en el movimiento.',
+        'Busco tu constancia, autoconocimiento y exploración. Las U.C. incentivan tu camino en el movimiento.',
       bullets: [
         'U.C. (Unidades de Coherencia) por completar semanas',
         'Acceso a canjes y programas especiales al sostener tu racha de entrenamiento'

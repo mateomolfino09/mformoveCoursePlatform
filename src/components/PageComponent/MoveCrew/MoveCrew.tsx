@@ -4,6 +4,7 @@ import MainSideBar from '../../MainSidebar/MainSideBar';
 import FooterProfile from '../Profile/FooterProfile';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
 import { toggleScroll } from '../../../redux/features/headerHomeSlice';
+import { useAuth } from '../../../hooks/useAuth';
 import { Plan } from '../../../../typings';
 import MoveCrewHero from './MoveCrewHero';
 import MoveCrewHighlights from './MoveCrewHighlights';
@@ -36,6 +37,7 @@ interface MoveCrewProps {
 
 const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
   const dispatch = useAppDispatch();
+  const auth = useAuth();
   const [promocionActiva, setPromocionActiva] = useState<Promocion | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -48,11 +50,24 @@ const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
     const el = scrollContainerRef.current;
     if (!el) return;
 
+    let lastScrollTop = el.scrollTop;
+    let rafId: number | null = null;
+
     const emitScrollEvent = () => {
+      const scrollTop = el.scrollTop;
+      
+      // Siempre emitir cuando el scroll llega a 0 o cuando cambia significativamente
+      const isAtTop = scrollTop === 0;
+      const hasChanged = Math.abs(scrollTop - lastScrollTop) >= 1;
+      
+      if (!isAtTop && !hasChanged) return;
+      
+      lastScrollTop = scrollTop;
+      
       window.dispatchEvent(
         new CustomEvent('movecrew-scroll', {
           detail: {
-            scrollTop: el.scrollTop,
+            scrollTop: scrollTop,
             scrollHeight: el.scrollHeight,
             clientHeight: el.clientHeight,
           },
@@ -60,12 +75,27 @@ const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
       );
     };
 
-    // Emitir una vez al montar para establecer el estado inicial
-    emitScrollEvent();
+    const handleScroll = () => {
+      // Usar requestAnimationFrame para optimizar
+      if (rafId !== null) return;
+      
+      rafId = requestAnimationFrame(() => {
+        emitScrollEvent();
+        rafId = null;
+      });
+    };
 
-    el.addEventListener('scroll', emitScrollEvent, { passive: true });
+    // Emitir una vez al montar para establecer el estado inicial
+    const timeoutId = setTimeout(() => {
+      emitScrollEvent();
+    }, 100);
+
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    
     return () => {
-      el.removeEventListener('scroll', emitScrollEvent);
+      clearTimeout(timeoutId);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      el.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -137,7 +167,7 @@ const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
         <MoveCrewCTA />
         
         <FooterProfile />
-        {promocionActiva && (
+        {promocionActiva && !auth.user?.subscription?.active && (
           <div className="pb-24 md:pb-28">
             <PromocionFooter promocion={promocionActiva} onCtaClick={handlePromocionClick} variant="movecrew" plans={plans} />
           </div>

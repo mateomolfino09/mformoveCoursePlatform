@@ -176,6 +176,11 @@ const weeklyLogbookSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  // Indica si es la bitácora base (Primer Círculo)
+  isBaseBitacora: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -187,16 +192,38 @@ const weeklyLogbookSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-// Índice para buscar bitácoras por mes/año
-weeklyLogbookSchema.index({ year: 1, month: 1 }, { unique: true });
+// Índice único para bitácoras regulares (no base)
+// Solo aplica unicidad cuando isBaseBitacora es false
+// Las bitácoras base (isBaseBitacora: true) pueden tener cualquier fecha sin restricción
+// y pueden coexistir con bitácoras regulares de la misma fecha
+weeklyLogbookSchema.index(
+  { year: 1, month: 1 },
+  { 
+    unique: true,
+    partialFilterExpression: { 
+      isBaseBitacora: false
+    },
+    name: 'year_month_unique_non_base'
+  }
+);
+
+// Índice para buscar la bitácora base
+weeklyLogbookSchema.index({ isBaseBitacora: 1 });
+
+// Método estático para obtener la bitácora base
+weeklyLogbookSchema.statics.getBaseBitacora = async function() {
+  return await this.findOne({ isBaseBitacora: true })
+    .sort({ createdAt: -1 })
+    .lean();
+};
 
 // Método para obtener la bitácora de la semana actual
 weeklyLogbookSchema.statics.getCurrentWeekLogbook = async function() {
   const now = new Date();
   now.setHours(0, 0, 0, 0); // Normalizar a medianoche
   
-  // Buscar todas las bitácoras y ordenarlas por fecha (más reciente primero)
-  const logbooks = await this.find()
+  // Buscar todas las bitácoras regulares (excluir bitácoras base) y ordenarlas por fecha (más reciente primero)
+  const logbooks = await this.find({ isBaseBitacora: { $ne: true } })
     .sort({ year: -1, month: -1 })
     .lean();
   
