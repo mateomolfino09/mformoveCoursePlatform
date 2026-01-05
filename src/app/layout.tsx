@@ -12,8 +12,8 @@ import { Analytics } from "@vercel/analytics/react"
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.mateomove.com'),
   title: 'MForMove',
-  description: 'Descubre el poder del movimiento consciente. Clases online, eventos presenciales y programas transformacionales para conectar cuerpo, mente y espíritu.',
-  keywords: "movimiento, fitness, yoga, meditacion, calistenia, workout, training, bienestar, transformacion personal"
+  description: 'Descubre la practica de movimiento. Aprende a moverte sin dolor, desarrolla fuerza real y domina la movilidad de tu cuerpo. Crea hábitos reales y sostenibles para tu bienestar. Esto es MForMove.',
+  keywords: "movimiento, calistenia, yoga, meditacion, calistenia, workout, training, bienestar, transformacion personal"
 }
 
 

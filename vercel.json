@@ -22,7 +22,7 @@
   "crons": [
     {
       "path": "/api/cron/weekly-logbook",
-      "schedule": "0 9 * * 1"
+      "schedule": "0 12 * * 1"
     }
   ]
 }
