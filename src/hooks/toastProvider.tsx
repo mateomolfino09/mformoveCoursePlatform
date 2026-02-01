@@ -1,18 +1,11 @@
-"use client";
+'use client';
 
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
+import { ToastProvider } from '../contexts/ToastContext';
 
 interface ToastProviderProps {
   children: React.ReactNode;
 }
 
-export default function ToastProvider({ children }: ToastProviderProps) {
-  return (
-    <>
-      {children}
-      <ToastContainer />
-    </>
-  );
+export default function ToasterProvider({ children }: ToastProviderProps) {
+  return <ToastProvider>{children}</ToastProvider>;
 }

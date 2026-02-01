@@ -11,7 +11,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import endpoints from '../../../services/api';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import DeletePlan from './DeletePlan';
 import { Plan } from '../../../../typings';
 import { Dialog } from '@headlessui/react';

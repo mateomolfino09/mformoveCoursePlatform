@@ -10,13 +10,15 @@ import './forgetStyle.css';
 import { alertTypes } from '../../../constants/alertTypes';
 import AlertComponent from '../../AlertComponent';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import LoginModalForm from '../Login/AccountForm';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import Footer from '../../Footer';
 import { CldImage } from 'next-cloudinary';
+import AuthSkeleton from '../../AuthSkeleton';
 
 function ForgetForm() {
+  const [initialLoading, setInitialLoading] = useState(true);
   const [message, setMessage] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   // const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -35,6 +37,15 @@ function ForgetForm() {
       document.addEventListener('keydown', testCapsLock);
       document.addEventListener('keyup', testCapsLock);
     }
+  }, []);
+
+  useEffect(() => {
+    // Mostrar skeleton al inicio y luego ocultarlo
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 800);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   function testCapsLock(event: any) {
@@ -100,6 +111,10 @@ function ForgetForm() {
       ]);
     }
   };
+
+  if (initialLoading) {
+    return <AuthSkeleton />;
+  }
 
   return (
     <div>

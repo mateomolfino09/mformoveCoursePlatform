@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useMentorshipAnalytics } from '../../../hooks/useMentorshipAnalytics';
 import { useAuth } from '../../../hooks/useAuth';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { MentorshipProps } from '../../../types/mentorship';
 import PremiumMentorshipCards from './PremiumMentorshipCards';
 
@@ -35,6 +35,10 @@ const MentorshipPlans = ({ plans, origin }: MentorshipProps) => {
 
   const handlePlanSelect = async (plan: MentorshipPlan) => {
     if (!auth.user) {
+      // Guardar la URL actual para redirigir después del login/registro
+      if (typeof window !== 'undefined') {
+        saveRedirectUrl(window.location.pathname + window.location.search);
+      }
       toast.error('Debes iniciar sesión para continuar');
       router.push('/login');
       return;

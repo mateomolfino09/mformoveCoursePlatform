@@ -4,7 +4,7 @@ import { LoadingSpinner } from '../../LoadingSpinner';
 import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import endpoints from '../../../services/api';

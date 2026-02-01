@@ -10,13 +10,15 @@ import {
   CheckIcon
 } from '@heroicons/react/24/outline';
 import Cookies from 'js-cookie';
+import { saveRedirectUrl, savePlanIntent } from '../../../../utils/redirectQueue';
 import { CldImage } from 'next-cloudinary';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { CheckmarkIcon } from 'react-hot-toast';
 import Select, { StylesConfig } from 'react-select';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
+import state from '../../../../valtio';
 import './SelectYourPlan.css'
 interface Promocion {
   _id: string;
@@ -115,7 +117,17 @@ const SelectYourPlan = ({ plans, promociones = [], select = "", origin }: Props)
 
     const handleClick = async () => {
         if(!auth.user) {
-            toast.error('Usuario no encontrado')
+            // Guardar la intención del plan para ejecutarla después del login/registro
+            if (typeof window !== 'undefined' && planSelected) {
+                savePlanIntent({
+                    planId: planSelected.id,
+                    provider: planSelected.provider || 'dlocalgo',
+                    origin: origin,
+                    plan_token: planSelected.plan_token
+                });
+                state.loginForm = true;
+            }
+            toast.error('Debes iniciar sesión para continuar')
             return
         }
         const email = auth.user.email
