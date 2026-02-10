@@ -50,9 +50,6 @@ export async function POST(req) {
       || null;
 
     if (!userId) {
-      console.warn('[bitacora/complete] Token decodificado sin userId', {
-        decodedKeys: Object.keys(decoded || {})
-      });
       return NextResponse.json(
         { error: 'No autorizado: userId no encontrado en el token' },
         { status: 401 }
@@ -69,14 +66,6 @@ export async function POST(req) {
         { status: 400 }
       );
     }
-
-    console.log('[bitacora/complete] Iniciando', { 
-      userId, 
-      weekNumber, 
-      dayNumber, 
-      contentType, 
-      logbookId
-    });
 
     // Obtener el logbook para calcular la semana actual
     let semanaActualDelLogbook = 0;
@@ -110,14 +99,9 @@ export async function POST(req) {
             }
           }
           
-          console.log('[bitacora/complete] Semana actual del logbook calculada', { 
-            semanaActualDelLogbook, 
-            weekNumberCompletando: weekNumber,
-            esSemanaAdicional: semanaActualDelLogbook > 0 && (weekNumber < semanaActualDelLogbook || weekNumber > semanaActualDelLogbook)
-          });
         }
       } catch (error) {
-        console.error('[bitacora/complete] Error obteniendo logbook', error.message);
+        // Error silencioso al obtener logbook
       }
     }
 
@@ -171,10 +155,10 @@ export async function POST(req) {
 
     let newAchievements = [];
     let ucResult = null; // Guardar el resultado de addCoherenceUnit para usarlo en la respuesta
+    let ucGranted = false; // Flag para saber si realmente se otorgó U.C.
     
-    // Si no está completado, procesar la completación
+    // Agregar a los arrays de completados solo si no está completado
     if (!alreadyCompleted) {
-      // Agregar a los arrays de completados
       if (dayKey) {
         if (!tracking.completedDays.includes(dayKey)) {
           tracking.completedDays.push(dayKey);
@@ -185,110 +169,69 @@ export async function POST(req) {
           tracking.completedWeeks.push(weekKey);
         }
       }
-      // Procesar video o audio para agregar U.C.
-      if ((videoKey && contentType === 'visual') || (audioKey && (contentType === 'audio' || contentType === 'audioText'))) {
-        const contentKey = videoKey || audioKey;
+      if (isVideo && videoKey) {
+        tracking.completedVideos.push(videoKey);
+      } else if (isAudio && audioKey) {
+        tracking.completedAudios.push(audioKey);
+      }
+    }
+    
+    // SIEMPRE llamar a addCoherenceUnit para incrementar levelProgress
+    // Incluso si el contenido ya está completado (no otorgará U.C. pero sí incrementará levelProgress)
+    if ((videoKey && contentType === 'visual') || (audioKey && (contentType === 'audio' || contentType === 'audioText'))) {
+      try {
+        const result = await tracking.addCoherenceUnit(logbookId, contentType, weekNumber, null, semanaActualDelLogbook);
+        ucResult = result; // Guardar el resultado
         
-        // Verificar si ya está completado este contenido específico
-        const alreadyCompletedContent = isVideo 
-          ? tracking.completedVideos.includes(videoKey)
-          : tracking.completedAudios.includes(audioKey);
-        
-        if (!alreadyCompletedContent) {
-          if (isVideo && videoKey) {
-            tracking.completedVideos.push(videoKey);
-          } else if (isAudio && audioKey) {
-            tracking.completedAudios.push(audioKey);
+        if (result.success) {
+          newAchievements = result.newAchievements || [];
+          ucGranted = (result.ucsOtorgadas || 0) > 0;
+          // Actualizar el tracking con los valores del resultado
+          if (result.totalUnits !== undefined) {
+            tracking.totalUnits = result.totalUnits;
           }
-          
-          // Intentar agregar U.C. (addCoherenceUnit verificará si ya se completó este tipo para esta semana)
-          try {
-            const result = await tracking.addCoherenceUnit(logbookId, contentType, weekNumber, null, semanaActualDelLogbook);
-            ucResult = result; // Guardar el resultado
-            console.log('[bitacora/complete] Resultado', { 
-              success: result.success, 
-              totalUnits: result.totalUnits,
-              esSemanaAdicional: result.esSemanaAdicional
-            });
-            
-            if (result.success) {
-              newAchievements = result.newAchievements || [];
-              // Actualizar el tracking con los valores del resultado
-              if (result.totalUnits !== undefined) {
-                tracking.totalUnits = result.totalUnits;
-              }
-              if (result.currentStreak !== undefined) {
-                tracking.currentStreak = result.currentStreak;
-              }
-              if (result.longestStreak !== undefined) {
-                tracking.longestStreak = result.longestStreak;
-              }
-            } else {
-              // Si no se pudo agregar U.C., pero el contenido SÍ se completó
-              // IMPORTANTE: Guardar el tracking para que se actualice el porcentaje de completado
-              console.log('[bitacora/complete] No se agregó U.C., pero guardando completado', { message: result.message, reason: result.reason });
-              
-              // Guardar el tracking actualizado (aunque no se haya otorgado U.C.)
-              const updateData = {
-                totalUnits: tracking.totalUnits,
-                currentStreak: tracking.currentStreak,
-                longestStreak: tracking.longestStreak,
-                lastCompletedDate: tracking.lastCompletedDate,
-                completedDays: tracking.completedDays || [],
-                completedWeeks: tracking.completedWeeks || [],
-                completedVideos: tracking.completedVideos || [],
-                completedAudios: tracking.completedAudios || []
-              };
-              
-              await CoherenceTracking.findOneAndUpdate(
-                { userId },
-                { $set: updateData },
-                { new: true, upsert: false }
-              );
-              
-              // Devolver respuesta indicando que se completó pero no se otorgó U.C.
-              return NextResponse.json(
-                {
-                  success: false,
-                  message: result.message || 'No se pudo agregar la Unidad de Coherencia',
-                  reason: result.reason || 'UNKNOWN',
-                  tip: result.tip || null,
-                  weekNumber: result.weekNumber || weekNumber,
-                  contentType: result.contentType || contentType,
-                  tracking: {
-                    totalUnits: tracking.totalUnits,
-                    currentStreak: tracking.currentStreak,
-                    longestStreak: tracking.longestStreak,
-                  },
-                  completedDays: tracking.completedDays || [],
-                  completedWeeks: tracking.completedWeeks || [],
-                  completedVideos: tracking.completedVideos || [],
-                  completedAudios: tracking.completedAudios || []
-                },
-                { status: 200 } // Status 200 porque la clase se completó, solo que no se otorgó U.C.
-              );
-            }
-          } catch (error) {
-            console.error('[bitacora/complete] Error agregando U.C.', error.message);
+          if (result.currentStreak !== undefined) {
+            tracking.currentStreak = result.currentStreak;
+          }
+          if (result.longestStreak !== undefined) {
+            tracking.longestStreak = result.longestStreak;
+          }
+          // Actualizar levelProgress y level si están en el resultado
+          if (result.levelProgress !== undefined && result.levelProgress !== null) {
+            tracking.levelProgress = result.levelProgress;
+          }
+          if (result.newLevel !== undefined && result.newLevel !== null) {
+            tracking.level = result.newLevel;
+          } else if (result.levelUp && result.newLevel !== undefined) {
+            // Si hubo level up, usar el nuevo nivel
+            tracking.level = result.newLevel;
+          }
+          if (result.characterEvolution !== undefined) {
+            tracking.characterEvolution = result.characterEvolution;
           }
         }
+      } catch (error) {
+        // Error silencioso al agregar U.C.
       }
     }
 
     // Guardar el tracking actualizado usando findOneAndUpdate para asegurar que los arrays se guarden
     
     // Usar findOneAndUpdate para asegurar que los arrays se guarden correctamente
+    // Asegurar que levelProgress y level se incluyan siempre
     const updateData = {
       totalUnits: tracking.totalUnits,
       currentStreak: tracking.currentStreak,
       longestStreak: tracking.longestStreak,
       lastCompletedDate: tracking.lastCompletedDate,
+      level: tracking.level !== undefined && tracking.level !== null ? tracking.level : 1,
+      levelProgress: tracking.levelProgress !== undefined && tracking.levelProgress !== null ? tracking.levelProgress : 0,
+      characterEvolution: tracking.characterEvolution !== undefined && tracking.characterEvolution !== null ? tracking.characterEvolution : 0,
       completedDays: tracking.completedDays || [],
       completedWeeks: tracking.completedWeeks || [],
       completedVideos: tracking.completedVideos || [],
       completedAudios: tracking.completedAudios || []
     };
-    
     
     const trackingActualizado = await CoherenceTracking.findOneAndUpdate(
       { userId },
@@ -335,35 +278,84 @@ export async function POST(req) {
           
           await user.save();
         }
-      } catch (error) {
-        console.error('[bitacora/complete] Error incrementando práctica:', error);
+        } catch (error) {
+        // Error silencioso al incrementar práctica
       }
     }
     
     // Construir mensaje según el resultado
     const esSemanaAdicional = ucResult?.esSemanaAdicional || false;
-    const ucsOtorgadas = ucResult?.ucsOtorgadas || 1;
+    const ucsOtorgadas = ucResult?.ucsOtorgadas || 0;
     
     let message = '';
-    if (esSemanaAdicional) {
-      message = `¡Clase completada! Obtuviste ${ucsOtorgadas} U.C. (semana adicional).`;
+    let responseSuccess = true;
+    let reason = undefined;
+    let tip = undefined;
+    
+    if (ucGranted) {
+      if (esSemanaAdicional) {
+        message = `¡Clase completada! Obtuviste ${ucsOtorgadas} U.C. (semana adicional).`;
+      } else {
+        message = `¡Clase completada! Obtuviste ${ucsOtorgadas} U.C.`;
+      }
+      responseSuccess = true;
     } else {
-      message = `¡Clase completada! Obtuviste ${ucsOtorgadas} U.C.`;
+      // No se otorgó U.C. (contenido ya estaba completado o límite de semana adicional)
+      responseSuccess = false;
+      reason = ucResult?.reason || 'ALREADY_COMPLETED_NO_UC';
+      tip = ucResult?.tip || 'No se otorga una nueva U.C. pero se suma progreso de nivel.';
+      message = ucResult?.message || 'Contenido ya completado. No se otorga U.C., pero se sumó progreso de nivel.';
+      // Si hubo level up, seguir considerándolo éxito para que se procese el efecto
+      if (ucResult?.levelUp) {
+        responseSuccess = true;
+      }
     }
 
+    console.log('ucResult', ucResult);
+
+    // Obtener información de level up del resultado de addCoherenceUnit
+    const levelUp = ucResult?.levelUp || false;
+    const newLevel = ucResult?.newLevel;
+    const evolution = ucResult?.evolution || false;
+    const gorillaIcon = ucResult?.gorillaIcon;
+    const evolutionName = ucResult?.evolutionName;
+
+    console.log('levelUp', levelUp);
+    
+    // Si hay level up, obtener el tracking actualizado para obtener la información completa
+    let finalTracking = trackingParaRespuesta;
+    if (levelUp) {
+      const updatedTracking = await CoherenceTracking.findOne({ userId });
+      if (updatedTracking) {
+        finalTracking = updatedTracking;
+      }
+    }
+    
+    // Obtener levelProgress del tracking final (actualizado si hubo level up)
+    const levelProgress = finalTracking.levelProgress !== undefined && finalTracking.levelProgress !== null 
+      ? finalTracking.levelProgress 
+      : (ucResult?.levelProgress !== undefined && ucResult?.levelProgress !== null 
+          ? ucResult?.levelProgress 
+          : 0);
+
+    console.log('levelProgress', levelProgress);
+    
     return NextResponse.json(
       {
-        success: true,
+        success: responseSuccess,
+        ucGranted,
         message,
+        reason,
+        tip,
         tracking: {
-          totalUnits: trackingParaRespuesta.totalUnits,
-          currentStreak: trackingParaRespuesta.currentStreak,
-          longestStreak: trackingParaRespuesta.longestStreak,
+          totalUnits: finalTracking.totalUnits,
+          currentStreak: finalTracking.currentStreak,
+          longestStreak: finalTracking.longestStreak,
         },
-        completedDays: trackingParaRespuesta.completedDays || [],
-        completedWeeks: trackingParaRespuesta.completedWeeks || [],
-        completedVideos: trackingParaRespuesta.completedVideos || [],
-        completedAudios: trackingParaRespuesta.completedAudios || [],
+        completedDays: finalTracking.completedDays || [],
+        completedWeeks: finalTracking.completedWeeks || [],
+        completedVideos: finalTracking.completedVideos || [],
+        completedAudios: finalTracking.completedAudios || [],
         newAchievements: newAchievements.map(ach => ({
           name: ach.name,
           description: ach.description,
@@ -373,14 +365,20 @@ export async function POST(req) {
         ucsOtorgadas,
         weekNumber,
         contentType,
-        necesitaReporte
+        necesitaReporte,
+        levelUp: levelUp,
+        newLevel: newLevel,
+        evolution: evolution,
+        gorillaIcon: gorillaIcon,
+        evolutionName: evolutionName,
+        levelProgress: levelProgress,
+        progressToNextLevel: Math.round((levelProgress / 8) * 100)
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error('[bitacora/complete] Error', error.message);
     return NextResponse.json(
-      { error: 'Error al completar la bitácora', message: error.message },
+      { error: 'Error al completar la camino', message: error.message },
       { status: 500 }
     );
   }

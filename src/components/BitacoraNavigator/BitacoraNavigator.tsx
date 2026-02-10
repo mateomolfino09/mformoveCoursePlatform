@@ -1,18 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAuth } from '../../hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  BookOpenIcon, 
-  ChevronDownIcon,
-  XMarkIcon,
-  CalendarIcon,
-  AcademicCapIcon,
-  PaperAirplaneIcon
-} from '@heroicons/react/24/outline';
-import { BookOpenIcon as BookOpenIconSolid } from '@heroicons/react/24/solid';
+import { useSnapshot } from 'valtio';
+import state from '../../valtio';
+import { IoCloseOutline } from 'react-icons/io5';
 
 interface Logbook {
   _id: string;
@@ -31,13 +25,38 @@ const BitacoraNavigator = () => {
   const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [logbooks, setLogbooks] = useState<Logbook[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentLogbook, setCurrentLogbook] = useState<Logbook | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [navigationTarget, setNavigationTarget] = useState<string | null>(null);
+  const [isTutorialActive, setIsTutorialActive] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const snap = useSnapshot(state);
+  const isHome = pathname === '/home';
+
+  // En móvil el dropdown se controla desde el header (state.bitacoraNavOpen)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // En móvil y en /home (desktop) la visibilidad la controla el header/barra (bitacoraNavOpen); en el resto de desktop, estado local (isOpen)
+  const isOpenEffective = (isMobile || isHome) ? snap.bitacoraNavOpen : isOpen;
+
+  // Sincronizar estado local cuando el header/barra cierra/abre (móvil o /home) para closeMenu y tutorial
+  useEffect(() => {
+    if (isMobile || isHome) {
+      setIsOpen(snap.bitacoraNavOpen);
+    }
+  }, [isMobile, isHome, snap.bitacoraNavOpen]);
 
   // Verificar si el usuario tiene acceso
   const hasAccess = auth.user && (
@@ -48,12 +67,10 @@ const BitacoraNavigator = () => {
 
   // Función helper para cerrar el menú (respetando el estado del tutorial)
   const closeMenu = () => {
-    // NO permitir cerrar el menú si el tutorial está activo
     const tutorialActive = document.body.classList.contains('tutorial-active');
-    if (tutorialActive) {
-      return; // No hacer nada si el tutorial está activo
-    }
+    if (tutorialActive) return;
     setIsOpen(false);
+    state.bitacoraNavOpen = false;
   };
 
   // Cerrar dropdown al hacer click fuera
@@ -79,7 +96,7 @@ const BitacoraNavigator = () => {
     };
   }, [isOpen]);
 
-  // Cargar bitácoras disponibles
+  // Cargar caminos disponibles
   useEffect(() => {
     if (!hasAccess) return;
 
@@ -93,23 +110,25 @@ const BitacoraNavigator = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setLogbooks(data.logbooks || []);
+          // Filtrar el camino base
+          const filteredLogbooks = (data.logbooks || []).filter((lb: Logbook) => !lb.isBaseBitacora);
+          setLogbooks(filteredLogbooks);
           
-          // Determinar la bitácora actual basada en la URL o mes/año actual
+          // Determinar la camino actual basada en la URL o mes/año actual
           if (pathname === '/bitacora') {
             const now = new Date();
             const currentMonth = now.getMonth() + 1;
             const currentYear = now.getFullYear();
             
-            const current = data.logbooks.find(
+            const current = filteredLogbooks.find(
               (lb: Logbook) => lb.month === currentMonth && lb.year === currentYear
-            ) || data.logbooks[0];
+            ) || filteredLogbooks[0];
             
             setCurrentLogbook(current || null);
           }
         }
       } catch (error) {
-        console.error('Error cargando bitácoras:', error);
+        console.error('Error cargando caminos:', error);
       } finally {
         setLoading(false);
       }
@@ -118,15 +137,49 @@ const BitacoraNavigator = () => {
     fetchLogbooks();
   }, [hasAccess, pathname]);
 
+  // Desactivar el loading solo cuando la navegación haya llegado al destino
+  useEffect(() => {
+    if (!isNavigating || !navigationTarget) return;
+    const query = searchParams?.toString();
+    const currentUrl = query ? `${pathname}?${query}` : pathname;
+    if (currentUrl === navigationTarget) {
+      const timer = setTimeout(() => {
+        setIsNavigating(false);
+        setNavigationTarget(null);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [pathname, searchParams, isNavigating, navigationTarget]);
+
+  // Detectar si el tutorial está activo
+  useEffect(() => {
+    const checkTutorialActive = () => {
+      setIsTutorialActive(document.body.classList.contains('tutorial-active'));
+    };
+    
+    // Verificar inicialmente
+    checkTutorialActive();
+    
+    // Observar cambios en el body
+    const observer = new MutationObserver(checkTutorialActive);
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+
   // Detectar páginas con fondo blanco
   const whiteBackgroundPages = [
     '/account',
     '/bitacora',
     '/mentorship',
     '/move-crew',
-    '/events'
+    '/events',
+    '/onboarding/bitacora-base'
   ];
-  const hasWhiteBackground = whiteBackgroundPages.some(page => pathname?.startsWith(page));
+  const hasWhiteBackground = whiteBackgroundPages.some(page => pathname?.startsWith(page)) && !snap.systemNavOpen;
 
 
   // No mostrar si no tiene acceso
@@ -142,7 +195,10 @@ const BitacoraNavigator = () => {
     }
     setCurrentLogbook(logbook);
     closeMenu();
-    // Navegar a la bitácora usando el ID
+    const targetUrl = `/bitacora?id=${logbook._id}`;
+    setNavigationTarget(targetUrl);
+    setIsNavigating(true);
+    // Navegar a la camino usando el ID
     router.push(`/bitacora?id=${logbook._id}`);
   };
 
@@ -153,6 +209,8 @@ const BitacoraNavigator = () => {
       return; // No hacer nada si el tutorial está activo
     }
     closeMenu();
+    setNavigationTarget('/bitacora');
+    setIsNavigating(true);
     router.push('/bitacora');
   };
 
@@ -161,299 +219,153 @@ const BitacoraNavigator = () => {
                      pathname?.startsWith('/register') || 
                      pathname?.startsWith('/forget');
   
-  // No mostrar en páginas de onboarding
-  const isOnboardingPage = pathname?.startsWith('/onboarding');
+  // No mostrar en páginas de onboarding (excepto bitacora-base)
+  const isOnboardingPage = pathname?.startsWith('/onboarding') && 
+                           !pathname?.startsWith('/onboarding/bitacora-base');
   
   if (isAuthPage || isOnboardingPage) {
     return null;
   }
 
+  // Función para abrir/cerrar el menú de Move Crew
+  const handleMoveCrewMenu = () => {
+    // NO permitir cerrar el menú si el tutorial está activo
+    const tutorialActive = document.body.classList.contains('tutorial-active');
+    if (tutorialActive && snap.systemNavOpen) {
+      return; // No hacer nada si el tutorial está activo y el menú está abierto
+    }
+    if (tutorialActive && !snap.systemNavOpen) {
+      state.systemNavOpen = true; // Solo permitir abrir si el tutorial está activo
+      return;
+    }
+    state.systemNavOpen = !snap.systemNavOpen;
+  };
+
+  // En móvil el control está en la barra inferior; en desktop en /home está en el header
+  const showFloatingButton = !isMobile && !isHome;
+
   return (
     <div 
       ref={dropdownRef}
-      className="fixed bottom-6 right-6 z-[200]"
+      className={`fixed z-[200] ${isMobile ? 'inset-0 pointer-events-none' : `bottom-6 ${isHome ? 'right-6' : 'right-6'}`}`}
     >
-      {/* Botón flotante */}
-      <motion.button
-        ref={buttonRef}
-        onClick={() => {
-          // NO permitir cerrar el menú si el tutorial está activo
-          const tutorialActive = document.body.classList.contains('tutorial-active');
-          if (tutorialActive && isOpen) {
-            return; // No hacer nada si el tutorial está activo y el menú está abierto
-          }
-          if (tutorialActive && !isOpen) {
-            setIsOpen(true); // Solo permitir abrir si el tutorial está activo
-            return;
-          }
-          setIsOpen(!isOpen);
-        }}
-        className={`
-          relative flex items-center gap-3 px-4 py-3 
-          rounded-full transition-all cursor-pointer 
-          shadow-md hover:shadow-lg 
-          bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 
-          backdrop-blur-md border border-amber-300/40 
-          hover:from-amber-400/30 hover:via-orange-400/30 hover:to-rose-400/30
-          font-montserrat font-medium text-sm text-white
-          ${isOpen ? 'ring-2 ring-amber-300/50' : ''}
-          z-10
-        `}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        aria-label="Navegador de Camino"
-      >
-        {/* Fondo negro para páginas con fondo blanco - mismo tamaño y animación que el botón */}
-        {hasWhiteBackground && (
-          <>
-          <motion.div
-            whileHover={{ scale: 1.01 }}
-            className="absolute inset-0 bg-black/20 z-0 rounded-full border border-amber-300/40"
-          />
-          <motion.div
-            whileHover={{ scale: 1.01 }}
-            className="absolute inset-0 from-amber-500/90 via-orange-500/90 to-rose-500/90 
-          backdrop-blur-md
-           z-1 rounded-full"
-          />
-          
-          </>
-          
+      <div className={`${isHome && showFloatingButton ? 'flex items-end gap-3 relative' : 'relative'} ${isMobile ? 'pointer-events-none' : ''}`}>
+        {/* Botón flotante - solo en desktop; en móvil el control está en el header */}
+        {showFloatingButton && (
+        <div>
+          <motion.button
+          ref={buttonRef}
+          onClick={() => {
+            // NO permitir cerrar el menú si el tutorial está activo
+            const tutorialActive = document.body.classList.contains('tutorial-active');
+            if (tutorialActive && isOpen) {
+              return; // No hacer nada si el tutorial está activo y el menú está abierto
+            }
+            if (tutorialActive && !isOpen) {
+              setIsOpen(true); // Solo permitir abrir si el tutorial está activo
+              return;
+            }
+            setIsOpen(!isOpen);
+          }}
+          className={`
+            font-montserrat font-light text-xs tracking-[0.12em] uppercase 
+            rounded-full px-5 py-2 transition-all duration-200 cursor-pointer
+            ${hasWhiteBackground 
+              ? 'text-palette-stone border border-palette-stone/50 hover:border-palette-cream hover:text-palette-cream' 
+              : 'text-palette-stone border border-palette-stone/50 hover:border-palette-cream hover:text-palette-cream'}
+            ${isOpen ? 'ring-2 ring-palette-sage/30' : ''}
+          `}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          aria-label="Navegador de Camino"
+        >
+          {isOpen ? (
+            <span className="flex items-center gap-1.5">
+              <IoCloseOutline className="h-5 w-5" />
+              <span>Cerrar</span>
+            </span>
+          ) : (
+            <span>Move Crew</span>
+          )}
+        </motion.button>
+        </div>
         )}
-        <BookOpenIconSolid className="h-5 w-5 text-white relative z-10" />
-        <span className="hidden sm:inline relative z-10">Camino</span>
-        <ChevronDownIcon 
-          className={`h-4 w-4 text-white transition-transform duration-200 relative z-10 ${isOpen ? 'rotate-180' : ''}`} 
-        />
-      </motion.button>
 
-      {/* Dropdown */}
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            {/* Overlay para mobile */}
+        {/* Menú Move Crew: mismo panel full-screen que el menú general (mobile y desktop) */}
+        <AnimatePresence>
+          {isOpenEffective && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[199] sm:hidden"
-              onClick={closeMenu}
-            />
-            
-            {/* Contenido del dropdown */}
-            <motion.div
+              className="fixed inset-0 bg-black z-[200] font-montserrat"
               ref={menuRef}
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className={`
-                absolute bottom-full right-0 mb-3
-                w-[90vw] sm:w-80 max-w-sm
-                bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 
-                backdrop-blur-md rounded-2xl shadow-2xl
-                border border-amber-300/40
-                overflow-hidden
-                z-[201]
-              `}
             >
-              {/* Fondo negro para páginas con fondo blanco - mismo tamaño y animación que el menú */}
-              {hasWhiteBackground && (
-                <>
- 
-                <motion.div
-                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute inset-0 bg-black/70 z-1 rounded-2xl from-amber-500/90 via-orange-500/90 to-rose-500/90"
-                />
-                
-                </>
+              <div className="w-full h-full relative top-40 md:top-28 right-12 flex flex-col space-y-4 md:space-y-4 justify-start items-end mr-12 lg:mr-24 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const tutorialActive = document.body.classList.contains('tutorial-active');
+                    if (tutorialActive) return;
+                    closeMenu();
+                    setNavigationTarget('/home');
+                    setIsNavigating(true);
+                    router.push('/home');
+                  }}
+                  className="flex flex-col justify-end items-end -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] hover:text-[#fff] cursor-pointer text-left transition-colors"
+                >
+                  <h2 className="font-light lg:text-xl">Clases a Demanda</h2>
+                  <h1 className="text-4xl font-thin lg:text-6xl md:text-4xl">Biblioteca</h1>
+                </button>
 
-                
-              )}
-              
-              {/* Header */}
-              <div className="p-4 text-white border-b border-amber-300/20 relative z-10">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <BookOpenIconSolid className="h-5 w-5" />
-                    <h3 className="font-montserrat font-semibold text-base">
-                      Navegador
-                    </h3>
-                  </div>
-                  <button
-                    onClick={closeMenu}
-                    className="p-1 hover:bg-white/20 rounded-full transition-colors"
-                    aria-label="Cerrar"
-                  >
-                    <XMarkIcon className="h-5 w-5" />
-                  </button>
-                </div>
-                <p className="text-xs text-white/80 mt-1 font-montserrat font-light">
-                  Accede a clases, tu camino y la comunidad
-                </p>
-              </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const tutorialActive = document.body.classList.contains('tutorial-active');
+                    if (tutorialActive) return;
+                    handleGoToBitacora();
+                  }}
+                  className="flex flex-col justify-end items-end -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] hover:text-[#fff] cursor-pointer text-left transition-colors"
+                >
+                  <h2 className="font-light lg:text-xl">Programa de Movimiento</h2>
+                  <h1 className="text-4xl font-thin lg:text-6xl md:text-4xl">El Camino</h1>
+                </button>
 
-              {/* Contenido */}
-              <div className="max-h-[60vh] overflow-y-auto z-10 relative">
-                {/* Enlaces principales */}
-                <div className="py-2 border-b border-amber-300/20">
-                  {/* Biblioteca de Clases */}
-                  <button
-                    onClick={() => {
-                      // NO permitir navegar si el tutorial está activo
-                      const tutorialActive = document.body.classList.contains('tutorial-active');
-                      if (tutorialActive) {
-                        return; // No hacer nada si el tutorial está activo
-                      }
-                      closeMenu();
-                      router.push('/home');
-                    }}
-                    className={`
-                      w-full px-4 py-3 text-left
-                      hover:bg-white/10 transition-colors
-                      border-b border-amber-300/10 last:border-b-0
-                      font-montserrat
-                      ${pathname === '/home' ? 'bg-white/10 border-l-4 border-l-amber-400' : ''}
-                    `}
-                  >
-                    <div className="flex items-center gap-2">
-                      <AcademicCapIcon className="h-5 w-5 text-white/90 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium text-white text-sm">
-                          Biblioteca de Clases
-                        </p>
-                        <p className="text-xs text-white/70 font-light">
-                          Accede a todas las clases disponibles
-                        </p>
-                      </div>
-                    </div>
-                  </button>
+                <a
+                  href={TELEGRAM_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => {
+                    const tutorialActive = document.body.classList.contains('tutorial-active');
+                    if (tutorialActive) { e.preventDefault(); return; }
+                    closeMenu();
+                  }}
+                  className="flex flex-col justify-end items-end -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] hover:text-[#fff] cursor-pointer no-underline transition-colors"
+                >
+                  <h2 className="font-light lg:text-xl">Telegram</h2>
+                  <h1 className="text-4xl font-thin lg:text-6xl md:text-4xl">Comunidad</h1>
+                </a>
 
-                  {/* Bitácora Actual */}
-                  <button
-                    onClick={handleGoToBitacora}
-                    className={`
-                      w-full px-4 py-3 text-left
-                      hover:bg-white/10 transition-colors
-                      border-b border-amber-300/10 last:border-b-0
-                      font-montserrat
-                      ${pathname === '/bitacora' ? 'bg-white/10 border-l-4 border-l-amber-400' : ''}
-                    `}
-                  >
-                    <div className="flex items-center gap-2">
-                      <BookOpenIcon className="h-5 w-5 text-white/90 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium text-white text-sm">
-                          Tu Camino
-                        </p>
-                        <p className="text-xs text-white/70 font-light">
-                          Ver contenido del mes actual
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* Grupo de Telegram */}
-                  <a
-                    href={TELEGRAM_LINK}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => {
-                      // NO permitir navegar si el tutorial está activo
-                      const tutorialActive = document.body.classList.contains('tutorial-active');
-                      if (tutorialActive) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        return false;
-                      }
-                      closeMenu();
-                    }}
-                    className="w-full px-4 py-3 text-left hover:bg-white/10 transition-colors border-b border-amber-300/10 last:border-b-0 font-montserrat block"
-                  >
-                    <div className="flex items-center gap-2">
-                      <PaperAirplaneIcon className="h-5 w-5 text-white/90 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium text-white text-sm">
-                          Grupo de Telegram
-                        </p>
-                        <p className="text-xs text-white/70 font-light">
-                          Únete a la comunidad
-                        </p>
-                      </div>
-                    </div>
-                  </a>
-                </div>
-
-                {/* Lista de bitácoras disponibles */}
-                {loading ? (
-                  <div className="p-6 text-center">
-                    <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-white/60" />
-                    <p className="text-sm text-white/80 mt-2 font-montserrat font-light">
-                      Cargando tu camino...
-                    </p>
-                  </div>
-                ) : logbooks.length === 0 ? (
-                  <div className="p-6 text-center">
-                    <CalendarIcon className="h-12 w-12 text-white/40 mx-auto mb-2" />
-                    <p className="text-sm text-white/70 font-montserrat font-light">
-                      No hay caminos disponibles
-                    </p>
-                  </div>
-                ) : (
-                  <div className="py-2">
-                    <div className="px-4 py-2 text-xs font-semibold text-white/60 uppercase tracking-wide font-montserrat">
-                      Caminos Disponibles
-                    </div>
-                    {logbooks.map((logbook) => {
-                      const isCurrent = currentLogbook?._id === logbook._id;
-                      return (
-                        <button
-                          key={logbook._id}
-                          onClick={() => {
-                            // NO permitir navegar si el tutorial está activo
-                            const tutorialActive = document.body.classList.contains('tutorial-active');
-                            if (tutorialActive) {
-                              return; // No hacer nada si el tutorial está activo
-                            }
-                            handleLogbookSelect(logbook);
-                          }}
-                          className={`
-                            w-full px-4 py-3 text-left
-                            hover:bg-white/10 transition-colors
-                            border-b border-amber-300/10 last:border-b-0
-                            font-montserrat
-                            ${isCurrent ? 'bg-white/10 border-l-4 border-l-amber-400' : ''}
-                          `}
-                        >
-                          <div className="flex items-start gap-3">
-                            <CalendarIcon className="h-5 w-5 text-white/90 mt-0.5 flex-shrink-0" />
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-white text-sm">
-                                {logbook.isBaseBitacora ? logbook.title : `${logbook.monthName} ${logbook.year}`}
-                              </p>
-                              {logbook.title && !logbook.isBaseBitacora && (
-                                <p className="text-xs text-white/70 font-light mt-0.5 truncate">
-                                  {logbook.title}
-                                </p>
-                              )}
-                            </div>
-                            {isCurrent && (
-                              <div className="flex-shrink-0">
-                                <div className="w-2 h-2 bg-amber-400 rounded-full" />
-                              </div>
-                            )}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
               </div>
             </motion.div>
-          </>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Overlay de loading cuando se está navegando */}
+      <AnimatePresence>
+        {isNavigating && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[300] flex items-center justify-center font-montserrat bg-palette-ink/60 backdrop-blur-sm"
+          >
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-8 h-8 border-2 border-palette-stone/30 border-t-palette-sage rounded-full animate-spin" />
+              <p className="text-palette-cream text-sm font-light">Redirigiendo...</p>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

@@ -23,9 +23,11 @@ interface PromocionFooterProps {
   onCtaClick: () => void;
   variant?: 'default' | 'movecrew';
   plans?: Plan[];
+  /** En móvil Move Crew: botones (Empezar Camino, Menú) para incluir en la barra */
+  rightActions?: React.ReactNode;
 }
 
-const PromocionFooter: React.FC<PromocionFooterProps> = ({ promocion, onCtaClick, variant = 'default', plans = [] }) => {
+const PromocionFooter: React.FC<PromocionFooterProps> = ({ promocion, onCtaClick, variant = 'default', plans = [], rightActions }) => {
   const isMoveCrew = variant === 'movecrew';
   const textColor = isMoveCrew ? 'text-amber-700' : 'text-[#ae9359]';
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -404,12 +406,12 @@ const PromocionFooter: React.FC<PromocionFooterProps> = ({ promocion, onCtaClick
   return (
     <div 
       data-promocion-footer
-      className="fixed bottom-0 md:bottom-0 left-0 right-0 z-50 bg-gradient-to-r  from-amber-500/30 via-orange-500/30 to-rose-500/30 backdrop-blur-md text-white shadow-2xl border-t border-amber-300/40 transition-opacity duration-300"
+      className={`fixed bottom-0 md:bottom-0 left-0 right-0 bg-gradient-to-r from-amber-500/30 via-orange-500/30 to-rose-500/30 backdrop-blur-md text-white shadow-2xl border-t border-amber-300/40 transition-opacity duration-300 ${isMoveCrew && rightActions ? 'z-[210]' : 'z-50'}`}
       style={{ opacity: scrollOpacity }}
     >
       <div className="container mx-auto px-4 md:px-12 py-2 md:py-2">
         {/* Layout para web: nombre/descripción a la izquierda, contador centrado, botón a la derecha */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4">
+        <div className={`flex items-center justify-between gap-2 md:gap-4 ${isMoveCrew && rightActions ? 'flex-row' : 'flex-col md:flex-row'}`}>
           {/* Nombre y descripción a la izquierda - solo en web */}
           <div className="hidden md:flex flex-col items-start justify-center flex-shrink-0">
             <h3 className="text-base lg:text-lg text-black/90 font-bold">
@@ -420,15 +422,15 @@ const PromocionFooter: React.FC<PromocionFooterProps> = ({ promocion, onCtaClick
             )}
           </div>
           
-          {/* Nombre centrado para mobile - sin descripción */}
-          <div className="flex md:hidden items-center justify-center">
-            <h3 className="text-xs text-black/90 font-bold">
+          {/* Móvil: nombre + contador (izq/centro); con rightActions en Move Crew van en bloque flex-1 */}
+          <div className={`flex flex-col md:hidden items-center gap-0.5 flex-1 min-w-0 ${isMoveCrew && rightActions ? 'items-start' : ''}`}>
+            <h3 className="text-xs text-black/90 font-bold truncate max-w-full">
               {promocion.porcentajeDescuento}% OFF - {promocion.nombre}
             </h3>
           </div>
         
-          {/* Contador centrado */}
-          <div className="flex items-center gap-1 md:gap-4 justify-center flex-1">
+          {/* Contador centrado (desktop) o junto al nombre (móvil con rightActions) */}
+          <div className={`flex items-center gap-1 md:gap-4 justify-center flex-1 min-w-0 ${isMoveCrew && rightActions ? 'md:flex-1 justify-start md:justify-center' : ''}`}>
             <div className="flex items-center gap-0.5 md:gap-1 lg:gap-2">
               <div className="bg-black/20 rounded-lg px-1.5 md:px-2 lg:px-3 py-0.5 md:py-1 text-center min-w-[40px] md:min-w-[50px] lg:min-w-[60px]">
                 <div className="text-[10px] md:text-xs lg:text-sm font-light">Días</div>
@@ -463,16 +465,24 @@ const PromocionFooter: React.FC<PromocionFooterProps> = ({ promocion, onCtaClick
             {arrowDirection === 'up' && <ArrowUpIcon className="w-4 h-4 md:w-5 md:h-5" />}
           </button>
           
-          {/* Flecha sutil para mobile - siempre visible, cambia de dirección */}
-          <button
-            onClick={handleAprovecharOferta}
-            className="md:hidden bg-white/20 hover:bg-white/30 backdrop-blur-sm p-2 rounded-full transition-all duration-300 flex items-center justify-center absolute right-10 top-1/2 -translate-y-1/2"
-            aria-label="Aprovechar oferta"
-          >
-            {arrowDirection === 'down' && <ArrowDownIcon className="w-5 h-5 text-white transition-transform duration-300" />}
-            {arrowDirection === 'right' && <ArrowRightIcon className="w-5 h-5 text-white transition-transform duration-300" />}
-            {arrowDirection === 'up' && <ArrowUpIcon className="w-5 h-5 text-white transition-transform duration-300" />}
-          </button>
+          {/* En Move Crew móvil: botones Empezar Camino + Menú integrados en la barra */}
+          {isMoveCrew && rightActions && (
+            <div className="md:hidden flex items-center gap-2 shrink-0">
+              {rightActions}
+            </div>
+          )}
+          {/* Flecha sutil para mobile (solo si no hay rightActions) - siempre visible, cambia de dirección */}
+          {!(isMoveCrew && rightActions) && (
+            <button
+              onClick={handleAprovecharOferta}
+              className="md:hidden bg-white/20 hover:bg-white/30 backdrop-blur-sm p-2 rounded-full transition-all duration-300 flex items-center justify-center absolute right-10 top-1/2 -translate-y-1/2"
+              aria-label="Aprovechar oferta"
+            >
+              {arrowDirection === 'down' && <ArrowDownIcon className="w-5 h-5 text-white transition-transform duration-300" />}
+              {arrowDirection === 'right' && <ArrowRightIcon className="w-5 h-5 text-white transition-transform duration-300" />}
+              {arrowDirection === 'up' && <ArrowUpIcon className="w-5 h-5 text-white transition-transform duration-300" />}
+            </button>
+          )}
         </div>
       </div>
     </div>

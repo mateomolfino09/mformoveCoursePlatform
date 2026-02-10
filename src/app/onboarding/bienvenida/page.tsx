@@ -1,13 +1,14 @@
 'use client';
 
+import type { CSSProperties, MouseEvent } from 'react';
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { CheckCircleIcon, LockClosedIcon, SparklesIcon, PlayIcon } from '@heroicons/react/24/solid';
-import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircleIcon, LockClosedIcon, PlayIcon, PauseIcon } from '@heroicons/react/24/solid';
 import Player from '@vimeo/player';
-import imageLoader from '../../../../imageLoader';
-import CoherenceCelebrationModal from '../../../components/PageComponent/Bitacora/CoherenceCelebrationModal';
+import MainSideBar from '../../../components/MainSidebar/MainSideBar';
+import ShimmerBox from '../../../components/ShimmerBox';
+import CoherenceCelebrationModal from '../../../components/PageComponent/WeeklyPath/CoherenceCelebrationModal';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function BienvenidaPage() {
@@ -20,6 +21,7 @@ export default function BienvenidaPage() {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
   const [showCoherenceModal, setShowCoherenceModal] = useState(false);
   const [coherenceData, setCoherenceData] = useState<{
     ucsOtorgadas: number;
@@ -29,33 +31,78 @@ export default function BienvenidaPage() {
   const videoRef = useRef<HTMLDivElement>(null);
   const vimeoPlayerRef = useRef<Player | null>(null);
   const textContainerRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const VIMEO_VIDEO_ID = 1106601666; // ID extraído de la URL de Vimeo
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"]
-  });
-
-  // Efectos de parallax
-  const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const VIMEO_VIDEO_ID = 1156890575; // ID extraído de la URL de Vimeo
+  const [privateToken, setPrivateToken] = useState<string | null>(null);
+  const [tokenLoaded, setTokenLoaded] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  // Inicializar reproductor de Vimeo y verificar progreso (95%)
+  // Scroll para efecto tipo Index: video se achica y redondea
+  // Tiempo más corto en mobile (cambio más pequeño): 80px mobile, 120px desktop
   useEffect(() => {
-    // Esperar a que el componente esté visible antes de inicializar
-    if (!isVisible || !videoRef.current) return;
+    const handleScroll = () => {
+      const maxScrollPx = typeof window !== 'undefined' && window.innerWidth <= 768 ? 80 : 120;
+      const progress = Math.min(1, window.scrollY / maxScrollPx);
+      setScrollProgress(progress);
+    };
+    const handleResize = () => setIsMobile(typeof window !== 'undefined' && window.innerWidth <= 768);
+    handleResize();
+    handleScroll();
+    let ticking = false;
+    const throttled = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => { handleScroll(); ticking = false; });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', throttled, { passive: true });
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('scroll', throttled);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  // Obtener token privado para videos UNLISTED
+  useEffect(() => {
+    const fetchPrivateToken = async () => {
+      try {
+        const res = await fetch('/api/vimeo/getPrivateToken', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ videoId: VIMEO_VIDEO_ID.toString() }),
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          setPrivateToken(data.privateToken);
+        }
+      } catch (error) {
+        console.error('Error obteniendo token privado:', error);
+      } finally {
+        setTokenLoaded(true);
+      }
+    };
+
+    fetchPrivateToken();
+  }, []);
+
+  // Inicializar reproductor de Vimeo y verificar progreso (50%)
+  useEffect(() => {
+    // Esperar a que el componente esté visible y el token esté cargado antes de inicializar
+    if (!isVisible || !videoRef.current || !tokenLoaded) return;
 
     // Pequeño delay para asegurar que el DOM esté completamente renderizado
     const timer = setTimeout(() => {
       if (!videoRef.current) return;
 
       try {
-        const player = new Player(videoRef.current, {
-          id: VIMEO_VIDEO_ID,
+        const playerOptions: any = {
           autoplay: false,
           controls: false, // Sin controles nativos, usaremos botón personalizado
           responsive: true,
@@ -66,7 +113,24 @@ export default function BienvenidaPage() {
           background: false,
           keyboard: false,
           pip: false,
-        });
+        };
+
+        // Para videos UNLISTED, usar la URL completa con el hash en lugar del ID
+        if (privateToken) {
+          // Usar URL completa con hash para videos UNLISTED, sin subtítulos
+          // texttrack=false desactiva los subtítulos por defecto
+          playerOptions.url = `https://player.vimeo.com/video/${VIMEO_VIDEO_ID}?h=${privateToken}&texttrack=false&title=0&byline=0&portrait=0`;
+        } else {
+          // Para videos públicos, usar URL con parámetros para desactivar subtítulos
+          // texttrack=false desactiva los subtítulos por defecto
+          playerOptions.url = `https://player.vimeo.com/video/${VIMEO_VIDEO_ID}?texttrack=false&title=0&byline=0&portrait=0`;
+        }
+        
+        // También intentar desactivar subtítulos usando la opción del SDK (si está disponible)
+        // Nota: El SDK de Vimeo no tiene una opción directa en el constructor, 
+        // pero lo haremos después con disableTextTrack()
+
+        const player = new Player(videoRef.current, playerOptions);
 
         vimeoPlayerRef.current = player;
 
@@ -84,19 +148,35 @@ export default function BienvenidaPage() {
         // Evento de error
         const handleError = (error: any) => {
           console.error('Error en reproductor Vimeo:', error);
+          setIsVideoLoading(false);
         };
 
         // Evento cuando el video está listo
-        const handleReady = () => {
+        const handleReady = async () => {
           // Reproductor Vimeo listo
+          setIsVideoLoading(false);
+          
+          // Desactivar subtítulos cuando el reproductor esté listo
+          try {
+            await player.disableTextTrack();
+          } catch (error) {
+            console.warn('No se pudieron desactivar los subtítulos:', error);
+          }
         };
 
         // Eventos de play/pause para ocultar controles cuando está reproduciendo
-        const handlePlay = () => {
+        const handlePlay = async () => {
           setIsPlaying(true);
           // Agregar clase para ocultar controles cuando está reproduciendo
           if (videoRef.current?.parentElement) {
             videoRef.current.parentElement.classList.add('playing');
+          }
+          
+          // Asegurarse de que los subtítulos estén desactivados cuando se reproduce
+          try {
+            await player.disableTextTrack();
+          } catch (error) {
+            // Ignorar errores silenciosamente
           }
         };
 
@@ -108,24 +188,47 @@ export default function BienvenidaPage() {
           }
         };
 
+        // Función para desactivar subtítulos (reutilizable)
+        const disableSubtitles = async () => {
+          try {
+            await player.disableTextTrack();
+          } catch (error) {
+            // Ignorar errores silenciosamente
+          }
+        };
+
         player.on('timeupdate', handleTimeUpdate);
         player.on('ended', handleEnded);
         player.on('error', handleError);
-        player.on('ready', handleReady);
+        const handleLoaded = () => {
+          handleReady();
+          disableSubtitles();
+        };
+        player.on('loaded', handleLoaded);
         player.on('play', handlePlay);
         player.on('pause', handlePause);
+        
+        // También desactivar subtítulos después de un pequeño delay para asegurarse
+        setTimeout(disableSubtitles, 500);
+        setTimeout(disableSubtitles, 1000);
+        setTimeout(disableSubtitles, 2000);
+
+        // Timeout de seguridad: si "loaded" no dispara en 12s, quitar skeleton
+        const fallbackTimer = setTimeout(() => setIsVideoLoading(false), 12000);
 
         return () => {
+          clearTimeout(fallbackTimer);
           player.off('timeupdate', handleTimeUpdate);
           player.off('ended', handleEnded);
           player.off('error', handleError);
-          player.off('ready', handleReady);
+          player.off('loaded', handleLoaded);
           player.off('play', handlePlay);
           player.off('pause', handlePause);
           player.destroy().catch((err) => console.error('Error al destruir reproductor:', err));
         };
       } catch (error) {
         console.error('Error inicializando reproductor Vimeo:', error);
+        setIsVideoLoading(false);
       }
     }, 100);
 
@@ -135,7 +238,7 @@ export default function BienvenidaPage() {
         vimeoPlayerRef.current.destroy().catch((err) => console.error('Error al destruir reproductor:', err));
       }
     };
-  }, [isVisible]);
+  }, [isVisible, privateToken, tokenLoaded]);
 
   // Verificar scroll del texto
   useEffect(() => {
@@ -224,22 +327,29 @@ export default function BienvenidaPage() {
     };
   };
 
-  // Habilitar botón cuando ambas condiciones se cumplan
+  // Habilitar botón cuando el usuario haya llegado al final del texto
   useEffect(() => {
-    if (videoProgress >= 95 && textScrolled) {
-      setButtonEnabled(true);
-    } else {
-      setButtonEnabled(false);
-    }
-  }, [videoProgress, textScrolled]);
+    setButtonEnabled(!!textScrolled);
+  }, [textScrolled]);
 
-  const handlePlayClick = async () => {
+  const handlePlayClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const player = vimeoPlayerRef.current;
+    if (!player) return;
+    // Llamar play() de forma síncrona para conservar el user gesture (requerido por navegadores)
+    player.play()
+      .then(() => setIsPlaying(true))
+      .catch((err) => console.error('Error al reproducir video:', err));
+  };
+
+  const handlePauseClick = async () => {
     if (vimeoPlayerRef.current) {
       try {
-        await vimeoPlayerRef.current.play();
-        setIsPlaying(true);
+        await vimeoPlayerRef.current.pause();
+        setIsPlaying(false);
       } catch (error) {
-        console.error('Error al reproducir video:', error);
+        console.error('Error al pausar video:', error);
       }
     }
   };
@@ -257,9 +367,7 @@ export default function BienvenidaPage() {
 
       if (response.ok) {
         const data = await response.json();
-        
-        console.log('📋 [ACCEPT CONTRACT] Respuesta del servidor:', data);
-        
+                
         setLoading(false);
         
         // Mostrar el modal si:
@@ -271,24 +379,19 @@ export default function BienvenidaPage() {
                                   data.totalUnits !== null;
         
         if (debeMostrarModal) {
-          console.log('✅ [ACCEPT CONTRACT] Mostrando modal de U.C. (primera vez o U.C. otorgada)');
           setCoherenceData({
             ucsOtorgadas: data.ucOtorgada ? 1 : 0, // Mostrar 0 si no se otorgó nueva U.C.
             totalUnits: data.totalUnits,
             currentStreak: 0
           });
           setShowCoherenceModal(true);
-          console.log('✅ [ACCEPT CONTRACT] showCoherenceModal establecido a true');
           // NO refrescar el usuario aquí para evitar que OnboardingChecker redirija
           // El usuario se refrescará cuando se cierre el modal en handleCloseCoherenceModal
         } else {
-          console.log('⚠️ [ACCEPT CONTRACT] No es primera vez y no se otorgó U.C. Redirigiendo directamente.');
-          // Si no es primera vez y no se otorgó U.C., refrescar usuario y redirigir directamente
+          // Si no es primera vez y no se otorgó U.C., mostrar overlay y redirigir
+          setIsRedirecting(true);
           await auth.fetchUser();
-          setIsVisible(false);
-          setTimeout(() => {
-            router.push('/home');
-          }, 500);
+          router.push('/library');
         }
       } else {
         const error = await response.json();
@@ -313,10 +416,7 @@ export default function BienvenidaPage() {
     await auth.fetchUser();
     
     // Después de cerrar el modal y refrescar el usuario, redirigir al dashboard
-    setIsVisible(false);
-    setTimeout(() => {
-      router.push('/home');
-    }, 500);
+    router.push('/library');
   };
 
 
@@ -328,18 +428,16 @@ export default function BienvenidaPage() {
 
   // Generar datos fijos para todas las figuras geométricas (una sola vez)
   const geometricShapes = useMemo(() => {
-    // Colores del botón MoveCrewHero: amber, orange, rose
+    // Paleta: teal, sage, stone
     const baseColors = [
-      { r: 245, g: 158, b: 11 },   // amber-500 #F59E0B
-      { r: 251, g: 191, b: 36 },   // amber-400 #FBBF24
-      { r: 249, g: 115, b: 22 },   // orange-500 #F97316
-      { r: 251, g: 146, b: 60 },   // orange-400 #FB923C
-      { r: 244, g: 63, b: 94 },    // rose-500 #F43F5E
-      { r: 251, g: 113, b: 133 },  // rose-400 #FB7185
+      { r: 7, g: 70, b: 71 },      // palette-teal #074647
+      { r: 0, g: 27, b: 28 },     // palette-deep-teal #001b1c
+      { r: 172, g: 174, b: 137 }, // palette-sage #acae89
+      { r: 120, g: 120, b: 103 }, // palette-stone #787867
     ];
 
-    // Círculos - cantidad optimizada: 18 figuras
-    const circles = Array.from({ length: 18 }, (_, i) => {
+    // Círculos - cantidad reducida: 10 figuras
+    const circles = Array.from({ length: 10 }, (_, i) => {
       const seed = i * 7.3;
       const size = 12 + seededRandom(seed) * 18; // Más pequeños: 12-30px
       const initialX = seededRandom(seed + 1) * 100;
@@ -365,8 +463,8 @@ export default function BienvenidaPage() {
       };
     });
 
-    // Triángulos - cantidad optimizada: 24 figuras
-    const triangles = Array.from({ length: 24 }, (_, i) => {
+    // Triángulos - cantidad reducida: 12 figuras
+    const triangles = Array.from({ length: 12 }, (_, i) => {
       const seed = i * 11.7;
       const size = 10 + seededRandom(seed) * 20; // Más pequeños: 10-30px
       const initialX = seededRandom(seed + 1) * 100;
@@ -394,8 +492,8 @@ export default function BienvenidaPage() {
       };
     });
 
-    // Hexágonos - cantidad optimizada: 15 figuras
-    const hexagons = Array.from({ length: 15 }, (_, i) => {
+    // Hexágonos - cantidad reducida: 8 figuras
+    const hexagons = Array.from({ length: 8 }, (_, i) => {
       const seed = i * 13.9;
       const size = 14 + seededRandom(seed) * 22; // Más pequeños: 14-36px
       const initialX = seededRandom(seed + 1) * 100;
@@ -424,15 +522,13 @@ export default function BienvenidaPage() {
     return { circles, triangles, hexagons };
   }, []);
 
-  // Formas orgánicas flotantes - más pequeñas, colores amber/orange/rose
+  // Formas orgánicas flotantes - paleta teal/sage/stone
   const organicShapes = useMemo(() => {
     const colors = [
-      { r: 245, g: 158, b: 11 },   // amber-500
-      { r: 251, g: 191, b: 36 },   // amber-400
-      { r: 249, g: 115, b: 22 },   // orange-500
-      { r: 251, g: 146, b: 60 },   // orange-400
-      { r: 244, g: 63, b: 94 },    // rose-500
-      { r: 251, g: 113, b: 133 },  // rose-400
+      { r: 7, g: 70, b: 71 },      // palette-teal
+      { r: 0, g: 27, b: 28 },      // palette-deep-teal
+      { r: 172, g: 174, b: 137 }, // palette-sage
+      { r: 120, g: 120, b: 103 }, // palette-stone
     ];
     
     return Array.from({ length: 10 }, (_, i) => { // Optimizado: 10 formas
@@ -476,9 +572,9 @@ export default function BienvenidaPage() {
     });
   }, []);
 
-  // Partículas de energía - más pequeñas, colores amber/orange/rose
+  // Partículas de energía - paleta
   const particles = useMemo(() => {
-    const colors = ['#F59E0B', '#FBBF24', '#F97316', '#FB923C', '#F43F5E', '#FB7185']; // amber, orange, rose
+    const colors = ['#074647', '#001b1c', '#acae89', '#787867']; // palette teal, deep-teal, sage, stone
     
     return Array.from({ length: 35 }, (_, i) => { // Optimizado: 35 partículas
       const seed = i * 17.9;
@@ -530,6 +626,67 @@ export default function BienvenidaPage() {
     });
   }, []);
 
+  // Estilos del video: mismo criterio que Index (wrapper en px, scale en iframe, sin lógica especial móvil)
+  const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+  const getVideoStyles = () => {
+    if (typeof window === 'undefined') {
+      return { wrapperStyles: {} as CSSProperties, iframeStyles: {} as CSSProperties };
+    }
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const endWidthPx = viewportWidth * 0.9;
+    const endHeightPx = viewportHeight * 0.8;
+    // Mobile y Desktop: ambos empiezan ya en el bloque definido (achicado) y se achican un poco al hacer scroll
+    let borderRadius: number, scale: number, translateYPercent: number, wrapperWidthPx: number, wrapperHeightPx: number;
+    if (isMobile) {
+      borderRadius = lerp(24, 32, scrollProgress);
+      scale = lerp(3.6, 3.5, scrollProgress);
+      translateYPercent = lerp(80, 75, scrollProgress);
+      wrapperWidthPx = lerp(viewportWidth * 0.95, endWidthPx, scrollProgress);
+      wrapperHeightPx = lerp(viewportHeight * 0.85, endHeightPx, scrollProgress);
+    } else {
+      // Desktop: empieza ya en el rectángulo del medio (tamaño reducido)
+      borderRadius = lerp(24, 32, scrollProgress);
+      scale = lerp(1.1, 1, scrollProgress);
+      translateYPercent = lerp(-50, -50, scrollProgress); // Centrado desde el inicio
+      wrapperWidthPx = lerp(endWidthPx * 1.05, endWidthPx, scrollProgress); // Empieza un poco más grande y se achica
+      wrapperHeightPx = lerp(endHeightPx * 1.05, endHeightPx, scrollProgress);
+    }
+    // En desktop, mover el contenedor un poco más abajo para separarlo del header
+    const topOffset = isMobile ? '50%' : '52%';
+    const wrapperStyles: CSSProperties = {
+      position: 'absolute',
+      top: topOffset,
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: `${wrapperWidthPx}px`,
+      height: `${wrapperHeightPx}px`,
+      borderRadius: `${borderRadius}px`,
+      overflow: 'hidden',
+      zIndex: 2,
+      padding: 0,
+      margin: 0,
+      boxSizing: 'border-box',
+    };
+    // Mobile: centrado y scale ~1.75→1.6. Desktop: translateY -200%→-50%, scale 4→1.4
+    const iframeStyles: CSSProperties = {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      width: '100%',
+      height: '100%',
+      transform: `translate(-50%, ${translateYPercent}%) scale(${scale})`,
+      transformOrigin: 'center center',
+      display: 'block',
+      border: 'none',
+      margin: 0,
+      padding: 0,
+      boxSizing: 'border-box',
+    };
+    return { wrapperStyles, iframeStyles };
+  };
+  const { wrapperStyles, iframeStyles } = getVideoStyles();
+
   // Animaciones escalonadas
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -567,19 +724,133 @@ export default function BienvenidaPage() {
   };
 
   return (
-    <AnimatePresence mode="wait">
-      {isVisible && (
-        <motion.div
-          ref={containerRef}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.5 } }}
-          className="min-h-screen bg-gradient-to-br from-[#f5f8ff] via-[#e4edff] to-[#4b6fa5] text-white font-montserrat relative overflow-hidden"
-        >
-          {/* Background Effects - Movimiento Orgánico */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {/* Base gradient con colores Move Crew */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#f6f9ff] via-[#e7f0ff] to-[#4d71a8]" />
+    <MainSideBar where="onboarding" forceStandardHeader onMenuClick={() => setSidebarOpen((prev) => !prev)} sidebarOpen={sidebarOpen}>
+      <AnimatePresence mode="wait">
+        {isVisible && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.5 } }}
+            className="min-h-screen bg-palette-cream text-palette-ink font-montserrat relative"
+          >
+            {/* Sección scroll: efecto tipo Index - video sticky que se achica al bajar */}
+            {/* Altura reducida para tiempo de scroll más corto: 150px en mobile, 250px en desktop */}
+            <div className="flex flex-col relative" style={{ minHeight: isMobile ? 'calc(100vh + 150px)' : 'calc(100vh + 250px)' }}>
+              <div className="sticky top-0 left-0 h-[100vh] w-full overflow-hidden bg-palette-cream" style={{ marginTop: 0, paddingTop: 0 }}>
+                {/* Formas decorativas detrás del video - extendidas desde el contenido */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                  {/* Base con paleta crema */}
+                  <div className="absolute inset-0 bg-palette-cream" />
+                  {/* Triángulos decorativos detrás del video */}
+                  {geometricShapes.triangles.slice(0, 8).map((shape, i) => (
+                    <motion.div
+                      key={`video-triangle-${i}`}
+                      className="absolute"
+                      style={{
+                        width: `${shape.size * 0.7}px`,
+                        height: `${shape.size * 0.7}px`,
+                        left: `${shape.initialX}%`,
+                        top: `${shape.initialY}%`,
+                        backgroundColor: shape.color,
+                        clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+                        opacity: 0.3,
+                        zIndex: 0,
+                      }}
+                      animate={{
+                        x: ['0vw', `${shape.moveX * 0.5}vw`, `${shape.moveX * 0.5}vw`, '0vw'],
+                        y: ['0vh', `${shape.moveY * 0.5}vh`, `${shape.moveY * 0.5}vh`, '0vh'],
+                        rotate: [shape.rotation, shape.rotation + 360],
+                        scale: [1, 1.1, 0.9, 1],
+                        opacity: [0.2, 0.4, 0.3, 0.2],
+                      }}
+                      transition={{
+                        duration: shape.duration * 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: shape.delay
+                      }}
+                    />
+                  ))}
+                </div>
+                {/* Texto arriba del video: tamaños ajustados para mobile */}
+                <div
+                  className="fixed top-1/3 left-1/2 w-full md:px-32 md:pt-24 -translate-x-1/2 -translate-y-1/2 z-[100] text-white text-start pointer-events-none flex mt-8 md:mt-12 flex-col items-start gap-2 md:gap-5 px-12"
+                  style={{
+                    opacity: scrollProgress <= 0.4 ? 1 - scrollProgress / 0.4 : 0,
+                    transition: 'opacity 0.2s ease-out',
+                  }}
+                >
+         
+                  <h1
+                    className="text-[3rem] md:!text-[6rem] font-semibold tracking-tight text-left md:tracking-wide leading-[0.95]"
+                    style={{ textShadow: '0 2px 12px rgba(0, 0, 0, 0.2), 0 1px 6px rgba(0, 0, 0, 0.3)' }}
+                  >
+                    Bienvenido. 
+                 
+                  </h1>
+                  <h2 className="text-[3rem] relative bottom-2 left-1 md:left-2 md:bottom-4 md:!text-[4rem] font-semibold tracking-tight text-left md:tracking-wide leading-[0.95]">La Move Crew te espera.</h2> 
+                </div>
+                <div className={`vimeo-player-container ${isPlaying ? 'playing' : ''}`} style={wrapperStyles}>
+                  {/* Skeleton loading dentro del contenedor del video para respetar bordes */}
+                  {isVideoLoading && (
+                    <div className="absolute inset-0 z-[5] rounded-[inherit] overflow-hidden" aria-hidden>
+                      <div className="absolute inset-0 bg-palette-deep-teal/90" />
+                      <ShimmerBox className="absolute inset-0 w-full h-full" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <p className="font-montserrat text-sm uppercase tracking-[0.2em] text-palette-cream/80">Cargando video...</p>
+                      </div>
+                    </div>
+                  )}
+                  <div
+                    ref={videoRef}
+                    className="absolute w-full h-full p-0 m-0 z-0"
+                    style={iframeStyles}
+                  />
+                  {/* Capa oscura 50% para mejorar visibilidad del título; opacidad 0 al terminar el scroll */}
+                  <div
+                    className="absolute inset-0 z-[2] pointer-events-none bg-black/50 transition-opacity duration-300"
+                    style={{ opacity: 1 - scrollProgress }}
+                    aria-hidden
+                  />
+                  {/* Botones play/pause dentro del contenedor, z-[50] para quedar encima del overlay y del iframe */}
+                  {!isVideoLoading && !isPlaying && (
+                    <motion.button
+                      type="button"
+                      onClick={handlePlayClick}
+                      className="absolute bottom-4 left-4 z-[50] flex items-center justify-center bg-palette-cream/90 hover:bg-palette-cream hover:border-palette-teal/40 backdrop-blur-sm transition-colors rounded-full p-3 border border-palette-stone/20 shadow-lg cursor-pointer isolate"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <PlayIcon className="h-5 w-5 text-palette-teal" />
+                    </motion.button>
+                  )}
+                  {!isVideoLoading && isPlaying && (
+                    <motion.button
+                      type="button"
+                      onClick={handlePauseClick}
+                      className="absolute bottom-4 left-4 z-[50] flex items-center justify-center bg-palette-cream/90 hover:bg-palette-cream hover:border-palette-teal/40 backdrop-blur-sm transition-colors rounded-full p-3 border border-palette-stone/20 shadow-lg cursor-pointer isolate"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      whileHover={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <PauseIcon className="h-5 w-5 text-palette-teal" />
+                    </motion.button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Contenido debajo del video: fondo decorativo + contrato + botón */}
+            <div className="relative min-h-screen bg-palette-cream">
+              {/* Background Effects - Movimiento Orgánico */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                {/* Base con paleta crema */}
+                <div className="absolute inset-0 bg-palette-cream" />
             
             {/* Ondas de movimiento - Capa 1 */}
             <motion.svg
@@ -592,14 +863,14 @@ export default function BienvenidaPage() {
             >
               <defs>
                 <linearGradient id="waveGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.15" />
-                  <stop offset="50%" stopColor="#F97316" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#F43F5E" stopOpacity="0.15" />
+                  <stop offset="0%" stopColor="#074647" stopOpacity="0.12" />
+                  <stop offset="50%" stopColor="#acae89" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="#787867" stopOpacity="0.12" />
                 </linearGradient>
                 <linearGradient id="waveGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.2" />
-                  <stop offset="50%" stopColor="#FB923C" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="#FB7185" stopOpacity="0.15" />
+                  <stop offset="0%" stopColor="#acae89" stopOpacity="0.15" />
+                  <stop offset="50%" stopColor="#074647" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#001b1c" stopOpacity="0.1" />
                 </linearGradient>
               </defs>
               
@@ -670,9 +941,9 @@ export default function BienvenidaPage() {
                   <svg viewBox="0 0 200 200" className="w-full h-full">
                     <defs>
                       <linearGradient id={`spiralGradient${i}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.3" />
-                        <stop offset="50%" stopColor="#F97316" stopOpacity="0.2" />
-                        <stop offset="100%" stopColor="#F43F5E" stopOpacity="0.1" />
+                        <stop offset="0%" stopColor="#074647" stopOpacity="0.2" />
+                        <stop offset="50%" stopColor="#acae89" stopOpacity="0.15" />
+                        <stop offset="100%" stopColor="#787867" stopOpacity="0.1" />
                       </linearGradient>
                     </defs>
                     <motion.path
@@ -735,7 +1006,7 @@ export default function BienvenidaPage() {
                   height: '2px',
                   left: '50%',
                   top: '50%',
-                  background: `linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.4), transparent)`,
+                  background: `linear-gradient(90deg, transparent, rgba(7, 70, 71, 0.35), transparent)`,
                   transform: `rotate(${shape.angle}deg) translateX(-50%)`,
                   transformOrigin: 'left center',
                 }}
@@ -782,13 +1053,13 @@ export default function BienvenidaPage() {
               />
             ))}
 
-            {/* Grid pattern sutil con colores amber/orange/rose */}
+            {/* Grid pattern sutil con paleta */}
             <div 
-              className="absolute inset-0 opacity-[0.02]"
+              className="absolute inset-0 opacity-[0.03]"
               style={{
                 backgroundImage: `
-                  linear-gradient(rgba(245, 158, 11, 0.3) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(249, 115, 22, 0.3) 1px, transparent 1px)
+                  linear-gradient(rgba(7, 70, 71, 0.4) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(120, 120, 103, 0.3) 1px, transparent 1px)
                 `,
                 backgroundSize: '60px 60px'
               }}
@@ -816,7 +1087,7 @@ export default function BienvenidaPage() {
                   y: ['0vh', `${shape.moveY}vh`, `${shape.moveY}vh`, '0vh'],
                   rotate: [0, 360],
                   scale: [1, 1.3, 0.7, 1],
-                  opacity: [0.5, 0.8, 0.6, 0.5],
+                  opacity: [0.25, 0.4, 0.3, 0.25],
                 }}
                 transition={{
                   duration: shape.duration,
@@ -850,7 +1121,7 @@ export default function BienvenidaPage() {
                   y: ['0vh', `${shape.moveY}vh`, `${shape.moveY}vh`, '0vh'],
                   rotate: [shape.rotation, shape.rotation + 360],
                   scale: [1, 1.2, 0.8, 1],
-                  opacity: [0.4, 0.7, 0.5, 0.4],
+                  opacity: [0.2, 0.35, 0.25, 0.2],
                 }}
                 transition={{
                   duration: shape.duration,
@@ -884,7 +1155,7 @@ export default function BienvenidaPage() {
                   y: ['0vh', `${shape.moveY}vh`, `${shape.moveY}vh`, '0vh'],
                   rotate: [0, 360],
                   scale: [1, 1.25, 0.75, 1],
-                  opacity: [0.35, 0.65, 0.45, 0.35],
+                  opacity: [0.2, 0.35, 0.25, 0.2],
                 }}
                 transition={{
                   duration: shape.duration,
@@ -895,15 +1166,13 @@ export default function BienvenidaPage() {
               />
             ))}
 
-            {/* Figuras geométricas más grandes y lentas para profundidad - colores amber/orange/rose */}
+            {/* Figuras geométricas más grandes y lentas para profundidad - paleta */}
             {largeShapes.map((shape, i) => {
               const colors = [
-                { r: 245, g: 158, b: 11 },   // amber-500
-                { r: 251, g: 191, b: 36 },   // amber-400
-                { r: 249, g: 115, b: 22 },   // orange-500
-                { r: 251, g: 146, b: 60 },   // orange-400
-                { r: 244, g: 63, b: 94 },    // rose-500
-                { r: 251, g: 113, b: 133 },  // rose-400
+                { r: 7, g: 70, b: 71 },      // palette-teal
+                { r: 0, g: 27, b: 28 },     // palette-deep-teal
+                { r: 172, g: 174, b: 137 }, // palette-sage
+                { r: 120, g: 120, b: 103 }, // palette-stone
               ];
               const baseColor = colors[i % colors.length];
               
@@ -935,197 +1204,91 @@ export default function BienvenidaPage() {
                 />
               );
             })}
-          </div>
+              </div>
 
-          {/* Logo MForMove - Sin acción */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative z-10 w-full flex  justify-center pt-8 md:pt-12"
-          >
-            <Image
-              alt="MForMove logo"
-              src="/images/MFORMOVE_v2.negro.png"
-              width={180}
-              height={180}
-              className="object-contain w-16 md:w-24 md:h-24 lg:w-30 lg:h-30 h-16 opacity-100"
-              priority
-              loader={imageLoader}
-            />
-          </motion.div>
-
-          {/* Contenido principal */}
-          <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 pb-12 pt-3">
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="max-w-5xl w-full space-y-8 md:space-y-12"
-            >
-              {/* Header con animación */}
-              <motion.div variants={itemVariants} className="text-center space-y-4">
+{/* Contenido principal: contrato + botón */}
+              <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 pb-12 pt-8 md:pt-12">
                 <motion.div
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 border border-slate-200 text-slate-700 backdrop-blur mb-2 shadow-sm"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="max-w-3xl md:max-w-4xl w-full space-y-8 md:space-y-10"
                 >
-                  <SparklesIcon className="h-4 w-4 text-slate-700" />
-                  <span className="text-xs uppercase tracking-wider text-slate-700">Primer Círculo</span>
-                </motion.div>
-
-                <motion.h1
-                  variants={textRevealVariants}
-                  className="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-4 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 bg-clip-text text-transparent leading-10"
-                >
-                  Bienvenido a la Move Crew
-                </motion.h1>
-
-                <motion.p
-                  variants={textRevealVariants}
-                  className="text-lg md:text-xl text-slate-700 font-light max-w-2xl mx-auto leading-relaxed"
-                >
-                  Te damos la bienvenida y te explicamos cómo funciona tu nueva plataforma
-                </motion.p>
-              </motion.div>
-
-              {/* Video Container con efecto glassmorphism */}
-              <motion.div
-                variants={itemVariants}
-                className="relative group"
-              >
-                <div className="absolute -inset-1 bg-gradient-to-r from-white/60 via-slate-100/70 to-sky-100/60 rounded-2xl blur-lg opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
-                <div className="relative bg-white/90 backdrop-blur-xl rounded-2xl border border-slate-200 p-2 md:p-4 shadow-xl">
-                  <div className={`rounded-xl overflow-hidden bg-white relative w-full vimeo-player-container ${isPlaying ? 'playing' : ''}`} style={{ aspectRatio: '16/9' }}>
-                    <div
-                      ref={videoRef}
-                      className="w-full h-full absolute inset-0"
-                    />
-                    {/* Botón de play personalizado */}
-                    {!isPlaying && (
-                      <motion.button
-                        onClick={handlePlayClick}
-                        className="absolute inset-0 flex items-center justify-center bg-slate-900/10 hover:bg-slate-900/15 transition-colors z-10 group"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <div className="relative">
-                          <div className="absolute inset-0 bg-white/20 rounded-full blur-xl group-hover:bg-white/30 transition-colors" />
-                          <div className="relative bg-white/90 rounded-full p-6 md:p-8 group-hover:bg-white transition-colors">
-                            <PlayIcon className="h-12 w-12 md:h-16 md:w-16 text-black ml-1" />
-                          </div>
-                        </div>
-                      </motion.button>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Texto del Contrato con animación de revelado */}
+                {/* Contrato: diseño fino, conceptos básicos Move Crew */}
               <motion.div
                 variants={itemVariants}
                 className="relative"
               >
-                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-red-500/20 rounded-2xl blur-xl opacity-50" />
-                <div className="relative bg-black/30 backdrop-blur-2xl rounded-2xl border border-white/10 p-6 md:p-10 lg:p-12">
+                <div className="absolute -inset-px bg-palette-teal/5 rounded-xl" />
+                <div className="relative bg-palette-cream/98 backdrop-blur-sm rounded-xl md:rounded-2xl border border-palette-stone/15 p-6 md:p-10 lg:p-12 shadow-[0_2px_16px_rgba(20,20,17,0.04)]">
                   <div ref={textContainerRef} className="space-y-6 md:space-y-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
                     {/* Introducción */}
                     <motion.div
                       variants={textRevealVariants}
                       className="space-y-4"
                     >
-                      <p className="text-lg md:text-xl leading-relaxed text-white font-light">
-                        ¡Bienvenido a Move Crew!
+                      <p className="text-xl md:text-2xl leading-relaxed text-palette-ink font-medium font-montserrat tracking-tight">
+                        Contrato
                       </p>
-                      <p className="text-lg md:text-xl leading-relaxed text-white font-light">
-                        Acá vas a encontrar todo lo que necesitás para desarrollar fuerza real, dominar tu movilidad y moverte con mayor libertad. Te explicamos cómo funciona tu plataforma:
+                      <p className="text-base md:text-lg leading-relaxed text-palette-stone font-light font-montserrat">
+                        Movimiento, fuerza y libertad. Acá tenés lo esencial:
                       </p>
                     </motion.div>
 
-                    {/* Secciones de Move Crew */}
+                    {/* Conceptos básicos */}
                     <motion.div
                       variants={textRevealVariants}
-                      className="space-y-4 pt-4 border-t border-white/10"
+                      className="space-y-4 pt-5 border-t border-palette-stone/10"
                     >
-                      <p className="text-lg md:text-xl font-semibold text-white mb-4">
-                        ¿Qué tenés disponible?
+                      <p className="text-sm md:text-base font-semibold text-palette-teal uppercase tracking-widest mb-4 font-montserrat">
+                        Qué tenés
                       </p>
-                      
-                      <div className="space-y-4 text-white">
+                      <div className="space-y-4">
                         {[
                           {
-                            number: '1',
-                            title: 'Biblioteca de Movimiento',
-                            text: 'Clases on demand y programas listos para seguir cuando quieras. Podés acceder desde ya y explorar todo el contenido disponible.'
+                            title: 'Biblioteca',
+                            text: 'Clases y programas cuando quieras.'
                           },
                           {
-                            number: '2',
-                            title: 'Grupo de Telegram',
-                            text: 'Unite a la Crew en Telegram para soporte directo, avisos y novedades. Es tu espacio para hacer preguntas y compartir tu proceso.'
+                            title: 'Telegram',
+                            text: 'La Crew: soporte, avisos y comunidad.'
                           },
                           {
-                            number: '3',
-                            title: 'Camino Base (Opcional)',
-                            text: '4 videos fundamentales que te preparan para el Camino del Gorila. Podés saltearla, pero si la completás ganás U.C. (Unidades de Coherencia) que podés canjear después.'
-                          },
-                          {
-                            number: '4',
-                            title: 'Camino del Gorila',
-                            text: 'Tu ruta semanal guiada con contenido nuevo cada semana. Una vez que aceptes esta bienvenida, ya podés acceder y empezar a sumar U.C. semanalmente.'
+                            title: 'Contenido nuevo cada semana',
+                            text: 'Tu ruta semanal. Una vez que aceptes, entrás y empezás a sumar U.C. para canjear por programas, material o lo que vayamos creando.'
                           }
                         ].map((item, index) => (
                           <motion.div
                             key={index}
-                            initial={{ opacity: 0, x: -20 }}
+                            initial={{ opacity: 0, x: -12 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 1 + index * 0.2 }}
+                            transition={{ delay: 1 + index * 0.15 }}
                             className="flex gap-4 group"
                           >
-                            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-r from-amber-500/70 via-orange-500/70 to-rose-500/70 
-          backdrop-blur-md border border-amber-300/40 flex items-center justify-center font-bold text-white text-lg group-hover:scale-110 transition-transform">
-                              {item.number}
+                            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-palette-teal/15 border border-palette-teal/30 flex items-center justify-center mt-0.5">
+                              <div className="w-2 h-2 rounded-full bg-palette-teal" />
                             </div>
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-white mb-1 text-lg">{item.title}</h3>
-                              <p className="text-gray-200 leading-relaxed">{item.text}</p>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-palette-ink text-base md:text-lg font-montserrat">{item.title}</h3>
+                              <p className="text-palette-stone text-sm md:text-base leading-relaxed font-montserrat">{item.text}</p>
                             </div>
                           </motion.div>
                         ))}
                       </div>
                     </motion.div>
 
-                    {/* Cómo funciona */}
-                    <motion.div
-                      variants={textRevealVariants}
-                      className="space-y-4 pt-4 border-t border-white/10"
-                    >
-                      <p className="text-lg md:text-xl font-semibold text-white mb-4">
-                        ¿Cómo funciona?
-                      </p>
-                      <p className="text-lg md:text-xl leading-relaxed text-white font-light">
-                        <span className="font-semibold text-white">U.C. (Unidades de Coherencia):</span> Cada vez que completás una práctica del Camino del Gorila, ganás U.C. Idealmente, ganás 2 U.C. por semana (1 por video + 1 por audio). Acumulás U.C. para canjearlas por programas especiales, elementos, material o ropa que vamos creando.
-                      </p>
-                      <p className="text-lg md:text-xl leading-relaxed text-white font-light mt-4">
-                        <span className="font-semibold text-white">Camino Base:</span> Es opcional. Si la completás, ganás U.C. desde el inicio. Si la saltás, podés acceder igual al Camino del Gorila, pero te perdés esas U.C. iniciales.
-                      </p>
-                    </motion.div>
-
                     {/* Cierre */}
                     <motion.div
                       variants={textRevealVariants}
-                      className="pt-4 border-t border-slate-200"
+                      className="pt-5 border-t border-palette-stone/10"
                     >
-                      <p className="text-lg md:text-xl leading-relaxed text-white font-light">
-                        Simple, claro y sostenible. <span className="font-semibold text-white">Hecho para acompañar tu día a día.</span>
+                      <p className="text-base md:text-lg leading-relaxed text-palette-stone font-light font-montserrat">
+                        Simple y sostenible. <span className="font-medium text-palette-ink">Hecho para tu día a día.</span>
                       </p>
-                      <p className="text-lg md:text-xl leading-relaxed text-white font-semibold mt-4">
-                        Cuando estés listo, dale al botón de abajo para empezar.
+                      <p className="text-base md:text-lg text-palette-ink font-medium mt-5 font-montserrat">
+                        Cuando estés listo, aceptá abajo.
                       </p>
-                      <p className="text-base text-gray-200 mt-6">
+                      <p className="text-sm text-palette-stone/80 mt-6 font-montserrat">
                         — Mateo.Move
                       </p>
                     </motion.div>
@@ -1133,52 +1296,28 @@ export default function BienvenidaPage() {
                 </div>
               </motion.div>
 
-              {/* Botón de Aceptación con efectos avanzados */}
+              {/* Botón de Aceptación */}
               <motion.div
                 variants={itemVariants}
-                className="flex flex-col items-center space-y-4 pt-4"
+                className="flex flex-col items-center space-y-4 pt-2"
               >
                 <AnimatePresence mode="wait">
                   {!buttonEnabled && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="text-center space-y-2"
+                      exit={{ opacity: 0, y: -8 }}
+                      className="text-center space-y-1"
                     >
-                      <div className="flex flex-col items-center justify-center gap-2 text-slate-600 text-sm md:text-base">
-                        <LockClosedIcon className="h-4 w-4" />
-                        <div className="space-y-1">
-                          <span>
-                            {videoProgress < 95 
-                              ? `Video: ${Math.round(videoProgress)}% completado (necesitas 95%)`
-                              : '✓ Video completado'
-                            }
-                          </span>
-                          <span className="block">
-                            {!textScrolled 
-                              ? 'Desplázate hasta el final del texto de bienvenida'
-                              : '✓ Texto leído'
-                            }
-                          </span>
-                        </div>
+                      <div className="flex flex-col items-center justify-center gap-1 text-palette-stone text-xs md:text-sm font-montserrat">
+                        <LockClosedIcon className="h-3.5 w-3.5 text-palette-teal" />
+                        <span>
+                          {!textScrolled
+                            ? 'Desplazá hasta el final del texto'
+                            : '✓ Listo'
+                          }
+                        </span>
                       </div>
-                      {videoProgress < 95 && (
-                        <motion.div
-                          className="w-64 h-1 bg-slate-200 rounded-full overflow-hidden mx-auto"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                        >
-                          <motion.div
-                            className="h-full bg-gradient-to-r from-amber-500 to-orange-600"
-                            initial={{ width: '0%' }}
-                            animate={{ 
-                              width: `${videoProgress}%` 
-                            }}
-                            transition={{ duration: 0.3, ease: "easeOut" }}
-                          />
-                        </motion.div>
-                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -1187,24 +1326,24 @@ export default function BienvenidaPage() {
                   onClick={handleAccept}
                   disabled={!buttonEnabled || loading}
                   className={`
-                    relative px-10 py-5 rounded-2xl font-semibold text-lg md:text-xl
+                    relative px-10 py-5 rounded-2xl font-semibold text-lg md:text-xl font-montserrat uppercase tracking-[0.2em]
                     transition-all duration-500 overflow-hidden
                     ${buttonEnabled && !loading
-                      ? 'bg-gradient-to-r from-amber-700/40 to-orange-700/40 text-white cursor-pointer shadow-lg shadow-amber-500/20 hover:from-amber-800 hover:to-orange-800'
-                      : 'bg-white/5 text-white/30 cursor-not-allowed border border-white/10'
+                      ? 'bg-palette-ink text-palette-cream border-2 border-palette-ink cursor-pointer shadow-[0_4px_24px_rgba(20,20,17,0.12)] hover:bg-palette-teal hover:border-palette-teal'
+                      : 'bg-palette-stone/10 text-palette-stone/60 cursor-not-allowed border-2 border-palette-stone/25'
                     }
                     flex items-center gap-3 min-w-[280px] justify-center
                   `}
                   whileHover={buttonEnabled && !loading ? { 
-                    scale: 1.05,
-                    boxShadow: "0 20px 40px rgba(180, 83, 9, 0.3)"
+                    scale: 1.02,
+                    boxShadow: "0 8px 32px rgba(7, 70, 71, 0.2)"
                   } : {}}
                   whileTap={buttonEnabled && !loading ? { scale: 0.98 } : {}}
                 >
                   {/* Efecto de brillo animado cuando está habilitado */}
                   {buttonEnabled && !loading && (
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-palette-cream/15 to-transparent"
                       animate={{
                         x: ['-100%', '100%']
                       }}
@@ -1221,22 +1360,22 @@ export default function BienvenidaPage() {
                       <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
+                        className="w-6 h-6 border-2 border-palette-cream border-t-transparent rounded-full"
                       />
                       <span>Procesando...</span>
                     </>
                   ) : (
                     <>
-                              <CheckCircleIcon className="h-6 w-6" />
                               <span>Empezar en Move Crew</span>
                     </>
                   )}
                 </motion.button>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          </div>
+            </div>
+            </div>
 
-                  {/* Modal de celebración de primera U.C. */}
+            {/* Modal de celebración de primera U.C. */}
                   {/* Renderizar el modal siempre que coherenceData exista, independientemente de showCoherenceModal */}
                   {/* El modal manejará su propia visibilidad con la prop isOpen */}
                   {coherenceData && (
@@ -1262,13 +1401,13 @@ export default function BienvenidaPage() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-md"
+                        className="fixed inset-0 z-[9999] flex items-center justify-center bg-palette-deep-teal/95 backdrop-blur-md"
                       >
                         <div className="flex flex-col items-center gap-6">
                           <motion.div
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            className="w-16 h-16 border-4 border-amber-300/30 border-t-amber-600 rounded-full"
+                            className="w-16 h-16 border-4 border-palette-stone/30 border-t-palette-teal rounded-full"
                           />
                           <motion.div
                             initial={{ opacity: 0, y: 10 }}
@@ -1276,10 +1415,10 @@ export default function BienvenidaPage() {
                             transition={{ delay: 0.2 }}
                             className="text-center"
                           >
-                            <h3 className="text-2xl font-bold text-white font-montserrat mb-2">
+                            <h3 className="text-2xl font-bold text-palette-cream font-montserrat mb-2">
                               Redirigiendo...
                             </h3>
-                            <p className="text-gray-300 font-montserrat text-sm">
+                            <p className="text-palette-stone font-montserrat text-sm">
                               Preparando tu experiencia en Move Crew
                             </p>
                           </motion.div>
@@ -1294,35 +1433,69 @@ export default function BienvenidaPage() {
                       width: 8px;
                     }
                     .custom-scrollbar::-webkit-scrollbar-track {
-                      background: rgba(255, 255, 255, 0.05);
+                      background: rgba(120, 120, 103, 0.1);
                       border-radius: 10px;
                     }
                     .custom-scrollbar::-webkit-scrollbar-thumb {
-                      background: rgba(255, 255, 255, 0.2);
+                      background: rgba(7, 70, 71, 0.25);
                       border-radius: 10px;
                     }
                     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                      background: rgba(255, 255, 255, 0.3);
+                      background: rgba(7, 70, 71, 0.4);
                     }
                     
-                    /* Ocultar todos los controles de Vimeo excepto el botón de play */
+                    /* El SDK de Vimeo pone paddingBottom en el div contenedor (spacechange), eso deja el video "muy arriba". Anulamos todo padding. */
+                    .vimeo-player-container > div {
+                      padding: 0 !important;
+                      padding-bottom: 0 !important;
+                      margin: 0 !important;
+                      box-sizing: border-box !important;
+                    }
+                    /* Iframe de Vimeo: cover del contenedor (como Index), sin padding/margin */
                     .vimeo-player-container :global(iframe) {
+                      position: absolute !important;
+                      top: 0 !important;
+                      left: 0 !important;
                       width: 100% !important;
                       height: 100% !important;
+                      margin: 0 !important;
+                      padding: 0 !important;
+                      border: none !important;
+                      display: block !important;
+                      /* Que los clics pasen al botón de play; el body/UI del iframe queda por encima visualmente pero no captura eventos */
+                      pointer-events: none !important;
                     }
                     
-                    /* Cuando el video está reproduciendo, ocultar controles */
-                    .vimeo-player-container.playing :global(iframe) {
-                      pointer-events: none;
+                    /* El iframe siempre con pointer-events: none para que nuestro botón play/pause reciba los clics */
+                    
+                    /* Nuestro botón siempre recibe clics */
+                    .vimeo-player-container button {
+                      pointer-events: auto !important;
                     }
                     
                     /* Ocultar controles de Vimeo usando CSS (si es posible acceder al iframe) */
                     .vimeo-player-container :global(iframe[src*="vimeo"]) {
                       filter: brightness(1);
                     }
+                    
+                    /* Intentar ocultar subtítulos de Vimeo usando CSS */
+                    .vimeo-player-container :global(iframe) {
+                      /* Los subtítulos están dentro del iframe, pero podemos intentar ocultarlos */
+                    }
+                    
+                    /* Ocultar cualquier overlay de subtítulos que pueda aparecer */
+                    .vimeo-player-container :global(.vp-caption),
+                    .vimeo-player-container :global(.vp-subtitle),
+                    .vimeo-player-container :global([class*="caption"]),
+                    .vimeo-player-container :global([class*="subtitle"]) {
+                      display: none !important;
+                      visibility: hidden !important;
+                      opacity: 0 !important;
+                    }
                   `}</style>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </MainSideBar>
   );
 }

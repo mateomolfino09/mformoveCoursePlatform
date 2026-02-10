@@ -19,11 +19,14 @@ import { GiHamburger } from 'react-icons/gi';
 import MainSideBar from '../MainSidebar/MainSideBar';
 import Footer from '../Footer';
 import NewsletterForm from './Index/NewsletterForm';
+import IndexMovementSection from './Index/IndexMovementSection';
 import { routes } from '../../constants/routes';
+import IndexSkeleton from '../IndexSkeleton';
 
 const Index = () => {
   const auth = useAuth()
   const router = useRouter()
+  const [videoLoaded, setVideoLoaded] = useState(false)
 
   useEffect(() => {
     const cookies: any = Cookies.get('userToken')
@@ -35,42 +38,47 @@ const Index = () => {
     if(!auth.user) {
       auth.fetchUser()
     }
-
   }, [auth.user]);
-  
 
+  // Fallback: si el video no dispara onLoad en 6s, mostrar contenido igual
+  useEffect(() => {
+    const fallback = setTimeout(() => {
+      setVideoLoaded(true)
+    }, 6000)
+    return () => clearTimeout(fallback)
+  }, []);
+
+  const handleVideoLoaded = () => {
+    setVideoLoaded(true)
+  };
 
   return (
     <AnimatePresence>
-        <div className='h-screen bg-gradient-to-bl lg:h-[100vh] overflow-hidden font-montserrat'>
+        <div className='min-h-screen bg-gradient-to-bl font-montserrat'>
         <MainSideBar where={"index"}>
           <Head>
             <title>MforMove Platform</title>
             <meta name='description' content='Stream Video App' />
             <link rel='icon' href='/favicon.ico' />
           </Head>
-          {/* <IndexHeader user={auth.user} /> */}
-          <main className='relative pl-4 lg:space-y-24 lg:pl-16'>
-            <Banner />
+          <main className='relative'>
+            <Banner onVideoLoaded={handleVideoLoaded} />
+            <IndexMovementSection />
           </main>
-            <div className='absolute w-full top-1/2 flex justify-center items-center' >
-                <button className='w-48 h-12 md:w-56 md:h-14 md:text-lg rounded-3xl border-white hover:text-white border text-base font-thin transition-all duration-300 transform hover:scale-105 shadow-lg' >
-                  <a href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/home' : routes.navegation.membership.moveCrew}>
-                  Movete Conmigo 
-                  </a>
-                </button>
-
-          </div>
           <div className='absolute right-0 bottom-0 h-12 w-12'>
           </div>
-          <div className='w-full pt-12'>
-            <NewsletterForm />
 
-          </div>
           <Footer />
 
         </MainSideBar>
         </div>
+
+        {/* Skeleton de carga hasta que el video del banner esté listo */}
+        {!videoLoaded && (
+          <div className="fixed inset-0 z-[300]">
+            <IndexSkeleton />
+          </div>
+        )}
         
       </AnimatePresence>
 

@@ -22,7 +22,7 @@ import ClassesFilters from '../../ClassesFilters';
 import { m } from 'framer-motion';
 import FilterNavWrapper from '../../FilterNavWrapper';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
-import { toggleScroll } from '../../../redux/features/headerHomeSlice';
+import { toggleScroll } from '../../../redux/features/headerLibrarySlice';
 import { setFilters, setIndividualClasses } from '../../../redux/features/filterClass';
 import CarouselSearchClasses from '../../CarouselSearchClasses';
 import Link from 'next/link';
@@ -112,7 +112,7 @@ const ClassesCategory = ({ classesDB, filters, filter  }: Props) => {
       }
     } }
     >
-      <MainSideBar where={'home'}>
+      <MainSideBar where={'library'}>
       <Head>
         <title>Video Streaming</title>
         <meta name='description' content='Stream Video App' />

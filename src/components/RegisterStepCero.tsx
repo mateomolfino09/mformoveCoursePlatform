@@ -4,7 +4,7 @@ import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from '../hooks/useToast';
 import endpoints from '../services/api';
 import { addEmail } from '../redux/features/register'
 import { useDispatch } from 'react-redux'

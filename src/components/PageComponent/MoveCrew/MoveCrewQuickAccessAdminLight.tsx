@@ -18,13 +18,13 @@ import { useEffect, useState } from 'react';
 const MoveCrewQuickAccessAdminLight = () => {
   const auth = useAuth();
   const [coherenceStreak, setCoherenceStreak] = useState<number | null>(null);
-  const [hasBitacoraContent, setHasBitacoraContent] = useState<boolean>(false);
+  const [hasWeeklyPathContent, setHasWeeklyPathContent] = useState<boolean>(false);
   const isMember = auth.user?.subscription?.active || auth.user?.isVip;
 
   useEffect(() => {
     if (isMember) {
       fetchCoherenceTracking();
-      checkBitacoraContent();
+      checkWeeklyPathContent();
     }
   }, [isMember]);
 
@@ -44,7 +44,7 @@ const MoveCrewQuickAccessAdminLight = () => {
     }
   };
 
-  const checkBitacoraContent = async () => {
+  const checkWeeklyPathContent = async () => {
     try {
       const response = await fetch('/api/bitacora/current', {
         credentials: 'include',
@@ -53,24 +53,15 @@ const MoveCrewQuickAccessAdminLight = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setHasBitacoraContent(data.logbook && data.weeklyContent && data.weeklyContent.isPublished);
+        setHasWeeklyPathContent(data.logbook && data.weeklyContent && data.weeklyContent.isPublished);
       }
     } catch (err) {
-      console.error('Error verificando bitácora:', err);
-      setHasBitacoraContent(false);
+      console.error('Error verificando camino:', err);
+      setHasWeeklyPathContent(false);
     }
   };
 
   const adminFeatures = [
-    {
-      name: 'Bitácoras',
-      description: 'Gestionar',
-      href: '/admin/memberships/bitacora',
-      icon: FireIcon,
-      color: 'from-[#4F7CCF] to-[#234C8C]',
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-600'
-    },
     {
       name: 'Membresías',
       description: 'Administrar',
@@ -93,20 +84,20 @@ const MoveCrewQuickAccessAdminLight = () => {
 
   const userFeatures = [
     {
-      name: 'Bitácora',
-      description: 'Camino del Gorila',
-      href: routes.navegation.membership.bitacora,
+      name: 'Camino',
+      description: 'Camino',
+      href: routes.navegation.membership.weeklyPath,
       icon: FireIcon,
       color: 'from-amber-500 to-orange-500',
       bgColor: 'bg-amber-500/10',
       textColor: 'text-amber-600',
-      available: hasBitacoraContent && isMember,
+      available: hasWeeklyPathContent && isMember,
       badge: coherenceStreak && coherenceStreak > 0 ? coherenceStreak : null
     },
     {
       name: 'Clases',
       description: 'Entrenamientos',
-      href: routes.navegation.membership.home,
+      href: routes.navegation.membership.library,
       icon: VideoCameraIcon,
       color: 'from-amber-500 to-orange-500',
       bgColor: 'bg-amber-500/10',

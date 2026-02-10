@@ -4,7 +4,7 @@ import ClassQuestions from './ClassQuestions';
 import ClassResources from './ClassResources';
 import ClassThumbnail from './ClassThumbnail';
 import VideoPlayer from './VideoPlayer';
-import { toggleScroll } from '../../../redux/features/headerHomeSlice';
+import { toggleScroll } from '../../../redux/features/headerLibrarySlice';
 import {
   ClassesDB,
   IndividualClass,
@@ -41,7 +41,6 @@ import ClassDescription from './ClassDescription';
 import Footer from '../../Footer';
 import VimeoPlayer from './VimeoPlayer';
 import { routes } from '../../../constants/routes';
-import MoveCrewLoading from '../MoveCrew/MoveCrewLoading';
 import RecommendedClasses from './RecommendedClasses';
 
 interface Props {
@@ -57,7 +56,6 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
   const [resumeModal, setResumeModal] = useState<boolean>(false);
   const [hasWindow, setHasWindow] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
-  const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [playerRef, setPlayerRef] = useState<RefObject<ReactPlayer> | null>(
     null
   );
@@ -77,11 +75,6 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
     if (typeof window !== 'undefined') {
       setHasWindow(true);
       setWindowWidth(window.innerWidth);
-      
-      // Finalizar loading inicial después de un pequeño delay
-      setTimeout(() => {
-        setInitialLoading(false);
-      }, 500);
     }
   }, []);
 
@@ -205,7 +198,6 @@ function IndividualClassDisplay ({ clase, questions }: Props) {
 
   return (
     <>
-      <MoveCrewLoading show={initialLoading} />
       <MainSideBar where={'index'}>
         <div className='relative min-h-screen bg-black overflow-x-hidden font-montserrat'>
         <main className='relative flex flex-col bg-black'>

@@ -11,9 +11,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    console.log('Generando email directamente para concepto:', concept);
-
     // Generar email directo con toda la personalidad de Mateo
     const emailPrompt = `
       Eres Mateo Molfino, experto en movimiento, biomecánica, salud postural, fuerza y flexibilidad.
@@ -85,7 +82,6 @@ El secreto está en no saltearse pasos y confiar en el proceso.
       };
     }
 
-    console.log('Email generado exitosamente');
 
     return NextResponse.json({
       success: true,

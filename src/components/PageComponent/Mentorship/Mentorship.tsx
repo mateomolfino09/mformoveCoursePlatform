@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import MainSideBar from '../../MainSidebar/MainSideBar'
 import FooterProfile from '../Profile/FooterProfile';
 import { useAppDispatch } from '../../../hooks/useTypeSelector'
-import { toggleScroll } from '../../../redux/features/headerHomeSlice'
+import { toggleScroll } from '../../../redux/features/headerLibrarySlice'
 import { useAuth } from '../../../hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import { useMentorshipAnalytics } from '../../../hooks/useMentorshipAnalytics'

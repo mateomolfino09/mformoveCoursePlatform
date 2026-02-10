@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import { RxCrossCircled } from 'react-icons/rx';
 import { Radio, RadioGroup } from '@headlessui/react';

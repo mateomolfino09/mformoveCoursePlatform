@@ -69,9 +69,6 @@ export default function OnboardingChecker() {
             return;
           }
         }
-
-        console.log('auth.user', auth.user);
-
         // Verificar si el usuario tiene suscripción activa
         if (!auth.user?.subscription?.active) {
           return; // No necesita onboarding si no tiene suscripción activa
@@ -85,22 +82,28 @@ export default function OnboardingChecker() {
 
         if (response.ok) {
           const data = await response.json();
-
-          console.log('data', data);
+          console.log('[OnboardingChecker] Estado del onboarding:', data);
 
           // Si no tiene suscripción activa, no hacer nada
           if (data.sinSuscripcion) {
+            console.log('[OnboardingChecker] Usuario sin suscripción activa');
             return;
           }
 
           // Si necesita onboarding (contrato no aceptado), redirigir
           if (data.necesitaOnboarding) {
+            console.log('[OnboardingChecker] Necesita onboarding, contratoAceptado:', data.contratoAceptado);
             if (!data.contratoAceptado) {
+              console.log('[OnboardingChecker] Redirigiendo a /onboarding/bienvenida');
               // Solo redirigir a bienvenida si no estamos ya ahí
               router.push('/onboarding/bienvenida');
             }
             // Si el contrato está aceptado, NO hacer nada (dejar que el usuario complete el flujo)
+          } else {
+            console.log('[OnboardingChecker] No necesita onboarding');
           }
+        } else {
+          console.error('[OnboardingChecker] Error en respuesta:', response.status);
         }
       } catch (error) {
         console.error('Error verificando onboarding:', error);

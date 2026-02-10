@@ -16,7 +16,7 @@ import { useAuth } from '../../../hooks/useAuth';
 
 interface MoveCrewFeaturesNavProps {
   coherenceStreak?: number | null;
-  hasBitacoraContent?: boolean;
+  hasWeeklyPathContent?: boolean;
   isMember?: boolean;
   isVip?: boolean;
   hasActiveSubscription?: boolean;
@@ -27,7 +27,7 @@ const TELEGRAM_LINK = 'https://t.me/+_9hJulwT690yNWFh';
 
 const MoveCrewFeaturesNav = ({ 
   coherenceStreak = null, 
-  hasBitacoraContent = false,
+  hasWeeklyPathContent = false,
   isMember = false,
   isVip = false,
   hasActiveSubscription = false,
@@ -40,8 +40,8 @@ const MoveCrewFeaturesNav = ({
   // Verificar estado de onboarding
   const contratoAceptado = auth.user?.subscription?.onboarding?.contratoAceptado || false;
   
-  // Después del Contrato (Bienvenida) se desbloquean: Telegram, Biblioteca y Bitácora Base
-  // El Camino del Gorila solo requiere contrato aceptado (Bitácora Base es opcional)
+  // Después del Contrato (Bienvenida) se desbloquean: Telegram, Biblioteca y Camino Base
+  // El Camino solo requiere contrato aceptado (Camino Base es opcional)
   const canAccessCaminoGorila = canAccess && contratoAceptado;
   const canAccessTelegram = canAccess && contratoAceptado;
   const canAccessBiblioteca = canAccess && contratoAceptado;
@@ -57,8 +57,8 @@ const MoveCrewFeaturesNav = ({
 
   const features = [
     {
-      name: 'Ir a Camino del Gorila',
-      href: routes.navegation.membership.bitacora,
+      name: 'Ir a Camino',
+      href: routes.navegation.membership.weeklyPath,
       icon: FireIcon,
       available: canAccessCaminoGorila,
       locked: !canAccessCaminoGorila,
@@ -69,7 +69,7 @@ const MoveCrewFeaturesNav = ({
     ...(!onlyGorila ? [
       {
         name: 'Biblioteca de Clases',
-        href: routes.navegation.membership.home,
+        href: routes.navegation.membership.library,
         icon: VideoCameraIcon,
         available: canAccessBiblioteca, // Requiere contrato aceptado
         locked: !canAccessBiblioteca,

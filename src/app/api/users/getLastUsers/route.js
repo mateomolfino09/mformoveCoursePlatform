@@ -18,7 +18,6 @@ export async function GET(req) {
     if (isProd === true) {
       // Usar conexión de producción específica
       mongoUri = 'mongodb://admin:abcd*1234@3.224.88.8:27017/MForMoveProduccion';
-      console.log('🔗 Usando conexión de producción específica');
     } else {
       // Usar MONGODB_URI del .env
       if (!process.env.MONGODB_URI) {
@@ -28,14 +27,12 @@ export async function GET(req) {
         );
       }
       mongoUri = process.env.MONGODB_URI;
-      console.log('🔗 Usando conexión del .env');
     }
 
     // Conectar a la base de datos
     if (mongoose.connections[0].readyState !== 1) {
       mongoose.set('strictQuery', false);
       await mongoose.connect(mongoUri);
-      console.log('✅ Conectado a la base de datos');
     }
 
     // Obtener los últimos 10 usuarios ordenados por fecha de creación (más recientes primero)

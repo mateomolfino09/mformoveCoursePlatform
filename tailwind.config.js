@@ -12,7 +12,9 @@ module.exports = {
   theme: {
     fontFamily: {
       boldFont: ["var(--font-boldfont)"],
-      montserrat: ["var(--font-montserrat)"]
+      montserrat: ["var(--font-montserrat)"],
+      lora: ["var(--font-lora)", "Georgia", "serif"],
+      raleway: ["var(--font-raleway)", "sans-serif"]
     },
     extend: {
       backgroundImage: {
@@ -41,8 +43,17 @@ module.exports = {
         'secondary-darker': '#173067',
         'primary': '#F3F4F7',
         'tertiary': '#373436',
-        'yellow': '#ffeb99'
-
+        'yellow': '#ffeb99',
+        /* Paleta del sistema */
+        palette: {
+          ink: '#141411',
+          sage: '#acae89',
+          stone: '#787867',
+          'deep-teal': '#001b1c',
+          teal: '#074647',
+          white: '#FAF8F4',
+          cream: '#FAF8F4',
+        },
       }
     }
   },

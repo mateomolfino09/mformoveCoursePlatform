@@ -46,8 +46,8 @@ const RegisterStepThree = ({ signUp, recaptchaRef, step3ToStep2 }: Props) => {
 
         <div className="space-y-3">
           {rows.map((item) => (
-            <div key={item.label} className="flex flex-col gap-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-              <span className="text-xs uppercase tracking-wide text-white/60">{item.label}</span>
+            <div key={item.label} className="flex flex-col gap-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 md:px-5 md:py-4">
+              <span className="text-xs md:text-sm uppercase tracking-wide text-white/60">{item.label}</span>
               <span className="text-sm md:text-base text-white break-words">{item.value}</span>
             </div>
           ))}

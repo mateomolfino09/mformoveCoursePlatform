@@ -12,7 +12,6 @@ export async function POST(req) {
     const cookieStore = await cookies();
     const token = cookieStore.get('userToken')?.value;
 
-    console.log('token', token);
 
     if (!token) {
       return NextResponse.json(
@@ -34,7 +33,8 @@ export async function POST(req) {
     }
 
     // Buscar el usuario
-    const user = await userModel.findById(decoded.userId);
+    const userId = decoded._id || decoded.userId || decoded.id;
+    const user = await userModel.findById(userId);
 
     if (!user) {
       return NextResponse.json(
@@ -62,24 +62,19 @@ export async function POST(req) {
     // Marcar el subdocumento como modificado para que Mongoose lo guarde
     user.markModified('subscription.onboarding');
 
-    console.log('user.subscription.onboarding', user.subscription.onboarding);
-    console.log('user.subscription.onboarding.tutorialBitacoraCompletado', user.subscription.onboarding.tutorialBitacoraCompletado);
-    console.log('user.subscription.onboarding.fechaTutorialBitacora', user.subscription.onboarding.fechaTutorialBitacora);
 
     await user.save();
 
     // Verificar que se guardó correctamente
     const savedUser = await userModel.findById(decoded.userId);
-    console.log('Verificación después de guardar - tutorialBitacoraCompletado:', savedUser.subscription?.onboarding?.tutorialBitacoraCompletado);
 
-    console.log('user saved', user);
 
     return NextResponse.json({
       success: true,
-      message: 'Tutorial de bitácora completado correctamente',
+      message: 'Tutorial de camino completado correctamente',
     });
   } catch (error) {
-    console.error('Error completando tutorial de bitácora:', error);
+    console.error('Error completando tutorial de camino:', error);
     return NextResponse.json(
       { success: false, message: 'Error interno del servidor' },
       { status: 500 }

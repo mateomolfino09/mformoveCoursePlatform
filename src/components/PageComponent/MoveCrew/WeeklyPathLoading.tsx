@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 
-const BitacoraBaseLoading = ({ show }: { show: boolean }) => {
+const WeeklyPathLoading = ({ show }: { show: boolean }) => {
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
@@ -65,22 +65,14 @@ const BitacoraBaseLoading = ({ show }: { show: boolean }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl md:text-6xl font-bold mb-2"
+              className="text-4xl md:text-6xl font-bold mb-6"
             >
-              Move Crew
+              Weekly Path
             </motion.h1>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-2xl md:text-4xl font-light mb-6 text-white/90"
-            >
-              Camino Base
-            </motion.h2>
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, delay: 0.3 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
               className="h-10 w-10 border-2 border-white/30 border-t-white rounded-full animate-spin"
             />
           </div>
@@ -90,5 +82,4 @@ const BitacoraBaseLoading = ({ show }: { show: boolean }) => {
   );
 };
 
-export default BitacoraBaseLoading;
-
+export default WeeklyPathLoading;

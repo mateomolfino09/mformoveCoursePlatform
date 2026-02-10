@@ -3,7 +3,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import { useDeleteFileMutation, useDeleteLinkMutation, useGetClassQuery } from "../../../redux/services/individualClassApi";
 import { DocumentTextIcon, LinkIcon, TrashIcon, ArrowDownTrayIcon, PlusIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import AddResources from './AddResources';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';

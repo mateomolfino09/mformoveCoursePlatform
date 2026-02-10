@@ -7,7 +7,7 @@ const faqs = [
   {
     question: '¿Qué diferencia a Move Crew de la mentoría?',
     answer:
-      'En la mentoría voy 1:1 y personalizo todo. Move Crew es grupal: seguís el Camino del Gorila semanal, con clases de 15-25 minutos, audios, U.C. y soporte asíncrono. Ideal si querés avanzar acompañado sin un plan a medida.'
+      'En la mentoría voy 1:1 y personalizo todo. Move Crew es grupal: seguís el Camino semanal, con contenido nuevo todas las semanas, U.C. y soporte asíncrono. Ideal si querés avanzar acompañado sin un plan a medida.'
   },
   {
     question: '¿Necesito experiencia previa?',
@@ -49,18 +49,20 @@ const MoveCrewFAQ = () => {
   };
 
   return (
-    <section className="py-20 bg-gray-50 font-montserrat" id="move-crew-faq">
-      <div className="max-w-4xl mx-auto px-6">
+    <section className="py-16 md:py-20 bg-palette-cream font-montserrat" id="move-crew-faq">
+      <div className="w-[85%] max-w-4xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
           viewport={{ once: true }}
-          className="mb-12 text-center"
+          className="mb-10 md:mb-12 text-start md:text-left"
         >
-          <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-500 mb-3">Preguntas frecuentes</p>
-          <h2 className="text-3xl md:text-5xl font-bold text-black">Respuestas claras antes de sumarte</h2>
-          <p className="text-base md:text-xl text-gray-600 max-w-3xl mx-auto font-light mt-4">
+          <p className="font-montserrat uppercase tracking-[0.2em] text-xs md:text-sm text-palette-stone/80 mb-2">Preguntas frecuentes</p>
+          <h2 className="text-2xl md:text-4xl font-montserrat font-semibold text-palette-ink tracking-tight mb-4">
+            Respuestas claras antes de sumarte
+          </h2>
+          <p className="font-raleway italic text-palette-stone text-base md:text-lg max-w-2xl mx-auto md:mx-0 leading-relaxed">
             Si todavía tenés dudas, revisá esta lista o escribime. Quiero que tomes una decisión informada.
           </p>
         </motion.div>
@@ -73,18 +75,15 @@ const MoveCrewFAQ = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
               viewport={{ once: true }}
-              className="relative bg-gradient-to-br from-white via-amber-50/20 to-orange-50/10 border border-amber-200/40 rounded-3xl overflow-hidden"
+              className="relative bg-palette-cream border border-palette-stone/25 rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_4px_24px_rgba(20,20,17,0.06)]"
             >
-              {/* Decoración sutil de fondo */}
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-200/10 to-orange-200/5 rounded-full blur-2xl opacity-50" />
-              
               <div className="relative z-10">
               <button
                 onClick={() => toggle(index)}
                 className="w-full flex items-center justify-between px-6 py-4 text-left"
               >
-                <span className="text-base md:text-lg font-medium text-black">{faq.question}</span>
-                <ChevronDownIcon className={`w-5 h-5 text-gray-500 transition-transform ${openIndex === index ? 'rotate-180' : ''}`} />
+                <span className="text-base md:text-lg font-montserrat font-medium text-palette-ink">{faq.question}</span>
+                <ChevronDownIcon className={`w-5 h-5 text-palette-stone transition-transform flex-shrink-0 ${openIndex === index ? 'rotate-180' : ''}`} />
               </button>
 
               <AnimatePresence initial={false}>
@@ -96,7 +95,7 @@ const MoveCrewFAQ = () => {
                     transition={{ duration: 0.3 }}
                     className="px-6 pb-4"
                   >
-                    <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed">{faq.answer}</p>
+                    <p className="text-sm md:text-base text-palette-stone font-light leading-relaxed">{faq.answer}</p>
                   </motion.div>
                 )}
               </AnimatePresence>

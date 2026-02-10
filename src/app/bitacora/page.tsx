@@ -12,24 +12,25 @@ import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../imageLoader';
 import { toast } from 'react-hot-toast';
 import Cookies from 'js-cookie';
-import BitacoraSidebar from '../../components/PageComponent/Bitacora/BitacoraSidebar';
-import VideoContentDisplay from '../../components/PageComponent/Bitacora/VideoContentDisplay';
-import AudioTextContentDisplay from '../../components/PageComponent/Bitacora/AudioTextContentDisplay';
+import WeeklyPathSidebar from '../../components/PageComponent/WeeklyPath/WeeklyPathSidebar';
+import VideoContentDisplay from '../../components/PageComponent/WeeklyPath/VideoContentDisplay';
+import AudioTextContentDisplay from '../../components/PageComponent/WeeklyPath/AudioTextContentDisplay';
 import MoveCrewLoading from '../../components/PageComponent/MoveCrew/MoveCrewLoading';
 import MainSideBar from '../../components/MainSidebar/MainSideBar';
+import WeeklyPathSkeleton from '../../components/WeeklyPathSkeleton';
 import { CoherenceProvider, useCoherence } from '../../contexts/CoherenceContext';
-import CoherenceCelebrationModal from '../../components/PageComponent/Bitacora/CoherenceCelebrationModal';
-import CoherenceInfoModal from '../../components/PageComponent/Bitacora/CoherenceInfoModal';
-import GorillaLevelDisplay from '../../components/PageComponent/Bitacora/GorillaLevelDisplay';
-import VideoHeaderGorilla from '../../components/PageComponent/Bitacora/VideoHeaderGorilla';
-import BitacoraLoading from '../../components/PageComponent/MoveCrew/BitacoraLoading';
+import CoherenceCelebrationModal from '../../components/PageComponent/WeeklyPath/CoherenceCelebrationModal';
+import CoherenceInfoModal from '../../components/PageComponent/WeeklyPath/CoherenceInfoModal';
+import GorillaLevelDisplay from '../../components/PageComponent/WeeklyPath/GorillaLevelDisplay';
+import VideoHeaderGorilla from '../../components/PageComponent/WeeklyPath/VideoHeaderGorilla';
+import WeeklyPathLoading from '../../components/PageComponent/MoveCrew/WeeklyPathLoading';
 import FooterProfile from '../../components/PageComponent/Profile/FooterProfile';
 import WeeklyReportModal from '../../components/WeeklyReportModal';
 
 import Footer from '../../components/Footer';
 import Link from 'next/link';
 
-const BitacoraFooter = () => (
+const WeeklyPathFooter = () => (
   <footer className="bg-black text-white mt-12">
     <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row md:items-start md:justify-between gap-8">
       <div className="flex items-center gap-4">
@@ -43,7 +44,7 @@ const BitacoraFooter = () => (
           />
         </Link>
         <p className="text-sm text-white/70 font-light font-montserrat">
-          Move Crew - Camino del Gorila
+          Move Crew - Camino
         </p>
       </div>
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm text-white/80 font-light font-montserrat">
@@ -67,7 +68,7 @@ const GorillaHoverInfo = ({ children }: { children: React.ReactNode }) => (
     <div
       className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-72 -translate-x-1/2 rounded-xl bg-black/80 px-3 py-2 text-xs text-white opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
     >
-      Sube de nivel completando semanas del Camino del Gorila. Gana U.C. y canjea por programas o merch que iremos creando.
+      Sube de nivel completando semanas del Camino. Gana U.C. y canjea por programas o merch que iremos creando.
     </div>
   </div>
 );
@@ -139,7 +140,7 @@ interface CoherenceTracking {
   }>;
 }
 
-function BitacoraPageContent() {
+function WeeklyPathPageContent() {
   const router = useRouter();
   const auth = useAuth();
   const coherence = useCoherence();
@@ -158,8 +159,8 @@ function BitacoraPageContent() {
   const [openTooltip, setOpenTooltip] = useState<'menu' | 'progress' | 'uc' | null>(null);
   const isMobile = !isDesktop;
   const tooltipTexts: Record<'menu' | 'progress' | 'uc', string> = {
-    menu: 'Sube de nivel completando semanas del Camino del Gorila. Gana U.C. y canjealas por programas, elementos, material o ropa, lo iremos mejorando y mejorando.',
-    progress: 'Porcentaje de avance del mes actual del Camino del Gorila.',
+    menu: 'Sube de nivel completando semanas del Camino. Gana U.C. y canjealas por programas, elementos, material o ropa, lo iremos mejorando y mejorando.',
+    progress: 'Porcentaje de avance del mes actual del Camino.',
     uc: 'Unidades de Coherencia acumuladas (2 por semana ideal: 1 audio + 1 video). Canjealas por programas, elementos, material o ropa, lo iremos mejorando y mejorando.'
   };
   
@@ -167,6 +168,12 @@ function BitacoraPageContent() {
   const [showCelebrationModal, setShowCelebrationModal] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showLevelUpEffect, setShowLevelUpEffect] = useState(false);
+  const [levelUpData, setLevelUpData] = useState<{
+    newLevel?: number;
+    evolution?: boolean;
+    gorillaIcon?: string;
+  } | null>(null);
   const [celebrationData, setCelebrationData] = useState<{
     ucsOtorgadas: number;
     totalUnits: number;
@@ -238,8 +245,8 @@ function BitacoraPageContent() {
         return;
       }
 
-      // Verificar acceso al Camino del Gorila (solo requiere contrato aceptado)
-      // La Bitácora Base es opcional (se puede saltear pero se pierden U.C.)
+      // Verificar acceso al Camino (solo requiere contrato aceptado)
+      // La Camino Base es opcional (se puede saltear pero se pierden U.C.)
       if (auth.user && auth.user.rol !== 'Admin') {
         const contratoAceptado = auth.user.subscription?.onboarding?.contratoAceptado || false;
 
@@ -249,7 +256,7 @@ function BitacoraPageContent() {
         }
       }
 
-      fetchBitacora();
+      fetchWeeklyPath();
       coherence.fetchCoherenceTracking();
     };
 
@@ -259,17 +266,19 @@ function BitacoraPageContent() {
   }, []);
 
   // Calcular porcentaje completado del mes
-  // Cada contenido (video o audio) representa 6.25% (dos contenidos por semana = 12.5%).
+  // El porcentaje depende de la cantidad de contenidos completados vs el total disponible
   const calculateMonthProgress = (): number => {
     if (!logbook || !logbook.weeklyContents) return 0;
 
     let completedContentsCount = 0;
+    let totalContentsCount = 0;
 
     logbook.weeklyContents.forEach((week) => {
       if (week.dailyContents && week.dailyContents.length > 0) {
         week.dailyContents.forEach((day) => {
           // Video diario
           if (day.visualContent && day.visualContent.videoUrl) {
+            totalContentsCount++;
             const videoKey = `${logbook._id}-${week.weekNumber}-${day.dayNumber}-video`;
             if (coherence.completedVideos.has(videoKey)) {
               completedContentsCount++;
@@ -278,6 +287,7 @@ function BitacoraPageContent() {
 
           // Audio diario
           if (day.audioTextContent && day.audioTextContent.audioUrl) {
+            totalContentsCount++;
             const audioKey = `${logbook._id}-${week.weekNumber}-${day.dayNumber}-audio`;
             if (coherence.completedAudios.has(audioKey)) {
               completedContentsCount++;
@@ -286,12 +296,14 @@ function BitacoraPageContent() {
         });
       } else if (week.videoUrl) {
         // Estructura legacy: video semanal
+        totalContentsCount++;
         const videoKey = `${logbook._id}-${week.weekNumber}-week-video`;
         if (coherence.completedVideos.has(videoKey)) {
           completedContentsCount++;
         }
         // Estructura legacy: audio semanal (si existe)
         if ((week).audioUrl) {
+          totalContentsCount++;
           const audioKey = `${logbook._id}-${week.weekNumber}-week-audio`;
           if (coherence.completedAudios.has(audioKey)) {
             completedContentsCount++;
@@ -300,8 +312,10 @@ function BitacoraPageContent() {
       }
     });
 
-    // Cada contenido aporta 6.25%
-    return Math.min(completedContentsCount * 6.25, 100);
+    // Calcular porcentaje basado en completados / total
+    if (totalContentsCount === 0) return 0;
+    const percentage = Math.round((completedContentsCount / totalContentsCount) * 100);
+    return Math.min(percentage, 100);
   };
 
   const monthProgress = calculateMonthProgress();
@@ -347,35 +361,30 @@ function BitacoraPageContent() {
           if (response.ok) {
             const data = await response.json();
             
-            if (data.levelUp) {
-              console.log('[BitacoraPage] Mes completado - Subida de nivel', {
-                newLevel: data.newLevel,
-                evolution: data.evolution,
-                gorillaIcon: data.gorillaIcon
-              });
-              
-              // Actualizar tracking con el nuevo nivel
-              if (data.tracking) {
-                coherence.updateTracking(data.tracking);
-              }
-              
-              // Mostrar modal de celebración con información de nivel
+            // Actualizar tracking siempre, independientemente de si hay levelUp
+            if (data.tracking) {
+              coherence.updateTracking(data.tracking);
+            }
+            
+            // Mostrar modal de celebración si hay levelUp o si hay logros nuevos
+            if (data.levelUp || (data.newAchievements && data.newAchievements.length > 0)) {
+              // Usar los valores del tracking actualizado (ya incluye gorillaIcon calculado)
+              const updatedTracking = data.tracking || coherence.coherenceTracking;
               setCelebrationData({
                 ucsOtorgadas: 0,
-                totalUnits: data.tracking?.totalUnits || 0,
-                currentStreak: data.tracking?.currentStreak || 0,
+                totalUnits: updatedTracking?.totalUnits || 0,
+                currentStreak: updatedTracking?.currentStreak || 0,
                 esSemanaAdicional: false,
                 newAchievements: data.newAchievements || [],
-                levelUp: true,
-                newLevel: data.newLevel,
-                evolution: data.evolution,
-                gorillaIcon: data.gorillaIcon
+                levelUp: data.levelUp || false,
+                newLevel: updatedTracking?.level || data.newLevel || 1,
+                evolution: data.evolution || false,
+                gorillaIcon: updatedTracking?.gorillaIcon || data.gorillaIcon || '🦍'
               });
               setShowCelebrationModal(true);
             }
           }
         } catch (error) {
-          console.error('[BitacoraPage] Error completando mes', error);
           // Si hay error, permitir intentar de nuevo
           setMonthCompletionChecked(false);
         }
@@ -390,7 +399,7 @@ function BitacoraPageContent() {
     checkMonthCompletion();
   }, [monthProgress, logbook, coherence, monthCompletionChecked]);
 
-  const fetchBitacora = async () => {
+  const fetchWeeklyPath = async () => {
     try {
       setLoading(true);
       // Obtener parámetros de la URL
@@ -414,7 +423,7 @@ function BitacoraPageContent() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        // Si es un 404, intentar obtener la bitácora más reciente sin parámetros
+        // Si es un 404, intentar obtener la camino más reciente sin parámetros
         if (response.status === 404 && (id || month || year)) {
           // Si había parámetros específicos, intentar sin ellos
           const fallbackResponse = await fetch('/api/bitacora/month', {
@@ -430,7 +439,7 @@ function BitacoraPageContent() {
             return;
           }
         }
-        throw new Error(errorData.error || 'Error al obtener la bitácora');
+        throw new Error(errorData.error || 'Error al obtener la camino');
       }
 
       const data = await response.json();
@@ -440,8 +449,7 @@ function BitacoraPageContent() {
       
       setInitialLoading(false);
     } catch (err: any) {
-      console.error('Error obteniendo bitácora:', err);
-      setError(err.message || 'Error al cargar la bitácora');
+      setError(err.message || 'Error al cargar la camino');
     } finally {
       setLoading(false);
     }
@@ -571,12 +579,6 @@ function BitacoraPageContent() {
       contentType: selectedContentType // Enviar el tipo de contenido (visual o audioText)
     };
 
-    console.log('[BitacoraPage] handleComplete: Enviando petición');
-    console.log('  - logbookId:', logbook._id);
-    console.log('  - weekNumber:', selectedWeek);
-    console.log('  - dayNumber:', selectedDay);
-    console.log('  - contentType:', selectedContentType);
-
     try {
       const response = await fetch('/api/bitacora/complete', {
         method: 'POST',
@@ -593,15 +595,6 @@ function BitacoraPageContent() {
       }
 
       const data = await response.json();
-      
-      console.log('[BitacoraPage] handleComplete: Respuesta recibida');
-      console.log('  - success:', data.success);
-      console.log('  - totalUnits:', data.tracking?.totalUnits);
-      console.log('  - esSemanaAdicional:', data.esSemanaAdicional);
-      console.log('  - ucsOtorgadas:', data.ucsOtorgadas);
-      console.log('  - weekNumber:', data.weekNumber);
-      console.log('  - contentType:', data.contentType);
-      console.log('  - message:', data.message);
       
       // Si no se pudo agregar U.C. (pero la clase se completó)
       if (data.success === false) {
@@ -623,7 +616,10 @@ function BitacoraPageContent() {
           coherence.updateTracking({
             totalUnits: data.tracking.totalUnits,
             currentStreak: data.tracking.currentStreak,
-            longestStreak: data.tracking.longestStreak
+            longestStreak: data.tracking.longestStreak,
+            levelProgress: data.levelProgress !== undefined && data.levelProgress !== null ? data.levelProgress : (coherence.coherenceTracking?.levelProgress ?? 0),
+            progressToNextLevel: data.progressToNextLevel !== undefined && data.progressToNextLevel !== null ? data.progressToNextLevel : (coherence.coherenceTracking?.progressToNextLevel ?? 0),
+            level: data.newLevel !== undefined && data.newLevel !== null ? data.newLevel : (coherence.coherenceTracking?.level ?? 1)
           });
         }
         
@@ -654,28 +650,24 @@ function BitacoraPageContent() {
       
       // Marcar como completado usando el contexto con los datos del servidor
       if (data.completedDays && data.completedDays.length > 0) {
-        console.log('[BitacoraPage] handleComplete: Marcando días completados', data.completedDays);
         data.completedDays.forEach((key: string) => {
           coherence.markDayCompleted(key);
         });
       }
       
       if (data.completedWeeks && data.completedWeeks.length > 0) {
-        console.log('[BitacoraPage] handleComplete: Marcando semanas completadas', data.completedWeeks);
         data.completedWeeks.forEach((key: string) => {
           coherence.markWeekCompleted(key);
         });
       }
       
       if (data.completedVideos && data.completedVideos.length > 0) {
-        console.log('[BitacoraPage] handleComplete: Marcando videos completados', data.completedVideos);
         data.completedVideos.forEach((key: string) => {
           coherence.markVideoCompleted(key, 1);
         });
       }
       
       if (data.completedAudios && data.completedAudios.length > 0) {
-        console.log('[BitacoraPage] handleComplete: Marcando audios completados', data.completedAudios);
         data.completedAudios.forEach((key: string) => {
           coherence.markAudioCompleted(key);
         });
@@ -683,20 +675,43 @@ function BitacoraPageContent() {
       
       // Actualizar tracking en el contexto directamente desde la respuesta (sin reload)
       if (data.tracking) {
-        console.log('[BitacoraPage] handleComplete: Actualizando tracking', {
-          totalUnitsAntes: coherence.coherenceTracking?.totalUnits,
-          totalUnitsNuevo: data.tracking.totalUnits
-        });
-        
-        coherence.updateTracking({
-          totalUnits: data.tracking.totalUnits,
-          currentStreak: data.tracking.currentStreak,
-          longestStreak: data.tracking.longestStreak
-        });
-        
-        console.log('[BitacoraPage] handleComplete: Tracking actualizado', {
-          totalUnitsDespues: coherence.coherenceTracking?.totalUnits
-        });
+        // Si hubo level up, actualizar todos los campos juntos incluyendo el nuevo nivel
+        if (data.levelUp) {
+          coherence.updateTracking({
+            totalUnits: data.tracking.totalUnits,
+            currentStreak: data.tracking.currentStreak,
+            longestStreak: data.tracking.longestStreak,
+            level: data.newLevel, // Nuevo nivel después del level up
+            levelProgress: data.levelProgress !== undefined && data.levelProgress !== null ? data.levelProgress : 0, // Se reinicia a 0 después del level up
+            progressToNextLevel: data.progressToNextLevel !== undefined && data.progressToNextLevel !== null ? data.progressToNextLevel : 0,
+            gorillaIcon: data.gorillaIcon,
+            evolutionName: data.evolutionName,
+            characterEvolution: data.evolution ? (coherence.coherenceTracking?.characterEvolution ?? 0) + 1 : (coherence.coherenceTracking?.characterEvolution ?? 0)
+          });
+          
+          // Mostrar efecto visual de level up
+          setLevelUpData({
+            newLevel: data.newLevel,
+            evolution: data.evolution,
+            gorillaIcon: data.gorillaIcon
+          });
+          setShowLevelUpEffect(true);
+          
+          // Ocultar el efecto después de 3 segundos
+          setTimeout(() => {
+            setShowLevelUpEffect(false);
+            setLevelUpData(null);
+          }, 3000);
+        } else {
+          // Si no hay level up, actualizar tracking normalmente
+          coherence.updateTracking({
+            totalUnits: data.tracking.totalUnits,
+            currentStreak: data.tracking.currentStreak,
+            longestStreak: data.tracking.longestStreak,
+            levelProgress: data.levelProgress !== undefined && data.levelProgress !== null ? data.levelProgress : (coherence.coherenceTracking?.levelProgress ?? 0),
+            progressToNextLevel: data.progressToNextLevel !== undefined && data.progressToNextLevel !== null ? data.progressToNextLevel : (coherence.coherenceTracking?.progressToNextLevel ?? 0)
+          });
+        }
         
         // Actualizar achievements si hay nuevos
         if (data.newAchievements && data.newAchievements.length > 0) {
@@ -728,14 +743,17 @@ function BitacoraPageContent() {
           totalUnits,
           currentStreak,
           esSemanaAdicional,
-          newAchievements: data.newAchievements || []
+          newAchievements: data.newAchievements || [],
+          levelUp: data.levelUp || false,
+          newLevel: data.newLevel,
+          evolution: data.evolution || false,
+          gorillaIcon: data.gorillaIcon
         });
         setShowCelebrationModal(true);
       }
 
     } catch (err: any) {
-      console.error('Error completando:', err);
-      toast.error(err.message || 'Error al completar la bitácora');
+      toast.error(err.message || 'Error al completar la camino');
     } finally {
       setIsCompleting(false);
     }
@@ -799,12 +817,7 @@ function BitacoraPageContent() {
   };
 
   if (initialLoading || loading) {
-    return (
-      <>
-        <BitacoraLoading show={initialLoading || loading} />
-        <div className="min-h-screen bg-gray-50" />
-      </>
-    );
+    return <WeeklyPathSkeleton />;
   }
 
   if (error || !logbook) {
@@ -818,7 +831,7 @@ function BitacoraPageContent() {
             {error || 'No hay contenido disponible. Pronto estará disponible.'}
           </p>
           <button
-            onClick={() => router.push('/home')}
+            onClick={() => router.push('/library')}
             className="px-6 py-3 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 text-gray-900 rounded-full font-medium hover:border-amber-300/60 hover:shadow-lg transition-all duration-300 font-montserrat"
           >
             Volver al inicio
@@ -834,13 +847,12 @@ function BitacoraPageContent() {
   return (
     <>
     <MainSideBar
-      where={'bitacora'}
+      where={'weekly-path'}
       forceStandardHeader
       onMenuClick={() => setSidebarOpen(prev => !prev)}
       sidebarOpen={sidebarOpen}
       forceLightTheme={selectedContentType === 'audioText'}
     >  
-      <MoveCrewLoading show={initialLoading} />
       <div className="min-h-screen bg-gray-50 font-montserrat relative">
         {/* Layout principal con flex */}
         <div className="flex relative justify-between">
@@ -888,7 +900,7 @@ function BitacoraPageContent() {
               transition-opacity duration-150
               overflow-hidden
             `}>
-              <BitacoraSidebar
+              <WeeklyPathSidebar
                 logbook={logbook}
                 selectedWeek={selectedWeek}
                 selectedDay={selectedDay}
@@ -925,7 +937,7 @@ function BitacoraPageContent() {
                 {/* Imagen de fondo */}
                 <CldImage
                   src="my_uploads/msbtxfaeeizafeo9axkq"
-                  alt="El Camino del Gorila"
+                  alt="El Camino"
                   fill
                   className="object-cover opacity-40"
                   priority
@@ -941,82 +953,27 @@ function BitacoraPageContent() {
                   <div className="flex flex-row-reverse items-center gap-6 flex-1 max-w-7xl mx-auto w-full">
                     {/* Icono de gorila con círculo de progreso */}
                     <div className="relative flex-shrink-0 flex flex-col items-center">
-                      <svg className="w-20 h-20 md:w-24 md:h-24 transform -rotate-90" viewBox="0 0 100 100">
-                        {/* Círculo de fondo */}
-                        <circle
-                          cx="50"
-                          cy="50"
-                          r="45"
-                          fill="none"
-                          stroke="rgba(251, 191, 36, 0.2)"
-                          strokeWidth="8"
-                        />
-                        {/* Círculo de progreso con gradiente Move Crew */}
-                        <circle
-                          cx="50"
-                          cy="50"
-                          r="45"
-                          fill="none"
-                          stroke="url(#progressGradient)"
-                          strokeWidth="8"
-                          strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 45}`}
-                          strokeDashoffset={`${2 * Math.PI * 45 * (1 - monthProgress / 100)}`}
-                          className="transition-all duration-500 ease-out"
-                        />
-                        {/* Definición del gradiente */}
-                        <defs>
-                          <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.9" />
-                            <stop offset="50%" stopColor="#F97316" stopOpacity="0.9" />
-                            <stop offset="100%" stopColor="#E11D48" stopOpacity="0.9" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                      
-                      <div className="flex flex-col items-center">
-                        {/* Componente de gorila con nivel y progreso */}
-                        <div className="absolute inset-0 flex items-center bottom-11 md:bottom-12 justify-center" aria-label="gorilla-level">
-                          {(() => {
-                            // Usar tracking siempre (con fallback) para que entre al primer branch
-                            const fallbackTracking = {
-                              level: 0,
-                              monthsCompleted: 0,
-                              gorillaIcon: '🦍',
-                              evolutionName: 'Gorila Bebé',
-                              progressToNextLevel: 0
-                            };
-                            const tracking = coherence.coherenceTracking || fallbackTracking;
-                            const monthsCompleted = tracking.monthsCompleted ?? 0;
-                            const levelDisplay = monthsCompleted > 0
-                              ? (tracking.level ?? monthsCompleted ?? 1)
-                              : 1;
-                            const gorillaIcon = monthsCompleted > 0
-                              ? (tracking.gorillaIcon || '🦍')
-                              : '🦍';
-                            const evolutionName = monthsCompleted > 0
-                              ? (tracking.evolutionName || 'Gorila Bebé')
-                              : 'Gorila Bebé';
-                            const progressToNextLevel = tracking.progressToNextLevel ?? 0;
-
-                            return (
-                              <GorillaHoverInfo>
-                                <GorillaLevelDisplay
-                                  level={levelDisplay}
-                                  gorillaIcon={gorillaIcon}
-                                  evolutionName={evolutionName}
-                                  progressToNextLevel={progressToNextLevel}
-                                  monthsCompleted={monthsCompleted}
-                                  size="sm"
-                                  showProgressBar={false}
-                                  showLevel={true}
-                                  layout="centered"
-                                  showInfoText={false}
-                                />
-                              </GorillaHoverInfo>
-                            );
-                          })()}
-                      </div>
+                      <div className="flex flex-col items-center relative">
+                        {/* Componente de gorila con nivel y progreso - El SVG del círculo de progreso está dentro del componente */}
+                        <div className="flex items-center justify-center" aria-label="gorilla-level">
+                          {coherence.coherenceTracking ? (
+                            <GorillaHoverInfo>
+                              <GorillaLevelDisplay
+                                level={coherence.coherenceTracking.level || 1}
+                                gorillaIcon={coherence.coherenceTracking.gorillaIcon || '🦍'}
+                                evolutionName={coherence.coherenceTracking.evolutionName || 'Gorila Bebé'}
+                                progressToNextLevel={coherence.coherenceTracking.progressToNextLevel || 0}
+                                monthsCompleted={coherence.coherenceTracking.monthsCompleted || 0}
+                                levelProgress={coherence.coherenceTracking.levelProgress !== undefined && coherence.coherenceTracking.levelProgress !== null ? coherence.coherenceTracking.levelProgress : 0}
+                                size="sm"
+                                showProgressBar={false}
+                                showLevel={true}
+                                layout="centered"
+                                showInfoText={false}
+                              />
+                            </GorillaHoverInfo>
+                          ) : null}
+                        </div>
 
                         {/* Texto fuera del círculo para no afectar su tamaño */}
                         {(() => {
@@ -1042,7 +999,7 @@ function BitacoraPageContent() {
                     {/* Información del usuario y progreso */}
                     <div className="flex-1 min-w-0">
                       <h1 className="text-3xl md:text-5xl lg:text-4xl font-bold text-white font-montserrat tracking-tight mb-2 drop-shadow-lg">
-                        El Camino del Gorila
+                        El Camino
                       </h1>
                       <p className="text-base hidden md:block md:text-lg text-white/90 font-montserrat font-light mb-1 drop-shadow-md">
                         {auth.user?.nombre || 'Usuario'}
@@ -1064,7 +1021,12 @@ function BitacoraPageContent() {
                         </div>
                         {coherence.coherenceTracking && (
                           <div className="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-lg">
-                            <span className="text-amber-400 text-lg md:text-xl flex-shrink-0">▲</span>
+                            <img 
+                              src="/images/svg/icosahedron-thick.svg" 
+                              alt="Icosaedro" 
+                              className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
+                              style={{ filter: 'brightness(0) invert(1)' }}
+                            />
                             <span className="text-xl md:text-2xl font-bold text-white font-montserrat">
                               {coherence.coherenceTracking?.totalUnits || 0}
                             </span>
@@ -1096,6 +1058,7 @@ function BitacoraPageContent() {
                       <VideoHeaderGorilla
                         level={coherence.coherenceTracking.level || 1}
                         gorillaIcon={coherence.coherenceTracking.gorillaIcon || '🦍'}
+                        levelProgress={coherence.coherenceTracking.levelProgress !== undefined && coherence.coherenceTracking.levelProgress !== null ? coherence.coherenceTracking.levelProgress : 0}
                       />
  
                     </div>
@@ -1127,7 +1090,12 @@ function BitacoraPageContent() {
                         className="relative flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-sm"
                         onClick={() => setOpenTooltip(openTooltip === 'uc' ? null : 'uc')}
                       >
-                        <span className="text-amber-600 text-sm flex-shrink-0">▲</span>
+                        <img 
+                          src="/images/svg/icosahedron-thick.svg" 
+                          alt="Icosaedro" 
+                          className="w-5 h-5 flex-shrink-0"
+                          style={{ filter: 'brightness(0)' }}
+                        />
                         <span className="text-base font-bold text-gray-900 font-montserrat">
                           {coherence.coherenceTracking?.totalUnits || 0}
                         </span>
@@ -1158,6 +1126,7 @@ function BitacoraPageContent() {
                         <VideoHeaderGorilla
                           level={coherence.coherenceTracking.level || 1}
                           gorillaIcon={coherence.coherenceTracking.gorillaIcon || '🦍'}
+                          levelProgress={coherence.coherenceTracking.levelProgress !== undefined && coherence.coherenceTracking.levelProgress !== null ? coherence.coherenceTracking.levelProgress : 0}
                         />
                       </GorillaHoverInfo>
                     )}
@@ -1178,7 +1147,12 @@ function BitacoraPageContent() {
                       {/* U.C. */}
                       {coherence.coherenceTracking && (
                         <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-sm">
-                          <span className="text-amber-600 text-sm flex-shrink-0">▲</span>
+                          <img 
+                            src="/images/svg/icosahedron-thick.svg" 
+                            alt="Icosaedro" 
+                            className="w-5 h-5 flex-shrink-0"
+                            style={{ filter: 'brightness(0)' }}
+                          />
                           <span className="text-base font-bold text-gray-900 font-montserrat">
                             {coherence.coherenceTracking?.totalUnits || 0}
                           </span>
@@ -1403,7 +1377,7 @@ function BitacoraPageContent() {
                       ¿Qué es la Coherencia?
                     </h3>
                     <p className="text-base sm:text-lg text-gray-800 leading-relaxed mb-3 font-montserrat font-light text-left">
-                      La coherencia es la constancia en tu práctica. Cada semana que completes el Camino del Gorila, 
+                      La coherencia es la constancia en tu práctica. Cada semana que completes el Camino, 
                       cultivas una Unidad de Coherencia (U.C.) y mantenés tu racha activa.
                     </p>
                     <p className="text-base sm:text-lg text-gray-800 leading-relaxed mb-4 font-montserrat font-light text-left">
@@ -1485,14 +1459,122 @@ function BitacoraPageContent() {
       />
 
       {renderMobileTooltip()}
+
+      {/* Efecto visual de Level Up */}
+      <AnimatePresence>
+        {showLevelUpEffect && levelUpData && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[300] flex items-center justify-center pointer-events-none"
+            style={{
+              background: `linear-gradient(135deg, rgba(139, 69, 19, 0.5) 0%, rgba(249, 115, 22, 0.4) 100%)`,
+              backdropFilter: 'blur(12px)'
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0, rotate: -180 }}
+              animate={{ 
+                scale: [0.5, 1.2, 1], 
+                opacity: [0, 1, 1],
+                rotate: [-180, 0, 0]
+              }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ 
+                duration: 0.8,
+                ease: [0.34, 1.56, 0.64, 1]
+              }}
+              className="relative flex flex-col items-center gap-4 p-8 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 rounded-3xl border-2 border-amber-300 shadow-2xl max-w-md mx-4"
+            >
+              {/* Partículas de celebración */}
+              {[...Array(20)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2 rounded-full"
+                  style={{
+                    backgroundColor: ['#F59E0B', '#F97316', '#E11D48'][i % 3],
+                    left: '50%',
+                    top: '50%'
+                  }}
+                  initial={{ 
+                    scale: 0,
+                    x: 0,
+                    y: 0,
+                    opacity: 1
+                  }}
+                  animate={{ 
+                    scale: [0, 1, 0],
+                    x: Math.cos((i * 360 / 20) * Math.PI / 180) * 150,
+                    y: Math.sin((i * 360 / 20) * Math.PI / 180) * 150,
+                    opacity: [1, 1, 0]
+                  }}
+                  transition={{ 
+                    duration: 1.5,
+                    delay: i * 0.05,
+                    ease: 'easeOut'
+                  }}
+                />
+              ))}
+              
+              {/* Icono del gorila animado */}
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.3, 1],
+                  rotate: [0, 10, -10, 0]
+                }}
+                transition={{ 
+                  duration: 0.8,
+                  repeat: 2,
+                  ease: 'easeInOut'
+                }}
+                className="text-8xl relative z-10"
+              >
+                {levelUpData.gorillaIcon || '🦍'}
+              </motion.div>
+              
+              {/* Mensaje de level up */}
+              <div className="text-center relative z-10">
+                <motion.h2
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                  className="text-3xl font-bold text-gray-900 font-montserrat mb-2"
+                >
+                  ¡Subiste de Nivel!
+                </motion.h2>
+                <motion.p
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.5 }}
+                  className="text-xl font-semibold text-amber-600 font-montserrat mb-1"
+                >
+                  Nivel {levelUpData.newLevel}
+                </motion.p>
+                {levelUpData.evolution && (
+                  <motion.p
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.7, duration: 0.5 }}
+                    className="text-sm text-gray-700 font-montserrat font-light"
+                  >
+                    ¡Tu gorila evoluciona!
+                  </motion.p>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
 
-export default function BitacoraPage() {
+export default function WeeklyPathPage() {
   return (
     <CoherenceProvider>
-      <BitacoraPageContent />
+      <WeeklyPathPageContent />
     </CoherenceProvider>
   );
 }

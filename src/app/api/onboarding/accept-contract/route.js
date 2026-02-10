@@ -18,7 +18,8 @@ export async function POST(req) {
     }
 
     const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET);
-    const user = await Users.findById(decoded.userId);
+    const userId = decoded._id || decoded.userId || decoded.id;
+    const user = await Users.findById(userId);
 
     if (!user) {
       return NextResponse.json(

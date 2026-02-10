@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 
 interface Props {
   productCreado: any;

@@ -46,7 +46,7 @@ export async function GET(req) {
       logbook = await WeeklyLogbook.findOne({
         year: targetYear,
         month: targetMonth,
-        isBaseBitacora: { $ne: true } // Excluir bitácoras base
+        isBaseBitacora: { $ne: true } // Excluir caminos base
       }).lean();
       
       // Si no existe, buscar la más reciente como fallback
@@ -64,7 +64,7 @@ export async function GET(req) {
       logbook = await WeeklyLogbook.findOne({
         year: targetYear,
         month: targetMonth,
-        isBaseBitacora: { $ne: true } // Excluir bitácoras base
+        isBaseBitacora: { $ne: true } // Excluir caminos base
       }).lean();
 
       // Si no existe la del mes actual, buscar la más reciente
@@ -77,7 +77,7 @@ export async function GET(req) {
 
     if (!logbook) {
       return NextResponse.json(
-        { error: 'No se encontró ninguna bitácora' },
+        { error: 'No se encontró ninguna camino' },
         { status: 404 }
       );
     }
@@ -94,9 +94,9 @@ export async function GET(req) {
       }
     );
   } catch (error) {
-    console.error('Error obteniendo bitácora del mes:', error);
+    console.error('Error obteniendo camino del mes:', error);
     return NextResponse.json(
-      { error: 'Error al obtener la bitácora', message: error.message },
+      { error: 'Error al obtener la camino', message: error.message },
       { status: 500 }
     );
   }

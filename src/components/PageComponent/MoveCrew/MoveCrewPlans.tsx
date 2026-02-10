@@ -6,9 +6,10 @@ import { useAuth } from '../../../hooks/useAuth';
 import state from '../../../valtio';
 import endpoints from '../../../services/api';
 import Cookies from 'js-cookie';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { useState, useEffect } from 'react';
 import { MiniLoadingSpinner } from '../Products/MiniSpinner';
+import { savePlanIntent } from '../../../utils/redirectQueue';
 
 interface Promocion {
   _id: string;
@@ -106,8 +107,17 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
   }, [auth.user, auth]);
 
   const handleSelect = async (plan: Plan) => {
-    // Si el usuario no está logueado, abrir el modal de login
+    // Si el usuario no está logueado, guardar la intención del plan y abrir el modal de login
     if (!auth.user) {
+      if (typeof window !== 'undefined' && plan) {
+        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+        savePlanIntent({
+          planId: plan.id,
+          provider: plan.provider || 'dlocalgo',
+          origin: origin,
+          plan_token: plan.plan_token
+        });
+      }
       state.loginForm = true;
       return;
     }
@@ -187,11 +197,11 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
   const renderPlans = () => {
     if (activePlans.length === 0) {
       return (
-        <div className="relative bg-gradient-to-br from-gray-50 via-amber-50/20 to-orange-50/10 border border-amber-200/40 rounded-3xl p-10 text-center text-gray-700 font-light overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-200/10 to-orange-200/5 rounded-full blur-3xl" />
+        <div className="relative bg-palette-cream border border-palette-stone/25 rounded-2xl md:rounded-3xl p-10 text-center md:text-left text-palette-stone font-light overflow-hidden shadow-[0_4px_24px_rgba(20,20,17,0.06)]">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-palette-stone/10 rounded-full blur-3xl" />
           <div className="relative z-10">
             <p>
-              Estamos actualizando los planes de Move Crew en este momento. Si querés reservar tu lugar, escribime a <a href="mailto:hola@mformove.com" className="underline">hola@mformove.com</a> o tocá el botón para recibir novedades.
+              Estoy actualizando los planes de Move Crew en este momento. Si querés reservar tu lugar, escribime a <a href="mailto:hola@mformove.com" className="underline text-palette-sage hover:text-palette-ink">hola@mformove.com</a> o tocá el botón para recibir novedades.
             </p>
             <button
               onClick={() => {
@@ -199,7 +209,7 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
                   window.open('mailto:hola@mformove.com');
                 }
               }}
-              className="mt-6 bg-gradient-to-r from-amber-700 to-orange-700 text-white px-10 py-3 rounded-2xl text-sm md:text-base hover:from-amber-800 hover:to-orange-800 transition-all duration-300 shadow-lg shadow-amber-500/20"
+              className="mt-6 font-montserrat font-semibold text-sm uppercase tracking-[0.2em] rounded-full px-6 py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage transition-all duration-200"
             >
               Recibir novedades
             </button>
@@ -226,72 +236,71 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  className={`relative border rounded-3xl p-8 overflow-hidden flex flex-col h-full min-h-[600px] transition-all duration-300 ${
+                  className={`relative border rounded-2xl md:rounded-3xl p-8 overflow-hidden flex flex-col h-full min-h-[600px] transition-all duration-300 ${
                     plan._id === annualPlan._id
-                      ? 'border-amber-400 bg-gradient-to-br from-amber-50 via-orange-50/40 to-rose-50/30 shadow-xl shadow-amber-200/60 scale-[1.02]'
-                      : 'border-amber-200/40 bg-gradient-to-br from-gray-50 via-amber-50/20 to-orange-50/10'
+                      ? 'border-palette-stone/50 bg-palette-stone/10 shadow-[0_8px_32px_rgba(20,20,17,0.08)] scale-[1.02]'
+                      : 'border-palette-stone/25 bg-palette-cream shadow-[0_4px_24px_rgba(20,20,17,0.06)]'
                   }`}
                 >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-200/10 to-orange-200/5 rounded-full blur-3xl" />
- 
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-palette-stone/10 rounded-full blur-3xl" />
 
                   <div className="relative z-10 flex flex-col flex-grow">
                     {promocionPlan && (
-                      <div className="mb-3 bg-gradient-to-r from-amber-700 to-orange-700 text-white px-4 py-2 rounded-lg inline-block shadow-lg shadow-amber-500/20">
-                        <p className="text-sm font-semibold">{promocionPlan.porcentajeDescuento}% OFF - {promocionPlan.nombre}</p>
+                      <div className="mb-3 bg-palette-sage text-palette-cream px-4 py-2 rounded-lg inline-block">
+                        <p className="text-sm font-montserrat font-semibold">{promocionPlan.porcentajeDescuento}% OFF - {promocionPlan.nombre}</p>
                       </div>
                     )}
-                    <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
+                    <p className="font-montserrat text-xs uppercase tracking-[0.2em] text-palette-stone">
                       {plan.frequency_label}
                       {plan._id === annualPlan._id && anualMensualizado !== null && (
-                        <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full bg-amber-100 text-amber-800 text-[11px] font-semibold">
+                        <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full bg-palette-stone/20 text-palette-ink text-[11px] font-semibold">
                           Equivale a {formatPrice(plan.currency, anualMensualizado)}/mes
                         </span>
                       )}
                     </p>
-                    <h3 className="text-2xl md:text-3xl font-semibold mt-2 mb-3 text-black">{plan.name}</h3>
-                    <p className="text-sm md:text-base text-gray-600 mb-6 font-light">{plan.description}</p>
+                    <h3 className="text-2xl md:text-3xl font-montserrat font-semibold mt-2 mb-3 text-palette-ink tracking-tight">{plan.name}</h3>
+                    <p className="text-sm md:text-base text-palette-stone mb-6 font-light">{plan.description}</p>
                     <div className="mb-6">
                       {promocionPlan && precioConDescuento ? (
                         <>
-                          <p className="text-2xl line-through text-gray-400">{formatPrice(plan.currency, plan.amount)}</p>
-                          <p className="text-4xl font-bold text-amber-700 mt-1">{formatPrice(plan.currency, Math.round(precioConDescuento))}</p>
-                          <p className="text-gray-500 text-sm font-light mt-1">
+                          <p className="text-2xl line-through text-palette-stone/70">{formatPrice(plan.currency, plan.amount)}</p>
+                          <p className="text-4xl font-bold text-palette-teal mt-1">{formatPrice(plan.currency, Math.round(precioConDescuento))}</p>
+                          <p className="text-palette-stone text-sm font-light mt-1">
                             Facturación {plan.frequency_label?.toLowerCase()}
                           </p>
-                          <p className="text-amber-700 text-sm font-semibold mt-1">
+                          <p className="text-palette-stone text-sm font-semibold mt-1">
                             Ahorras {formatPrice(plan.currency, Math.round(plan.amount - precioConDescuento))}
                           </p>
                         </>
                       ) : (
                         <>
                           <div className="flex items-end gap-2">
-                            <p className={`text-4xl font-bold ${plan._id === annualPlan._id ? 'text-amber-800' : 'text-black'}`}>
+                            <p className={`text-4xl font-bold ${plan._id === annualPlan._id ? 'text-palette-teal' : 'text-palette-ink'}`}>
                               {formatPrice(plan.currency, plan.amount)}
                             </p>
                             {plan._id === annualPlan._id && ahorroAnual !== null && ahorroAnual > 0 && (
-                              <span className="text-sm font-semibold text-amber-700 bg-amber-100 px-2 py-1 rounded-full">
+                              <span className="text-sm font-semibold text-palette-ink bg-palette-stone/20 px-2 py-1 rounded-full">
                                 Ahorras {formatPrice(plan.currency, ahorroAnual)}
                               </span>
                             )}
                           </div>
-                          <p className="text-gray-500 text-sm font-light mt-1">
+                          <p className="text-palette-stone text-sm font-light mt-1">
                             Facturación {plan.frequency_label?.toLowerCase()}
                           </p>
                           {plan._id === monthlyPlan._id && (
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-palette-stone mt-1">
                               Paga mes a mes, cancela cuando quieras.
                             </p>
                           )}
                           {plan._id === annualPlan._id && (
-                            <p className="text-xs text-amber-700 font-semibold mt-1">
+                            <p className="text-xs text-palette-stone font-semibold mt-1">
                               Mejor precio: bloquea 12 meses y asegura tu lugar.
                             </p>
                           )}
                         </>
                       )}
                     </div>
-                    <div className="space-y-3 text-sm md:text-base text-gray-700 font-light mb-8 flex-grow">
+                    <div className="space-y-3 text-sm md:text-base text-palette-stone font-light mb-8 flex-grow">
                       <p>• Acceso completo a prácticas y biblioteca de recursos.</p>
                       <p>• Comunidad privada y desafíos trimestrales.</p>
                       <p>• Material educativo y recordatorios para sostener tu proceso.</p>
@@ -299,7 +308,7 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
                     <button
                       onClick={() => handleSelect(plan)}
                       disabled={loadingPlanId === plan._id}
-                      className="w-full bg-gradient-to-r from-amber-700 to-orange-700 text-white rounded-2xl py-3 font-semibold text-sm md:text-base hover:from-amber-800 hover:to-orange-800 transition-all duration-300 shadow-lg shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-auto"
+                      className="w-full font-montserrat font-semibold text-sm uppercase tracking-[0.2em] rounded-full py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-auto"
                     >
                       {loadingPlanId === plan._id ? (
                         <>
@@ -335,41 +344,41 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="relative border border-amber-200/40 rounded-3xl p-8 bg-gradient-to-br from-gray-50 via-amber-50/20 to-orange-50/10 overflow-hidden flex flex-col h-full min-h-[600px] transition-all duration-300"
+              className="relative border border-palette-stone/25 rounded-2xl md:rounded-3xl p-8 bg-palette-cream overflow-hidden flex flex-col h-full min-h-[600px] transition-all duration-300 shadow-[0_4px_24px_rgba(20,20,17,0.06)]"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-200/10 to-orange-200/5 rounded-full blur-3xl" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-palette-stone/10 rounded-full blur-3xl" />
 
               <div className="relative z-10 flex flex-col flex-grow">
                 {promocionPlan && (
-                  <div className="mb-3 bg-gradient-to-r from-amber-700 to-orange-700 text-white px-4 py-2 rounded-lg inline-block shadow-lg shadow-amber-500/20">
-                    <p className="text-sm font-semibold">{promocionPlan.porcentajeDescuento}% OFF - {promocionPlan.nombre}</p>
+                  <div className="mb-3 bg-palette-sage text-palette-cream px-4 py-2 rounded-lg inline-block">
+                    <p className="text-sm font-montserrat font-semibold">{promocionPlan.porcentajeDescuento}% OFF - {promocionPlan.nombre}</p>
                   </div>
                 )}
-                <p className="text-xs uppercase tracking-[0.3em] text-gray-500">{plan.frequency_label}</p>
-                <h3 className="text-2xl md:text-3xl font-semibold mt-2 mb-3 text-black">{plan.name}</h3>
-                <p className="text-sm md:text-base text-gray-600 mb-6 font-light">{plan.description}</p>
+                <p className="font-montserrat text-xs uppercase tracking-[0.2em] text-palette-stone">{plan.frequency_label}</p>
+                <h3 className="text-2xl md:text-3xl font-montserrat font-semibold mt-2 mb-3 text-palette-ink tracking-tight">{plan.name}</h3>
+                <p className="text-sm md:text-base text-palette-stone mb-6 font-light">{plan.description}</p>
                 <div className="mb-6">
                   {promocionPlan && precioConDescuento ? (
                     <>
-                      <p className="text-2xl line-through text-gray-400">{formatPrice(plan.currency, plan.amount)}</p>
-                      <p className="text-4xl font-bold text-amber-700 mt-1">{formatPrice(plan.currency, Math.round(precioConDescuento))}</p>
-                      <p className="text-gray-500 text-sm font-light mt-1">
+                      <p className="text-2xl line-through text-palette-stone/70">{formatPrice(plan.currency, plan.amount)}</p>
+                      <p className="text-4xl font-bold text-palette-teal mt-1">{formatPrice(plan.currency, Math.round(precioConDescuento))}</p>
+                      <p className="text-palette-stone text-sm font-light mt-1">
                         Facturación {plan.frequency_label?.toLowerCase()}
                       </p>
-                      <p className="text-amber-700 text-sm font-semibold mt-1">
+                      <p className="text-palette-stone text-sm font-semibold mt-1">
                         Ahorras {formatPrice(plan.currency, Math.round(plan.amount - precioConDescuento))}
                       </p>
                     </>
                   ) : (
                     <>
-                      <p className="text-4xl font-bold text-black">{formatPrice(plan.currency, plan.amount)}</p>
-                      <p className="text-gray-500 text-sm font-light mt-1">
+                      <p className="text-4xl font-bold text-palette-ink">{formatPrice(plan.currency, plan.amount)}</p>
+                      <p className="text-palette-stone text-sm font-light mt-1">
                         Facturación {plan.frequency_label?.toLowerCase()}
                       </p>
                     </>
                   )}
                 </div>
-                <div className="space-y-3 text-sm md:text-base text-gray-700 font-light mb-8 flex-grow">
+                <div className="space-y-3 text-sm md:text-base text-palette-stone font-light mb-8 flex-grow">
                   <p>• Acceso completo a prácticas y biblioteca de recursos.</p>
                   <p>• Comunidad privada y desafíos trimestrales.</p>
                   <p>• Material educativo y recordatorios para sostener tu proceso.</p>
@@ -377,7 +386,7 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
                 <button
                   onClick={() => handleSelect(plan)}
                   disabled={loadingPlanId === plan._id}
-                  className="w-full bg-gradient-to-r from-amber-700 to-orange-700 text-white rounded-2xl py-3 font-semibold text-sm md:text-base hover:from-amber-800 hover:to-orange-800 transition-all duration-300 shadow-lg shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-auto"
+                  className="w-full font-montserrat font-semibold text-sm uppercase tracking-[0.2em] rounded-full py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-auto"
                 >
                   {loadingPlanId === plan._id ? (
                     <>
@@ -397,45 +406,25 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
   };
 
   return (
-    <section className="py-20 bg-white font-montserrat" id="move-crew-plans">
-      <div className="max-w-6xl mx-auto px-6">
+    <section className="py-16 md:py-20 bg-palette-cream font-montserrat" id="move-crew-plans">
+      <div className="w-[85%] max-w-6xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
           viewport={{ once: true }}
-          className="mb-12 text-center"
+          className="mb-10 md:mb-12 text-start md:text-left"
         >
-          <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-500 mb-3">Inversión</p>
-          <h2 className="text-3xl md:text-5xl font-bold text-black">Elegí el ciclo que mejor va con vos</h2>
-          <p className="text-base md:text-xl text-gray-600 max-w-3xl mx-auto font-light mt-4">
-            Te ofrezco planes mensuales y trimestrales para que puedas sumarte cuando estés listo/a. Elijas el que elijas, vas a acceder a toda mi biblioteca, desafíos, comunidad y soporte.
-          </p>
+          <p className="font-montserrat uppercase tracking-[0.2em] text-xs md:text-sm text-palette-stone/80 mb-2">Inversión</p>
+          <h2 className="text-2xl md:text-4xl font-montserrat font-semibold text-palette-ink tracking-tight mb-4">
+            Elegí el ciclo que mejor va con vos
+          </h2>
+
         </motion.div>
 
         {renderPlans()}
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          viewport={{ once: true }}
-          className="relative mt-16 text-center bg-gradient-to-br from-amber-50/40 via-orange-50/20 to-rose-50/20 rounded-3xl p-8 md:p-12 border border-amber-200/40 overflow-hidden"
-        >
-          <div className="absolute top-0 left-0 w-40 h-40 bg-gradient-to-br from-amber-200/10 to-orange-200/5 rounded-full blur-3xl" />
-          <div className="relative z-10">
-            <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-black">
-              Garantía de 30 días con condiciones claras
-            </h3>
-            <p className="text-base md:text-lg text-gray-600 font-light max-w-2xl mx-auto mb-4">
-              Si después del primer mes sentís que Move Crew no es para vos, te devuelvo tu dinero. 
-              Pero para acceder a la garantía necesitás cumplir mínimos razonables: haber completado al menos 6 sesiones (2 por semana), participar activamente en la comunidad 3 veces, y seguir las planificaciones propuestas.
-            </p>
-            <p className="text-sm md:text-base text-gray-500 font-light">
-              La garantía protege a quienes realmente intentan, no a quienes quieren probar gratis.
-            </p>
-          </div>
-        </motion.div>
+     
       </div>
     </section>
   );

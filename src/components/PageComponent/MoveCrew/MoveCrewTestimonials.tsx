@@ -29,20 +29,20 @@ const MoveCrewTestimonials = () => {
   };
 
   return (
-    <section className="py-20 bg-white font-montserrat">
-      <div className="max-w-6xl mx-auto px-6">
+    <section className="py-16 md:py-20 bg-palette-cream font-montserrat">
+      <div className="w-[85%] max-w-6xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
           viewport={{ once: true }}
-          className="mb-12 text-center"
+          className="mb-10 md:mb-12 text-start md:text-left"
         >
-          <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-500 mb-3">Resultados reales</p>
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-black">
+          <p className="font-montserrat uppercase tracking-[0.2em] text-xs md:text-sm text-palette-stone/80 mb-2">Resultados reales</p>
+          <h2 className="text-2xl md:text-4xl font-montserrat font-semibold text-palette-ink tracking-tight mb-4">
             Lo que dicen quienes entrenan conmigo
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 font-light max-w-3xl mx-auto leading-relaxed">
+          <p className="font-raleway italic text-palette-stone text-base md:text-lg max-w-2xl mx-auto md:mx-0 leading-relaxed">
             Alumnos que están transformando su relación con el movimiento
           </p>
         </motion.div>
@@ -55,14 +55,13 @@ const MoveCrewTestimonials = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="relative bg-gradient-to-br from-gray-50 via-amber-50/20 to-orange-50/10 backdrop-blur-sm rounded-3xl p-6 md:p-8 border border-amber-200/40 hover:from-amber-50/30 hover:via-orange-50/20 hover:to-rose-50/10 transition-all duration-300 flex flex-col overflow-hidden"
+              className="relative bg-palette-cream rounded-2xl md:rounded-3xl p-6 md:p-8 border border-palette-stone/25 shadow-[0_4px_24px_rgba(20,20,17,0.06)] flex flex-col overflow-hidden"
             >
-              {/* Decoración sutil de fondo */}
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-200/10 to-orange-200/5 rounded-full blur-2xl" />
+              <div className="absolute top-0 right-0 w-24 h-24 bg-palette-sage/10 rounded-full blur-2xl" />
               
               <div className="relative z-10">
               <div className="mb-6">
-                <svg viewBox="0 0 24 24" className="w-8 h-8 text-black/20">
+                <svg viewBox="0 0 24 24" className="w-8 h-8 text-palette-stone/30">
                   <path 
                     fill="currentColor" 
                     d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"
@@ -71,26 +70,23 @@ const MoveCrewTestimonials = () => {
               </div>
 
               <div className="mb-8 flex-1">
-                <p className="text-sm md:text-base text-gray-700 font-light leading-relaxed">
+                <p className="text-sm md:text-base text-palette-stone font-light leading-relaxed">
                   {testimonial.text}
                 </p>
               </div>
 
-              <div className="w-full h-px bg-black/10 mb-6"/>
+              <div className="w-full h-px bg-palette-stone/20 mb-6"/>
               <div className="flex items-center space-x-4">
-                {/* Profile Image */}
-                <div className="w-12 h-12 rounded-full overflow-hidden border border-black/10 flex-shrink-0">
+                <div className="w-12 h-12 rounded-full overflow-hidden border border-palette-stone/25 flex-shrink-0">
                   <img
                     src={testimonial.photo}
                     alt={testimonial.name}
                     className="w-full h-full object-cover grayscale-[30%]"
                   />
                 </div>
-                
-                {/* Profile Info */}
                 <div>
-                  <h4 className="font-semibold text-black text-sm md:text-base mb-1">{testimonial.name}</h4>
-                  <p className="text-gray-500 text-xs md:text-sm font-light">{testimonial.plan}</p>
+                  <h4 className="font-montserrat font-semibold text-palette-ink text-sm md:text-base mb-1">{testimonial.name}</h4>
+                  <p className="text-palette-stone text-xs md:text-sm font-light">{testimonial.plan}</p>
                 </div>
               </div>
               </div>
@@ -103,14 +99,13 @@ const MoveCrewTestimonials = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
           viewport={{ once: true }}
-          className="text-center"
+          className="text-center md:text-left"
         >
           <button
             onClick={scrollToPlans}
-            className="group relative bg-black text-white px-8 py-3.5 rounded-full font-medium text-base md:text-lg tracking-wide hover:bg-gray-900 transition-all duration-300 border border-black/10 hover:border-black/20 shadow-sm hover:shadow-md"
+            className="font-montserrat font-semibold text-sm uppercase tracking-[0.2em] rounded-full px-6 py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage transition-all duration-200"
           >
-            <span className="relative z-10">Quiero estos resultados</span>
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-500/0 via-amber-500/5 to-orange-500/0 group-hover:from-amber-500/10 group-hover:via-amber-500/15 group-hover:to-orange-500/10 transition-all duration-300 opacity-0 group-hover:opacity-100" />
+            Quiero estos resultados
           </button>
         </motion.div>
       </div>

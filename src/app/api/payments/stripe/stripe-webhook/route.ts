@@ -73,7 +73,6 @@ export const POST = async (req: NextRequest) => {
             const customerEmail = session.customer_details?.email || session.metadata?.email;
             
             if (customerEmail) {
-              console.log(`✅ Checkout completado para membresía: ${customerEmail}`);
               // La suscripción se procesará cuando llegue el evento customer.subscription.created
               // Este evento solo sirve como log/confirmación
             }
@@ -91,22 +90,16 @@ export const POST = async (req: NextRequest) => {
           const isMembership = subscription.metadata?.type === 'membership';
           
           if (isMembership && email) {
-            console.log(`✅ Procesando creación de suscripción de membresía para: ${email}`);
-            console.log(`📧 Email del usuario detectado: ${email}`);
             
             try {
               const user = await createStripeSubscription(email);
               const status = await getLatestSubscriptionStatusByEmail(email);
               
               if (user) {
-                console.log(`✅ Membresía creada exitosamente para: ${email}`);
-                console.log(`👤 Usuario encontrado: ${user.name || 'Sin nombre'} (${user.email})`);
-                console.log(`📊 Estado de suscripción: ${status}`);
 
                 // Inicializar tracking de coherencia para Move Crew
                 try {
                   await ensureCoherenceTracking(user._id);
-                  console.log(`🦍 Tracking inicial de coherencia creado para: ${user.email}`);
                 } catch (trackingErr) {
                   console.error(`❌ Error creando tracking de coherencia para ${user.email}:`, trackingErr);
                 }
@@ -115,13 +108,11 @@ export const POST = async (req: NextRequest) => {
                 
                 // Enviar email de bienvenida al usuario (onboarding)
                 try {
-                  console.log(`📨 Enviando email de bienvenida (onboarding) a: ${user.email}`);
                   await emailService.sendOnboardingWelcome({
                     email: user.email,
                     name: user.name || 'Miembro',
                     onboardingLink: `${origin}/onboarding/bienvenida`
                   });
-                  console.log(`✅ Email de bienvenida (onboarding) enviado exitosamente a: ${user.email}`);
                 } catch (emailErr) {
                   console.error(`❌ Error enviando email de bienvenida a ${user.email}:`, emailErr);
                 }
@@ -129,7 +120,6 @@ export const POST = async (req: NextRequest) => {
                 // Enviar email de notificación al administrador
                 try {
                   const adminEmail = 'mateomolfino09@gmail.com';
-                  console.log(`📨 Enviando notificación de membresía al administrador: ${adminEmail}`);
                   await emailService.sendAdminMembershipNotification({
                     userName: user.name || 'Sin nombre',
                     userEmail: user.email,
@@ -145,7 +135,6 @@ export const POST = async (req: NextRequest) => {
                     }),
                     adminUrl: `${origin}/admin`
                   }, adminEmail);
-                  console.log(`✅ Notificación de administrador enviada exitosamente a: ${adminEmail}`);
                 } catch (adminEmailErr) {
                   console.error(`❌ Error enviando notificación al administrador:`, adminEmailErr);
                 }
@@ -210,7 +199,6 @@ export const POST = async (req: NextRequest) => {
                           })
                         : null;
                       
-                      console.log(`📨 Enviando email de cancelación a: ${user.email}`);
                       await emailService.sendSubscriptionCancelled({
                         email: user.email,
                         name: user.name || 'Miembro',
@@ -224,12 +212,10 @@ export const POST = async (req: NextRequest) => {
                         feedbackUrl: `${origin}/contact?reason=cancellation&email=${encodeURIComponent(user.email)}`,
                         reactivateUrl: `${origin}/move-crew`
                       });
-                      console.log(`✅ Email de cancelación enviado exitosamente a: ${user.email}`);
                       
                       // Enviar email de notificación al administrador
                       try {
                         const adminEmail = 'mateomolfino09@gmail.com';
-                        console.log(`📨 Enviando notificación de cancelación al administrador: ${adminEmail}`);
                         await emailService.sendAdminSubscriptionCancelled({
                           userName: user.name || 'Sin nombre',
                           userEmail: user.email,
@@ -246,7 +232,6 @@ export const POST = async (req: NextRequest) => {
                           accessUntil: periodEnd,
                           adminUrl: `${origin}/admin`
                         }, adminEmail);
-                        console.log(`✅ Notificación de cancelación enviada exitosamente al administrador: ${adminEmail}`);
                       } catch (adminEmailErr) {
                         console.error(`❌ Error enviando notificación de cancelación al administrador:`, adminEmailErr);
                       }
@@ -283,7 +268,6 @@ export const POST = async (req: NextRequest) => {
             if (isMembership && user) {
               try {
                 const emailService = EmailService.getInstance();
-                console.log(`📨 Enviando email de cancelación (eliminada) a: ${user.email}`);
                 await emailService.sendSubscriptionCancelled({
                   email: user.email,
                   name: user.name || 'Miembro',
@@ -297,12 +281,10 @@ export const POST = async (req: NextRequest) => {
                   feedbackUrl: `${origin}/contact?reason=cancellation&email=${encodeURIComponent(user.email)}`,
                   reactivateUrl: `${origin}/move-crew`
                 });
-                console.log(`✅ Email de cancelación enviado exitosamente a: ${user.email}`);
                 
                 // Enviar email de notificación al administrador
                 try {
                   const adminEmail = 'mateomolfino09@gmail.com';
-                  console.log(`📨 Enviando notificación de cancelación (eliminada) al administrador: ${adminEmail}`);
                   await emailService.sendAdminSubscriptionCancelled({
                     userName: user.name || 'Sin nombre',
                     userEmail: user.email,
@@ -319,7 +301,6 @@ export const POST = async (req: NextRequest) => {
                     accessUntil: null,
                     adminUrl: `${origin}/admin`
                   }, adminEmail);
-                  console.log(`✅ Notificación de cancelación (eliminada) enviada exitosamente al administrador: ${adminEmail}`);
                 } catch (adminEmailErr) {
                   console.error(`❌ Error enviando notificación de cancelación al administrador:`, adminEmailErr);
                 }
@@ -354,7 +335,6 @@ export const POST = async (req: NextRequest) => {
                   const amount = invoice.amount_due ? (invoice.amount_due / 100).toFixed(2) : null;
                   const planName = subscription.metadata?.planName || 'Move Crew';
                   
-                  console.log(`📨 Enviando email de pago fallido a: ${user.email}`);
                   await emailService.sendPaymentFailed({
                     email: user.email,
                     name: user.name || 'Miembro',
@@ -371,12 +351,10 @@ export const POST = async (req: NextRequest) => {
                     retryUrl: `${origin}/move-crew`,
                     feedbackUrl: `${origin}/contact?reason=payment&email=${encodeURIComponent(user.email)}`
                   });
-                  console.log(`✅ Email de pago fallido enviado exitosamente a: ${user.email}`);
                   
                   // Enviar email de notificación al administrador
                   try {
                     const adminEmail = 'mateomolfino09@gmail.com';
-                    console.log(`📨 Enviando notificación de pago fallido al administrador: ${adminEmail}`);
                     await emailService.sendAdminPaymentFailed({
                       userName: user.name || 'Sin nombre',
                       userEmail: user.email,
@@ -396,7 +374,6 @@ export const POST = async (req: NextRequest) => {
                       invoiceId: invoice.id,
                       adminUrl: `${origin}/admin`
                     }, adminEmail);
-                    console.log(`✅ Notificación de pago fallido enviada exitosamente al administrador: ${adminEmail}`);
                   } catch (adminEmailErr) {
                     console.error(`❌ Error enviando notificación de pago fallido al administrador:`, adminEmailErr);
                   }

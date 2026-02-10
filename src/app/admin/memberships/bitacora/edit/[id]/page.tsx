@@ -7,21 +7,34 @@ import Cookies from 'js-cookie';
 import AdmimDashboardLayout from '../../../../../../components/AdmimDashboardLayout';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
-import { ArrowLeftIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, CalendarIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { ClassModule } from '../../../../../../../typings';
+
+export interface WeekContentItem {
+  videoUrl: string;
+  videoId?: string;
+  videoName?: string;
+  videoThumbnail?: string;
+  videoDuration?: number;
+  audioUrl?: string;
+  audioTitle?: string;
+  audioDuration?: number;
+  audioText?: string;
+  level: number;
+  moduleId: string;
+  submoduleSlug: string;
+  submoduleName: string;
+  orden: number;
+}
 
 interface WeekContent {
   weekNumber: number;
   moduleName?: string;
-  videoUrl: string;
-  videoId?: string;
-  videoName?: string;
-  videoDescription?: string;
-  audioUrl: string;
-  audioTitle?: string;
-  text: string;
+  weekTitle: string;
   publishDate: string;
   isPublished: boolean;
+  contents: WeekContentItem[];
 }
 
 interface PageProps {
@@ -37,15 +50,27 @@ export default function EditBitacoraPage({ params }: PageProps) {
   const [submitting, setSubmitting] = useState(false);
   const [logbookId, setLogbookId] = useState<string>(params.id);
 
+  const [classModules, setClassModules] = useState<ClassModule[]>([]);
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
-  const [title, setTitle] = useState('Camino del Gorila');
+  const [title, setTitle] = useState('Camino');
   const [description, setDescription] = useState('');
   const [isBaseBitacora, setIsBaseBitacora] = useState(false);
   const [weeks, setWeeks] = useState<WeekContent[]>([]);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const prevMonthRef = useRef<number>(month);
   const prevYearRef = useRef<number>(year);
+
+  const emptyContentItem = (orden: number): WeekContentItem => ({
+    videoUrl: '',
+    videoName: '',
+    videoThumbnail: '',
+    level: 1,
+    moduleId: '',
+    submoduleSlug: '',
+    submoduleName: '',
+    orden
+  });
 
   const getFirstMondayOfMonth = useCallback((year: number, month: number): Date => {
     const firstDay = new Date(year, month - 1, 1);
@@ -96,7 +121,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
         });
 
         if (!response.ok) {
-          throw new Error('Bitácora no encontrada');
+          throw new Error('Camino no encontrada');
         }
 
         const data = await response.json();
@@ -104,40 +129,58 @@ export default function EditBitacoraPage({ params }: PageProps) {
 
         setMonth(loadedLogbook.month);
         setYear(loadedLogbook.year);
-        setTitle(loadedLogbook.title || 'Camino del Gorila');
+        setTitle(loadedLogbook.title || 'Camino');
         setDescription(loadedLogbook.description || '');
         setIsBaseBitacora(loadedLogbook.isBaseBitacora || false);
 
-        // Convertir la estructura de la bitácora a la estructura del formulario
-        const formattedWeeks: WeekContent[] = loadedLogbook.weeklyContents.map((week: any) => {
-          // Si tiene dailyContents, usar el primer día para video/audio (simplificado para el formulario)
-          const firstDailyVideo = week.dailyContents?.find((d: any) => d.visualContent?.videoUrl || d.visualContent?.videoId);
-          const firstDailyAudio = week.dailyContents?.find((d: any) => d.audioTextContent?.audioUrl || d.audioTextContent?.text);
-
-          // Obtener fecha de publicación: priorizar dailyContents, luego week.publishDate
+        // Convertir a estructura con contents[] (nuevo formato o legacy)
+        const formattedWeeks: WeekContent[] = (loadedLogbook.weeklyContents || []).map((week: any) => {
           let publishDate = '';
-          if (firstDailyVideo?.publishDate) {
-            publishDate = new Date(firstDailyVideo.publishDate).toISOString().split('T')[0];
-          } else if (firstDailyAudio?.publishDate) {
-            publishDate = new Date(firstDailyAudio.publishDate).toISOString().split('T')[0];
-          } else if (week.publishDate) {
-            publishDate = typeof week.publishDate === 'string' 
-              ? week.publishDate.split('T')[0]
-              : new Date(week.publishDate).toISOString().split('T')[0];
+          if (week.publishDate) {
+            publishDate = typeof week.publishDate === 'string' ? week.publishDate.split('T')[0] : new Date(week.publishDate).toISOString().split('T')[0];
           }
-
+          let contents: WeekContentItem[] = [];
+          if (week.contents && Array.isArray(week.contents) && week.contents.length > 0) {
+            contents = week.contents.map((c: any, idx: number) => ({
+              videoUrl: c.videoUrl || '',
+              videoId: c.videoId,
+              videoName: c.videoName || '',
+              videoThumbnail: c.videoThumbnail || '',
+              videoDuration: c.videoDuration,
+              audioUrl: c.audioUrl || '',
+              audioTitle: c.audioTitle || '',
+              audioDuration: c.audioDuration,
+              audioText: c.audioText || '',
+              level: Math.min(10, Math.max(1, Number(c.level) || 1)),
+              moduleId: c.moduleId ? String(c.moduleId) : '',
+              submoduleSlug: c.submoduleSlug || '',
+              submoduleName: c.submoduleName || '',
+              orden: idx
+            }));
+          } else {
+            contents = [{
+              videoUrl: week.videoUrl || '',
+              videoId: week.videoId,
+              videoName: week.videoName || '',
+              videoThumbnail: week.videoThumbnail || '',
+              videoDuration: week.videoDuration,
+              audioUrl: week.audioUrl || '',
+              audioTitle: week.audioTitle || '',
+              audioText: week.text || '',
+              level: 1,
+              moduleId: '',
+              submoduleSlug: '',
+              submoduleName: '',
+              orden: 0
+            }];
+          }
           return {
             weekNumber: week.weekNumber,
             moduleName: week.moduleName || '',
-            videoUrl: firstDailyVideo?.visualContent?.videoUrl || week.videoUrl || '',
-            videoId: firstDailyVideo?.visualContent?.videoId || week.videoId || '',
-            videoName: firstDailyVideo?.visualContent?.nombre || week.videoName || '',
-            videoDescription: firstDailyVideo?.visualContent?.description || '',
-            audioUrl: firstDailyAudio?.audioTextContent?.audioUrl || week.audioUrl || '',
-            audioTitle: firstDailyAudio?.audioTextContent?.nombre || week.audioTitle || '',
-            text: firstDailyAudio?.audioTextContent?.text || week.text || '',
-            publishDate: publishDate,
-            isPublished: firstDailyVideo?.isPublished !== undefined ? firstDailyVideo.isPublished : (firstDailyAudio?.isPublished !== undefined ? firstDailyAudio.isPublished : (week.isPublished || false))
+            weekTitle: week.weekTitle || `Semana ${week.weekNumber}`,
+            publishDate,
+            isPublished: week.isPublished || false,
+            contents
           };
         });
         setWeeks(formattedWeeks);
@@ -146,7 +189,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
         prevYearRef.current = year;
       } catch (err: any) {
         console.error('Error fetching logbook for edit:', err);
-        toast.error(err.message || 'Error al cargar la bitácora para edición');
+        toast.error(err.message || 'Error al cargar la camino para edición');
         router.push('/admin/memberships/bitacora/list');
       } finally {
         setLoading(false);
@@ -155,6 +198,13 @@ export default function EditBitacoraPage({ params }: PageProps) {
 
     fetchLogbookData();
   }, [auth.user, router, logbookId]);
+
+  useEffect(() => {
+    fetch('/api/class-modules?all=1', { credentials: 'include', cache: 'no-store' })
+      .then((r) => r.ok ? r.json() : [])
+      .then((data) => setClassModules(Array.isArray(data) ? data : []))
+      .catch(() => setClassModules([]));
+  }, []);
 
   // Recalcular fechas de publicación solo si el usuario cambia mes o año manualmente
   // No recalcular cuando se cargan los datos iniciales
@@ -183,18 +233,71 @@ export default function EditBitacoraPage({ params }: PageProps) {
     setWeeks(newWeeks);
   };
 
+  const updateContent = (weekIndex: number, contentIndex: number, field: keyof WeekContentItem, value: any) => {
+    const newWeeks = [...weeks];
+    const contents = [...(newWeeks[weekIndex].contents || [])];
+    contents[contentIndex] = { ...contents[contentIndex], [field]: value };
+    if (field === 'submoduleName' && typeof value === 'string') {
+      contents[contentIndex].submoduleSlug = value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    }
+    if (field === 'moduleId') {
+      contents[contentIndex].submoduleSlug = '';
+      contents[contentIndex].submoduleName = '';
+    }
+    newWeeks[weekIndex].contents = contents;
+    setWeeks(newWeeks);
+  };
+
+  const addContent = (weekIndex: number) => {
+    const newWeeks = [...weeks];
+    const contents = [...(newWeeks[weekIndex].contents || [])];
+    contents.push(emptyContentItem(contents.length));
+    newWeeks[weekIndex].contents = contents;
+    setWeeks(newWeeks);
+  };
+
+  const removeContent = (weekIndex: number, contentIndex: number) => {
+    const newWeeks = [...weeks];
+    let contents = newWeeks[weekIndex].contents.filter((_, i) => i !== contentIndex);
+    if (contents.length === 0) contents = [emptyContentItem(0)];
+    newWeeks[weekIndex].contents = contents.map((c, i) => ({ ...c, orden: i }));
+    setWeeks(newWeeks);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
-
     try {
-      // Validar que todos los campos estén completos
       for (let i = 0; i < weeks.length; i++) {
         const week = weeks[i];
-        if (!week.videoUrl || !week.audioUrl || !week.text || !week.publishDate) {
-          toast.error(`Por favor completa todos los campos de la semana ${i + 1}`);
+        if (!week.publishDate) {
+          toast.error(`Semana ${i + 1}: falta fecha de publicación`);
           setSubmitting(false);
           return;
+        }
+        const contents = week.contents || [];
+        if (contents.length === 0) {
+          toast.error(`Semana ${i + 1}: agrega al menos un contenido (video)`);
+          setSubmitting(false);
+          return;
+        }
+        for (let j = 0; j < contents.length; j++) {
+          const c = contents[j];
+          if (!c.videoUrl?.trim()) {
+            toast.error(`Semana ${i + 1}, contenido ${j + 1}: URL del video es requerida`);
+            setSubmitting(false);
+            return;
+          }
+          if (!c.moduleId) {
+            toast.error(`Semana ${i + 1}, contenido ${j + 1}: selecciona un módulo`);
+            setSubmitting(false);
+            return;
+          }
+          if (!c.submoduleSlug?.trim() && !c.submoduleName?.trim()) {
+            toast.error(`Semana ${i + 1}, contenido ${j + 1}: indica submódulo o crea uno nuevo`);
+            setSubmitting(false);
+            return;
+          }
         }
       }
 
@@ -203,75 +306,47 @@ export default function EditBitacoraPage({ params }: PageProps) {
         year,
         title,
         description,
-        isBaseBitacora,
         userEmail: auth.user?.email,
-        weeklyContents: weeks.map(week => ({
-            weekNumber: week.weekNumber,
-            moduleName: week.moduleName?.trim() || '',
-            weekTitle: `Semana ${week.weekNumber}`,
-            // Contenido legacy (semanal)
-            videoUrl: week.videoUrl,
-            videoId: week.videoId || '',
-            videoName: week.videoName?.trim() || `Semana ${week.weekNumber}`,
-            audioUrl: week.audioUrl,
-            audioTitle: week.audioTitle?.trim() || `Semana ${week.weekNumber}`,
-            text: week.text,
-            // Para contenido diario, crear un día con video y audio
-            dailyContents: week.videoUrl || week.audioUrl || week.text ? [{
-              dayNumber: 1,
-              dayTitle: `Semana ${week.weekNumber}`,
-              visualContent: week.videoUrl ? {
-                type: 'video',
-                nombre: week.videoName?.trim() || '',
-                videoUrl: week.videoUrl,
-                videoId: week.videoId || '',
-                description: week.videoDescription?.trim() || ''
-              } : {
-                type: 'none',
-                nombre: '',
-                videoUrl: '',
-                videoId: '',
-                description: ''
-              },
-              audioTextContent: (week.audioUrl || week.text) ? {
-                nombre: week.audioTitle?.trim() || '',
-                audioUrl: week.audioUrl || '',
-                text: week.text || ''
-              } : {
-                nombre: '',
-                audioUrl: '',
-                text: ''
-              },
-              publishDate: week.publishDate,
-              isPublished: week.isPublished,
-              isUnlocked: false
-            }] : [],
-            publishDate: new Date(week.publishDate).toISOString(),
-            isPublished: week.isPublished,
-            isUnlocked: false
+        isBaseBitacora,
+        weeklyContents: weeks.map((week) => ({
+          weekNumber: week.weekNumber,
+          moduleName: week.moduleName?.trim() || '',
+          weekTitle: week.weekTitle || `Semana ${week.weekNumber}`,
+          publishDate: new Date(week.publishDate).toISOString(),
+          isPublished: week.isPublished,
+          isUnlocked: false,
+          contents: (week.contents || []).map((c, idx) => ({
+            videoUrl: c.videoUrl,
+            videoId: c.videoId || undefined,
+            videoName: c.videoName || undefined,
+            videoThumbnail: c.videoThumbnail || undefined,
+            videoDuration: c.videoDuration || undefined,
+            audioUrl: c.audioUrl || undefined,
+            audioTitle: c.audioTitle || undefined,
+            audioDuration: c.audioDuration || undefined,
+            audioText: c.audioText || undefined,
+            level: Math.min(10, Math.max(1, c.level)),
+            moduleId: c.moduleId || undefined,
+            submoduleSlug: c.submoduleSlug || (c.submoduleName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+            submoduleName: c.submoduleName || undefined,
+            orden: idx
           }))
+        }))
       };
 
       const response = await fetch(`/api/bitacora/update/${logbookId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify(payload)
       });
-
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al actualizar la bitácora');
-      }
-
-      toast.success('Bitácora actualizada exitosamente');
+      if (!response.ok) throw new Error(data.error || 'Error al actualizar la camino');
+      toast.success('Camino actualizada exitosamente');
       router.push('/admin/memberships/bitacora/list');
     } catch (error: any) {
-      console.error('Error actualizando bitácora:', error);
-      toast.error(error.message || 'Error al actualizar la bitácora');
+      console.error('Error actualizando camino:', error);
+      toast.error(error.message || 'Error al actualizar la camino');
     } finally {
       setSubmitting(false);
     }
@@ -295,7 +370,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
           className="inline-flex items-center gap-2 text-black hover:text-gray-900 mb-6 font-montserrat"
         >
           <ArrowLeftIcon className="w-5 h-5" />
-          Volver a la Lista de Bitácoras
+          Volver a la Lista de Caminos
         </Link>
 
         <motion.div
@@ -304,10 +379,10 @@ export default function EditBitacoraPage({ params }: PageProps) {
           className="bg-white rounded-xl shadow-lg p-6 md:p-8"
         >
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 font-montserrat">
-            Editar Bitácora Mensual
+            Editar Camino Mensual
           </h1>
           <p className="text-black mb-8 font-montserrat">
-            Modifica el contenido de las 4 semanas del Camino del Gorila
+            Modifica el contenido de las 4 semanas del Camino
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -351,7 +426,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Camino del Gorila"
+                  placeholder="Camino"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat text-black bg-white"
                 />
               </div>
@@ -370,34 +445,17 @@ export default function EditBitacoraPage({ params }: PageProps) {
               />
             </div>
 
-            {/* Checkbox para Bitácora Base */}
-            <div className="flex items-center gap-3 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
-              <input
-                type="checkbox"
-                id="isBaseBitacora"
-                checked={isBaseBitacora}
-                onChange={(e) => setIsBaseBitacora(e.target.checked)}
-                className="h-5 w-5 text-orange-500 focus:ring-orange-500 border-gray-300 rounded cursor-pointer"
-              />
-              <label htmlFor="isBaseBitacora" className="text-sm font-medium text-gray-700 cursor-pointer font-montserrat">
-                <span className="font-bold text-yellow-700">Bitácora Base (Primer Círculo)</span>
-                <p className="text-xs text-gray-600 mt-1">
-                  Marca esta opción si esta es la bitácora base para el onboarding. Solo puede haber una bitácora base activa.
-                </p>
-              </label>
-            </div>
-
-            {/* Semanas */}
+            {/* Semanas con contenidos */}
             <div className="space-y-8">
-              {weeks.map((week, index) => (
+              {weeks.map((week, weekIndex) => (
                 <motion.div
                   key={week.weekNumber}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: weekIndex * 0.05 }}
                   className="border-2 border-gray-200 rounded-xl p-6 bg-gradient-to-br from-orange-50 to-amber-50"
                 >
-                  <div className="flex items-center gap-3 mb-6">
+                  <div className="flex items-center gap-3 mb-4">
                     <div className="px-4 py-2 bg-orange-500 text-white rounded-lg font-bold text-lg font-montserrat">
                       Semana {week.weekNumber}
                     </div>
@@ -406,7 +464,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
                       <input
                         type="date"
                         value={week.publishDate}
-                        onChange={(e) => updateWeek(index, 'publishDate', e.target.value)}
+                        onChange={(e) => updateWeek(weekIndex, 'publishDate', e.target.value)}
                         className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat text-black bg-white"
                       />
                     </div>
@@ -414,102 +472,116 @@ export default function EditBitacoraPage({ params }: PageProps) {
                       <input
                         type="checkbox"
                         checked={week.isPublished}
-                        onChange={(e) => updateWeek(index, 'isPublished', e.target.checked)}
-                        className="form-checkbox h-4 w-4 text-orange-600 transition duration-150 ease-in-out"
+                        onChange={(e) => updateWeek(weekIndex, 'isPublished', e.target.checked)}
+                        className="form-checkbox h-4 w-4 text-orange-600"
                       />
                       <span>Publicada</span>
                     </label>
                   </div>
 
-                  {/* Nombre del Módulo */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-black mb-2 font-montserrat">
-                      Nombre del Módulo (opcional)
-                    </label>
-                    <input
-                      type="text"
-                      value={week.moduleName || ''}
-                      onChange={(e) => updateWeek(index, 'moduleName', e.target.value)}
-                      placeholder={`Módulo ${week.weekNumber}`}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat text-black bg-white"
-                    />
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {/* Video Content */}
-                    <div>
-                      <label className="block text-sm font-medium text-black mb-2 font-montserrat">
-                        Nombre del Video (opcional)
-                      </label>
-                      <input
-                        type="text"
-                        value={week.videoName || ''}
-                        onChange={(e) => updateWeek(index, 'videoName', e.target.value)}
-                        placeholder="Nombre del video"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat mb-3 text-black bg-white"
-                      />
-                      <label className="block text-sm font-medium text-black mb-2 font-montserrat">
-                        Descripción del Video (opcional)
-                      </label>
-                      <textarea
-                        value={week.videoDescription || ''}
-                        onChange={(e) => updateWeek(index, 'videoDescription', e.target.value)}
-                        placeholder="Descripción del video..."
-                        rows={3}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat mb-3 text-black bg-white"
-                      />
-                      <label className="block text-sm font-medium text-black mb-2 font-montserrat">
-                        URL del Video *
-                      </label>
-                      <input
-                        type="url"
-                        value={week.videoUrl}
-                        onChange={(e) => updateWeek(index, 'videoUrl', e.target.value)}
-                        placeholder="https://..."
-                        required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat text-black bg-white"
-                      />
+                  {(week.contents || []).map((content, contentIndex) => (
+                    <div key={contentIndex} className="mb-6 p-4 bg-white rounded-lg border border-gray-200">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-sm font-medium text-gray-700">Contenido {contentIndex + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeContent(weekIndex, contentIndex)}
+                          className="text-red-600 hover:text-red-800 p-1"
+                          title="Quitar contenido"
+                        >
+                          <XMarkIcon className="w-5 h-5" />
+                        </button>
+                      </div>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Video URL *</label>
+                          <input
+                            type="url"
+                            value={content.videoUrl}
+                            onChange={(e) => updateContent(weekIndex, contentIndex, 'videoUrl', e.target.value)}
+                            placeholder="https://..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                          />
+                          <label className="block text-xs font-medium text-gray-600 mb-1 mt-2">Nombre video</label>
+                          <input
+                            type="text"
+                            value={content.videoName || ''}
+                            onChange={(e) => updateContent(weekIndex, contentIndex, 'videoName', e.target.value)}
+                            placeholder="Opcional"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Nivel (1-10) *</label>
+                          <select
+                            value={content.level}
+                            onChange={(e) => updateContent(weekIndex, contentIndex, 'level', Number(e.target.value))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                          >
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                              <option key={n} value={n}>{n}</option>
+                            ))}
+                          </select>
+                          <label className="block text-xs font-medium text-gray-600 mb-1 mt-2">Módulo *</label>
+                          <select
+                            value={content.moduleId}
+                            onChange={(e) => updateContent(weekIndex, contentIndex, 'moduleId', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                          >
+                            <option value="">Seleccionar módulo</option>
+                            {classModules.map((m) => (
+                              <option key={m._id} value={m._id}>{m.name}</option>
+                            ))}
+                          </select>
+                          <label className="block text-xs font-medium text-gray-600 mb-1 mt-2">Submódulo (existente o crear) *</label>
+                          <input
+                            type="text"
+                            value={content.submoduleName || content.submoduleSlug || ''}
+                            onChange={(e) => updateContent(weekIndex, contentIndex, 'submoduleName', e.target.value)}
+                            placeholder="Ej: Locomotions o nombre nuevo"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-3 grid md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Audio URL (opcional)</label>
+                          <input
+                            type="url"
+                            value={content.audioUrl || ''}
+                            onChange={(e) => updateContent(weekIndex, contentIndex, 'audioUrl', e.target.value)}
+                            placeholder="https://..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                          />
+                          <label className="block text-xs font-medium text-gray-600 mb-1 mt-1">Título audio</label>
+                          <input
+                            type="text"
+                            value={content.audioTitle || ''}
+                            onChange={(e) => updateContent(weekIndex, contentIndex, 'audioTitle', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Texto / reflexión (opcional)</label>
+                          <textarea
+                            value={content.audioText || ''}
+                            onChange={(e) => updateContent(weekIndex, contentIndex, 'audioText', e.target.value)}
+                            rows={2}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                          />
+                        </div>
+                      </div>
                     </div>
+                  ))}
 
-                    {/* Audio Content */}
-                    <div>
-                      <label className="block text-sm font-medium text-black mb-2 font-montserrat">
-                        Nombre del Audio (opcional)
-                      </label>
-                      <input
-                        type="text"
-                      value={week.audioTitle || ''}
-                      onChange={(e) => updateWeek(index, 'audioTitle', e.target.value)}
-                        placeholder="Nombre del audio"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat mb-4 text-black bg-white"
-                      />
-                      <label className="block text-sm font-medium text-black mb-2 font-montserrat">
-                        URL del Audio *
-                      </label>
-                      <input
-                        type="url"
-                        value={week.audioUrl}
-                        onChange={(e) => updateWeek(index, 'audioUrl', e.target.value)}
-                        placeholder="https://..."
-                        required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat text-black bg-white"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-6">
-                    <label className="block text-sm font-medium text-black mb-2 font-montserrat">
-                      Texto de la Semana *
-                    </label>
-                    <textarea
-                      value={week.text}
-                      onChange={(e) => updateWeek(index, 'text', e.target.value)}
-                      rows={6}
-                      placeholder="Contenido textual de la semana..."
-                      required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat text-black bg-white"
-                    />
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => addContent(weekIndex)}
+                    className="inline-flex items-center gap-2 px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm font-montserrat"
+                  >
+                    <PlusIcon className="w-4 h-4" />
+                    Agregar otro contenido a esta semana
+                  </button>
                 </motion.div>
               ))}
             </div>
@@ -533,7 +605,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
                     <span>Actualizando...</span>
                   </>
                 ) : (
-                  <span>Actualizar Bitácora</span>
+                  <span>Actualizar Camino</span>
                 )}
               </button>
             </div>

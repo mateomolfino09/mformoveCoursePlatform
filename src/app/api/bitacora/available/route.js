@@ -63,54 +63,27 @@ export async function GET(req) {
       );
     }
 
-    // Verificar si la bitácora base está completada
-    const bitacoraBaseCompletada = user.subscription?.onboarding?.bitacoraBaseCompletada === true;
-
-    // Obtener todas las bitácoras regulares (excluir bitácoras base) ordenadas por año y mes (más recientes primero)
+    // Obtener todas las caminos (sin camino base) ordenadas por año y mes (más recientes primero)
     const logbooks = await WeeklyLogbook.find({ isBaseBitacora: { $ne: true } })
       .sort({ year: -1, month: -1, createdAt: -1 })
       .select('_id month year title description createdAt')
       .lean();
 
-    // Formatear las bitácoras con información adicional
-    const formattedLogbooks = logbooks.map(logbook => {
-      const monthNames = [
-        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-      ];
-      
-      return {
-        _id: logbook._id,
-        month: logbook.month,
-        year: logbook.year,
-        monthName: monthNames[logbook.month - 1],
-        title: logbook.title || `Camino del Gorila - ${monthNames[logbook.month - 1]} ${logbook.year}`,
-        description: logbook.description || '',
-        createdAt: logbook.createdAt,
-        isBaseBitacora: false
-      };
-    });
+    const monthNames = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
 
-    // Si la bitácora base no está completada, agregarla a la lista
-    if (!bitacoraBaseCompletada) {
-      const baseBitacora = await WeeklyLogbook.findOne({ isBaseBitacora: true })
-        .select('_id month year title description createdAt')
-        .lean();
-      
-      if (baseBitacora) {
-        // Agregar la bitácora base al inicio de la lista
-        formattedLogbooks.unshift({
-          _id: baseBitacora._id,
-          month: baseBitacora.month,
-          year: baseBitacora.year,
-          monthName: 'Inicio',
-          title: 'Camino de Inicio',
-          description: baseBitacora.description || '',
-          createdAt: baseBitacora.createdAt,
-          isBaseBitacora: true
-        });
-      }
-    }
+    const formattedLogbooks = logbooks.map(logbook => ({
+      _id: logbook._id,
+      month: logbook.month,
+      year: logbook.year,
+      monthName: monthNames[logbook.month - 1],
+      title: logbook.title || `Camino - ${monthNames[logbook.month - 1]} ${logbook.year}`,
+      description: logbook.description || '',
+      createdAt: logbook.createdAt,
+      isBaseBitacora: false
+    }));
 
     return NextResponse.json(
       { 
@@ -127,11 +100,11 @@ export async function GET(req) {
       }
     );
   } catch (error) {
-    console.error('Error obteniendo bitácoras disponibles:', error);
+    console.error('Error obteniendo caminos disponibles:', error);
     return NextResponse.json(
       { 
         success: false,
-        error: error.message || 'Error al obtener las bitácoras disponibles' 
+        error: error.message || 'Error al obtener las caminos disponibles' 
       },
       { status: 500 }
     );

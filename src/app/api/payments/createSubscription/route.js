@@ -55,6 +55,10 @@ export async function PUT(req) {
             if(res.success) {
                 user.subscription = latestSub;
                 user.freeSubscription = null;
+                if (user.validEmail !== 'yes') {
+                    user.validEmail = 'yes';
+                    user.emailToken = undefined;
+                }
                 await user.save();
         
                 user.password = null;
@@ -100,6 +104,10 @@ export async function PUT(req) {
             
                 user.subscription = newSub
                 user.freeSubscription = null
+                if (user.validEmail !== 'yes') {
+                    user.validEmail = 'yes';
+                    user.emailToken = undefined;
+                }
     
                 await user.save()
                 

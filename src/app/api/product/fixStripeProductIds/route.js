@@ -17,13 +17,11 @@ export async function POST(req) {
       ]
     });
 
-    console.log(`🔍 Encontrados ${productosSinStripeId.length} productos sin stripeProductId`);
 
     const resultados = [];
 
     for (const producto of productosSinStripeId) {
       try {
-        console.log(`🔄 Procesando producto: ${producto.nombre} (${producto._id})`);
         
         // Buscar el primer priceId disponible
         let primerPriceId = null;
@@ -37,7 +35,6 @@ export async function POST(req) {
         }
 
         if (!primerPriceId) {
-          console.log(`❌ Producto ${producto.nombre} no tiene priceId válido`);
           resultados.push({
             producto: producto.nombre,
             status: 'error',
@@ -49,7 +46,6 @@ export async function POST(req) {
         // Obtener el precio de Stripe para extraer el productId
         const price = await stripe.prices.retrieve(primerPriceId);
         if (!price.product) {
-          console.log(`❌ Price ${primerPriceId} no tiene product asociado`);
           resultados.push({
             producto: producto.nombre,
             status: 'error',
@@ -63,7 +59,6 @@ export async function POST(req) {
           stripeProductId: price.product
         });
 
-        console.log(`✅ Producto ${producto.nombre} actualizado con stripeProductId: ${price.product}`);
         
         resultados.push({
           producto: producto.nombre,

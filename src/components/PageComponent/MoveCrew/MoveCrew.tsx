@@ -3,13 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import FooterProfile from '../Profile/FooterProfile';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
-import { toggleScroll } from '../../../redux/features/headerHomeSlice';
+import { toggleScroll } from '../../../redux/features/headerLibrarySlice';
 import { useAuth } from '../../../hooks/useAuth';
 import { Plan } from '../../../../typings';
 import MoveCrewHero from './MoveCrewHero';
 import MoveCrewHighlights from './MoveCrewHighlights';
-import MoveCrewMethodVideo from './MoveCrewMethodVideo';
-import MoveCrewIsForYou from './MoveCrewIsForYou';
 import MoveCrewCommunitySlider from './MoveCrewCommunitySlider';
 import MoveCrewTestimonials from './MoveCrewTestimonials';
 import MoveCrewResultsSlider from './MoveCrewResultsSlider';
@@ -19,6 +17,8 @@ import MoveCrewStructure from './MoveCrewStructure';
 import MoveCrewFAQ from './MoveCrewFAQ';
 import MoveCrewCTA from './MoveCrewCTA';
 import PromocionFooter from '../Membership/PromocionFooter';
+import MoveCrewMobileBottomBar, { MoveCrewBottomBarButtons } from './MoveCrewMobileBottomBar';
+import MoveCrewWhatWeTeach from './MoveCrewWhatWeTeach';
 
 interface Promocion {
   _id: string;
@@ -136,13 +136,10 @@ const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
         {/* 2. Highlights - Valor inmediato (qué recibís) */}
         <MoveCrewHighlights />
         
-        {/* 2.5. Method Video - Demostración del método (después de valor) */}
-        <MoveCrewMethodVideo />
+        {/* 2.5. Lo que enseñamos - Disciplinas (fotos de Index) */}
+        <MoveCrewWhatWeTeach />
         
-        {/* 3. IsForYou - Calificación temprana (filtra antes de precios) */}
-        <MoveCrewIsForYou />
-        
-        {/* 3.5. Community Slider - Refuerzo social (después de identificación) */}
+        {/* 3. Community Slider - Refuerzo social */}
         <MoveCrewCommunitySlider />
         
         {/* 4. Testimonials - Prueba social (construye confianza) */}
@@ -169,9 +166,17 @@ const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
         <FooterProfile />
         {promocionActiva && !auth.user?.subscription?.active && (
           <div className="pb-24 md:pb-28">
-            <PromocionFooter promocion={promocionActiva} onCtaClick={handlePromocionClick} variant="movecrew" plans={plans} />
+            <PromocionFooter
+              promocion={promocionActiva}
+              onCtaClick={handlePromocionClick}
+              variant="movecrew"
+              plans={plans}
+              rightActions={<MoveCrewBottomBarButtons />}
+            />
           </div>
         )}
+        {/* En móvil sin descuento: barra fija con Empezar Camino + Menú centrada a la derecha */}
+        {(!promocionActiva || auth.user?.subscription?.active) && <MoveCrewMobileBottomBar />}
       </MainSideBar>
     </div>
   );

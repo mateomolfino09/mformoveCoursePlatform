@@ -81,6 +81,29 @@ const dailyContentSchema = new mongoose.Schema({
   }
 }, { _id: false });
 
+// Item de contenido dentro de una semana (varios por semana: videos + opcional audio, nivel, módulo, submódulo)
+const weekContentItemSchema = new mongoose.Schema({
+  // Video
+  videoUrl: { type: String, default: '' },
+  videoId: { type: String },
+  videoName: { type: String, default: '' },
+  videoThumbnail: { type: String, default: '' },
+  videoDuration: { type: Number },
+  title: { type: String },
+  description: { type: String },
+  // Audio opcional
+  audioUrl: { type: String, default: '' },
+  audioTitle: { type: String, default: '' },
+  audioDuration: { type: Number },
+  audioText: { type: String, default: '' },
+  // Nivel 1-10, módulo y submódulo (clase)
+  level: { type: Number, min: 1, max: 10, default: 1 },
+  moduleId: { type: mongoose.Schema.Types.ObjectId, ref: 'ClassModule' },
+  submoduleSlug: { type: String, default: '' },
+  submoduleName: { type: String, default: '' },
+  orden: { type: Number, default: 0 }
+}, { _id: true });
+
 // Schema para contenido semanal (mantiene compatibilidad con estructura anterior)
 const weeklyContentSchema = new mongoose.Schema({
   weekNumber: {
@@ -100,9 +123,14 @@ const weeklyContentSchema = new mongoose.Schema({
   weekDescription: {
     type: String // Descripción de la semana
   },
+  /** Contenidos de la semana (varios videos por semana; cada uno con nivel, módulo, submódulo; audio opcional) */
+  contents: {
+    type: [weekContentItemSchema],
+    default: []
+  },
   // Contenido diario (7 días)
   dailyContents: [dailyContentSchema],
-  // Contenido semanal (para compatibilidad con versión anterior)
+  // Contenido semanal legacy (para compatibilidad con versión anterior)
   videoUrl: {
     type: String,
     default: ''
@@ -150,7 +178,7 @@ const weeklyContentSchema = new mongoose.Schema({
   }
 }, { _id: false });
 
-// Schema principal para la Bitácora Mensual
+// Schema principal para la Camino Mensual
 const weeklyLogbookSchema = new mongoose.Schema({
   month: {
     type: Number,
@@ -164,7 +192,7 @@ const weeklyLogbookSchema = new mongoose.Schema({
   },
   title: {
     type: String,
-    default: 'Camino del Gorila'
+    default: 'Camino'
   },
   description: {
     type: String,
@@ -176,7 +204,7 @@ const weeklyLogbookSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  // Indica si es la bitácora base (Primer Círculo)
+  // Indica si es la camino base (Primer Círculo)
   isBaseBitacora: {
     type: Boolean,
     default: false
@@ -192,10 +220,10 @@ const weeklyLogbookSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-// Índice único para bitácoras regulares (no base)
+// Índice único para caminos regulares (no base)
 // Solo aplica unicidad cuando isBaseBitacora es false
-// Las bitácoras base (isBaseBitacora: true) pueden tener cualquier fecha sin restricción
-// y pueden coexistir con bitácoras regulares de la misma fecha
+// Las caminos base (isBaseBitacora: true) pueden tener cualquier fecha sin restricción
+// y pueden coexistir con caminos regulares de la misma fecha
 weeklyLogbookSchema.index(
   { year: 1, month: 1 },
   { 
@@ -207,22 +235,22 @@ weeklyLogbookSchema.index(
   }
 );
 
-// Índice para buscar la bitácora base
+// Índice para buscar la camino base
 weeklyLogbookSchema.index({ isBaseBitacora: 1 });
 
-// Método estático para obtener la bitácora base
+// Método estático para obtener la camino base
 weeklyLogbookSchema.statics.getBaseBitacora = async function() {
   return await this.findOne({ isBaseBitacora: true })
     .sort({ createdAt: -1 })
     .lean();
 };
 
-// Método para obtener la bitácora de la semana actual
+// Método para obtener la camino de la semana actual
 weeklyLogbookSchema.statics.getCurrentWeekLogbook = async function() {
   const now = new Date();
   now.setHours(0, 0, 0, 0); // Normalizar a medianoche
   
-  // Buscar todas las bitácoras regulares (excluir bitácoras base) y ordenarlas por fecha (más reciente primero)
+  // Buscar todas las caminos regulares (excluir caminos base) y ordenarlas por fecha (más reciente primero)
   const logbooks = await this.find({ isBaseBitacora: { $ne: true } })
     .sort({ year: -1, month: -1 })
     .lean();

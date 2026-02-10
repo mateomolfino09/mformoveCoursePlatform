@@ -84,7 +84,6 @@ const BitacoraSidebar = ({
   completedDays,
   onClose
 }: Props) => {
-  console.log('logbook', logbook);
   const router = useRouter();
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
   
@@ -115,9 +114,6 @@ const BitacoraSidebar = ({
   const isContentUnlocked = (week: WeeklyContent) => {
     // Los administradores pueden ver todo el contenido
     if (isAdmin) return true;
-
-    console.log('week.isPublished', week.isPublished, week);
-    console.log('week.isUnlocked', week.isUnlocked, week);
     
     // Solo liberamos si el cron (o admin) marcó published/unlocked
     if (week.isPublished || week.isUnlocked) return true;
@@ -282,7 +278,6 @@ const BitacoraSidebar = ({
                       const isWeekCompleted = completedWeeks.has(weekKey);
                       const isWeekSelected = selectedWeek === week.weekNumber;
                       const isWeekUnlocked = isContentUnlocked(week);
-                      console.log('isWeekUnlocked', isWeekUnlocked);
                       const isLastWeek = week.weekNumber === maxWeekNumber;
                       const isLastWeekReleaseDay = isLastWeek && isWeekUnlocked && isPublishDateToday(week.publishDate);
                       const hasVideo = (week.dailyContents?.some(day => day.visualContent?.type === 'video' && day.visualContent.videoUrl)) || 

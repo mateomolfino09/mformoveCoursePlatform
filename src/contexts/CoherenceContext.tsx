@@ -16,6 +16,7 @@ interface CoherenceTracking {
   achievements: Achievement[];
   lastCompletedDate?: string;
   level?: number;
+  levelProgress?: number;
   monthsCompleted?: number;
   characterEvolution?: number;
   gorillaIcon?: string;
@@ -51,15 +52,12 @@ export function CoherenceProvider({ children }: { children: React.ReactNode }) {
 
   const fetchCoherenceTracking = useCallback(async () => {
     try {
-      console.log('[CoherenceContext] fetchCoherenceTracking: Iniciando petición');
-      
       const response = await fetch('/api/coherence/tracking', {
         credentials: 'include',
         cache: 'no-store'
       });
 
       if (!response.ok) {
-        console.error('[CoherenceContext] fetchCoherenceTracking: Error en respuesta', response.status);
         return;
       }
 
@@ -67,130 +65,93 @@ export function CoherenceProvider({ children }: { children: React.ReactNode }) {
       
       if (data.success && data.tracking) {
         const rawMonthsCompleted = data.tracking.monthsCompleted ?? 0;
-        const rawLevel = data.tracking.level ?? 0;
-        const displayLevel = rawMonthsCompleted > 0 ? (rawLevel || rawMonthsCompleted || 1) : 1;
-        const displayIcon = rawMonthsCompleted > 0 ? (data.tracking.gorillaIcon || '🦍') : '🦍';
-        const displayName = rawMonthsCompleted > 0 ? (data.tracking.evolutionName || 'Gorila Bebé') : 'Gorila Bebé';
+        // Usar directamente el nivel de la base de datos (ya viene calculado correctamente)
+        // El nivel puede subir por meses completados o por U.C. completadas (cada 8 = 1 nivel)
+        const rawLevel = data.tracking.level ?? 1;
+        const displayLevel = rawLevel || 1; // Asegurar que sea al menos 1
+        const displayIcon = data.tracking.gorillaIcon || '🦍';
+        const displayName = data.tracking.evolutionName || 'Gorila Bebé';
         const displayProgress = data.tracking.progressToNextLevel || 0;
+        const levelProgress = data.tracking.levelProgress !== undefined && data.tracking.levelProgress !== null ? data.tracking.levelProgress : 0;
 
-        setCoherenceTracking({
+        const newTracking = {
           totalUnits: data.tracking.totalUnits || 0,
           currentStreak: data.tracking.currentStreak || 0,
           longestStreak: data.tracking.longestStreak || 0,
           achievements: data.tracking.achievements || [],
           lastCompletedDate: data.tracking.lastCompletedDate,
           level: displayLevel,
+          levelProgress: levelProgress,
           monthsCompleted: rawMonthsCompleted,
           characterEvolution: data.tracking.characterEvolution || 0,
           gorillaIcon: displayIcon,
           evolutionName: displayName,
           progressToNextLevel: displayProgress
-        });
+        };
         
-        console.log('[CoherenceContext] fetchCoherenceTracking: Tracking actualizado', {
-          totalUnits: data.tracking.totalUnits || 0
-        });
+        setCoherenceTracking(newTracking);
         
         // Inicializar los Sets con los datos del servidor
         if (data.completedDays && Array.isArray(data.completedDays)) {
-          console.log('[CoherenceContext] fetchCoherenceTracking: Inicializando completedDays', {
-            count: data.completedDays.length,
-            items: data.completedDays
-          });
           setCompletedDays(new Set(data.completedDays));
-        } else {
-          console.log('[CoherenceContext] fetchCoherenceTracking: No hay completedDays o no es array', {
-            hasData: !!data.completedDays,
-            isArray: Array.isArray(data.completedDays),
-            type: typeof data.completedDays
-          });
         }
         
         if (data.completedWeeks && Array.isArray(data.completedWeeks)) {
-          console.log('[CoherenceContext] fetchCoherenceTracking: Inicializando completedWeeks', {
-            count: data.completedWeeks.length,
-            items: data.completedWeeks
-          });
           setCompletedWeeks(new Set(data.completedWeeks));
-        } else {
-          console.log('[CoherenceContext] fetchCoherenceTracking: No hay completedWeeks o no es array');
         }
         
         if (data.completedVideos && Array.isArray(data.completedVideos)) {
-          console.log('[CoherenceContext] fetchCoherenceTracking: Inicializando completedVideos', {
-            count: data.completedVideos.length,
-            items: data.completedVideos
-          });
           setCompletedVideos(new Set(data.completedVideos));
-        } else {
-          console.log('[CoherenceContext] fetchCoherenceTracking: No hay completedVideos o no es array');
         }
         
         if (data.completedAudios && Array.isArray(data.completedAudios)) {
-          console.log('[CoherenceContext] fetchCoherenceTracking: Inicializando completedAudios', {
-            count: data.completedAudios.length,
-            items: data.completedAudios
-          });
           setCompletedAudios(new Set(data.completedAudios));
-        } else {
-          console.log('[CoherenceContext] fetchCoherenceTracking: No hay completedAudios o no es array');
         }
-      } else {
-        console.log('[CoherenceContext] fetchCoherenceTracking: No hay datos válidos en la respuesta');
       }
     } catch (error) {
-      console.error('[CoherenceContext] fetchCoherenceTracking: Error obteniendo tracking', error);
+      // Error silencioso
     }
   }, []);
 
   const markDayCompleted = useCallback((key: string) => {
-    console.log('[CoherenceContext] markDayCompleted', { key });
     setCompletedDays(prev => {
       const nuevo = new Set(prev).add(key);
-      console.log('[CoherenceContext] markDayCompleted: Nuevo Set', Array.from(nuevo));
       return nuevo;
     });
   }, []);
 
   const markWeekCompleted = useCallback((key: string) => {
-    console.log('[CoherenceContext] markWeekCompleted', { key });
     setCompletedWeeks(prev => {
       const nuevo = new Set(prev).add(key);
-      console.log('[CoherenceContext] markWeekCompleted: Nuevo Set', Array.from(nuevo));
       return nuevo;
     });
   }, []);
 
   const markVideoCompleted = useCallback((key: string, count: number = 1) => {
-    console.log('[CoherenceContext] markVideoCompleted', { key, count });
     setCompletedVideos(prev => {
       const nuevo = new Set(prev).add(key);
-      console.log('[CoherenceContext] markVideoCompleted: Nuevo Set', Array.from(nuevo));
       return nuevo;
     });
   }, []);
 
   const markAudioCompleted = useCallback((key: string) => {
-    console.log('[CoherenceContext] markAudioCompleted', { key });
     setCompletedAudios(prev => {
       const nuevo = new Set(prev).add(key);
-      console.log('[CoherenceContext] markAudioCompleted: Nuevo Set', Array.from(nuevo));
       return nuevo;
     });
   }, []);
 
   const updateTracking = useCallback((data: Partial<CoherenceTracking>) => {
-    console.log('[CoherenceContext] updateTracking: Actualizando tracking', {
-      dataRecibido: data
-    });
-    
     setCoherenceTracking(prev => {
       const rawMonthsCompleted = data.monthsCompleted ?? prev?.monthsCompleted ?? 0;
-      const rawLevel = data.level ?? prev?.level ?? 0;
-      const displayLevel = rawMonthsCompleted > 0 ? (rawLevel || rawMonthsCompleted || 1) : 1;
-      const displayIcon = rawMonthsCompleted > 0 ? (data.gorillaIcon || prev?.gorillaIcon || '🦍') : '🦍';
-      const displayName = rawMonthsCompleted > 0 ? (data.evolutionName || prev?.evolutionName || 'Gorila Bebé') : 'Gorila Bebé';
+      // El nivel es independiente de monthsCompleted - usar el nivel que viene en data o mantener el anterior
+      const rawLevel = data.level !== undefined && data.level !== null ? data.level : (prev?.level ?? 1);
+      const displayLevel = rawLevel || 1;
+      // El icono y nombre de evolución se basan en el nivel, no en monthsCompleted
+      const displayIcon = data.gorillaIcon || prev?.gorillaIcon || '🦍';
+      const displayName = data.evolutionName || prev?.evolutionName || 'Gorila Bebé';
       const displayProgress = data.progressToNextLevel ?? prev?.progressToNextLevel ?? 0;
+      const levelProgress = data.levelProgress !== undefined && data.levelProgress !== null ? data.levelProgress : (prev?.levelProgress ?? 0);
 
       const nuevoTracking = !prev ? {
         totalUnits: data.totalUnits || 0,
@@ -199,6 +160,7 @@ export function CoherenceProvider({ children }: { children: React.ReactNode }) {
         achievements: data.achievements || [],
         lastCompletedDate: data.lastCompletedDate,
         level: displayLevel,
+        levelProgress: levelProgress,
         monthsCompleted: rawMonthsCompleted,
         gorillaIcon: displayIcon,
         evolutionName: displayName,
@@ -208,6 +170,7 @@ export function CoherenceProvider({ children }: { children: React.ReactNode }) {
         ...prev,
         ...data,
         level: displayLevel,
+        levelProgress: levelProgress,
         monthsCompleted: rawMonthsCompleted,
         gorillaIcon: displayIcon,
         evolutionName: displayName,
@@ -215,11 +178,6 @@ export function CoherenceProvider({ children }: { children: React.ReactNode }) {
         achievements: data.achievements !== undefined ? data.achievements : prev.achievements
       };
       
-      console.log('[CoherenceContext] updateTracking: Nuevo tracking establecido', {
-        totalUnits: nuevoTracking.totalUnits,
-        currentStreak: nuevoTracking.currentStreak,
-        longestStreak: nuevoTracking.longestStreak
-      });
       return nuevoTracking;
     });
   }, []);

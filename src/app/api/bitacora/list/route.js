@@ -24,7 +24,7 @@ export async function GET(req) {
 
     let decoded;
     try {
-      // Usar NEXTAUTH_SECRET como en otros endpoints de bitácora
+      // Usar NEXTAUTH_SECRET como en otros endpoints de camino
       decoded = verify(userToken, process.env.NEXTAUTH_SECRET);
     } catch (error) {
       return NextResponse.json(
@@ -61,7 +61,7 @@ export async function GET(req) {
       );
     }
 
-    // Obtener todas las bitácoras ordenadas por año y mes (más recientes primero)
+    // Obtener todas las caminos ordenadas por año y mes (más recientes primero)
     const logbooks = await WeeklyLogbook.find({})
       .sort({ year: -1, month: -1, createdAt: -1 })
       .lean();
@@ -81,11 +81,11 @@ export async function GET(req) {
       }
     );
   } catch (error) {
-    console.error('Error obteniendo lista de bitácoras:', error);
+    console.error('Error obteniendo lista de caminos:', error);
     return NextResponse.json(
       { 
         success: false,
-        error: error.message || 'Error al obtener la lista de bitácoras' 
+        error: error.message || 'Error al obtener la lista de caminos' 
       },
       { status: 500 }
     );

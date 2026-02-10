@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { AppDispatch } from '../../../redux/store';
 import { useDispatch } from 'react-redux';
 import { addStepTwo } from '../../../redux/features/register';
@@ -60,25 +60,25 @@ const RegisterStepTwo = ({ step2ToStep3, step2ToStep1, signUp }: Props) => {
 
         <div className='space-y-4'>
           <Field>
-            <Label className="text-xs font-medium text-white">Contraseña</Label>
+            <Label className="text-xs md:text-sm font-medium text-white">Contraseña</Label>
             <Input
               value={password}
               type='password'
               placeholder='Contraseña'
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={keyDownHandler}
-              className="mt-1 block w-full rounded-lg border-0 bg-white/5 py-2 px-3 text-sm text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2"
+              className="mt-1 block w-full rounded-lg border-0 bg-white/5 py-3 px-4 md:py-4 md:px-5 text-sm md:text-base text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2"
             />
           </Field>
           <Field>
-            <Label className="text-xs font-medium text-white">Confirmar contraseña</Label>
+            <Label className="text-xs md:text-sm font-medium text-white">Confirmar contraseña</Label>
             <Input
               value={confirmPassword}
               type='password'
               placeholder='Confirmar contraseña'
               onChange={(e) => setConfirmPassword(e.target.value)}
               onKeyDown={keyDownHandler}
-              className="mt-1 block w-full rounded-lg border-0 bg-white/5 py-2 px-3 text-sm text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2"
+              className="mt-1 block w-full rounded-lg border-0 bg-white/5 py-3 px-4 md:py-4 md:px-5 text-sm md:text-base text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2"
             />
           </Field>
         </div>

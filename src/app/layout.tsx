@@ -4,11 +4,11 @@ import { ProviderAuth } from '../hooks/useAuth';
 import ToasterProvider from '../hooks/toastProvider';
 import ProgressBarProvider from '../hooks/progressBar';
 import Providers from '../redux/providers';
-import { BoldFont, MontserratFont } from "../utils/customFonts";
+import { BoldFont, MontserratFont, LoraFont, RalewayFont } from "../utils/customFonts";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import OnboardingChecker from '../components/OnboardingChecker';
-import BitacoraNavigator from '../components/BitacoraNavigator/BitacoraNavigator';
+import WeeklyPathNavigator from '../components/WeeklyPathNavigator/WeeklyPathNavigator';
 
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.mateomove.com'),
@@ -26,14 +26,14 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${BoldFont.variable} ${MontserratFont.variable}`}>
+      <body className={`${BoldFont.variable} ${MontserratFont.variable} ${LoraFont.variable} ${RalewayFont.variable}`}>
         <ProviderAuth>
           <Providers>
             <ToasterProvider>
               <ProgressBarProvider>
                 <OnboardingChecker />
                 {children}
-                <BitacoraNavigator />
+                <WeeklyPathNavigator />
               </ProgressBarProvider>
             </ToasterProvider>
           </Providers>

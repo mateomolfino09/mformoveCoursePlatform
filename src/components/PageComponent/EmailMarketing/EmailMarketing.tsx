@@ -3,7 +3,7 @@ import { ArrowUpTrayIcon, DocumentIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import React, { useState } from 'react'
 import { useDropzone } from 'react-dropzone';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import AdmimDashboardLayout from '../../AdmimDashboardLayout';
 import Select, { StylesConfig } from 'react-select';
 import { genders } from '../../../constants/genders';
@@ -209,7 +209,7 @@ const EmailMarketing = ({ courses }: Props) => {
         </button>
         <div className='text-[gray]'>
           Volver al Inicio
-          <Link href={'/home'}>
+          <Link href={'/library'}>
             <button
               type='button'
               className='text-white hover:underline ml-2'

@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verify } from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import connectDB from '../../../../../config/connectDB';
 import WeeklyLogbook from '../../../../../models/weeklyLogbookModel';
 import Users from '../../../../../models/userModel';
+import ClassModule from '../../../../../models/classModuleModel';
 
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
@@ -24,7 +26,7 @@ export async function PUT(req, { params }) {
 
     let decoded;
     try {
-      // Usar NEXTAUTH_SECRET como en otros endpoints de bitácora
+      // Usar NEXTAUTH_SECRET como en otros endpoints de camino
       decoded = verify(userToken, process.env.NEXTAUTH_SECRET);
     } catch (error) {
       return NextResponse.json(
@@ -37,31 +39,13 @@ export async function PUT(req, { params }) {
 
     if (!id) {
       return NextResponse.json(
-        { error: 'ID de bitácora requerido' },
+        { error: 'ID de camino requerido' },
         { status: 400 }
       );
     }
 
     const body = await req.json();
     const { month, year, title, description, weeklyContents, isBaseBitacora, userEmail } = body;
-
-    // DEBUG: Log de los datos recibidos
-    console.log('=== DEBUG BITÁCORA UPDATE ===');
-    console.log('Body recibido:', JSON.stringify(body, null, 2));
-    console.log('WeeklyContents:', JSON.stringify(weeklyContents, null, 2));
-    if (weeklyContents && weeklyContents.length > 0) {
-      console.log('Primera semana:', JSON.stringify(weeklyContents[0], null, 2));
-      if (weeklyContents[0].dailyContents && weeklyContents[0].dailyContents.length > 0) {
-        console.log('Primer dailyContent:', JSON.stringify(weeklyContents[0].dailyContents[0], null, 2));
-        if (weeklyContents[0].dailyContents[0].visualContent) {
-          console.log('VisualContent nombre:', weeklyContents[0].dailyContents[0].visualContent.nombre);
-        }
-        if (weeklyContents[0].dailyContents[0].audioTextContent) {
-          console.log('AudioTextContent nombre:', weeklyContents[0].dailyContents[0].audioTextContent.nombre);
-        }
-      }
-      console.log('ModuleName:', weeklyContents[0].moduleName);
-    }
 
     // Validar campos requeridos
     if (!weeklyContents || !Array.isArray(weeklyContents)) {
@@ -71,10 +55,10 @@ export async function PUT(req, { params }) {
       );
     }
 
-    // Si es bitácora base, no requiere month/year
+    // Si es camino base, no requiere month/year
     if (!isBaseBitacora && (!month || !year)) {
       return NextResponse.json(
-        { error: 'Month y year son requeridos para bitácoras regulares' },
+        { error: 'Month y year son requeridos para caminos regulares' },
         { status: 400 }
       );
     }
@@ -84,23 +68,23 @@ export async function PUT(req, { params }) {
       const user = await Users.findOne({ email: userEmail });
       if (!user || user.rol !== 'Admin') {
         return NextResponse.json(
-          { error: 'Solo administradores pueden actualizar bitácoras' },
+          { error: 'Solo administradores pueden actualizar caminos' },
           { status: 403 }
         );
       }
     }
 
-    // Buscar la bitácora existente
+    // Buscar la camino existente
     const existingLogbook = await WeeklyLogbook.findById(id);
 
     if (!existingLogbook) {
       return NextResponse.json(
-        { error: 'Bitácora no encontrada' },
+        { error: 'Camino no encontrada' },
         { status: 404 }
       );
     }
 
-    // Si se está marcando como bitácora base, desactivar cualquier otra bitácora base existente
+    // Si se está marcando como camino base, desactivar cualquier otra camino base existente
     if (isBaseBitacora && !existingLogbook.isBaseBitacora) {
       await WeeklyLogbook.updateMany(
         { isBaseBitacora: true, _id: { $ne: id } },
@@ -108,7 +92,7 @@ export async function PUT(req, { params }) {
       );
     }
 
-    // Verificar si hay conflicto con otra bitácora del mismo mes/año (solo para bitácoras regulares)
+    // Verificar si hay conflicto con otra camino del mismo mes/año (solo para caminos regulares)
     if (!isBaseBitacora) {
     const conflictingLogbook = await WeeklyLogbook.findOne({
       month,
@@ -119,7 +103,7 @@ export async function PUT(req, { params }) {
 
     if (conflictingLogbook) {
       return NextResponse.json(
-        { error: 'Ya existe otra bitácora para este mes y año' },
+        { error: 'Ya existe otra camino para este mes y año' },
         { status: 409 }
       );
       }
@@ -160,18 +144,81 @@ export async function PUT(req, { params }) {
       }
     };
 
+    const ensureSubmodule = async (moduleId, submoduleSlug, submoduleName) => {
+      if (!moduleId || !mongoose.Types.ObjectId.isValid(moduleId)) return;
+      const mod = await ClassModule.findById(moduleId);
+      if (!mod || !mod.submodules) return;
+      const slug = (submoduleSlug || '').trim() || (submoduleName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const name = (submoduleName || '').trim() || (submoduleSlug || '').replace(/-/g, ' ');
+      if (!slug) return;
+      const exists = mod.submodules.some(s => (s.slug || s.name) === slug);
+      if (!exists) {
+        mod.submodules.push({ name: name || slug, slug });
+        await mod.save();
+      }
+    };
+
+    const mapContentItem = async (item, orden) => {
+      const meta = await fetchVimeoMeta(item.videoUrl);
+      const audioMeta = item.audioUrl ? await fetchCloudinaryAudioMeta(item.audioUrl) : {};
+      if (item.moduleId && (item.submoduleSlug || item.submoduleName)) {
+        await ensureSubmodule(item.moduleId, item.submoduleSlug, item.submoduleName);
+      }
+      return {
+        videoUrl: item.videoUrl || '',
+        videoId: item.videoId || undefined,
+        videoName: (item.videoName || item.title || '').trim(),
+        videoThumbnail: item.videoThumbnail || meta.thumbnail || '',
+        videoDuration: item.videoDuration ?? meta.duration,
+        title: item.title || undefined,
+        description: item.description || undefined,
+        audioUrl: item.audioUrl || '',
+        audioTitle: (item.audioTitle || '').trim(),
+        audioDuration: item.audioDuration ?? audioMeta.duration,
+        audioText: item.audioText || '',
+        level: Math.min(10, Math.max(1, Number(item.level) || 1)),
+        moduleId: item.moduleId && mongoose.Types.ObjectId.isValid(item.moduleId) ? item.moduleId : undefined,
+        submoduleSlug: (item.submoduleSlug || '').trim() || (item.submoduleName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+        submoduleName: (item.submoduleName || item.submoduleSlug || '').trim(),
+        orden: Number(item.orden) || orden
+      };
+    };
+
     const mappedWeeklyContents = await Promise.all(weeklyContents.map(async wc => {
+      const publishDate = new Date(wc.publishDate);
+      const base = {
+        weekNumber: wc.weekNumber,
+        moduleName: (wc.moduleName?.trim() || ''),
+        weekTitle: wc.weekTitle || `Semana ${wc.weekNumber}`,
+        weekDescription: wc.weekDescription || '',
+        dailyContents: [],
+        publishDate,
+        isPublished: wc.isPublished || false,
+        isUnlocked: wc.isUnlocked || false
+      };
+
+      if (wc.contents && Array.isArray(wc.contents) && wc.contents.length > 0) {
+        base.contents = await Promise.all(wc.contents.map((item, idx) => mapContentItem(item, idx)));
+        base.videoUrl = (base.contents[0] && base.contents[0].videoUrl) || '';
+        base.videoId = (base.contents[0] && base.contents[0].videoId) || '';
+        base.videoName = (base.contents[0] && base.contents[0].videoName) || base.weekTitle;
+        base.videoThumbnail = (base.contents[0] && base.contents[0].videoThumbnail) || '';
+        base.videoDuration = (base.contents[0] && base.contents[0].videoDuration) || undefined;
+        base.audioUrl = (base.contents[0] && base.contents[0].audioUrl) || '';
+        base.audioTitle = (base.contents[0] && base.contents[0].audioTitle) || '';
+        base.audioDuration = (base.contents[0] && base.contents[0].audioDuration) || undefined;
+        base.text = (base.contents[0] && base.contents[0].audioText) || wc.text || '';
+        return base;
+      }
+
       const meta = await fetchVimeoMeta(wc.videoUrl);
       const audioMeta = await fetchCloudinaryAudioMeta(wc.audioUrl);
       const videoThumbnail = wc.videoThumbnail || wc.thumbnailUrl || meta.thumbnail || '';
       const videoDuration = wc.videoDuration || wc.duration || meta.duration || undefined;
       const audioDuration = wc.audioDuration || audioMeta.duration || undefined;
 
-      const mappedWc = {
-        weekNumber: wc.weekNumber,
-        moduleName: (wc.moduleName?.trim() || ''),
-        weekTitle: wc.weekTitle || `Semana ${wc.weekNumber}`,
-        weekDescription: wc.weekDescription || '',
+      return {
+        ...base,
         videoUrl: wc.videoUrl || '',
         videoId: wc.videoId || '',
         videoName: wc.videoName?.trim() || wc.weekTitle || '',
@@ -180,55 +227,35 @@ export async function PUT(req, { params }) {
         audioUrl: wc.audioUrl || '',
         audioTitle: wc.audioTitle?.trim() || wc.weekTitle || '',
         audioDuration,
-        text: wc.text || '',
-        dailyContents: [],
-        publishDate: new Date(wc.publishDate),
-        isPublished: wc.isPublished || false,
-        isUnlocked: wc.isUnlocked || false
+        text: wc.text || ''
       };
-      
-      console.log(`Semana ${wc.weekNumber} - ModuleName procesado:`, mappedWc.moduleName);
-      
-      return mappedWc;
     }));
-
-    // DEBUG: Log antes de asignar
-    console.log('Bitácora antes de asignar:');
-    console.log('ModuleName semana 1:', mappedWeeklyContents[0]?.moduleName);
-    console.log('VisualContent nombre semana 1:', mappedWeeklyContents[0]?.dailyContents[0]?.visualContent?.nombre);
-    console.log('AudioTextContent nombre semana 1:', mappedWeeklyContents[0]?.dailyContents[0]?.audioTextContent?.nombre);
 
     // Preparar datos de actualización
     const updateData = {
-      title: title || (isBaseBitacora ? 'Bitácora Base - Primer Círculo' : 'Camino del Gorila'),
+      title: title || (isBaseBitacora ? 'Camino Base - Primer Círculo' : 'Camino'),
       description: description || '',
       weeklyContents: mappedWeeklyContents,
       updatedAt: new Date(),
       isBaseBitacora: isBaseBitacora || false
     };
 
-    // Solo actualizar month/year si no es bitácora base
+    // Solo actualizar month/year si no es camino base
     if (!isBaseBitacora) {
       updateData.month = month;
       updateData.year = year;
     }
 
-    // Actualizar la bitácora usando findByIdAndUpdate para asegurar que los cambios se guarden
+    // Actualizar la camino usando findByIdAndUpdate para asegurar que los cambios se guarden
     const updatedLogbook = await WeeklyLogbook.findByIdAndUpdate(
       id,
       { $set: updateData },
       { new: true, runValidators: true }
     );
 
-    // DEBUG: Log después de guardar
-    console.log('Bitácora después de guardar:');
-    console.log('ModuleName semana 1:', updatedLogbook?.weeklyContents[0]?.moduleName);
-    console.log('VisualContent nombre semana 1:', updatedLogbook?.weeklyContents[0]?.dailyContents[0]?.visualContent?.nombre);
-    console.log('AudioTextContent nombre semana 1:', updatedLogbook?.weeklyContents[0]?.dailyContents[0]?.audioTextContent?.nombre);
-
     return NextResponse.json(
       { 
-        message: 'Bitácora actualizada exitosamente',
+        message: 'Camino actualizada exitosamente',
         logbook: updatedLogbook
       },
       { 
@@ -241,9 +268,9 @@ export async function PUT(req, { params }) {
       }
     );
   } catch (error) {
-    console.error('Error actualizando bitácora:', error);
+    console.error('Error actualizando camino:', error);
     return NextResponse.json(
-      { error: error.message || 'Error al actualizar la bitácora' },
+      { error: error.message || 'Error al actualizar la camino' },
       { status: 500 }
     );
   }

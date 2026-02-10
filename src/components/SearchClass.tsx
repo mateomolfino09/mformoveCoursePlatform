@@ -55,7 +55,7 @@ const SearchClass = ({ active, searchClasses }: Props) => {
             ))}
             {searchClasses && searchClasses.length >= 5 && (
                 <>
-                 <a className='text-xs mt-6 pb-2 pt-2 font-light underline cursor-pointer' href={`/home/${filters.searchInput}`}>Ver todos</a>
+                 <a className='text-xs mt-6 pb-2 pt-2 font-light underline cursor-pointer' href={`/library/${filters.searchInput}`}>Ver todos</a>
                 </>
             )}
 

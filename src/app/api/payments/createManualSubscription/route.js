@@ -44,7 +44,6 @@ export async function POST(req) {
     if (isProd === true) {
       // Usar conexión de producción específica
       mongoUri = 'mongodb://admin:abcd*1234@3.224.88.8:27017/MForMoveProduccion';
-      console.log('🔗 Usando conexión de producción específica');
     } else {
       // Usar MONGODB_URI del .env
       if (!process.env.MONGODB_URI) {
@@ -54,14 +53,12 @@ export async function POST(req) {
         );
       }
       mongoUri = process.env.MONGODB_URI;
-      console.log('🔗 Usando conexión del .env');
     }
 
     // Verificar si ya hay una conexión activa
     if (mongoose.connections[0].readyState !== 1) {
       mongoose.set('strictQuery', false);
       await mongoose.connect(mongoUri);
-      console.log('✅ Conectado a la base de datos');
     }
 
     // Validar que se proporcione el email
@@ -123,7 +120,6 @@ export async function POST(req) {
       try {
         selectedPlan = await Plan.findOne({ id: prodSubscriptionTemplate.planId });
       } catch (err) {
-        console.log('Plan no encontrado, continuando sin información del plan');
       }
     } else {
       // Lógica normal: obtener un plan real de la base de datos
@@ -173,6 +169,10 @@ export async function POST(req) {
     // Asignar la suscripción al usuario
     user.subscription = manualSubscription;
     user.freeSubscription = null; // Eliminar suscripción gratuita si existe
+    if (user.validEmail !== 'yes') {
+      user.validEmail = 'yes';
+      user.emailToken = undefined;
+    }
     await user.save();
 
     // Enviar email de bienvenida
@@ -183,7 +183,7 @@ export async function POST(req) {
       await emailService.sendWelcomeMembership({
         email: user.email,
         name: name || user.name || 'Mover',
-        dashboardUrl: `${origin}/home`,
+        dashboardUrl: `${origin}/library`,
         telegramInviteUrl: 'https://t.me/+_9hJulwT690yNWFh'
       });
     } catch (emailError) {

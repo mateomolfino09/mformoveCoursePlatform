@@ -52,7 +52,7 @@ async function createIndividualClassesForLogbook(logbook: LogbookWithWeeks) {
         content?.weekDescription ||
         content?.text ||
         logbook?.description ||
-        'Contenido de la Bitácora';
+        'Contenido de la Camino';
       const imageUrl =
         content?.videoThumbnail ||
         (content as any)?.thumbnailUrl ||
@@ -65,7 +65,7 @@ async function createIndividualClassesForLogbook(logbook: LogbookWithWeeks) {
       const html = buildIframeHtml(content?.videoUrl || content?.videoId);
       const tagBase = `${logbook?.month}-${logbook?.year}`;
       const tags = [
-        { id: 1, title: 'Bitácora' },
+        { id: 1, title: 'Camino' },
         { id: 2, title: `Mes ${tagBase}` },
         { id: 3, title: `Semana ${content?.weekNumber ?? ''}` }
       ];
@@ -237,10 +237,10 @@ export async function GET(req: NextRequest) {
     let clasesIndividualesCreadas = 0;
     const resultados = [];
     
-    // Buscar todas las bitácoras
+    // Buscar todas las caminos
     const logbooks = await WeeklyLogbook.find().lean();
     
-    // Procesar cada bitácora
+    // Procesar cada camino
     for (const logbook of logbooks) {
       if (!logbook.weeklyContents || logbook.weeklyContents.length === 0) {
         continue;
@@ -285,8 +285,13 @@ export async function GET(req: NextRequest) {
           const emailText = content.text || '';
           const audioUrl = content.audioUrl || '';
           const audioTitle = content.weekTitle || `Semana ${content.weekNumber}`;
-          // Obtener imagen con mejor calidad
-          let coverImage = (content as any)?.videoThumbnail || (content as any)?.thumbnailUrl || null;
+          // Imagen: primer video de la semana (contents[0] o legacy)
+          const firstContent = (content as any)?.contents?.[0];
+          let coverImage =
+            (firstContent?.videoThumbnail) ||
+            (content as any)?.videoThumbnail ||
+            (content as any)?.thumbnailUrl ||
+            null;
           
           // Mejorar calidad de imagen si es de Vimeo (reemplazar tamaño pequeño por Full HD)
           if (coverImage && coverImage.includes('vimeocdn.com')) {
@@ -320,7 +325,7 @@ export async function GET(req: NextRequest) {
 
           // 3. Enviar email a cada miembro
           const baseUrl = process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://mateomove.com';
-          const bitacoraLink = `${baseUrl}/bitacora`;
+          const bitacoraLink = `${baseUrl}/weekly-path`;
           
           for (const usuario of miembrosActivos) {
             try {
@@ -332,7 +337,7 @@ export async function GET(req: NextRequest) {
               await emailService.sendEmail({
                 type: EmailType.WEEKLY_LOGBOOK_RELEASE,
                 to: usuario.email,
-                subject: `El Camino del Gorila - Semana ${content.weekNumber} está disponible`,
+                subject: `El Camino - Semana ${content.weekNumber} está disponible`,
                 data: {
                   name: usuario.name || 'Miembro',
                   email: usuario.email,
@@ -345,7 +350,7 @@ export async function GET(req: NextRequest) {
                   coverImage,
                   videoDurationSeconds,
                   bitacoraLink: bitacoraLink,
-                  logbookTitle: logbook.title || 'Camino del Gorila',
+                  logbookTitle: logbook.title || 'Camino',
                   isFirstWeek: content.weekNumber === 1 || content.weekNumber === '1'
                 }
               });

@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../hooks/useAuth';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { LoadingSpinner } from '../../LoadingSpinner';
 import { Button, Dialog, DialogPanel, DialogTitle, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
 import { byeMessages } from '../../../constants/notifications';

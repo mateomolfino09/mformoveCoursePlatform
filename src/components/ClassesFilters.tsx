@@ -7,7 +7,7 @@ import { motion as m, useAnimation } from 'framer-motion';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { RxCross2 } from 'react-icons/rx';
 import { VscTools } from 'react-icons/vsc';
-import { ClassTypes, IndividualClass, ValuesFilters } from '../../typings';
+import { ClassTypes, IndividualClass, ValuesFilters, ClassModule } from '../../typings';
 import endpoints from '../services/api';
 import { toast } from '../hooks/useToast';
 import SearchClass from './SearchClass';
@@ -15,9 +15,11 @@ import { Transition } from '@headlessui/react';
 
 interface Props {
   filtersDB: ClassTypes[];
+  /** Si hay módulos, se usan para las pestañas principales en lugar de filtersDB[0] */
+  classModules?: ClassModule[];
 }
 
-const ClassesFilters = ({ filtersDB }: Props) => {
+const ClassesFilters = ({ filtersDB, classModules = [] }: Props) => {
     const dispatch = useAppDispatch();
   const router = useRouter();
   const filters = useAppSelector(
@@ -134,13 +136,21 @@ const [searchClasses, setSearchClasses] = useState<null | IndividualClass[]>(nul
             <span className={`${classType === "all" ? "bg-white rounded-full text-black " : ""} cursor-pointer p-3 md:mr-0 mr-1 h-7 text-center flex justify-center  items-center md:text-base font-thin text-sm hover:bg-white hover:rounded-full hover:text-black`} onClick={() => handleChange('all')}>
                 <p className=''>Todos</p>
             </span>
-            {filtersDB[0].values.map((f: ValuesFilters) => (
-              <div key={f.id}>
-                  <span key={f.id} onClick={() => handleChange(f.value)} className={`${classType === f.value ? "bg-white rounded-full text-black " : ""} cursor-pointer p-3 md:mr-0 mr-1 font-thin text-sm md:text-base h-7 text-center flex justify-center items-center hover:bg-white hover:rounded-full hover:text-black`}>
-                  <p className=''>{f.label}</p>
-                  </span>
-              </div>
-            ))}
+            {classModules.length > 0
+              ? classModules.map((m) => (
+                  <div key={m._id}>
+                    <span onClick={() => handleChange(m.slug)} className={`${classType === m.slug ? "bg-white rounded-full text-black " : ""} cursor-pointer p-3 md:mr-0 mr-1 font-thin text-sm md:text-base h-7 text-center flex justify-center items-center hover:bg-white hover:rounded-full hover:text-black`}>
+                      <p className=''>{m.name}</p>
+                    </span>
+                  </div>
+                ))
+              : filtersDB[0]?.values?.map((f: ValuesFilters) => (
+                  <div key={f.id}>
+                    <span onClick={() => handleChange(f.value)} className={`${classType === f.value ? "bg-white rounded-full text-black " : ""} cursor-pointer p-3 md:mr-0 mr-1 font-thin text-sm md:text-base h-7 text-center flex justify-center items-center hover:bg-white hover:rounded-full hover:text-black`}>
+                      <p className=''>{f.label}</p>
+                    </span>
+                  </div>
+                ))}
         </div>
         <div className='flex flex-col justify-end items-baseline overflow-visible'>
           <div className='flex lg:mr-24 w-full md:mr-12 md:ml-10 ml-2 mt-4 lg:mt-0' > 

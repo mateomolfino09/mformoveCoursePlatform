@@ -11,6 +11,11 @@ export async function createStripeSubscription(customerEmail?: string) {
     if(customerEmail == "" || !user) return null;
 
     if(user?.subscription?.active) {
+        if (user.validEmail !== 'yes') {
+          user.validEmail = 'yes';
+          user.emailToken = undefined;
+          await user.save();
+        }
         return user;
     }
 
@@ -25,8 +30,21 @@ export async function createStripeSubscription(customerEmail?: string) {
         const res = await subscribeUserToMailchimp(user, hashedEmail)
 
         if(res.success) {
+            // Inicializar onboarding si no existe
+            if (!latestSub.onboarding) {
+              latestSub.onboarding = {
+                contratoAceptado: false,
+                tutorialBitacoraCompletado: false,
+                practicasSemanales: []
+              };
+            }
+            
             user.subscription = latestSub;
             user.freeSubscription = null;
+            if (user.validEmail !== 'yes') {
+              user.validEmail = 'yes';
+              user.emailToken = undefined;
+            }
             await user.save();
     
             user.password = null;

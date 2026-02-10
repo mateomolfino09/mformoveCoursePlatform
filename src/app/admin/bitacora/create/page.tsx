@@ -35,7 +35,7 @@ export default function CreateBitacoraPage() {
   
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
-  const [title, setTitle] = useState('Camino del Gorila');
+  const [title, setTitle] = useState('Camino');
   const [description, setDescription] = useState('');
   
   const [weeks, setWeeks] = useState<WeekContent[]>(Array.from({ length: 4 }).map((_, idx) => ({
@@ -154,14 +154,14 @@ export default function CreateBitacoraPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error al crear la bitácora');
+        throw new Error(data.error || 'Error al crear la camino');
       }
 
-      toast.success('Bitácora creada exitosamente');
+      toast.success('Camino creada exitosamente');
       router.push('/admin/memberships/bitacora');
     } catch (error: any) {
-      console.error('Error creando bitácora:', error);
-      toast.error(error.message || 'Error al crear la bitácora');
+      console.error('Error creando camino:', error);
+      toast.error(error.message || 'Error al crear la camino');
     } finally {
       setSubmitting(false);
     }
@@ -194,10 +194,10 @@ export default function CreateBitacoraPage() {
           className="bg-white rounded-xl shadow-lg p-6 md:p-8"
         >
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 font-montserrat">
-            Crear Bitácora Mensual
+            Crear Camino Mensual
           </h1>
           <p className="text-gray-600 mb-8 font-montserrat">
-            Configura 4 semanas de contenido para el Camino del Gorila
+            Configura 4 semanas de contenido para el Camino
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -247,7 +247,7 @@ export default function CreateBitacoraPage() {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Camino del Gorila"
+                  placeholder="Camino"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat"
                 />
               </div>
@@ -404,7 +404,7 @@ export default function CreateBitacoraPage() {
                     <span>Creando...</span>
                   </>
                 ) : (
-                  <span>Crear Bitácora</span>
+                  <span>Crear Camino</span>
                 )}
               </button>
             </div>

@@ -32,7 +32,7 @@ const ProductHeader = ({ user, toggleNav }: Props) => {
   const snap = useSnapshot(state);
   const auth = useAuth();
   const headerScroll = useAppSelector(
-    (state: any) => state.headerHomeReducer.value.scrollHeader
+    (state: any) => state.headerLibraryReducer.value.scrollHeader
     );
   const pathname = usePathname()
   useEffect(() => {
@@ -60,7 +60,7 @@ const ProductHeader = ({ user, toggleNav }: Props) => {
             className={` w-full h-full flex justify-between items-center`}
             >
             <div className='pl-4 md:pl-16'>
-                <a href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/home' : (pathname != routes.navegation.membership.home ? routes.navegation.membership.home : `/`)}>
+                <a href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/library' : (pathname != routes.navegation.membership.library ? routes.navegation.membership.library : `/`)}>
                 <img
                     alt='icon image'
                     src='/images/MFORMOVE_v2.negro03.png'

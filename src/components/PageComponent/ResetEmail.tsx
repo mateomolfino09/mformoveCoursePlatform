@@ -8,7 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from '../../hooks/useToast';
 import { useAuth } from '../../hooks/useAuth';
 import MainSideBar from '../MainSidebar/MainSideBar';
 import { routes } from '../../constants/routes';

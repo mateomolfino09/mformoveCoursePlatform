@@ -100,6 +100,11 @@ export async function POST(req) {
             
                     user.subscription = newSub
                     user.freeSubscription = null
+                    if (user.validEmail !== 'yes') {
+                      user.validEmail = 'yes';
+                      user.emailToken = undefined;
+                    }
+                    await user.save()
                     
                 return NextResponse.json({ message: `Usuario subscripto a NewsLetter VIP con éxito.`, newSub, success: true}, { status: 200 })
 

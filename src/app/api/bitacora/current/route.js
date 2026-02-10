@@ -17,7 +17,7 @@ export async function GET(req) {
     // Esta ruta no requiere autenticación estricta, puede ser pública
     // pero verificamos si hay token para loguear en caso de error
 
-    // Usar el método estático del modelo para obtener la bitácora actual
+    // Usar el método estático del modelo para obtener la camino actual
     const result = await WeeklyLogbook.getCurrentWeekLogbook();
 
     if (!result) {
@@ -49,9 +49,9 @@ export async function GET(req) {
       }
     );
   } catch (error) {
-    console.error('Error obteniendo bitácora actual:', error);
+    console.error('Error obteniendo camino actual:', error);
     return NextResponse.json(
-      { error: 'Error al obtener la bitácora actual', message: error.message, logbook: null, weeklyContent: null },
+      { error: 'Error al obtener la camino actual', message: error.message, logbook: null, weeklyContent: null },
       { status: 200 } // Retornamos 200 con datos null para que no rompa el frontend
     );
   }

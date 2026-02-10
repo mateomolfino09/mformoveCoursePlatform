@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { routes } from '../../../constants/routes';
+import { saveRedirectUrl, getRedirectUrl } from '../../../utils/redirectQueue';
 
 interface Props {
   submitFunction: any
@@ -98,7 +99,19 @@ export default function AccountForm({ submitFunction, title, buttonTitle, showEm
               Olvidé la contraseña
             </span>
               </Link>
-              <Link href={routes.user.register}>
+              <Link 
+                href={routes.user.register}
+                onClick={() => {
+                  // Guardar la URL actual si no hay una ya guardada
+                  if (typeof window !== 'undefined') {
+                    const existingUrl = getRedirectUrl();
+                    if (!existingUrl) {
+                      // Si no hay URL guardada, guardar la URL actual (por si el usuario vino desde otra página)
+                      saveRedirectUrl(window.location.pathname + window.location.search);
+                    }
+                  }
+                }}
+              >
             <span className=' text-center mt-2 md:mt-0 text-white'>Crear cuenta</span>
           </Link>
         </div>

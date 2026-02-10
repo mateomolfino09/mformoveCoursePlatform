@@ -310,16 +310,11 @@ export default function MentorshipConsultaPage() {
   // Función para cargar los planes de mentoría
   const loadMentorshipPlans = async () => {
     try {
-      console.log('Cargando planes de mentoría...');
       const response = await fetch('/api/payments/getPlans?type=mentorship');
-      console.log('Response status:', response.status);
-      
       if (response.ok) {
         const plans = await response.json();
-        console.log('Planes recibidos:', plans);
         
         const activePlans = plans.filter((plan: MentorshipPlan) => plan.active);
-        console.log('Planes activos:', activePlans);
         
         setMentorshipPlans(activePlans);
         
@@ -354,7 +349,6 @@ export default function MentorshipConsultaPage() {
             };
           });
           
-          console.log('Opciones generadas:', options);
           setBudgetOptions(options);
           presupuestoPregunta.options = options;
         }

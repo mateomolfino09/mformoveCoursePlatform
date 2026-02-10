@@ -82,22 +82,19 @@ const MoveCrewCommunitySlider = () => {
   };
 
   return (
-    <section className="py-12 md:py-20 bg-white font-montserrat">
-      <div className="max-w-6xl mx-auto px-4 md:px-6">
+    <section className="py-16 md:py-20 bg-palette-cream font-montserrat">
+      <div className="w-[85%] max-w-6xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="mb-8 md:mb-12 text-center"
+          className="mb-10 md:mb-12 text-start md:text-left"
         >
-          <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-500 mb-3">Comunidad activa</p>
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black mb-4">
-            Alumnos en movimiento
+          <p className="font-montserrat uppercase tracking-[0.2em] text-xs md:text-sm text-palette-stone/80 mb-2">Comunidad activa</p>
+          <h2 className="text-2xl md:text-4xl font-montserrat font-semibold text-palette-ink tracking-tight mb-4">
+            Compañeros en movimiento
           </h2>
-          <p className="text-sm md:text-base lg:text-lg text-gray-600 font-light max-w-2xl mx-auto">
-            Humanos transformando su relación con su cuerpo.
-          </p>
         </motion.div>
 
         {/* Slider Container */}
@@ -134,14 +131,14 @@ const MoveCrewCommunitySlider = () => {
           {/* Navigation Arrows */}
           <button
             onClick={goToPrevious}
-            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-gray-900 p-2 md:p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 bg-palette-cream/95 hover:bg-palette-teal/20 text-palette-teal p-2 md:p-3 rounded-full shadow-lg border border-palette-teal/40 transition-all duration-300 hover:scale-110"
             aria-label="Imagen anterior"
           >
             <ChevronLeftIcon className="w-5 h-5 md:w-6 md:h-6" />
           </button>
           <button
             onClick={goToNext}
-            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-gray-900 p-2 md:p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 bg-palette-cream/95 hover:bg-palette-teal/20 text-palette-teal p-2 md:p-3 rounded-full shadow-lg border border-palette-teal/40 transition-all duration-300 hover:scale-110"
             aria-label="Siguiente imagen"
           >
             <ChevronRightIcon className="w-5 h-5 md:w-6 md:h-6" />
@@ -155,8 +152,8 @@ const MoveCrewCommunitySlider = () => {
                 onClick={() => goToSlide(index)}
                 className={`transition-all duration-300 rounded-full ${
                   index === currentIndex
-                    ? 'w-8 md:w-10 h-2 md:h-2.5 bg-amber-600'
-                    : 'w-2 md:w-2.5 h-2 md:h-2.5 bg-gray-300 hover:bg-gray-400'
+                    ? 'w-8 md:w-10 h-2 md:h-2.5 bg-palette-teal'
+                    : 'w-2 md:w-2.5 h-2 md:h-2.5 bg-palette-stone/40 hover:bg-palette-stone/60'
                 }`}
                 aria-label={`Ir a imagen ${index + 1}`}
               />

@@ -9,7 +9,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { ClassesDB } from '../../../../typings';
 import requests from '../../../utils/requests';
 import { useGetClassQuery, useAddFilesMutation } from '../../../redux/services/individualClassApi';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { IndividualClass } from '../../../../typings';
 
 interface Props {

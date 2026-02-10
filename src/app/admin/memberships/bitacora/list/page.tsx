@@ -80,18 +80,18 @@ const BitacoraListPage = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Error al obtener las bitácoras');
+        throw new Error('Error al obtener las caminos');
       }
 
       const data = await response.json();
       if (data.success) {
         setLogbooks(data.logbooks || []);
       } else {
-        setError(data.error || 'Error al cargar las bitácoras');
+        setError(data.error || 'Error al cargar las caminos');
       }
     } catch (err: any) {
       console.error('Error fetching logbooks:', err);
-      setError(err.message || 'Error al cargar las bitácoras');
+      setError(err.message || 'Error al cargar las caminos');
     } finally {
       setLoading(false);
     }
@@ -135,8 +135,8 @@ const BitacoraListPage = () => {
   return (
     <AdmimDashboardLayout>
       <Head>
-        <title>Admin - Lista de Bitácoras</title>
-        <meta name='description' content='Lista de Bitácoras Semanales' />
+        <title>Admin - Lista de Caminos</title>
+        <meta name='description' content='Lista de Caminos Semanales' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <div 
@@ -159,10 +159,10 @@ const BitacoraListPage = () => {
           
           <div className='mb-12 mt-8'>
             <h1 className='text-4xl md:text-5xl font-bold text-gray-900 font-montserrat mb-4'>
-              Lista de Bitácoras
+              Lista de Caminos
             </h1>
             <p className='text-gray-600 text-lg font-montserrat'>
-              Gestiona y visualiza todas las bitácoras mensuales creadas
+              Gestiona y visualiza todas las caminos mensuales creadas
             </p>
           </div>
 
@@ -176,16 +176,16 @@ const BitacoraListPage = () => {
             <div className="bg-white rounded-xl shadow-lg p-12 border border-gray-200 text-center">
               <CalendarIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2 font-montserrat">
-                No hay bitácoras creadas
+                No hay caminos creadas
               </h3>
               <p className="text-gray-600 mb-6 font-montserrat">
-                Comienza creando tu primera bitácora mensual
+                Comienza creando tu primera camino mensual
               </p>
               <Link
                 href="/admin/memberships/bitacora/create"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#234C8C] to-[#4F7CCF] text-white rounded-lg font-semibold hover:from-[#1A3A6B] hover:to-[#234C8C] transition-all shadow-lg hover:shadow-xl font-montserrat"
               >
-                Crear Primera Bitácora
+                Crear Primera Camino
               </Link>
             </div>
           )}
@@ -211,7 +211,7 @@ const BitacoraListPage = () => {
                     <div className='flex items-start justify-between mb-4'>
                       <div className='flex-1'>
                         <h3 className='text-xl font-bold text-gray-900 font-montserrat mb-1'>
-                          {logbook.title || 'Camino del Gorila'}
+                          {logbook.title || 'Camino'}
                         </h3>
                         <p className='text-lg text-gray-600 font-montserrat'>
                           {monthNames[logbook.month - 1]} {logbook.year}

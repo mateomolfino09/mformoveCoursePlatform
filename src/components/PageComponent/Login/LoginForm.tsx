@@ -17,8 +17,12 @@ import MainSideBar from '../../MainSidebar/MainSideBar';
 import LoginModalForm from './AccountForm';
 import NewsletterF from '../Index/NewsletterForm';
 import { CldImage } from 'next-cloudinary';
+import { getAndClearRedirectUrl } from '../../../utils/redirectQueue';
+import { executePlanIntent } from '../../../utils/executePlanIntent';
+import AuthSkeleton from '../../AuthSkeleton';
 
 function LoginForm() {
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<any>([]);
   const [verifyInfo, setVerifyInfo] = useState<{ email: string; message?: string } | null>(null);
@@ -32,6 +36,15 @@ function LoginForm() {
       document.addEventListener('keydown', testCapsLock);
       document.addEventListener('keyup', testCapsLock);
     }
+  }, []);
+
+  useEffect(() => {
+    // Mostrar skeleton al inicio y luego ocultarlo
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 800);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   function testCapsLock(event: any) {
@@ -90,13 +103,6 @@ function LoginForm() {
                   router.push('/onboarding/bienvenida');
                 }, 1000);
                 return;
-              } 
-              // Si aceptó el contrato pero no completó la bitácora base
-              else if (!onboardingData.bitacoraBaseCompletada) {
-                setTimeout(() => {
-                  router.push('/onboarding/bitacora-base');
-                }, 1000);
-                return;
               }
             }
           }
@@ -105,11 +111,34 @@ function LoginForm() {
           // Si hay error, continuar con el flujo normal de login
         }
 
-        // Si el onboarding está completo o no es necesario, redirigir normalmente
-        const hasActiveSub = res?.user?.subscription?.active || auth.user?.subscription?.active;
-        setTimeout(() => {
-          router.push(hasActiveSub ? '/home' : '/move-crew');
-        }, 1000);
+        // Verificar si hay una intención de plan guardada para ejecutarla
+        const userEmail = res?.user?.email || auth.user?.email;
+        const userId = res?.user?._id || auth.user?._id;
+        
+        if (userEmail && userId) {
+          const planIntentExecuted = await executePlanIntent(userEmail, userId, router);
+          
+          if (planIntentExecuted) {
+            // Si se ejecutó una intención de plan, no hacer nada más (ya redirigió)
+            return;
+          }
+        }
+        
+        // Si no hay intención de plan, verificar si hay una URL guardada para redirigir
+        const redirectUrl = getAndClearRedirectUrl();
+        
+        if (redirectUrl) {
+          // Si hay una URL guardada, redirigir ahí
+          setTimeout(() => {
+            router.push(redirectUrl);
+          }, 1000);
+        } else {
+          // Si el onboarding está completo o no es necesario, redirigir normalmente
+          const hasActiveSub = res?.user?.subscription?.active || auth.user?.subscription?.active;
+          setTimeout(() => {
+            router.push(hasActiveSub ? '/library' : '/move-crew');
+          }, 1000);
+        }
       } else {
         if (res.validate) {
           setVerifyInfo({ email, message: res.message });
@@ -165,6 +194,10 @@ function LoginForm() {
     }
     setLoading(false);
   };
+
+  if (initialLoading) {
+    return <AuthSkeleton />;
+  }
 
   return (
     <div>

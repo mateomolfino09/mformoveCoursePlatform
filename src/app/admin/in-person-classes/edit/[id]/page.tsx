@@ -7,7 +7,7 @@ import Head from 'next/head';
 import { MiniLoadingSpinner } from '../../../../../components/PageComponent/Products/MiniSpinner';
 import CreateInPersonClass from '../../../../../components/PageComponent/AdminInPersonClass/CreateInPersonClass';
 import { InPersonClass, VirtualClass } from '../../../../../../typings';
-import { toast } from 'react-toastify';
+import { toast } from '../../../../hooks/useToast';
 
 interface PageProps {
   params: {

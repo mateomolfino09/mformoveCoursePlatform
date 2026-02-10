@@ -14,7 +14,7 @@ import {
   PencilIcon,
   PlayIcon
 } from '@heroicons/react/24/outline';
-import { toast } from 'react-toastify';
+import { toast } from '../../../../hooks/useToast';
 
 const ViewProgramPage = () => {
   const router = useRouter();

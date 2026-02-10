@@ -24,7 +24,21 @@ export async function middleware(request: NextRequest) {
     try {
         // Verifica si el token JWT no existe y redirige a login
         if (jwt === undefined) {
-            return NextResponse.redirect(new URL('/login', request.url));
+            // Guardar la URL de destino en una cookie para redirigir después del login
+            const redirectUrl = request.nextUrl.pathname + request.nextUrl.search;
+            const response = NextResponse.redirect(new URL('/login', request.url));
+            
+            // Solo guardar si no es una ruta de auth
+            const authRoutes = ['/login', '/register', '/email', '/reset', '/forget'];
+            if (!authRoutes.some(route => redirectUrl.startsWith(route))) {
+                response.cookies.set('redirectQueue', redirectUrl, {
+                    maxAge: 60 * 60 * 24, // 1 día
+                    sameSite: 'lax',
+                    path: '/'
+                });
+            }
+            
+            return response;
         }
 
         // Redirecciones específicas según las rutas
@@ -49,7 +63,8 @@ export const config = {
         '/admin/:path*', 
         '/products/:path*', 
         '/payment/:path*',
-        '/home/:path*',
+        '/library/:path*',
+        '/weekly-path/:path*',
         '/onboarding/:path*' // Incluido para permitir acceso pero sin bloquear
     ]
 };

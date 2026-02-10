@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { LockClosedIcon } from '@heroicons/react/24/solid';
@@ -14,7 +14,6 @@ export default function OnboardingGuard({ children }: OnboardingGuardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const auth = useAuth();
-  const [checking, setChecking] = useState(true);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
   const [onboardingStatus, setOnboardingStatus] = useState<any>(null);
 
@@ -34,30 +33,18 @@ export default function OnboardingGuard({ children }: OnboardingGuardProps) {
     '/mentorship'
   ];
 
-  useEffect(() => {
-    // Si estamos en una ruta excluida, no verificar
-    const isExcluded = excludedPaths.some(path => 
-      pathname === path || pathname.startsWith(path + '/')
-    );
-
-    if (isExcluded) {
-      setChecking(false);
-      return;
-    }
-
-    checkOnboardingStatus();
-
-    // Verificar periódicamente cada 30 segundos (por si el usuario paga mientras está navegando)
-    const interval = setInterval(() => {
-      checkOnboardingStatus();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [pathname, auth.user]);
-
-  const checkOnboardingStatus = async () => {
+  const checkOnboardingStatus = useCallback(async () => {
     try {
-      // Si no hay usuario, intentar cargarlo
+      // Si estamos en una ruta excluida, no verificar
+      const isExcluded = excludedPaths.some(path => 
+        pathname === path || pathname.startsWith(path + '/')
+      );
+
+      if (isExcluded) {
+        return;
+      }
+
+      // Si no hay usuario, intentar cargarlo en background
       if (!auth.user) {
         const token = document.cookie
           .split('; ')
@@ -65,16 +52,14 @@ export default function OnboardingGuard({ children }: OnboardingGuardProps) {
         
         if (token) {
           await auth.fetchUser();
-          await new Promise(resolve => setTimeout(resolve, 500));
+          // No esperar delay, continuar inmediatamente
         } else {
-          setChecking(false);
           return;
         }
       }
 
       // Si el usuario no tiene suscripción activa, no necesita onboarding
       if (!auth.user?.subscription?.active) {
-        setChecking(false);
         return;
       }
 
@@ -89,42 +74,42 @@ export default function OnboardingGuard({ children }: OnboardingGuardProps) {
 
         // Si no tiene suscripción activa, no necesita onboarding
         if (data.sinSuscripcion) {
-          setChecking(false);
           setNeedsOnboarding(false);
           return;
         }
 
         // Solo verificar contrato aceptado (Bienvenida obligatoria)
-        // La Bitácora Base es opcional y no bloquea el acceso
+        // La Camino Base es opcional y no bloquea el acceso
         if (data.necesitaOnboarding) {
-          setNeedsOnboarding(true);
-
-          console.log('data.contratoAceptado', data.contratoAceptado);
-          
           // Solo redirigir si no aceptó el contrato (Bienvenida)
           if (!data.contratoAceptado) {
+            setNeedsOnboarding(true);
             router.push('/onboarding/bienvenida');
             return;
           }
+          setNeedsOnboarding(false);
         } else {
           setNeedsOnboarding(false);
         }
       }
-      setChecking(false);
     } catch (error) {
       console.error('Error verificando onboarding:', error);
-      setChecking(false);
     }
-  };
+  }, [pathname, auth.user, router]);
 
-  if (checking) {
-    return (
-      <div className="min-h-screen bg-black text-white font-montserrat flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    // Verificar en background sin bloquear el renderizado
+    checkOnboardingStatus();
 
+    // Verificar periódicamente cada 30 segundos (por si el usuario paga mientras está navegando)
+    const interval = setInterval(() => {
+      checkOnboardingStatus();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [checkOnboardingStatus]);
+
+  // Solo bloquear si realmente necesita onboarding (no mientras verifica)
   if (needsOnboarding) {
     return (
       <div className="min-h-screen bg-black text-white font-montserrat flex items-center justify-center px-4">
@@ -151,6 +136,7 @@ export default function OnboardingGuard({ children }: OnboardingGuardProps) {
     );
   }
 
+  // Siempre renderizar children mientras verifica (sin bloquear)
   return <>{children}</>;
 }
 

@@ -77,7 +77,7 @@ function CarouselClasses({
     >
       <div className={`${title == "Publicadas Recientemente" ? "mb-4 md:mb-2" : ""} flex md:justify-between flex-col md:flex-row items-start md:items-center w-full`}>
         <div className='flex justify-start items-center w-full' style={{ flex: '1 0 21%'}}>
-          <h2 className='ml-2 md:ml-4 relative text-xl sm:text-2xl font-extrabold text-[#E5E5E5] transition duration-200 font-montserrat hover:text-white lg:text-2xl md:mb-4 -mb-3'>
+          <h2 className='ml-2 md:ml-4 relative text-xl sm:text-2xl md:text-3xl font-light text-palette-ink transition duration-200 font-montserrat hover:text-palette-stone lg:text-3xl md:mb-4 -mb-3 tracking-tight'>
             {title}
           </h2>
         <div className='flex relative ml-2 mb-5 justify-center items-center w-auto'>
@@ -87,30 +87,30 @@ function CarouselClasses({
             onClick={() => setShowHelper(!showHelper)}
             onMouseEnter={() => setShowHelper(true)}
             onMouseLeave={() => setShowHelper(false)}
-            className="p-1 text-white/80 hover:text-white transition"
+            className="p-1 text-palette-stone/60 hover:text-palette-stone transition-colors"
           >
-            <BsExclamationCircle className='w-4 md:w-6 lg:w-7' />
+            <BsExclamationCircle className='w-4 md:w-5 lg:w-6' />
           </button>
           <div
-            className={`absolute left-0 sm:left-10 top-full mt-2 w-[240px] max-w-[80vw] z-[120] rounded-2xl bg-black/85 text-white border border-white/15 shadow-xl backdrop-blur px-3 py-2 text-xs sm:text-sm font-light transition-all duration-200 ${
+            className={`absolute left-0 sm:left-10 top-full mt-2 w-[240px] max-w-[80vw] z-[120] rounded-2xl bg-palette-cream text-palette-ink border border-palette-stone/20 shadow-[0_8px_32px_rgba(20,20,17,0.12)] backdrop-blur px-4 py-3 text-xs sm:text-sm font-light transition-all duration-200 ${
               showHelper ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-1 pointer-events-none'
             }`}
           >
-            <div className="absolute -top-2 left-6 sm:left-4 h-3 w-3 rotate-45 bg-black/85 border-l border-t border-white/15"></div>
+            <div className="absolute -top-2 left-6 sm:left-4 h-3 w-3 rotate-45 bg-palette-cream border-l border-t border-palette-stone/20"></div>
             <p className='break-words whitespace-normal'>{description}</p>
           </div>
         </div>
 
         </div>
-        <div className={`flex ml-2 md:ml-4 md:ml-0 mb-5 relative font-light text-xs md:text-sm group ${title == "Publicadas Recientemente" ? 'hidden' : ""}`} onClick={() => router.push(`/classes-category/${title?.toLowerCase()}`)}>
-          <p className='relative before:content-[""] before:md:bg-yellow-400/80 before:h-[1px] before:absolute before:w-full before:bottom-[-3px] before:left-0 before:bg-yellow-400/80'>Todas las clases de {title} </p>
-          <ArrowRightIcon className='w-4 ml-2 group-hover:translate-x-1 transition-all duration-500'/>
+        <div className={`flex ml-2 md:ml-4 md:ml-0 mb-5 relative font-light text-xs md:text-sm group cursor-pointer ${title == "Publicadas Recientemente" ? 'hidden' : ""}`} onClick={() => router.push(`/classes-category/${title?.toLowerCase()}`)}>
+          <p className='relative text-palette-stone hover:text-palette-ink transition-colors before:content-[""] before:h-[1px] before:absolute before:w-full before:bottom-[-3px] before:left-0 before:bg-palette-stone/40 group-hover:before:bg-palette-ink before:transition-colors'>Todas las clases de {title} </p>
+          <ArrowRightIcon className='w-4 ml-2 text-palette-stone group-hover:text-palette-ink group-hover:translate-x-1 transition-all duration-300'/>
         </div>
       </div>
       <ChevronLeftIcon
-        className={`hidden md:block absolute left-2 z-[110] h-9 ${
+        className={`hidden md:block absolute left-2 z-[110] h-9 w-9 text-palette-stone/60 hover:text-palette-ink hover:bg-palette-cream/80 rounded-full p-1.5 transition-all duration-200 ${
           title === 'Mis Cursos' ? 'bottom-64' : 'bottom-32'
-        } opacity-0 transition hover:scale-125 group-hover:opacity-100 ${
+        } opacity-0 group-hover:opacity-100 ${
           classesDB?.length && classesDB?.length == 0 ? 'hidden' : ''
         }`}
         onClick={() => handleClick('left')}
@@ -147,9 +147,9 @@ function CarouselClasses({
         </div>
       </m.div>
       <ChevronRightIcon
-        className={`hidden md:block absolute right-0 z-[110]  h-9 ${
+        className={`hidden md:block absolute right-0 z-[110] h-9 w-9 text-palette-stone/60 hover:text-palette-ink hover:bg-palette-cream/80 rounded-full p-1.5 transition-all duration-200 ${
           title === 'Mis Cursos' ? 'bottom-64' : 'bottom-32'
-        } transition hover:scale-125 ${
+        } ${
             classesDB?.length && classesDB?.length < 1 ? 'hidden' : ''
         }`}
         onClick={() => handleClick('right')}

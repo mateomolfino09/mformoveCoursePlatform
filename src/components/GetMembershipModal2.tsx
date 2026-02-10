@@ -20,7 +20,7 @@ import { useForm } from 'react-hook-form';
 import { CldImage } from 'next-cloudinary';
 import { IoCloseCircle } from 'react-icons/io5';
 import endpoints from '../services/api';
-import { toast } from 'react-toastify';
+import { toast } from '../hooks/useToast';
 import { LoadingSpinner } from './LoadingSpinner';
 import { alertTypes } from '../constants/alertTypes';
 import { MdEmail } from 'react-icons/md';
