@@ -46,7 +46,7 @@ const AdminMembershipIndex = () => {
               Bienvenido al Dashboard de Membresías
             </h1>
             <p className='text-gray-600 text-lg font-montserrat'>
-              Gestiona tus planes y clases de membresía
+              Gestiona tus planes y clases de Move Crew
             </p>
           </div>
 
