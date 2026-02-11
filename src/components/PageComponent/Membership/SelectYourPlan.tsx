@@ -10,7 +10,7 @@ import {
   CheckIcon
 } from '@heroicons/react/24/outline';
 import Cookies from 'js-cookie';
-import { saveRedirectUrl, savePlanIntent } from '../../../../utils/redirectQueue';
+import { saveRedirectUrl, savePlanIntent } from '../../../utils/redirectQueue';
 import { CldImage } from 'next-cloudinary';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react';
 import { CheckmarkIcon } from 'react-hot-toast';
 import Select, { StylesConfig } from 'react-select';
 import { toast } from '../../../hooks/useToast';
-import state from '../../../../valtio';
 import './SelectYourPlan.css'
 interface Promocion {
   _id: string;

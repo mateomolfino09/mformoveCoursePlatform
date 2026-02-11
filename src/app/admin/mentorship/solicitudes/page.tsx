@@ -4,7 +4,7 @@ import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout';
 import InfoModal from '../../../../components/InfoModal';
 import InfoModalSection from '../../../../components/InfoModalSection';
 import InfoModalField from '../../../../components/InfoModalField';
-import { toast } from '../../../hooks/useToast';
+import { toast } from '../../../../hooks/useToast';
 
 interface Solicitud {
   _id: string;

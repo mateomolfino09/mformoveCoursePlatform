@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import connectDB from '../../../../../../config/connectDB';
-import ClassModule from '../../../../../../models/classModuleModel';
+import connectDB from '../../../../../config/connectDB';
+import ClassModule from '../../../../../models/classModuleModel';
 
 connectDB();
 export const revalidate = 0;

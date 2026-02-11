@@ -11,7 +11,7 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { Plan } from '../../../../typings';
 import state from '../../../valtio';
-import { savePlanIntent } from '../../../../utils/redirectQueue';
+import { savePlanIntent } from '../../../utils/redirectQueue';
 import { Button } from '@headlessui/react';
 import SelectPlanOptions from './SelectPlanOptions';
 import SelectPlanPlans from './SelectPlanPlans';
