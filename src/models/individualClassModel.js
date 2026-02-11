@@ -95,6 +95,14 @@ const individualClassSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    /** Módulo de clase (Movimiento, Movilidad, Handbalance, etc.) - filtro principal */
+    moduleId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ClassModule',
+      default: null
+    },
+    /** Submódulo (ej. Locomotions, Squat Work) - slug del submódulo dentro del módulo */
+    submoduleSlug: { type: String, default: null },
     isFree: {
       type: Boolean,
       default: () => false

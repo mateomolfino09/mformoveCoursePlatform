@@ -14,7 +14,7 @@ import endpoints from '../../../services/api';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import Footer from '../../Footer';
 import { AcademicCapIcon } from '@heroicons/react/24/solid';

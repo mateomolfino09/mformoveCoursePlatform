@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
 
     if (videoId && caption) {
       // Usar el video específico enviado desde el frontend
-      console.log('📱 [INFO] Generando WhatsApp desde video específico:', videoId);
       videoContent = {
         caption: caption,
         videoUrl: `https://www.instagram.com/p/${videoId}/`,
@@ -20,7 +19,6 @@ export async function POST(req: NextRequest) {
       };
     } else {
       // Fallback: Obtener el último video de Instagram
-      console.log('📱 [INFO] Obteniendo último video de Instagram para WhatsApp...');
       const instagramService = InstagramService.getInstance();
       
       if (!instagramService.hasCredentials()) {
@@ -49,15 +47,11 @@ export async function POST(req: NextRequest) {
       };
     }
 
-    console.log('📱 [INFO] Generando mensaje de WhatsApp con contenido:', videoContent.caption.substring(0, 100) + '...');
-
     const whatsappContent = await aiService.generateWhatsAppMessage({
       content: videoContent.caption,
       type: type as 'story' | 'promotion' | 'tip' | 'reflection'
     });
 
-    console.log('📱 [INFO] WhatsApp Response length:', whatsappContent.message.length);
-    console.log('📱 [INFO] WhatsApp Response preview:', whatsappContent.message.substring(0, 200) + '...');
 
     // Parsear el mensaje de WhatsApp
     const messageLines = whatsappContent.message.split('\n').filter(line => line.trim());
@@ -87,8 +81,6 @@ export async function POST(req: NextRequest) {
       messages.push(whatsappContent.message);
     }
 
-    console.log('📱 [INFO] Mensajes de WhatsApp separados:', messages.length);
-
     const response = {
       success: true,
       whatsapp: {
@@ -105,8 +97,6 @@ export async function POST(req: NextRequest) {
         timestamp: videoContent.timestamp
       }
     };
-
-    console.log('✅ [SUCCESS] Mensaje de WhatsApp generado exitosamente');
 
     return NextResponse.json(response);
 

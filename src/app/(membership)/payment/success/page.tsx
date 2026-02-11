@@ -1,6 +1,6 @@
 import { IndividualClass, Question } from "../../../../../typings";
 import IndividualClassPage from "../../../../components/PageComponent/ClassPage/IndividualClass";
-import HomeSearch from "../../../../components/PageComponent/HomeSearch/HomeSearch";
+import LibrarySearch from "../../../../components/PageComponent/LibrarySearch/LibrarySearch";
 import connectDB from "../../../../config/connectDB";
 import { getClassById } from "../../../api/individualClass/getClassById";
 import { getQuestionsFromClass } from "../../../api/individualClass/getAllQuestions";

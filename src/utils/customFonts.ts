@@ -1,4 +1,4 @@
-import { Montserrat } from 'next/font/google';
+import { Montserrat, Lora, Raleway } from 'next/font/google';
 import localFont from "next/font/local";
 
 const BoldFont = localFont({
@@ -6,9 +6,11 @@ const BoldFont = localFont({
   variable: "--font-boldfont",
 });
 
-const MontserratFont = Montserrat({ subsets: ["latin"], variable: '--font-montserrat'})
+const MontserratFont = Montserrat({ subsets: ["latin"], variable: '--font-montserrat'});
 
+const LoraFont = Lora({ subsets: ["latin"], variable: '--font-lora' });
 
+const RalewayFont = Raleway({ subsets: ["latin"], variable: '--font-raleway' });
 
 // const ClashDisplay = localFont({
 //   src: [
@@ -46,4 +48,4 @@ const MontserratFont = Montserrat({ subsets: ["latin"], variable: '--font-montse
 //   variable: "--font-clash-display",
 // });
 
-export { BoldFont, MontserratFont };
+export { BoldFont, MontserratFont, LoraFont, RalewayFont };

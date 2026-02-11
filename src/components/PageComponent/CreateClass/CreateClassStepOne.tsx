@@ -1,34 +1,41 @@
-import { ClassTypes } from '../../../../typings';
+import { ClassTypes, ClassModule } from '../../../../typings';
 import { addStepOne } from '../../../redux/features/createClassSlice';
 import { useAppSelector } from '../../../redux/hooks';
 import { AppDispatch } from '../../../redux/store';
 import { ArrowUpTrayIcon, DocumentIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useDispatch } from 'react-redux';
 import Select, { StylesConfig } from 'react-select';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 
 interface Props {
   step0ToStep1: any;
   types: ClassTypes[];
+  classModules?: ClassModule[];
 }
 
-const CreateClassStepOne = ({ step0ToStep1, types }: Props) => {
+const CreateClassStepOne = ({ step0ToStep1, types, classModules = [] }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   
-  // Estados del formulario
   const [name, setName] = useState<string>('');
   const [typeId, setTypeId] = useState<string | null>(null);
+  const [moduleId, setModuleId] = useState<string | null>(null);
   const [typeName, setTypeName] = useState<string>('');
   const [files, setFiles] = useState<File[]>([]);
 
-  // Mapear tipos para el Select
-  const mapTypes = types.map((type) => ({
-    value: type._id,
-    label: type.name
-  }));
+  const mapTypes = useMemo(() => {
+    if (classModules.length > 0) {
+      return classModules.map((m) => ({ value: m._id, label: m.name, isModule: true }));
+    }
+    const firstFilter = types[0];
+    const values = (firstFilter as any)?.values;
+    if (Array.isArray(values)) {
+      return values.map((v: { value: string; label: string }) => ({ value: v.value, label: v.label, isModule: false }));
+    }
+    return [];
+  }, [classModules, types]);
 
   // Dropzone para imágenes
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -62,7 +69,7 @@ const CreateClassStepOne = ({ step0ToStep1, types }: Props) => {
       return;
     }
     
-    if (!typeId) {
+    if (classModules.length > 0 ? !moduleId : !typeId) {
       toast.error('Debes seleccionar un tipo de clase');
       return;
     }
@@ -72,11 +79,12 @@ const CreateClassStepOne = ({ step0ToStep1, types }: Props) => {
       return;
     }
 
-    // Enviar datos al Redux
+    const selectedOption = mapTypes.find((t: any) => t.value === (moduleId || typeId));
     dispatch(addStepOne({
       name,
-      typeId,
-      typeName,
+      typeId: classModules.length > 0 ? null : typeId,
+      moduleId: classModules.length > 0 ? moduleId : null,
+      typeName: selectedOption?.label ?? typeName,
       files
     }));
 
@@ -150,11 +158,18 @@ const CreateClassStepOne = ({ step0ToStep1, types }: Props) => {
                     placeholder: (styles) => ({ ...styles, color: '#9ca3af' }),
                     singleValue: (styles) => ({ ...styles, color: '#374151' })
                   }}
-                  placeholder={typeName || 'Selecciona el tipo de clase'}
+                  value={mapTypes.find((t: any) => t.value === (moduleId || typeId)) ?? null}
+                  placeholder={typeName || 'Selecciona el módulo o tipo de clase'}
                   className="w-full"
                   onChange={(e: any) => {
                     setTypeName(e?.label || '');
-                    setTypeId(e?.value || null);
+                    if (e?.isModule) {
+                      setModuleId(e?.value || null);
+                      setTypeId(null);
+                    } else {
+                      setTypeId(e?.value || null);
+                      setModuleId(null);
+                    }
                   }}
                 />
               </label>

@@ -9,16 +9,15 @@ export const prepareEmail = async (titulo, link, action, user, contenido, subjec
   try {
     const title = `<h1>${titulo}</h1>`;
 
+    // Paleta tailwind: ink #141411, stone #787867, cream #FAF8F4, teal #074647
     const message = `
-    <div>     
+    <div>
         <div>
-        <button style="background-color:black; border:none;border-radius: 4px;width:100%; padding:14px 0px; margin-bottom:15px">
-        <a style="color:white; text-decoration: none; font-weight:700; font-size:14px" href="${link}">${action}</a>
-        </button>
+        <a href="${link}" style="display:inline-block;background-color:#074647;color:#FAF8F4;text-decoration:none;font-weight:500;font-size:14px;padding:12px 24px;border-radius:8px;font-family:'Source Sans 3',Helvetica,Arial,sans-serif">${action}</a>
         </div>
-        <p style="font-size:14px;font-weight:700;color:#221f1f;margin-bottom:24px">El equipo de MForMove.</p>
-        <hr style="height:2px;background-color:#221f1f;border:none">       
-    </div> `;
+        <p style="font-size:14px;font-weight:400;color:#141411;margin:20px 0 24px;font-family:'Source Sans 3',Helvetica,Arial,sans-serif">El equipo de MForMove.</p>
+        <hr style="height:1px;background-color:#787867;border:none;opacity:0.3">
+    </div>`;
 
     let resp = sendEmail({
     title: title,

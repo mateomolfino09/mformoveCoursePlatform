@@ -7,6 +7,8 @@ const mentorshipRequestSchema = new mongoose.Schema({
   interesadoEn: [{ type: String, required: true }],
   dondeEntrena: { type: String, required: true },
   nivelActual: { type: String, required: true },
+  nivelBuscado: { type: String, required: true },
+  principalFrenoJustificacion: { type: String, required: true },
   principalFreno: { type: String, required: true },
   porQueElegirme: { type: String, required: true },
   whatsapp: { type: String, required: true },

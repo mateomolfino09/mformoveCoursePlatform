@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import { RxCrossCircled } from 'react-icons/rx';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { ProductDB } from '../../../../typings';
 import { CldImage } from 'next-cloudinary';
 import { Dialog } from '@headlessui/react';
@@ -159,14 +159,6 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
   // Estados para edición de semanas
   const [semanaEditando, setSemanaEditando] = useState<any>(null);
   const [modalEditarSemana, setModalEditarSemana] = useState<boolean>(false);
-
-  // Debug: ver los valores inicializados
-  console.log('Valores inicializados:', {
-    name, description, price, currency, tipo, fecha,
-    earlyBirdPrice, earlyBirdStart, earlyBirdEnd,
-    generalPrice, lastTicketsPrice,
-    codigoDescuento, descuentoPorcentaje
-  });
 
   // Dropzone hooks
   const { getRootProps: getRootPropsPortrait, getInputProps: getInputPropsPortrait, isDragActive: isDragActivePortrait } = useDropzone({

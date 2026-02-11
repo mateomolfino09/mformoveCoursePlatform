@@ -16,11 +16,12 @@ type InitialState = {
 
 type RegisterState = {
   name: string;
-  files: SerializedFile[]; // Cambiado a archivos serializables
+  files: SerializedFile[];
   description: string;
   descriptionLength: number;
   level: number;
   typeId: string | null;
+  moduleId: string | null; // Módulo de clase (filtro principal)
   image_url: string | null;
   videoId: string;
   isFree: boolean;
@@ -31,12 +32,13 @@ const initialState: InitialState = {
   value: {
     name: '',
     videoId: '',
-    files: [], // Inicializamos como un arreglo vacío
+    files: [],
     description: '',
     descriptionLength: 0,
     level: 0,
     image_url: null,
     typeId: null,
+    moduleId: null,
     isFree: false,
     tags: []
   }
@@ -58,8 +60,9 @@ export const createClassesSlice = createSlice({
         value: {
           ...state.value,
           name: action.payload.name,
-          typeId: action.payload.typeId,
-          files: serializedFiles // Almacenamos solo los datos serializables
+          typeId: action.payload.typeId ?? null,
+          moduleId: action.payload.moduleId ?? null,
+          files: serializedFiles
         }
       };
     },

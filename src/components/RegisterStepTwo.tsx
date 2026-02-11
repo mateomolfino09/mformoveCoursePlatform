@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import Select, { StylesConfig } from 'react-select';
-import { toast } from 'react-toastify';
+import { toast } from '../hooks/useToast';
 import { AppDispatch } from '../redux/store';
 import { useDispatch } from 'react-redux';
 import { addStepTwo } from '../redux/features/register'

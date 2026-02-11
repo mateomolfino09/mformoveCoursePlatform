@@ -325,6 +325,38 @@ export interface Tags {
 
 }
 
+/** Imagen de la galería de un módulo de clase */
+export interface ClassModuleGalleryImage {
+  url: string;
+  publicId?: string;
+  caption?: string;
+}
+
+/** Submódulo: ej. Locomotions, Squat Work (solo nombre, sin imagen) */
+export interface ClassModuleSubmodule {
+  name: string;
+  slug?: string;
+}
+
+/** Módulo de clase: filtro principal (Movimiento, Movilidad, Handbalance) */
+export interface ClassModule {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  shortDescription?: string;
+  imageGallery: ClassModuleGalleryImage[];
+  submodules: ClassModuleSubmodule[];
+  videoUrl?: string;
+  videoId?: string;
+  videoThumbnail?: string;
+  icon?: string;
+  color?: string;
+  isActive: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 export interface IndividualClass {
   _id: string;
   id: number;
@@ -338,6 +370,11 @@ export interface IndividualClass {
   minutes: number;
   hours: number;
   type: string;
+  /** Módulo de clase (filtro principal) */
+  moduleId?: string | null;
+  module?: ClassModule | null;
+  /** Submódulo (ej. Locomotions, Squat Work) - slug dentro del módulo */
+  submoduleSlug?: string | null;
   isFree: boolean
   image_base_link: string
   image_mini_base_link: string

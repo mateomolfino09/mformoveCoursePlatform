@@ -66,6 +66,10 @@ export async function PUT(req) {
     
             user.subscription = newSub
             user.freeSubscription = null
+            if (user.validEmail !== 'yes') {
+              user.validEmail = 'yes';
+              user.emailToken = undefined;
+            }
 
             await user.save()
 

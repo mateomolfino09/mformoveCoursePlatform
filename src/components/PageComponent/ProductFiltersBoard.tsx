@@ -10,7 +10,7 @@ import { RxCross2 } from 'react-icons/rx';
 import { VscTools } from 'react-icons/vsc';
 import { ClassTypes, IndividualClass, ValuesFilters } from '../../../typings';
 import endpoints from '../../services/api';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import SearchClass from '../SearchClass';
 import { Transition } from '@headlessui/react';
 import Cookies from 'js-cookie';

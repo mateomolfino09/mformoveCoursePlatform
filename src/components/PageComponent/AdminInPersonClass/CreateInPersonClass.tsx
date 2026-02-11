@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../hooks/useAuth';
 import AdmimDashboardLayout from '../../AdmimDashboardLayout';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { useDropzone } from 'react-dropzone';
 import requests from '../../../utils/requests';
 import axios from 'axios';

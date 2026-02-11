@@ -2,43 +2,41 @@
 import { useEffect, useState } from 'react';
 import CreateClass from '../../../../../components/PageComponent/CreateClass/CreateClass';
 import { MiniLoadingSpinner } from '../../../../../components/PageComponent/Products/MiniSpinner';
-import { ClassTypes } from '../../../../../typings';
+import { ClassTypes, ClassModule } from '../../../../../typings';
 
-// Variable global declarada fuera del componente
 let filters: ClassTypes[] = [];
+let classModules: ClassModule[] = [];
 
 export default function Page() {
-  const [isLoading, setIsLoading] = useState(true); // Estado para controlar la carga
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch('/api/individualClass/getClassTypes', {
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0',
-          },
-          next: { tags: ['classFilters'] },
-        });
-
-        const classTypesData = await res.json();
-
-        filters = classTypesData;
-
-        setIsLoading(false); // Termina la carga después de que la llamada finalice
+        const [filtersRes, modulesRes] = await Promise.all([
+          fetch('/api/individualClass/getClassTypes', {
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0' },
+            next: { tags: ['classFilters'] },
+          }),
+          fetch('/api/class-modules?all=1', { credentials: 'include', cache: 'no-store' }),
+        ]);
+        const classTypesData = await filtersRes.json();
+        const modulesData = await modulesRes.json();
+        filters = Array.isArray(classTypesData) ? classTypesData : [];
+        classModules = Array.isArray(modulesData) ? modulesData : [];
+        setIsLoading(false);
       } catch (err) {
-        console.error('Error fetching class types:', err);
-        setIsLoading(false); // Termina la carga incluso en caso de error
+        console.error('Error fetching data:', err);
+        setIsLoading(false);
       }
     }
-
-    fetchData(); // Ejecutar la función de carga de datos
-  }, []); // El efecto se ejecutará solo una vez al montar el componente
+    fetchData();
+  }, []);
 
   if (isLoading) {
-    return <div> <MiniLoadingSpinner /></div>; 
+    return <div><MiniLoadingSpinner /></div>;
   }
 
-  // Renderizar el componente CreateClass solo después de que los datos estén disponibles
-  return <CreateClass classTypes={filters} />;
+  return <CreateClass classTypes={filters} classModules={classModules} />;
 }

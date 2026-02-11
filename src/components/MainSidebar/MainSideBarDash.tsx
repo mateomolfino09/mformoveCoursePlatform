@@ -107,7 +107,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
             className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
           >
-            <h2 className='font-light lg:text-xl'>Membresía Online</h2>
+            <h2 className='font-light lg:text-xl'>Movimiento Online</h2>
             <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
             Move Crew
             </h1>
@@ -141,11 +141,11 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
           >
             <h2 className='font-light lg:text-xl'>Talleres y Eventos</h2>
             <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
-              Experiencias Únicas
+              Experiencias
             </h1>
           </m.div>
         </Link>
-        {!auth.user && (where != 'products' || where != 'productsHome') ? (
+        {!auth.user && (where != 'products' || where != 'productsLibrary') ? (
           <Link href={'/login'}>
             <m.div
               initial={{ color: '#fff', x: 700 }}
@@ -168,7 +168,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
           </Link>
         ) : (
           <>
-            {!auth.user && (where == 'products' || where == 'productsHome') ? (
+            {!auth.user && (where == 'products' || where == 'productsLibrary') ? (
               <>
                 <m.div
                   initial={{ color: '#fff', x: 700 }}

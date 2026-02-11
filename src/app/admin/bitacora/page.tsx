@@ -49,17 +49,17 @@ const BitacoraAdminPage = () => {
   return (
     <AdmimDashboardLayout>
       <Head>
-        <title>Admin - Bitácoras Semanales</title>
-        <meta name='description' content='Gestiona las Bitácoras Semanales' />
+        <title>Admin - Caminos Semanales</title>
+        <meta name='description' content='Gestiona las Caminos Semanales' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <div className='w-full md:h-[100vh]'>
         <div className='mb-12 mt-8'>
           <h1 className='text-4xl md:text-5xl font-bold text-gray-900 font-montserrat mb-4'>
-            Dashboard de Bitácoras Semanales
+            Dashboard de Caminos Semanales
           </h1>
           <p className='text-gray-600 text-lg font-montserrat'>
-            Gestiona las bitácoras mensuales del Camino del Gorila
+            Gestiona las caminos mensuales del Camino
           </p>
         </div>
 
@@ -75,7 +75,7 @@ const BitacoraAdminPage = () => {
                 <PlusCircleIcon className='w-12 h-12 text-white transition-colors duration-300' />
               </div>
               <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-orange-600 transition-colors duration-300'>
-                Crear Bitácora Mensual
+                Crear Camino Mensual
               </p>
               <p className='text-gray-500 text-sm mt-2 font-montserrat'>
                 4 semanas de contenido
@@ -94,10 +94,10 @@ const BitacoraAdminPage = () => {
                 <BookOpenIcon className='w-12 h-12 text-white transition-colors duration-300' />
               </div>
               <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-orange-600 transition-colors duration-300'>
-                Ver Bitácoras
+                Ver Caminos
               </p>
               <p className='text-gray-500 text-sm mt-2 font-montserrat'>
-                Lista y edita bitácoras
+                Lista y edita caminos
               </p>
             </motion.div>
           </Link>
@@ -109,13 +109,13 @@ const BitacoraAdminPage = () => {
           </h3>
           <div className='space-y-3 text-gray-600 font-montserrat'>
             <p>
-              <strong>Bitácora Mensual:</strong> Cada bitácora contiene 4 semanas de contenido (video, audio y texto).
+              <strong>Camino Mensual:</strong> Cada camino contiene 4 semanas de contenido (video, audio y texto).
             </p>
             <p>
               <strong>Publicación Automática:</strong> El contenido se publica cada lunes según las fechas configuradas.
             </p>
             <p>
-              <strong>Camino del Gorila:</strong> Esta es la característica principal de retención para miembros de Move Crew.
+              <strong>Camino:</strong> Esta es la característica principal de retención para miembros de Move Crew.
             </p>
           </div>
         </div>

@@ -9,7 +9,7 @@ import { Plan } from '../../../../typings'
 import Select, { StylesConfig } from 'react-select';
 import Link from 'next/link'
 import { useAppDispatch } from '../../../hooks/useTypeSelector'
-import { toggleScroll } from '../../../redux/features/headerHomeSlice'
+import { toggleScroll } from '../../../redux/features/headerLibrarySlice'
 import Footer from '../../Footer'
 import PromocionFooter from './PromocionFooter'
 

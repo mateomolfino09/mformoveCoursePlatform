@@ -12,6 +12,8 @@ interface FormState {
   interesadoEn: string[];
   dondeEntrena: string;
   nivelActual: string;
+  nivelBuscado: string;
+  principalFrenoJustificacion: string;
   principalFreno: string;
   porQueElegirme: string;
   whatsapp: string;
@@ -99,7 +101,7 @@ const preguntas = [
   },
   {
     name: "nivelActual",
-    label: "¿En qué punto te encuentras?",
+    label: "¿En qué punto te encontras?",
     type: "select",
     options: [
       "Quiero entrenar pero me falta adherencia",
@@ -111,8 +113,27 @@ const preguntas = [
     required: true,
   },
   {
+    name: "nivelBuscado",
+    label: "¿Cuales son tus objetivos con tu cuerpo?",
+    type: "select",
+    options: [
+      "Mejorar mi salud fisica y mental",
+      "Tener mas constancia y regularidad en mi vida",
+      "Tener resultados fisicos y esteticos visibles",
+      "Prevenir y aliviar lesiones y dolores",
+      "Otro"
+    ],
+    required: true,
+  },
+  {
+    name: "principalFrenoJustificacion",
+    label: "¿Te gustaría detallar la justificación de tu elección?",
+    type: "textarea",
+    required: true,
+  },
+  {
     name: "principalFreno",
-    label: "¿Cuál es tu principal freno para conseguir tus objetivos? ¿Cómo te sentirás una vez los hayas alcanzado?",
+    label: "¿Que te está frenando para conseguir tus objetivos? ",
     type: "textarea",
     required: true,
   },
@@ -150,6 +171,8 @@ const initialState: FormState = {
   interesadoEn: [],
   dondeEntrena: "",
   nivelActual: "",
+  nivelBuscado: "",
+  principalFrenoJustificacion: "",
   principalFreno: "",
   porQueElegirme: "",
   whatsapp: "",
@@ -219,6 +242,18 @@ const validators = {
     return '';
   },
 
+  nivelBuscado: (value: string): string => {
+    if (!value.trim()) return 'Debes seleccionar tus objetivos';
+    return '';
+  },
+
+  principalFrenoJustificacion: (value: string): string => {
+    if (!value.trim()) return 'Este campo es requerido';
+    if (value.trim().length < 20) return 'Describe tu justificación con más detalle (mínimo 20 caracteres)';
+    if (value.trim().length > 500) return 'El texto es demasiado largo (máximo 500 caracteres)';
+    return '';
+  },
+
   principalFreno: (value: string): string => {
     if (!value.trim()) return 'Este campo es requerido';
     if (value.trim().length < 20) return 'Describe tu situación con más detalle (mínimo 20 caracteres)';
@@ -237,7 +272,7 @@ const validators = {
     if (!value.trim()) return 'El WhatsApp es requerido';
     // Validar formato internacional: +1234567890 o 1234567890
     const whatsappRegex = /^(\+?[1-9]\d{1,14}|[1-9]\d{8,14})$/;
-    const cleanNumber = value.trim().replace(/[\s\-\(\)]/g, '');
+    const cleanNumber = value.trim().replace(/[\s\-()]/g, '');
     if (!whatsappRegex.test(cleanNumber)) {
       return 'Ingresa un número de WhatsApp válido (ej: +1234567890)';
     }
@@ -275,16 +310,11 @@ export default function MentorshipConsultaPage() {
   // Función para cargar los planes de mentoría
   const loadMentorshipPlans = async () => {
     try {
-      console.log('Cargando planes de mentoría...');
       const response = await fetch('/api/payments/getPlans?type=mentorship');
-      console.log('Response status:', response.status);
-      
       if (response.ok) {
         const plans = await response.json();
-        console.log('Planes recibidos:', plans);
         
         const activePlans = plans.filter((plan: MentorshipPlan) => plan.active);
-        console.log('Planes activos:', activePlans);
         
         setMentorshipPlans(activePlans);
         
@@ -319,7 +349,6 @@ export default function MentorshipConsultaPage() {
             };
           });
           
-          console.log('Opciones generadas:', options);
           setBudgetOptions(options);
           presupuestoPregunta.options = options;
         }
@@ -567,7 +596,7 @@ export default function MentorshipConsultaPage() {
             </motion.p>
             
             <motion.button
-              onClick={() => window.location.href = '/'}
+              onClick={() => { window.location.href = '/'; }}
               className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors font-montserrat text-sm"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -800,7 +829,7 @@ export default function MentorshipConsultaPage() {
               {preguntaActual.type === "radio" && preguntaActual.name === "presupuesto" && !plansLoaded && (
                 <div className="flex items-center justify-center py-12">
                   <div className="flex flex-col items-center space-y-4">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-black/20 border-t-black"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-black/20 border-t-black" />
                     <span className="text-gray-600 font-montserrat text-base">Cargando planes...</span>
                   </div>
                 </div>

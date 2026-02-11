@@ -37,7 +37,6 @@ export async function POST(req) {
 
     // Verificar el tamaño del contenido
     const contentLength = req.headers.get('content-length');
-    console.log('📊 Tamaño de la petición:', contentLength ? `${(parseInt(contentLength) / 1024 / 1024).toFixed(2)}MB` : 'Desconocido');
     
     if (contentLength && parseInt(contentLength) > maxBodySize) {
       console.error('❌ Petición demasiado grande:', `${(parseInt(contentLength) / 1024 / 1024).toFixed(2)}MB`);
@@ -316,9 +315,7 @@ export async function POST(req) {
           method: 'GET',
           headers: { 'Cache-Control': 'no-cache' }
         });
-        console.log('✅ Caché de eventos revalidado desde backend');
       } catch (cacheError) {
-        console.log('⚠️ Error revalidando caché desde backend:', cacheError);
       }
     }
 

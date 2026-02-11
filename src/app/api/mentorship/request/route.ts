@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
     
     // Validar campos requeridos
-    const requiredFields = ['nombre', 'email', 'paisCiudad', 'interesadoEn', 'dondeEntrena', 'nivelActual', 'principalFreno', 'porQueElegirme', 'whatsapp', 'presupuesto'];
+    const requiredFields = ['nombre', 'email', 'paisCiudad', 'interesadoEn', 'dondeEntrena', 'nivelActual', 'nivelBuscado', 'principalFrenoJustificacion', 'principalFreno', 'porQueElegirme', 'whatsapp', 'presupuesto'];
     const missingFields = requiredFields.filter(field => !body[field]);
     
     if (missingFields.length > 0) {
@@ -59,6 +59,8 @@ export async function POST(req: NextRequest) {
               <p style="margin: 5px 0; color: #666666;"><strong>Intereses:</strong> ${body.interesadoEn.join(', ')}</p>
               <p style="margin: 5px 0; color: #666666;"><strong>Donde entrena:</strong> ${body.dondeEntrena}</p>
               <p style="margin: 5px 0; color: #666666;"><strong>Nivel actual:</strong> ${body.nivelActual}</p>
+              <p style="margin: 5px 0; color: #666666;"><strong>Objetivos con tu cuerpo:</strong> ${body.nivelBuscado}</p>
+              <p style="margin: 5px 0; color: #666666;"><strong>Justificación de la elección:</strong> ${body.principalFrenoJustificacion}</p>
               <p style="margin: 5px 0; color: #666666;"><strong>Principal freno:</strong> ${body.principalFreno}</p>
               <p style="margin: 5px 0; color: #666666;"><strong>Presupuesto:</strong> ${body.presupuesto}</p>
             </div>

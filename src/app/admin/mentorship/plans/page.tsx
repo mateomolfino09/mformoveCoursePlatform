@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';
 import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout';
 import Link from 'next/link';
 import { PlusCircleIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
-import { toast } from 'react-toastify';
+import { toast } from '../../../../hooks/useToast';
 
 interface MentorshipPlan {
   _id?: string;

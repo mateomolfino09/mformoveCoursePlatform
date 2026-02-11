@@ -1,7 +1,21 @@
 // Sistema de colores centralizado para MForMove
 // Basado en la paleta de marca: azul #234C8C, negro, blanco
 
+/** Paleta de colores del sistema (usar en todo el producto) */
+export const palette = {
+  ink: '#141411',       // Negro / tinta
+  sage: '#acae89',      // Verde salvia
+  stone: '#787867',     // Gris piedra
+  deepTeal: '#001b1c',  // Teal oscuro
+  teal: '#074647',      // Teal
+  white: '#FAF8F4',     // Blanco minimalista
+  cream: '#FAF8F4',     // Crema (mismo que white)
+} as const;
+
 export const colors = {
+  // Paleta del sistema (alias para uso con colors.palette)
+  palette,
+
   // Colores principales de marca
   primary: {
     blue: '#234C8C',        // Azul principal de marca
@@ -113,6 +127,7 @@ export const colorUtils = {
 
 // Exportar tipos para TypeScript
 export type ColorKey = keyof typeof colors;
+export type PaletteKey = keyof typeof palette;
 export type PrimaryColorKey = keyof typeof colors.primary;
 export type NeutralColorKey = keyof typeof colors.neutral;
 export type StatusColorKey = keyof typeof colors.status; 

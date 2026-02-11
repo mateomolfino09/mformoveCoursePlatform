@@ -23,7 +23,7 @@ export async function GET(req, { params }) {
 
     let decoded;
     try {
-      // Usar NEXTAUTH_SECRET como en otros endpoints de bitácora
+      // Usar NEXTAUTH_SECRET como en otros endpoints de camino
       decoded = verify(userToken, process.env.NEXTAUTH_SECRET);
     } catch (error) {
       return NextResponse.json(
@@ -36,17 +36,17 @@ export async function GET(req, { params }) {
 
     if (!id) {
       return NextResponse.json(
-        { error: 'ID de bitácora requerido' },
+        { error: 'ID de camino requerido' },
         { status: 400 }
       );
     }
 
-    // Buscar la bitácora por ID
+    // Buscar la camino por ID
     const logbook = await WeeklyLogbook.findById(id).lean();
 
     if (!logbook) {
       return NextResponse.json(
-        { error: 'Bitácora no encontrada' },
+        { error: 'Camino no encontrada' },
         { status: 404 }
       );
     }
@@ -63,9 +63,9 @@ export async function GET(req, { params }) {
       }
     );
   } catch (error) {
-    console.error('Error obteniendo bitácora:', error);
+    console.error('Error obteniendo camino:', error);
     return NextResponse.json(
-      { error: error.message || 'Error al obtener la bitácora' },
+      { error: error.message || 'Error al obtener la camino' },
       { status: 500 }
     );
   }

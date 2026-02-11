@@ -4,7 +4,7 @@ import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import endpoints from '../../../services/api';
 import { addEmail, addStepOne, addStepTwo } from '../../../redux/features/register'
 import { useDispatch } from 'react-redux'
@@ -116,7 +116,7 @@ const RegisterStepCero = ({ step0ToStep1, step0ToResend }: Props) => {
 
           <div className="space-y-4">
             <Input
-              className="block w-full rounded-lg border-0 bg-white/5 py-2 px-3 text-sm/6 text-white placeholder:text-white/60 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/30"
+              className="block w-full rounded-lg border-0 bg-white/5 py-3 px-4 md:py-4 md:px-5 text-sm md:text-base text-white placeholder:text-white/60 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/30"
               placeholder='Correo electrónico'
               value={email}
               type='email'

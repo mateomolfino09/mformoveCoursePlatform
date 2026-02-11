@@ -13,7 +13,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, { MouseEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
+import { toast } from '../../hooks/useToast';
 import Cookies from 'js-cookie';
 import endpoints from '../../services/api';
 import { routes } from '../../constants/routes';

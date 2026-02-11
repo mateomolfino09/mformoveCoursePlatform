@@ -82,19 +82,10 @@ export async function PUT(req) {
       }
 
       // Debug: mostrar objeto completo del producto
-      console.log('📋 Producto encontrado:', {
-        _id: existingProduct._id,
-        nombre: existingProduct.nombre,
-        tipo: existingProduct.tipo,
-        stripeProductId: existingProduct.stripeProductId,
-        precios: existingProduct.precios
-      });
+
 
       // Verificar que el producto tiene stripeProductId si es un evento
       if (tipo === 'evento') {
-        console.log('🔍 Verificando stripeProductId para:', existingProduct.nombre);
-        console.log('📊 stripeProductId:', existingProduct.stripeProductId);
-        console.log('📊 Precios existentes:', existingProduct.precios);
         
         // Si no tiene stripeProductId pero tiene precios con priceId, intentar extraer el productId del primer priceId
         if (!existingProduct.stripeProductId && existingProduct.precios) {
@@ -105,7 +96,6 @@ export async function PUT(req) {
               const price = await stripe.prices.retrieve(primerPrecio.priceId);
               if (price.product) {
                 existingProduct.stripeProductId = price.product;
-                console.log('✅ stripeProductId extraído del priceId:', existingProduct.stripeProductId);
               }
             } catch (error) {
               console.error('❌ Error extrayendo productId del priceId:', error);
@@ -114,7 +104,6 @@ export async function PUT(req) {
         }
         
         if (!existingProduct.stripeProductId) {
-          console.log('🔄 Producto sin stripeProductId, creando todo de vuelta...');
           
           // Crear producto en Stripe desde cero
           const stripeProduct = await stripe.products.create({
@@ -129,7 +118,6 @@ export async function PUT(req) {
           
           // Asignar el nuevo stripeProductId
           existingProduct.stripeProductId = stripeProduct.id;
-          console.log('✅ Nuevo stripeProductId creado:', stripeProduct.id);
           
           // Si se creó un nuevo stripeProductId, forzar la creación de todos los precios
           preciosConLinks = {};
@@ -183,10 +171,6 @@ export async function PUT(req) {
       
       let preciosConLinks = {};
       if (tipo === 'evento' && precios) {
-        console.log('🔄 Procesando precios para evento:', existingProduct.nombre);
-        console.log('📊 stripeProductId:', existingProduct.stripeProductId);
-        console.log('📊 Precios nuevos:', JSON.stringify(precios, null, 2));
-        console.log('📊 Precios existentes:', JSON.stringify(existingProduct.precios, null, 2));
         // Procesar cada tipo de precio
         for (const tipoPrecio of ['earlyBird', 'general', 'lastTickets']) {
           const nuevoPrecio = precios[tipoPrecio];
@@ -208,7 +192,6 @@ export async function PUT(req) {
               };
             } else if (nuevoPrecio.price && nuevoPrecio.start && nuevoPrecio.end) {
               // Si el precio cambió o no existe, crear uno nuevo en Stripe
-              console.log(`🔄 Creando nuevo precio para ${tipoPrecio}: ${nuevoPrecio.price}`);
               
               // Verificar que existe stripeProductId
               if (!existingProduct.stripeProductId) {
@@ -271,7 +254,6 @@ export async function PUT(req) {
                 paymentLink: paymentLink.url,
               };
               
-              console.log(`✅ Nuevo precio creado para ${tipoPrecio}: ${paymentLink.url}`);
             }
           }
         }
@@ -309,7 +291,6 @@ export async function PUT(req) {
 
       // Debug: ver el objeto de actualización (solo para eventos)
       if (tipo === 'evento') {
-        console.log('📊 Precios actualizados:', JSON.stringify(preciosConLinks, null, 2));
       }
 
       // Eliminar campos undefined (pero mantener arrays vacíos)

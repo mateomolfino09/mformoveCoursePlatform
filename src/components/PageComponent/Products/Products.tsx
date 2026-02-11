@@ -32,7 +32,7 @@ const Products = ({ products, filters }: Props) => {
   return (
     <div className='relative bg-to-dark lg:h-full min-w-[90vw] min-h-screen overflow-scroll overflow-x-hidden'  
     >    
-    <MainSideBar where={'productsHome'}>
+    <MainSideBar where={'productsLibrary'}>
       <FilterNavProductWrapper>
         <Head>
         <title>Video Streaming</title>

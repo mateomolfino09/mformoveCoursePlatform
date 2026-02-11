@@ -2,7 +2,8 @@
 
 import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
 import { PlusCircleIcon, TableCellsIcon } from '@heroicons/react/24/outline';
-import { Link, useRouter } from 'next13-progressbar';
+import Link from 'next/link';
+import { useRouter } from 'next13-progressbar';
 import { useAuth } from '../../../hooks/useAuth';
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';

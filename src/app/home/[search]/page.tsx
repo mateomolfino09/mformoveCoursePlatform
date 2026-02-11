@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { IndividualClass } from '../../../../typings';
-import HomeSearch from '../../../components/PageComponent/HomeSearch/HomeSearch';
+import LibrarySearch from '../../../components/PageComponent/LibrarySearch/LibrarySearch';
 import { MiniLoadingSpinner } from '../../../components/PageComponent/Products/MiniSpinner';
 
 export default function Page({ params }: { params: { search: string } }) {
@@ -36,5 +36,5 @@ export default function Page({ params }: { params: { search: string } }) {
     return <div> <MiniLoadingSpinner /></div>; // Puedes reemplazar este mensaje con un spinner
   }
 
-  return <HomeSearch classesDB={classes} search={search} />;
+  return <LibrarySearch classesDB={classes} search={search} />;
 }

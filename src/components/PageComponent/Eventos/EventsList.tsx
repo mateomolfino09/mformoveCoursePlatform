@@ -9,7 +9,7 @@ import { SparklesIcon, UserGroupIcon, ChartBarIcon } from '@heroicons/react/24/s
 import Footer from '../../Footer';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { MiniLoadingSpinner } from '../Products/MiniSpinner';
 
 interface Props {
@@ -38,7 +38,6 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
       // Recargar la página para mostrar los nuevos eventos
       window.location.reload();
     } catch (error) {
-      console.log('Error revalidando eventos:', error);
     }
   };
 

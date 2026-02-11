@@ -15,30 +15,30 @@ import { useAuth } from '../../../hooks/useAuth';
 
 interface MoveCrewQuickAccessAdminProps {
   coherenceStreak?: number | null;
-  hasBitacoraContent?: boolean;
+  hasWeeklyPathContent?: boolean;
 }
 
 const MoveCrewQuickAccessAdmin = ({ 
   coherenceStreak = null, 
-  hasBitacoraContent = false 
+  hasWeeklyPathContent = false 
 }: MoveCrewQuickAccessAdminProps) => {
   const auth = useAuth();
   const isMember = auth.user?.subscription?.active || auth.user?.isVip;
 
   const userFeatures = [
     {
-      name: 'Bitácora',
-      description: 'Camino del Gorila',
-      href: routes.navegation.membership.bitacora,
+      name: 'Camino',
+      description: 'Camino',
+      href: routes.navegation.membership.weeklyPath,
       icon: FireIcon,
       color: 'from-orange-500 to-amber-500',
-      available: hasBitacoraContent && isMember,
+      available: hasWeeklyPathContent && isMember,
       badge: coherenceStreak && coherenceStreak > 0 ? coherenceStreak : null
     },
     {
       name: 'Clases',
       description: 'Entrenamientos',
-      href: routes.navegation.membership.home,
+      href: routes.navegation.membership.library,
       icon: VideoCameraIcon,
       color: 'from-blue-500 to-indigo-500',
       available: isMember
@@ -62,14 +62,6 @@ const MoveCrewQuickAccessAdmin = ({
   ];
 
   const adminFeatures = [
-    {
-      name: 'Bitácoras',
-      description: 'Gestionar',
-      href: '/admin/memberships/bitacora',
-      icon: FireIcon,
-      color: 'from-[#4F7CCF] to-[#234C8C]',
-      available: true
-    },
     {
       name: 'Membresías',
       description: 'Administrar',

@@ -9,7 +9,7 @@ import { useDropzone } from 'react-dropzone';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import { RxCrossCircled } from 'react-icons/rx';
 import { StylesConfig } from 'react-select';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { countries } from 'countries-list';
 
 interface Props {

@@ -6,16 +6,18 @@ import { useAuth } from '../../../hooks/useAuth';
 import { MiniLoadingSpinner } from '../../MiniLoadingSpinner';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { alertTypes } from '../../../constants/alertTypes';
 import AlertComponent from '../../AlertComponent';
 import { CldImage } from 'next-cloudinary';
+import AuthSkeleton from '../../AuthSkeleton';
 
 interface Props {
   token: string;
 }
 
 function ResetForm({ token }: Props) {
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<any>([]);
   const auth = useAuth();
@@ -27,6 +29,15 @@ function ResetForm({ token }: Props) {
       document.addEventListener('keydown', testCapsLock);
       document.addEventListener('keyup', testCapsLock);
     }
+  }, []);
+
+  useEffect(() => {
+    // Mostrar skeleton al inicio y luego ocultarlo
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 800);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   function testCapsLock(event: any) {
@@ -91,6 +102,10 @@ function ResetForm({ token }: Props) {
     }
     setLoading(false);
   };
+
+  if (initialLoading) {
+    return <AuthSkeleton />;
+  }
 
   return (
     <section className="relative min-h-screen bg-black text-white font-montserrat overflow-hidden">
@@ -181,10 +196,10 @@ function ResetForm({ token }: Props) {
                   </Link>
                 </div>
               </form>
+            </div>
               {message?.map((mes: any) => (
                 <AlertComponent key={mes.message} type={mes.type} message={mes.message} />
               ))}
-            </div>
           </div>
         </div>
       </div>

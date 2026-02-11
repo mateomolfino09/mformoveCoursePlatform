@@ -104,7 +104,7 @@ function useProvideAuth() {
 
 			const user = await res.json()
 			setUser(user.user)
-			return {message:'Login Exitoso', type: 'success'}
+			return {message:'Login Exitoso', type: 'success', user: user.user}
 							
 		} catch (error: any) {
 			setError(error.response.data.message)

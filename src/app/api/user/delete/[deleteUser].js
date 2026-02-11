@@ -6,7 +6,6 @@ import { ObjectId } from 'mongodb';
 export default async function deleteUser(req, res) {
   try {
     if (req.method === 'DELETE') {
-      debugger;
       const userId = req.query.deleteUser;
 
       const bills = await Bills.deleteMany({

@@ -12,7 +12,7 @@ import { AiOutlineCheckCircle } from 'react-icons/ai';
 import { RxCrossCircled } from 'react-icons/rx';
 import { useDispatch } from 'react-redux';
 import Select, { StylesConfig } from 'react-select';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { routes } from '../../../constants/routes';
 import { Radio, RadioGroup } from '@headlessui/react';
 import { CheckCircleIcon } from '@heroicons/react/24/solid'

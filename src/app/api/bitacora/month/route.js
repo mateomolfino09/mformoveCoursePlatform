@@ -21,27 +21,63 @@ export async function GET(req) {
       );
     }
 
-    // Obtener la bitácora del mes actual
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1; // Los meses son 0-indexed en JS
-    const currentYear = now.getFullYear();
+    // Obtener parámetros de query (id, mes y año)
+    const { searchParams } = new URL(req.url);
+    const idParam = searchParams.get('id');
+    const monthParam = searchParams.get('month');
+    const yearParam = searchParams.get('year');
 
-    // Buscar la bitácora del mes/año actual
-    let logbook = await WeeklyLogbook.findOne({
-      year: currentYear,
-      month: currentMonth
-    }).lean();
+    let logbook;
 
-    // Si no existe la del mes actual, buscar la más reciente
-    if (!logbook) {
-      logbook = await WeeklyLogbook.findOne()
-        .sort({ year: -1, month: -1 })
-        .lean();
+    // Si se proporciona un ID, buscar por ID directamente
+    if (idParam) {
+      logbook = await WeeklyLogbook.findById(idParam).lean();
+      // Si no se encuentra por ID, buscar la más reciente como fallback
+      if (!logbook) {
+        logbook = await WeeklyLogbook.findOne({ isBaseBitacora: { $ne: true } })
+          .sort({ year: -1, month: -1 })
+          .lean();
+      }
+    } else if (monthParam && yearParam) {
+      // Si se proporcionan mes y año, buscar por esos parámetros
+      const targetMonth = parseInt(monthParam, 10);
+      const targetYear = parseInt(yearParam, 10);
+      
+      logbook = await WeeklyLogbook.findOne({
+        year: targetYear,
+        month: targetMonth,
+        isBaseBitacora: { $ne: true } // Excluir caminos base
+      }).lean();
+      
+      // Si no existe, buscar la más reciente como fallback
+      if (!logbook) {
+        logbook = await WeeklyLogbook.findOne({ isBaseBitacora: { $ne: true } })
+          .sort({ year: -1, month: -1 })
+          .lean();
+      }
+    } else {
+      // Si no se proporcionan parámetros, usar el mes/año actual
+      const now = new Date();
+      const targetMonth = now.getMonth() + 1; // Los meses son 0-indexed en JS
+      const targetYear = now.getFullYear();
+
+      logbook = await WeeklyLogbook.findOne({
+        year: targetYear,
+        month: targetMonth,
+        isBaseBitacora: { $ne: true } // Excluir caminos base
+      }).lean();
+
+      // Si no existe la del mes actual, buscar la más reciente
+      if (!logbook) {
+        logbook = await WeeklyLogbook.findOne({ isBaseBitacora: { $ne: true } })
+          .sort({ year: -1, month: -1 })
+          .lean();
+      }
     }
 
     if (!logbook) {
       return NextResponse.json(
-        { error: 'No se encontró ninguna bitácora' },
+        { error: 'No se encontró ninguna camino' },
         { status: 404 }
       );
     }
@@ -58,9 +94,9 @@ export async function GET(req) {
       }
     );
   } catch (error) {
-    console.error('Error obteniendo bitácora del mes:', error);
+    console.error('Error obteniendo camino del mes:', error);
     return NextResponse.json(
-      { error: 'Error al obtener la bitácora', message: error.message },
+      { error: 'Error al obtener la camino', message: error.message },
       { status: 500 }
     );
   }

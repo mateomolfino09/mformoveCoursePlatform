@@ -53,11 +53,11 @@ const getEvolutionName = (level) => {
 };
 
 // Calcular progreso hacia el siguiente nivel (0-100%)
-const getProgressToNextLevel = (level) => {
-  // El progreso es el resto de dividir el nivel entre 10, multiplicado por 10
-  // Ejemplo: nivel 13 = 13 % 10 = 3, entonces 3 * 10 = 30% hacia el nivel 20
-  const progressInEvolution = (level % 10) * 10;
-  return progressInEvolution;
+const getProgressToNextLevel = (levelProgress) => {
+  // El progreso es levelProgress / 8 * 100
+  // Ejemplo: levelProgress = 4 → 4/8 * 100 = 50%
+  // Ejemplo: levelProgress = 8 → 8/8 * 100 = 100% (listo para subir de nivel)
+  return Math.round((levelProgress / 8) * 100);
 };
 
 // Definición de logros estratégicos en puntos clave del camino
@@ -74,7 +74,7 @@ const ACHIEVEMENTS = {
   },
   PRIMER_MES: {
     name: 'Primer Mes Completado',
-    description: 'Completaste tu primer Camino del Gorila al 100%',
+    description: 'Completaste tu primer Camino al 100%',
     icon: '🎯',
     threshold: 1, // 1 mes completado
     type: 'milestone'
@@ -279,6 +279,12 @@ const coherenceTrackingSchema = new mongoose.Schema({
     type: Number,
     default: 1
   },
+  levelProgress: {
+    type: Number,
+    default: 0, // Progreso dentro del nivel actual (0-8, donde 8 sube de nivel)
+    min: 0,
+    max: 8
+  },
   monthsCompleted: {
     type: Number,
     default: 0
@@ -385,10 +391,7 @@ coherenceTrackingSchema.index({ userId: 1 });
 
 // Método para agregar una Unidad de Coherencia
 coherenceTrackingSchema.methods.addCoherenceUnit = async function(logbookId, contentType, weekNumber, programId = null, semanaActualDelLogbook = 0) {
-  console.log('[addCoherenceUnit] Iniciando', { weekNumber, contentType, semanaActualDelLogbook, totalUnits: this.totalUnits });
-  
   if (!weekNumber) {
-    console.error('[CoherenceTrackingModel] addCoherenceUnit: weekNumber es requerido');
     return {
       success: false,
       message: 'weekNumber es requerido'
@@ -481,93 +484,110 @@ coherenceTrackingSchema.methods.addCoherenceUnit = async function(logbookId, con
   // Usar la semana actual del logbook que se calculó en el API route
   const semanaActualDelPrograma = semanaActualDelLogbook;
   
-  if (semanaActualDelPrograma > 0) {
-    console.log('[addCoherenceUnit] Semana actual del logbook', { 
-      semanaActualDelPrograma, 
-      weekNumberCompletando: weekNumber
-    });
-  }
-  
   // Determinar si es una semana adicional:
   // Solo si la semana del programa que se está completando es MENOR O MAYOR que la semana actual del logbook
   // según las fechas de publicación (significa que está completando una semana que no corresponde al calendario)
   const esSemanaAdicional = semanaActualDelPrograma > 0 && (weekNumber < semanaActualDelPrograma || weekNumber > semanaActualDelPrograma);
   
-  console.log('[addCoherenceUnit] Análisis semana adicional', {
-    weekNumber,
-    semanaActualDelPrograma,
-    esSemanaAdicional,
-    razon: esSemanaAdicional ? 'calendario (menor o mayor que semana actual)' : 'no'
-  });
-  
   // Verificar si ya completó este tipo de contenido para esta weekNumber
+  // Si ya está completado, no otorgar U.C. pero SÍ incrementar levelProgress
+  let yaCompletado = false;
+  let ucsAOtorgar = 0;
+  
   if (existingProgramWeek) {
     if (isVideo && existingProgramWeek.completedVideo === true) {
-      return {
-        success: false,
-        message: `Ya has completado el video de la Semana ${weekNumber} del programa.`,
-        reason: 'VIDEO_ALREADY_COMPLETED',
-        weekNumber,
-        contentType: 'visual',
-        tip: esSemanaAdicional 
-          ? 'Esta es una semana adicional. Cada semana adicional solo otorga 1 U.C. en total (ya obtuviste la U.C. por completar el audio).'
-          : 'Puedes completar el audio de esta semana para obtener 1 U.C. adicional.'
-      };
+      yaCompletado = true;
+      ucsAOtorgar = 0; // No otorgar U.C. adicional
+    } else if (isAudio && existingProgramWeek.completedAudio === true) {
+      yaCompletado = true;
+      ucsAOtorgar = 0; // No otorgar U.C. adicional
+    } else if (esSemanaAdicional && existingProgramWeek.ucsOtorgadas >= 1) {
+      // Si es semana adicional y ya tiene 1 U.C. otorgada, no otorgar más U.C.
+      yaCompletado = false; // No está completamente completado, solo no otorga U.C.
+      ucsAOtorgar = 0;
+    } else {
+      // Determinar cuántas U.C. otorgar
+      if (esPrimeraSemanaPrograma) {
+        // Primera semana del programa: permite hasta 2 U.C. (1 video + 1 audio)
+        ucsAOtorgar = 1; // Siempre otorga 1 por completación, pero puede obtener hasta 2
+      } else {
+        // Semana adicional: solo 1 U.C. en total para esta weekNumber
+        ucsAOtorgar = 1;
+      }
     }
-    if (isAudio && existingProgramWeek.completedAudio === true) {
-      return {
-        success: false,
-        message: `Ya has completado el audio de la Semana ${weekNumber} del programa.`,
-        reason: 'AUDIO_ALREADY_COMPLETED',
-        weekNumber,
-        contentType: 'audio',
-        tip: esSemanaAdicional
-          ? 'Esta es una semana adicional. Cada semana adicional solo otorga 1 U.C. en total (ya obtuviste la U.C. por completar el video).'
-          : 'Puedes completar el video de esta semana para obtener 1 U.C. adicional.'
-      };
-    }
-    
-    // Si es semana adicional y ya tiene 1 U.C. otorgada, bloquear más U.C. para esta weekNumber
-    if (esSemanaAdicional && existingProgramWeek.ucsOtorgadas >= 1) {
-      const tipoCompletado = existingProgramWeek.completedVideo ? 'video' : 'audio';
-      
-      console.log('[addCoherenceUnit] Bloqueando semana adicional - ya tiene U.C.', {
-        weekNumber,
-        esSemanaAdicional,
-        ucsOtorgadas: existingProgramWeek.ucsOtorgadas,
-        tipoCompletado,
-        contentType
-      });
-      
-      return {
-        success: false,
-        message: `Ya obtuviste la U.C. de la Semana ${weekNumber}.`,
-        reason: 'ADDITIONAL_WEEK_LIMIT_REACHED',
-        weekNumber,
-        contentType: contentType,
-        tip: `Cuando completas una semana que no corresponde al calendario actual (completando todo en un día), solo obtenés 1 U.C. en total.`
-      };
-    }
-  }
-  
-  // Determinar cuántas U.C. otorgar
-  let ucsAOtorgar;
-  if (esPrimeraSemanaPrograma) {
-    // Primera semana del programa: permite hasta 2 U.C. (1 video + 1 audio)
-    ucsAOtorgar = 1; // Siempre otorga 1 por completación, pero puede obtener hasta 2
   } else {
-    // Semana adicional: solo 1 U.C. en total para esta weekNumber
-    ucsAOtorgar = 1;
+    // No existe la semana del programa, otorgar U.C. normalmente
+    if (esPrimeraSemanaPrograma) {
+      ucsAOtorgar = 1;
+    } else {
+      ucsAOtorgar = 1;
+    }
   }
   
   
   // Guardar la fecha anterior antes de actualizar
   const previousLastDate = this.lastCompletedDate;
   
-  // Agregar la nueva unidad
-  this.totalUnits += ucsAOtorgar;
+  // Agregar la nueva unidad solo si se otorga U.C.
+  if (ucsAOtorgar > 0) {
+    this.totalUnits += ucsAOtorgar;
+  }
   
-  console.log('[addCoherenceUnit] U.C. otorgada', { totalUnits: this.totalUnits, esSemanaAdicional, ucsOtorgadas: ucsAOtorgar });
+  // Incrementar progreso de nivel cuando se completa contenido
+  // Cada contenido completado incrementa el levelProgress en 1/8
+  let levelUp = false;
+  let evolution = false;
+  let previousLevel = this.level;
+  let previousEvolution = this.characterEvolution;
+  
+  // Inicializar levelProgress si no existe
+  if (this.levelProgress === undefined || this.levelProgress === null) {
+    this.levelProgress = 0;
+  }
+  
+  // Incrementar progreso de nivel en 1 por cada contenido completado
+  // (independientemente de si es semana adicional o no)
+  this.levelProgress += 1;
+
+  console.log('[addCoherenceUnit] Progreso de nivel inicial', {
+    levelProgress: this.levelProgress,
+    level: this.level,
+    esSemanaAdicional
+  });
+  
+  // Si llegó a 8, subir de nivel
+  if (this.levelProgress >= 8) {
+    this.level += 1;
+    this.levelProgress = 0; // Reiniciar a 0
+    // Incrementar meses completados cuando subes de nivel
+    if (this.monthsCompleted === undefined || this.monthsCompleted === null) {
+      this.monthsCompleted = 0;
+    }
+    this.monthsCompleted += 1;
+    levelUp = true;
+    
+    // Verificar si hay evolución (cada 10 niveles)
+    const newEvolution = Math.floor((this.level - 1) / 10);
+    if (newEvolution > previousEvolution) {
+      evolution = true;
+      this.characterEvolution = newEvolution;
+    }
+    
+    console.log('[addCoherenceUnit] Subida de nivel', { 
+      previousLevel, 
+      newLevel: this.level, 
+      levelUp, 
+      evolution,
+      newEvolution: this.characterEvolution,
+      monthsCompleted: this.monthsCompleted
+    });
+  }
+  
+  console.log('[addCoherenceUnit] Progreso de nivel actualizado', {
+    levelProgress: this.levelProgress,
+    level: this.level,
+    esSemanaAdicional
+  });
   
   // La racha siempre aumenta cuando se agrega una U.C.
   // Verificar si es continuación de la racha (basado en la última fecha de completación)
@@ -608,13 +628,17 @@ coherenceTrackingSchema.methods.addCoherenceUnit = async function(logbookId, con
     
     if (existingProgramWeek) {
       // Actualizar la semana del programa existente
+      // Marcar como completado incluso si no se otorga U.C. adicional
       if (isVideo) {
         existingProgramWeek.completedVideo = true;
       }
       if (isAudio) {
         existingProgramWeek.completedAudio = true;
       }
-      existingProgramWeek.ucsOtorgadas += ucsAOtorgar;
+      // Solo incrementar U.C. si se otorga
+      if (ucsAOtorgar > 0) {
+        existingProgramWeek.ucsOtorgadas += ucsAOtorgar;
+      }
       
     } else {
       // Crear nueva entrada para esta semana del programa
@@ -672,6 +696,7 @@ coherenceTrackingSchema.methods.addCoherenceUnit = async function(logbookId, con
     weeklyCompletions: this.weeklyCompletions,
     achievements: this.achievements,
     level: this.level || 1,
+    levelProgress: this.levelProgress !== undefined && this.levelProgress !== null ? this.levelProgress : 0,
     monthsCompleted: this.monthsCompleted || 0,
     characterEvolution: this.characterEvolution || 0,
     completedMonths: this.completedMonths || [],
@@ -696,6 +721,7 @@ coherenceTrackingSchema.methods.addCoherenceUnit = async function(logbookId, con
     this.weeklyCompletions = updated.weeklyCompletions;
     this.achievements = updated.achievements;
     this.level = updated.level || 1;
+    this.levelProgress = updated.levelProgress !== undefined && updated.levelProgress !== null ? updated.levelProgress : 0;
     this.monthsCompleted = updated.monthsCompleted || 0;
     this.characterEvolution = updated.characterEvolution || 0;
     this.completedMonths = updated.completedMonths || [];
@@ -713,7 +739,14 @@ coherenceTrackingSchema.methods.addCoherenceUnit = async function(logbookId, con
     longestStreak: this.longestStreak,
     newAchievements,
     esSemanaAdicional,
-    ucsOtorgadas: ucsAOtorgar
+    ucsOtorgadas: ucsAOtorgar,
+    levelUp: levelUp,
+    newLevel: levelUp ? this.level : undefined,
+    evolution: evolution,
+    gorillaIcon: levelUp ? getGorillaIcon(this.level) : undefined,
+    evolutionName: levelUp ? getEvolutionName(this.level) : undefined,
+    levelProgress: this.levelProgress !== undefined && this.levelProgress !== null ? this.levelProgress : 0,
+    ucGranted: ucsAOtorgar > 0
   };
 };
 
@@ -778,9 +811,14 @@ coherenceTrackingSchema.methods.completeMonth = function(month, year, logbookId)
   // Incrementar meses completados
   this.monthsCompleted += 1;
   
+  console.log('monthsCompleted', this.monthsCompleted);
+  console.log('level', this.level);
   // Subir de nivel (1 nivel por mes completado)
+  // Usar el máximo entre el nivel actual y el nivel basado en meses
+  // para no sobrescribir niveles ganados por addCoherenceUnit
   const previousLevel = this.level;
-  this.level = this.monthsCompleted;
+  const levelFromMonths = this.monthsCompleted;
+  this.level = Math.max(this.level, levelFromMonths);
   
   // Verificar si hay evolución (cada 10 niveles)
   const previousEvolution = this.characterEvolution;
@@ -813,6 +851,7 @@ coherenceTrackingSchema.statics.getOrCreate = async function(userId) {
     longestStreak: 0,
     achievements: [],
     level: 1,
+    levelProgress: 0,
     monthsCompleted: 0,
     characterEvolution: 0,
     completedMonths: [],
@@ -857,6 +896,10 @@ coherenceTrackingSchema.statics.getOrCreate = async function(userId) {
   }
   if (tracking.level === undefined || tracking.level === null) {
     tracking.level = tracking.monthsCompleted || 1;
+    needsSave = true;
+  }
+  if (tracking.levelProgress === undefined || tracking.levelProgress === null) {
+    tracking.levelProgress = 0;
     needsSave = true;
   }
   if (tracking.monthsCompleted === undefined || tracking.monthsCompleted === null) {

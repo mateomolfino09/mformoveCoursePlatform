@@ -116,6 +116,7 @@ function CarouselClassesThumbnail({
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [videoReady, setVideoReady] = useState(false);
   const [showVideo, setShowVideo] = useState(false); // Estado separado para mostrar el video con delay
+  const [privateToken, setPrivateToken] = useState<string | null>(null);
   const videoLoadedRef = React.useRef<boolean>(false); // Ref para recordar si el video ya se cargó
   const touchTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const videoShowTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -143,13 +144,6 @@ function CarouselClassesThumbnail({
     const extractedId = extractVimeoId(c.link);
     setVideoId(extractedId);
     
-    // Debug: verificar que se extraiga el ID correctamente
-    if (extractedId) {
-      console.log('Video ID extraído:', extractedId, 'para clase:', c.name);
-    } else {
-      console.log('No se pudo extraer Video ID de:', c.link, 'para clase:', c.name);
-    }
-    
     // Priorizar image_base_link si existe y es una URL válida, sino usar thumbnail de Vimeo
     if (c.image_base_link) {
       // Verificar si es una URL completa o solo un public_id
@@ -163,6 +157,33 @@ function CarouselClassesThumbnail({
       setThumbnailUrl(getVimeoThumbnail(extractedId));
     }
   }, [c.link, c.image_base_link, c.name]);
+
+  // Obtener token privado para videos UNLISTED cuando cambie el videoId
+  useEffect(() => {
+    if (!videoId) {
+      setPrivateToken(null);
+      return;
+    }
+
+    const fetchPrivateToken = async () => {
+      try {
+        const res = await fetch('/api/vimeo/getPrivateToken', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ videoId }),
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          setPrivateToken(data.privateToken);
+        }
+      } catch (error) {
+        console.error('Error obteniendo token privado:', error);
+      }
+    };
+
+    fetchPrivateToken();
+  }, [videoId]);
   
 
   const ComponentToRender = ({ children }: any) =>  (
@@ -367,8 +388,8 @@ function CarouselClassesThumbnail({
                 {shouldLoadVideo && (
                   <div className={`absolute inset-0 w-full h-full overflow-hidden ${shouldDisplayVideo ? 'opacity-100 z-[1]' : 'opacity-0 z-0'} transition-opacity duration-300`}>
                     <iframe
-                      key={videoId}
-                      src={`https://player.vimeo.com/video/${videoId}?autoplay=1&muted=1&loop=0&controls=0&background=1&responsive=1&start=0`}
+                      key={`${videoId}-${privateToken || 'no-token'}`}
+                      src={`https://player.vimeo.com/video/${videoId}?autoplay=1&muted=1&loop=0&controls=0&background=1&responsive=1&start=0${privateToken ? `&h=${privateToken}` : ''}`}
                       className="absolute top-1/2 left-1/2 w-full h-full"
                       allow="autoplay; encrypted-media"
                       allowFullScreen

@@ -4,7 +4,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 
 const CreateFAQ = () => {
   const [question, setQuestion] = useState('');

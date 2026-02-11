@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { verify } from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import connectDB from '../../../../config/connectDB';
-import CoherenceTracking from '../../../../models/coherenceTrackingModel';
+import CoherenceTracking, { getGorillaIcon, getEvolutionName, getProgressToNextLevel } from '../../../../models/coherenceTrackingModel';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
 
 export async function POST(req) {
@@ -82,7 +82,12 @@ export async function POST(req) {
         currentStreak: tracking.currentStreak,
         longestStreak: tracking.longestStreak,
         level: tracking.level,
-        characterEvolution: tracking.characterEvolution
+        levelProgress: tracking.levelProgress !== undefined && tracking.levelProgress !== null ? tracking.levelProgress : 0,
+        monthsCompleted: tracking.monthsCompleted,
+        characterEvolution: tracking.characterEvolution,
+        gorillaIcon: getGorillaIcon(tracking.level),
+        evolutionName: getEvolutionName(tracking.level),
+        progressToNextLevel: getProgressToNextLevel(tracking.levelProgress !== undefined && tracking.levelProgress !== null ? tracking.levelProgress : 0)
       }
     });
   } catch (error) {

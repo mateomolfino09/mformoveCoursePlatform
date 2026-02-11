@@ -9,7 +9,7 @@ import { MdAdd, MdDelete, MdDownload, MdUpload } from 'react-icons/md';
 import { useAppSelector } from '../redux/hooks';
 import { useDeleteFileMutation, useDeleteLinkMutation, useGetClassQuery } from "../redux/services/classApi";
 import { AiFillFileImage, AiOutlineLink } from 'react-icons/ai';
-import { toast } from 'react-toastify';
+import { toast } from '../hooks/useToast';
 import AddResources from './AddResources';
 import { BsCloudUpload, BsDownload, BsUpload } from 'react-icons/bs';
 import Link from 'next/link';

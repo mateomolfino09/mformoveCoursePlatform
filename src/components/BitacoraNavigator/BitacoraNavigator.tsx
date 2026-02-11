@@ -1,0 +1,376 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useAuth } from '../../hooks/useAuth';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useSnapshot } from 'valtio';
+import state from '../../valtio';
+import { IoCloseOutline } from 'react-icons/io5';
+
+interface Logbook {
+  _id: string;
+  month: number;
+  year: number;
+  monthName: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  isBaseBitacora?: boolean;
+}
+
+const TELEGRAM_LINK = 'https://t.me/+_9hJulwT690yNWFh';
+
+const BitacoraNavigator = () => {
+  const auth = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isOpen, setIsOpen] = useState(false);
+  const [logbooks, setLogbooks] = useState<Logbook[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentLogbook, setCurrentLogbook] = useState<Logbook | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [navigationTarget, setNavigationTarget] = useState<string | null>(null);
+  const [isTutorialActive, setIsTutorialActive] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const snap = useSnapshot(state);
+  const isHome = pathname === '/home';
+
+  // En móvil el dropdown se controla desde el header (state.bitacoraNavOpen)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // En móvil y en /home (desktop) la visibilidad la controla el header/barra (bitacoraNavOpen); en el resto de desktop, estado local (isOpen)
+  const isOpenEffective = (isMobile || isHome) ? snap.bitacoraNavOpen : isOpen;
+
+  // Sincronizar estado local cuando el header/barra cierra/abre (móvil o /home) para closeMenu y tutorial
+  useEffect(() => {
+    if (isMobile || isHome) {
+      setIsOpen(snap.bitacoraNavOpen);
+    }
+  }, [isMobile, isHome, snap.bitacoraNavOpen]);
+
+  // Verificar si el usuario tiene acceso
+  const hasAccess = auth.user && (
+    auth.user.subscription?.active || 
+    auth.user.isVip || 
+    auth.user.rol === 'Admin'
+  );
+
+  // Función helper para cerrar el menú (respetando el estado del tutorial)
+  const closeMenu = () => {
+    const tutorialActive = document.body.classList.contains('tutorial-active');
+    if (tutorialActive) return;
+    setIsOpen(false);
+    state.bitacoraNavOpen = false;
+  };
+
+  // Cerrar dropdown al hacer click fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // NO cerrar el menú si el tutorial está activo
+      const tutorialActive = document.body.classList.contains('tutorial-active');
+      if (tutorialActive) {
+        return; // No hacer nada si el tutorial está activo
+      }
+      
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        closeMenu();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  // Cargar caminos disponibles
+  useEffect(() => {
+    if (!hasAccess) return;
+
+    const fetchLogbooks = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/bitacora/available', {
+          credentials: 'include',
+          cache: 'no-store'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Filtrar el camino base
+          const filteredLogbooks = (data.logbooks || []).filter((lb: Logbook) => !lb.isBaseBitacora);
+          setLogbooks(filteredLogbooks);
+          
+          // Determinar la camino actual basada en la URL o mes/año actual
+          if (pathname === '/bitacora') {
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
+            
+            const current = filteredLogbooks.find(
+              (lb: Logbook) => lb.month === currentMonth && lb.year === currentYear
+            ) || filteredLogbooks[0];
+            
+            setCurrentLogbook(current || null);
+          }
+        }
+      } catch (error) {
+        console.error('Error cargando caminos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLogbooks();
+  }, [hasAccess, pathname]);
+
+  // Desactivar el loading solo cuando la navegación haya llegado al destino
+  useEffect(() => {
+    if (!isNavigating || !navigationTarget) return;
+    const query = searchParams?.toString();
+    const currentUrl = query ? `${pathname}?${query}` : pathname;
+    if (currentUrl === navigationTarget) {
+      const timer = setTimeout(() => {
+        setIsNavigating(false);
+        setNavigationTarget(null);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [pathname, searchParams, isNavigating, navigationTarget]);
+
+  // Detectar si el tutorial está activo
+  useEffect(() => {
+    const checkTutorialActive = () => {
+      setIsTutorialActive(document.body.classList.contains('tutorial-active'));
+    };
+    
+    // Verificar inicialmente
+    checkTutorialActive();
+    
+    // Observar cambios en el body
+    const observer = new MutationObserver(checkTutorialActive);
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+
+  // Detectar páginas con fondo blanco
+  const whiteBackgroundPages = [
+    '/account',
+    '/bitacora',
+    '/mentorship',
+    '/move-crew',
+    '/events',
+    '/onboarding/bitacora-base'
+  ];
+  const hasWhiteBackground = whiteBackgroundPages.some(page => pathname?.startsWith(page)) && !snap.systemNavOpen;
+
+
+  // No mostrar si no tiene acceso
+  if (!hasAccess) {
+    return null;
+  }
+
+  const handleLogbookSelect = (logbook: Logbook) => {
+    // NO permitir navegar si el tutorial está activo
+    const tutorialActive = document.body.classList.contains('tutorial-active');
+    if (tutorialActive) {
+      return; // No hacer nada si el tutorial está activo
+    }
+    setCurrentLogbook(logbook);
+    closeMenu();
+    const targetUrl = `/bitacora?id=${logbook._id}`;
+    setNavigationTarget(targetUrl);
+    setIsNavigating(true);
+    // Navegar a la camino usando el ID
+    router.push(`/bitacora?id=${logbook._id}`);
+  };
+
+  const handleGoToBitacora = () => {
+    // NO permitir navegar si el tutorial está activo
+    const tutorialActive = document.body.classList.contains('tutorial-active');
+    if (tutorialActive) {
+      return; // No hacer nada si el tutorial está activo
+    }
+    closeMenu();
+    setNavigationTarget('/bitacora');
+    setIsNavigating(true);
+    router.push('/bitacora');
+  };
+
+  // No mostrar en páginas de autenticación
+  const isAuthPage = pathname?.startsWith('/login') || 
+                     pathname?.startsWith('/register') || 
+                     pathname?.startsWith('/forget');
+  
+  // No mostrar en páginas de onboarding (excepto bitacora-base)
+  const isOnboardingPage = pathname?.startsWith('/onboarding') && 
+                           !pathname?.startsWith('/onboarding/bitacora-base');
+  
+  if (isAuthPage || isOnboardingPage) {
+    return null;
+  }
+
+  // Función para abrir/cerrar el menú de Move Crew
+  const handleMoveCrewMenu = () => {
+    // NO permitir cerrar el menú si el tutorial está activo
+    const tutorialActive = document.body.classList.contains('tutorial-active');
+    if (tutorialActive && snap.systemNavOpen) {
+      return; // No hacer nada si el tutorial está activo y el menú está abierto
+    }
+    if (tutorialActive && !snap.systemNavOpen) {
+      state.systemNavOpen = true; // Solo permitir abrir si el tutorial está activo
+      return;
+    }
+    state.systemNavOpen = !snap.systemNavOpen;
+  };
+
+  // En móvil el control está en la barra inferior; en desktop en /home está en el header
+  const showFloatingButton = !isMobile && !isHome;
+
+  return (
+    <div 
+      ref={dropdownRef}
+      className={`fixed z-[200] ${isMobile ? 'inset-0 pointer-events-none' : `bottom-6 ${isHome ? 'right-6' : 'right-6'}`}`}
+    >
+      <div className={`${isHome && showFloatingButton ? 'flex items-end gap-3 relative' : 'relative'} ${isMobile ? 'pointer-events-none' : ''}`}>
+        {/* Botón flotante - solo en desktop; en móvil el control está en el header */}
+        {showFloatingButton && (
+        <div>
+          <motion.button
+          ref={buttonRef}
+          onClick={() => {
+            // NO permitir cerrar el menú si el tutorial está activo
+            const tutorialActive = document.body.classList.contains('tutorial-active');
+            if (tutorialActive && isOpen) {
+              return; // No hacer nada si el tutorial está activo y el menú está abierto
+            }
+            if (tutorialActive && !isOpen) {
+              setIsOpen(true); // Solo permitir abrir si el tutorial está activo
+              return;
+            }
+            setIsOpen(!isOpen);
+          }}
+          className={`
+            font-montserrat font-light text-xs tracking-[0.12em] uppercase 
+            rounded-full px-5 py-2 transition-all duration-200 cursor-pointer
+            ${hasWhiteBackground 
+              ? 'text-palette-stone border border-palette-stone/50 hover:border-palette-cream hover:text-palette-cream' 
+              : 'text-palette-stone border border-palette-stone/50 hover:border-palette-cream hover:text-palette-cream'}
+            ${isOpen ? 'ring-2 ring-palette-sage/30' : ''}
+          `}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          aria-label="Navegador de Camino"
+        >
+          {isOpen ? (
+            <span className="flex items-center gap-1.5">
+              <IoCloseOutline className="h-5 w-5" />
+              <span>Cerrar</span>
+            </span>
+          ) : (
+            <span>Move Crew</span>
+          )}
+        </motion.button>
+        </div>
+        )}
+
+        {/* Menú Move Crew: mismo panel full-screen que el menú general (mobile y desktop) */}
+        <AnimatePresence>
+          {isOpenEffective && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black z-[200] font-montserrat"
+              ref={menuRef}
+            >
+              <div className="w-full h-full relative top-40 md:top-28 right-12 flex flex-col space-y-4 md:space-y-4 justify-start items-end mr-12 lg:mr-24 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const tutorialActive = document.body.classList.contains('tutorial-active');
+                    if (tutorialActive) return;
+                    closeMenu();
+                    setNavigationTarget('/home');
+                    setIsNavigating(true);
+                    router.push('/home');
+                  }}
+                  className="flex flex-col justify-end items-end -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] hover:text-[#fff] cursor-pointer text-left transition-colors"
+                >
+                  <h2 className="font-light lg:text-xl">Clases a Demanda</h2>
+                  <h1 className="text-4xl font-thin lg:text-6xl md:text-4xl">Biblioteca</h1>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const tutorialActive = document.body.classList.contains('tutorial-active');
+                    if (tutorialActive) return;
+                    handleGoToBitacora();
+                  }}
+                  className="flex flex-col justify-end items-end -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] hover:text-[#fff] cursor-pointer text-left transition-colors"
+                >
+                  <h2 className="font-light lg:text-xl">Programa de Movimiento</h2>
+                  <h1 className="text-4xl font-thin lg:text-6xl md:text-4xl">El Camino</h1>
+                </button>
+
+                <a
+                  href={TELEGRAM_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => {
+                    const tutorialActive = document.body.classList.contains('tutorial-active');
+                    if (tutorialActive) { e.preventDefault(); return; }
+                    closeMenu();
+                  }}
+                  className="flex flex-col justify-end items-end -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] hover:text-[#fff] cursor-pointer no-underline transition-colors"
+                >
+                  <h2 className="font-light lg:text-xl">Telegram</h2>
+                  <h1 className="text-4xl font-thin lg:text-6xl md:text-4xl">Comunidad</h1>
+                </a>
+
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Overlay de loading cuando se está navegando */}
+      <AnimatePresence>
+        {isNavigating && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[300] flex items-center justify-center font-montserrat bg-palette-ink/60 backdrop-blur-sm"
+          >
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-8 h-8 border-2 border-palette-stone/30 border-t-palette-sage rounded-full animate-spin" />
+              <p className="text-palette-cream text-sm font-light">Redirigiendo...</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export default BitacoraNavigator;
+

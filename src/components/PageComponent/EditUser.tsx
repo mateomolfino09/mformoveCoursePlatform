@@ -13,7 +13,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Select, { StylesConfig } from 'react-select';
-import { toast } from 'react-toastify';
+import { toast } from '../../hooks/useToast';
 import { useAuth } from '../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import endpoints from '../../services/api';

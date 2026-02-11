@@ -64,7 +64,6 @@ const AutoEmailsPage = () => {
       setAutoEmails(prev => prev.map(email => 
         email.id === emailId ? { ...email, status: 'approved' as const } : email
       ));
-      console.log('Email aprobado:', emailId);
     } catch (error) {
       console.error('Error approving email:', error);
     }
@@ -76,7 +75,6 @@ const AutoEmailsPage = () => {
       setAutoEmails(prev => prev.map(email => 
         email.id === emailId ? { ...email, status: 'rejected' as const } : email
       ));
-      console.log('Email rechazado:', emailId);
     } catch (error) {
       console.error('Error rejecting email:', error);
     }
@@ -88,7 +86,6 @@ const AutoEmailsPage = () => {
       setAutoEmails(prev => prev.map(email => 
         email.id === emailId ? { ...email, status: 'sent' as const } : email
       ));
-      console.log('Email enviado:', emailId);
     } catch (error) {
       console.error('Error sending email:', error);
     }

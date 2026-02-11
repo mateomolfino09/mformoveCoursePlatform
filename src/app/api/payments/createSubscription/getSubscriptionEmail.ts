@@ -25,13 +25,13 @@ export const sendSubscriptionEmail = async (
       title: "Tu prueba gratuita ha comenzado 🎉",
       message: "¡Disfruta de todos los beneficios de tu membresía! Te avisaremos cuando termine el período de prueba.",
       buttonText: "Ver mi cuenta",
-      buttonLink: `${origin}/home`,
+      buttonLink: `${origin}/library`,
     },
     active: {
       title: "¡Se activó tu subscripción!",
       message: "Gracias por elegirnos. Accede a tus clases y avanza en tu entrenamiento.",
       buttonText: "Empezar a moverme",
-      buttonLink: `${origin}/home`,
+      buttonLink: `${origin}/library`,
     },
     past_due: {
       title: "Pago pendiente ⏳",

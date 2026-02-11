@@ -199,7 +199,7 @@ const Header = ({
     }
   };
 
-  function scrollToHome() {
+  function scrollToLibrary() {
     if (window) {
       const y = 0;
 
@@ -211,7 +211,7 @@ const Header = ({
   return (
     <header className={`${isScrolled && 'bg-[#141414]'}`}>
       <div className='flex items-center space-x-2 md:space-x-10'>
-        <Link href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/home' : '/'}>
+        <Link href={auth?.user?.subscription?.active || auth?.user?.isVip ? routes.navegation.membership.library : routes.navegation.index}>
           <img
             alt='icon image'
             src='/images/MFORMOVE_v2.negro03.png'
@@ -223,10 +223,10 @@ const Header = ({
 
         <ul className='hidden space-x-4 md:flex'>
           <li 
-            className={`headerLink transition-all duration-200 ${loadingLink === 'home' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
-            onClick={() => handleLinkClick(routes.navegation.membership.home, 'home')}
+            className={`headerLink transition-all duration-200 ${loadingLink === 'library' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
+            onClick={() => handleLinkClick(routes.navegation.membership.library, 'library')}
           >
-            {loadingLink === 'home' ? 'Cargando...' : 'Home'}
+            {loadingLink === 'library' ? 'Cargando...' : 'Library'}
           </li>
 
           <li 
@@ -257,7 +257,7 @@ const Header = ({
           ) : (
             <li 
               className={`headerLink transition-all duration-200 ${loadingLink === 'nuevo' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
-              onClick={() => handleLinkClick(routes.navegation.membership.home, 'nuevo')}
+              onClick={() => handleLinkClick(routes.navegation.membership.library, 'nuevo')}
             >
               {loadingLink === 'nuevo' ? 'Cargando...' : 'Nuevo'}
             </li>
@@ -269,7 +269,7 @@ const Header = ({
           ) : (
             <li 
               className={`headerLink transition-all duration-200 ${loadingLink === 'miLista' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
-              onClick={() => handleLinkClick(routes.navegation.membership.home, 'miLista')}
+              onClick={() => handleLinkClick(routes.navegation.membership.library, 'miLista')}
             >
               {loadingLink === 'miLista' ? 'Cargando...' : 'Mi Lista'}
             </li>

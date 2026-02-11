@@ -22,7 +22,7 @@ import ClassesFilters from '../../ClassesFilters';
 import { m } from 'framer-motion';
 import FilterNavWrapper from '../../FilterNavWrapper';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
-import { toggleScroll } from '../../../redux/features/headerHomeSlice';
+import { toggleScroll } from '../../../redux/features/headerLibrarySlice';
 import { setFilters, setIndividualClasses } from '../../../redux/features/filterClass';
 import CarouselSearchClasses from '../../CarouselSearchClasses';
 import Link from 'next/link';
@@ -32,7 +32,7 @@ interface Props {
   search: string
 }
 
-const HomeSearch = ({ classesDB, search }: Props) => {
+const LibrarySearch = ({ classesDB, search }: Props) => {
   const [isMember, setIsMember] = useState<boolean>(false);
   const [selectedClass, setSelectedClass] = useState<IndividualClass | null>(null);
   const router = useRouter()
@@ -66,7 +66,7 @@ const HomeSearch = ({ classesDB, search }: Props) => {
       }
     } }
     >
-      <MainSideBar where={'home'}>
+      <MainSideBar where={'library'}>
       <Head>
         <title>Video Streaming</title>
         <meta name='description' content='Stream Video App' />
@@ -76,7 +76,7 @@ const HomeSearch = ({ classesDB, search }: Props) => {
           <section className='!mt-0'>
           </section>
           <section>
-            <a href={'/home'}>
+            <a href={'/library'}>
             <h5 className='ml-12 md:text-base w-fit mb-12 py-2 text-white relative font-light text-sm hover:scale-105 transition duration-200 before:content-[""]  before:h-[1px] before:absolute before:w-full before:bottom-[-3px] before:left-0 before:bg-yellow-500/80 cursor-pointer'>Ver todas las clases</h5>
             
             </a>
@@ -93,4 +93,4 @@ const HomeSearch = ({ classesDB, search }: Props) => {
 };
 
 
-export default HomeSearch;
+export default LibrarySearch;

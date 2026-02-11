@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
             }
           }
         } catch (err) {
-          console.warn('No se pudo simular desde bitácora:', err);
+          console.warn('No se pudo simular desde camino:', err);
         }
       }
 
@@ -60,30 +60,21 @@ export async function POST(req: NextRequest) {
         audioTitle: simulatedWeek?.audioTitle || data?.audioTitle || 'Audio de la semana',
         coverImage: simulatedWeek?.coverImage || data?.coverImage || 'https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png',
         videoDurationSeconds: simulatedWeek?.videoDurationSeconds || data?.videoDurationSeconds || 0,
-        bitacoraLink: data?.bitacoraLink || 'https://mateomove.com/bitacora',
-        logbookTitle: simulatedWeek?.logbookTitle || data?.logbookTitle || 'Camino del Gorila'
+        bitacoraLink: data?.bitacoraLink || 'https://mateomove.com/weekly-path',
+        logbookTitle: simulatedWeek?.logbookTitle || data?.logbookTitle || 'Camino'
       };
-
-      console.log('Preview WEEKLY_LOGBOOK_RELEASE', {
-        to,
-        weekNumber: defaultData.weekNumber,
-        coverImage: defaultData.coverImage,
-        videoDurationSeconds: defaultData.videoDurationSeconds,
-        hasText: !!defaultData.text,
-        simulated: !!simulatedWeek
-      });
 
       const html = EmailService.renderTemplate(EmailType.WEEKLY_LOGBOOK_RELEASE, defaultData);
       return NextResponse.json({
         success: true,
         preview: true,
         to,
-        subject: subject || `El Camino del Gorila - Semana ${defaultData.weekNumber} está disponible`,
+        subject: subject || `El Camino - Semana ${defaultData.weekNumber} está disponible`,
         html
       });
     }
 
-    // Envío directo de template específico (p.ej. bitácora)
+    // Envío directo de template específico (p.ej. camino)
     if (type === EmailType.WEEKLY_LOGBOOK_RELEASE) {
       if (!data?.email && !testEmail) {
         return NextResponse.json(
@@ -94,7 +85,7 @@ export async function POST(req: NextRequest) {
 
       const to = data?.email || testEmail;
 
-      // Opcional: simular desde bitácora real también en envío (no solo preview)
+      // Opcional: simular desde camino real también en envío (no solo preview)
       let simulatedWeek: any = null;
       if (data?.simulateFromLogbookId) {
         try {
@@ -127,7 +118,7 @@ export async function POST(req: NextRequest) {
             }
           }
         } catch (err) {
-          console.warn('No se pudo simular desde bitácora (send):', err);
+          console.warn('No se pudo simular desde camino (send):', err);
         }
       }
 
@@ -142,15 +133,15 @@ export async function POST(req: NextRequest) {
         audioTitle: simulatedWeek?.audioTitle || data?.audioTitle || 'Audio de la semana',
         coverImage: simulatedWeek?.coverImage || data?.coverImage || 'https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png',
         videoDurationSeconds: simulatedWeek?.videoDurationSeconds || data?.videoDurationSeconds || 0,
-        bitacoraLink: data?.bitacoraLink || 'https://mateomove.com/bitacora',
-        logbookTitle: simulatedWeek?.logbookTitle || data?.logbookTitle || 'Camino del Gorila'
+        bitacoraLink: data?.bitacoraLink || 'https://mateomove.com/weekly-path',
+        logbookTitle: simulatedWeek?.logbookTitle || data?.logbookTitle || 'Camino'
       };
 
       try {
         const result = await emailService.sendEmail({
           type: EmailType.WEEKLY_LOGBOOK_RELEASE,
           to,
-          subject: subject || `El Camino del Gorila - Semana ${defaultData.weekNumber} está disponible`,
+          subject: subject || `El Camino - Semana ${defaultData.weekNumber} está disponible`,
           data: defaultData
         });
 
@@ -182,7 +173,7 @@ export async function POST(req: NextRequest) {
       const result = await emailService.sendWelcomeMembership({
         email: testEmail,
         name: 'Usuario de Prueba',
-        dashboardUrl: 'https://mateomove.com/home',
+        dashboardUrl: 'https://mateomove.com/library',
         telegramInviteUrl: 'https://t.me/+_9hJulwT690yNWFh'
       });
       results.push({

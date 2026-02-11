@@ -2,7 +2,7 @@ import { countries } from '../../../constants/countries';
 import { genders } from '../../../constants/genders';
 import React, { useEffect, useState } from 'react';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { AppDispatch } from '../../../redux/store';
 import { useDispatch } from 'react-redux';
 import { addStepOne } from '../../../redux/features/register';
@@ -107,9 +107,9 @@ const RegisterStepOne = ({ step1ToStep2, step1ToStep0 }: Props) => {
 
         <div className='space-y-4'>
           <Field>
-            <Label className="text-xs font-medium text-white">Nombre</Label>
+            <Label className="text-xs md:text-sm font-medium text-white">Nombre</Label>
             <Input
-              className="mt-1 block w-full rounded-lg border-0 bg-white/5 py-2 px-3 text-sm text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2"
+              className="mt-1 block w-full rounded-lg border-0 bg-white/5 py-3 px-4 md:py-4 md:px-5 text-sm md:text-base text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2"
               type='text'
               placeholder='Nombre'
               value={firstname}
@@ -118,21 +118,21 @@ const RegisterStepOne = ({ step1ToStep2, step1ToStep0 }: Props) => {
             />
           </Field>
           <Field>
-            <Label className="text-xs font-medium text-white">Apellido</Label>
+            <Label className="text-xs md:text-sm font-medium text-white">Apellido</Label>
             <Input
               value={lastname}
               type='text'
               placeholder='Apellido'
               onChange={(e) => setLastname(e.target.value)}
               onKeyDown={keyDownHandler}
-              className="mt-1 block w-full rounded-lg border-0 bg-white/5 py-2 px-3 text-sm text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2"
+              className="mt-1 block w-full rounded-lg border-0 bg-white/5 py-3 px-4 md:py-4 md:px-5 text-sm md:text-base text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2"
             />
           </Field>
           <Field>
-            <Label className="text-xs font-medium text-white">Género</Label>
+            <Label className="text-xs md:text-sm font-medium text-white">Género</Label>
             <div className="relative">
               <Select
-                className="mt-1 block w-full appearance-none rounded-lg border-0 bg-white/5 py-2 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2 *:text-black"
+                className="mt-1 block w-full appearance-none rounded-lg border-0 bg-white/5 py-3 px-4 md:py-4 md:px-5 text-sm md:text-base text-white focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2 *:text-black"
                 placeholder={gender || 'Género'}
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
@@ -142,16 +142,16 @@ const RegisterStepOne = ({ step1ToStep2, step1ToStep0 }: Props) => {
                 ))}
               </Select>
               <ChevronDownIcon
-                className="group pointer-events-none absolute top-2.5 right-2.5 w-4 h-4 fill-white/60"
+                className="group pointer-events-none absolute top-3 md:top-4 right-3 md:right-4 w-4 h-4 md:w-5 md:h-5 fill-white/60"
                 aria-hidden="true"
               />
             </div>
           </Field>
           <Field>
-            <Label className="text-xs font-medium text-white">País</Label>
+            <Label className="text-xs md:text-sm font-medium text-white">País</Label>
             <div className="relative">
               <Select
-                className="mt-1 block w-full appearance-none rounded-lg border-0 bg-white/5 py-2 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2 *:text-black"
+                className="mt-1 block w-full appearance-none rounded-lg border-0 bg-white/5 py-3 px-4 md:py-4 md:px-5 text-sm md:text-base text-white focus:outline-none focus:ring-2 focus:ring-white/25 focus:ring-offset-2 *:text-black"
                 placeholder={country || 'País'}
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
@@ -161,7 +161,7 @@ const RegisterStepOne = ({ step1ToStep2, step1ToStep0 }: Props) => {
                 ))}
               </Select>
               <ChevronDownIcon
-                className="group pointer-events-none absolute top-2.5 right-2.5 w-4 h-4 fill-white/60"
+                className="group pointer-events-none absolute top-3 md:top-4 right-3 md:right-4 w-4 h-4 md:w-5 md:h-5 fill-white/60"
                 aria-hidden="true"
               />
             </div>

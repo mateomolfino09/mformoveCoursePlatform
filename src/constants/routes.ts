@@ -1,10 +1,12 @@
 import { payments } from "./payments";
 
 const membershipRoutes = {
-    home: '/home',
-    bitacora: '/bitacora',
+    /** Página principal de membresía (Library) */
+    library: '/library',
+    /** Camino semanal (antes "Bitácora") */
+    weeklyPath: '/weekly-path',
     moveCrew: '/move-crew',
-    entry: (isMember: boolean) => isMember ? '/home' : '/move-crew',
+    entry: (isMember: boolean) => isMember ? '/library' : '/move-crew',
 };
 
 export const routes = {
@@ -18,11 +20,12 @@ export const routes = {
     },
     navegation: {
         membership: membershipRoutes,
-        // Aliases para compatibilidad hacia atrás
-        bitacora: membershipRoutes.bitacora,
+        // Aliases
+        home: membershipRoutes.library,
+        bitacora: membershipRoutes.weeklyPath,
         moveCrew: membershipRoutes.moveCrew,
         membresia: membershipRoutes.entry,
-        membresiaHome: membershipRoutes.home,
+        membresiaHome: membershipRoutes.library,
         mentorship: '/mentorship',
         mentoria: '/mentorship', // Mantener para compatibilidad
         mentorshipConsulta: '/mentorship/consulta',
@@ -30,6 +33,15 @@ export const routes = {
         preguntasFrecuentes: '/faq',
         index: '/',
         products: '/products',
-        payments: `/payment`
+        payments: `/payment`,
+        paymentSuccess: '/payment/success',
+        onboarding: {
+            bienvenida: '/onboarding/bienvenida',
+        },
+        about: '/about',
+        privacy: '/privacy',
+        classes: '/classes',
+        email: '/email',
+        account: '/account',
     }
 }

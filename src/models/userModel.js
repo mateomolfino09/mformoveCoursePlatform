@@ -88,6 +88,45 @@ const subscriptionSchema = new mongoose.Schema(
     cancellation_reason: {
       type: String,
       default: () => ''
+    },
+    // Onboarding "Primer Círculo" - Solo para usuarios con suscripción activa
+    onboarding: {
+      contratoAceptado: {
+        type: Boolean,
+        default: false
+      },
+      fechaAceptacionContrato: {
+        type: Date
+      },
+      bitacoraBaseCompletada: {
+        type: Boolean,
+        default: false
+      },
+      bitacoraBaseProgreso: {
+        elCinturon: { type: Boolean, default: false },
+        laEspiral: { type: Boolean, default: false },
+        elRango: { type: Boolean, default: false },
+        elCuerpoUtil: { type: Boolean, default: false }
+      },
+      fechaCompletacionBitacora: {
+        type: Date
+      },
+      tutorialBitacoraCompletado: {
+        type: Boolean,
+        default: false
+      },
+      fechaTutorialBitacora: {
+        type: Date
+      },
+      // Tracking de prácticas semanales para reporte
+      practicasSemanales: [{
+        semana: { type: String }, // Formato: "YYYY-WW" (año-semana)
+        cantidadPracticas: { type: Number, default: 0 },
+        reporteCompletado: { type: Boolean, default: false },
+        fechaReporte: { type: Date },
+        feedbackSensorial: { type: String },
+        feedbackTecnico: { type: String }
+      }]
     }
   },
 );
@@ -182,7 +221,7 @@ const userSchema = new mongoose.Schema(
     subscription: subscriptionSchema,
     freeSubscription: freeSubscriptionSchema,
     memberShip: { token: String, productId: String },
-    productToken: { token: String, productId: String },
+    productToken: { token: String, productId: String }
   },
   { timestamps: true }
 );
