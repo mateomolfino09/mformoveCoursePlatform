@@ -109,37 +109,37 @@ const FilterNav = ({ showNav }: Props) => {
     //   flex flex-col space-y-2 py-16 md:space-y-4 h-[75vh] lg:h-[90vh] justify-end lg:items-end mr-12 lg:mr-24
 
       return (
-        <div className='fixed flex justify-end  w-full h-full bg-black md:bg-black/80 z-[300]'>
+        <div className='fixed flex justify-end w-full h-full bg-palette-ink/40 backdrop-blur-sm z-[300]'>
 
             <m.div initial={{ x: 700 }}
-                animate={+windowWidth  < 768 ? animationPhones : animation} className='md:w-[30rem] lg:w-[35rem] w-full h-screen relative  md:bg-white'>
-                <div className='absolute right-0 top-2' onClick={() => dispatch(toggleNav(false))}>
-                <IoCloseOutline className='text-white md:text-black w-10 h-10'/>
+                animate={+windowWidth  < 768 ? animationPhones : animation} className='md:w-[32rem] lg:w-[36rem] w-full h-screen relative bg-palette-cream shadow-2xl'>
+                <div className='absolute right-4 top-4 md:right-6 md:top-6' onClick={() => dispatch(toggleNav(false))}>
+                <IoCloseOutline className='text-palette-ink w-8 h-8 md:w-9 md:h-9 cursor-pointer hover:text-palette-stone transition-colors'/>
                 </div>
-                <div className='mt-28 flex items-center justify-start flex-col w-full'>
+                <div className='mt-20 md:mt-24 flex items-start flex-col w-full px-6 md:px-8 pb-6 overflow-y-auto h-full'>
                   {filters?.filter(x => x.type === 'multiple').map((f, i) => (
                     <React.Fragment key={i}>
-                    <div className={`${i === 0 && 'hidden'} w-full px-6 flex flex-col justify-center items-start`} >
-                      <hr className={`${i == 1 ? 'border-[0.5px] border-solid border-white/75 md:border-black/75 w-full my-3' : 'hidden'}`}/>
-                      <div className='w-full flex justify-between items-center' onClick={() => {
+                    <div className={`${i === 0 && 'hidden'} w-full flex flex-col justify-center items-start`} >
+                      <hr className={`${i == 1 ? 'border-t border-palette-stone/20 w-full my-4' : 'hidden'}`}/>
+                      <div className='w-full flex justify-between items-center cursor-pointer group' onClick={() => {
                           expand === i 
                           ? setExpand(0)
                           : setExpand(i) 
                         }}>
-                        <p className='text-white md:text-black'>{f.name.toUpperCase()}</p>
-                        <div className='flex flex-wrap space-x-4 items-center'>
+                        <p className='text-palette-ink font-light text-xs tracking-[0.15em] uppercase'>{f.name}</p>
+                        <div className='flex flex-wrap gap-2 items-center'>
                           {filterClassSlice[Object.keys(filterClassSlice)[Object.keys(filterClassSlice).findIndex(x => x === f.name.toLowerCase())]]?.length > 0 && (
                             <>
-                              <div className="border border-white md:border-black px-1 w-1/3">
-                                <p className='text-white md:text-black text-sm md:text-base'>{f.values.filter(x => x.value === filterClassSlice[Object.keys(filterClassSlice)[Object.keys(filterClassSlice).findIndex(x => x === f.name.toLowerCase())]][0]
+                              <div className="border border-palette-sage/40 bg-palette-sage/10 px-2.5 py-1 rounded-full">
+                                <p className='text-palette-ink text-xs font-light'>{f.values.filter(x => x.value === filterClassSlice[Object.keys(filterClassSlice)[Object.keys(filterClassSlice).findIndex(x => x === f.name.toLowerCase())]][0]
                               )[0].label}</p> 
                               </div>         
                             </>
                           )}
                           {filterClassSlice[Object.keys(filterClassSlice)[Object.keys(filterClassSlice).findIndex(x => x === f.name.toLowerCase())]]?.length > 1 && (
                             <>
-                              <div className='border border-white md:border-black px-1'>
-                               <p className='text-white md:text-black text-sm md:text-base'> + 1</p>
+                              <div className='border border-palette-sage/40 bg-palette-sage/10 px-2.5 py-1 rounded-full'>
+                               <p className='text-palette-ink text-xs font-light'>+{filterClassSlice[Object.keys(filterClassSlice)[Object.keys(filterClassSlice).findIndex(x => x === f.name.toLowerCase())]].length - 1}</p>
                               </div>         
                             </>
                           )}
@@ -151,9 +151,9 @@ const FilterNav = ({ showNav }: Props) => {
                               duration: 0.3,
                               ease: [0.4, 0, 0.2, 1],
                             }}
-                            className='cursor-pointer ml-auto group/item w-8 h-8 border-white border-[0.5px] rounded-full flex justify-center items-center transition hover:border-neutral-300 mr-2'
+                            className='cursor-pointer ml-auto w-7 h-7 border border-palette-stone/30 rounded-full flex justify-center items-center transition-colors hover:border-palette-sage/50 hover:bg-palette-sage/5'
                           >
-                          <IoIosArrowDown className='w-5 h-5 md:text-black text-white cursor-pointer'/>
+                          <IoIosArrowDown className='w-4 h-4 text-palette-stone'/>
                           </m.div>
                   
                         </div>
@@ -168,73 +168,62 @@ const FilterNav = ({ showNav }: Props) => {
                           duration: 0.4,
                           ease: [0.4, 0, 0.2, 1],
                         }}
-                        className={`w-full px-2 overflow-hidden`}
+                        className={`w-full overflow-hidden`}
                       >
-                      <div className="w-full flex flex-wrap justify-start items-center gap-x-3 gap-y-2 py-2">
-  {filters[i].values.map((val) => (
-    <m.div
+                      <div className="w-full flex flex-wrap justify-start items-center gap-2 py-3">
+  {filters[i].values.map((val) => {
+    const isSelected = filterClassSlice[
+      Object.keys(filterClassSlice)[
+        Object.keys(filterClassSlice).findIndex((x) => x === f.name.toLowerCase())
+      ]
+    ]?.includes(val.value);
+    return (
+    <m.button
       key={val.id}
       onClick={() => handleFilterChange(filters[i], val)}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className={`rounded-full max-w-[100px] flex justify-center items-center min-h-[15px] px-2 py-1 border mt-2 transition-all duration-300 ease-[0.4,0,0.2,1] ${
-        filterClassSlice[
-          Object.keys(filterClassSlice)[
-            Object.keys(filterClassSlice).findIndex((x) => x === f.name.toLowerCase())
-          ]
-        ]?.includes(val.value)
-          ? 'md:border-white md:bg-black bg-white border-black'
-          : 'md:border-black border-white'
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className={`rounded-full px-3 py-1.5 border transition-all duration-200 text-xs font-light ${
+        isSelected
+          ? 'border-palette-sage bg-palette-sage text-palette-ink'
+          : 'border-palette-stone/30 bg-transparent text-palette-stone hover:border-palette-sage/50 hover:text-palette-ink'
       }`}
-      style={{ flex: '1 0 calc(33.33% - 12px)' }} // 33.33% para 3 elementos por fila, ajustando el espacio con el gap
     >
-      <p
-        className={`transition-all duration-300 ease-[0.4,0,0.2,1] ${
-          filterClassSlice[
-            Object.keys(filterClassSlice)[
-              Object.keys(filterClassSlice).findIndex((x) => x === f.name.toLowerCase())
-            ]
-          ]?.includes(val.value)
-            ? 'md:text-white text-black'
-            : 'md:text-black text-white'
-        }`}
-      >
-        {val.label}
-      </p>
-    </m.div>
-  ))}
+      {val.label}
+    </m.button>
+  )})}
 </div>
                       </m.div>  
-                      <hr className='border-[0.5px] border-solid border-white/75 md:border-black/75 w-full my-3'/>
+                      <hr className='border-t border-palette-stone/20 w-full my-4'/>
                     </div>
                     </React.Fragment>
                   ))}
                   {filters?.filter(x => x.type === 'two').map((f, i) => (
                     <React.Fragment key={i}>
-                    <div className={`w-full px-6 flex flex-col justify-center items-start`}>
-                      <hr className={`${i == 1 ? 'border-[0.5px] border-solid border-white/75 md:border-black/75 w-full my-3' : 'hidden'}`}/>
+                    <div className={`w-full flex flex-col justify-center items-start`}>
+                      <hr className={`${i == 1 ? 'border-t border-palette-stone/20 w-full my-4' : 'hidden'}`}/>
                       <div className='w-full flex justify-between items-center'>
-                        <p className='text-white md:text-black'>{f.name.toUpperCase()}</p>
-                          <label htmlFor="check" className='border-black border-[1.2px] relative w-16 h-8 rounded-full'>
-                            <input type="checkbox" id='check' className='sr-only peer' onChange={(e) => handleCheckboxChange(f, e)}/>
-                            <span className='w-2/5 h-4/5 bg-black/90 absolute rounded-full left-[1.5px] top-1 peer-checked:bg-orange-300 peer-checked:left-[2.15rem] transition-all duration-500' />
+                        <p className='text-palette-ink font-light text-xs tracking-[0.15em] uppercase'>{f.name}</p>
+                          <label htmlFor={`filter-check-${i}`} className='border border-palette-stone/40 relative w-14 h-7 rounded-full cursor-pointer bg-palette-stone/10'>
+                            <input type="checkbox" id={`filter-check-${i}`} className='sr-only peer' onChange={(e) => handleCheckboxChange(f, e)} checked={!!filterClassSlice.seen}/>
+                            <span className='w-5 h-5 bg-palette-stone/40 absolute rounded-full left-1 top-1 peer-checked:bg-palette-sage peer-checked:left-[1.75rem] transition-all duration-300 shadow-sm' />
                           </label>
                       </div>
-                      <hr className='border-[0.5px] border-solid border-white/75 md:border-black/75 w-full my-3'/>
+                      <hr className='border-t border-palette-stone/20 w-full my-4'/>
                     </div>
                     </React.Fragment>
                   ))}
                 </div>
-                <div className='mt-28 flex items-center justify-start flex-col w-full h-full'>
+                <div className='absolute bottom-0 left-0 right-0 flex flex-col items-center gap-3 px-6 md:px-8 py-6 bg-palette-cream border-t border-palette-stone/20'>
                     <button 
-                      className='bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md group w-52 h-12 hover:from-amber-400/30 hover:via-orange-400/30 hover:to-rose-400/30 flex justify-center space-x-2 items-center rounded-full cursor-pointer transition-all duration-300 border border-amber-300/40 shadow-md hover:shadow-lg'
+                      className='bg-palette-sage text-palette-ink w-full max-w-xs h-11 hover:bg-palette-sage/90 flex justify-center items-center rounded-full cursor-pointer transition-all duration-200 font-light text-sm tracking-wide shadow-sm hover:shadow-md'
                       onClick={() => dispatch(toggleNav(false))}
                     >
-                      <p className='text-white font-montserrat text-lg'>VER CLASES</p>
+                      Ver clases
                     </button>
 
-                    <button className=' w-22 h-12 rounded-full mt-2 '>
-                      <p className='text-white md:text-black relative font-light text-sm hover:scale-105 transition duration-200 before:content-[""] before:md:bg-black before:h-[1px] before:absolute before:w-full before:bottom-[-3px] before:left-0 before:bg-white' onClick={() => dispatch(clearDataFilters()) }>Borrar</p>
+                    <button className='text-palette-stone hover:text-palette-ink relative font-light text-xs transition-colors duration-200' onClick={() => dispatch(clearDataFilters()) }>
+                      <span className='relative after:content-[""] after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[1px] after:bg-palette-stone/40 hover:after:bg-palette-ink after:transition-colors'>Borrar filtros</span>
                     </button>
                 </div>
 

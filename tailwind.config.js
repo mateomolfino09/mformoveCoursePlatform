@@ -51,6 +51,8 @@ module.exports = {
           stone: '#787867',
           'deep-teal': '#001b1c',
           teal: '#074647',
+          olive: '#6b8e23',
+          'olive-dark': '#5a7a1e',
           white: '#FAF8F4',
           cream: '#FAF8F4',
         },

@@ -105,9 +105,9 @@ const getBaseTemplateAdmin = (content: string) => `
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
   </head>
-  <body style="margin: 0; padding: 0; background-color: ${p.deepTeal}; font-family: ${EMAIL_FONT}; font-weight: 300;">
-    <div style="background-color: ${p.deepTeal}; padding: 20px 10px;">
-      <div style="max-width: 600px; margin: 0 auto; background-color: ${p.teal}; padding: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);">
+  <body style="margin: 0; padding: 0; background-color: ${p.ink}; font-family: ${EMAIL_FONT}; font-weight: 300;">
+    <div style="background-color: ${p.ink}; padding: 20px 10px;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: ${p.sage}; padding: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);">
         <div style="padding: 20px 16px; text-align: center; border-bottom: 1px solid rgba(250, 248, 244, 0.12);">
           <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto; width: 100%;">
             <tr>
@@ -179,7 +179,7 @@ const emailTemplates = {
       ` : ''}
       
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.adminUrl || 'https://mateomove.com/admin/mentorship/requests'}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="${data.adminUrl || 'https://mateomove.com/admin/mentorship/requests'}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Ver Solicitud en el Panel
         </a>
       </div>
@@ -189,7 +189,7 @@ const emailTemplates = {
 
   [EmailType.MENTORSHIP_APPROVAL]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">Solicitud de Mentoría Aprobada</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">Solicitud de Mentoría Aprobada</h2>
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
         Hola <strong>${data.nombre}</strong>, hemos revisado tu solicitud de mentoría y estamos listos para comenzar.
       </p>
@@ -203,7 +203,7 @@ const emailTemplates = {
           Descarga y completa este documento antes de nuestra primera sesión. Nos ayudará a crear tu plan personalizado.
         </p>
                  <a href="https://asset.cloudinary.com/dbeem2avp/f6931c6ea72bb31622b8872d47b7ec5e" 
-            style="background-color: ${p.teal}; color: ${p.white}; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; display: inline-block; margin-top: 10px;">
+            style="background-color: ${p.sage}; color: ${p.white}; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; display: inline-block; margin-top: 10px;">
            📄 Descargar Evaluación
          </a>
        </div>
@@ -212,7 +212,7 @@ const emailTemplates = {
         Una vez completado, agenda tu llamada de consulta inicial para evaluar tus objetivos y crear tu plan personalizado:
       </p>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.calendlyLink || 'https://calendly.com/mformovers/consulta-mentoria'}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="${data.calendlyLink || 'https://calendly.com/mformovers/consulta-mentoria'}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Agendar Consulta
         </a>
       </div>
@@ -299,7 +299,7 @@ const emailTemplates = {
         ${data.message}
       </p>
       <div style="text-align: center; margin: 20px 0;">
-        <a href="${data.buttonLink}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="${data.buttonLink}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           ${data.buttonText}
         </a>
       </div>
@@ -388,18 +388,18 @@ const emailTemplates = {
 
   [EmailType.NEW_CLASS_NOTIFICATION]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Nueva Clase Disponible!</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Nueva Clase Disponible!</h2>
       <p style="font-size: 16px; color: ${p.stone}; text-align: center; line-height: 1.6; margin-bottom: 30px;">
         Una nueva clase ha sido subida y está disponible para ti. ¡Revisa los detalles a continuación y continúa tu aprendizaje!
       </p>
       <div style="background-color: ${p.cream}; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
-        <a href="${data.classUrl}" style="color: ${p.teal}; text-decoration: none; font-size: 18px; font-weight: bold;">
+        <a href="${data.classUrl}" style="color: ${p.sage}; text-decoration: none; font-size: 18px; font-weight: bold;">
           ${data.className}
         </a>
         <p style="font-size: 14px; color: ${p.stone}; margin-top: 10px;">${data.classDescription}</p>
       </div>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.classUrl}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="${data.classUrl}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Ver Clase
         </a>
       </div>
@@ -554,7 +554,7 @@ const emailTemplates = {
 
   [EmailType.PAYMENT_SUCCESS]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Pago Exitoso!</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Pago Exitoso!</h2>
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
         ¡Hola <strong>${data.name}</strong>! Tu pago ha sido procesado exitosamente.
       </p>
@@ -566,7 +566,7 @@ const emailTemplates = {
         <p style="margin: 5px 0; color: ${p.stone};"><strong>ID de transacción:</strong> ${data.transactionId}</p>
       </div>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.accessUrl || 'https://mateomove.com/account'}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="${data.accessUrl || 'https://mateomove.com/account'}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Acceder al Contenido
         </a>
       </div>
@@ -673,7 +673,7 @@ const emailTemplates = {
 
   [EmailType.WELCOME_MENTORSHIP]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Bienvenido al Programa de Mentoría!</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Bienvenido al Programa de Mentoría!</h2>
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
         ¡Hola <strong>${data.name}</strong>! Nos emociona que hayas decidido comenzar tu viaje de transformación con nuestro programa de mentoría.
       </p>
@@ -684,7 +684,7 @@ const emailTemplates = {
           Para comenzar, descarga y completa este documento de evaluación. Nos ayudará a crear tu plan personalizado.
         </p>
                  <a href="https://asset.cloudinary.com/dbeem2avp/f6931c6ea72bb31622b8872d47b7ec5e" 
-            style="background-color: ${p.teal}; color: ${p.white}; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; display: inline-block; margin-top: 10px;">
+            style="background-color: ${p.sage}; color: ${p.white}; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; display: inline-block; margin-top: 10px;">
            📄 Descargar Evaluación
          </a>
       </div>
@@ -700,7 +700,7 @@ const emailTemplates = {
       </div>
       
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.calendlyLink || 'https://calendly.com/mformovers/consulta-mentoria'}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="${data.calendlyLink || 'https://calendly.com/mformovers/consulta-mentoria'}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           📅 Agendar Primera Consulta
         </a>
       </div>
@@ -783,21 +783,21 @@ el bienestar fisico y emocional.
         </a>
         </div>
 
-        <!-- Invitación a la comunidad de Telegram -->
+        <!-- Invitación a la comunidad de WhatsApp -->
         <div style="text-align: center; margin: 18px 0 0;">
-          <a href="${data.telegramInviteUrl || 'https://t.me/+_9hJulwT690yNWFh'}"
+          <a href="${data.whatsappInviteUrl || data.telegramInviteUrl || 'https://chat.whatsapp.com/'}"
              style="display: inline-block;
-                    background: linear-gradient(135deg, ${p.teal} 0%, ${p.deepTeal} 100%);
-                    color: ${p.white};
+                    background: ${p.sage};
+                    color: ${p.ink};
                     padding: 12px 24px;
                     text-decoration: none;
                     border-radius: 12px;
                     font-size: 15px;
                     font-weight: 600;
                     font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-                    border: 1px solid rgba(7, 70, 71, 0.3);
-                    box-shadow: 0 2px 10px rgba(7, 70, 71, 0.2);">
-            Comunidad Telegram
+                    border: 1px solid rgba(172, 174, 137, 0.5);
+                    box-shadow: 0 2px 10px rgba(172, 174, 137, 0.3);">
+            Comunidad WhatsApp
           </a>
           <p style="font-size: 13px; color: rgba(0, 0, 0, 0.6); line-height: 1.5; margin: 10px 0 0; text-align: center; font-weight: 400; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
             Allí compartimos avisos, soporte y las novedades de la Move Crew.
@@ -810,7 +810,7 @@ el bienestar fisico y emocional.
 
   [EmailType.COURSE_COMPLETION]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Curso Completado!</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Curso Completado!</h2>
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
         ¡Felicitaciones <strong>${data.name}</strong>! Has completado exitosamente el curso.
       </p>
@@ -824,7 +824,7 @@ el bienestar fisico y emocional.
         ¡Sigue así! Tu dedicación y esfuerzo te están llevando a alcanzar tus objetivos.
       </p>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.nextCourseUrl || 'https://mateomove.com/courses'}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="${data.nextCourseUrl || 'https://mateomove.com/courses'}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Explorar Próximo Curso
         </a>
       </div>
@@ -834,7 +834,7 @@ el bienestar fisico y emocional.
 
   [EmailType.REMINDER_EMAIL]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">Recordatorio de Entrenamiento</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">Recordatorio de Entrenamiento</h2>
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
         ¡Hola <strong>${data.name}</strong>! Te recordamos que tienes contenido pendiente por revisar.
       </p>
@@ -848,7 +848,7 @@ el bienestar fisico y emocional.
         Mantén la consistencia en tu entrenamiento para ver los mejores resultados.
       </p>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.classUrl}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="${data.classUrl}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Continuar Entrenamiento
         </a>
       </div>
@@ -859,7 +859,7 @@ el bienestar fisico y emocional.
   [EmailType.EVENT_CONFIRMATION]: (data: EmailData) => {
     const isOnline = data.isOnline;
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">Reserva Confirmada</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">Reserva Confirmada</h2>
       
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
         Hola <strong>${data.customerName}</strong>, tu reserva para <strong>${data.eventName}</strong> ha sido confirmada exitosamente.
@@ -880,7 +880,7 @@ el bienestar fisico y emocional.
       <div style="background-color: ${p.cream}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
         <h3 style="color: ${p.ink}; margin: 0 0 15px 0; font-size: 18px; text-align: center;">Información para Evento Online</h3>
         <div style="text-align: center;">
-          ${data.eventLink ? `<p style="margin: 8px 0; color: ${p.stone};"><strong>Link de acceso:</strong> <a href="${data.eventLink}" style="color: ${p.teal}; text-decoration: underline;">Acceder al evento</a></p>` : `<p style="margin: 8px 0; color: ${p.stone};">El link de acceso se enviará 15 minutos antes del evento</p>`}
+          ${data.eventLink ? `<p style="margin: 8px 0; color: ${p.stone};"><strong>Link de acceso:</strong> <a href="${data.eventLink}" style="color: ${p.sage}; text-decoration: underline;">Acceder al evento</a></p>` : `<p style="margin: 8px 0; color: ${p.stone};">El link de acceso se enviará 15 minutos antes del evento</p>`}
           <p style="margin: 8px 0; color: ${p.stone};"><strong>Grabación:</strong> ${data.recordingInfo}</p>
         </div>
       </div>
@@ -906,7 +906,7 @@ el bienestar fisico y emocional.
       ` : ''}
 
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.eventPageUrl}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block; margin: 0 10px;">
+        <a href="${data.eventPageUrl}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block; margin: 0 10px;">
           Ver Detalles del Evento
         </a>
       </div>
@@ -917,7 +917,7 @@ el bienestar fisico y emocional.
           Si tienes alguna pregunta, no dudes en contactarnos:
         </p>
         <p style="margin: 5px 0; color: ${p.stone}; text-align: center;">
-          <strong>Email:</strong> <a href="mailto:${data.supportEmail}" style="color: ${p.teal}; text-decoration: underline;">${data.supportEmail}</a>
+          <strong>Email:</strong> <a href="mailto:${data.supportEmail}" style="color: ${p.sage}; text-decoration: underline;">${data.supportEmail}</a>
         </p>
       </div>
 
@@ -930,7 +930,7 @@ el bienestar fisico y emocional.
 
   [EmailType.PRODUCT_CONFIRMATION]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">Compra Confirmada</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">Compra Confirmada</h2>
       
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
         Hola <strong>${data.customerName}</strong>, tu compra de <strong>${data.productName}</strong> ha sido confirmada exitosamente.
@@ -946,7 +946,7 @@ el bienestar fisico y emocional.
       </div>
 
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.productPageUrl}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block; margin: 0 10px;">
+        <a href="${data.productPageUrl}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block; margin: 0 10px;">
           Ver Producto
         </a>
       </div>
@@ -957,7 +957,7 @@ el bienestar fisico y emocional.
           Si tienes alguna pregunta sobre tu compra, no dudes en contactarnos:
         </p>
         <p style="margin: 5px 0; color: ${p.stone}; text-align: center;">
-          <strong>Email:</strong> <a href="mailto:${data.supportEmail}" style="color: ${p.teal}; text-decoration: underline;">${data.supportEmail}</a>
+          <strong>Email:</strong> <a href="mailto:${data.supportEmail}" style="color: ${p.sage}; text-decoration: underline;">${data.supportEmail}</a>
         </p>
       </div>
 
@@ -970,7 +970,7 @@ el bienestar fisico y emocional.
 
   [EmailType.TRANSFORMATIONAL_PROGRAM_WEEK]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Nuevo Contenido Disponible!</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Nuevo Contenido Disponible!</h2>
       
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
         ¡Hola <strong>${data.name}</strong>! Tu contenido de la <strong>Semana ${data.semana}</strong> ya está disponible.
@@ -994,7 +994,7 @@ el bienestar fisico y emocional.
 
       <div style="text-align: center; margin: 30px 0;">
         <a href="https://mateomove.com/programa-transformacional/semana-${data.semana}" 
-           style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+           style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           🎬 Ver Contenido de la Semana ${data.semana}
         </a>
       </div>
@@ -1022,7 +1022,7 @@ el bienestar fisico y emocional.
 
   [EmailType.ADMIN_NOTIFICATION]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">Nueva Compra Realizada</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">Nueva Compra Realizada</h2>
       
       <div style="background-color: ${p.cream}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
         <h3 style="color: ${p.ink}; margin: 0 0 15px 0; font-size: 18px; text-align: center;">Información del Cliente</h3>
@@ -1057,7 +1057,7 @@ el bienestar fisico y emocional.
       ` : ''}
 
       <div style="text-align: center; margin: 30px 0;">
-        <a href="https://mateomove.com/admin" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="https://mateomove.com/admin" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Ver en el Panel de Admin
         </a>
       </div>
@@ -1578,21 +1578,21 @@ el bienestar fisico y emocional.
           </a>
         </div>
 
-        <!-- Link a Telegram -->
+        <!-- Link a WhatsApp -->
         <div style="text-align: center; margin: 24px 0 0; padding-top: 24px; border-top: 1px solid rgba(0, 0, 0, 0.08);">
-          <a href="${data.telegramInviteUrl || 'https://t.me/+_9hJulwT690yNWFh'}" 
+          <a href="${data.whatsappInviteUrl || data.telegramInviteUrl || 'https://chat.whatsapp.com/'}" 
              target="_blank"
              rel="noopener noreferrer"
              style="display: inline-block; 
-                    background: ${p.teal}; 
-                    color: ${p.white}; 
+                    background: ${p.sage}; 
+                    color: ${p.ink}; 
                     padding: 12px 24px; 
                     text-decoration: none; 
                     border-radius: 8px; 
                     font-size: 14px; 
                     font-weight: 600; 
                     font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-            Unite a la Crew (Telegram)
+            Unite a la Crew (WhatsApp)
           </a>
           <p style="font-size: 12px; color: rgba(0, 0, 0, 0.6); margin: 8px 0 0 0; line-height: 1.4;">
             Acceso directo al grupo privado para soporte, avisos y novedades.

@@ -734,8 +734,8 @@ export default function BienvenidaPage() {
             className="min-h-screen bg-palette-cream text-palette-ink font-montserrat relative"
           >
             {/* Sección scroll: efecto tipo Index - video sticky que se achica al bajar */}
-            {/* Altura reducida para tiempo de scroll más corto: 150px en mobile, 250px en desktop */}
-            <div className="flex flex-col relative" style={{ minHeight: isMobile ? 'calc(100vh + 150px)' : 'calc(100vh + 250px)' }}>
+            {/* Menor distancia entre video y contrato: 80px mobile, 180px desktop */}
+            <div className="flex flex-col relative" style={{ minHeight: isMobile ? 'calc(100vh + 80px)' : 'calc(100vh + 180px)' }}>
               <div className="sticky top-0 left-0 h-[100vh] w-full overflow-hidden bg-palette-cream" style={{ marginTop: 0, paddingTop: 0 }}>
                 {/* Formas decorativas detrás del video - extendidas desde el contenido */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
@@ -794,7 +794,7 @@ export default function BienvenidaPage() {
                   {/* Skeleton loading dentro del contenedor del video para respetar bordes */}
                   {isVideoLoading && (
                     <div className="absolute inset-0 z-[5] rounded-[inherit] overflow-hidden" aria-hidden>
-                      <div className="absolute inset-0 bg-palette-deep-teal/90" />
+                      <div className="absolute inset-0 bg-palette-ink/90" />
                       <ShimmerBox className="absolute inset-0 w-full h-full" />
                       <div className="absolute inset-0 flex items-center justify-center">
                         <p className="font-montserrat text-sm uppercase tracking-[0.2em] text-palette-cream/80">Cargando video...</p>
@@ -817,34 +817,33 @@ export default function BienvenidaPage() {
                     <motion.button
                       type="button"
                       onClick={handlePlayClick}
-                      className="absolute bottom-4 left-4 z-[50] flex items-center justify-center bg-palette-cream/90 hover:bg-palette-cream hover:border-palette-teal/40 backdrop-blur-sm transition-colors rounded-full p-3 border border-palette-stone/20 shadow-lg cursor-pointer isolate"
+                      className="absolute bottom-4 left-4 z-[50] flex items-center justify-center bg-palette-cream/90 hover:bg-palette-cream hover:border-palette-sage/40 backdrop-blur-sm transition-colors rounded-full p-3 border border-palette-stone/20 shadow-lg cursor-pointer isolate"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      <PlayIcon className="h-5 w-5 text-palette-teal" />
+                      <PlayIcon className="h-5 w-5 text-palette-sage" />
                     </motion.button>
                   )}
                   {!isVideoLoading && isPlaying && (
                     <motion.button
                       type="button"
                       onClick={handlePauseClick}
-                      className="absolute bottom-4 left-4 z-[50] flex items-center justify-center bg-palette-cream/90 hover:bg-palette-cream hover:border-palette-teal/40 backdrop-blur-sm transition-colors rounded-full p-3 border border-palette-stone/20 shadow-lg cursor-pointer isolate"
+                      className="absolute bottom-4 left-4 z-[50] flex items-center justify-center bg-palette-cream/90 hover:bg-palette-cream hover:border-palette-sage/40 backdrop-blur-sm transition-colors rounded-full p-3 border border-palette-stone/20 shadow-lg cursor-pointer isolate"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       whileHover={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <PauseIcon className="h-5 w-5 text-palette-teal" />
+                      <PauseIcon className="h-5 w-5 text-palette-sage" />
                     </motion.button>
                   )}
                 </div>
               </div>
             </div>
-
             {/* Contenido debajo del video: fondo decorativo + contrato + botón */}
             <div className="relative min-h-screen bg-palette-cream">
               {/* Background Effects - Movimiento Orgánico */}
@@ -852,122 +851,17 @@ export default function BienvenidaPage() {
                 {/* Base con paleta crema */}
                 <div className="absolute inset-0 bg-palette-cream" />
             
-            {/* Ondas de movimiento - Capa 1 */}
-            <motion.svg
-              className="absolute inset-0 w-full h-full"
-              viewBox="0 0 1200 800"
-              preserveAspectRatio="xMidYMid slice"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 2 }}
-            >
-              <defs>
-                <linearGradient id="waveGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#074647" stopOpacity="0.12" />
-                  <stop offset="50%" stopColor="#acae89" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="#787867" stopOpacity="0.12" />
-                </linearGradient>
-                <linearGradient id="waveGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#acae89" stopOpacity="0.15" />
-                  <stop offset="50%" stopColor="#074647" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#001b1c" stopOpacity="0.1" />
-                </linearGradient>
-              </defs>
-              
-              {/* Onda principal - movimiento fluido */}
-              <motion.path
-                d="M0,400 Q300,300 600,400 T1200,400 L1200,800 L0,800 Z"
-                fill="url(#waveGradient1)"
-                animate={{
-                  d: [
-                    "M0,400 Q300,300 600,400 T1200,400 L1200,800 L0,800 Z",
-                    "M0,450 Q300,350 600,450 T1200,450 L1200,800 L0,800 Z",
-                    "M0,400 Q300,300 600,400 T1200,400 L1200,800 L0,800 Z",
-                  ]
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-              
-              {/* Onda secundaria - contramovimiento */}
-              <motion.path
-                d="M0,500 Q400,450 800,500 T1200,500 L1200,800 L0,800 Z"
-                fill="url(#waveGradient2)"
-                animate={{
-                  d: [
-                    "M0,500 Q400,450 800,500 T1200,500 L1200,800 L0,800 Z",
-                    "M0,450 Q400,500 800,450 T1200,450 L1200,800 L0,800 Z",
-                    "M0,500 Q400,450 800,500 T1200,500 L1200,800 L0,800 Z",
-                  ]
-                }}
-                transition={{
-                  duration: 10,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-            </motion.svg>
+            {/* Detalle sutil: grid muy suave con sage - estilo Move Crew limpio */}
+            <div
+              className="absolute inset-0 opacity-[0.04]"
+              style={{
+                backgroundImage: `linear-gradient(rgba(172, 174, 137, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(172, 174, 137, 0.4) 1px, transparent 1px)`,
+                backgroundSize: '48px 48px'
+              }}
+            />
 
-            {/* Espirales de energía - relacionadas con "La Espiral" */}
-            {[...Array(3)].map((_, i) => {
-              const size = 300 + i * 150;
-              const x = 20 + i * 35;
-              const y = 15 + i * 25;
-              return (
-                <motion.div
-                  key={`spiral-${i}`}
-                  className="absolute"
-                  style={{
-                    width: `${size}px`,
-                    height: `${size}px`,
-                    left: `${x}%`,
-                    top: `${y}%`,
-                  }}
-                  animate={{
-                    rotate: [0, 360],
-                    scale: [1, 1.1, 1],
-                    opacity: [0.08, 0.15, 0.08],
-                  }}
-                  transition={{
-                    duration: 20 + i * 5,
-                    repeat: Infinity,
-                    ease: "linear",
-                    delay: i * 2
-                  }}
-                >
-                  <svg viewBox="0 0 200 200" className="w-full h-full">
-                    <defs>
-                      <linearGradient id={`spiralGradient${i}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#074647" stopOpacity="0.2" />
-                        <stop offset="50%" stopColor="#acae89" stopOpacity="0.15" />
-                        <stop offset="100%" stopColor="#787867" stopOpacity="0.1" />
-                      </linearGradient>
-                    </defs>
-                    <motion.path
-                      d="M100,100 Q150,50 100,0 Q50,50 100,100 Q150,150 200,100 Q150,50 100,100"
-                      fill="none"
-                      stroke={`url(#spiralGradient${i})`}
-                      strokeWidth="2"
-                      animate={{
-                        pathLength: [0, 1, 0],
-                        opacity: [0.1, 0.3, 0.1]
-                      }}
-                      transition={{
-                        duration: 4 + i,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    />
-                  </svg>
-                </motion.div>
-              );
-            })}
-
-            {/* Formas orgánicas flotantes - sugieren movimiento corporal */}
-            {organicShapes.map((shape, i) => (
+            {/* Formas orgánicas flotantes - muy sutiles, sage */}
+            {organicShapes.slice(0, 4).map((shape, i) => (
               <motion.div
                 key={`organic-${i}`}
                 className="absolute rounded-full"
@@ -976,19 +870,19 @@ export default function BienvenidaPage() {
                   height: `${shape.size}px`,
                   left: `${shape.initialX}%`,
                   top: `${shape.initialY}%`,
-                  background: `radial-gradient(circle, rgba(${shape.baseColor.r}, ${shape.baseColor.g}, ${shape.baseColor.b}, ${shape.opacity}) 0%, transparent 70%)`,
-                  filter: 'blur(40px)',
+                  background: `radial-gradient(circle, rgba(172, 174, 137, ${shape.opacity * 0.5}) 0%, transparent 70%)`,
+                  filter: 'blur(50px)',
                   willChange: 'transform, opacity',
-                  transform: 'translateZ(0)', // Acelera la renderización con GPU
+                  transform: 'translateZ(0)',
                 }}
                 animate={{
-                  x: [0, shape.moveX, 0],
-                  y: [0, shape.moveY, 0],
-                  scale: [1, shape.scaleMax, 1],
-                  opacity: [0.1, 0.25, 0.1],
+                  x: [0, shape.moveX * 0.3, 0],
+                  y: [0, shape.moveY * 0.3, 0],
+                  scale: [1, shape.scaleMax * 0.9, 1],
+                  opacity: [0.04, 0.1, 0.04],
                 }}
                 transition={{
-                  duration: shape.duration,
+                  duration: shape.duration * 1.2,
                   repeat: Infinity,
                   ease: "easeInOut",
                   delay: shape.delay
@@ -996,241 +890,97 @@ export default function BienvenidaPage() {
               />
             ))}
 
-            {/* Líneas de flujo de energía - detalles finos Move Crew */}
-            {flowLines.map((shape, i) => (
-              <motion.div
-                key={`flow-${i}`}
-                className="absolute origin-center"
-                style={{
-                  width: `${shape.length}px`,
-                  height: '2px',
-                  left: '50%',
-                  top: '50%',
-                  background: `linear-gradient(90deg, transparent, rgba(7, 70, 71, 0.35), transparent)`,
-                  transform: `rotate(${shape.angle}deg) translateX(-50%)`,
-                  transformOrigin: 'left center',
-                }}
+            {/* Ondas abajo del todo - bien visibles, movimiento constante */}
+            <motion.svg
+              className="absolute bottom-0 left-0 w-full h-44 md:h-56"
+              viewBox="0 0 1200 200"
+              preserveAspectRatio="none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1 }}
+            >
+              <defs>
+                <linearGradient id="bienvenidaWave1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#acae89" stopOpacity="0" />
+                  <stop offset="30%" stopColor="#acae89" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="#acae89" stopOpacity="0.45" />
+                </linearGradient>
+                <linearGradient id="bienvenidaWave2" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#acae89" stopOpacity="0" />
+                  <stop offset="40%" stopColor="#acae89" stopOpacity="0.15" />
+                  <stop offset="100%" stopColor="#acae89" stopOpacity="0.38" />
+                </linearGradient>
+                <linearGradient id="bienvenidaWave3" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#acae89" stopOpacity="0" />
+                  <stop offset="50%" stopColor="#acae89" stopOpacity="0.1" />
+                  <stop offset="100%" stopColor="#acae89" stopOpacity="0.28" />
+                </linearGradient>
+              </defs>
+              <motion.path
+                fill="url(#bienvenidaWave1)"
                 animate={{
-                  opacity: [0, 0.6, 0],
-                  scaleX: [0.5, 1, 0.5],
+                  d: [
+                    "M0,100 Q300,50 600,100 T1200,100 L1200,200 L0,200 Z",
+                    "M0,130 Q300,170 600,130 T1200,130 L1200,200 L0,200 Z",
+                    "M0,80 Q300,140 600,80 T1200,80 L1200,200 L0,200 Z",
+                    "M0,150 Q300,90 600,150 T1200,150 L1200,200 L0,200 Z",
+                    "M0,100 Q300,50 600,100 T1200,100 L1200,200 L0,200 Z",
+                  ]
                 }}
-                transition={{
-                  duration: shape.duration,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: shape.delay
-                }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
-            ))}
-
-            {/* Partículas de energía - detalles finos con colores Move Crew */}
-            {particles.map((particle, i) => (
-              <motion.div
-                key={`particle-${i}`}
-                className="absolute rounded-full"
-                style={{
-                  width: `${particle.size}px`,
-                  height: `${particle.size}px`,
-                  backgroundColor: particle.color,
-                  left: `${particle.left}%`,
-                  top: `${particle.top}%`,
-                  boxShadow: `0 0 ${particle.glowSize}px ${particle.color}`,
-                  willChange: 'transform, opacity',
-                  transform: 'translateZ(0)', // Acelera la renderización con GPU
-                }}
+              <motion.path
+                fill="url(#bienvenidaWave2)"
                 animate={{
-                  y: [0, particle.moveY, 0],
-                  x: [0, particle.moveX, 0],
-                  opacity: [0, 0.8, 0],
-                  scale: [0.5, 1.5, 0.5],
+                  d: [
+                    "M0,140 Q400,90 800,140 T1200,140 L1200,200 L0,200 Z",
+                    "M0,110 Q400,160 800,110 T1200,110 L1200,200 L0,200 Z",
+                    "M0,160 Q400,100 800,160 T1200,160 L1200,200 L0,200 Z",
+                    "M0,120 Q400,150 800,120 T1200,120 L1200,200 L0,200 Z",
+                    "M0,140 Q400,90 800,140 T1200,140 L1200,200 L0,200 Z",
+                  ]
                 }}
-                transition={{
-                  duration: particle.duration,
-                  repeat: Infinity,
-                  ease: "easeOut",
-                  delay: particle.delay
-                }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
               />
-            ))}
-
-            {/* Grid pattern sutil con paleta */}
-            <div 
-              className="absolute inset-0 opacity-[0.03]"
-              style={{
-                backgroundImage: `
-                  linear-gradient(rgba(7, 70, 71, 0.4) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(120, 120, 103, 0.3) 1px, transparent 1px)
-                `,
-                backgroundSize: '60px 60px'
-              }}
-            />
-
-            {/* Figuras geométricas rebotando - Círculos */}
-            {geometricShapes.circles.map((shape, i) => (
-              <motion.div
-                key={`circle-${i}`}
-                className="absolute rounded-full"
-                style={{
-                  width: `${shape.size}px`,
-                  height: `${shape.size}px`,
-                  left: `${shape.initialX}%`,
-                  top: `${shape.initialY}%`,
-                  backgroundColor: shape.color,
-                  border: `2px solid ${shape.borderColor}`,
-                  boxShadow: `0 0 ${shape.size}px ${shape.color}, 0 0 ${shape.size * 1.5}px ${shape.color}`,
-                  zIndex: 1,
-                  willChange: 'transform, opacity',
-                  transform: 'translateZ(0)', // Acelera la renderización con GPU
-                }}
+              <motion.path
+                fill="url(#bienvenidaWave3)"
                 animate={{
-                  x: ['0vw', `${shape.moveX}vw`, `${shape.moveX}vw`, '0vw'],
-                  y: ['0vh', `${shape.moveY}vh`, `${shape.moveY}vh`, '0vh'],
-                  rotate: [0, 360],
-                  scale: [1, 1.3, 0.7, 1],
-                  opacity: [0.25, 0.4, 0.3, 0.25],
+                  d: [
+                    "M0,170 Q250,120 500,170 T1000,170 T1200,170 L1200,200 L0,200 Z",
+                    "M0,130 Q250,180 500,130 T1000,130 T1200,130 L1200,200 L0,200 Z",
+                    "M0,160 Q250,100 500,160 T1000,160 T1200,160 L1200,200 L0,200 Z",
+                    "M0,140 Q250,170 500,140 T1000,140 T1200,140 L1200,200 L0,200 Z",
+                    "M0,170 Q250,120 500,170 T1000,170 T1200,170 L1200,200 L0,200 Z",
+                  ]
                 }}
-                transition={{
-                  duration: shape.duration,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: shape.delay
-                }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
               />
-            ))}
-
-            {/* Figuras geométricas rebotando - Triángulos */}
-            {geometricShapes.triangles.map((shape, i) => (
-              <motion.div
-                key={`triangle-${i}`}
-                className="absolute"
-                style={{
-                  width: `${shape.size}px`,
-                  height: `${shape.size}px`,
-                  left: `${shape.initialX}%`,
-                  top: `${shape.initialY}%`,
-                  backgroundColor: shape.color,
-                  clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
-                  border: `none`,
-                  boxShadow: `0 0 ${shape.size}px ${shape.color}`,
-                  zIndex: 1,
-                  willChange: 'transform, opacity',
-                  transform: 'translateZ(0)', // Acelera la renderización con GPU
-                }}
-                animate={{
-                  x: ['0vw', `${shape.moveX}vw`, `${shape.moveX}vw`, '0vw'],
-                  y: ['0vh', `${shape.moveY}vh`, `${shape.moveY}vh`, '0vh'],
-                  rotate: [shape.rotation, shape.rotation + 360],
-                  scale: [1, 1.2, 0.8, 1],
-                  opacity: [0.2, 0.35, 0.25, 0.2],
-                }}
-                transition={{
-                  duration: shape.duration,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: shape.delay
-                }}
-              />
-            ))}
-
-            {/* Figuras geométricas rebotando - Hexágonos */}
-            {geometricShapes.hexagons.map((shape, i) => (
-              <motion.div
-                key={`hexagon-${i}`}
-                className="absolute"
-                style={{
-                  width: `${shape.size}px`,
-                  height: `${shape.size}px`,
-                  left: `${shape.initialX}%`,
-                  top: `${shape.initialY}%`,
-                  backgroundColor: shape.color,
-                  clipPath: 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)',
-                  border: `2px solid ${shape.borderColor}`,
-                  boxShadow: `0 0 ${shape.size}px ${shape.color}`,
-                  zIndex: 1,
-                  willChange: 'transform, opacity',
-                  transform: 'translateZ(0)', // Acelera la renderización con GPU
-                }}
-                animate={{
-                  x: ['0vw', `${shape.moveX}vw`, `${shape.moveX}vw`, '0vw'],
-                  y: ['0vh', `${shape.moveY}vh`, `${shape.moveY}vh`, '0vh'],
-                  rotate: [0, 360],
-                  scale: [1, 1.25, 0.75, 1],
-                  opacity: [0.2, 0.35, 0.25, 0.2],
-                }}
-                transition={{
-                  duration: shape.duration,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: shape.delay
-                }}
-              />
-            ))}
-
-            {/* Figuras geométricas más grandes y lentas para profundidad - paleta */}
-            {largeShapes.map((shape, i) => {
-              const colors = [
-                { r: 7, g: 70, b: 71 },      // palette-teal
-                { r: 0, g: 27, b: 28 },     // palette-deep-teal
-                { r: 172, g: 174, b: 137 }, // palette-sage
-                { r: 120, g: 120, b: 103 }, // palette-stone
-              ];
-              const baseColor = colors[i % colors.length];
-              
-              return (
-                <motion.div
-                  key={`large-geometric-${i}`}
-                  className="absolute rounded-full"
-                  style={{
-                    width: `${shape.size}px`,
-                    height: `${shape.size}px`,
-                    left: `${shape.initialX}%`,
-                    top: `${shape.initialY}%`,
-                    background: `radial-gradient(circle, rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.08) 0%, transparent 70%)`,
-                    border: `1px solid rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.15)`,
-                  }}
-                  animate={{
-                    x: ['0vw', `${shape.moveX}vw`, `${shape.moveX}vw`, '0vw'],
-                    y: ['0vh', `${shape.moveY}vh`, `${shape.moveY}vh`, '0vh'],
-                    rotate: [0, 360],
-                    scale: [1, 1.3, 0.7, 1],
-                    opacity: [0.05, 0.15, 0.1, 0.05],
-                  }}
-                  transition={{
-                    duration: shape.duration,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: shape.delay
-                  }}
-                />
-              );
-            })}
+            </motion.svg>
               </div>
 
-{/* Contenido principal: contrato + botón */}
-              <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 pb-12 pt-8 md:pt-12">
+{/* Contenido principal: contrato integrado en la página + botón */}
+              <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-0 md:px-4 pb-12 pt-4 md:pt-12">
                 <motion.div
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
-                  className="max-w-3xl md:max-w-4xl w-full space-y-8 md:space-y-10"
+                  className="w-full max-w-3xl md:max-w-4xl px-4 md:px-0 space-y-8 md:space-y-10"
                 >
-                {/* Contrato: diseño fino, conceptos básicos Move Crew */}
-              <motion.div
-                variants={itemVariants}
-                className="relative"
-              >
-                <div className="absolute -inset-px bg-palette-teal/5 rounded-xl" />
-                <div className="relative bg-palette-cream/98 backdrop-blur-sm rounded-xl md:rounded-2xl border border-palette-stone/15 p-6 md:p-10 lg:p-12 shadow-[0_2px_16px_rgba(20,20,17,0.04)]">
-                  <div ref={textContainerRef} className="space-y-6 md:space-y-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                {/* Contrato: en mobile sin marco y ancho completo; en desktop marco con más sombra */}
+              <motion.div variants={itemVariants} className="relative">
+                  <div
+                    ref={textContainerRef}
+                    className="relative bg-palette-cream/95 p-5 md:p-10 lg:p-12 space-y-5 md:space-y-8 md:border-1 md:border-palette-ink/25 md:rounded-lg md:shadow-[0_12px_40px_rgba(20,20,17,0.14),0_4px_16px_rgba(20,20,17,0.08),inset_0_0_0_1px_rgba(20,20,17,0.06)]"
+                  >
                     {/* Introducción */}
                     <motion.div
                       variants={textRevealVariants}
-                      className="space-y-4"
+                      className="space-y-3 md:space-y-4"
                     >
-                      <p className="text-xl md:text-2xl leading-relaxed text-palette-ink font-medium font-montserrat tracking-tight">
+                      <p className="text-2xl md:text-3xl leading-relaxed text-palette-ink font-medium font-montserrat tracking-tight">
                         Contrato
                       </p>
-                      <p className="text-base md:text-lg leading-relaxed text-palette-stone font-light font-montserrat">
+                      <p className="text-lg md:text-xl leading-relaxed text-palette-stone font-light font-montserrat">
                         Movimiento, fuerza y libertad. Acá tenés lo esencial:
                       </p>
                     </motion.div>
@@ -1238,9 +988,9 @@ export default function BienvenidaPage() {
                     {/* Conceptos básicos */}
                     <motion.div
                       variants={textRevealVariants}
-                      className="space-y-4 pt-5 border-t border-palette-stone/10"
+                      className="space-y-4 pt-4 md:pt-5 border-t border-palette-stone/10"
                     >
-                      <p className="text-sm md:text-base font-semibold text-palette-teal uppercase tracking-widest mb-4 font-montserrat">
+                      <p className="text-base md:text-lg font-semibold text-palette-sage uppercase tracking-widest mb-3 md:mb-4 font-montserrat">
                         Qué tenés
                       </p>
                       <div className="space-y-4">
@@ -1250,7 +1000,7 @@ export default function BienvenidaPage() {
                             text: 'Clases y programas cuando quieras.'
                           },
                           {
-                            title: 'Telegram',
+                            title: 'WhatsApp',
                             text: 'La Crew: soporte, avisos y comunidad.'
                           },
                           {
@@ -1263,14 +1013,14 @@ export default function BienvenidaPage() {
                             initial={{ opacity: 0, x: -12 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 1 + index * 0.15 }}
-                            className="flex gap-4 group"
+                            className="flex gap-3 md:gap-4 group"
                           >
-                            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-palette-teal/15 border border-palette-teal/30 flex items-center justify-center mt-0.5">
-                              <div className="w-2 h-2 rounded-full bg-palette-teal" />
+                            <div className="flex-shrink-0 w-8 h-8 md:w-7 md:h-7 rounded-full bg-palette-sage/20 border border-palette-sage/40 flex items-center justify-center mt-0.5">
+                              <div className="w-2.5 h-2.5 md:w-2 md:h-2 rounded-full bg-palette-sage" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold text-palette-ink text-base md:text-lg font-montserrat">{item.title}</h3>
-                              <p className="text-palette-stone text-sm md:text-base leading-relaxed font-montserrat">{item.text}</p>
+                              <h3 className="font-semibold text-palette-ink text-lg md:text-xl font-montserrat">{item.title}</h3>
+                              <p className="text-palette-stone text-base md:text-lg leading-relaxed font-montserrat">{item.text}</p>
                             </div>
                           </motion.div>
                         ))}
@@ -1280,20 +1030,19 @@ export default function BienvenidaPage() {
                     {/* Cierre */}
                     <motion.div
                       variants={textRevealVariants}
-                      className="pt-5 border-t border-palette-stone/10"
+                      className="pt-4 md:pt-5 border-t border-palette-stone/10"
                     >
-                      <p className="text-base md:text-lg leading-relaxed text-palette-stone font-light font-montserrat">
+                      <p className="text-lg md:text-xl leading-relaxed text-palette-stone font-light font-montserrat">
                         Simple y sostenible. <span className="font-medium text-palette-ink">Hecho para tu día a día.</span>
                       </p>
-                      <p className="text-base md:text-lg text-palette-ink font-medium mt-5 font-montserrat">
+                      <p className="text-lg md:text-xl text-palette-ink font-medium mt-4 md:mt-5 font-montserrat">
                         Cuando estés listo, aceptá abajo.
                       </p>
-                      <p className="text-sm text-palette-stone/80 mt-6 font-montserrat">
+                      <p className="text-base text-palette-stone/80 mt-5 md:mt-6 font-montserrat">
                         — Mateo.Move
                       </p>
                     </motion.div>
                   </div>
-                </div>
               </motion.div>
 
               {/* Botón de Aceptación */}
@@ -1310,7 +1059,7 @@ export default function BienvenidaPage() {
                       className="text-center space-y-1"
                     >
                       <div className="flex flex-col items-center justify-center gap-1 text-palette-stone text-xs md:text-sm font-montserrat">
-                        <LockClosedIcon className="h-3.5 w-3.5 text-palette-teal" />
+                        <LockClosedIcon className="h-3.5 w-3.5 text-palette-sage" />
                         <span>
                           {!textScrolled
                             ? 'Desplazá hasta el final del texto'
@@ -1329,14 +1078,14 @@ export default function BienvenidaPage() {
                     relative px-10 py-5 rounded-2xl font-semibold text-lg md:text-xl font-montserrat uppercase tracking-[0.2em]
                     transition-all duration-500 overflow-hidden
                     ${buttonEnabled && !loading
-                      ? 'bg-palette-ink text-palette-cream border-2 border-palette-ink cursor-pointer shadow-[0_4px_24px_rgba(20,20,17,0.12)] hover:bg-palette-teal hover:border-palette-teal'
+                      ? 'bg-palette-sage text-palette-ink border-2 border-palette-sage cursor-pointer shadow-[0_4px_24px_rgba(172,174,137,0.3)] hover:bg-palette-sage/90 hover:border-palette-sage/90'
                       : 'bg-palette-stone/10 text-palette-stone/60 cursor-not-allowed border-2 border-palette-stone/25'
                     }
                     flex items-center gap-3 min-w-[280px] justify-center
                   `}
                   whileHover={buttonEnabled && !loading ? { 
                     scale: 1.02,
-                    boxShadow: "0 8px 32px rgba(7, 70, 71, 0.2)"
+                    boxShadow: "0 8px 32px rgba(172, 174, 137, 0.4)"
                   } : {}}
                   whileTap={buttonEnabled && !loading ? { scale: 0.98 } : {}}
                 >
@@ -1401,13 +1150,13 @@ export default function BienvenidaPage() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="fixed inset-0 z-[9999] flex items-center justify-center bg-palette-deep-teal/95 backdrop-blur-md"
+                        className="fixed inset-0 z-[9999] flex items-center justify-center bg-palette-ink/95 backdrop-blur-md"
                       >
                         <div className="flex flex-col items-center gap-6">
                           <motion.div
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            className="w-16 h-16 border-4 border-palette-stone/30 border-t-palette-teal rounded-full"
+                            className="w-16 h-16 border-4 border-palette-stone/30 border-t-palette-sage rounded-full"
                           />
                           <motion.div
                             initial={{ opacity: 0, y: 10 }}

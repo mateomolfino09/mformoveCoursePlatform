@@ -80,7 +80,9 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
                 pathname == '/admin/memberships/classes/allClasses' ||
                 pathname == '/admin/memberships/classes/createClassType' ||
                 pathname == '/admin/memberships/class-modules' ||
-                pathname?.startsWith('/admin/memberships/class-modules/')
+                pathname?.startsWith('/admin/memberships/class-modules/') ||
+                pathname == '/admin/memberships/submodules' ||
+                pathname?.startsWith('/admin/memberships/submodules/')
                   ? 'bg-white/10 text-white border-l-2 border-[#4F7CCF] shadow-lg'
                   : 'text-gray-400 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
               }`}
@@ -95,7 +97,9 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
                   pathname == '/admin/memberships/classes/allClasses' ||
                   pathname == '/admin/memberships/classes/createClassType' ||
                   pathname == '/admin/memberships/class-modules' ||
-                  pathname?.startsWith('/admin/memberships/class-modules/')
+                  pathname?.startsWith('/admin/memberships/class-modules/') ||
+                  pathname == '/admin/memberships/submodules' ||
+                  pathname?.startsWith('/admin/memberships/submodules/')
                     ? 'text-[#4F7CCF]' : ''
                 }`} />
               </div>

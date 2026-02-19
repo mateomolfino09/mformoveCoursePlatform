@@ -34,7 +34,7 @@ const generateEmailContent = (data: any) => {
   const ink = '#141411';
   const stone = '#787867';
   const cream = '#FAF8F4';
-  const teal = '#074647';
+  const sage = '#acae89';
   const font = "'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif";
 
   return {

@@ -22,7 +22,7 @@ const faqs = [
   {
     question: '¿Cómo funciona el soporte?',
     answer:
-      'Es asíncrono por Telegram: preguntas rápidas y feedback sin atarte a horarios. Además, cada miércoles grabo un Q&A para responder lo que vaya surgiendo.'
+      'Es asíncrono por WhatsApp: preguntas rápidas y feedback sin atarte a horarios. Además, cada miércoles grabo un Q&A para responder lo que vaya surgiendo.'
   },
   {
     question: '¿Qué pasa si me pierdo una semana?',

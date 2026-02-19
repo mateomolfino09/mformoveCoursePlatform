@@ -131,14 +131,14 @@ const MoveCrewCommunitySlider = () => {
           {/* Navigation Arrows */}
           <button
             onClick={goToPrevious}
-            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 bg-palette-cream/95 hover:bg-palette-teal/20 text-palette-teal p-2 md:p-3 rounded-full shadow-lg border border-palette-teal/40 transition-all duration-300 hover:scale-110"
+            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 bg-palette-cream/95 hover:bg-palette-sage/20 text-palette-sage p-2 md:p-3 rounded-full shadow-lg border border-palette-sage/40 transition-all duration-300 hover:scale-110"
             aria-label="Imagen anterior"
           >
             <ChevronLeftIcon className="w-5 h-5 md:w-6 md:h-6" />
           </button>
           <button
             onClick={goToNext}
-            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 bg-palette-cream/95 hover:bg-palette-teal/20 text-palette-teal p-2 md:p-3 rounded-full shadow-lg border border-palette-teal/40 transition-all duration-300 hover:scale-110"
+            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 bg-palette-cream/95 hover:bg-palette-sage/20 text-palette-sage p-2 md:p-3 rounded-full shadow-lg border border-palette-sage/40 transition-all duration-300 hover:scale-110"
             aria-label="Siguiente imagen"
           >
             <ChevronRightIcon className="w-5 h-5 md:w-6 md:h-6" />
@@ -152,7 +152,7 @@ const MoveCrewCommunitySlider = () => {
                 onClick={() => goToSlide(index)}
                 className={`transition-all duration-300 rounded-full ${
                   index === currentIndex
-                    ? 'w-8 md:w-10 h-2 md:h-2.5 bg-palette-teal'
+                    ? 'w-8 md:w-10 h-2 md:h-2.5 bg-palette-sage'
                     : 'w-2 md:w-2.5 h-2 md:h-2.5 bg-palette-stone/40 hover:bg-palette-stone/60'
                 }`}
                 aria-label={`Ir a imagen ${index + 1}`}

@@ -414,11 +414,11 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
           // El modal se centrará sin necesidad de targetElement
           targetElement = null;
         } else if (currentStep === 2) {
-          // Paso 2: Apuntar al botón "El Camino" (Programa de Movimiento)
+          // Paso 2: Apuntar al botón "Camino Semanal"
           if (menuRoot) {
             const buttons = menuRoot.querySelectorAll('button');
             targetElement = Array.from(buttons).find(
-              (el) => (el.textContent || '').includes('El Camino')
+              (el) => (el.textContent || '').includes('Camino Semanal')
             ) as HTMLElement;
           }
         } else if (currentStep === 3) {
@@ -430,11 +430,11 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
             ) as HTMLElement;
           }
         } else if (currentStep === 4) {
-          // Paso 4: Apuntar a "Telegram"
+          // Paso 4: Apuntar a "WhatsApp"
           if (menuRoot) {
             const links = menuRoot.querySelectorAll('a');
             targetElement = Array.from(links).find(
-              (el) => (el.textContent || '').includes('Telegram')
+              (el) => (el.textContent || '').includes('WhatsApp')
             ) as HTMLElement;
           }
         }
@@ -444,12 +444,12 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
           if (currentStep === 1) {
             // Paso 1: No necesita subrayado (menú no está abierto)
           } else if (currentStep === 2) {
-            // Paso 2: Subrayar "Programa de Movimiento" (h2) dentro del botón "El Camino"
-            const h2Element = targetElement.querySelector('h2');
-            if (h2Element) {
-              h2Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
-              h2Element.style.setProperty('padding-bottom', '0.25rem', 'important');
-              h2Element.style.setProperty('display', 'inline-block', 'important');
+            // Paso 2: Subrayar "Camino Semanal" (h1) dentro del botón
+            const h1Element = targetElement.querySelector('h1');
+            if (h1Element) {
+              h1Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
+              h1Element.style.setProperty('padding-bottom', '0.25rem', 'important');
+              h1Element.style.setProperty('display', 'inline-block', 'important');
             }
             targetElement.style.setProperty('background-color', 'rgba(255, 255, 255, 0.1)', 'important');
           } else if (currentStep === 3) {
@@ -461,7 +461,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
               h2Element.style.setProperty('display', 'inline-block', 'important');
             }
           } else if (currentStep === 4) {
-            // Paso 4: Subrayar "Telegram" - buscar el h2 "Comunidad" dentro del link
+            // Paso 4: Subrayar "WhatsApp" - buscar el h2 "Comunidad" dentro del link
             const h2Element = targetElement.querySelector('h2');
             if (h2Element) {
               h2Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
@@ -635,23 +635,23 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
           targetElement = (firstContent as HTMLElement) || menuRoot;
         } else if (step === 2 && menuRoot) {
           const buttons = menuRoot.querySelectorAll('button');
-          targetElement = Array.from(buttons).find((el) => (el.textContent || '').includes('El Camino')) as HTMLElement;
+          targetElement = Array.from(buttons).find((el) => (el.textContent || '').includes('Camino Semanal')) as HTMLElement;
         } else if (step === 3 && menuRoot) {
           const buttons = menuRoot.querySelectorAll('button');
           targetElement = Array.from(buttons).find((el) => (el.textContent || '').includes('Biblioteca')) as HTMLElement;
         } else if (step === 4 && menuRoot) {
           const links = menuRoot.querySelectorAll('a');
-          targetElement = Array.from(links).find((el) => (el.textContent || '').includes('Telegram')) as HTMLElement;
+          targetElement = Array.from(links).find((el) => (el.textContent || '').includes('WhatsApp')) as HTMLElement;
         }
         
         // Aplicar subrayado al elemento objetivo
         if (targetElement && targetElement.getBoundingClientRect().width > 0) {
           if (step === 2) {
-            const h2Element = targetElement.querySelector('h2');
-            if (h2Element) {
-              h2Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
-              h2Element.style.setProperty('padding-bottom', '0.25rem', 'important');
-              h2Element.style.setProperty('display', 'inline-block', 'important');
+            const h1Element = targetElement.querySelector('h1');
+            if (h1Element) {
+              h1Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
+              h1Element.style.setProperty('padding-bottom', '0.25rem', 'important');
+              h1Element.style.setProperty('display', 'inline-block', 'important');
             }
             targetElement.style.setProperty('background-color', 'rgba(255, 255, 255, 0.1)', 'important');
           } else if (step === 3) {
@@ -779,23 +779,23 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
           targetElement = (firstContent as HTMLElement) || menuRoot;
         } else if (step === 2 && menuRoot) {
           const buttons = menuRoot.querySelectorAll('button');
-          targetElement = Array.from(buttons).find((el) => (el.textContent || '').includes('El Camino')) as HTMLElement;
+          targetElement = Array.from(buttons).find((el) => (el.textContent || '').includes('Camino Semanal')) as HTMLElement;
         } else if (step === 3 && menuRoot) {
           const buttons = menuRoot.querySelectorAll('button');
           targetElement = Array.from(buttons).find((el) => (el.textContent || '').includes('Biblioteca')) as HTMLElement;
         } else if (step === 4 && menuRoot) {
           const links = menuRoot.querySelectorAll('a');
-          targetElement = Array.from(links).find((el) => (el.textContent || '').includes('Telegram')) as HTMLElement;
+          targetElement = Array.from(links).find((el) => (el.textContent || '').includes('WhatsApp')) as HTMLElement;
         }
         
         // Aplicar subrayado al elemento objetivo
         if (targetElement && targetElement.getBoundingClientRect().width > 0) {
           if (step === 2) {
-            const h2Element = targetElement.querySelector('h2');
-            if (h2Element) {
-              h2Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
-              h2Element.style.setProperty('padding-bottom', '0.25rem', 'important');
-              h2Element.style.setProperty('display', 'inline-block', 'important');
+            const h1Element = targetElement.querySelector('h1');
+            if (h1Element) {
+              h1Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
+              h1Element.style.setProperty('padding-bottom', '0.25rem', 'important');
+              h1Element.style.setProperty('display', 'inline-block', 'important');
             }
             targetElement.style.setProperty('background-color', 'rgba(255, 255, 255, 0.1)', 'important');
           } else if (step === 3) {
@@ -1283,10 +1283,10 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                   style={{ pointerEvents: 'none' }}
                 >
                   <h3 className="text-lg md:text-xl font-semibold text-palette-ink font-montserrat tracking-tight mb-3">
-                    El Camino
+                    Camino Semanal
                   </h3>
                   <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                    Contenido semanal guiado, progreso y Unidades de Coherencia (U.C.).
+                    Contenido nuevo todas las semanas, guiado, progresivo y con obtención de unidades de coherencia.
                   </p>
                 </motion.div>
               )}
@@ -1308,7 +1308,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                     Biblioteca de Clases
                   </h3>
                   <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                    Clases on-demand y programas disponibles. A tu ritmo, cuando quieras.
+                    Programas de entrenamiento y clases individuales guiadas. A tu ritmo, cuando quieras.
                   </p>
                 </motion.div>
               )}
@@ -1327,7 +1327,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                   style={{ pointerEvents: 'none' }}
                 >
                   <h3 className="text-lg md:text-xl font-semibold text-palette-ink font-montserrat tracking-tight mb-3">
-                    Grupo de Telegram
+                    Grupo de WhatsApp
                   </h3>
                   <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
                     Únete a la comunidad. Comparte avances, pregunta dudas y recibe soporte.
@@ -1461,10 +1461,10 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                       className="space-y-4"
                     >
                       <h3 className="text-lg md:text-xl font-semibold text-palette-ink font-montserrat tracking-tight mb-3">
-                        El Camino
+                        Camino Semanal
                       </h3>
                       <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                        Contenido semanal guiado, progreso y Unidades de Coherencia (U.C.).
+                        Contenido nuevo todas las semanas, guiado, progresivo y con obtención de unidades de coherencia.
                       </p>
                     </motion.div>
                   )}
@@ -1485,7 +1485,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                     Biblioteca de Clases
                   </h3>
                       <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                        Clases on-demand y programas disponibles. A tu ritmo, cuando quieras.
+                        Programas de entrenamiento y clases individuales guiadas. A tu ritmo, cuando quieras.
                   </p>
                     </motion.div>
                   )}
@@ -1503,7 +1503,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                       className="space-y-4"
                     >
                       <h3 className="text-lg md:text-xl font-semibold text-palette-ink font-montserrat tracking-tight mb-3">
-                    Grupo de Telegram
+                    Grupo de WhatsApp
                   </h3>
                       <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
                         Únete a la comunidad. Comparte avances, pregunta dudas y recibe soporte.

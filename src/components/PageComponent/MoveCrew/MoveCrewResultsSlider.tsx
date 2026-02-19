@@ -227,14 +227,14 @@ const MoveCrewResultsSlider = () => {
           {/* Navigation Arrows - Desktop only */}
           <button
             onClick={goToPrevious}
-            className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-palette-cream/95 hover:bg-palette-teal/20 text-palette-teal p-3 rounded-full shadow-lg border border-palette-teal/40 transition-all duration-300 hover:scale-110"
+            className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-palette-cream/95 hover:bg-palette-sage/20 text-palette-sage p-3 rounded-full shadow-lg border border-palette-sage/40 transition-all duration-300 hover:scale-110"
             aria-label="Imagen anterior"
           >
             <ChevronLeftIcon className="w-6 h-6" />
           </button>
           <button
             onClick={goToNext}
-            className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-palette-cream/95 hover:bg-palette-teal/20 text-palette-teal p-3 rounded-full shadow-lg border border-palette-teal/40 transition-all duration-300 hover:scale-110"
+            className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-palette-cream/95 hover:bg-palette-sage/20 text-palette-sage p-3 rounded-full shadow-lg border border-palette-sage/40 transition-all duration-300 hover:scale-110"
             aria-label="Siguiente imagen"
           >
             <ChevronRightIcon className="w-6 h-6" />
@@ -248,7 +248,7 @@ const MoveCrewResultsSlider = () => {
                 onClick={() => goToSlide(index)}
                 className={`transition-all duration-300 rounded-full ${
                   index === currentIndex
-                    ? 'w-8 h-2 bg-palette-teal'
+                    ? 'w-8 h-2 bg-palette-sage'
                     : 'w-2 h-2 bg-palette-stone/40'
                 }`}
                 aria-label={`Ir a imagen ${index + 1}`}
@@ -264,7 +264,7 @@ const MoveCrewResultsSlider = () => {
                 onClick={() => goToSlide(index)}
                 className={`transition-all duration-300 rounded-full ${
                   index === currentIndex || index === (currentIndex + 1) % resultsImages.length
-                    ? 'w-8 h-2 bg-palette-teal'
+                    ? 'w-8 h-2 bg-palette-sage'
                     : 'w-2 h-2 bg-palette-stone/40 hover:bg-palette-stone/60'
                 }`}
                 aria-label={`Ir a imagen ${index + 1}`}
@@ -274,8 +274,8 @@ const MoveCrewResultsSlider = () => {
         </div>
 
         <div className="mt-8 md:mt-12 flex flex-col md:flex-row gap-4 md:gap-6 justify-center">
-          <div className="bg-palette-teal/15 text-palette-ink rounded-2xl px-6 py-4 text-center md:text-left border border-palette-stone/25 flex-1">
-            <p className="font-montserrat text-xs md:text-sm uppercase tracking-[0.2em] text-palette-teal mb-1">
+          <div className="bg-palette-sage/15 text-palette-ink rounded-2xl px-6 py-4 text-center md:text-left border border-palette-stone/25 flex-1">
+            <p className="font-montserrat text-xs md:text-sm uppercase tracking-[0.2em] text-palette-sage mb-1">
               Compañeros en movimiento
             </p>
             <p className="text-3xl md:text-5xl font-montserrat font-bold tabular-nums text-palette-ink" aria-live="polite">

@@ -235,7 +235,7 @@ const ProgramaTransformacionalInfo: React.FC<Props> = ({ evento }) => {
                         <ChatBubbleLeftRightIcon className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <div className="font-light">Grupo de Telegram</div>
+                        <div className="font-light">Grupo de WhatsApp</div>
                         <div className="text-gray-300 text-sm">Recursos y material adicional</div>
                       </div>
                     </div>

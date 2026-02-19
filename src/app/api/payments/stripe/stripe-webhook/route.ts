@@ -111,7 +111,8 @@ export const POST = async (req: NextRequest) => {
                   await emailService.sendOnboardingWelcome({
                     email: user.email,
                     name: user.name || 'Miembro',
-                    onboardingLink: `${origin}/onboarding/bienvenida`
+                    onboardingLink: `${origin}/onboarding/bienvenida`,
+                    whatsappInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/'
                   });
                 } catch (emailErr) {
                   console.error(`❌ Error enviando email de bienvenida a ${user.email}:`, emailErr);

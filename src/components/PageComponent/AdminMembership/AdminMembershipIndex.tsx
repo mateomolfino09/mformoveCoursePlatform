@@ -96,6 +96,7 @@ const AdminMembershipIndex = () => {
                   <Squares2X2Icon className='w-12 h-12 text-white transition-colors duration-300' />
                 </div>
                 <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Módulos de clase</p>
+                <p className='text-gray-500 text-sm font-montserrat mt-1'>módulos, submódulos y clases</p>
               </div>
             </Link>
           </div>

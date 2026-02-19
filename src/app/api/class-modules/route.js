@@ -4,13 +4,13 @@ import connectDB from '../../../config/connectDB';
 import ClassModule from '../../../models/classModuleModel';
 import Users from '../../../models/userModel';
 
-connectDB();
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
 
 /** GET: listar módulos. Por defecto solo activos; si ?all=1 y usuario admin, devuelve todos. */
 export async function GET(req) {
   try {
+    await connectDB();
     const { searchParams } = new URL(req.url);
     const all = searchParams.get('all') === '1';
     let filter = { isActive: true };
@@ -49,6 +49,7 @@ export async function GET(req) {
 /** POST: crear módulo (admin) */
 export async function POST(req) {
   try {
+    await connectDB();
     const { userEmail, ...body } = await req.json();
     if (!userEmail) {
       return NextResponse.json({ error: 'userEmail requerido' }, { status: 400 });
@@ -75,6 +76,8 @@ export async function POST(req) {
       slug,
       description: body.description,
       shortDescription: body.shortDescription,
+      aboutDescription: body.aboutDescription,
+      howToUse: Array.isArray(body.howToUse) ? body.howToUse : [],
       imageGallery: Array.isArray(body.imageGallery) ? body.imageGallery : [],
       submodules: Array.isArray(body.submodules) ? body.submodules : [],
       videoUrl: body.videoUrl,

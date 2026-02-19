@@ -70,7 +70,7 @@ const CoherenceCelebrationModal = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-[200] bg-palette-deep-teal/80 backdrop-blur-md"
+            className="fixed inset-0 z-[200] bg-palette-ink/80 backdrop-blur-md"
             onClick={onClose}
           />
 
@@ -215,8 +215,8 @@ const CoherenceCelebrationModal = ({
                     transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
                     className="mb-4 md:mb-6"
                   >
-                    <div className="inline-flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full bg-palette-teal/10 border border-palette-teal/30">
-                      <span className="text-2xl md:text-3xl font-semibold font-montserrat text-palette-teal">
+                    <div className="inline-flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full bg-palette-sage/10 border border-palette-sage/30">
+                      <span className="text-2xl md:text-3xl font-semibold font-montserrat text-palette-sage">
                         +{ucsOtorgadas}
                       </span>
                       <span className="text-base md:text-lg font-medium font-montserrat tracking-tight text-palette-ink">
@@ -239,7 +239,7 @@ const CoherenceCelebrationModal = ({
                         transition={{ delay: 0.8 }}
                         className="space-y-4"
                       >
-                        <div className="p-5 rounded-xl border border-palette-stone/15 bg-palette-teal/5">
+                        <div className="p-5 rounded-xl border border-palette-stone/15 bg-palette-sage/5">
                           <h3 className="text-base font-semibold font-montserrat mb-3 text-center text-palette-ink uppercase tracking-[0.12em]">
                             ¿Qué es una U.C.?
                           </h3>
@@ -311,7 +311,7 @@ const CoherenceCelebrationModal = ({
                             transition={{ delay: 0.3 + index * 0.1 }}
                             className="flex flex-col items-center gap-2 mb-3 p-3 rounded-xl bg-palette-sage/10 border border-palette-stone/10"
                           >
-                            <span className="text-3xl text-palette-teal">{shapeIcon(achievement.name || index)}</span>
+                            <span className="text-3xl text-palette-sage">{shapeIcon(achievement.name || index)}</span>
                             <div className="text-center">
                               <p className="text-sm font-medium font-montserrat mb-1 text-palette-ink">
                                 {achievement.name}

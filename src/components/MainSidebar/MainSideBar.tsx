@@ -31,6 +31,7 @@ const MainSideBar = ({ children, where, forceStandardHeader = false, onMenuClick
   }
 
   const hasAccess = auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin');
+  const isAnyMenuOpen = showNav || snap.weeklyPathNavOpen;
 
   useEffect(() => {
     state.systemNavOpen = showNav;
@@ -62,52 +63,47 @@ const MainSideBar = ({ children, where, forceStandardHeader = false, onMenuClick
       ) : (
         children
       )}
-      {/* Barra móvil: Move Crew y Menú abajo a la derecha (todo el sitio excepto Move Crew) */}
+      {/* Barra móvil: contenedor transparente; solo los botones tienen fondo para que siempre se vean */}
       <div
         className="fixed bottom-0 left-0 right-0 z-[210] flex items-center justify-end md:hidden px-4 py-3 gap-2"
-          style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0))' }}
-        >
-          {hasAccess && (
-            <button
-              type="button"
-              data-tutorial-move-crew-target
-              onClick={(e) => { 
-                // Bloquear función natural cuando el tutorial está activo (excepto paso 1 donde se necesita el clic)
-                const tutorialActive = document.body.classList.contains('tutorial-active');
-                if (tutorialActive) {
-                  // En el paso 1, permitir el clic para que el tutorial lo capture
-                  // El tutorial manejará la transición al paso 2
-                  return;
-                }
-                state.weeklyPathNavOpen = !snap.weeklyPathNavOpen; 
-              }}
-              className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 py-2 transition-all duration-200 inline-flex items-center justify-center gap-1.5 shrink-0 ${snap.weeklyPathNavOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : (where === 'library' || where === 'move-crew') ? 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5' : 'text-white border border-white/40 hover:bg-white/20'}`}
-            >
-              {snap.weeklyPathNavOpen ? (
-                <>
-                  <IoCloseOutline className="h-5 w-5" aria-hidden />
-                  <span>Cerrar</span>
-                </>
-              ) : (
-                <span>Move Crew</span>
-              )}
-            </button>
-          )}
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0))' }}
+      >
+        {hasAccess && (
           <button
             type="button"
-            onClick={toggleNav}
-            className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 py-2 transition-all duration-200 inline-flex items-center justify-center gap-1.5 shrink-0 ${showNav ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : (where === 'library' || where === 'move-crew') ? 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5' : 'text-white border border-white/40 hover:bg-white/20'}`}
+            data-tutorial-move-crew-target
+            onClick={(e) => { 
+              const tutorialActive = document.body.classList.contains('tutorial-active');
+              if (tutorialActive) return;
+              state.weeklyPathNavOpen = !snap.weeklyPathNavOpen; 
+            }}
+            className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 py-2 transition-all duration-200 inline-flex items-center justify-center gap-1.5 shrink-0 ${snap.weeklyPathNavOpen ? 'bg-white text-palette-ink border border-white hover:bg-palette-sage hover:border-palette-sage' : (where === 'library' || where === 'move-crew') ? 'bg-palette-cream text-palette-ink border border-palette-stone/40 hover:border-palette-ink hover:bg-palette-stone/10 shadow-sm' : 'bg-white/95 text-palette-ink border border-white/80 hover:bg-palette-cream shadow-sm'}`}
           >
-            {showNav ? (
+            {snap.weeklyPathNavOpen ? (
               <>
                 <IoCloseOutline className="h-5 w-5" aria-hidden />
                 <span>Cerrar</span>
               </>
             ) : (
-              <span>Menú</span>
+              <span>Move Crew</span>
             )}
           </button>
-        </div>
+        )}
+        <button
+          type="button"
+          onClick={toggleNav}
+          className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 py-2 transition-all duration-200 inline-flex items-center justify-center gap-1.5 shrink-0 ${isAnyMenuOpen ? 'bg-white text-palette-ink border border-white hover:bg-palette-sage hover:border-palette-sage' : (where === 'library' || where === 'move-crew') ? 'bg-palette-cream text-palette-ink border border-palette-stone/40 hover:border-palette-ink hover:bg-palette-stone/10 shadow-sm' : 'bg-white/95 text-palette-ink border border-white/80 hover:bg-palette-cream shadow-sm'}`}
+        >
+          {showNav ? (
+            <>
+              <IoCloseOutline className="h-5 w-5" aria-hidden />
+              <span>Cerrar</span>
+            </>
+          ) : (
+            <span>Menú</span>
+          )}
+        </button>
+      </div>
     </div>
   )
 }

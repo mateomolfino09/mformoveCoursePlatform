@@ -34,13 +34,19 @@ const AddResources = ({ clase, handleAdd, render, setRender }: Props) => {
   return (
     <>
         {render === '' && (
-            <div className='mt-4 flex flex-col space-y-6 items-center'>
-                <div className=''>
-                    <button className='w-72 h-12 bg-white text-black rounded-md' onClick={() => setRender('file')}> Archivos</button>
-                </div>
-                <div className=''>
-                    <button className='w-72 h-12 bg-white text-black rounded-md' onClick={() => setRender('link')}> Links</button>
-                </div>
+            <div className='mt-4 flex flex-col sm:flex-row gap-4 sm:gap-6 items-stretch sm:items-center justify-center'>
+                <button
+                  className='w-full sm:w-56 h-12 bg-palette-sage/15 border border-palette-sage/40 text-palette-ink rounded-xl font-montserrat font-medium hover:bg-palette-sage/25 hover:border-palette-sage transition-all duration-200'
+                  onClick={() => setRender('file')}
+                >
+                  Archivos
+                </button>
+                <button
+                  className='w-full sm:w-56 h-12 bg-palette-sage/15 border border-palette-sage/40 text-palette-ink rounded-xl font-montserrat font-medium hover:bg-palette-sage/25 hover:border-palette-sage transition-all duration-200'
+                  onClick={() => setRender('link')}
+                >
+                  Links
+                </button>
             </div>
         )}
         {render === 'file' && (

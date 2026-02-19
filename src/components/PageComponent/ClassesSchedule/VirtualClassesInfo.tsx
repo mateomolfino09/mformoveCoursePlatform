@@ -131,7 +131,7 @@ const VirtualClassesInfo: React.FC<Props> = ({ classes }) => {
               {typeClasses.map((clase) => (
                 <Link
                   key={clase._id}
-                  href={`/classes/${clase.id}`}
+                  href={`/library/individual-classes/${clase.id}`}
                   className="bg-dark rounded-lg overflow-hidden hover:bg-gray-800 transition-all duration-200 cursor-pointer group"
                 >
                   {/* Imagen */}

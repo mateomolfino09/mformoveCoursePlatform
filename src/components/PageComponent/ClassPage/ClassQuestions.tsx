@@ -266,90 +266,77 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
 
   return (
     <div className="w-full">
-      {/* Formulario para nueva pregunta */}
+      {/* Formulario para nueva pregunta - sin caja */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="mb-8"
+        className="mb-6 md:mb-8"
       >
-        <div className="relative rounded-2xl border border-amber-300/20 bg-gradient-to-br from-white/5 via-amber-500/5 to-orange-500/5 backdrop-blur-md p-6 overflow-hidden">
-          {/* Decoración de fondo */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-400/10 to-orange-400/5 rounded-full blur-3xl" />
-          
-          <div className="relative z-10">
-            <label className="block w-full">
-              <textarea
-                placeholder="Escribe tu pregunta o comentario..."
-                className="w-full min-h-[100px] bg-black/40 border border-gray-700/50 rounded-xl px-4 py-3 text-white placeholder-gray-400 font-montserrat text-sm focus:outline-none focus:border-amber-300/50 focus:ring-2 focus:ring-amber-300/20 transition-all duration-300 resize-none"
-                onFocus={() => setQuestion(true)}
-                onChange={(e) => setContent(e.target.value)}
-                value={content}
-              />
-            </label>
-            
-            <AnimatePresence>
-              {message && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className={`mt-3 text-sm font-montserrat ${
-                    messageType === 'error' 
-                      ? 'text-red-400' 
-                      : 'text-green-400'
-                  }`}
-                >
-                  {message}
-                </motion.p>
-              )}
-            </AnimatePresence>
-
-            {(question || content) && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mt-4 flex justify-end gap-3"
-              >
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => {
-                    setQuestion(false);
-                    setContent('');
-                    setMessage('');
-                  }}
-                  className="px-6 py-2 bg-black/60 border border-gray-700/50 text-white rounded-full font-montserrat font-medium hover:border-gray-600/70 transition-all duration-300"
-                >
-                  Cancelar
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={createQuestion}
-                  disabled={!content.trim() || content.trim().length < 10}
-                  className="px-6 py-2 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 text-white rounded-full font-montserrat font-medium hover:border-amber-300/60 hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Publicar
-                </motion.button>
-              </motion.div>
-            )}
-          </div>
-        </div>
+        <label className="block w-full">
+          <textarea
+            placeholder="Escribe tu pregunta o comentario..."
+            className="w-full min-h-[100px] bg-transparent border-b border-palette-stone/20 px-0 py-3 text-[15px] sm:text-base text-palette-ink placeholder-palette-stone font-montserrat focus:outline-none focus:border-palette-stone resize-none"
+            onFocus={() => setQuestion(true)}
+            onChange={(e) => setContent(e.target.value)}
+            value={content}
+          />
+        </label>
+        <AnimatePresence>
+          {message && (
+            <motion.p
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className={`mt-2 text-sm font-montserrat ${
+                messageType === 'error' ? 'text-red-600' : 'text-palette-sage'
+              }`}
+            >
+              {message}
+            </motion.p>
+          )}
+        </AnimatePresence>
+        {(question || content) && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-4 flex flex-wrap justify-end gap-3"
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setQuestion(false);
+                setContent('');
+                setMessage('');
+              }}
+              className="px-4 py-2 text-sm font-medium text-palette-stone hover:text-palette-ink font-montserrat transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={createQuestion}
+              disabled={!content.trim() || content.trim().length < 10}
+              className="px-4 py-2 text-sm font-medium text-palette-ink hover:text-palette-sage font-montserrat transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Publicar
+            </button>
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Lista de preguntas */}
-      <div className="space-y-4 max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent pr-2">
+      <div className="space-y-4 max-h-[480px] md:max-h-[600px] overflow-y-auto pr-2 [scrollbar-color:var(--palette-stone)_transparent]">
         <AnimatePresence mode="popLayout">
           {reversedQuestions.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center py-12"
+              className="text-center py-10 md:py-12"
             >
-              <ChatBubbleBottomCenterIcon className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400 font-montserrat">No hay preguntas aún. ¡Sé el primero en preguntar!</p>
+              <ChatBubbleBottomCenterIcon className="h-10 w-10 md:h-12 md:w-12 text-palette-stone/40 mx-auto mb-3" />
+              <p className="text-palette-stone font-montserrat text-[15px] sm:text-base">No hay preguntas aún. ¡Sé el primero en preguntar!</p>
             </motion.div>
           ) : (
             reversedQuestions.map((quest: Question, index: number) => (
@@ -359,111 +346,100 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className="relative rounded-2xl border border-gray-800/50 bg-gradient-to-br from-black/60 via-gray-900/40 to-black/60 backdrop-blur-sm p-6 overflow-hidden"
+                className="py-4 md:py-5 border-b border-palette-stone/10 last:border-b-0"
               >
-                {/* Decoración sutil */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-400/5 to-orange-400/5 rounded-full blur-2xl" />
-                
-                <div className="relative z-10">
-                  {/* Header de la pregunta */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-amber-500/20 via-orange-500/20 to-rose-500/20 border border-amber-300/30 flex items-center justify-center">
-                        <UserCircleIcon className="h-6 w-6 text-white/80" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white font-montserrat">
-                          {quest?.user?.name || 'Usuario'}
-                        </p>
-                        <p className="text-xs text-gray-400 font-montserrat">
-                          {handleDateReturn(new Date(quest.createdAt))}
-                        </p>
-                      </div>
+                {/* Header de la pregunta */}
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-palette-stone/10 flex items-center justify-center flex-shrink-0">
+                      <UserCircleIcon className="h-4 w-4 md:h-5 md:w-5 text-palette-stone" />
                     </div>
-
-                    {/* Botones de acción */}
-                    {(user?.rol === 'Admin' || user?._id === quest?.user?._id) && (
-                      <div className="flex gap-2">
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => setOpenEdit(quest)}
-                          className="p-2 rounded-lg bg-gray-800/50 hover:bg-amber-500/20 text-gray-400 hover:text-amber-300 transition-all duration-200"
-                        >
-                          <PencilIcon className="h-4 w-4" />
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => openModalDelete(quest)}
-                          className="p-2 rounded-lg bg-gray-800/50 hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-all duration-200"
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </motion.button>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Contenido de la pregunta */}
-                  <p className="text-white/90 text-sm md:text-base font-montserrat font-light leading-relaxed mb-4">
-                    {quest.question}
-                  </p>
-
-                  {/* Respuestas */}
-                  {quest.answers && quest.answers.length > 0 && (
-                    <div className="mt-6 pt-6 border-t border-gray-800/50 space-y-4">
-                      <p className="text-xs text-gray-500 font-montserrat font-medium mb-3">
-                        {quest.answers.length} {quest.answers.length === 1 ? 'Respuesta' : 'Respuestas'}
+                    <div className="min-w-0">
+                      <p className="text-[15px] sm:text-sm font-medium text-palette-ink font-montserrat truncate">
+                        {quest?.user?.name || 'Usuario'}
                       </p>
-                      {quest.answers.map((answer: Answer, index: number) => (
-                        <motion.div
-                          key={`${answer.answeredAt}-${index}`}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="pl-4 border-l-2 border-amber-500/20 bg-black/30 rounded-lg p-4"
-                        >
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-500/30 to-orange-500/30 border border-amber-300/40 flex items-center justify-center">
-                                <UserCircleIcon className="h-5 w-5 text-white/90" />
+                      <p className="text-xs text-palette-stone font-montserrat">
+                        {handleDateReturn(new Date(quest.createdAt))}
+                      </p>
+                    </div>
+                  </div>
+                  {(user?.rol === 'Admin' || user?._id === quest?.user?._id) && (
+                    <div className="flex gap-1 flex-shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setOpenEdit(quest)}
+                        className="p-1.5 text-palette-stone hover:text-palette-ink transition-colors"
+                        aria-label="Editar"
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openModalDelete(quest)}
+                        className="p-1.5 text-palette-stone hover:text-red-600 transition-colors"
+                        aria-label="Eliminar"
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Contenido de la pregunta */}
+                <p className="text-palette-ink/90 text-[15px] sm:text-base font-montserrat font-light leading-relaxed mb-3 md:mb-4">
+                  {quest.question}
+                </p>
+
+                {/* Respuestas */}
+                {quest.answers && quest.answers.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-palette-stone/10 space-y-3">
+                    <p className="text-xs text-palette-stone font-montserrat mb-2">
+                      {quest.answers.length} {quest.answers.length === 1 ? 'Respuesta' : 'Respuestas'}
+                    </p>
+                    {quest.answers.map((answer: Answer, index: number) => (
+                      <motion.div
+                        key={`${answer.answeredAt}-${index}`}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="pl-3 border-l-2 border-palette-stone/20 py-2"
+                      >
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="h-6 w-6 rounded-full bg-palette-stone/10 flex items-center justify-center flex-shrink-0">
+                                <UserCircleIcon className="h-3.5 w-3.5 text-palette-stone" />
                               </div>
-                              <div>
-                                <p className="text-xs font-semibold text-white font-montserrat">
+                              <div className="min-w-0">
+                                <p className="text-xs font-medium text-palette-ink font-montserrat truncate">
                                   {answer?.answerAdmin?.name || 'Admin'}
                                 </p>
-                                <p className="text-xs text-gray-500 font-montserrat">
+                                <p className="text-xs text-palette-stone font-montserrat">
                                   {handleDateReturn(new Date(answer?.answeredAt))}
                                 </p>
                               </div>
                             </div>
-
-                            {(user?.rol === 'Admin' ||
-                              user?._id === answer?.answerAdmin?._id) && (
-                              <div className="flex gap-2">
-                                <motion.button
-                                  whileHover={{ scale: 1.1 }}
-                                  whileTap={{ scale: 0.9 }}
-                                  onClick={() => {
-                                    setOpenEdit(quest);
-                                    setOpenEditAnswer(index);
-                                  }}
-                                  className="p-1.5 rounded bg-gray-800/50 hover:bg-amber-500/20 text-gray-500 hover:text-amber-300 transition-all duration-200"
+                            {(user?.rol === 'Admin' || user?._id === answer?.answerAdmin?._id) && (
+                              <div className="flex gap-1 flex-shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => { setOpenEdit(quest); setOpenEditAnswer(index); }}
+                                  className="p-1 text-palette-stone hover:text-palette-ink"
+                                  aria-label="Editar"
                                 >
                                   <PencilIcon className="h-3.5 w-3.5" />
-                                </motion.button>
-                                <motion.button
-                                  whileHover={{ scale: 1.1 }}
-                                  whileTap={{ scale: 0.9 }}
+                                </button>
+                                <button
+                                  type="button"
                                   onClick={() => openModalDeleteAnswer(index, quest)}
-                                  className="p-1.5 rounded bg-gray-800/50 hover:bg-red-500/20 text-gray-500 hover:text-red-400 transition-all duration-200"
+                                  className="p-1 text-palette-stone hover:text-red-600"
+                                  aria-label="Eliminar"
                                 >
                                   <TrashIcon className="h-3.5 w-3.5" />
-                                </motion.button>
+                                </button>
                               </div>
                             )}
                           </div>
-                          <p className="text-sm text-white/80 font-montserrat font-light leading-relaxed ml-10">
+                          <p className="text-[15px] sm:text-sm text-palette-ink/90 font-montserrat font-light leading-relaxed mt-1">
                             {answer?.answer}
                           </p>
                         </motion.div>
@@ -471,61 +447,49 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
                     </div>
                   )}
 
-                  {/* Botón para responder */}
                   {answerOn !== quest.id && (
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => {
-                        setAnswerOn(quest.id);
-                        setAnswer('');
-                      }}
-                      className="mt-4 text-xs text-amber-300/80 hover:text-amber-300 font-montserrat font-medium flex items-center gap-1 transition-colors"
+                    <button
+                      type="button"
+                      onClick={() => { setAnswerOn(quest.id); setAnswer(''); }}
+                      className="mt-3 text-xs text-palette-stone hover:text-palette-ink font-montserrat font-medium flex items-center gap-1 transition-colors"
                     >
                       <ChatBubbleBottomCenterIcon className="h-4 w-4" />
                       Responder
-                    </motion.button>
+                    </button>
                   )}
 
-                  {/* Formulario de respuesta */}
                   {answerOn === quest.id && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="mt-4 p-4 bg-black/40 border border-gray-800/50 rounded-xl"
+                      className="mt-4"
                     >
                       <textarea
                         placeholder="Escribe tu respuesta..."
-                        className="w-full min-h-[80px] bg-black/40 border border-gray-700/50 rounded-lg px-4 py-2 text-white placeholder-gray-400 font-montserrat text-sm focus:outline-none focus:border-amber-300/50 focus:ring-2 focus:ring-amber-300/20 transition-all duration-300 resize-none"
+                        className="w-full min-h-[80px] bg-transparent border-b border-palette-stone/20 px-0 py-2 text-[15px] sm:text-sm text-palette-ink placeholder-palette-stone font-montserrat focus:outline-none focus:border-palette-stone resize-none"
                         onChange={(e) => setAnswer(e.target.value)}
                         value={answer}
                       />
-                      <div className="flex justify-end gap-2 mt-3">
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => {
-                            setAnswerOn(0);
-                            setAnswer('');
-                          }}
-                          className="px-4 py-1.5 text-xs bg-black/60 border border-gray-700/50 text-white rounded-full font-montserrat hover:border-gray-600/70 transition-all duration-300"
+                      <div className="flex flex-wrap justify-end gap-2 mt-3">
+                        <button
+                          type="button"
+                          onClick={() => { setAnswerOn(0); setAnswer(''); }}
+                          className="px-3 py-1.5 text-xs font-medium text-palette-stone hover:text-palette-ink font-montserrat transition-colors"
                         >
                           Cancelar
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => createAnswer(quest.id)}
                           disabled={!answer.trim()}
-                          className="px-4 py-1.5 text-xs bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 text-white rounded-full font-montserrat font-medium hover:border-amber-300/60 hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-3 py-1.5 text-xs font-medium text-palette-ink hover:text-palette-sage font-montserrat transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Publicar respuesta
-                        </motion.button>
+                        </button>
                       </div>
                     </motion.div>
                   )}
-                </div>
               </motion.div>
             ))
           )}
