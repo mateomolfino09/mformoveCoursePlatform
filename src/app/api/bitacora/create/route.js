@@ -132,12 +132,18 @@ export async function POST(req) {
     };
 
     const mapContentItem = async (item, orden) => {
-      const vimeoMeta = await fetchVimeoMeta(item.videoUrl);
+      const contentType = ['moduleClass', 'individualClass', 'audio'].includes(item.contentType) ? item.contentType : 'moduleClass';
+      const vimeoMeta = (contentType !== 'audio' && item.videoUrl) ? await fetchVimeoMeta(item.videoUrl) : { thumbnail: '', duration: undefined };
       const audioMeta = item.audioUrl ? await fetchCloudinaryAudioMeta(item.audioUrl) : {};
-      if (item.moduleId && (item.submoduleSlug || item.submoduleName)) {
+      if (contentType === 'moduleClass' && item.moduleId && (item.submoduleSlug || item.submoduleName)) {
         await ensureSubmodule(item.moduleId, item.submoduleSlug, item.submoduleName);
       }
+      const individualClassId = (contentType === 'individualClass' && item.individualClassId && mongoose.Types.ObjectId.isValid(item.individualClassId)) ? item.individualClassId : undefined;
+      const moduleClassId = (contentType === 'moduleClass' && item.moduleClassId && mongoose.Types.ObjectId.isValid(item.moduleClassId)) ? item.moduleClassId : undefined;
       return {
+        contentType,
+        individualClassId: individualClassId || undefined,
+        moduleClassId: moduleClassId || undefined,
         videoUrl: item.videoUrl || '',
         videoId: item.videoId || undefined,
         videoName: (item.videoName || item.title || '').trim(),

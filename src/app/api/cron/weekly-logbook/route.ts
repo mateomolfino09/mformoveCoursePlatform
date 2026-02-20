@@ -4,6 +4,7 @@ import connectDB from '../../../../config/connectDB';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
 import Users from '../../../../models/userModel';
 import IndividualClass from '../../../../models/individualClassModel';
+import ModuleClass from '../../../../models/moduleClassModel';
 import ClassFilters from '../../../../models/classFiltersModel';
 import { EmailService, EmailType } from '../../../../services/email/emailService';
 
@@ -394,6 +395,34 @@ export async function GET(req: NextRequest) {
               clasesIndividualesCreadas: resultadoClases.created
             });
           }
+        }
+      }
+
+      // Al publicar la última semana: hacer visibles en biblioteca todas las clases de módulo e individuales
+      // que estaban solo en el weekly path (visibleInLibrary: false) y están referenciadas en este camino
+      if (ultimaSemanaPublicadaAhora) {
+        const moduleClassIds: string[] = [];
+        const individualClassIds: string[] = [];
+        for (const wc of logbook.weeklyContents || []) {
+          const contents = (wc as any)?.contents;
+          if (Array.isArray(contents)) {
+            for (const c of contents) {
+              if (c.moduleClassId) moduleClassIds.push(String(c.moduleClassId));
+              if (c.individualClassId) individualClassIds.push(String(c.individualClassId));
+            }
+          }
+        }
+        if (moduleClassIds.length > 0) {
+          await ModuleClass.updateMany(
+            { _id: { $in: moduleClassIds }, visibleInLibrary: false },
+            { $set: { visibleInLibrary: true } }
+          );
+        }
+        if (individualClassIds.length > 0) {
+          await IndividualClass.updateMany(
+            { _id: { $in: individualClassIds }, visibleInLibrary: false },
+            { $set: { visibleInLibrary: true } }
+          );
         }
       }
     }

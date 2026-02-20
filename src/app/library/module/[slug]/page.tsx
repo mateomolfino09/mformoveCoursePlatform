@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IndividualClass } from '../../../../../typings';
 import type { ModuleForLibrary } from '../../../../components/PageComponent/ClassPage/LibraryModuleView';
@@ -9,13 +9,21 @@ import LibraryModuleView from '../../../../components/PageComponent/ClassPage/Li
 import ModuleLibrarySkeleton from '../../../../components/ModuleLibrarySkeleton';
 import { routes } from '../../../../constants/routes';
 
+function moduleHasVideo(mod: ModuleForLibrary | null): boolean {
+  if (!mod) return false;
+  const url = mod.videoUrl && String(mod.videoUrl).trim();
+  return !!(mod.videoId || url);
+}
+
 export default function LibraryModulePage({ params }: { params: { slug: string } }) {
   const { slug } = params;
   const router = useRouter();
   const [classes, setClasses] = useState<IndividualClass[]>([]);
   const [module, setModule] = useState<ModuleForLibrary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [videoReady, setVideoReady] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const handleVideoReady = useCallback(() => setVideoReady(true), []);
 
   useEffect(() => {
     if (!slug) return;
@@ -52,8 +60,11 @@ export default function LibraryModulePage({ params }: { params: { slug: string }
           videoId: moduleData.videoId ?? null,
           videoThumbnail: moduleData.videoThumbnail ?? null,
           submodules: moduleData.submodules ?? [],
+          practicesCount: moduleData.practicesCount ?? 0,
+          moduleClasses: Array.isArray(moduleData.moduleClasses) ? moduleData.moduleClasses : [],
         });
         setClasses(Array.isArray(classesData) ? classesData : []);
+        setVideoReady(false);
       } catch (err) {
         console.error('Error fetching module data:', err);
       } finally {
@@ -89,9 +100,22 @@ export default function LibraryModulePage({ params }: { params: { slug: string }
     );
   }
 
+  const showSkeletonOverlay = moduleHasVideo(module) && !videoReady;
+
   return (
     <OnboardingGuard>
-      <LibraryModuleView module={module} classes={classes} />
+      <div className="relative">
+        <LibraryModuleView
+          module={module}
+          classes={classes}
+          onVideoReady={handleVideoReady}
+        />
+        {showSkeletonOverlay && (
+          <div className="fixed inset-0 z-[200] pointer-events-none">
+            <ModuleLibrarySkeleton />
+          </div>
+        )}
+      </div>
     </OnboardingGuard>
   );
 }

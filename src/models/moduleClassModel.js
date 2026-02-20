@@ -12,11 +12,13 @@ const moduleClassSchema = new mongoose.Schema(
       ref: 'ClassModule',
       required: true
     },
+    /** Slug del submódulo, o __main__ si el módulo no tiene submódulos (una sola agrupación). */
     submoduleSlug: {
       type: String,
       required: true,
       trim: true,
-      lowercase: true
+      lowercase: true,
+      default: '__main__'
     },
     name: {
       type: String,
@@ -43,6 +45,11 @@ const moduleClassSchema = new mongoose.Schema(
     materials: {
       type: [{ type: String, enum: ['baston', 'banda elastica', 'banco', 'pelota'] }],
       default: []
+    },
+    /** Si false, la clase solo aparece en weekly path hasta que el job publique la última semana. */
+    visibleInLibrary: {
+      type: Boolean,
+      default: true
     }
   },
   { timestamps: true }

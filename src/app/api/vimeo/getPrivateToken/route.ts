@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
  */
 export async function POST(req: Request) {
   try {
-    const { videoId } = await req.json();
+    const { videoId } = await req.clone().json();
     
     if (!videoId) {
       return NextResponse.json({ error: 'Falta el ID del video de Vimeo.' }, { status: 400 });

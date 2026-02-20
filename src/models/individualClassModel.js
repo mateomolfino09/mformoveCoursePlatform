@@ -121,6 +121,11 @@ const individualClassSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    /** Si false, la clase solo aparece en weekly path hasta que el job publique la última semana. */
+    visibleInLibrary: {
+      type: Boolean,
+      default: true
+    },
     new: {
       type: Boolean,
       required: true,

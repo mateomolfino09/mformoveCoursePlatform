@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation';
 import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout';
 import { useAuth } from '../../../../hooks/useAuth';
 import Cookies from 'js-cookie';
-import { ClassModule, ModuleClass } from '../../../../typings';
+import { ClassModule, ModuleClass } from '../../../../../typings';
 import { ArrowLeftIcon, PlusIcon, VideoCameraIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
+import { NO_SUBMODULE_SLUG } from '../../../../constants/moduleClassConstants';
 
 type ModuleWithClasses = ClassModule & { moduleClasses?: ModuleClass[] };
 
@@ -162,7 +163,32 @@ export default function ClassModulesAdminPage() {
                   </div>
                   <div className="p-4">
                     {submodules.length === 0 ? (
-                      <p className="text-gray-500 font-montserrat text-sm py-2">Sin submódulos. Agregá desde Editar o Crear submódulo.</p>
+                      <div className="border border-gray-100 rounded-lg overflow-hidden">
+                        <div className="flex items-center justify-between px-4 py-2 bg-gray-50">
+                          <span className="font-medium text-gray-800 font-montserrat">Clases del módulo</span>
+                          <Link
+                            href={`/admin/memberships/submodules/${m._id}/${encodeURIComponent(NO_SUBMODULE_SLUG)}`}
+                            className="inline-flex items-center gap-1 text-[#4F7CCF] hover:underline font-montserrat text-sm"
+                          >
+                            <VideoCameraIcon className="w-4 h-4" />
+                            Gestionar
+                          </Link>
+                        </div>
+                        {(classesBySub[NO_SUBMODULE_SLUG] || []).length > 0 ? (
+                          <ul className="px-4 py-2 space-y-1">
+                            {(classesBySub[NO_SUBMODULE_SLUG] || []).map((c) => (
+                              <li key={c._id} className="flex items-center justify-between text-sm text-gray-700 font-montserrat">
+                                <span>{c.name} <span className="text-gray-500">(nivel {c.level})</span></span>
+                                <button type="button" onClick={() => deleteModuleClass(c._id)} className="text-red-500 hover:text-red-700" title="Eliminar clase">
+                                  <TrashIcon className="w-4 h-4" />
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-gray-500 font-montserrat text-sm px-4 py-2">Sin clases. Agregá desde Editar o Gestionar.</p>
+                        )}
+                      </div>
                     ) : (
                       <ul className="space-y-4">
                         {submodules.map((s, idx) => {

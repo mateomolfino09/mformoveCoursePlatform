@@ -11,6 +11,7 @@ import { ArrowLeftIcon, ArrowUpTrayIcon, XMarkIcon, PlusIcon, TrashIcon, VideoCa
 import type { ModuleClass } from '../../../../../../typings';
 import { toast } from '../../../../../../hooks/useToast';
 import { MODULE_CLASS_MATERIALS } from '../../../../../../constants/moduleClassMaterials';
+import { NO_SUBMODULE_SLUG } from '../../../../../../constants/moduleClassConstants';
 import { useDropzone } from 'react-dropzone';
 import requests from '../../../../../../utils/requests';
 
@@ -126,22 +127,31 @@ export default function EditClassModulePage({ params }: { params: { id: string }
   }, [id, router]);
 
   useEffect(() => {
-    if (!id || submodules.length === 0) {
+    if (!id) {
       setModuleClassesBySub({});
       return;
     }
     const load = async () => {
       const out: Record<string, ModuleClass[]> = {};
-      await Promise.all(
-        submodules.map(async (s) => {
-          const res = await fetch(
-            `/api/module-classes?moduleId=${encodeURIComponent(id)}&submoduleSlug=${encodeURIComponent(s.slug)}`,
-            { credentials: 'include', cache: 'no-store' }
-          );
-          const list = res.ok ? await res.json() : [];
-          out[s.slug] = Array.isArray(list) ? list : [];
-        })
-      );
+      if (submodules.length === 0) {
+        const res = await fetch(
+          `/api/module-classes?moduleId=${encodeURIComponent(id)}&submoduleSlug=${encodeURIComponent(NO_SUBMODULE_SLUG)}`,
+          { credentials: 'include', cache: 'no-store' }
+        );
+        const list = res.ok ? await res.json() : [];
+        out[NO_SUBMODULE_SLUG] = Array.isArray(list) ? list : [];
+      } else {
+        await Promise.all(
+          submodules.map(async (s) => {
+            const res = await fetch(
+              `/api/module-classes?moduleId=${encodeURIComponent(id)}&submoduleSlug=${encodeURIComponent(s.slug)}`,
+              { credentials: 'include', cache: 'no-store' }
+            );
+            const list = res.ok ? await res.json() : [];
+            out[s.slug] = Array.isArray(list) ? list : [];
+          })
+        );
+      }
       setModuleClassesBySub(out);
     };
     load();
@@ -411,6 +421,82 @@ export default function EditClassModulePage({ params }: { params: { id: string }
               </ul>
             )}
           </div>
+
+          {submodules.length === 0 && (
+            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+              <label className="block text-sm font-medium text-gray-900 mb-1">Clases del módulo</label>
+              <p className="text-sm text-gray-700 mb-4">Este módulo no tiene submódulos: las clases forman una única agrupación. Agregá clases acá.</p>
+              {(() => {
+                const s = { slug: NO_SUBMODULE_SLUG, name: 'Clases del módulo' };
+                return (
+                <div key={s.slug} className="p-4 rounded-lg border border-gray-200 bg-gray-50/80">
+                  <div className="flex items-center gap-2 mb-3">
+                    <VideoCameraIcon className="w-5 h-5 text-gray-700" />
+                    <span className="font-medium text-gray-900 font-montserrat">{s.name}</span>
+                  </div>
+                  {(moduleClassesBySub[s.slug] || []).length > 0 && (
+                    <ul className="mb-3 space-y-1.5">
+                      {(moduleClassesBySub[s.slug] || []).map((c) => (
+                        <li key={c._id} className="flex items-center justify-between text-sm text-gray-900 font-montserrat py-1.5 px-2 rounded bg-white border border-gray-100">
+                          <span>{c.name} <span className="text-gray-600">(nivel {c.level})</span>{c.materials?.length ? <span className="text-gray-600 text-xs ml-1"> · {c.materials.join(', ')}</span> : null}</span>
+                          <button type="button" onClick={() => deleteModuleClass(c._id, s.slug)} className="text-red-600 hover:text-red-800" title="Eliminar clase">
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {addingClassForSlug === s.slug ? (
+                    <div className="rounded-lg border border-[#4F7CCF]/30 bg-white p-4 space-y-4">
+                      <p className="text-sm font-medium text-gray-900">Nueva clase de módulo</p>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-900 mb-1">Nombre de la clase *</label>
+                          <input type="text" value={newClassName} onChange={(e) => setNewClassName(e.target.value)} placeholder="Ej: Calentamiento básico" className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-900 mb-1">Nivel (1–10)</label>
+                          <select value={newClassLevel} onChange={(e) => setNewClassLevel(Number(e.target.value))} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 text-sm">
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                              <option key={n} value={n}>Nivel {n}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-900 mb-1">URL del video</label>
+                        <input type="url" value={newClassVideoUrl} onChange={(e) => setNewClassVideoUrl(e.target.value)} placeholder="https://..." className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-900 mb-2">Materiales a usar en clase (opcional)</label>
+                        <div className="flex flex-wrap gap-3">
+                          {MODULE_CLASS_MATERIALS.map((mat) => (
+                            <label key={mat} className="inline-flex items-center gap-2 cursor-pointer text-sm text-gray-900">
+                              <input type="checkbox" checked={newClassMaterials.includes(mat)} onChange={() => toggleNewClassMaterial(mat)} className="rounded border-gray-400 text-[#4F7CCF]" />
+                              <span className="capitalize">{mat}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex gap-2 pt-1">
+                        <button type="button" onClick={() => addModuleClass(s.slug)} disabled={submittingClass} className="px-4 py-2 bg-[#4F7CCF] text-white rounded-lg text-sm font-medium hover:bg-[#234C8C] disabled:opacity-50">
+                          {submittingClass ? 'Agregando...' : 'Agregar clase'}
+                        </button>
+                        <button type="button" onClick={() => { setAddingClassForSlug(null); setNewClassName(''); setNewClassVideoUrl(''); setNewClassMaterials([]); }} className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 hover:bg-gray-50">
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => setAddingClassForSlug(s.slug)} className="text-sm font-medium text-[#4F7CCF] hover:underline font-montserrat">
+                      + Agregar clase de módulo
+                    </button>
+                  )}
+                </div>
+                );
+              })()}
+            </div>
+          )}
 
           {submodules.length > 0 && (
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">

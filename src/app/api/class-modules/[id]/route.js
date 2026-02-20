@@ -38,6 +38,24 @@ export async function GET(req, { params }) {
   }
 }
 
+/** Obtiene thumbnail de Vimeo vía oEmbed. videoUrlOrId: URL completa o id numérico. */
+async function fetchVimeoThumbnail(videoUrlOrId) {
+  try {
+    const url = typeof videoUrlOrId === 'string' && videoUrlOrId.trim()
+      ? /^\d+$/.test(videoUrlOrId.trim())
+        ? `https://vimeo.com/${videoUrlOrId.trim()}`
+        : videoUrlOrId.trim()
+      : '';
+    if (!url || !url.includes('vimeo.com')) return '';
+    const resp = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`);
+    if (!resp.ok) return '';
+    const data = await resp.json();
+    return data.thumbnail_url || '';
+  } catch {
+    return '';
+  }
+}
+
 /** PUT: actualizar módulo (admin) */
 export async function PUT(req, { params }) {
   try {
@@ -71,12 +89,34 @@ export async function PUT(req, { params }) {
     if (Array.isArray(body.submodules)) module_.submodules = body.submodules;
     if (body.videoUrl != null) module_.videoUrl = body.videoUrl;
     if (body.videoId != null) module_.videoId = body.videoId;
-    if (body.videoThumbnail != null) module_.videoThumbnail = body.videoThumbnail;
+    if (body.videoThumbnail != null) {
+      module_.videoThumbnail = body.videoThumbnail;
+    } else if ((body.videoUrl != null || body.videoId != null) && !(module_.videoThumbnail && String(module_.videoThumbnail).trim())) {
+      const vimeoUrlOrId = (body.videoUrl && String(body.videoUrl).trim()) || (body.videoId && String(body.videoId).trim()) || (module_.videoUrl && String(module_.videoUrl).trim()) || (module_.videoId && String(module_.videoId).trim());
+      if (vimeoUrlOrId) {
+        const thumb = await fetchVimeoThumbnail(vimeoUrlOrId);
+        if (thumb) module_.videoThumbnail = thumb;
+      }
+    }
     if (body.icon != null) module_.icon = body.icon;
     if (body.color != null) module_.color = body.color;
     if (typeof body.isActive === 'boolean') module_.isActive = body.isActive;
 
     await module_.save();
+
+    const moduleIdObj = new mongoose.Types.ObjectId(id);
+    const classes = await ModuleClass.find({ moduleId: moduleIdObj }).lean();
+    for (const c of classes) {
+      const hasVideo = (c.videoUrl && String(c.videoUrl).trim()) || (c.videoId && String(c.videoId).trim());
+      const noThumb = !(c.videoThumbnail && String(c.videoThumbnail).trim());
+      if (hasVideo && noThumb) {
+        const vimeoUrlOrId = (c.videoUrl && String(c.videoUrl).trim()) || (c.videoId && String(c.videoId).trim());
+        const thumb = await fetchVimeoThumbnail(vimeoUrlOrId);
+        if (thumb) {
+          await ModuleClass.updateOne({ _id: c._id }, { $set: { videoThumbnail: thumb } });
+        }
+      }
+    }
 
     return NextResponse.json(module_.toObject ? module_.toObject() : module_, { status: 200 });
   } catch (error) {

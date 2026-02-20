@@ -12,6 +12,7 @@ export async function GET(request) {
   const populateModule = searchParams.get('populateModule') === '1';
   const moduleId = searchParams.get('moduleId') || '';
   const submoduleSlug = searchParams.get('submoduleSlug') || '';
+  const includeUnpublished = searchParams.get('includeUnpublished') === '1';
 
   try {
     await connectDB();
@@ -27,6 +28,9 @@ export async function GET(request) {
     }
     if (submoduleSlug) {
       query.submoduleSlug = submoduleSlug;
+    }
+    if (!includeUnpublished) {
+      query.visibleInLibrary = { $ne: false };
     }
     let classes = await IndividualClass.find(query)
       .populate(populateModule ? 'moduleId' : null)

@@ -6,10 +6,11 @@ import { useRouter } from 'next/navigation';
 import AdmimDashboardLayout from '../../../../../components/AdmimDashboardLayout';
 import { useAuth } from '../../../../../hooks/useAuth';
 import Cookies from 'js-cookie';
-import { ClassModule } from '../../../../../typings';
+import { ClassModule } from '../../../../../../typings';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
 import { MODULE_CLASS_MATERIALS } from '../../../../../constants/moduleClassMaterials';
+import { NO_SUBMODULE_SLUG } from '../../../../../constants/moduleClassConstants';
 
 export default function CreateModuleClassPage() {
   const router = useRouter();
@@ -57,9 +58,11 @@ export default function CreateModuleClassPage() {
       toast.error('Seleccioná un módulo');
       return;
     }
-    const slug = submoduleSlug || (submodules[0] && (submodules[0].slug || (submodules[0].name || '').toLowerCase().replace(/\s+/g, '-')));
-    if (!slug) {
-      toast.error('Seleccioná o creá primero un submódulo en el módulo');
+    const slug = submodules.length > 0
+      ? (submoduleSlug || (submodules[0]?.slug || (submodules[0]?.name || '').toLowerCase().replace(/\s+/g, '-')))
+      : NO_SUBMODULE_SLUG;
+    if (submodules.length > 0 && !slug) {
+      toast.error('Seleccioná un submódulo');
       return;
     }
     setSubmitting(true);
@@ -126,9 +129,9 @@ export default function CreateModuleClassPage() {
               ))}
             </select>
           </div>
-          {submodules.length > 0 && (
+          {submodules.length > 0 ? (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Submódulo *</label>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Submódulo *</label>
               <select
                 value={submoduleSlug}
                 onChange={(e) => setSubmoduleSlug(e.target.value)}
@@ -143,6 +146,8 @@ export default function CreateModuleClassPage() {
                 ))}
               </select>
             </div>
+          ) : selectedModule && (
+            <p className="text-sm text-gray-700">Este módulo no tiene submódulos: la clase se agregará a la única agrupación del módulo.</p>
           )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
@@ -187,8 +192,8 @@ export default function CreateModuleClassPage() {
           </button>
         </form>
         {selectedModule && submodules.length === 0 && (
-          <p className="mt-4 text-sm text-amber-700 font-montserrat">
-            Este módulo no tiene submódulos. Creá uno desde &quot;Crear submódulo&quot; o editando el módulo.
+          <p className="mt-4 text-sm text-gray-700 font-montserrat">
+            Podés crear la clase igual: se asignará a la agrupación única del módulo.
           </p>
         )}
       </div>

@@ -9,6 +9,7 @@ import Cookies from 'js-cookie';
 import { ArrowLeftIcon, PlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
 import { MODULE_CLASS_MATERIALS } from '../../../../../../constants/moduleClassMaterials';
+import { NO_SUBMODULE_SLUG } from '../../../../../../constants/moduleClassConstants';
 
 interface ModuleClassItem {
   _id: string;
@@ -69,10 +70,11 @@ export default function SubmoduleVideosPage({
     ]).then(([moduleData, list]) => {
       if (moduleData) {
         setModuleName(moduleData.name || '');
+        const isMain = submoduleSlug.toLowerCase() === NO_SUBMODULE_SLUG;
         const sub = (moduleData.submodules || []).find(
           (s: { slug?: string }) => (s.slug || '').toLowerCase() === submoduleSlug.toLowerCase()
         );
-        setSubmoduleName(sub?.name || submoduleSlug);
+        setSubmoduleName(isMain ? 'Clases del módulo' : (sub?.name || submoduleSlug));
       }
       setVideos(Array.isArray(list) ? list : []);
     }).catch(() => setVideos([])).finally(() => setLoading(false));

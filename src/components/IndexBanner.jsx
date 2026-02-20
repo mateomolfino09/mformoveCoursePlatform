@@ -292,16 +292,16 @@ function Banner({ onVideoLoaded }) {
       {/* Botones */}
       <div className='flex flex-row sm:flex-row gap-4 !pt-32 pointer-events-auto'>
         <Link 
-          href={routes.navegation.membership.moveCrew}
+          href={(auth.user?.subscription?.active || auth.user?.isVip || auth.user?.rol === 'Admin') ? routes.navegation.membership.library : routes.navegation.membership.moveCrew}
           className='px-8 py-3 bg-white text-black rounded-full font-medium text-sm md:text-base hover:bg-gray-100 transition-all duration-300 transform hover:scale-105'
         >
-          Move Crew
+          {(auth.user?.subscription?.active || auth.user?.isVip || auth.user?.rol === 'Admin') ? 'Biblioteca' : 'Move Crew'}
         </Link>
         <Link 
-          href={routes.user.login}
+          href={auth.user ? routes.user.perfil : routes.user.login}
           className='px-8 py-3 border-2 border-white text-white rounded-full font-medium text-sm md:text-base hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-105 flex items-center gap-2'
         >
-          Iniciar Sesión
+          {auth.user ? 'Mi Perfil' : 'Iniciar Sesión'}
           <ArrowRightIcon className='w-5 h-5' />
         </Link>
       </div>

@@ -150,6 +150,23 @@ function Register() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Si ya está logueado, redirigir según rol y suscripción
+  useEffect(() => {
+    if (!auth.user) {
+      auth.fetchUser();
+      return;
+    }
+    if (auth.user.rol === 'Admin') {
+      router.replace('/admin');
+      return;
+    }
+    if (auth.user.subscription?.active || auth.user.isVip) {
+      router.replace('/library');
+      return;
+    }
+    router.replace('/');
+  }, [auth, auth.user, router]);
+
   const clearData = () => {
     setState({
       ...state,

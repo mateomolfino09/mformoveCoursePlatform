@@ -19,8 +19,8 @@ export async function DELETE(req, { params }) {
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({ error: 'id de módulo inválido' }, { status: 400 });
     }
-    if (!submoduleSlug) {
-      return NextResponse.json({ error: 'slug de submódulo requerido' }, { status: 400 });
+    if (!submoduleSlug || submoduleSlug === '__main__') {
+      return NextResponse.json({ error: 'No se puede eliminar la agrupación principal del módulo. Las clases sin submódulo se gestionan desde Editar módulo.' }, { status: 400 });
     }
 
     const cookieStore = await cookies();

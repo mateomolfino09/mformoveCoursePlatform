@@ -21,6 +21,48 @@ function getAuthUser(cookieStore) {
   }
 }
 
+/** Obtiene thumbnail y duración de Vimeo vía oEmbed. videoUrlOrId: URL completa o id numérico. */
+async function fetchVimeoThumbnail(videoUrlOrId) {
+  try {
+    const url = typeof videoUrlOrId === 'string' && videoUrlOrId.trim()
+      ? /^\d+$/.test(videoUrlOrId.trim())
+        ? `https://vimeo.com/${videoUrlOrId.trim()}`
+        : videoUrlOrId.trim()
+      : '';
+    if (!url || !url.includes('vimeo.com')) return { thumbnail: '', duration: undefined };
+    const resp = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`);
+    if (!resp.ok) return { thumbnail: '', duration: undefined };
+    const data = await resp.json();
+    return {
+      thumbnail: data.thumbnail_url || '',
+      duration: data.duration != null ? Number(data.duration) : undefined
+    };
+  } catch {
+    return { thumbnail: '', duration: undefined };
+  }
+}
+
+/** GET: obtener una clase de módulo por id (público, para reproducir en biblioteca) */
+export async function GET(req, { params }) {
+  try {
+    const { id } = params;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+    }
+    const doc = await ModuleClass.findById(id).lean();
+    if (!doc) {
+      return NextResponse.json({ error: 'Clase no encontrada' }, { status: 404 });
+    }
+    return NextResponse.json(doc, {
+      status: 200,
+      headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
+    });
+  } catch (error) {
+    console.error('Error fetching module class:', error);
+    return NextResponse.json({ error: error.message || 'Error al obtener la clase' }, { status: 500 });
+  }
+}
+
 /** PATCH: actualizar clase de módulo (solo admin) */
 export async function PATCH(req, { params }) {
   try {
@@ -55,6 +97,13 @@ export async function PATCH(req, { params }) {
       update.materials = Array.isArray(body.materials)
         ? body.materials.filter((m) => ALLOWED_MATERIALS.includes(String(m).trim()))
         : [];
+    }
+
+    const vimeoUrlOrId = (update.videoUrl && String(update.videoUrl).trim()) || (update.videoId && String(update.videoId).trim());
+    const thumbnailMissing = !(update.videoThumbnail && String(update.videoThumbnail).trim());
+    if (vimeoUrlOrId && thumbnailMissing) {
+      const vimeoMeta = await fetchVimeoThumbnail(vimeoUrlOrId);
+      if (vimeoMeta.thumbnail) update.videoThumbnail = vimeoMeta.thumbnail;
     }
 
     if (Object.keys(update).length === 0) {

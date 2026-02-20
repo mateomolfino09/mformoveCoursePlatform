@@ -70,6 +70,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	const isLibraryArea = path.startsWith(routes.navegation.membership.library);
 	// Solo en página de módulo (/library/module/xxx): texto blanco arriba, al scroll fondo blanco y texto negro
 	const isLibraryModulePage = path.startsWith(routes.navegation.membership.library + '/module');
+	// Página de práctica (video): header opaco para que se vean logo y botones
+	const isLibraryPracticePage = path.includes('/practice/');
 	const menuTooltipText = 'Sube de nivel completando semanas del Camino. Gana U.C. y canjealas por programas, elementos, material o ropa; lo iremos mejorando y mejorando.';
 
 	// Evita que el header del login y home cambien al hacer scroll
@@ -275,6 +277,9 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							? forceLight
 							: ((isAuth || isIndex) ? true : isLightText))))));
 
+	// En página de práctica (video) los botones del header con fondo opaco para que se vean
+	const headerButtonsOpaque = isLibraryPracticePage;
+
 	// Logo MMOVE ACADEMY en blanco cuando el menú o el navegador Move Crew están abiertos
 	const logoLight = headerTitleLight || showNav || snap.weeklyPathNavOpen;
 
@@ -366,7 +371,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 											<button
 												type='button'
 												onClick={() => router.push('/admin')}
-												className={`rounded-full p-1 transition-colors cursor-pointer hidden md:block ${(isMoveCrew && isAnyMenuOpen) ? 'text-white hover:text-white/80' : (isLightText ? 'text-white hover:text-white/80' : 'text-palette-ink hover:text-palette-stone')}`}
+												className={`rounded-full p-1 transition-colors cursor-pointer hidden md:block ${(isMoveCrew && isAnyMenuOpen) ? 'text-white hover:text-white/80' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink hover:bg-palette-cream' : (isLightText ? 'text-white hover:text-white/80' : 'text-palette-ink hover:text-palette-stone')}`}
 												aria-label='Ir al panel de administración'
 											>
 												<GoTools className='h-5 w-5' />
@@ -375,7 +380,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 										<Menu.Button
 											as='button'
 											type='button'
-											className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1 cursor-pointer ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : isLightText ? 'text-white border border-white/40 hover:bg-white/20' : 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5'}`}
+											className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1 cursor-pointer ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream' : isLightText ? 'text-white border border-white/40 hover:bg-white/20' : 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5'}`}
 											onClick={() => {
 												if (onMenuClick && isMobile) {
 													if (isMobile) onMenuClick();
@@ -456,7 +461,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 											if (tutorialActive) return;
 											state.weeklyPathNavOpen = !snap.weeklyPathNavOpen; 
 										}}
-										className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${snap.weeklyPathNavOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : 'bg-black text-white border border-black hover:bg-palette-sage hover:border-palette-sage'}`}
+										className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${snap.weeklyPathNavOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream' : 'bg-black text-white border border-black hover:bg-palette-sage hover:border-palette-sage'}`}
 										aria-label="Abrir navegador Move Crew"
 									>
 										{snap.weeklyPathNavOpen ? (
@@ -473,8 +478,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									<button
 										type='button'
 										onClick={() => router.push('/admin')}
-										className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : (isMoveCrew ? 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5' : isLightText ? 'text-white border border-white/40 hover:bg-white/20' : 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5')}`}
-										aria-label='Ir al panel de administración'
+className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream' : (isMoveCrew ? 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5' : isLightText ? 'text-white border border-white/40 hover:bg-white/20' : 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5')}`}
+												aria-label='Ir al panel de administración'
 									>
 										<span>Admin</span>
 									</button>
@@ -482,7 +487,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								<Menu.Button
 									as='button'
 									type='button'
-									className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : (isMoveCrew ? 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5' : isLightText ? 'text-white border border-white/40 hover:bg-white/20' : 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5')}`}
+									className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream' : (isMoveCrew ? 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5' : isLightText ? 'text-white border border-white/40 hover:bg-white/20' : 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5')}`}
 									onClick={toggleNav}
 								>
 									{state.systemNavOpen ? (

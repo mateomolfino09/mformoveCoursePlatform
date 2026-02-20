@@ -46,6 +46,24 @@ export async function GET(req) {
   }
 }
 
+/** Obtiene thumbnail de Vimeo vía oEmbed. videoUrlOrId: URL completa o id numérico. */
+async function fetchVimeoThumbnail(videoUrlOrId) {
+  try {
+    const url = typeof videoUrlOrId === 'string' && videoUrlOrId.trim()
+      ? /^\d+$/.test(videoUrlOrId.trim())
+        ? `https://vimeo.com/${videoUrlOrId.trim()}`
+        : videoUrlOrId.trim()
+      : '';
+    if (!url || !url.includes('vimeo.com')) return '';
+    const resp = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`);
+    if (!resp.ok) return '';
+    const data = await resp.json();
+    return data.thumbnail_url || '';
+  } catch {
+    return '';
+  }
+}
+
 /** POST: crear módulo (admin) */
 export async function POST(req) {
   try {
@@ -71,6 +89,13 @@ export async function POST(req) {
       );
     }
 
+    let videoThumbnail = body.videoThumbnail != null ? String(body.videoThumbnail).trim() : '';
+    const vimeoUrlOrId = (body.videoUrl && String(body.videoUrl).trim()) || (body.videoId && String(body.videoId).trim());
+    if (vimeoUrlOrId && !videoThumbnail) {
+      const thumb = await fetchVimeoThumbnail(vimeoUrlOrId);
+      if (thumb) videoThumbnail = thumb;
+    }
+
     const newModule = await ClassModule.create({
       name: body.name,
       slug,
@@ -82,7 +107,7 @@ export async function POST(req) {
       submodules: Array.isArray(body.submodules) ? body.submodules : [],
       videoUrl: body.videoUrl,
       videoId: body.videoId,
-      videoThumbnail: body.videoThumbnail,
+      videoThumbnail: videoThumbnail || '',
       icon: body.icon,
       color: body.color,
       isActive: body.isActive !== false
