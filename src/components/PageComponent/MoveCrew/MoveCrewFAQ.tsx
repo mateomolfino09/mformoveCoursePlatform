@@ -32,7 +32,7 @@ const faqs = [
   {
     question: '¿Cómo funcionan las U.C. y los canjes?',
     answer:
-      'Completá semanas y desafíos para sumar U.C. (Unidades de Coherencia). A los 3 meses sostenidos ganás la insignia “Núcleo Estable” y podés canjear U.C. por programas o futuras piezas de merch.'
+      'Una semana completada del Camino = 1 U.C. Acumulalas y canjealas por programas o merch. A los 3 meses sostenidos ganás la insignia “Núcleo Estable”.'
   },
   {
     question: '¿Hay garantía?',

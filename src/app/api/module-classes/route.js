@@ -93,7 +93,7 @@ export async function POST(req) {
 
     const ALLOWED_MATERIALS = ['baston', 'banda elastica', 'banco', 'pelota'];
     const body = await req.clone().json();
-    const { moduleId, submoduleSlug, name, description, videoUrl, videoId, videoThumbnail, duration, level, order, materials } = body;
+    const { moduleId, submoduleSlug, name, description, videoUrl, videoId, videoThumbnail, duration, level, order, materials, visibleInLibrary } = body;
 
     if (!moduleId || !name) {
       return NextResponse.json(

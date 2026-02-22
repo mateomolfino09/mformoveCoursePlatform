@@ -68,7 +68,7 @@ const GorillaHoverInfo = ({ children }: { children: React.ReactNode }) => (
     <div
       className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-72 -translate-x-1/2 rounded-xl bg-black/80 px-3 py-2 text-xs text-white opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
     >
-      Sube de nivel completando semanas del Camino. Gana U.C. y canjea por programas o merch que iremos creando.
+      Una semana completada = 1 U.C. Completá semanas del Camino y canjeá por programas o merch.
     </div>
   </div>
 );
@@ -159,9 +159,9 @@ function WeeklyPathPageContent() {
   const [openTooltip, setOpenTooltip] = useState<'menu' | 'progress' | 'uc' | null>(null);
   const isMobile = !isDesktop;
   const tooltipTexts: Record<'menu' | 'progress' | 'uc', string> = {
-    menu: 'Sube de nivel completando semanas del Camino. Gana U.C. y canjealas por programas, elementos, material o ropa, lo iremos mejorando y mejorando.',
-    progress: 'Porcentaje de avance del mes actual del Camino.',
-    uc: 'Unidades de Coherencia acumuladas (2 por semana ideal: 1 audio + 1 video). Canjealas por programas, elementos, material o ropa, lo iremos mejorando y mejorando.'
+    menu: 'Completá semanas del Camino y ganá U.C. para canjear por programas, material o merch.',
+    progress: 'Avance del mes en el Camino.',
+    uc: 'Una semana completada = 1 U.C. Acumulalas y canjealas por programas, material o lo que vayamos creando.'
   };
   
   // Estados para los modales de celebración e información
@@ -603,7 +603,7 @@ function WeeklyPathPageContent() {
         
         // Mostrar modal informativo con el motivo
         setInfoModalData({
-          message: data.message || 'No se pudo agregar la Unidad de Coherencia',
+          message: data.message || 'Una semana completada = 1 U.C. Este contenido ya estaba completado.',
           tip: data.tip || undefined,
           reason: data.reason || undefined,
           weekNumber: data.weekNumber || selectedWeek || undefined,
@@ -1377,22 +1377,11 @@ function WeeklyPathPageContent() {
                       ¿Qué es la Coherencia?
                     </h3>
                     <p className="text-base sm:text-lg text-gray-800 leading-relaxed mb-3 font-montserrat font-light text-left">
-                      La coherencia es la constancia en tu práctica. Cada semana que completes el Camino, 
-                      cultivas una Unidad de Coherencia (U.C.) y mantenés tu racha activa.
+                      Una semana completada del Camino = 1 Unidad de Coherencia (U.C.). Mantené la constancia y acumulá U.C. para canjear por programas, material o lo que vayamos creando.
                     </p>
-                    <p className="text-base sm:text-lg text-gray-800 leading-relaxed mb-4 font-montserrat font-light text-left">
-                      Se premia la constancia, porque ahí están los resultados en el movimiento.
+                    <p className="text-base sm:text-lg text-gray-800 leading-relaxed font-montserrat font-light text-left">
+                      Se premia la constancia: ahí están los resultados en el movimiento.
                     </p>
-                    <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                      <p className="text-lg sm:text-base text-gray-800 leading-relaxed font-montserrat font-normal mb-2 text-left">
-                        Sistema de Constancia:
-                      </p>
-                      <ul className="text-base sm:text-base text-gray-700 leading-relaxed font-montserrat font-light space-y-2 list-disc list-inside text-left">
-                        <li><strong>Constancia ideal:</strong> Completa 2 U.C. por semana (1 video + 1 audio) para obtener el máximo de puntos.</li>
-                        <li><strong>Si te atrasas:</strong> Si completas más de 2 U.C. en una semana calendario, cada semana adicional solo otorga 1 U.C. en total (no 2).</li>
-                        <li><strong>Ejemplo:</strong> Si completas 3 semanas en una semana calendario, obtienes 4 U.C. (2 de la primera semana + 1 de cada semana adicional) en lugar de 6.</li>
-                      </ul>
-                    </div>
                   </div>
                 </motion.div>
               </div>

@@ -174,7 +174,7 @@ const GorillaLevelDisplay = ({
                 boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)'
               }}
             >
-              <span className="text-white font-bold text-xs md:text-sm">
+              <span className="text-palette-cream font-bold text-xs md:text-sm">
                 {level}
               </span>
             </motion.div>
@@ -185,10 +185,10 @@ const GorillaLevelDisplay = ({
       {/* Nombre de evolución */}
       {showInfoText && (
         <div className="text-center mt-4 mb-2">
-          <p className={`${currentSize.name} font-medium font-montserrat`} style={{ color: EARTH_BROWN }}>
+          <p className={`${currentSize.name} font-medium font-montserrat text-palette-cream`}>
             {evolutionName}
           </p>
-          <p className={`text-xs font-light font-montserrat`} style={{ color: NATURAL_GRAY }}>
+          <p className={`text-xs font-light font-montserrat text-palette-stone`}>
             {monthsCompleted} {monthsCompleted === 1 ? 'mes' : 'meses'} completados
           </p>
         </div>
@@ -205,7 +205,7 @@ const GorillaLevelDisplay = ({
               Nivel {currentEvolutionLevel}
             </span>
           </div>
-          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-palette-stone/30 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progressToNextLevel}%` }}
@@ -217,7 +217,7 @@ const GorillaLevelDisplay = ({
               }}
             />
           </div>
-          <p className="text-xs font-light font-montserrat text-center mt-1" style={{ color: NATURAL_GRAY }}>
+          <p className="text-xs font-light font-montserrat text-center mt-1 text-palette-stone">
             {progressToNextLevel}% hacia el siguiente nivel
           </p>
         </div>

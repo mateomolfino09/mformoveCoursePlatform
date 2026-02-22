@@ -36,6 +36,9 @@ export interface WeekContentItem {
   orden: number;
   newModuleClassName?: string;
   newModuleClassMaterials?: string[];
+  submoduleMode?: 'existing' | 'new';
+  createdInWeeklyPathForm?: boolean;
+  createdClassDescription?: string;
 }
 
 interface WeekContent {
@@ -345,7 +348,8 @@ export default function EditBitacoraPage({ params }: PageProps) {
     }
     setCreatingClass(`module-${weekIndex}-${contentIndex}`);
     try {
-      const r = await fetch('/api/module-classes', {
+      const description = (c.createdClassDescription ?? c.audioText ?? '').trim();
+      const r = await fetch('/api/module-classes/from-weekly-path', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -353,10 +357,11 @@ export default function EditBitacoraPage({ params }: PageProps) {
           moduleId,
           submoduleSlug: submoduleSlug || NO_SUBMODULE_SLUG,
           name,
+          description: description || '',
           videoUrl: c.videoUrl,
+          videoId: c.videoId || undefined,
           level: c.level || 1,
-          materials: c.newModuleClassMaterials || [],
-          visibleInLibrary: false
+          materials: c.newModuleClassMaterials || []
         })
       });
       if (!r.ok) {
@@ -369,7 +374,13 @@ export default function EditBitacoraPage({ params }: PageProps) {
       setWeeks((prev) => {
         const next = [...prev];
         const contents = [...(next[weekIndex].contents || [])];
-        contents[contentIndex] = { ...contents[contentIndex], moduleClassId: created._id, videoName: created.name, moduleClassSource: 'existing' as const };
+        contents[contentIndex] = {
+          ...contents[contentIndex],
+          moduleClassId: created._id,
+          videoName: created.name,
+          createdInWeeklyPathForm: true,
+          createdClassDescription: description || created.description || ''
+        };
         next[weekIndex] = { ...next[weekIndex], contents };
         return next;
       });
@@ -407,7 +418,13 @@ export default function EditBitacoraPage({ params }: PageProps) {
       setWeeks((prev) => {
         const next = [...prev];
         const contents = [...(next[weekIndex].contents || [])];
-        contents[contentIndex] = { ...contents[contentIndex], individualClassId: created._id, individualClassSource: 'existing' as const };
+        contents[contentIndex] = {
+          ...contents[contentIndex],
+          individualClassId: created._id,
+          individualClassSource: 'existing' as const,
+          createdInWeeklyPathForm: true,
+          createdClassDescription: (c.audioText || '').trim()
+        };
         next[weekIndex] = { ...next[weekIndex], contents };
         return next;
       });
@@ -416,6 +433,37 @@ export default function EditBitacoraPage({ params }: PageProps) {
       toast.error(e.message || 'Error al crear clase');
     } finally {
       setCreatingClass(null);
+    }
+  };
+
+  const deleteCreatedClassAndRemove = async (weekIndex: number, contentIndex: number) => {
+    const c = weeks[weekIndex].contents[contentIndex];
+    if (!c.createdInWeeklyPathForm) return;
+    const moduleClassId = c.moduleClassId;
+    const individualClassId = c.individualClassId;
+    try {
+      if (moduleClassId) {
+        const r = await fetch(`/api/module-classes/${moduleClassId}`, { method: 'DELETE', credentials: 'include' });
+        if (!r.ok) {
+          const d = await r.json().catch(() => ({}));
+          throw new Error(d.error || 'Error al eliminar la clase');
+        }
+      } else if (individualClassId) {
+        const r = await fetch(`/api/individualClass/delete/${individualClassId}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ classId: individualClassId })
+        });
+        if (!r.ok) {
+          const d = await r.json().catch(() => ({}));
+          throw new Error(d.error || 'Error al eliminar la clase');
+        }
+      }
+      removeContent(weekIndex, contentIndex);
+      toast.success('Clase eliminada de la base de datos y del contenido.');
+    } catch (e: any) {
+      toast.error(e.message || 'Error al eliminar');
     }
   };
 
@@ -631,9 +679,19 @@ export default function EditBitacoraPage({ params }: PageProps) {
                   transition={{ delay: weekIndex * 0.05 }}
                   className="border-2 border-gray-200 rounded-xl p-6 bg-gradient-to-br from-orange-50 to-amber-50"
                 >
-                  <div className="flex items-center gap-3 mb-4">
+                  <div className="flex flex-wrap items-center gap-3 mb-4">
                     <div className="px-4 py-2 bg-orange-500 text-white rounded-lg font-bold text-lg font-montserrat">
                       Semana {week.weekNumber}
+                    </div>
+                    <div className="flex-1 min-w-[200px]">
+                      <label className="block text-xs font-medium text-gray-600 mb-0.5 font-montserrat">Nombre de la semana</label>
+                      <input
+                        type="text"
+                        value={week.weekTitle || ''}
+                        onChange={(e) => updateWeek(weekIndex, 'weekTitle', e.target.value)}
+                        placeholder={`Semana ${week.weekNumber}`}
+                        className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat text-black bg-white text-sm"
+                      />
                     </div>
                     <div className="flex items-center gap-2 text-black font-montserrat">
                       <CalendarIcon className="w-5 h-5" />
@@ -662,7 +720,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-sm font-medium text-gray-700">Contenido {contentIndex + 1}</span>
                         <div className="flex items-center gap-3">
-                          <label className="text-xs font-medium text-gray-600">Tipo:</label>
+                          <label className="text-xs font-medium text-black">Tipo:</label>
                           <select
                             value={tipo}
                             onChange={(e) => updateContent(weekIndex, contentIndex, 'contentType', e.target.value as ContentType)}
@@ -683,17 +741,38 @@ export default function EditBitacoraPage({ params }: PageProps) {
                         </div>
                       </div>
 
-                      {tipo === 'moduleClass' && (
+                      {(content.createdInWeeklyPathForm && (content.moduleClassId || content.individualClassId)) && (
+                        <div className="mt-3 p-4 bg-gray-100 rounded-lg border border-gray-300">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-medium text-black">{content.videoName || 'Clase'}</p>
+                              {(content.createdClassDescription || content.audioText) && (
+                                <p className="text-sm text-gray-700 mt-1">{content.createdClassDescription || content.audioText}</p>
+                              )}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => deleteCreatedClassAndRemove(weekIndex, contentIndex)}
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded"
+                              title="Eliminar clase de la base de datos y quitar del contenido"
+                            >
+                              <XMarkIcon className="w-5 h-5" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {!content.createdInWeeklyPathForm && tipo === 'moduleClass' && (
                         <div className="space-y-4">
                           <div className="flex items-center gap-4">
-                            <span className="text-xs font-medium text-gray-600">Origen:</span>
+                            <span className="text-xs font-medium text-black">Origen:</span>
                             <label className="flex items-center gap-1">
                               <input type="radio" name={`moduleSource-${weekIndex}-${contentIndex}`} checked={(content.moduleClassSource || 'existing') === 'existing'} onChange={() => updateContent(weekIndex, contentIndex, 'moduleClassSource', 'existing')} className="text-orange-600" />
-                              <span className="text-sm">Usar clase existente</span>
+                              <span className="text-sm text-black">Usar clase existente</span>
                             </label>
                             <label className="flex items-center gap-1">
                               <input type="radio" name={`moduleSource-${weekIndex}-${contentIndex}`} checked={(content.moduleClassSource || 'existing') === 'new'} onChange={() => updateContent(weekIndex, contentIndex, 'moduleClassSource', 'new')} className="text-orange-600" />
-                              <span className="text-sm">Crear clase nueva</span>
+                              <span className="text-sm text-black">Crear clase nueva</span>
                             </label>
                           </div>
                           {(content.moduleClassSource || 'existing') === 'existing' && (
@@ -723,35 +802,57 @@ export default function EditBitacoraPage({ params }: PageProps) {
                           )}
                           {(content.moduleClassSource || 'existing') === 'new' && (
                             <div className="grid md:grid-cols-2 gap-4 p-3 bg-gray-50 rounded-lg">
-                              <div><label className="block text-xs font-medium text-gray-600 mb-1">Módulo *</label><select value={content.moduleId} onChange={(e) => updateContent(weekIndex, contentIndex, 'moduleId', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"><option value="">Seleccionar módulo</option>{classModules.map((m) => (<option key={m._id} value={m._id}>{m.name}</option>))}</select></div>
-                              <div><label className="block text-xs font-medium text-gray-600 mb-1">Submódulo</label><select value={content.submoduleSlug || ''} onChange={(e) => { const v = e.target.value; if (v === '__new__') return; const mod = classModules.find((m) => m._id === content.moduleId); const sub = mod?.submodules?.find((s) => (s.slug || '') === v); updateContent(weekIndex, contentIndex, 'submoduleSlug', v); updateContent(weekIndex, contentIndex, 'submoduleName', sub?.name || v); }} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"><option value={NO_SUBMODULE_SLUG}>Clases del módulo</option>{content.moduleId && classModules.find((m) => m._id === content.moduleId)?.submodules?.map((s) => (<option key={s.slug || s.name} value={s.slug || ''}>{s.name}</option>))}<option value="__new__">+ Crear nuevo submódulo</option></select></div>
-                              <div><label className="block text-xs font-medium text-gray-600 mb-1">Nombre clase *</label><input type="text" value={content.newModuleClassName || content.videoName || ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'newModuleClassName', e.target.value)} placeholder="Ej: Locomotions básico" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
-                              <div><label className="block text-xs font-medium text-gray-600 mb-1">Video URL *</label><input type="url" value={content.videoUrl} onChange={(e) => updateContent(weekIndex, contentIndex, 'videoUrl', e.target.value)} placeholder="https://vimeo.com/..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
-                              <div><label className="block text-xs font-medium text-gray-600 mb-1">Nivel (1-10)</label><select value={content.level} onChange={(e) => updateContent(weekIndex, contentIndex, 'level', Number(e.target.value))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm">{[1,2,3,4,5,6,7,8,9,10].map((n) => (<option key={n} value={n}>{n}</option>))}</select></div>
+                              <div><label className="block text-xs font-medium text-black mb-1">Módulo *</label><select value={content.moduleId} onChange={(e) => updateContent(weekIndex, contentIndex, 'moduleId', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"><option value="">Seleccionar módulo</option>{classModules.map((m) => (<option key={m._id} value={m._id}>{m.name}</option>))}</select></div>
+                              <div>
+                                <label className="block text-xs font-medium text-black mb-2">Submódulo</label>
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                  <button type="button" onClick={() => updateContent(weekIndex, contentIndex, 'submoduleMode', 'existing')} className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${(content.submoduleMode || 'existing') === 'existing' ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-black border-gray-300 hover:bg-gray-100'}`}>Seleccionar existente</button>
+                                  <button type="button" onClick={() => updateContent(weekIndex, contentIndex, 'submoduleMode', 'new')} className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${content.submoduleMode === 'new' ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-black border-gray-300 hover:bg-gray-100'}`}>Crear submódulo nuevo</button>
+                                </div>
+                                {(content.submoduleMode || 'existing') === 'existing' && content.moduleId && (<select value={content.submoduleSlug || ''} onChange={(e) => { const v = e.target.value; const mod = classModules.find((m) => m._id === content.moduleId); const sub = mod?.submodules?.find((s) => (s.slug || '') === v); updateContent(weekIndex, contentIndex, 'submoduleSlug', v); updateContent(weekIndex, contentIndex, 'submoduleName', sub?.name || v); }} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"><option value={NO_SUBMODULE_SLUG}>Clases del módulo</option>{classModules.find((m) => m._id === content.moduleId)?.submodules?.map((s) => (<option key={s.slug || s.name} value={s.slug || ''}>{s.name}</option>))}</select>)}
+                                {content.submoduleMode === 'new' && content.moduleId && (<div className="flex gap-2"><input type="text" placeholder="Nombre nuevo submódulo" value={newSubmoduleName[`${weekIndex}-${contentIndex}`] || ''} onChange={(e) => setNewSubmoduleName((prev) => ({ ...prev, [`${weekIndex}-${contentIndex}`]: e.target.value }))} className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /><button type="button" onClick={async () => { const name = newSubmoduleName[`${weekIndex}-${contentIndex}`]?.trim(); if (!name || !content.moduleId) return; try { const created = await addSubmoduleToModule(content.moduleId, name); updateContent(weekIndex, contentIndex, 'submoduleSlug', created.slug); updateContent(weekIndex, contentIndex, 'submoduleName', created.name); setNewSubmoduleName((prev) => ({ ...prev, [`${weekIndex}-${contentIndex}`]: '' })); toast.success('Submódulo creado'); } catch (err: any) { toast.error(err.message); } }} className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600">Crear</button></div>)}
+                              </div>
+                              <div><label className="block text-xs font-medium text-black mb-1">Nombre clase *</label><input type="text" value={content.newModuleClassName || content.videoName || ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'newModuleClassName', e.target.value)} placeholder="Ej: Locomotions básico" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                              <div><label className="block text-xs font-medium text-black mb-1">Video URL *</label><input type="url" value={content.videoUrl} onChange={(e) => updateContent(weekIndex, contentIndex, 'videoUrl', e.target.value)} placeholder="https://vimeo.com/..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                              <div><label className="block text-xs font-medium text-black mb-1">Video ID (Vimeo, opcional)</label><input type="text" value={content.videoId || ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'videoId', e.target.value)} placeholder="Ej: 123456789" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                              <div className="md:col-span-2"><label className="block text-xs font-medium text-black mb-1">Descripción</label><textarea value={content.createdClassDescription ?? content.audioText ?? ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'createdClassDescription', e.target.value)} placeholder="Descripción de la clase" rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                              <div className="md:col-span-2"><label className="block text-xs font-medium text-black mb-1">Materiales</label><div className="flex flex-wrap gap-3">{['baston', 'banda elastica', 'banco', 'pelota'].map((mat) => { const list = content.newModuleClassMaterials || []; const checked = list.includes(mat); return (<label key={mat} className="flex items-center gap-1.5 text-sm text-black"><input type="checkbox" checked={checked} onChange={() => { const next = checked ? list.filter((x) => x !== mat) : [...list, mat]; updateContent(weekIndex, contentIndex, 'newModuleClassMaterials', next); }} className="rounded border-gray-300 text-orange-600" /><span className="capitalize">{mat}</span></label>); })}</div></div>
+                              <div><label className="block text-xs font-medium text-black mb-1">Nivel (1-10)</label><select value={content.level} onChange={(e) => updateContent(weekIndex, contentIndex, 'level', Number(e.target.value))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm">{[1,2,3,4,5,6,7,8,9,10].map((n) => (<option key={n} value={n}>{n}</option>))}</select></div>
                               <div className="md:col-span-2"><button type="button" disabled={creatingClass === `module-${weekIndex}-${contentIndex}` || !content.moduleId || !(content.newModuleClassName || content.videoName || content.videoUrl)?.trim() || !content.videoUrl?.trim()} onClick={() => createModuleClassAndUse(weekIndex, contentIndex)} className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">{creatingClass === `module-${weekIndex}-${contentIndex}` ? 'Creando...' : 'Crear clase y usar aquí'}</button>{content.moduleClassId && <span className="ml-2 text-sm text-green-600">Clase asignada</span>}</div>
-                              {content.moduleId && (<div className="mt-2 flex gap-2 md:col-span-2"><input type="text" placeholder="Nombre nuevo submódulo" value={newSubmoduleName[`${weekIndex}-${contentIndex}`] || ''} onChange={(e) => setNewSubmoduleName((prev) => ({ ...prev, [`${weekIndex}-${contentIndex}`]: e.target.value }))} className="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-gray-900 text-sm" /><button type="button" onClick={async () => { const name = newSubmoduleName[`${weekIndex}-${contentIndex}`]?.trim(); if (!name || !content.moduleId) return; try { const created = await addSubmoduleToModule(content.moduleId, name); updateContent(weekIndex, contentIndex, 'submoduleSlug', created.slug); updateContent(weekIndex, contentIndex, 'submoduleName', created.name); setNewSubmoduleName((prev) => ({ ...prev, [`${weekIndex}-${contentIndex}`]: '' })); toast.success('Submódulo creado'); } catch (err: any) { toast.error(err.message); } }} className="px-3 py-1.5 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">Crear</button></div>)}
                             </div>
                           )}
                         </div>
                       )}
 
-                      {tipo === 'individualClass' && (
+                      {!content.createdInWeeklyPathForm && tipo === 'individualClass' && (
                         <div className="space-y-4">
                           <div className="flex items-center gap-4">
-                            <span className="text-xs font-medium text-gray-600">Origen:</span>
-                            <label className="flex items-center gap-1"><input type="radio" name={`individualSource-${weekIndex}-${contentIndex}`} checked={(content.individualClassSource || 'existing') === 'existing'} onChange={() => updateContent(weekIndex, contentIndex, 'individualClassSource', 'existing')} className="text-orange-600" /><span className="text-sm">Usar clase existente</span></label>
-                            <label className="flex items-center gap-1"><input type="radio" name={`individualSource-${weekIndex}-${contentIndex}`} checked={(content.individualClassSource || 'existing') === 'new'} onChange={() => updateContent(weekIndex, contentIndex, 'individualClassSource', 'new')} className="text-orange-600" /><span className="text-sm">Crear clase nueva</span></label>
+                            <span className="text-xs font-medium text-black">Origen:</span>
+                            <label className="flex items-center gap-1"><input type="radio" name={`individualSource-${weekIndex}-${contentIndex}`} checked={(content.individualClassSource || 'existing') === 'existing'} onChange={() => updateContent(weekIndex, contentIndex, 'individualClassSource', 'existing')} className="text-orange-600" /><span className="text-sm text-black">Usar clase existente</span></label>
+                            <label className="flex items-center gap-1"><input type="radio" name={`individualSource-${weekIndex}-${contentIndex}`} checked={(content.individualClassSource || 'existing') === 'new'} onChange={() => updateContent(weekIndex, contentIndex, 'individualClassSource', 'new')} className="text-orange-600" /><span className="text-sm text-black">Crear clase nueva</span></label>
                           </div>
                           {(content.individualClassSource || 'existing') === 'existing' && (
                             <div>
                               <label className="block text-xs font-medium text-gray-600 mb-1">Clase individual *</label>
-                              <select value={content.individualClassId || ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'individualClassId', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm">
+                              <select
+                                value={content.individualClassId || ''}
+                                onChange={(e) => {
+                                  const id = e.target.value;
+                                  const ic = individualClasses.find((x) => x._id === id);
+                                  setWeeks((prev) => {
+                                    const next = [...prev];
+                                    const contents = [...(next[weekIndex].contents || [])];
+                                    const current = contents[contentIndex] || {};
+                                    contents[contentIndex] = { ...current, individualClassId: id || undefined, videoName: ic?.name ?? current.videoName };
+                                    next[weekIndex] = { ...next[weekIndex], contents };
+                                    return next;
+                                  });
+                                }}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                              >
                                 <option value="">Seleccionar clase individual</option>
                                 {individualClasses.map((ic) => (<option key={ic._id} value={ic._id}>{ic.name}</option>))}
                               </select>
-                              <p className="text-xs text-gray-500 mt-1">Opcional: video URL para sobrescribir</p>
-                              <label className="block text-xs font-medium text-gray-600 mb-1 mt-2">Video URL (opcional)</label>
-                              <input type="url" value={content.videoUrl} onChange={(e) => updateContent(weekIndex, contentIndex, 'videoUrl', e.target.value)} placeholder="https://..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" />
                             </div>
                           )}
                           {(content.individualClassSource || 'existing') === 'new' && (
@@ -796,7 +897,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
                         </div>
                       )}
 
-                      {(tipo === 'moduleClass' || tipo === 'individualClass') && (
+                      {(tipo === 'moduleClass' || tipo === 'individualClass') && !content.createdInWeeklyPathForm && (
                         <div className="mt-3 grid md:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-xs font-medium text-gray-600 mb-1">Audio URL (opcional)</label>

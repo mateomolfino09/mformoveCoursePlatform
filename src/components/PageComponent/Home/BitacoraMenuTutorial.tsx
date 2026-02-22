@@ -1001,7 +1001,7 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
                     Tu Camino
                   </h3>
                   <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                    Contenido nuevo todas las semanas, guiado, progresivo y con obtención de unidades de coherencia.
+                    Contenido nuevo cada semana, guiado y progresivo. Una semana completada = 1 U.C.
                   </p>
                 </motion.div>
               )}
@@ -1177,7 +1177,7 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
                         Tu Camino
                       </h3>
                       <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                        Contenido nuevo todas las semanas, guiado, progresivo y con obtención de unidades de coherencia.
+                        Contenido nuevo cada semana, guiado y progresivo. Una semana completada = 1 U.C.
                       </p>
                     </motion.div>
                   )}

@@ -63,7 +63,7 @@ const MainSideBar = ({ children, where, forceStandardHeader = false, onMenuClick
       ) : (
         children
       )}
-      {/* Barra móvil: contenedor transparente; solo los botones tienen fondo para que siempre se vean */}
+      {/* Barra móvil: un solo botón Menú (abre navegador Move Crew) */}
       <div
         className="fixed bottom-0 left-0 right-0 z-[210] flex items-center justify-end md:hidden px-4 py-3 gap-2"
         style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0))' }}
@@ -85,24 +85,10 @@ const MainSideBar = ({ children, where, forceStandardHeader = false, onMenuClick
                 <span>Cerrar</span>
               </>
             ) : (
-              <span>Move Crew</span>
+              <span>Menú</span>
             )}
           </button>
         )}
-        <button
-          type="button"
-          onClick={toggleNav}
-          className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 py-2 transition-all duration-200 inline-flex items-center justify-center gap-1.5 shrink-0 ${isAnyMenuOpen ? 'bg-white text-palette-ink border border-white hover:bg-palette-sage hover:border-palette-sage' : (where === 'library' || where === 'move-crew') ? 'bg-palette-cream text-palette-ink border border-palette-stone/40 hover:border-palette-ink hover:bg-palette-stone/10 shadow-sm' : 'bg-white/95 text-palette-ink border border-white/80 hover:bg-palette-cream shadow-sm'}`}
-        >
-          {showNav ? (
-            <>
-              <IoCloseOutline className="h-5 w-5" aria-hidden />
-              <span>Cerrar</span>
-            </>
-          ) : (
-            <span>Menú</span>
-          )}
-        </button>
       </div>
     </div>
   )

@@ -8,6 +8,7 @@ import {
   CheckCircleIcon, 
   LockClosedIcon
 } from '@heroicons/react/24/solid';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../imageLoader';
 import { toast } from 'react-hot-toast';
@@ -21,8 +22,7 @@ import WeeklyPathSkeleton from '../../components/WeeklyPathSkeleton';
 import { CoherenceProvider, useCoherence } from '../../contexts/CoherenceContext';
 import CoherenceCelebrationModal from '../../components/PageComponent/WeeklyPath/CoherenceCelebrationModal';
 import CoherenceInfoModal from '../../components/PageComponent/WeeklyPath/CoherenceInfoModal';
-import GorillaLevelDisplay from '../../components/PageComponent/WeeklyPath/GorillaLevelDisplay';
-import VideoHeaderGorilla from '../../components/PageComponent/WeeklyPath/VideoHeaderGorilla';
+import NextContentModal from '../../components/PageComponent/WeeklyPath/NextContentModal';
 import WeeklyPathLoading from '../../components/PageComponent/MoveCrew/WeeklyPathLoading';
 import FooterProfile from '../../components/PageComponent/Profile/FooterProfile';
 import WeeklyReportModal from '../../components/WeeklyReportModal';
@@ -30,48 +30,11 @@ import WeeklyReportModal from '../../components/WeeklyReportModal';
 import Footer from '../../components/Footer';
 import Link from 'next/link';
 
-const WeeklyPathFooter = () => (
-  <footer className="bg-black text-white mt-12">
-    <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row md:items-start md:justify-between gap-8">
-      <div className="flex items-center gap-4">
-        <Link href="/">
-          <img
-            alt="MforMove logo blanco"
-            src="/images/MFORMOVE_blanco03.png"
-            width={180}
-            height={60}
-            className="h-12 w-auto object-contain"
-          />
-        </Link>
-        <p className="text-sm text-white/70 font-light font-montserrat">
-          Move Crew - Camino
-        </p>
-      </div>
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm text-white/80 font-light font-montserrat">
-        <Link href="/faq" className="hover:text-white transition-colors">Preguntas Frecuentes</Link>
-        <a href="/documents/terms-and-conditions.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Términos y Condiciones</a>
-        <a href="/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Políticas de Privacidad</a>
-      </div>
-    </div>
-  </footer>
-);
-
 const shapeIcon = (seed: string | number) => {
   const shapes = ['▲', '■', '●', '◆', '▴', '▢'];
   const code = typeof seed === 'number' ? seed : seed.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
   return shapes[code % shapes.length];
 };
-
-const GorillaHoverInfo = ({ children }: { children: React.ReactNode }) => (
-  <div className="relative group inline-flex items-center justify-center">
-    {children}
-    <div
-      className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-72 -translate-x-1/2 rounded-xl bg-black/80 px-3 py-2 text-xs text-white opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
-    >
-      Sube de nivel completando semanas del Camino. Gana U.C. y canjea por programas o merch que iremos creando.
-    </div>
-  </div>
-);
 
 interface DailyContent {
   dayNumber: number;
@@ -101,11 +64,26 @@ interface DailyContent {
   isUnlocked: boolean;
 }
 
+/** Ítem de contenido de la semana (clase de módulo, clase individual, audio) */
+interface WeekContentItem {
+  contentType?: 'moduleClass' | 'individualClass' | 'audio';
+  videoUrl?: string;
+  videoId?: string;
+  videoName?: string;
+  audioUrl?: string;
+  audioTitle?: string;
+  audioText?: string;
+  submoduleName?: string;
+  orden?: number;
+}
+
 interface WeeklyContent {
   weekNumber: number;
   weekTitle?: string;
   weekDescription?: string;
   dailyContents?: DailyContent[];
+  /** Varios contenidos por semana */
+  contents?: WeekContentItem[];
   publishDate: string;
   isPublished: boolean;
   isUnlocked: boolean;
@@ -151,6 +129,7 @@ function WeeklyPathPageContent() {
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [selectedContentType, setSelectedContentType] = useState<'visual' | 'audioText' | null>(null);
+  const [selectedContentIndex, setSelectedContentIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
   const [isChangingContent, setIsChangingContent] = useState(false);
@@ -159,9 +138,9 @@ function WeeklyPathPageContent() {
   const [openTooltip, setOpenTooltip] = useState<'menu' | 'progress' | 'uc' | null>(null);
   const isMobile = !isDesktop;
   const tooltipTexts: Record<'menu' | 'progress' | 'uc', string> = {
-    menu: 'Sube de nivel completando semanas del Camino. Gana U.C. y canjealas por programas, elementos, material o ropa, lo iremos mejorando y mejorando.',
-    progress: 'Porcentaje de avance del mes actual del Camino.',
-    uc: 'Unidades de Coherencia acumuladas (2 por semana ideal: 1 audio + 1 video). Canjealas por programas, elementos, material o ropa, lo iremos mejorando y mejorando.'
+    menu: 'Completá semanas del Camino y ganá U.C. para canjear por programas, material o merch.',
+    progress: 'Avance del mes en el Camino (las clases completadas representan el 25 % del camino).',
+    uc: 'Una semana completada = 1 U.C. Acumulalas y canjealas por programas, material o lo que vayamos creando.'
   };
   
   // Estados para los modales de celebración e información
@@ -192,6 +171,12 @@ function WeeklyPathPageContent() {
     weekNumber?: number;
     contentType?: string;
   } | null>(null);
+  const [showNextContentModal, setShowNextContentModal] = useState(false);
+  const [nextContentModalPayload, setNextContentModalPayload] = useState<{
+    nextContentIndex: number;
+    nextContentType: 'visual' | 'audioText';
+    nextTitle?: string;
+  } | null>(null);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -217,7 +202,7 @@ function WeeklyPathPageContent() {
     return (
       <div className="fixed inset-0 z-[120] flex items-center justify-center px-6" onClick={() => setOpenTooltip(null)}>
         <div className="absolute inset-0 bg-black/70" />
-        <div className="relative z-[121] max-w-sm w-full rounded-2xl bg-black/40 text-white p-5 shadow-[0_12px_40px_rgba(0,0,0,0.35)] border border-white/10 text-center font-montserrat text-sm leading-relaxed">
+        <div className="relative z-[121] max-w-sm w-full rounded-2xl bg-palette-ink text-palette-cream p-5 shadow-xl border border-palette-stone/20 text-center font-montserrat text-sm leading-relaxed">
           <p className="text-base font-semibold mb-1">Info</p>
           <p className="text-sm font-light">{tooltipTexts[openTooltip]}</p>
         </div>
@@ -265,8 +250,7 @@ function WeeklyPathPageContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Calcular porcentaje completado del mes
-  // El porcentaje depende de la cantidad de contenidos completados vs el total disponible
+  // Calcular porcentaje completado del mes: el total de clases representa el 25% del camino completado
   const calculateMonthProgress = (): number => {
     if (!logbook || !logbook.weeklyContents) return 0;
 
@@ -274,48 +258,46 @@ function WeeklyPathPageContent() {
     let totalContentsCount = 0;
 
     logbook.weeklyContents.forEach((week) => {
+      const contents = week.contents;
+      if (Array.isArray(contents) && contents.length > 0) {
+        totalContentsCount += contents.length;
+        contents.forEach((_, i) => {
+          const key = `${logbook._id}-${week.weekNumber}-content-${i}`;
+          if (coherence.completedVideos.has(key) || coherence.completedAudios.has(key)) completedContentsCount++;
+        });
+        return;
+      }
       if (week.dailyContents && week.dailyContents.length > 0) {
         week.dailyContents.forEach((day) => {
-          // Video diario
           if (day.visualContent && day.visualContent.videoUrl) {
             totalContentsCount++;
             const videoKey = `${logbook._id}-${week.weekNumber}-${day.dayNumber}-video`;
-            if (coherence.completedVideos.has(videoKey)) {
-              completedContentsCount++;
-            }
+            if (coherence.completedVideos.has(videoKey)) completedContentsCount++;
           }
-
-          // Audio diario
           if (day.audioTextContent && day.audioTextContent.audioUrl) {
             totalContentsCount++;
             const audioKey = `${logbook._id}-${week.weekNumber}-${day.dayNumber}-audio`;
-            if (coherence.completedAudios.has(audioKey)) {
-              completedContentsCount++;
-            }
+            if (coherence.completedAudios.has(audioKey)) completedContentsCount++;
           }
         });
-      } else if (week.videoUrl) {
-        // Estructura legacy: video semanal
+        return;
+      }
+      if (week.videoUrl) {
         totalContentsCount++;
         const videoKey = `${logbook._id}-${week.weekNumber}-week-video`;
-        if (coherence.completedVideos.has(videoKey)) {
-          completedContentsCount++;
-        }
-        // Estructura legacy: audio semanal (si existe)
-        if ((week).audioUrl) {
+        if (coherence.completedVideos.has(videoKey)) completedContentsCount++;
+        if ((week as WeeklyContent).audioUrl) {
           totalContentsCount++;
           const audioKey = `${logbook._id}-${week.weekNumber}-week-audio`;
-          if (coherence.completedAudios.has(audioKey)) {
-            completedContentsCount++;
-          }
+          if (coherence.completedAudios.has(audioKey)) completedContentsCount++;
         }
       }
     });
 
-    // Calcular porcentaje basado en completados / total
     if (totalContentsCount === 0) return 0;
-    const percentage = Math.round((completedContentsCount / totalContentsCount) * 100);
-    return Math.min(percentage, 100);
+    // Las clases completadas representan el 25% del camino
+    const percentage = Math.round((completedContentsCount / totalContentsCount) * 25);
+    return Math.min(percentage, 25);
   };
 
   const monthProgress = calculateMonthProgress();
@@ -490,22 +472,29 @@ function WeeklyPathPageContent() {
         const mostRecentUnlockedWeek = sortedUnlockedWeeks[0];
         setSelectedWeek(mostRecentUnlockedWeek.weekNumber);
         setSelectedDay(null);
-        if (mostRecentUnlockedWeek.videoUrl) {
-          setSelectedContentType('visual');
-        } else if (mostRecentUnlockedWeek.audioUrl || mostRecentUnlockedWeek.text) {
-          setSelectedContentType('audioText');
+        const weekContents = (mostRecentUnlockedWeek as WeeklyContent).contents;
+        if (Array.isArray(weekContents) && weekContents.length > 0) {
+          setSelectedContentIndex(0);
+          setSelectedContentType(weekContents[0].contentType === 'audio' ? 'audioText' : 'visual');
         } else {
-          setSelectedContentType(null);
+          setSelectedContentIndex(null);
+          if (mostRecentUnlockedWeek.videoUrl) setSelectedContentType('visual');
+          else if (mostRecentUnlockedWeek.audioUrl || mostRecentUnlockedWeek.text) setSelectedContentType('audioText');
+          else setSelectedContentType(null);
         }
       } else {
-        setSelectedWeek(processedWeeks[0]?.weekNumber || null);
+        const firstWeek = processedWeeks[0];
+        setSelectedWeek(firstWeek?.weekNumber ?? null);
         setSelectedDay(null);
-        if (processedWeeks[0]?.videoUrl) {
-          setSelectedContentType('visual');
-        } else if (processedWeeks[0]?.audioUrl || processedWeeks[0]?.text) {
-          setSelectedContentType('audioText');
+        const weekContents = (firstWeek as WeeklyContent)?.contents;
+        if (Array.isArray(weekContents) && weekContents.length > 0) {
+          setSelectedContentIndex(0);
+          setSelectedContentType(weekContents[0].contentType === 'audio' ? 'audioText' : 'visual');
         } else {
-          setSelectedContentType(null);
+          setSelectedContentIndex(null);
+          if (firstWeek?.videoUrl) setSelectedContentType('visual');
+          else if (firstWeek?.audioUrl || firstWeek?.text) setSelectedContentType('audioText');
+          else setSelectedContentType(null);
         }
       }
     }
@@ -518,20 +507,14 @@ function WeeklyPathPageContent() {
     // Por ahora asumimos que no está completada, esto se puede mejorar consultando la API
   };
 
-  const handleSelect = (weekNumber: number, dayNumber: number | null, contentType: 'visual' | 'audioText' | null) => {
-    // Activar loading
+  const handleSelect = (weekNumber: number, dayNumber: number | null, contentType: 'visual' | 'audioText' | null, contentIndex?: number) => {
     setIsChangingContent(true);
-    
-    // Pequeño delay para mostrar el loading y luego cambiar el contenido
     setTimeout(() => {
       setSelectedWeek(weekNumber);
       setSelectedDay(dayNumber);
       setSelectedContentType(contentType);
-      
-      // Desactivar loading después de que el contenido haya comenzado a renderizarse
-      setTimeout(() => {
-        setIsChangingContent(false);
-      }, 300);
+      setSelectedContentIndex(contentIndex ?? null);
+      setTimeout(() => setIsChangingContent(false), 300);
     }, 150);
   };
 
@@ -576,7 +559,8 @@ function WeeklyPathPageContent() {
       logbookId: logbook._id,
       weekNumber: selectedWeek,
       dayNumber: selectedDay || null,
-      contentType: selectedContentType // Enviar el tipo de contenido (visual o audioText)
+      contentType: selectedContentType,
+      contentIndex: selectedContentIndex ?? undefined
     };
 
     try {
@@ -595,24 +579,54 @@ function WeeklyPathPageContent() {
       }
 
       const data = await response.json();
-      
-      // Si no se pudo agregar U.C. (pero la clase se completó)
-      if (data.success === false) {
-        // La clase se completó pero no se otorgó U.C.
-        const totalUnits = data.tracking?.totalUnits || coherence.coherenceTracking?.totalUnits || 0;
-        
-        // Mostrar modal informativo con el motivo
-        setInfoModalData({
-          message: data.message || 'No se pudo agregar la Unidad de Coherencia',
-          tip: data.tip || undefined,
-          reason: data.reason || undefined,
-          weekNumber: data.weekNumber || selectedWeek || undefined,
-          contentType: data.contentType || selectedContentType || undefined
+
+      // Marcar como completado (siempre, tanto si se otorgó U.C. como si no)
+      if (data.completedDays && data.completedDays.length > 0) {
+        data.completedDays.forEach((key: string) => {
+          coherence.markDayCompleted(key);
         });
-        setShowInfoModal(true);
-        
-        // Actualizar tracking aunque no se haya otorgado U.C.
-        if (data.tracking) {
+      }
+      if (data.completedWeeks && data.completedWeeks.length > 0) {
+        data.completedWeeks.forEach((key: string) => {
+          coherence.markWeekCompleted(key);
+        });
+      }
+      if (data.completedVideos && data.completedVideos.length > 0) {
+        data.completedVideos.forEach((key: string) => {
+          coherence.markVideoCompleted(key, 1);
+        });
+      }
+      if (data.completedAudios && data.completedAudios.length > 0) {
+        data.completedAudios.forEach((key: string) => {
+          coherence.markAudioCompleted(key);
+        });
+      }
+
+      // Actualizar tracking si viene en la respuesta
+      if (data.tracking) {
+        if (data.levelUp) {
+          coherence.updateTracking({
+            totalUnits: data.tracking.totalUnits,
+            currentStreak: data.tracking.currentStreak,
+            longestStreak: data.tracking.longestStreak,
+            level: data.newLevel,
+            levelProgress: data.levelProgress !== undefined && data.levelProgress !== null ? data.levelProgress : 0,
+            progressToNextLevel: data.progressToNextLevel !== undefined && data.progressToNextLevel !== null ? data.progressToNextLevel : 0,
+            gorillaIcon: data.gorillaIcon,
+            evolutionName: data.evolutionName,
+            characterEvolution: data.evolution ? (coherence.coherenceTracking?.characterEvolution ?? 0) + 1 : (coherence.coherenceTracking?.characterEvolution ?? 0)
+          });
+          setLevelUpData({
+            newLevel: data.newLevel,
+            evolution: data.evolution,
+            gorillaIcon: data.gorillaIcon
+          });
+          setShowLevelUpEffect(true);
+          setTimeout(() => {
+            setShowLevelUpEffect(false);
+            setLevelUpData(null);
+          }, 3000);
+        } else {
           coherence.updateTracking({
             totalUnits: data.tracking.totalUnits,
             currentStreak: data.tracking.currentStreak,
@@ -622,98 +636,6 @@ function WeeklyPathPageContent() {
             level: data.newLevel !== undefined && data.newLevel !== null ? data.newLevel : (coherence.coherenceTracking?.level ?? 1)
           });
         }
-        
-        // Actualizar arrays de completados
-        if (data.completedDays && data.completedDays.length > 0) {
-          data.completedDays.forEach((key: string) => {
-            coherence.markDayCompleted(key);
-          });
-        }
-        if (data.completedWeeks && data.completedWeeks.length > 0) {
-          data.completedWeeks.forEach((key: string) => {
-            coherence.markWeekCompleted(key);
-          });
-        }
-        if (data.completedVideos && data.completedVideos.length > 0) {
-          data.completedVideos.forEach((key: string) => {
-            coherence.markVideoCompleted(key, 1);
-          });
-        }
-        if (data.completedAudios && data.completedAudios.length > 0) {
-          data.completedAudios.forEach((key: string) => {
-            coherence.markAudioCompleted(key);
-          });
-        }
-        
-        return; // Salir temprano ya que no se otorgó U.C.
-      }
-      
-      // Marcar como completado usando el contexto con los datos del servidor
-      if (data.completedDays && data.completedDays.length > 0) {
-        data.completedDays.forEach((key: string) => {
-          coherence.markDayCompleted(key);
-        });
-      }
-      
-      if (data.completedWeeks && data.completedWeeks.length > 0) {
-        data.completedWeeks.forEach((key: string) => {
-          coherence.markWeekCompleted(key);
-        });
-      }
-      
-      if (data.completedVideos && data.completedVideos.length > 0) {
-        data.completedVideos.forEach((key: string) => {
-          coherence.markVideoCompleted(key, 1);
-        });
-      }
-      
-      if (data.completedAudios && data.completedAudios.length > 0) {
-        data.completedAudios.forEach((key: string) => {
-          coherence.markAudioCompleted(key);
-        });
-      }
-      
-      // Actualizar tracking en el contexto directamente desde la respuesta (sin reload)
-      if (data.tracking) {
-        // Si hubo level up, actualizar todos los campos juntos incluyendo el nuevo nivel
-        if (data.levelUp) {
-          coherence.updateTracking({
-            totalUnits: data.tracking.totalUnits,
-            currentStreak: data.tracking.currentStreak,
-            longestStreak: data.tracking.longestStreak,
-            level: data.newLevel, // Nuevo nivel después del level up
-            levelProgress: data.levelProgress !== undefined && data.levelProgress !== null ? data.levelProgress : 0, // Se reinicia a 0 después del level up
-            progressToNextLevel: data.progressToNextLevel !== undefined && data.progressToNextLevel !== null ? data.progressToNextLevel : 0,
-            gorillaIcon: data.gorillaIcon,
-            evolutionName: data.evolutionName,
-            characterEvolution: data.evolution ? (coherence.coherenceTracking?.characterEvolution ?? 0) + 1 : (coherence.coherenceTracking?.characterEvolution ?? 0)
-          });
-          
-          // Mostrar efecto visual de level up
-          setLevelUpData({
-            newLevel: data.newLevel,
-            evolution: data.evolution,
-            gorillaIcon: data.gorillaIcon
-          });
-          setShowLevelUpEffect(true);
-          
-          // Ocultar el efecto después de 3 segundos
-          setTimeout(() => {
-            setShowLevelUpEffect(false);
-            setLevelUpData(null);
-          }, 3000);
-        } else {
-          // Si no hay level up, actualizar tracking normalmente
-          coherence.updateTracking({
-            totalUnits: data.tracking.totalUnits,
-            currentStreak: data.tracking.currentStreak,
-            longestStreak: data.tracking.longestStreak,
-            levelProgress: data.levelProgress !== undefined && data.levelProgress !== null ? data.levelProgress : (coherence.coherenceTracking?.levelProgress ?? 0),
-            progressToNextLevel: data.progressToNextLevel !== undefined && data.progressToNextLevel !== null ? data.progressToNextLevel : (coherence.coherenceTracking?.progressToNextLevel ?? 0)
-          });
-        }
-        
-        // Actualizar achievements si hay nuevos
         if (data.newAchievements && data.newAchievements.length > 0) {
           const currentAchievements = coherence.coherenceTracking?.achievements || [];
           coherence.updateTracking({
@@ -727,29 +649,55 @@ function WeeklyPathPageContent() {
         }
       }
 
-      // Mostrar modal de celebración con U.C. otorgada
-      const totalUnits = data.tracking?.totalUnits || coherence.coherenceTracking?.totalUnits || 0;
-      const esSemanaAdicional = data.esSemanaAdicional || false;
-      const ucsOtorgadas = data.ucsOtorgadas || 1;
-      const currentStreak = data.tracking?.currentStreak || coherence.coherenceTracking?.currentStreak || 0;
-      
-      // Verificar si necesita reporte semanal
-      if (data.necesitaReporte) {
-        setShowReportModal(true);
-      } else {
-        // Configurar datos del modal de celebración
-        setCelebrationData({
-          ucsOtorgadas,
-          totalUnits,
-          currentStreak,
-          esSemanaAdicional,
-          newAchievements: data.newAchievements || [],
-          levelUp: data.levelUp || false,
-          newLevel: data.newLevel,
-          evolution: data.evolution || false,
-          gorillaIcon: data.gorillaIcon
+      // Siempre: siguiente contenido de la semana o felicitaciones por completar la semana (sin modal "Contenido ya completado")
+      const contents = week.contents;
+      const currentIndex = selectedContentIndex ?? 0;
+      const nextIndex = currentIndex + 1;
+      const hasNextInWeek = Array.isArray(contents) && nextIndex < contents.length;
+
+      if (hasNextInWeek) {
+        const nextItem = contents![nextIndex];
+        const nextContentType = (nextItem.contentType === 'audio' ? 'audioText' : 'visual') as 'visual' | 'audioText';
+        const nextTitle = (nextItem as WeekContentItem).videoName || (nextItem as WeekContentItem).audioTitle;
+        setNextContentModalPayload({
+          nextContentIndex: nextIndex,
+          nextContentType,
+          nextTitle: nextTitle || undefined
         });
-        setShowCelebrationModal(true);
+        setShowNextContentModal(true);
+      } else {
+        // Semana completada: reporte si aplica o celebración (U.C. puede ser 0 si ya estaba todo completado)
+        const totalUnits = data.tracking?.totalUnits || coherence.coherenceTracking?.totalUnits || 0;
+        const esSemanaAdicional = data.esSemanaAdicional || false;
+        const ucsOtorgadas = data.ucsOtorgadas !== undefined && data.ucsOtorgadas !== null ? data.ucsOtorgadas : 1;
+        const currentStreak = data.tracking?.currentStreak || coherence.coherenceTracking?.currentStreak || 0;
+        if (data.necesitaReporte) {
+          setCelebrationData({
+            ucsOtorgadas,
+            totalUnits,
+            currentStreak,
+            esSemanaAdicional,
+            newAchievements: data.newAchievements || [],
+            levelUp: data.levelUp || false,
+            newLevel: data.newLevel,
+            evolution: data.evolution || false,
+            gorillaIcon: data.gorillaIcon
+          });
+          setShowReportModal(true);
+        } else {
+          setCelebrationData({
+            ucsOtorgadas,
+            totalUnits,
+            currentStreak,
+            esSemanaAdicional,
+            newAchievements: data.newAchievements || [],
+            levelUp: data.levelUp || false,
+            newLevel: data.newLevel,
+            evolution: data.evolution || false,
+            gorillaIcon: data.gorillaIcon
+          });
+          setShowCelebrationModal(true);
+        }
       }
 
     } catch (err: any) {
@@ -783,33 +731,49 @@ function WeeklyPathPageContent() {
     const week = logbook.weeklyContents.find(w => w.weekNumber === selectedWeek);
     if (!week) return null;
     
-    const pickVideo = () => {
-      if (!week.videoUrl) return null;
-      let videoId = week.videoId;
-      if (!videoId && week.videoUrl) {
-        const vimeoMatch = week.videoUrl.match(/(?:vimeo\.com\/)(\d+)/);
-        if (vimeoMatch && vimeoMatch[1]) {
-          videoId = vimeoMatch[1];
-        }
+    const contents = week.contents;
+    const hasContents = Array.isArray(contents) && contents.length > 0;
+    const effectiveIndex = hasContents && selectedContentIndex != null && selectedContentIndex >= 0 && selectedContentIndex < contents.length
+      ? selectedContentIndex
+      : hasContents ? 0 : -1;
+    const useContents = hasContents && effectiveIndex >= 0;
+    const c = useContents ? contents[effectiveIndex] : null;
+
+    const pickVideoFromContent = (item: WeekContentItem | (WeeklyContent & { videoUrl?: string; videoId?: string; videoName?: string })) => {
+      const url = item.videoUrl?.trim();
+      if (!url) return null;
+      let videoId = item.videoId;
+      if (!videoId && url) {
+        const vimeoMatch = url.match(/(?:vimeo\.com\/)(\d+)/);
+        if (vimeoMatch?.[1]) videoId = vimeoMatch[1];
       }
       return {
         type: 'visual' as const,
-        videoUrl: week.videoUrl,
-        videoId,
-        title: week.videoName || week.weekTitle || `Semana ${week.weekNumber}`,
-        duration: (week as any).videoDuration
+        videoUrl: url,
+        videoId: videoId ?? undefined,
+        title: item.videoName || week.weekTitle || `Semana ${week.weekNumber}`,
+        duration: (item as any).videoDuration
       };
     };
 
-    const pickAudio = () => {
-      if (!week.audioUrl && !week.text) return null;
+    const pickAudioFromContent = (item: WeekContentItem | (WeeklyContent & { audioUrl?: string; audioTitle?: string; text?: string })) => {
+      const hasAudio = !!(item.audioUrl?.trim() || (item as any).audioText?.trim());
+      if (!hasAudio) return null;
       return {
         type: 'audioText' as const,
-        audioUrl: week.audioUrl,
-        text: week.text,
-        title: week.audioTitle || week.weekTitle || `Semana ${week.weekNumber}`
+        audioUrl: item.audioUrl,
+        text: (item as any).audioText ?? (item as any).text,
+        title: item.audioTitle || week.weekTitle || `Semana ${week.weekNumber}`
       };
     };
+
+    if (useContents && c) {
+      if (c.contentType === 'audio') return pickAudioFromContent(c);
+      return pickVideoFromContent(c);
+    }
+
+    const pickVideo = () => pickVideoFromContent(week);
+    const pickAudio = () => pickAudioFromContent(week);
 
     if (selectedContentType === 'visual') return pickVideo();
     if (selectedContentType === 'audioText') return pickAudio();
@@ -822,17 +786,17 @@ function WeeklyPathPageContent() {
 
   if (error || !logbook) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 font-montserrat">
+      <div className="min-h-screen flex items-center justify-center bg-palette-ink font-montserrat text-palette-cream">
         <div className="text-center max-w-md px-6">
-          <h1 className="text-2xl font-normal text-gray-900 mb-4 font-montserrat">
+          <h1 className="text-2xl font-normal text-palette-cream mb-4 font-montserrat">
             No hay camino disponible
           </h1>
-          <p className="text-gray-700/90 mb-6 font-montserrat font-light">
+          <p className="text-palette-stone mb-6 font-montserrat font-light">
             {error || 'No hay contenido disponible. Pronto estará disponible.'}
           </p>
           <button
             onClick={() => router.push('/library')}
-            className="px-6 py-3 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 text-gray-900 rounded-full font-medium hover:border-amber-300/60 hover:shadow-lg transition-all duration-300 font-montserrat"
+            className="px-6 py-3 bg-palette-sage/30 border border-palette-stone/40 text-palette-cream rounded-full font-medium hover:bg-palette-sage/50 transition-all duration-300 font-montserrat"
           >
             Volver al inicio
           </button>
@@ -853,84 +817,26 @@ function WeeklyPathPageContent() {
       sidebarOpen={sidebarOpen}
       forceLightTheme={selectedContentType === 'audioText'}
     >  
-      <div className="min-h-screen bg-gray-50 font-montserrat relative">
-        {/* Layout principal con flex */}
-        <div className="flex relative justify-between">
-          {/* Overlay para cerrar sidebar en mobile */}
-          {sidebarOpen && (
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                setSidebarOpen(false);
-              }}
-              className="lg:hidden fixed inset-0 bg-black/50 z-[55] transition-opacity duration-300"
-            />
-          )}
+      <div className="flex flex-col min-h-screen bg-palette-ink text-palette-cream font-montserrat overflow-x-clip max-w-[100vw] min-w-0 w-full">
+        {/* Overlay para cerrar sidebar en mobile */}
+        {sidebarOpen && (
+          <div
+            onClick={() => setSidebarOpen(false)}
+            className="md:hidden fixed inset-0 bg-black/50 z-[55] transition-opacity duration-300"
+            aria-hidden
+          />
+        )}
 
-          {/* Sidebar */}
-          <motion.aside
-            initial={false}
-            animate={{
-              x: isDesktop ? 0 : (sidebarOpen ? 0 : '-100%'),
-            }}
-            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-            onClick={(e) => e.stopPropagation()}
-            className={`
-              fixed lg:relative
-              left-0 top-0 
-              h-screen 
-              bg-gradient-to-br from-white via-gray-50/50 to-amber-50/30 
-              border-r border-amber-200/40 
-              shadow-xl lg:shadow-none
-              z-[58] lg:z-auto
-              flex-shrink-0
-              overflow-hidden
-            `}
-            style={{
-              width: isDesktop 
-                ? '380px'  // En desktop siempre 380px, no se cierra
-                : '380px'
-            }}
+        {/* Área principal: en desktop se achica al abrir sidebar (como practice) */}
+        <section className="relative w-full max-w-full flex-1 min-h-0 md:min-h-[100vh] bg-palette-ink overflow-hidden shrink-0">
+          {/* Contenido principal: transición left como en practice */}
+          <div
+            className={`absolute top-0 bottom-0 right-0 w-full md:w-auto overflow-y-auto overflow-x-hidden transition-[left] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+              sidebarOpen ? 'md:left-96' : 'md:left-0'
+            }`}
+            style={{ zIndex: sidebarOpen && !isDesktop ? 50 : 'auto' }}
           >
-
-            {/* Contenido del sidebar - oculto cuando está cerrado en desktop */}
-            <div className={`
-              w-[420px] h-full
-              ${sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
-              transition-opacity duration-150
-              overflow-hidden
-            `}>
-              <WeeklyPathSidebar
-                logbook={logbook}
-                selectedWeek={selectedWeek}
-                selectedDay={selectedDay}
-                selectedContentType={selectedContentType}
-                onSelect={(week, day, type) => {
-                  handleSelect(week, day, type);
-                  // Cerrar sidebar en mobile al seleccionar
-                  if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-                    setSidebarOpen(false);
-                  }
-                }}
-                completedWeeks={coherence.completedWeeks}
-                completedDays={coherence.completedDays}
-                onClose={() => setSidebarOpen(false)}
-              />
-            </div>
-          </motion.aside>
-
-          {/* Contenido principal (banner + main content) */}
-          <div className={`
-            flex-1 
-            min-w-0
-            transition-all duration-300
-            ${sidebarOpen ? 'lg:ml-0' : 'lg:ml-0'}
-            ${sidebarOpen ? 'lg:pointer-events-auto pointer-events-none' : 'pointer-events-auto'}
-          `}
-          style={{
-            zIndex: sidebarOpen && !isDesktop ? 50 : 'auto'
-          }}
-          >
+            <div className="w-full h-full min-h-0 flex flex-col">
             {/* Header Banner con imagen de fondo - solo para audio y texto */}
             {selectedContentType === 'audioText' && (
               <div className="relative w-full h-[35vh] min-h-[300px] max-h-[450px] overflow-hidden bg-black">
@@ -951,86 +857,41 @@ function WeeklyPathPageContent() {
                 {/* Contenido del banner */}
                 <div className="relative h-full flex items-center justify-between px-4 sm:px-6 lg:px-8">
                   <div className="flex flex-row-reverse items-center gap-6 flex-1 max-w-7xl mx-auto w-full">
-                    {/* Icono de gorila con círculo de progreso */}
-                    <div className="relative flex-shrink-0 flex flex-col items-center">
-                      <div className="flex flex-col items-center relative">
-                        {/* Componente de gorila con nivel y progreso - El SVG del círculo de progreso está dentro del componente */}
-                        <div className="flex items-center justify-center" aria-label="gorilla-level">
-                          {coherence.coherenceTracking ? (
-                            <GorillaHoverInfo>
-                              <GorillaLevelDisplay
-                                level={coherence.coherenceTracking.level || 1}
-                                gorillaIcon={coherence.coherenceTracking.gorillaIcon || '🦍'}
-                                evolutionName={coherence.coherenceTracking.evolutionName || 'Gorila Bebé'}
-                                progressToNextLevel={coherence.coherenceTracking.progressToNextLevel || 0}
-                                monthsCompleted={coherence.coherenceTracking.monthsCompleted || 0}
-                                levelProgress={coherence.coherenceTracking.levelProgress !== undefined && coherence.coherenceTracking.levelProgress !== null ? coherence.coherenceTracking.levelProgress : 0}
-                                size="sm"
-                                showProgressBar={false}
-                                showLevel={true}
-                                layout="centered"
-                                showInfoText={false}
-                              />
-                            </GorillaHoverInfo>
-                          ) : null}
-                        </div>
-
-                        {/* Texto fuera del círculo para no afectar su tamaño */}
-                        {(() => {
-                          const monthsCompleted = coherence.coherenceTracking?.monthsCompleted ?? 0;
-                          const evolutionName = monthsCompleted > 0
-                            ? (coherence.coherenceTracking?.evolutionName || 'Gorila Bebé')
-                            : 'Gorila Bebé';
-                          return coherence.coherenceTracking ? (
-                            <div className="mt-3 text-center">
-                              <p className="text-xs md:text-sm font-montserrat font-medium text-white">
-                                {evolutionName}
-                              </p>
-                              <p className="text-[11px] md:text-xs font-montserrat font-light text-white/80">
-                                {monthsCompleted}{' '}
-                                {monthsCompleted === 1 ? 'mes' : 'meses'} completados
-                              </p>
-                            </div>
-                          ) : null;
-                        })()}
-                      </div>
-                    </div>
-
-                    {/* Información del usuario y progreso */}
+                    {/* Información del usuario y progreso (nivel va en el header como foto de usuario) */}
                     <div className="flex-1 min-w-0">
-                      <h1 className="text-3xl md:text-5xl lg:text-4xl font-bold text-white font-montserrat tracking-tight mb-2 drop-shadow-lg">
+                      <h1 className="text-3xl md:text-5xl lg:text-4xl font-bold text-palette-cream font-montserrat tracking-tight mb-2 drop-shadow-lg">
                         El Camino
                       </h1>
-                      <p className="text-base hidden md:block md:text-lg text-white/90 font-montserrat font-light mb-1 drop-shadow-md">
+                      <p className="text-base hidden md:block md:text-lg text-palette-cream/90 font-montserrat font-light mb-1 drop-shadow-md">
                         {auth.user?.nombre || 'Usuario'}
                       </p>
                       {auth.user?.email && (
-                        <p className="hidden md:block text-sm text-white/75 font-montserrat font-light mb-4 drop-shadow-sm">
+                        <p className="hidden md:block text-sm text-palette-cream/75 font-montserrat font-light mb-4 drop-shadow-sm">
                           {auth.user.email}
                         </p>
                       )}
                       {/* Completado y U.C. */}
                       <div className="flex items-center gap-4 flex-wrap">
-                        <div className="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-lg">
-                          <span className="text-xl md:text-2xl font-bold text-white font-montserrat">
+                        <div className="flex items-center gap-3 px-4 py-2.5 bg-palette-stone/20 backdrop-blur-md border border-palette-stone/40 rounded-full shadow-lg">
+                          <span className="text-xl md:text-2xl font-bold text-palette-cream font-montserrat">
                             {monthProgress}%
                           </span>
-                          <span className="text-xs md:text-sm text-gray-200 font-montserrat font-light uppercase tracking-wide">
+                          <span className="text-xs md:text-sm text-palette-stone font-montserrat font-light uppercase tracking-wide">
                             Completado
                           </span>
                         </div>
                         {coherence.coherenceTracking && (
-                          <div className="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-lg">
+                          <div className="flex items-center gap-3 px-4 py-2.5 bg-palette-stone/20 backdrop-blur-md border border-palette-stone/40 rounded-full shadow-lg">
                             <img 
                               src="/images/svg/icosahedron-thick.svg" 
                               alt="Icosaedro" 
                               className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
                               style={{ filter: 'brightness(0) invert(1)' }}
                             />
-                            <span className="text-xl md:text-2xl font-bold text-white font-montserrat">
+                            <span className="text-xl md:text-2xl font-bold text-palette-cream font-montserrat">
                               {coherence.coherenceTracking?.totalUnits || 0}
                             </span>
-                            <span className="text-xs md:text-sm text-gray-200 font-montserrat font-light uppercase tracking-wide">
+                            <span className="text-xs md:text-sm text-palette-stone font-montserrat font-light uppercase tracking-wide">
                               U.C.
                             </span>
                           </div>
@@ -1046,128 +907,7 @@ function WeeklyPathPageContent() {
             <div className="min-h-screen">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-20 pb-8">
             {/* Contenido Principal */}
-            {/* Banner mobile compacto para video */}
-            {selectedContent?.type === 'visual' && (
-              <div className="md:hidden mb-4 rounded-xl px-3 relative bottom-1">
-      <div className="flex items-center justify-between gap-3">
-                  {/* Icono de gorila con nivel (versión compacta para video) */}
-                  {coherence.coherenceTracking && (
-                    <div className="relative"
-                      onClick={() => setOpenTooltip(openTooltip === 'menu' ? null : 'menu')}
-                    >
-                      <VideoHeaderGorilla
-                        level={coherence.coherenceTracking.level || 1}
-                        gorillaIcon={coherence.coherenceTracking.gorillaIcon || '🦍'}
-                        levelProgress={coherence.coherenceTracking.levelProgress !== undefined && coherence.coherenceTracking.levelProgress !== null ? coherence.coherenceTracking.levelProgress : 0}
-                      />
- 
-                    </div>
-                  )}
-
-                  {/* Información de progreso y U.C. */}
-                  <div className="flex-1 flex items-center gap-2">
-                    {/* Porcentaje completado */}
-                    <div
-                      className="relative flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-sm"
-                      onClick={() => setOpenTooltip(openTooltip === 'progress' ? null : 'progress')}
-                    >
-                      <span className="text-base font-bold text-gray-900 font-montserrat">
-                        {monthProgress}%
-                      </span>
-                      <span className="text-[10px] text-gray-700 font-montserrat font-light uppercase tracking-wide">
-                        Completado
-                      </span>
-                      {openTooltip === 'progress' && !isMobile && (
-                        <div className="absolute left-1/2 top-full z-20 mt-2 w-64 -translate-x-1/2 rounded-xl bg-black px-4 py-3 text-xs text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)] border border-white/10">
-                          {tooltipTexts.progress}
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* U.C. */}
-                    {coherence.coherenceTracking && (
-                      <div
-                        className="relative flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-sm"
-                        onClick={() => setOpenTooltip(openTooltip === 'uc' ? null : 'uc')}
-                      >
-                        <img 
-                          src="/images/svg/icosahedron-thick.svg" 
-                          alt="Icosaedro" 
-                          className="w-5 h-5 flex-shrink-0"
-                          style={{ filter: 'brightness(0)' }}
-                        />
-                        <span className="text-base font-bold text-gray-900 font-montserrat">
-                          {coherence.coherenceTracking?.totalUnits || 0}
-                        </span>
-                        <span className="text-[10px] text-gray-700 font-montserrat font-light uppercase tracking-wide">
-                          U.C.
-                        </span>
-                        {openTooltip === 'uc' && !isMobile && (
-                          <div className="absolute left-1/2 top-full z-20 mt-2 w-64 -translate-x-1/2 rounded-xl bg-black px-4 py-3 text-xs text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)] border border-white/10">
-                            {tooltipTexts.uc}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-            
             <div className="relative">
-              {/* Banner de U.C. para web - solo para video, alineado a la derecha arriba */}
-              {selectedContent?.type === 'visual' && (
-                <div className="hidden md:flex absolute  right-4 z-10 rounded-xl -top-3 md:p-1 md:mb-2">
-                  <div className="flex items-center gap-3">
-
-                    {/* Icono/nivel compacto */}
-                    {coherence.coherenceTracking && (
-                      <GorillaHoverInfo>
-                        <VideoHeaderGorilla
-                          level={coherence.coherenceTracking.level || 1}
-                          gorillaIcon={coherence.coherenceTracking.gorillaIcon || '🦍'}
-                          levelProgress={coherence.coherenceTracking.levelProgress !== undefined && coherence.coherenceTracking.levelProgress !== null ? coherence.coherenceTracking.levelProgress : 0}
-                        />
-                      </GorillaHoverInfo>
-                    )}
-
-
-                    {/* Información de progreso y U.C. */}
-                    <div className="flex items-center gap-2">
-                      {/* Porcentaje completado */}
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-sm">
-                        <span className="text-base font-bold text-gray-900 font-montserrat">
-                          {monthProgress}%
-                        </span>
-                        <span className="text-[10px] text-gray-700 font-montserrat font-light uppercase tracking-wide">
-                          Completado
-                        </span>
-                      </div>
-                      
-                      {/* U.C. */}
-                      {coherence.coherenceTracking && (
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-sm">
-                          <img 
-                            src="/images/svg/icosahedron-thick.svg" 
-                            alt="Icosaedro" 
-                            className="w-5 h-5 flex-shrink-0"
-                            style={{ filter: 'brightness(0)' }}
-                          />
-                          <span className="text-base font-bold text-gray-900 font-montserrat">
-                            {coherence.coherenceTracking?.totalUnits || 0}
-                          </span>
-                          <span className="text-[10px] text-gray-700 font-montserrat font-light uppercase tracking-wide">
-                            U.C.
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-    
-
               {selectedContent && selectedWeekData && (
                 // Verificar desbloqueo: para contenido diario verificar día, para legacy verificar semana
                 (() => {
@@ -1206,7 +946,7 @@ function WeeklyPathPageContent() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-3xl"
+                        className="absolute inset-0 z-50 flex items-center justify-center bg-palette-ink/90 backdrop-blur-sm rounded-3xl"
                       >
                         <div className="flex flex-col items-center gap-4">
                           <motion.div
@@ -1217,7 +957,7 @@ function WeeklyPathPageContent() {
                           <motion.p
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-sm text-gray-700 font-montserrat font-medium"
+                            className="text-sm text-palette-cream font-montserrat font-medium"
                           >
                             Cargando contenido...
                           </motion.p>
@@ -1238,14 +978,18 @@ function WeeklyPathPageContent() {
                         <VideoContentDisplay
                           videoUrl={selectedContent.videoUrl}
                           videoId={selectedContent.videoId}
-                          thumbnailUrl={'thumbnailUrl' in selectedContent ? selectedContent.thumbnailUrl : undefined}
                           title={selectedContent.title}
                           description={'description' in selectedContent ? selectedContent.description : undefined}
                           duration={'duration' in selectedContent ? selectedContent.duration : undefined}
+                          materials={[]}
                           onComplete={handleComplete}
-                          isCompleted={selectedDay 
-                            ? coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-video`) 
-                            : coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-week-video`)}
+                          onPause={() => setSidebarOpen(true)}
+                          onPlay={() => setSidebarOpen(false)}
+                          isCompleted={selectedContentIndex != null
+                            ? coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-content-${selectedContentIndex}`)
+                            : selectedDay 
+                              ? coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-video`) 
+                              : coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-week-video`)}
                           logbookId={logbook?._id}
                           weekNumber={selectedWeek || undefined}
                           dayNumber={selectedDay || undefined}
@@ -1266,9 +1010,11 @@ function WeeklyPathPageContent() {
                           title={selectedContent.title}
                           subtitle={'subtitle' in selectedContent ? selectedContent.subtitle : undefined}
                           onComplete={handleComplete}
-                          isCompleted={selectedDay 
-                            ? coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-audio`) 
-                            : coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-week-audio`)}
+                          isCompleted={selectedContentIndex != null
+                            ? coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-content-${selectedContentIndex}`)
+                            : selectedDay 
+                              ? coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-audio`) 
+                              : coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-week-audio`)}
                           logbookId={logbook?._id}
                           weekNumber={selectedWeek || undefined}
                           dayNumber={selectedDay || undefined}
@@ -1278,13 +1024,13 @@ function WeeklyPathPageContent() {
                   </AnimatePresence>
                 </div>
               ) : selectedWeekData && !selectedWeekData.isUnlocked && auth.user?.rol !== 'Admin' ? (
-                <div className="relative rounded-3xl border border-gray-200 bg-white p-10 text-left sm:text-center shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+                <div className="relative rounded-3xl border border-palette-stone/20 bg-palette-ink p-10 text-left sm:text-center shadow-xl">
                   <div className="relative z-10">
-                    <LockClosedIcon className="w-16 h-16 text-amber-600 sm:mx-auto mb-4" />
-                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 font-montserrat mb-3 tracking-tight">
+                    <LockClosedIcon className="w-16 h-16 text-palette-sage sm:mx-auto mb-4" />
+                    <h2 className="text-2xl sm:text-3xl font-bold text-palette-cream font-montserrat mb-3 tracking-tight">
                       {selectedDay ? `Día ${selectedDay}` : `Semana ${selectedWeek}`} bloqueada
                     </h2>
-                    <p className="text-base sm:text-lg text-gray-700/90 mb-3 font-montserrat font-light">
+                    <p className="text-base sm:text-lg text-palette-stone mb-3 font-montserrat font-light">
                       Este contenido se desbloqueará el{' '}
                       {new Date(
                         selectedDay && selectedWeekData.dailyContents
@@ -1297,111 +1043,123 @@ function WeeklyPathPageContent() {
                         year: 'numeric'
                       })}
                     </p>
-                    <p className="text-base text-gray-600 font-montserrat font-light">
+                    <p className="text-base text-palette-stone font-montserrat font-light">
                       Vuelve cuando llegue la fecha de publicación para acceder al contenido.
                     </p>
                   </div>
                 </div>
               ) : (
-                <div className="relative rounded-3xl border border-gray-200 bg-white p-10 text-left sm:text-center shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
-                  <p className="relative z-10 text-base sm:text-lg text-gray-800 font-montserrat font-light">Selecciona un contenido para comenzar</p>
+                <div className="relative rounded-3xl border border-palette-stone/20 bg-palette-ink p-10 text-left sm:text-center shadow-xl">
+                  <p className="relative z-10 text-base sm:text-lg text-palette-cream font-montserrat font-light">Selecciona un contenido para comenzar</p>
                 </div>
               )}
 
-              {/* Logros - Estética natural y minimalista */}
+              {/* Logros - texto limpio, sin cajas con borde */}
               {coherence.coherenceTracking && coherence.coherenceTracking.achievements.length > 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="mt-16 relative overflow-hidden sm:p-8"
+                    className="mt-14 pt-10 border-t border-palette-stone/10"
                   >
-                    <div className="relative z-10">
-                      <h3 
-                        className="text-xl md:text-3xl font-semibold text-left sm:text-center mb-6 font-montserrat text-gray-900 tracking-tight"
-                      >
-                        Objetivos alcanzados
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {coherence.coherenceTracking.achievements.map((achievement: any, index: number) => (
-                          <motion.div
-                            key={index}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: index * 0.1, type: 'spring', stiffness: 200 }}
-                            className="flex flex-col items-start sm:items-center gap-3 p-4 rounded-2xl border border-gray-200 bg-white transition-all duration-300 hover:shadow-md"
-                          >
-                            <motion.div
-                              animate={{
-                                scale: [1, 1.1, 1],
-                                rotate: [0, 5, -5, 0]
-                              }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                repeatDelay: 3,
-                                delay: index * 0.2
-                              }}
-                              className="text-4xl text-amber-600"
-                            >
-                              {shapeIcon(achievement.name || index)}
-                            </motion.div>
-                            <div className="text-left sm:text-center">
-                              <p 
-                                className="font-normal text-lg sm:text-xl mb-1 font-montserrat text-gray-900"
-                              >
-                                {achievement.name}
-                              </p>
-                              <p 
-                                className="text-base sm:text-lg font-light leading-relaxed font-montserrat text-gray-700"
-                              >
-                                {achievement.description}
-                              </p>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
+                    <h3 className="text-lg md:text-xl font-semibold text-palette-cream font-montserrat tracking-tight mb-4">
+                      Objetivos alcanzados
+                    </h3>
+                    <ul className="space-y-4">
+                      {coherence.coherenceTracking.achievements.map((achievement: any, index: number) => (
+                        <li key={index} className="flex gap-3 items-start">
+                          <span className="text-palette-sage mt-0.5 shrink-0" aria-hidden>{shapeIcon(achievement.name || index)}</span>
+                          <div>
+                            <p className="font-normal text-palette-cream font-montserrat">{achievement.name}</p>
+                            <p className="text-palette-stone/90 text-sm font-light leading-relaxed font-montserrat">{achievement.description}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
                   </motion.div>
                 )}
 
-              {/* Información sobre Coherencia */}
+              {/* Información sobre Coherencia - texto fino, sin contenedores con borde */}
               <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
-                  className="mt-8 relative rounded-3xl bg-white border border-gray-200 p-6 sm:p-8 overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.04)]"
+                  className="mt-10 pt-10 border-t border-palette-stone/10"
                 >
-                  <div className="relative z-10">
-                    <h3 className="text-xl sm:text-xl font-bold text-gray-900 mb-4 font-montserrat tracking-tight text-left sm:text-center">
+                    <h3 className="text-lg md:text-xl font-semibold text-palette-cream font-montserrat tracking-tight mb-3">
                       ¿Qué es la Coherencia?
                     </h3>
-                    <p className="text-base sm:text-lg text-gray-800 leading-relaxed mb-3 font-montserrat font-light text-left">
-                      La coherencia es la constancia en tu práctica. Cada semana que completes el Camino, 
-                      cultivas una Unidad de Coherencia (U.C.) y mantenés tu racha activa.
+                    <p className="text-palette-cream/90 text-base font-light leading-relaxed font-montserrat mb-3">
+                      Una semana completada del Camino = 1 Unidad de Coherencia (U.C.). Mantené la constancia y acumulá U.C. para canjear por programas, material o lo que vayamos creando.
                     </p>
-                    <p className="text-base sm:text-lg text-gray-800 leading-relaxed mb-4 font-montserrat font-light text-left">
-                      Se premia la constancia, porque ahí están los resultados en el movimiento.
+                    <p className="text-palette-cream/90 text-base font-light leading-relaxed font-montserrat">
+                      Se premia la constancia: ahí están los resultados en el movimiento.
                     </p>
-                    <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                      <p className="text-lg sm:text-base text-gray-800 leading-relaxed font-montserrat font-normal mb-2 text-left">
-                        Sistema de Constancia:
-                      </p>
-                      <ul className="text-base sm:text-base text-gray-700 leading-relaxed font-montserrat font-light space-y-2 list-disc list-inside text-left">
-                        <li><strong>Constancia ideal:</strong> Completa 2 U.C. por semana (1 video + 1 audio) para obtener el máximo de puntos.</li>
-                        <li><strong>Si te atrasas:</strong> Si completas más de 2 U.C. en una semana calendario, cada semana adicional solo otorga 1 U.C. en total (no 2).</li>
-                        <li><strong>Ejemplo:</strong> Si completas 3 semanas en una semana calendario, obtienes 4 U.C. (2 de la primera semana + 1 de cada semana adicional) en lugar de 6.</li>
-                      </ul>
-                    </div>
-                  </div>
                 </motion.div>
               </div>
             </div>
-          </div>
+            <div className="pb-4 md:pb-6" >
+              <FooterProfile />
+            </div>
+            </div>
           </div>
         </div>
+
+          {/* PC: flecha para abrir sidebar (como practice) */}
+          <button 
+            type="button"
+            onClick={() => setSidebarOpen(true)}
+            className={`hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-30 h-14 w-10 items-center justify-center rounded-r-xl bg-palette-ink/95 text-palette-cream shadow-lg border border-l-0 border-palette-stone/30 hover:bg-palette-ink hover:w-12 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] focus:outline-none focus:ring-2 focus:ring-palette-sage focus:ring-offset-2 focus:ring-offset-transparent ${
+              sidebarOpen ? 'opacity-0 pointer-events-none -translate-x-4' : 'opacity-100 translate-x-0'
+            }`}
+            aria-label="Abrir menú del camino"
+          >
+            <ChevronRightIcon className="w-6 h-6 shrink-0" aria-hidden />
+          </button>
+
+          {/* Sidebar único: semanas/días del camino (desktop y móvil) */}
+          <div
+            className={`flex fixed inset-y-0 left-0 z-40 w-[min(380px,90vw)] md:w-96 max-w-[90vw] flex-col bg-palette-ink border-r border-palette-stone/20 shadow-xl overflow-hidden pt-20 transition-transform duration-300 md:duration-500 ease-out md:ease-[cubic-bezier(0.32,0.72,0,1)] min-w-0 ${
+              sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+          >
+            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-palette-stone/20 shrink-0">
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(false)}
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-palette-stone/30 text-palette-cream hover:bg-palette-stone/50 transition-colors focus:outline-none focus:ring-2 focus:ring-palette-sage focus:ring-offset-2 focus:ring-offset-palette-ink border border-palette-stone/40"
+                aria-label="Cerrar menú"
+              >
+                <ChevronLeftIcon className="w-6 h-6 shrink-0" strokeWidth={2.5} />
+              </button>
+              <Link
+                href="/library"
+                className="text-sm text-palette-sage hover:underline truncate"
+              >
+                Volver a Biblioteca
+              </Link>
+            </div>
+            <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 min-w-0">
+              <WeeklyPathSidebar
+                logbook={logbook}
+                selectedWeek={selectedWeek}
+                selectedDay={selectedDay}
+                selectedContentType={selectedContentType}
+                selectedContentIndex={selectedContentIndex}
+                onSelect={(week, day, type, contentIndex) => {
+                  handleSelect(week, day, type, contentIndex);
+                  if (typeof window !== 'undefined' && window.innerWidth < 1024) setSidebarOpen(false);
+                }}
+                completedWeeks={coherence.completedWeeks}
+                completedDays={coherence.completedDays}
+                completedVideos={coherence.completedVideos}
+                completedAudios={coherence.completedAudios}
+                onClose={() => setSidebarOpen(false)}
+              />
+            </div>
+          </div>
+        </section>
       </div>
-      <FooterProfile />
       </MainSideBar>
 
       {/* Modal de celebración cuando se obtiene U.C. */}
@@ -1423,6 +1181,23 @@ function WeeklyPathPageContent() {
           gorillaIcon={celebrationData.gorillaIcon}
         />
       )}
+
+      {/* Modal: ir al siguiente contenido de la semana */}
+      <NextContentModal
+        isOpen={showNextContentModal}
+        onClose={() => {
+          setShowNextContentModal(false);
+          setNextContentModalPayload(null);
+        }}
+        onNext={() => {
+          if (selectedWeek !== null && nextContentModalPayload) {
+            handleSelect(selectedWeek, null, nextContentModalPayload.nextContentType, nextContentModalPayload.nextContentIndex);
+          }
+          setShowNextContentModal(false);
+          setNextContentModalPayload(null);
+        }}
+        nextTitle={nextContentModalPayload?.nextTitle}
+      />
 
       {/* Modal informativo cuando NO se obtiene U.C. */}
       {infoModalData && (
@@ -1468,11 +1243,7 @@ function WeeklyPathPageContent() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[300] flex items-center justify-center pointer-events-none"
-            style={{
-              background: `linear-gradient(135deg, rgba(139, 69, 19, 0.5) 0%, rgba(249, 115, 22, 0.4) 100%)`,
-              backdropFilter: 'blur(12px)'
-            }}
+            className="fixed inset-0 z-[300] flex items-center justify-center pointer-events-none bg-palette-ink/80 backdrop-blur-xl"
           >
             <motion.div
               initial={{ scale: 0.5, opacity: 0, rotate: -180 }}
@@ -1486,7 +1257,7 @@ function WeeklyPathPageContent() {
                 duration: 0.8,
                 ease: [0.34, 1.56, 0.64, 1]
               }}
-              className="relative flex flex-col items-center gap-4 p-8 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 rounded-3xl border-2 border-amber-300 shadow-2xl max-w-md mx-4"
+              className="relative flex flex-col items-center gap-4 p-8 bg-palette-ink rounded-3xl border-2 border-palette-stone/30 shadow-2xl max-w-md mx-4"
             >
               {/* Partículas de celebración */}
               {[...Array(20)].map((_, i) => (
@@ -1540,7 +1311,7 @@ function WeeklyPathPageContent() {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3, duration: 0.5 }}
-                  className="text-3xl font-bold text-gray-900 font-montserrat mb-2"
+                  className="text-3xl font-bold text-palette-cream font-montserrat mb-2"
                 >
                   ¡Subiste de Nivel!
                 </motion.h2>
@@ -1548,7 +1319,7 @@ function WeeklyPathPageContent() {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.5, duration: 0.5 }}
-                  className="text-xl font-semibold text-amber-600 font-montserrat mb-1"
+                  className="text-xl font-semibold text-palette-sage font-montserrat mb-1"
                 >
                   Nivel {levelUpData.newLevel}
                 </motion.p>
@@ -1557,7 +1328,7 @@ function WeeklyPathPageContent() {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.7, duration: 0.5 }}
-                    className="text-sm text-gray-700 font-montserrat font-light"
+                    className="text-sm text-palette-stone font-montserrat font-light"
                   >
                     ¡Tu gorila evoluciona!
                   </motion.p>

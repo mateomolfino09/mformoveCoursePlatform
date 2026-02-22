@@ -1005,7 +1005,7 @@ export default function BienvenidaPage() {
                           },
                           {
                             title: 'Contenido nuevo cada semana',
-                            text: 'Tu ruta semanal. Una vez que aceptes, entrás y empezás a sumar U.C. para canjear por programas, material o lo que vayamos creando.'
+                            text: 'Tu ruta semanal. Una semana completada = 1 U.C. Canjealas por programas, material o lo que vayamos creando.'
                           }
                         ].map((item, index) => (
                           <motion.div

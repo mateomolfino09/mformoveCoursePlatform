@@ -58,7 +58,7 @@ export async function POST(req) {
 
     // Obtener el body de la petición
     const body = await req.json();
-    const { logbookId, weekNumber, dayNumber, contentType } = body;
+    const { logbookId, weekNumber, dayNumber, contentType, contentIndex } = body;
 
     if (!logbookId) {
       return NextResponse.json(
@@ -117,13 +117,15 @@ export async function POST(req) {
     // Generar las claves de completado - SEPARADAS por tipo de contenido
     const dayKey = dayNumber && weekNumber ? `${logbookId}-${weekNumber}-${dayNumber}` : null;
     const weekKey = weekNumber ? `${logbookId}-${weekNumber}` : null;
-    
+    const useContentIndex = contentIndex !== undefined && contentIndex !== null && !dayKey;
+
     // Claves específicas por tipo de contenido (video y audio son independientes)
-    const videoKey = contentType === 'visual' 
-      ? (dayKey ? `${dayKey}-video` : `${logbookId}-${weekNumber}-week-video`)
+    // Con contentIndex: una clave por ítem de la semana (varios contenidos por semana)
+    const videoKey = contentType === 'visual'
+      ? (useContentIndex ? `${logbookId}-${weekNumber}-content-${contentIndex}` : (dayKey ? `${dayKey}-video` : `${logbookId}-${weekNumber}-week-video`))
       : null;
     const audioKey = (contentType === 'audio' || contentType === 'audioText')
-      ? (dayKey ? `${dayKey}-audio` : `${logbookId}-${weekNumber}-week-audio`)
+      ? (useContentIndex ? `${logbookId}-${weekNumber}-content-${contentIndex}` : (dayKey ? `${dayKey}-audio` : `${logbookId}-${weekNumber}-week-audio`))
       : null;
 
 
@@ -176,12 +178,32 @@ export async function POST(req) {
       }
     }
     
-    // SIEMPRE llamar a addCoherenceUnit para incrementar levelProgress
-    // Incluso si el contenido ya está completado (no otorgará U.C. pero sí incrementará levelProgress)
-    if ((videoKey && contentType === 'visual') || (audioKey && (contentType === 'audio' || contentType === 'audioText'))) {
+    // U.C.: con contentIndex (varios contenidos por semana) solo se otorga 1 U.C. cuando la semana está completa.
+    // Sin contentIndex (legacy): se llama addCoherenceUnit por cada contenido.
+    const shouldCallAddUC = (videoKey && contentType === 'visual') || (audioKey && (contentType === 'audio' || contentType === 'audioText'));
+    if (shouldCallAddUC) {
       try {
-        const result = await tracking.addCoherenceUnit(logbookId, contentType, weekNumber, null, semanaActualDelLogbook);
-        ucResult = result; // Guardar el resultado
+        let callAddUC = false;
+        if (useContentIndex) {
+          const logbookDoc = await WeeklyLogbook.findById(logbookId).lean();
+          const week = logbookDoc?.weeklyContents?.find((w) => w.weekNumber === weekNumber);
+          const contents = week?.contents;
+          if (Array.isArray(contents) && contents.length > 0) {
+            let completedCount = 0;
+            for (let i = 0; i < contents.length; i++) {
+              const key = `${logbookId}-${weekNumber}-content-${i}`;
+              if ((tracking.completedVideos || []).includes(key) || (tracking.completedAudios || []).includes(key)) completedCount++;
+            }
+            if (completedCount === contents.length) callAddUC = true;
+          } else {
+            callAddUC = true;
+          }
+        } else {
+          callAddUC = true;
+        }
+        if (callAddUC) {
+          const result = await tracking.addCoherenceUnit(logbookId, contentType, weekNumber, null, semanaActualDelLogbook);
+          ucResult = result; // Guardar el resultado
         
         if (result.success) {
           newAchievements = result.newAchievements || [];
@@ -209,6 +231,7 @@ export async function POST(req) {
           if (result.characterEvolution !== undefined) {
             tracking.characterEvolution = result.characterEvolution;
           }
+        }
         }
       } catch (error) {
         // Error silencioso al agregar U.C.
@@ -293,18 +316,16 @@ export async function POST(req) {
     let tip = undefined;
     
     if (ucGranted) {
-      if (esSemanaAdicional) {
-        message = `¡Clase completada! Obtuviste ${ucsOtorgadas} U.C. (semana adicional).`;
-      } else {
-        message = `¡Clase completada! Obtuviste ${ucsOtorgadas} U.C.`;
-      }
+      message = ucsOtorgadas === 1
+        ? '¡Semana completada! Obtuviste 1 U.C.'
+        : `¡Semana completada! Obtuviste ${ucsOtorgadas} U.C.`;
       responseSuccess = true;
     } else {
       // No se otorgó U.C. (contenido ya estaba completado o límite de semana adicional)
       responseSuccess = false;
       reason = ucResult?.reason || 'ALREADY_COMPLETED_NO_UC';
-      tip = ucResult?.tip || 'No se otorga una nueva U.C. pero se suma progreso de nivel.';
-      message = ucResult?.message || 'Contenido ya completado. No se otorga U.C., pero se sumó progreso de nivel.';
+      tip = ucResult?.tip || 'Una semana completada = 1 U.C. Este contenido ya estaba completado.';
+      message = ucResult?.message || 'Contenido ya completado. Una semana completada = 1 U.C.';
       // Si hubo level up, seguir considerándolo éxito para que se procese el efecto
       if (ucResult?.levelUp) {
         responseSuccess = true;

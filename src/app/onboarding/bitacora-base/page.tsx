@@ -21,7 +21,7 @@ const GorillaHoverInfo = ({ children }: { children: React.ReactNode }) => (
     <div
       className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-72 -translate-x-1/2 rounded-xl bg-black/80 px-3 py-2 text-xs text-white opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
     >
-      Sube de nivel completando videos del Camino Base. Gana U.C. y canjea por programas o merch que iremos creando.
+      Una semana completada = 1 U.C. Completá el Camino Base y canjeá por programas o merch.
     </div>
   </div>
 );
@@ -58,7 +58,7 @@ function BitacoraBasePageContent() {
   
   const tooltipTexts: Record<'progress' | 'uc', string> = {
     progress: 'Porcentaje de avance del Camino Base.',
-    uc: 'Unidades de Coherencia acumuladas. Canjealas por programas, elementos, material o ropa, lo iremos mejorando y mejorando.'
+    uc: 'Una semana completada = 1 U.C. Acumulalas y canjealas por programas o material.'
   };
   const [celebrationData, setCelebrationData] = useState<{
     ucsOtorgadas: number;
@@ -760,7 +760,7 @@ function BitacoraBasePageContent() {
                     className="text-xs md:text-sm font-montserrat font-light mb-6 md:mb-7"
                     style={{ color: '#6B7280' }}
                   >
-                    Podés acceder igual al Camino y empezar a ganar U.C. desde ahí.
+                    Podés acceder igual al Camino: una semana completada = 1 U.C.
                   </motion.p>
 
                   {/* Botones */}

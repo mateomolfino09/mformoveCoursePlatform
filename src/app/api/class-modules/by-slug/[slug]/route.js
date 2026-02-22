@@ -7,7 +7,7 @@ connectDB();
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
 
-/** GET: obtener un módulo por slug (para URLs amigables). Incluye practicesCount: clases en video de submódulos + video principal del módulo. */
+/** GET: obtener un módulo por slug (para URLs amigables). practicesCount = solo clases de submódulos publicadas en biblioteca (visibleInLibrary !== false). */
 export async function GET(req, { params }) {
   try {
     const { slug } = params;
@@ -21,11 +21,12 @@ export async function GET(req, { params }) {
     }
 
     const moduleId = module_._id;
-    const countModuleClasses = await ModuleClass.countDocuments({ moduleId });
-    const hasModuleVideo = !!(module_.videoId || (module_.videoUrl && String(module_.videoUrl).trim()));
-    const practicesCount = countModuleClasses + (hasModuleVideo ? 1 : 0);
+    // Solo clases publicadas en biblioteca (visibleInLibrary !== false); las creadas desde weekly path quedan ocultas hasta publicar última semana
+    const visibleQuery = { moduleId, visibleInLibrary: { $ne: false } };
+    const countModuleClasses = await ModuleClass.countDocuments(visibleQuery);
+    const practicesCount = countModuleClasses;
 
-    const moduleClasses = await ModuleClass.find({ moduleId })
+    const moduleClasses = await ModuleClass.find(visibleQuery)
       .sort({ submoduleSlug: 1, order: 1, createdAt: 1 })
       .lean();
 

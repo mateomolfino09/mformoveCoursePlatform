@@ -512,7 +512,7 @@ export default function ModulePracticePage({
 
             {/* Web: 100vh, video se achica al abrir sidebar; sin scale en el wrapper para que los controles no se recorten */}
             <div
-              className={`hidden md:block absolute top-0 bottom-0 right-0 h-full transition-[left] duration-300 ease-out overflow-hidden ${
+              className={`hidden md:block absolute top-0 bottom-0 right-0 h-full overflow-hidden transition-[left] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
                 sidebarOpen ? 'left-96' : 'left-0'
               }`}
               onMouseEnter={() => setVideoAreaHover(true)}
@@ -560,7 +560,7 @@ export default function ModulePracticePage({
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}
-            className={`hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-30 h-14 w-10 items-center justify-center rounded-r-xl bg-palette-ink/95 text-palette-cream shadow-lg border border-l-0 border-palette-stone/30 hover:bg-palette-ink hover:w-12 transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-palette-sage focus:ring-offset-2 focus:ring-offset-transparent ${
+            className={`hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-30 h-14 w-10 items-center justify-center rounded-r-xl bg-palette-ink/95 text-palette-cream shadow-lg border border-l-0 border-palette-stone/30 hover:bg-palette-ink hover:w-12 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] focus:outline-none focus:ring-2 focus:ring-palette-sage focus:ring-offset-2 focus:ring-offset-transparent ${
               sidebarOpen ? 'opacity-0 pointer-events-none -translate-x-4' : 'opacity-100 translate-x-0'
             }`}
             aria-label="Abrir menú de la clase"
@@ -570,7 +570,7 @@ export default function ModulePracticePage({
 
           {/* PC: sidebar opaco; contenido debajo del header/logo */}
           <div
-            className={`hidden md:flex fixed inset-y-0 left-0 z-40 w-96 max-w-[90vw] flex-col bg-palette-ink border-r border-palette-stone/20 shadow-xl transition-transform duration-300 ease-out overflow-hidden pt-20 ${
+            className={`hidden md:flex fixed inset-y-0 left-0 z-40 w-96 max-w-[90vw] flex-col bg-palette-ink border-r border-palette-stone/20 shadow-xl overflow-hidden pt-20 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
               sidebarOpen ? 'translate-x-0' : '-translate-x-full'
             }`}
           >

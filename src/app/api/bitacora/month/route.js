@@ -1,10 +1,55 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import mongoose from 'mongoose';
 import connectDB from '../../../../config/connectDB';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
+import IndividualClass from '../../../../models/individualClassModel';
+import ModuleClass from '../../../../models/moduleClassModel';
 
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
+
+/** Extrae el id de Vimeo de una URL o string (ej. "https://vimeo.com/123" -> "123") */
+function extractVimeoId(urlOrId) {
+  if (!urlOrId || typeof urlOrId !== 'string') return null;
+  const trimmed = urlOrId.trim();
+  const match = trimmed.match(/(?:vimeo\.com\/)(\d+)/);
+  if (match) return match[1];
+  if (/^\d+$/.test(trimmed)) return trimmed;
+  return null;
+}
+
+/** Hidrata los ítems de contenido que solo tienen individualClassId o moduleClassId (trae videoUrl, videoName, etc. desde la fuente). */
+async function hydrateWeeklyContents(weeklyContents) {
+  if (!Array.isArray(weeklyContents)) return;
+  for (const week of weeklyContents) {
+    const contents = week.contents;
+    if (!Array.isArray(contents)) continue;
+    for (const item of contents) {
+      const needsVideo = (item.contentType === 'individualClass' || item.contentType === 'moduleClass') &&
+        (!item.videoUrl || !String(item.videoUrl).trim());
+      if (!needsVideo) continue;
+
+      if (item.contentType === 'individualClass' && item.individualClassId && mongoose.Types.ObjectId.isValid(item.individualClassId)) {
+        const ic = await IndividualClass.findById(item.individualClassId).select('link name').lean();
+        if (ic) {
+          const link = (ic.link && String(ic.link).trim()) || '';
+          item.videoUrl = link;
+          item.videoName = (item.videoName && String(item.videoName).trim()) || (ic.name && String(ic.name).trim()) || '';
+          if (!item.videoId) item.videoId = extractVimeoId(link) || undefined;
+        }
+      } else if (item.contentType === 'moduleClass' && item.moduleClassId && mongoose.Types.ObjectId.isValid(item.moduleClassId)) {
+        const mc = await ModuleClass.findById(item.moduleClassId).select('videoUrl videoId name duration').lean();
+        if (mc) {
+          item.videoUrl = (mc.videoUrl && String(mc.videoUrl).trim()) || item.videoUrl || '';
+          item.videoName = (item.videoName && String(item.videoName).trim()) || (mc.name && String(mc.name).trim()) || '';
+          if (mc.videoId) item.videoId = mc.videoId;
+          if (mc.duration != null) item.videoDuration = mc.duration;
+        }
+      }
+    }
+  }
+}
 
 export async function GET(req) {
   try {
@@ -80,6 +125,11 @@ export async function GET(req) {
         { error: 'No se encontró ninguna camino' },
         { status: 404 }
       );
+    }
+
+    // Hidratar contenidos que solo tienen individualClassId o moduleClassId (traer videoUrl, videoName desde IndividualClass / ModuleClass)
+    if (logbook.weeklyContents && logbook.weeklyContents.length > 0) {
+      await hydrateWeeklyContents(logbook.weeklyContents);
     }
 
     return NextResponse.json(

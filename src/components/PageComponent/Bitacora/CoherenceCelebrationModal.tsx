@@ -245,13 +245,10 @@ const CoherenceCelebrationModal = ({
                           </h3>
                           <div className="space-y-3 text-sm font-light font-montserrat leading-relaxed text-palette-ink">
                             <p>
-                              <strong className="text-palette-stone font-medium">U.C.</strong> significa <strong className="text-palette-stone font-medium">Unidad de Coherencia</strong>. Es tu sistema de puntos en Move Crew.
+                              <strong className="text-palette-stone font-medium">U.C.</strong> = <strong className="text-palette-stone font-medium">Unidad de Coherencia</strong>. Una semana completada del Camino = 1 U.C.
                             </p>
                             <p>
-                              <strong className="text-palette-stone font-medium">¿Cuándo se te da?</strong> Cada vez que completás una semana de tu Camino.
-                            </p>
-                            <p>
-                              <strong className="text-palette-stone font-medium">Podes canjearlas por programas especiales, elementos o material que vamos creando.</strong> 
+                              Acumulalas y canjealas por programas, material o lo que vayamos creando.
                             </p>
                             <p className="text-center mt-4 pt-3 border-t border-palette-stone/15">
                               <span className="font-medium text-palette-stone">Total actual: {totalUnits} U.C.</span>
@@ -282,7 +279,7 @@ const CoherenceCelebrationModal = ({
                             className="mt-4 p-4 rounded-xl border border-palette-stone/15 bg-palette-sage/10"
                           >
                             <p className="text-xs font-montserrat font-light leading-relaxed text-center text-palette-ink">
-                              Semana adicional: Cada semana adicional otorga 1 U.C. en total. Completa el contenido nuevo cada semana para maximizar tus puntos.
+                              Una semana completada = 1 U.C.
                             </p>
                           </motion.div>
                         )}

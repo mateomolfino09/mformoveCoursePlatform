@@ -1,9 +1,47 @@
 'use client'
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircleIcon, LockClosedIcon } from '@heroicons/react/24/solid';
-import Player from '@vimeo/player';
 import { toast } from 'react-hot-toast';
+import MoveCrewVideoPlayer, { type MoveCrewVideoPlayerHandle } from '../ClassPage/MoveCrewVideoPlayer';
+
+const MATERIAL_LABELS: Record<string, string> = {
+  baston: 'Bastón',
+  'banda elastica': 'Banda elástica',
+  banco: 'Banco',
+  pelota: 'Pelota',
+};
+
+const MaterialIcons: Record<string, React.ReactNode> = {
+  baston: (
+    <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" aria-hidden>
+      <path d="M14 44V18l4-4 12 12 4-4v22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M18 14l2-2 8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  ),
+  'banda elastica': (
+    <svg viewBox="0 0 48 24" fill="none" className="w-full h-full" aria-hidden>
+      <path d="M6 12h36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3" />
+      <ellipse cx="10" cy="12" rx="6" ry="4" stroke="currentColor" strokeWidth="2" fill="none" />
+      <ellipse cx="38" cy="12" rx="6" ry="4" stroke="currentColor" strokeWidth="2" fill="none" />
+    </svg>
+  ),
+  banco: (
+    <svg viewBox="0 0 48 32" fill="none" className="w-full h-full" aria-hidden>
+      <rect x="4" y="12" width="40" height="8" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />
+      <path d="M10 20v4h6v-4M32 20v4h6v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  ),
+  pelota: (
+    <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" aria-hidden>
+      <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="2" fill="none" />
+      <path d="M24 4c-6 4-10 12-10 20s4 16 10 20c6-4 10-12 10-20s-4-16-10-20z" stroke="currentColor" strokeWidth="1.5" fill="none" />
+      <path d="M4 24h40" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  ),
+};
+
+const INTRO_COUNTDOWN_SEC = 7;
+const INTRO_MORE_TIME_SEC = 30;
 
 interface Props {
   videoUrl?: string;
@@ -13,7 +51,13 @@ interface Props {
   videoName?: string;
   description?: string;
   duration?: number;
+  /** Materiales para la clase (baston, banda elastica, banco, pelota) */
+  materials?: string[];
   onComplete?: () => void;
+  /** Se llama cuando el usuario pone pausa (abrir sidebar, etc.) */
+  onPause?: () => void;
+  /** Se llama cuando el usuario reproduce el video (cerrar sidebar, etc.) */
+  onPlay?: () => void;
   isCompleted?: boolean;
   logbookId?: string;
   weekNumber?: number;
@@ -23,12 +67,14 @@ interface Props {
 const VideoContentDisplay = ({
   videoUrl,
   videoId,
-  thumbnailUrl,
   title,
   videoName,
   description,
   duration,
+  materials = [],
   onComplete,
+  onPause,
+  onPlay,
   isCompleted = false,
   logbookId,
   weekNumber,
@@ -37,305 +83,87 @@ const VideoContentDisplay = ({
   const [videoProgress, setVideoProgress] = useState(0);
   const [canComplete, setCanComplete] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
-  const playerRef = useRef<Player | null>(null);
-  const playerContainerRef = useRef<HTMLDivElement>(null);
+  const [introDismissed, setIntroDismissed] = useState(false);
+  const [countdown, setCountdown] = useState(INTRO_COUNTDOWN_SEC);
   const videoElementRef = useRef<HTMLVideoElement>(null);
+  const playerRef = useRef<MoveCrewVideoPlayerHandle>(null);
 
-  // Extraer videoId de la URL si no está presente
   const extractVimeoId = (url?: string): string | null => {
     if (!url) return null;
     const vimeoMatch = url.match(/(?:vimeo\.com\/)(\d+)/);
     return vimeoMatch?.[1] || null;
   };
 
-  // Determinar videoId final (del prop o extraído de la URL)
   const finalVideoId = videoId || extractVimeoId(videoUrl) || null;
   const isVimeo = Boolean(finalVideoId) || (videoUrl && videoUrl.includes('vimeo.com'));
   const vimeoId = finalVideoId;
+  const displayName = videoName || title;
+  const hasMaterials = materials?.length > 0;
 
-  const [privateToken, setPrivateToken] = useState<string | null>(null);
-  const [tokenLoaded, setTokenLoaded] = useState(false);
-
-  // Obtener token privado para videos UNLISTED
   useEffect(() => {
-    const computedVideoId = videoId || extractVimeoId(videoUrl) || null;
-    if (!computedVideoId) return;
+    setVideoProgress(0);
+    setCanComplete(false);
+    setIntroDismissed(false);
+    setCountdown(INTRO_COUNTDOWN_SEC);
+  }, [vimeoId || videoUrl]);
 
-    const fetchPrivateToken = async () => {
-      try {
-        const res = await fetch('/api/vimeo/getPrivateToken', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ videoId: computedVideoId }),
-        });
-        
-        if (res.ok) {
-          const data = await res.json();
-          setPrivateToken(data.privateToken);
-        }
-      } catch (error) {
-        console.error('Error obteniendo token privado:', error);
-      } finally {
-        setTokenLoaded(true);
+  useEffect(() => {
+    if (introDismissed || countdown <= 0) return;
+    const t = setInterval(() => setCountdown((c) => (c <= 0 ? 0 : c - 1)), 1000);
+    return () => clearInterval(t);
+  }, [introDismissed, countdown]);
+
+  const startVideo = useCallback(() => {
+    setIntroDismissed(true);
+    const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768;
+    const play = () => {
+      if (vimeoId) {
+        playerRef.current?.play();
+      } else if (videoUrl && videoElementRef.current) {
+        videoElementRef.current.play();
       }
     };
+    requestAnimationFrame(() => setTimeout(play, 50));
+  }, [vimeoId, videoUrl]);
 
-    fetchPrivateToken();
-  }, [videoId, videoUrl]);
-
-  // Inicializar Vimeo Player y tracking de progreso
   useEffect(() => {
-    const computedVideoId = videoId || extractVimeoId(videoUrl) || null;
-    
-    if (!computedVideoId || !playerContainerRef.current || !tokenLoaded) return;
+    if (countdown !== 0 || introDismissed) return;
+    startVideo();
+  }, [countdown, introDismissed, startVideo]);
 
-    const numericVideoId = Number(computedVideoId);
-    if (!numericVideoId || isNaN(numericVideoId)) return;
-
-    let player: Player | null = null;
-    let totalDuration = 0;
-    let progressInterval: ReturnType<typeof setInterval> | null = null;
-    let isMounted = true;
-    let isDestroyed = false;
-
-    // Limpiar reproductor anterior si existe
-    if (playerRef.current) {
-      try {
-        isDestroyed = true;
-        const oldPlayer = playerRef.current;
-        playerRef.current = null;
-        oldPlayer.destroy().catch(() => {});
-      } catch (e) {
-        // Ignorar errores
-      }
-    }
-
-    // Pequeño delay para asegurar que el DOM esté listo y que el cleanup anterior termine
-    const initTimeout = setTimeout(() => {
-      if (!isMounted || !playerContainerRef.current || isDestroyed) return;
-
-      try {
-        // Crear opciones del reproductor
-        const playerOptions: any = {
-          autoplay: false,
-          loop: false,
-          muted: false,
-          playsinline: true,
-          responsive: true,
-        };
-
-        // Para videos UNLISTED, usar la URL completa con el hash en lugar del ID
-        if (privateToken) {
-          // Usar URL completa con hash para videos UNLISTED
-          playerOptions.url = `https://player.vimeo.com/video/${numericVideoId}?h=${privateToken}`;
-        } else {
-          // Para videos públicos, usar solo el ID
-          playerOptions.id = numericVideoId;
-        }
-
-        // Crear nuevo reproductor
-        player = new Player(playerContainerRef.current, playerOptions);
-
-        if (!isMounted || isDestroyed) {
-          player.destroy().catch(() => {});
-          return;
-        }
-
-        playerRef.current = player;
-        isDestroyed = false;
-
-        // Función helper para verificar si el player es válido
-        const isValidPlayer = () => {
-          return isMounted && !isDestroyed && player && playerRef.current === player;
-        };
-
-        // Esperar a que el reproductor esté listo
-        player.ready()
-          .then(() => {
-            if (!isValidPlayer()) return;
-            
-            // Obtener duración del video
-            return player!.getDuration();
-          })
-          .then((duration) => {
-            if (isValidPlayer() && duration) {
-              totalDuration = duration;
-            }
-          })
-          .catch((error) => {
-            // Solo loguear si el componente aún está montado y no fue destruido intencionalmente
-            if (isMounted && !isDestroyed) {
-              console.warn('Error obteniendo duración del video:', error);
-            }
-          });
-
-        // Trackear progreso
-        const updateProgress = async () => {
-          if (!isValidPlayer() || isCompleted) {
-            if (isMounted && isCompleted) {
-              setCanComplete(false);
-            }
-            return;
-          }
-          
-          try {
-            const currentTime = await player!.getCurrentTime();
-            if (totalDuration > 0 && isValidPlayer()) {
-              const progress = (currentTime / totalDuration) * 100;
-              setVideoProgress(progress);
-              setCanComplete(progress >= 95);
-            }
-          } catch (error) {
-            // Silenciar errores de tracking (el reproductor puede estar siendo destruido)
-            if (isValidPlayer()) {
-              setCanComplete(false);
-            }
-          }
-        };
-
-        // Eventos del reproductor - usar funciones nombradas para poder removerlas
-        const handleReady = () => {
-          if (isValidPlayer()) {
-            // Iniciar tracking de progreso
-            if (progressInterval) {
-              clearInterval(progressInterval);
-            }
-            progressInterval = setInterval(() => {
-              if (isValidPlayer()) {
-                updateProgress();
-              }
-            }, 1000);
-          }
-        };
-
-        const handleTimeUpdate = () => {
-          if (isValidPlayer()) {
-            updateProgress();
-          }
-        };
-
-        const handleProgress = () => {
-          if (isValidPlayer()) {
-            updateProgress();
-          }
-        };
-
-        const handlePlay = () => {
-          if (isValidPlayer()) {
-            updateProgress();
-          }
-        };
-
-        const handleEnded = async () => {
-          // Completar automáticamente cuando el video termine
-          if (!isCompleted && !isCompleting && onComplete) {
-            // Verificar que el progreso sea suficiente (al menos 95%)
-            try {
-              if (totalDuration > 0) {
-                const currentTime = await player!.getCurrentTime();
-                const progress = (currentTime / totalDuration) * 100;
-                if (progress >= 95) {
-                  setIsCompleting(true);
-                  try {
-                    await onComplete();
-                    toast.success('¡Clase completada! 🎉');
-                  } catch (error: any) {
-                    toast.error(error.message || 'Error al completar la clase');
-                  } finally {
-                    setIsCompleting(false);
-                  }
-                }
-              }
-            } catch (error) {
-              // Si no se puede obtener el tiempo, intentar completar de todas formas
-              // porque el evento ended indica que el video terminó
-              setIsCompleting(true);
-              try {
-                await onComplete();
-                toast.success('¡Clase completada! 🎉');
-              } catch (error: any) {
-                toast.error(error.message || 'Error al completar la clase');
-              } finally {
-                setIsCompleting(false);
-              }
-            }
-          }
-        };
-
-        // Registrar eventos
-        player.on('ready', handleReady);
-        player.on('timeupdate', handleTimeUpdate);
-        player.on('progress', handleProgress);
-        player.on('play', handlePlay);
-        player.on('ended', handleEnded);
-
-      } catch (error) {
-        console.error('Error creando reproductor Vimeo:', error);
-        if (playerRef.current === player) {
-          playerRef.current = null;
-        }
-      }
-    }, 150);
-
-    return () => {
-      isMounted = false;
-      isDestroyed = true;
-      
-      clearTimeout(initTimeout);
-      
-      if (progressInterval) {
-        clearInterval(progressInterval);
-        progressInterval = null;
-      }
-      
-      if (player && playerRef.current === player) {
+  const handleVimeoEnded = () => {
+    if (isCompleted || isCompleting || !onComplete) return;
+    if (videoProgress >= 95) {
+      setIsCompleting(true);
+      (async () => {
         try {
-          // Remover eventos antes de destruir
-          player.off('ready');
-          player.off('timeupdate');
-          player.off('progress');
-          player.off('play');
-          player.off('ended');
-        } catch (e) {
-          // Ignorar errores al remover eventos
+          await onComplete();
+          toast.success('¡Clase completada! 🎉');
+          (playerRef.current as { resetToStart?: () => void } | null)?.resetToStart?.();
+        } catch (err: any) {
+          toast.error(err?.message || 'Error al completar la clase');
+        } finally {
+          setIsCompleting(false);
         }
-        
-        // Destruir el reproductor con un pequeño delay para evitar errores
-        setTimeout(() => {
-          if (player) {
-            player.destroy().catch(() => {});
-          }
-        }, 50);
-      }
-      
-      playerRef.current = null;
-      player = null;
-    };
-  }, [videoId, videoUrl, isCompleted, onComplete, privateToken, tokenLoaded]);
+      })();
+    }
+  };
 
-  // Para videos HTML5 nativos
   useEffect(() => {
     if (finalVideoId || !videoUrl) return;
-
     const videoElement = videoElementRef.current;
     if (!videoElement) return;
-
     const updateProgress = () => {
-      if (isCompleted) {
-        setCanComplete(false);
-        return;
-      }
+      if (isCompleted) return;
       if (videoElement.duration > 0) {
         const progress = (videoElement.currentTime / videoElement.duration) * 100;
         setVideoProgress(progress);
         setCanComplete(progress >= 95);
       }
     };
-
     videoElement.addEventListener('timeupdate', updateProgress);
     videoElement.addEventListener('progress', updateProgress);
     videoElement.addEventListener('play', updateProgress);
-
     return () => {
       videoElement.removeEventListener('timeupdate', updateProgress);
       videoElement.removeEventListener('progress', updateProgress);
@@ -343,59 +171,123 @@ const VideoContentDisplay = ({
     };
   }, [videoUrl, finalVideoId, isCompleted, onComplete]);
 
-  const handleCompleteClick = async () => {
-    if (!canComplete || isCompleting || isCompleted || !onComplete) return;
-
-    setIsCompleting(true);
-    try {
-      await onComplete();
-      toast.success('¡Clase completada! 🎉');
-    } catch (error: any) {
-      toast.error(error.message || 'Error al completar la clase');
-    } finally {
-      setIsCompleting(false);
-    }
-  };
-
-  // Usar videoName si está disponible, sino title como fallback
-  const displayName = videoName || title;
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className='w-full space-y-6'
+      className="w-full mt-6 md:mt-8"
     >
-      {/* Nombre de la clase arriba del video */}
-      {displayName && (
-        <h2 className='text-3xl mt-8 md:text-5xl md:mb-4 font-bold text-gray-900 font-montserrat tracking-tight'>
-          {displayName}
-        </h2>
+      {/* Overlay pre-video: materiales, nombre, "Necesito más tiempo" / "Quiero seguir" (como clase de módulo) */}
+      {!introDismissed && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 md:bg-black/70 md:backdrop-blur-sm transition-opacity duration-300"
+          role="dialog"
+          aria-labelledby="weekly-intro-title"
+        >
+          <div
+            className="w-full min-h-0 md:max-w-sm flex flex-col justify-center rounded-none md:rounded-3xl border-0 md:border md:border-palette-stone/20 bg-palette-ink md:shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col items-center gap-6 md:gap-5 p-6 md:p-8 max-w-md mx-auto w-full text-center">
+              <header className="space-y-1">
+                <h2 id="weekly-intro-title" className="font-montserrat text-lg md:text-xl font-light text-palette-cream tracking-wide leading-tight">
+                  {displayName || 'Clase semanal'}
+                </h2>
+                {duration != null && duration > 0 && (
+                  <p className="text-palette-stone/90 text-xs font-light">
+                    {Math.round(duration / 60)} min
+                  </p>
+                )}
+              </header>
+
+              {hasMaterials && (
+                <div className="space-y-2 w-full flex flex-col items-center">
+                  <p className="text-palette-cream/80 text-xs font-light">Materiales para esta clase</p>
+                  <ul className="flex flex-wrap justify-center gap-2">
+                    {materials.map((key) => (
+                      <li
+                        key={key}
+                        className="flex items-center gap-2.5 rounded-lg bg-palette-stone/10 border border-palette-stone/20 px-3 py-2"
+                      >
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-palette-stone/20 text-palette-cream">
+                          {MaterialIcons[key] ?? null}
+                        </span>
+                        <span className="font-montserrat text-palette-cream/90 text-xs font-light">
+                          {MATERIAL_LABELS[key] ?? key}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="flex flex-col items-center justify-center py-2 md:py-4 border-y border-palette-stone/20 w-full">
+                <span className="text-palette-stone/80 text-xs font-light uppercase tracking-wider">Empieza en</span>
+                <span className="font-montserrat text-2xl md:text-3xl font-light tabular-nums text-palette-sage mt-1">
+                  {countdown > 0 ? countdown : '¡Listo!'}
+                </span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 pt-1 w-full justify-center">
+                <button
+                  type="button"
+                  onClick={startVideo}
+                  className="flex-1 rounded-xl bg-palette-sage text-palette-ink text-sm font-light py-3 px-4 transition-all duration-200 hover:bg-palette-sage/90 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-palette-sage focus:ring-offset-2 focus:ring-offset-palette-ink"
+                >
+                  Quiero seguir
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCountdown(INTRO_MORE_TIME_SEC)}
+                  className="flex-1 rounded-xl border border-palette-stone/40 bg-palette-stone/10 text-palette-cream text-sm font-light py-3 px-4 transition-all duration-200 hover:bg-palette-stone/20 hover:border-palette-stone/50 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-palette-stone focus:ring-offset-2 focus:ring-offset-palette-ink"
+                >
+                  Necesito más tiempo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
-      {/* Video */}
-      <div className='relative w-full rounded-2xl md:rounded-3xl overflow-hidden bg-black border border-gray-800/50 shadow-[0_15px_45px_rgba(0,0,0,0.6)] md:!mt-0 !mt-4'>
+      {/* Video: más ancho (breakout al padding del contenedor), contenedor fino y limpio */}
+      <div className="relative -mx-4 sm:-mx-6 lg:-mx-8 rounded-none sm:rounded-xl overflow-hidden bg-palette-ink border-0 border-y border-palette-stone/10">
+        <div className="relative w-full aspect-video min-h-[40vh] md:min-h-[55vh] max-h-[82vh]">
         {isVimeo && vimeoId ? (
-          <div 
-            ref={playerContainerRef}
-            className="relative w-full aspect-video bg-black"
+          <MoveCrewVideoPlayer
+            ref={playerRef}
+            videoId={vimeoId}
+            className="absolute inset-0 w-full h-full !aspect-auto"
+            userStartsPlayback={true}
+            onEnded={handleVimeoEnded}
+            onPlayingChange={(playing) => { if (playing) onPlay?.(); else onPause?.(); }}
+            onProgress={(currentTime, dur) => {
+              if (isCompleted) return;
+              if (dur > 0) {
+                const pct = (currentTime / dur) * 100;
+                setVideoProgress(pct);
+                setCanComplete(pct >= 95);
+              }
+            }}
           />
         ) : videoUrl ? (
-          <div className='relative aspect-video'>
+          <div className="relative w-full h-full">
             <video
               ref={videoElementRef}
               src={videoUrl}
               controls
-              className='w-full h-full'
-              preload='metadata'
+              className="w-full h-full object-contain"
+              preload="metadata"
+              onPause={() => onPause?.()}
+              onPlay={() => onPlay?.()}
               onEnded={async () => {
-                // Completar automáticamente cuando el video termine
                 if (!isCompleted && !isCompleting && onComplete && canComplete) {
                   setIsCompleting(true);
                   try {
                     await onComplete();
                     toast.success('¡Clase completada! 🎉');
+                    const el = videoElementRef.current;
+                    if (el) el.currentTime = 0;
                   } catch (error: any) {
                     toast.error(error.message || 'Error al completar la clase');
                   } finally {
@@ -406,61 +298,17 @@ const VideoContentDisplay = ({
             />
           </div>
         ) : (
-          <div className='aspect-video flex items-center justify-center bg-gray-900'>
-            <p className='text-gray-400 font-montserrat'>No hay video disponible</p>
+          <div className="absolute inset-0 flex items-center justify-center bg-palette-ink">
+            <p className="text-palette-stone font-montserrat">No hay video disponible</p>
           </div>
         )}
+        </div>
       </div>
 
-      {/* Descripción abajo del video */}
       {description && (
-        <p className='text-gray-700 text-base md:text-lg font-montserrat !mt-6 font-light leading-relaxed'>
+        <p className="text-palette-stone/90 text-base md:text-lg font-montserrat mt-6 font-light leading-relaxed max-w-3xl">
           {description}
         </p>
-      )}
-
-      {onComplete && (
-        <div className='flex justify-start md:justify-center'>
-          <button
-            onClick={handleCompleteClick}
-            disabled={!canComplete || isCompleting || isCompleted}
-            className={`
-              flex items-center gap-2 px-6 py-3 rounded-full w-full font-montserrat font-medium transition-all duration-300
-              ${isCompleted
-                ? 'bg-green-500/20 border border-green-500/40 text-green-700 cursor-default'
-                : canComplete
-                ? 'bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 text-gray-900 hover:border-amber-300/60 hover:shadow-lg hover:shadow-amber-500/20 cursor-pointer'
-                : 'bg-gray-200/50 border border-gray-300/40 text-gray-500 cursor-not-allowed opacity-60'
-              }
-            `}
-          >
-            {isCompleted ? (
-              <>
-                <CheckCircleIcon className='w-5 h-5' />
-                <span>Clase Completada</span>
-              </>
-            ) : !canComplete ? (
-              <>
-                <LockClosedIcon className='w-5 h-5' />
-                <span>Completar clase ({Math.round(videoProgress)}% / 95%)</span>
-              </>
-            ) : (
-              <>
-                {isCompleting ? (
-                  <>
-                    <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900' />
-                    <span>Completando...</span>
-                  </>
-                ) : (
-                  <>
-                    <CheckCircleIcon className='w-5 h-5' />
-                    <span>Completar clase</span>
-                  </>
-                )}
-              </>
-            )}
-          </button>
-        </div>
       )}
     </motion.div>
   );

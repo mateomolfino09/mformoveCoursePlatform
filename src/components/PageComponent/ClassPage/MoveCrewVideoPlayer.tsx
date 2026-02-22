@@ -26,6 +26,8 @@ interface MoveCrewVideoPlayerProps {
   showControlsFromParent?: boolean;
   /** Se llama cuando el video termina de reproducirse */
   onEnded?: () => void;
+  /** Se llama con el progreso (currentTime, duration) para p. ej. botón "Completar clase" en camino semanal */
+  onProgress?: (currentTime: number, duration: number) => void;
   /** Tiempo en segundos para sincronizar con el otro reproductor (web/mobile) */
   syncTime?: number;
   /** Si true, este reproductor es el que está reproduciendo y no debe hacer seek al cambiar syncTime */
@@ -37,6 +39,10 @@ interface MoveCrewVideoPlayerProps {
 export interface MoveCrewVideoPlayerHandle {
   play: () => void;
   pause: () => void;
+  /** Ir a un tiempo en segundos (0 = inicio). Útil para reiniciar al completar y evitar que se cuelgue. */
+  seekTo: (seconds: number) => void;
+  /** Reinicia el video al inicio (seek 0). */
+  resetToStart: () => void;
 }
 
 const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoPlayerProps>(function MoveCrewVideoPlayer({
@@ -46,6 +52,7 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
   onPlayingChange,
   showControlsFromParent = false,
   onEnded,
+  onProgress,
   syncTime = 0,
   isActiveSource = false,
   onTimeUpdate,
@@ -61,34 +68,49 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
   const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(false);
   const [showControls, setShowControls] = useState(false);
+  const [hiddenByInactivity, setHiddenByInactivity] = useState(false);
   const [showThumbnail, setShowThumbnail] = useState(true);
   const [loading, setLoading] = useState(false);
   const [playbackRate, setPlaybackRate] = useState<number>(1);
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const progressRef = useRef<HTMLDivElement>(null);
   const volumeSliderRef = useRef<HTMLDivElement>(null);
-  const hideControlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onPlayingChangeRef = useRef(onPlayingChange);
   const onEndedRef = useRef(onEnded);
   const onTimeUpdateRef = useRef(onTimeUpdate);
+  const onProgressRef = useRef(onProgress);
   onPlayingChangeRef.current = onPlayingChange;
   onEndedRef.current = onEnded;
   onTimeUpdateRef.current = onTimeUpdate;
+  onProgressRef.current = onProgress;
 
   const INACTIVITY_MS = 3000;
+  const hideControlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleHideControlsRef = useRef<() => void>(() => {});
 
   const scheduleHideControls = useCallback(() => {
+    setHiddenByInactivity(false);
     if (hideControlsTimeoutRef.current) clearTimeout(hideControlsTimeoutRef.current);
+    // eslint-disable-next-line no-console
+    console.log('[MoveCrewVideoPlayer] Timer 3s: iniciado/reiniciado');
     hideControlsTimeoutRef.current = setTimeout(() => {
+      // eslint-disable-next-line no-console
+      console.log('[MoveCrewVideoPlayer] Timer 3s: ejecutando ocultar controles');
       setShowControls(false);
+      setHiddenByInactivity(true);
+      wrapRef.current?.style.setProperty('cursor', 'none');
       hideControlsTimeoutRef.current = null;
     }, INACTIVITY_MS);
   }, []);
+
+  scheduleHideControlsRef.current = scheduleHideControls;
 
   const cancelHideControls = useCallback(() => {
     if (hideControlsTimeoutRef.current) {
       clearTimeout(hideControlsTimeoutRef.current);
       hideControlsTimeoutRef.current = null;
+      // eslint-disable-next-line no-console
+      console.log('[MoveCrewVideoPlayer] Timer 3s: cancelado');
     }
   }, []);
 
@@ -157,6 +179,7 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
       setLoading(false);
       setShowThumbnail(false);
       onPlayingChangeRef.current?.(true);
+      scheduleHideControlsRef.current?.();
     });
     player.on('pause', () => {
       setPlaying(false);
@@ -176,6 +199,13 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
       iframeRef.current = null;
     };
   }, [videoId, privateToken, ready, userStartsPlayback]);
+
+  // Notificar progreso al padre (p. ej. camino semanal para botón "Completar clase")
+  useEffect(() => {
+    if (duration > 0) {
+      onProgressRef.current?.(currentTime, duration);
+    }
+  }, [currentTime, duration]);
 
   // Sincronizar tiempo cuando syncTime cambia (ej. el otro reproductor web/mobile actualizó) y este no es el activo
   useEffect(() => {
@@ -198,6 +228,13 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
     }
   }, [playing]);
 
+  const seekToSeconds = useCallback((seconds: number) => {
+    const p = playerRef.current;
+    if (!p) return;
+    const t = Math.max(0, Number.isFinite(seconds) ? seconds : 0);
+    p.setCurrentTime(t).catch(() => {});
+  }, []);
+
   useImperativeHandle(ref, () => ({
     play: () => {
       const p = playerRef.current;
@@ -209,7 +246,9 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
     pause: () => {
       playerRef.current?.pause();
     },
-  }), [playing]);
+    seekTo: seekToSeconds,
+    resetToStart: () => seekToSeconds(0),
+  }), [playing, seekToSeconds]);
 
   const toggleMute = useCallback(() => {
     const p = playerRef.current;
@@ -267,26 +306,111 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
 
   if (!videoId) return null;
 
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const lastMouseRef = useRef({ x: 0, y: 0, over: false });
+
   const handleShowControls = useCallback(() => {
+    // eslint-disable-next-line no-console
+    console.log('[MoveCrewVideoPlayer] Controles mostrados, timer reiniciado');
+    wrapRef.current?.style.setProperty('cursor', 'pointer');
+    setHiddenByInactivity(false);
     setShowControls(true);
     cancelHideControls();
     scheduleHideControls();
+    wrapRef.current?.focus({ preventScroll: true });
   }, [cancelHideControls, scheduleHideControls]);
+
+  const updateMousePosition = useCallback((e: { clientX: number; clientY: number }) => {
+    lastMouseRef.current = { x: e.clientX, y: e.clientY, over: true };
+  }, []);
+
+  // Teclado: Space = play/pause; Flecha izquierda = -10s; Flecha derecha = +10s
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    const onKeyDown = (e: KeyboardEvent) => {
+      const active = document.activeElement as HTMLElement | null;
+      if (active && ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName)) return;
+      if (!wrap) return;
+      const activeInside = active && wrap.contains(active);
+      const rect = wrap.getBoundingClientRect();
+      const { x, y, over } = lastMouseRef.current;
+      const mouseOver = over && x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+      if (!activeInside && !mouseOver) return;
+
+      if (e.key === ' ' && !e.repeat) {
+        e.preventDefault();
+        togglePlay();
+        scheduleHideControls();
+        return;
+      }
+      if (e.key === 'ArrowLeft' && !e.repeat) {
+        e.preventDefault();
+        playerRef.current?.getCurrentTime().then((t) => {
+          seekToSeconds(Math.max(0, t - 10));
+          scheduleHideControlsRef.current?.();
+        }).catch(() => {});
+        return;
+      }
+      if (e.key === 'ArrowRight' && !e.repeat) {
+        e.preventDefault();
+        playerRef.current?.getCurrentTime().then((t) => {
+          const d = duration > 0 ? duration : 9999;
+          seekToSeconds(Math.min(d, t + 10));
+          scheduleHideControlsRef.current?.();
+        }).catch(() => {});
+        return;
+      }
+    };
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => document.removeEventListener('keydown', onKeyDown, true);
+  }, [togglePlay, scheduleHideControls, seekToSeconds, duration]);
 
   return (
     <div
-      className={`movecrew-player-wrap relative w-full aspect-video overflow-hidden bg-palette-ink ring-1 ring-palette-stone/10 shadow-xl ${className}`}
-      onMouseEnter={handleShowControls}
-      onMouseMove={() => { if (showControls) scheduleHideControls(); }}
-      onMouseLeave={() => {
-        cancelHideControls();
-        setShowControls(false);
+      ref={wrapRef}
+      tabIndex={0}
+      role="application"
+      aria-label="Reproductor de video"
+      className={`movecrew-player-wrap relative w-full aspect-video overflow-hidden bg-palette-ink ring-1 ring-palette-stone/10 shadow-xl outline-none ${!playing || ((showControls || showControlsFromParent) && !hiddenByInactivity) ? 'cursor-pointer' : 'cursor-none'} ${className}`}
+      onMouseEnter={(e) => { updateMousePosition(e); handleShowControls(); }}
+      onMouseMove={(e) => {
+        updateMousePosition(e);
+        if (hiddenByInactivity || !showControls) handleShowControls();
+        else scheduleHideControls();
       }}
+      onMouseLeave={() => { lastMouseRef.current.over = false; }}
       onTouchStart={handleShowControls}
       onTouchMove={() => { if (showControls) scheduleHideControls(); }}
+      onKeyDown={(e) => {
+        if (e.key === ' ') {
+          e.preventDefault();
+          togglePlay();
+          scheduleHideControls();
+        }
+      }}
     >
       {/* Contenedor donde se inyecta el iframe de Vimeo (creado a mano, sin controles) */}
       <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+      {/* Overlay transparente sobre el iframe para recibir hover y click: el iframe de Vimeo no propaga eventos al documento. No ocultar al salir del overlay (ej. al ir a la barra) para que el timer de 3 s pueda esconder los controles. */}
+      <div
+        className="absolute inset-0 z-[8]"
+        aria-hidden
+        onMouseEnter={(e) => { updateMousePosition(e); handleShowControls(); }}
+        onMouseMove={(e) => {
+          updateMousePosition(e);
+          if (hiddenByInactivity || !showControls) handleShowControls();
+          else scheduleHideControls();
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          wrapRef.current?.focus();
+          togglePlay();
+          scheduleHideControls();
+        }}
+        onTouchStart={handleShowControls}
+        onTouchMove={() => { if (showControls) scheduleHideControls(); }}
+      />
 
       {/* Thumbnail del video hasta que se da play — evita pantalla negra */}
       {showThumbnail && (
@@ -310,7 +434,7 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
       {userStartsPlayback && !playing && !loading && (
         <button
           type="button"
-          onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+          onClick={(e) => { e.stopPropagation(); togglePlay(); scheduleHideControls(); }}
           className="absolute inset-0 z-10 flex items-center justify-center bg-palette-ink/30 transition-colors hover:bg-palette-ink/40 active:bg-palette-ink/40 focus:outline-none focus:ring-2 focus:ring-palette-sage focus:ring-offset-2 focus:ring-offset-palette-ink"
           aria-label="Reproducir"
         >
@@ -322,11 +446,22 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
         </button>
       )}
 
-      {/* Barra de controles: se muestra al hover en el video/pantalla o desde el padre; 3 s sin actividad y se oculta. Responsive y touch-friendly en móvil */}
+      {/* Barra de controles: 3 s sin actividad y se oculta. Zona de gradiente captura eventos sin resetear el timer; solo progreso y botones resetean. */}
       <div
-        className={`absolute bottom-0 left-0 right-0 z-20 flex flex-col justify-end bg-gradient-to-t from-palette-ink/95 to-transparent pt-12 md:pt-20 pb-2 md:pb-3 px-3 md:px-4 transition-opacity duration-200 pointer-events-none ${showControls || !playing || showControlsFromParent ? 'opacity-100' : 'opacity-0'}`}
-        style={{ pointerEvents: showControls || !playing || showControlsFromParent ? 'auto' : 'none' }}
+        className={`absolute bottom-0 left-0 right-0 z-20 flex flex-col justify-end bg-gradient-to-t from-palette-ink/95 to-transparent pt-12 md:pt-20 pb-2 md:pb-3 px-3 md:px-4 transition-opacity duration-200 ease-out pointer-events-none ${(showControls || !playing || showControlsFromParent) && !hiddenByInactivity ? 'opacity-100' : 'opacity-0'}`}
       >
+        {/* Capa que cubre toda la barra: captura eventos en la zona de gradiente para que no lleguen al overlay y no reseteen el timer */}
+        <div
+          className="absolute inset-0"
+          style={{ pointerEvents: (showControls || !playing || showControlsFromParent) && !hiddenByInactivity ? 'auto' : 'none' }}
+          aria-hidden
+        />
+        <div
+          className="relative z-10 flex flex-col gap-0 w-full"
+          style={{ pointerEvents: (showControls || !playing || showControlsFromParent) && !hiddenByInactivity ? 'auto' : 'none' }}
+          onMouseMove={scheduleHideControls}
+          onMouseEnter={scheduleHideControls}
+        >
         {/* Barra de progreso - click y touch para seek; thumb (puntito) al extremo como en audio */}
         <div
           ref={progressRef}
@@ -452,6 +587,7 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
               </svg>
             </button>
           </div>
+        </div>
         </div>
       </div>
     </div>
