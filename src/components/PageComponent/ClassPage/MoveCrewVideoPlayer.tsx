@@ -73,8 +73,14 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
   const [loading, setLoading] = useState(false);
   const [playbackRate, setPlaybackRate] = useState<number>(1);
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
+  const [progressHoverTime, setProgressHoverTime] = useState<number | null>(null);
+  const [bufferedEnd, setBufferedEnd] = useState(0);
   const progressRef = useRef<HTMLDivElement>(null);
   const volumeSliderRef = useRef<HTMLDivElement>(null);
+  const seekTargetRef = useRef<number | null>(null);
+  const seekWasPlayingRef = useRef(false);
+  const playingRef = useRef(playing);
+  playingRef.current = playing;
   const onPlayingChangeRef = useRef(onPlayingChange);
   const onEndedRef = useRef(onEnded);
   const onTimeUpdateRef = useRef(onTimeUpdate);
@@ -144,6 +150,7 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
       badge: '0',
       dnt: '1',
       transparent: '0',
+      preload: 'auto',
     });
     if (privateToken) params.set('h', privateToken);
     const src = `https://player.vimeo.com/video/${videoId}?${params.toString()}`;
@@ -165,14 +172,37 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
     const player = new Player(iframe);
     playerRef.current = player;
 
+    const updateBuffered = () => {
+      player.getBuffered().then((ranges: { start: number; end: number }[]) => {
+        if (!ranges?.length) return;
+        player.getCurrentTime().then((t) => {
+          let end = 0;
+          for (const r of ranges) {
+            if (r.start <= t && r.end > t) end = Math.max(end, r.end);
+          }
+          if (end === 0 && ranges[0].start <= 0) end = ranges[0].end;
+          setBufferedEnd(end);
+        }).catch(() => {});
+      }).catch(() => {});
+    };
+
     player.on('loaded', () => {
       player.getDuration().then((d) => setDuration(d)).catch(() => {});
       player.setVolume(1).then(() => { setVolume(1); setMuted(false); }).catch(() => {});
       player.setPlaybackRate(1).then(() => setPlaybackRate(1)).catch(() => {});
+      updateBuffered();
     });
+    player.on('progress', updateBuffered);
     player.on('timeupdate', (e) => {
       setCurrentTime(e.seconds);
       onTimeUpdateRef.current?.(e.seconds);
+      if (seekTargetRef.current != null && Math.abs(e.seconds - seekTargetRef.current) < 0.5) {
+        const wasPlaying = seekWasPlayingRef.current;
+        seekTargetRef.current = null;
+        seekWasPlayingRef.current = false;
+        setLoading(false);
+        if (wasPlaying) player.play().catch(() => {});
+      }
     });
     player.on('play', () => {
       setPlaying(true);
@@ -182,6 +212,7 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
       scheduleHideControlsRef.current?.();
     });
     player.on('pause', () => {
+      if (seekTargetRef.current != null) return;
       setPlaying(false);
       onPlayingChangeRef.current?.(false);
     });
@@ -232,7 +263,17 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
     const p = playerRef.current;
     if (!p) return;
     const t = Math.max(0, Number.isFinite(seconds) ? seconds : 0);
-    p.setCurrentTime(t).catch(() => {});
+    seekWasPlayingRef.current = playingRef.current;
+    p.pause();
+    setPlaying(false);
+    setCurrentTime(t);
+    seekTargetRef.current = t;
+    setLoading(true);
+    p.setCurrentTime(t).catch(() => {
+      seekTargetRef.current = null;
+      seekWasPlayingRef.current = false;
+      setLoading(false);
+    });
   }, []);
 
   useImperativeHandle(ref, () => ({
@@ -291,8 +332,27 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
     if (clientX == null) return;
     const x = (clientX - rect.left) / rect.width;
     const t = Math.max(0, Math.min(1, x)) * duration;
+    seekWasPlayingRef.current = playingRef.current;
+    p.pause();
+    setPlaying(false);
+    setCurrentTime(t);
+    seekTargetRef.current = t;
+    setLoading(true);
     p.setCurrentTime(t);
   }, [duration]);
+
+  const progressBarMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const bar = progressRef.current;
+    if (!bar || duration <= 0) return;
+    const rect = bar.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const pct = Math.max(0, Math.min(1, x));
+    setProgressHoverTime(pct * duration);
+  }, [duration]);
+
+  const progressBarMouseLeave = useCallback(() => {
+    setProgressHoverTime(null);
+  }, []);
 
   const toggleFullscreen = useCallback(() => {
     const wrap = containerRef.current?.closest('.movecrew-player-wrap');
@@ -423,9 +483,9 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
         </div>
       )}
 
-      {/* Loading: spinner en el centro (en lugar del triángulo de play) */}
+      {/* Loading: mismo estilo centrado; pointer-events-none para no capturar clics/focus y no abrir sidebar */}
       {loading && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-palette-ink/50" aria-hidden>
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-palette-ink/50 pointer-events-none" aria-hidden>
           <div className="h-14 w-14 rounded-full border-2 border-palette-cream/30 border-t-palette-cream animate-spin" />
         </div>
       )}
@@ -462,7 +522,7 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
           onMouseMove={scheduleHideControls}
           onMouseEnter={scheduleHideControls}
         >
-        {/* Barra de progreso - click y touch para seek; thumb (puntito) al extremo como en audio */}
+        {/* Barra de progreso - click y touch para seek; tooltip con tiempo al hover */}
         <div
           ref={progressRef}
           role="progressbar"
@@ -472,10 +532,30 @@ const MoveCrewVideoPlayer = forwardRef<MoveCrewVideoPlayerHandle, MoveCrewVideoP
           tabIndex={0}
           onClick={seek}
           onTouchEnd={(e) => { e.preventDefault(); seek(e); }}
+          onMouseMove={progressBarMouseMove}
+          onMouseLeave={progressBarMouseLeave}
           className="group mb-2 md:mb-3 h-1.5 md:h-2 w-full cursor-pointer rounded-full bg-palette-stone/30 transition-colors hover:bg-palette-stone/50 focus:outline-none focus:ring-2 focus:ring-palette-sage relative"
         >
+          {progressHoverTime != null && duration > 0 && (
+            <div
+              className="absolute bottom-full left-0 z-30 mb-1 -translate-x-1/2 px-2 py-1 rounded bg-palette-ink/95 text-palette-cream font-montserrat text-xs tabular-nums whitespace-nowrap pointer-events-none"
+              style={{
+                left: `${(progressHoverTime / duration) * 100}%`,
+              }}
+            >
+              {formatTime(progressHoverTime)}
+            </div>
+          )}
+          {/* Barra de video cargado (buffer) */}
+          {duration > 0 && bufferedEnd > 0 && (
+            <div
+              className="absolute inset-0 h-full rounded-full bg-palette-stone/50 transition-all pointer-events-none"
+              style={{ width: `${Math.min(100, (bufferedEnd / duration) * 100)}%` }}
+              aria-hidden
+            />
+          )}
           <div
-            className="h-full rounded-full bg-palette-sage transition-all relative min-w-0"
+            className="h-full rounded-full bg-palette-sage transition-all relative min-w-0 z-[1]"
             style={{ width: duration ? `${(currentTime / duration) * 100}%` : '0%' }}
           >
             {duration > 0 && (

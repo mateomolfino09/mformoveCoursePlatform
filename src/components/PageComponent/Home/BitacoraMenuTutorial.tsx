@@ -27,16 +27,29 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
   const [isCompleting, setIsCompleting] = useState<boolean>(false);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const [isExiting, setIsExiting] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
   const boxRef = useRef<HTMLDivElement>(null);
   const step0CardRef = useRef<HTMLDivElement>(null);
   const [arrowPoints, setArrowPoints] = useState<{ start: { x: number; y: number }; end: { x: number; y: number } } | null>(null);
 
-  // Paso 0: activar/desactivar resaltado del botón Move Crew (sombra celeste + titilar)
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // Paso 0: activar/desactivar resaltado del botón Move Crew
   useEffect(() => {
     const inStep0 = isOpen && !showTutorial;
     state.bitacoraTutorialHighlightButton = inStep0;
+    if (inStep0) {
+      document.body.classList.add('bitacora-tutorial-step0');
+    } else {
+      document.body.classList.remove('bitacora-tutorial-step0');
+    }
     return () => {
       state.bitacoraTutorialHighlightButton = false;
+      document.body.classList.remove('bitacora-tutorial-step0');
     };
   }, [isOpen, showTutorial]);
 
@@ -706,22 +719,11 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
     const sy = arrowPoints?.start.y ?? 0;
     const ex = arrowPoints?.end.x ?? 0;
     const ey = arrowPoints?.end.y ?? 0;
-    // Punta de la flecha un poco antes del botón; un poquito más lejos
     const tipRatio = 0.76;
     const tipX = sx + (ex - sx) * tipRatio;
     const tipY = sy + (ey - sy) * tipRatio;
-    // Panza: misma curva desde el cartel
-    const cpx = sx + (ex - sx) * 0.5;
-    const cpy = Math.min(sy, ey) - 110;
-    // Pico de la panza: punto donde termina la primera curva y empieza la segunda
-    const midX = tipX - (tipX - sx) * 0.14;
-    const midY = tipY + 36;
-    // Segunda curva bien redonda: control en el centro del tramo (mid→tip) y por debajo = arco suave
-    const ctrlUpX = (midX + tipX) * 0.5;
-    const ctrlUpY = (midY + tipY) * 0.5 + 28;
-    const pathD = arrowPoints
-      ? `M ${sx} ${sy} Q ${cpx} ${cpy} ${midX} ${midY} Q ${ctrlUpX} ${ctrlUpY} ${tipX} ${tipY}`
-      : '';
+    const arrowLength = arrowPoints ? Math.hypot(ex - sx, ey - sy) : 0;
+    const angle = arrowPoints ? Math.atan2(ey - sy, ex - sx) * (180 / Math.PI) : 0;
 
     return (
       <AnimatePresence>
@@ -733,22 +735,49 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
           style={{ pointerEvents: 'none' }}
         >
           <div className="absolute inset-0 bg-palette-ink/60 backdrop-blur-sm" />
-          {/* Flecha curvada imagen apuntando al botón Move Crew */}
+          {/* Flecha: en web posición fija a la derecha; en mobile dinámica hacia el botón */}
           {arrowPoints && arrowLength > 0 && (
             <img
               src="/images/svg/arrow curve.png"
               alt=""
               className="absolute pointer-events-none"
-              style={{
-                zIndex: 1,
-                left: `${arrowX}px`,
-                top: `${arrowY}px`,
-                transform: `translate(-50%, -50%) rotate(${angle}deg) scale(${scale})`,
-                transformOrigin: 'center center',
-                opacity: 0.92,
-              }}
+              style={
+                isMobile
+                  ? {
+                      zIndex: 200,
+                      left: `${tipX}px`,
+                      top: `${tipY}px`,
+                      width: 280,
+                      height: 280,
+                      transform: `translate(-50%, -50%) rotate(${angle}deg) scale(1)`,
+                      transformOrigin: 'center center',
+                      opacity: 0.92,
+                    }
+                  : {
+                      zIndex: 200,
+                      left: 'auto',
+                      right: '5%',
+                      top: '25%',
+                      width: 400,
+                      height: 400,
+                      transform: 'translate(0, -50%) rotate(20deg)',
+                      transformOrigin: 'center center',
+                      opacity: 0.95,
+                      filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.6))',
+                    }
+              }
             />
           )}
+          {/* Resaltado del botón Menú (solo en paso 0): borde para que no se recorte + glow visible */}
+          <style jsx global>{`
+            body.bitacora-tutorial-step0 [data-tutorial-move-crew-target] {
+              border-radius: 9999px !important;
+              outline: none !important;
+              border: 2px solid rgba(255, 255, 255, 0.95) !important;
+              box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4), 0 0 12px 2px rgba(255, 255, 255, 0.35) !important;
+              transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+            }
+          `}</style>
           <div className="absolute inset-0 flex flex-col items-center justify-center md:justify-start md:pt-32 px-4" style={{ zIndex: 2 }}>
             <motion.div
               ref={step0CardRef}
@@ -761,7 +790,7 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
                 Primer paso
               </p>
               <p className="text-palette-stone font-montserrat font-light text-sm md:text-base leading-relaxed">
-                Toca el botón <strong className="text-palette-ink">Move Crew</strong> en la parte superior (o en la barra inferior en móvil) para abrir el menú y continuar con el tutorial.
+                Toca el botón <strong className="text-palette-ink">Menú</strong> en la parte superior (o en la barra inferior en móvil) para abrir el menú y continuar con el tutorial.
               </p>
               <div className="mt-4 flex justify-center">
                 <span className="inline-flex h-2 w-2 rounded-full bg-palette-sage animate-pulse" aria-hidden />

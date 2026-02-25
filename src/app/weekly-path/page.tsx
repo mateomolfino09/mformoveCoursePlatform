@@ -30,12 +30,6 @@ import WeeklyReportModal from '../../components/WeeklyReportModal';
 import Footer from '../../components/Footer';
 import Link from 'next/link';
 
-const shapeIcon = (seed: string | number) => {
-  const shapes = ['▲', '■', '●', '◆', '▴', '▢'];
-  const code = typeof seed === 'number' ? seed : seed.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  return shapes[code % shapes.length];
-};
-
 interface DailyContent {
   dayNumber: number;
   dayTitle?: string;
@@ -158,7 +152,6 @@ function WeeklyPathPageContent() {
     totalUnits: number;
     currentStreak: number;
     esSemanaAdicional?: boolean;
-    newAchievements?: Array<{ name: string; description: string; icon: string }>;
     levelUp?: boolean;
     newLevel?: number;
     evolution?: boolean;
@@ -348,17 +341,15 @@ function WeeklyPathPageContent() {
               coherence.updateTracking(data.tracking);
             }
             
-            // Mostrar modal de celebración si hay levelUp o si hay logros nuevos
-            if (data.levelUp || (data.newAchievements && data.newAchievements.length > 0)) {
-              // Usar los valores del tracking actualizado (ya incluye gorillaIcon calculado)
+            // Mostrar modal de celebración solo si hay levelUp
+            if (data.levelUp) {
               const updatedTracking = data.tracking || coherence.coherenceTracking;
               setCelebrationData({
                 ucsOtorgadas: 0,
                 totalUnits: updatedTracking?.totalUnits || 0,
                 currentStreak: updatedTracking?.currentStreak || 0,
                 esSemanaAdicional: false,
-                newAchievements: data.newAchievements || [],
-                levelUp: data.levelUp || false,
+                levelUp: true,
                 newLevel: updatedTracking?.level || data.newLevel || 1,
                 evolution: data.evolution || false,
                 gorillaIcon: updatedTracking?.gorillaIcon || data.gorillaIcon || '🦍'
@@ -636,16 +627,18 @@ function WeeklyPathPageContent() {
             level: data.newLevel !== undefined && data.newLevel !== null ? data.newLevel : (coherence.coherenceTracking?.level ?? 1)
           });
         }
-        if (data.newAchievements && data.newAchievements.length > 0) {
-          const currentAchievements = coherence.coherenceTracking?.achievements || [];
-          coherence.updateTracking({
-            achievements: [...currentAchievements, ...data.newAchievements.map((a: any) => ({
-              name: a.name,
-              description: a.description,
-              icon: a.icon,
-              unlockedAt: new Date().toISOString()
-            }))]
-          });
+      }
+
+      // Notificar al header para que actualice el número de U.C. en el icono de perfil
+      if (data.tracking && typeof data.tracking.totalUnits === 'number') {
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('coherence-tracking-updated', {
+            detail: {
+              totalUnits: data.tracking.totalUnits,
+              level: data.newLevel ?? data.tracking.level,
+              levelProgress: data.levelProgress
+            }
+          }));
         }
       }
 
@@ -677,7 +670,6 @@ function WeeklyPathPageContent() {
             totalUnits,
             currentStreak,
             esSemanaAdicional,
-            newAchievements: data.newAchievements || [],
             levelUp: data.levelUp || false,
             newLevel: data.newLevel,
             evolution: data.evolution || false,
@@ -690,7 +682,6 @@ function WeeklyPathPageContent() {
             totalUnits,
             currentStreak,
             esSemanaAdicional,
-            newAchievements: data.newAchievements || [],
             levelUp: data.levelUp || false,
             newLevel: data.newLevel,
             evolution: data.evolution || false,
@@ -813,16 +804,22 @@ function WeeklyPathPageContent() {
     <MainSideBar
       where={'weekly-path'}
       forceStandardHeader
-      onMenuClick={() => setSidebarOpen(prev => !prev)}
+      onMenuClick={() => {
+        if (isDesktop) {
+          setSidebarOpen(prev => !prev);
+        } else {
+          document.getElementById('weekly-path-mobile-sidebar')?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }}
       sidebarOpen={sidebarOpen}
       forceLightTheme={selectedContentType === 'audioText'}
     >  
       <div className="flex flex-col min-h-screen bg-palette-ink text-palette-cream font-montserrat overflow-x-clip max-w-[100vw] min-w-0 w-full">
-        {/* Overlay para cerrar sidebar en mobile */}
+        {/* Overlay para cerrar sidebar (solo desktop; en mobile el sidebar va debajo del video) */}
         {sidebarOpen && (
           <div
             onClick={() => setSidebarOpen(false)}
-            className="md:hidden fixed inset-0 bg-black/50 z-[55] transition-opacity duration-300"
+            className="hidden md:hidden fixed inset-0 bg-black/50 z-[55] transition-opacity duration-300"
             aria-hidden
           />
         )}
@@ -937,91 +934,49 @@ function WeeklyPathPageContent() {
                   return isWeekUnlocked;
                 })()
               ) ? (
-                <div className="relative">
-                  {/* Overlay de loading durante la transición */}
-                  <AnimatePresence>
-                    {isChangingContent && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute inset-0 z-50 flex items-center justify-center bg-palette-ink/90 backdrop-blur-sm rounded-3xl"
-                      >
-                        <div className="flex flex-col items-center gap-4">
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            className="w-12 h-12 border-4 border-amber-300/30 border-t-amber-600 rounded-full"
-                          />
-                          <motion.p
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="text-sm text-palette-cream font-montserrat font-medium"
-                          >
-                            Cargando contenido...
-                          </motion.p>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                  
-                  <AnimatePresence mode="wait">
-                    {selectedContent.type === 'visual' ? (
-                      <motion.div
-                        key={`visual-${selectedWeek}-${selectedDay}`}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3, ease: "easeOut" }}
-                      >
-                        <VideoContentDisplay
-                          videoUrl={selectedContent.videoUrl}
-                          videoId={selectedContent.videoId}
-                          title={selectedContent.title}
-                          description={'description' in selectedContent ? selectedContent.description : undefined}
-                          duration={'duration' in selectedContent ? selectedContent.duration : undefined}
-                          materials={[]}
-                          onComplete={handleComplete}
-                          onPause={() => setSidebarOpen(true)}
-                          onPlay={() => setSidebarOpen(false)}
-                          isCompleted={selectedContentIndex != null
-                            ? coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-content-${selectedContentIndex}`)
-                            : selectedDay 
-                              ? coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-video`) 
-                              : coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-week-video`)}
-                          logbookId={logbook?._id}
-                          weekNumber={selectedWeek || undefined}
-                          dayNumber={selectedDay || undefined}
-                        />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key={`audioText-${selectedWeek}-${selectedDay}`}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3, ease: "easeOut" }}
-                      >
-                        <AudioTextContentDisplay
-                          audioUrl={'audioUrl' in selectedContent ? selectedContent.audioUrl : undefined}
-                          audioDuration={'audioDuration' in selectedContent ? selectedContent.audioDuration : undefined}
-                          text={'text' in selectedContent ? selectedContent.text : undefined}
-                          title={selectedContent.title}
-                          subtitle={'subtitle' in selectedContent ? selectedContent.subtitle : undefined}
-                          onComplete={handleComplete}
-                          isCompleted={selectedContentIndex != null
-                            ? coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-content-${selectedContentIndex}`)
-                            : selectedDay 
-                              ? coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-audio`) 
-                              : coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-week-audio`)}
-                          logbookId={logbook?._id}
-                          weekNumber={selectedWeek || undefined}
-                          dayNumber={selectedDay || undefined}
-                        />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                <div className="relative w-full md:min-h-screen">
+                  {selectedContent.type === 'visual' ? (
+                    <div key={`visual-${selectedWeek}-${selectedDay}-${selectedContentIndex ?? 0}`} className="w-full md:min-h-[80vh]">
+                      <VideoContentDisplay
+                        videoUrl={selectedContent.videoUrl}
+                        videoId={selectedContent.videoId}
+                        title={selectedContent.title}
+                        description={'description' in selectedContent ? selectedContent.description : undefined}
+                        duration={'duration' in selectedContent ? selectedContent.duration : undefined}
+                        materials={[]}
+                        onComplete={handleComplete}
+                        onPause={() => setSidebarOpen(true)}
+                        onPlay={() => setSidebarOpen(false)}
+                        isCompleted={selectedContentIndex != null
+                          ? coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-content-${selectedContentIndex}`)
+                          : selectedDay 
+                            ? coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-video`) 
+                            : coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-week-video`)}
+                        logbookId={logbook?._id}
+                        weekNumber={selectedWeek || undefined}
+                        dayNumber={selectedDay || undefined}
+                      />
+                    </div>
+                  ) : (
+                    <div key={`audioText-${selectedWeek}-${selectedDay}-${selectedContentIndex ?? 0}`} className="w-full min-h-[80vh]">
+                      <AudioTextContentDisplay
+                        audioUrl={'audioUrl' in selectedContent ? selectedContent.audioUrl : undefined}
+                        audioDuration={'audioDuration' in selectedContent ? selectedContent.audioDuration : undefined}
+                        text={'text' in selectedContent ? selectedContent.text : undefined}
+                        title={selectedContent.title}
+                        subtitle={'subtitle' in selectedContent ? selectedContent.subtitle : undefined}
+                        onComplete={handleComplete}
+                        isCompleted={selectedContentIndex != null
+                          ? coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-content-${selectedContentIndex}`)
+                          : selectedDay 
+                            ? coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-audio`) 
+                            : coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-week-audio`)}
+                        logbookId={logbook?._id}
+                        weekNumber={selectedWeek || undefined}
+                        dayNumber={selectedDay || undefined}
+                      />
+                    </div>
+                  )}
                 </div>
               ) : selectedWeekData && !selectedWeekData.isUnlocked && auth.user?.rol !== 'Admin' ? (
                 <div className="relative rounded-3xl border border-palette-stone/20 bg-palette-ink p-10 text-left sm:text-center shadow-xl">
@@ -1054,30 +1009,30 @@ function WeeklyPathPageContent() {
                 </div>
               )}
 
-              {/* Logros - texto limpio, sin cajas con borde */}
-              {coherence.coherenceTracking && coherence.coherenceTracking.achievements.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="mt-14 pt-10 border-t border-palette-stone/10"
-                  >
-                    <h3 className="text-lg md:text-xl font-semibold text-palette-cream font-montserrat tracking-tight mb-4">
-                      Objetivos alcanzados
-                    </h3>
-                    <ul className="space-y-4">
-                      {coherence.coherenceTracking.achievements.map((achievement: any, index: number) => (
-                        <li key={index} className="flex gap-3 items-start">
-                          <span className="text-palette-sage mt-0.5 shrink-0" aria-hidden>{shapeIcon(achievement.name || index)}</span>
-                          <div>
-                            <p className="font-normal text-palette-cream font-montserrat">{achievement.name}</p>
-                            <p className="text-palette-stone/90 text-sm font-light leading-relaxed font-montserrat">{achievement.description}</p>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </motion.div>
-                )}
+              {/* Sección Semanas: en mobile va justo debajo del video, como sección natural (en desktop está en el sidebar) */}
+              {logbook && (
+                <section
+                  id="weekly-path-mobile-sidebar"
+                  className="md:hidden w-full mt-0 md:mt-8 pt-8 border-t border-palette-stone/20"
+                >
+                  <h2 className="font-montserrat text-lg font-semibold text-palette-cream mb-4">Semanas</h2>
+                  <WeeklyPathSidebar
+                    logbook={logbook}
+                    selectedWeek={selectedWeek}
+                    selectedDay={selectedDay}
+                    selectedContentType={selectedContentType}
+                    selectedContentIndex={selectedContentIndex}
+                    onSelect={(week, day, type, contentIndex) => {
+                      handleSelect(week, day, type, contentIndex);
+                    }}
+                    completedWeeks={coherence.completedWeeks}
+                    completedDays={coherence.completedDays}
+                    completedVideos={coherence.completedVideos}
+                    completedAudios={coherence.completedAudios}
+                    onClose={() => {}}
+                  />
+                </section>
+              )}
 
               {/* Información sobre Coherencia - texto fino, sin contenedores con borde */}
               <motion.div
@@ -1117,9 +1072,9 @@ function WeeklyPathPageContent() {
             <ChevronRightIcon className="w-6 h-6 shrink-0" aria-hidden />
           </button>
 
-          {/* Sidebar único: semanas/días del camino (desktop y móvil) */}
+          {/* Sidebar: solo desktop (en mobile el menú va debajo del video) */}
           <div
-            className={`flex fixed inset-y-0 left-0 z-40 w-[min(380px,90vw)] md:w-96 max-w-[90vw] flex-col bg-palette-ink border-r border-palette-stone/20 shadow-xl overflow-hidden pt-20 transition-transform duration-300 md:duration-500 ease-out md:ease-[cubic-bezier(0.32,0.72,0,1)] min-w-0 ${
+            className={`hidden md:flex fixed inset-y-0 left-0 z-40 w-96 flex-col bg-palette-ink border-r border-palette-stone/20 shadow-xl overflow-hidden pt-20 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] min-w-0 ${
               sidebarOpen ? 'translate-x-0' : '-translate-x-full'
             }`}
           >
@@ -1174,7 +1129,6 @@ function WeeklyPathPageContent() {
           totalUnits={celebrationData.totalUnits}
           currentStreak={celebrationData.currentStreak}
           esSemanaAdicional={celebrationData.esSemanaAdicional}
-          newAchievements={celebrationData.newAchievements}
           levelUp={celebrationData.levelUp}
           newLevel={celebrationData.newLevel}
           evolution={celebrationData.evolution}
@@ -1235,105 +1189,38 @@ function WeeklyPathPageContent() {
 
       {renderMobileTooltip()}
 
-      {/* Efecto visual de Level Up */}
+      {/* Efecto visual de Level Up — estilo Move Crew: épico y fino */}
       <AnimatePresence>
         {showLevelUpEffect && levelUpData && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[300] flex items-center justify-center pointer-events-none bg-palette-ink/80 backdrop-blur-xl"
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="fixed inset-0 z-[300] flex items-center justify-center pointer-events-none bg-palette-ink/95 backdrop-blur-md"
           >
             <motion.div
-              initial={{ scale: 0.5, opacity: 0, rotate: -180 }}
-              animate={{ 
-                scale: [0.5, 1.2, 1], 
-                opacity: [0, 1, 1],
-                rotate: [-180, 0, 0]
-              }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ 
-                duration: 0.8,
-                ease: [0.34, 1.56, 0.64, 1]
-              }}
-              className="relative flex flex-col items-center gap-4 p-8 bg-palette-ink rounded-3xl border-2 border-palette-stone/30 shadow-2xl max-w-md mx-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
+              className="absolute inset-0 flex flex-col items-center justify-center w-full px-4"
             >
-              {/* Partículas de celebración */}
-              {[...Array(20)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-2 h-2 rounded-full"
-                  style={{
-                    backgroundColor: ['#F59E0B', '#F97316', '#E11D48'][i % 3],
-                    left: '50%',
-                    top: '50%'
-                  }}
-                  initial={{ 
-                    scale: 0,
-                    x: 0,
-                    y: 0,
-                    opacity: 1
-                  }}
-                  animate={{ 
-                    scale: [0, 1, 0],
-                    x: Math.cos((i * 360 / 20) * Math.PI / 180) * 150,
-                    y: Math.sin((i * 360 / 20) * Math.PI / 180) * 150,
-                    opacity: [1, 1, 0]
-                  }}
-                  transition={{ 
-                    duration: 1.5,
-                    delay: i * 0.05,
-                    ease: 'easeOut'
-                  }}
-                />
-              ))}
-              
-              {/* Icono del gorila animado */}
-              <motion.div
-                animate={{ 
-                  scale: [1, 1.3, 1],
-                  rotate: [0, 10, -10, 0]
-                }}
-                transition={{ 
-                  duration: 0.8,
-                  repeat: 2,
-                  ease: 'easeInOut'
-                }}
-                className="text-8xl relative z-10"
+              {/* Línea superior — marca Move Crew */}
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-palette-sage/60" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-palette-sage/30" />
+              {/* Mensaje centrado, tipografía refinada */}
+              <p
+                className="text-[10px] md:text-xs font-montserrat uppercase tracking-[0.35em] text-palette-sage/90 mb-2"
               >
-                {levelUpData.gorillaIcon || '🦍'}
-              </motion.div>
-              
-              {/* Mensaje de level up */}
-              <div className="text-center relative z-10">
-                <motion.h2
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3, duration: 0.5 }}
-                  className="text-3xl font-bold text-palette-cream font-montserrat mb-2"
-                >
-                  ¡Subiste de Nivel!
-                </motion.h2>
-                <motion.p
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5, duration: 0.5 }}
-                  className="text-xl font-semibold text-palette-sage font-montserrat mb-1"
-                >
-                  Nivel {levelUpData.newLevel}
-                </motion.p>
-                {levelUpData.evolution && (
-                  <motion.p
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.7, duration: 0.5 }}
-                    className="text-sm text-palette-stone font-montserrat font-light"
-                  >
-                    ¡Tu gorila evoluciona!
-                  </motion.p>
-                )}
-              </div>
+                {levelUpData.evolution ? 'Evolución' : 'Nivel'}
+              </p>
+              <p className="text-4xl md:text-6xl lg:text-7xl font-semibold font-montserrat tracking-tight text-palette-cream mb-1">
+                {levelUpData.newLevel}
+              </p>
+              <p className="text-lg md:text-xl font-montserrat font-light text-palette-stone/90 tracking-wide">
+                {levelUpData.evolution ? 'Tu camino sigue creciendo' : 'Subiste de nivel'}
+              </p>
             </motion.div>
           </motion.div>
         )}

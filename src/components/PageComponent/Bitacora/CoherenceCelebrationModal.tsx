@@ -136,9 +136,9 @@ const CoherenceCelebrationModal = ({
                         <motion.div
                           animate={{ rotate: [0, 5, -5, 0] }}
                           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                          className="text-3xl md:text-4xl"
+                          className="text-lg md:text-xl font-bold font-montserrat tracking-tight text-palette-sage"
                         >
-                          🌱
+                          U.C.
                         </motion.div>
                       </motion.div>
                       {[...Array(6)].map((_, i) => (
@@ -196,17 +196,6 @@ const CoherenceCelebrationModal = ({
                   >
                     {isFirstTime ? '¡Felicidades por empezar tu camino!' : (levelUp ? (evolution ? `Tu gorila evoluciona al nivel ${newLevel}` : `Ahora eres nivel ${newLevel}`) : 'Cultivada con constancia')}
                   </motion.p>
-
-                  {evolution && gorillaIcon && (
-                    <motion.div
-                      initial={{ scale: 0, rotate: -180 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ type: 'spring', stiffness: 150, damping: 20, delay: 0.6 }}
-                      className="mb-4"
-                    >
-                      <div className="text-6xl">{gorillaIcon}</div>
-                    </motion.div>
-                  )}
 
                   {/* Badge +N U.C. — acento teal paleta */}
                   <motion.div

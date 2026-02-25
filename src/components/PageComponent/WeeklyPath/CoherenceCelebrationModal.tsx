@@ -10,7 +10,6 @@ interface CoherenceCelebrationModalProps {
   totalUnits: number;
   currentStreak: number;
   esSemanaAdicional?: boolean;
-  newAchievements?: Array<{ name: string; description: string; icon: string }>;
   levelUp?: boolean;
   newLevel?: number;
   evolution?: boolean;
@@ -74,8 +73,8 @@ const CoherenceCelebrationModal = ({
                     transition={{ type: 'spring', stiffness: 200, damping: 22, delay: 0.08 }}
                     className="w-14 h-14 md:w-16 md:h-16 mx-auto mb-5 rounded-full bg-palette-sage/15 border border-palette-sage/30 flex items-center justify-center"
                   >
-                    <span className="text-2xl md:text-3xl" aria-hidden>
-                      {noUcGranted ? '✓' : '🌱'}
+                    <span className="text-xl md:text-2xl font-bold font-montserrat tracking-tight text-palette-sage" aria-hidden>
+                      {noUcGranted ? '✓' : 'U.C.'}
                     </span>
                   </motion.div>
 
@@ -115,17 +114,6 @@ const CoherenceCelebrationModal = ({
                         ? 'Una semana completada = 1 U.C. Acumulalas y canjealas.'
                         : 'Cultivada con constancia.'}
                   </motion.p>
-
-                  {evolution && gorillaIcon && (
-                    <motion.div
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.35 }}
-                      className="mb-4 text-5xl"
-                    >
-                      {gorillaIcon}
-                    </motion.div>
-                  )}
 
                   {!noUcGranted && (
                     <motion.div

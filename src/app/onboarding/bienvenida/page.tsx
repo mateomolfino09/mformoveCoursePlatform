@@ -4,7 +4,7 @@ import type { CSSProperties, MouseEvent } from 'react';
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircleIcon, LockClosedIcon, PlayIcon, PauseIcon } from '@heroicons/react/24/solid';
+import { CheckCircleIcon, LockClosedIcon, PlayIcon, PauseIcon, SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 import Player from '@vimeo/player';
 import MainSideBar from '../../../components/MainSidebar/MainSideBar';
 import ShimmerBox from '../../../components/ShimmerBox';
@@ -37,6 +37,7 @@ export default function BienvenidaPage() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
 
   useEffect(() => {
     setIsVisible(true);
@@ -103,7 +104,8 @@ export default function BienvenidaPage() {
 
       try {
         const playerOptions: any = {
-          autoplay: false,
+          autoplay: true,
+          muted: true, // Necesario para que autoplay funcione en la mayoría de navegadores
           controls: false, // Sin controles nativos, usaremos botón personalizado
           responsive: true,
           playsinline: true,
@@ -354,6 +356,36 @@ export default function BienvenidaPage() {
     }
   };
 
+  const handleMuteToggle = async () => {
+    const player = vimeoPlayerRef.current;
+    if (!player) return;
+    try {
+      const nextMuted = !isMuted;
+      await player.setMuted(nextMuted);
+      setIsMuted(nextMuted);
+    } catch (err) {
+      console.error('Error al cambiar mute:', err);
+    }
+  };
+
+  // Espacio: pausar/reanudar video
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== 'Space' && e.key !== ' ') return;
+      const target = e.target as HTMLElement;
+      if (target?.closest('input, textarea, [contenteditable="true"]')) return;
+      e.preventDefault();
+      const player = vimeoPlayerRef.current;
+      if (!player) return;
+      if (isPlaying) {
+        player.pause().then(() => setIsPlaying(false)).catch(() => {});
+      } else {
+        player.play().then(() => setIsPlaying(true)).catch(() => {});
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isPlaying]);
 
   const handleAccept = async () => {
     if (!buttonEnabled || loading) return;
@@ -653,7 +685,7 @@ export default function BienvenidaPage() {
       wrapperHeightPx = lerp(endHeightPx * 1.05, endHeightPx, scrollProgress);
     }
     // En desktop, mover el contenedor un poco más abajo para separarlo del header
-    const topOffset = isMobile ? '50%' : '52%';
+    const topOffset = isMobile ? '53%' : '52%';
     const wrapperStyles: CSSProperties = {
       position: 'absolute',
       top: topOffset,
@@ -790,15 +822,11 @@ export default function BienvenidaPage() {
                   </h1>
                   <h2 className="text-[3rem] relative bottom-2 left-1 md:left-2 md:bottom-4 md:!text-[4rem] font-semibold tracking-tight text-left md:tracking-wide leading-[0.95]">La Move Crew te espera.</h2> 
                 </div>
-                <div className={`vimeo-player-container ${isPlaying ? 'playing' : ''}`} style={wrapperStyles}>
+                <div className={`vimeo-player-container  pt-4 md:pt-0 ${isPlaying ? 'playing' : ''}`} style={wrapperStyles}>
                   {/* Skeleton loading dentro del contenedor del video para respetar bordes */}
                   {isVideoLoading && (
-                    <div className="absolute inset-0 z-[5] rounded-[inherit] overflow-hidden" aria-hidden>
-                      <div className="absolute inset-0 bg-palette-ink/90" />
+                    <div className="absolute inset-0 z-[5] rounded-[inherit] overflow-hidden flex items-center justify-center" aria-hidden>
                       <ShimmerBox className="absolute inset-0 w-full h-full" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <p className="font-montserrat text-sm uppercase tracking-[0.2em] text-palette-cream/80">Cargando video...</p>
-                      </div>
                     </div>
                   )}
                   <div
@@ -839,6 +867,25 @@ export default function BienvenidaPage() {
                       transition={{ duration: 0.3 }}
                     >
                       <PauseIcon className="h-5 w-5 text-palette-sage" />
+                    </motion.button>
+                  )}
+                  {/* Botón mute / sonido: siempre visible cuando el video está listo */}
+                  {!isVideoLoading && (
+                    <motion.button
+                      type="button"
+                      onClick={handleMuteToggle}
+                      aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}
+                      className="absolute bottom-4 left-16 z-[50] flex items-center justify-center bg-palette-cream/90 hover:bg-palette-cream hover:border-palette-sage/40 backdrop-blur-sm transition-colors rounded-full p-3 border border-palette-stone/20 shadow-lg cursor-pointer isolate"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {isMuted ? (
+                        <SpeakerXMarkIcon className="h-5 w-5 text-palette-sage" />
+                      ) : (
+                        <SpeakerWaveIcon className="h-5 w-5 text-palette-sage" />
+                      )}
                     </motion.button>
                   )}
                 </div>
@@ -1115,7 +1162,7 @@ export default function BienvenidaPage() {
                     </>
                   ) : (
                     <>
-                              <span>Empezar en Move Crew</span>
+                              <span>Empezar</span>
                     </>
                   )}
                 </motion.button>

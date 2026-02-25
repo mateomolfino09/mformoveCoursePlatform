@@ -1197,43 +1197,16 @@ function WeeklyPathPageContent() {
                   return isWeekUnlocked;
                 })()
               ) ? (
-                <div className="relative">
-                  {/* Overlay de loading durante la transición */}
-                  <AnimatePresence>
-                    {isChangingContent && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-3xl"
-                      >
-                        <div className="flex flex-col items-center gap-4">
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            className="w-12 h-12 border-4 border-amber-300/30 border-t-amber-600 rounded-full"
-                          />
-                          <motion.p
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="text-sm text-gray-700 font-montserrat font-medium"
-                          >
-                            Cargando contenido...
-                          </motion.p>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                  
+                <div className="relative w-full min-h-[70vh]">
                   <AnimatePresence mode="wait">
                     {selectedContent.type === 'visual' ? (
                       <motion.div
                         key={`visual-${selectedWeek}-${selectedDay}`}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        className="w-full"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
                       >
                         <VideoContentDisplay
                           videoUrl={selectedContent.videoUrl}
@@ -1254,10 +1227,11 @@ function WeeklyPathPageContent() {
                     ) : (
                       <motion.div
                         key={`audioText-${selectedWeek}-${selectedDay}`}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        className="w-full"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
                       >
                         <AudioTextContentDisplay
                           audioUrl={'audioUrl' in selectedContent ? selectedContent.audioUrl : undefined}
@@ -1405,7 +1379,6 @@ function WeeklyPathPageContent() {
           totalUnits={celebrationData.totalUnits}
           currentStreak={celebrationData.currentStreak}
           esSemanaAdicional={celebrationData.esSemanaAdicional}
-          newAchievements={celebrationData.newAchievements}
           levelUp={celebrationData.levelUp}
           newLevel={celebrationData.newLevel}
           evolution={celebrationData.evolution}
@@ -1449,109 +1422,34 @@ function WeeklyPathPageContent() {
 
       {renderMobileTooltip()}
 
-      {/* Efecto visual de Level Up */}
+      {/* Efecto visual de Level Up — estilo Move Crew: épico y fino */}
       <AnimatePresence>
         {showLevelUpEffect && levelUpData && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[300] flex items-center justify-center pointer-events-none"
-            style={{
-              background: `linear-gradient(135deg, rgba(139, 69, 19, 0.5) 0%, rgba(249, 115, 22, 0.4) 100%)`,
-              backdropFilter: 'blur(12px)'
-            }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="fixed inset-0 z-[300] flex items-center justify-center pointer-events-none bg-palette-ink/95 backdrop-blur-md"
           >
             <motion.div
-              initial={{ scale: 0.5, opacity: 0, rotate: -180 }}
-              animate={{ 
-                scale: [0.5, 1.2, 1], 
-                opacity: [0, 1, 1],
-                rotate: [-180, 0, 0]
-              }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ 
-                duration: 0.8,
-                ease: [0.34, 1.56, 0.64, 1]
-              }}
-              className="relative flex flex-col items-center gap-4 p-8 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 rounded-3xl border-2 border-amber-300 shadow-2xl max-w-md mx-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
+              className="absolute inset-0 flex flex-col items-center justify-center w-full px-4"
             >
-              {/* Partículas de celebración */}
-              {[...Array(20)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-2 h-2 rounded-full"
-                  style={{
-                    backgroundColor: ['#F59E0B', '#F97316', '#E11D48'][i % 3],
-                    left: '50%',
-                    top: '50%'
-                  }}
-                  initial={{ 
-                    scale: 0,
-                    x: 0,
-                    y: 0,
-                    opacity: 1
-                  }}
-                  animate={{ 
-                    scale: [0, 1, 0],
-                    x: Math.cos((i * 360 / 20) * Math.PI / 180) * 150,
-                    y: Math.sin((i * 360 / 20) * Math.PI / 180) * 150,
-                    opacity: [1, 1, 0]
-                  }}
-                  transition={{ 
-                    duration: 1.5,
-                    delay: i * 0.05,
-                    ease: 'easeOut'
-                  }}
-                />
-              ))}
-              
-              {/* Icono del gorila animado */}
-              <motion.div
-                animate={{ 
-                  scale: [1, 1.3, 1],
-                  rotate: [0, 10, -10, 0]
-                }}
-                transition={{ 
-                  duration: 0.8,
-                  repeat: 2,
-                  ease: 'easeInOut'
-                }}
-                className="text-8xl relative z-10"
-              >
-                {levelUpData.gorillaIcon || '🦍'}
-              </motion.div>
-              
-              {/* Mensaje de level up */}
-              <div className="text-center relative z-10">
-                <motion.h2
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3, duration: 0.5 }}
-                  className="text-3xl font-bold text-gray-900 font-montserrat mb-2"
-                >
-                  ¡Subiste de Nivel!
-                </motion.h2>
-                <motion.p
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5, duration: 0.5 }}
-                  className="text-xl font-semibold text-amber-600 font-montserrat mb-1"
-                >
-                  Nivel {levelUpData.newLevel}
-                </motion.p>
-                {levelUpData.evolution && (
-                  <motion.p
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.7, duration: 0.5 }}
-                    className="text-sm text-gray-700 font-montserrat font-light"
-                  >
-                    ¡Tu gorila evoluciona!
-                  </motion.p>
-                )}
-              </div>
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-palette-sage/60" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-palette-sage/30" />
+              <p className="text-[10px] md:text-xs font-montserrat uppercase tracking-[0.35em] text-palette-sage/90 mb-2">
+                {levelUpData.evolution ? 'Evolución' : 'Nivel'}
+              </p>
+              <p className="text-4xl md:text-6xl lg:text-7xl font-semibold font-montserrat tracking-tight text-palette-cream mb-1">
+                {levelUpData.newLevel}
+              </p>
+              <p className="text-lg md:text-xl font-montserrat font-light text-palette-stone/90 tracking-wide">
+                {levelUpData.evolution ? 'Tu camino sigue creciendo' : 'Subiste de nivel'}
+              </p>
             </motion.div>
           </motion.div>
         )}

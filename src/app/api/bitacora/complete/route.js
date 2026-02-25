@@ -177,6 +177,27 @@ export async function POST(req) {
         tracking.completedAudios.push(audioKey);
       }
     }
+
+    // Progreso de nivel por contenido: 25% de la barra por semana completa = 2/8.
+    // Cada contenido completado suma (2 / contenidosDeLaSemana).
+    let levelProgressResult = null;
+    if (!alreadyCompleted && (videoKey || audioKey)) {
+      let contentsLength = 2; // legacy: 2 contenidos por semana
+      if (useContentIndex && logbookId && weekNumber !== undefined && weekNumber !== null) {
+        try {
+          const logbookDoc = await WeeklyLogbook.findById(logbookId).lean();
+          const week = logbookDoc?.weeklyContents?.find((w) => w.weekNumber === weekNumber);
+          const contents = week?.contents;
+          if (Array.isArray(contents) && contents.length > 0) {
+            contentsLength = contents.length;
+          }
+        } catch (_) {}
+      }
+      const increment = contentsLength > 0 ? 2 / contentsLength : 0;
+      if (increment > 0) {
+        levelProgressResult = tracking.addLevelProgressByContent(increment);
+      }
+    }
     
     // U.C.: con contentIndex (varios contenidos por semana) solo se otorga 1 U.C. cuando la semana está completa.
     // Sin contentIndex (legacy): se llama addCoherenceUnit por cada contenido.
@@ -249,6 +270,7 @@ export async function POST(req) {
       lastCompletedDate: tracking.lastCompletedDate,
       level: tracking.level !== undefined && tracking.level !== null ? tracking.level : 1,
       levelProgress: tracking.levelProgress !== undefined && tracking.levelProgress !== null ? tracking.levelProgress : 0,
+      monthsCompleted: tracking.monthsCompleted !== undefined && tracking.monthsCompleted !== null ? tracking.monthsCompleted : 0,
       characterEvolution: tracking.characterEvolution !== undefined && tracking.characterEvolution !== null ? tracking.characterEvolution : 0,
       completedDays: tracking.completedDays || [],
       completedWeeks: tracking.completedWeeks || [],
@@ -306,6 +328,13 @@ export async function POST(req) {
       }
     }
     
+    // Obtener información de level up: addCoherenceUnit ya no sube nivel; viene de addLevelProgressByContent (levelProgressResult)
+    const levelUp = (ucResult?.levelUp || levelProgressResult?.levelUp) || false;
+    const newLevel = ucResult?.newLevel ?? levelProgressResult?.newLevel;
+    const evolution = (ucResult?.evolution || levelProgressResult?.evolution) || false;
+    const gorillaIcon = ucResult?.gorillaIcon ?? levelProgressResult?.gorillaIcon;
+    const evolutionName = ucResult?.evolutionName ?? levelProgressResult?.evolutionName;
+
     // Construir mensaje según el resultado
     const esSemanaAdicional = ucResult?.esSemanaAdicional || false;
     const ucsOtorgadas = ucResult?.ucsOtorgadas || 0;
@@ -326,21 +355,13 @@ export async function POST(req) {
       reason = ucResult?.reason || 'ALREADY_COMPLETED_NO_UC';
       tip = ucResult?.tip || 'Una semana completada = 1 U.C. Este contenido ya estaba completado.';
       message = ucResult?.message || 'Contenido ya completado. Una semana completada = 1 U.C.';
-      // Si hubo level up, seguir considerándolo éxito para que se procese el efecto
-      if (ucResult?.levelUp) {
+      // Si hubo level up (por U.C. o por contenido), seguir considerándolo éxito para que se procese el efecto
+      if (levelUp) {
         responseSuccess = true;
       }
     }
 
     console.log('ucResult', ucResult);
-
-    // Obtener información de level up del resultado de addCoherenceUnit
-    const levelUp = ucResult?.levelUp || false;
-    const newLevel = ucResult?.newLevel;
-    const evolution = ucResult?.evolution || false;
-    const gorillaIcon = ucResult?.gorillaIcon;
-    const evolutionName = ucResult?.evolutionName;
-
     console.log('levelUp', levelUp);
     
     // Si hay level up, obtener el tracking actualizado para obtener la información completa
@@ -352,12 +373,12 @@ export async function POST(req) {
       }
     }
     
-    // Obtener levelProgress del tracking final (actualizado si hubo level up)
-    const levelProgress = finalTracking.levelProgress !== undefined && finalTracking.levelProgress !== null 
-      ? finalTracking.levelProgress 
-      : (ucResult?.levelProgress !== undefined && ucResult?.levelProgress !== null 
-          ? ucResult?.levelProgress 
-          : 0);
+    // Obtener levelProgress del tracking final o del resultado por contenido
+    const levelProgress = (finalTracking?.levelProgress !== undefined && finalTracking?.levelProgress !== null)
+      ? finalTracking.levelProgress
+      : (levelProgressResult?.levelProgress !== undefined && levelProgressResult?.levelProgress !== null)
+        ? levelProgressResult.levelProgress
+        : (ucResult?.levelProgress !== undefined && ucResult?.levelProgress !== null ? ucResult.levelProgress : 0);
 
     console.log('levelProgress', levelProgress);
     

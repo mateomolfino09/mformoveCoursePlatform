@@ -1,5 +1,6 @@
 'use client'
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import MoveCrewVideoPlayer, { type MoveCrewVideoPlayerHandle } from '../ClassPage/MoveCrewVideoPlayer';
@@ -62,6 +63,8 @@ interface Props {
   logbookId?: string;
   weekNumber?: number;
   dayNumber?: number;
+  /** Si false, no se muestra el overlay de intro (materiales / countdown). Útil en weekly-path al cambiar de semana. */
+  showIntroOverlay?: boolean;
 }
 
 const VideoContentDisplay = ({
@@ -78,7 +81,8 @@ const VideoContentDisplay = ({
   isCompleted = false,
   logbookId,
   weekNumber,
-  dayNumber
+  dayNumber,
+  showIntroOverlay = true
 }: Props) => {
   const [videoProgress, setVideoProgress] = useState(0);
   const [canComplete, setCanComplete] = useState(false);
@@ -179,27 +183,17 @@ const VideoContentDisplay = ({
       className="w-full mt-6 md:mt-8"
     >
       {/* Overlay pre-video: materiales, nombre, "Necesito más tiempo" / "Quiero seguir" (como clase de módulo) */}
-      {!introDismissed && (
+      {showIntroOverlay && !introDismissed && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 md:bg-black/70 md:backdrop-blur-sm transition-opacity duration-300"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 md:bg-black/70 pointer-events-none"
           role="dialog"
           aria-labelledby="weekly-intro-title"
         >
           <div
-            className="w-full min-h-0 md:max-w-sm flex flex-col justify-center rounded-none md:rounded-3xl border-0 md:border md:border-palette-stone/20 bg-palette-ink md:shadow-2xl"
+            className="w-full min-h-0 md:max-w-sm flex flex-col justify-center rounded-none md:rounded-3xl border-0 md:border md:border-palette-stone/20 bg-palette-ink md:shadow-2xl pointer-events-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col items-center gap-6 md:gap-5 p-6 md:p-8 max-w-md mx-auto w-full text-center">
-              <header className="space-y-1">
-                <h2 id="weekly-intro-title" className="font-montserrat text-lg md:text-xl font-light text-palette-cream tracking-wide leading-tight">
-                  {displayName || 'Clase semanal'}
-                </h2>
-                {duration != null && duration > 0 && (
-                  <p className="text-palette-stone/90 text-xs font-light">
-                    {Math.round(duration / 60)} min
-                  </p>
-                )}
-              </header>
 
               {hasMaterials && (
                 <div className="space-y-2 w-full flex flex-col items-center">
@@ -247,12 +241,13 @@ const VideoContentDisplay = ({
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Video: más ancho (breakout al padding del contenedor), contenedor fino y limpio */}
       <div className="relative -mx-4 sm:-mx-6 lg:-mx-8 rounded-none sm:rounded-xl overflow-hidden bg-palette-ink border-0 border-y border-palette-stone/10">
-        <div className="relative w-full aspect-video min-h-[40vh] md:min-h-[55vh] max-h-[82vh]">
+        <div className="relative w-full aspect-video md:min-h-[55vh] max-h-[82vh]">
         {isVimeo && vimeoId ? (
           <MoveCrewVideoPlayer
             ref={playerRef}

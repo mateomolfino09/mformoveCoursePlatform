@@ -130,6 +130,16 @@ export async function GET(req) {
     // Hidratar contenidos que solo tienen individualClassId o moduleClassId (traer videoUrl, videoName desde IndividualClass / ModuleClass)
     if (logbook.weeklyContents && logbook.weeklyContents.length > 0) {
       await hydrateWeeklyContents(logbook.weeklyContents);
+      // Liberar semana por fecha: si publishDate ya pasó, la semana está desbloqueada
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      for (const week of logbook.weeklyContents) {
+        const pub = week.publishDate ? new Date(week.publishDate) : null;
+        if (pub) {
+          pub.setHours(0, 0, 0, 0);
+          if (pub <= today) week.isUnlocked = true;
+        }
+      }
     }
 
     return NextResponse.json(

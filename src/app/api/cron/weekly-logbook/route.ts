@@ -6,6 +6,7 @@ import Users from '../../../../models/userModel';
 import IndividualClass from '../../../../models/individualClassModel';
 import ModuleClass from '../../../../models/moduleClassModel';
 import ClassFilters from '../../../../models/classFiltersModel';
+import ClassModule from '../../../../models/classModuleModel';
 import { EmailService, EmailType } from '../../../../services/email/emailService';
 
 export const dynamic = 'force-dynamic';
@@ -23,6 +24,53 @@ const durationParts = (duration: number) => {
     seconds: Math.floor(safeDuration % 60)
   };
 };
+
+/** Construye el detalle de contenidos de la semana para el email: título, descripción, nombre del módulo */
+async function buildWeekContentsDetail(content: any): Promise<Array<{ type: string; title: string; description?: string; moduleName?: string }>> {
+  const contents = (content as any)?.contents;
+  if (Array.isArray(contents) && contents.length > 0) {
+    const detail: Array<{ type: string; title: string; description?: string; moduleName?: string }> = [];
+    for (const item of contents) {
+      const contentType = item.contentType || 'moduleClass';
+      if (contentType === 'moduleClass' && item.moduleClassId) {
+        const mc = await ModuleClass.findById(item.moduleClassId).select('name description moduleId').lean();
+        if (mc) {
+          let moduleName = '';
+          if ((mc as any).moduleId) {
+            const mod = await ClassModule.findById((mc as any).moduleId).select('name').lean();
+            if (mod && (mod as any).name) moduleName = (mod as any).name;
+          }
+          detail.push({
+            type: 'Clase de módulo',
+            title: (mc as any).name || 'Clase',
+            description: (mc as any).description || undefined,
+            moduleName: moduleName || undefined
+          });
+        }
+      } else if (contentType === 'individualClass' && item.individualClassId) {
+        const ic = await IndividualClass.findById(item.individualClassId).select('name description').lean();
+        if (ic) {
+          detail.push({
+            type: 'Clase individual',
+            title: (ic as any).name || (item.videoName || '') || 'Clase',
+            description: (ic as any).description || undefined
+          });
+        }
+      } else if (contentType === 'audio') {
+        detail.push({
+          type: 'Audio',
+          title: (item.audioTitle || '').trim() || content.weekTitle || 'Audio',
+          description: (item.audioText || '').trim() || undefined
+        });
+      }
+    }
+    return detail;
+  }
+  // Legacy: semana con un solo contenido a nivel semana
+  const title = (content as any)?.weekTitle || (content as any)?.videoName || `Semana ${content.weekNumber}`;
+  const text = (content as any)?.text || (content as any)?.weekDescription || '';
+  return [{ type: 'Contenido', title, description: text.trim() || undefined }];
+}
 
 async function createIndividualClassesForLogbook(logbook: LogbookWithWeeks) {
   try {
@@ -323,6 +371,7 @@ export async function GET(req: NextRequest) {
           }
           
           const videoDurationSeconds = (content as any)?.videoDuration || null;
+          const weekContentsDetail = await buildWeekContentsDetail(content);
 
           // 3. Enviar email a cada miembro
           const baseUrl = process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://mateomove.com';
@@ -352,7 +401,8 @@ export async function GET(req: NextRequest) {
                   videoDurationSeconds,
                   bitacoraLink: bitacoraLink,
                   logbookTitle: logbook.title || 'Camino',
-                  isFirstWeek: content.weekNumber === 1 || content.weekNumber === '1'
+                  isFirstWeek: content.weekNumber === 1 || content.weekNumber === '1',
+                  weekContentsDetail
                 }
               });
               
@@ -398,9 +448,13 @@ export async function GET(req: NextRequest) {
         }
       }
 
-      // Al publicar la última semana: hacer visibles en biblioteca todas las clases de módulo e individuales
+      // Al fin del mes del camino: hacer visibles en biblioteca las clases de módulo e individuales
       // que estaban solo en el weekly path (visibleInLibrary: false) y están referenciadas en este camino
-      if (ultimaSemanaPublicadaAhora) {
+      const logbookMonth = Number((logbook as any).month) || 0;
+      const logbookYear = Number((logbook as any).year) || 0;
+      const firstDayNextMonth = logbookMonth && logbookYear ? new Date(logbookYear, logbookMonth, 1) : null; // month 1-12
+      const isEndOfMonth = firstDayNextMonth ? ahora >= firstDayNextMonth : false;
+      if (isEndOfMonth) {
         const moduleClassIds: string[] = [];
         const individualClassIds: string[] = [];
         for (const wc of logbook.weeklyContents || []) {

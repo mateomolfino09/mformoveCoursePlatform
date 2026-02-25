@@ -9,14 +9,15 @@ export const prepareEmail = async (titulo, link, action, user, contenido, subjec
   try {
     const title = `<h1>${titulo}</h1>`;
 
-    // Paleta tailwind: ink #141411, stone #787867, cream #FAF8F4, teal #074647
+    // Paleta Move Crew: ink #141411, stone #787867, cream #FAF8F4
+    const font = "'Source Sans 3', Helvetica, Arial, sans-serif";
     const message = `
-    <div>
-        <div>
-        <a href="${link}" style="display:inline-block;background-color:#074647;color:#FAF8F4;text-decoration:none;font-weight:500;font-size:14px;padding:12px 24px;border-radius:8px;font-family:'Source Sans 3',Helvetica,Arial,sans-serif">${action}</a>
+    <div style="font-family:${font};font-weight:300;">
+        <div style="margin:20px 0 24px;">
+        <a href="${link}" style="display:inline-block;color:#FAF8F4;background:#141411;text-decoration:none;font-weight:400;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;padding:12px 28px;border-radius:9999px;font-family:${font}">${action}</a>
         </div>
-        <p style="font-size:14px;font-weight:400;color:#141411;margin:20px 0 24px;font-family:'Source Sans 3',Helvetica,Arial,sans-serif">El equipo de MForMove.</p>
-        <hr style="height:1px;background-color:#787867;border:none;opacity:0.3">
+        <p style="font-size:12px;font-weight:300;color:#787867;margin:20px 0 24px;letter-spacing:0.02em">El equipo de Move Crew.</p>
+        <hr style="height:1px;background:#787867;border:none;opacity:0.2">
     </div>`;
 
     let resp = sendEmail({

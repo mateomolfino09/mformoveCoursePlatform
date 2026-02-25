@@ -231,9 +231,13 @@ export async function PUT(req, { params }) {
       };
     };
 
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
     const mappedWeeklyContents = await Promise.all(weeklyContents.map(async wc => {
       const publishDate = new Date(wc.publishDate);
+      publishDate.setHours(0, 0, 0, 0);
       const weekTitle = (wc.weekTitle || '').trim() || `Semana ${wc.weekNumber}`;
+      const isUnlockedByDate = publishDate <= now;
       const base = {
         weekNumber: wc.weekNumber,
         moduleName: (wc.moduleName?.trim() || weekTitle || '').trim() || '',
@@ -242,7 +246,7 @@ export async function PUT(req, { params }) {
         dailyContents: [],
         publishDate,
         isPublished: wc.isPublished || false,
-        isUnlocked: wc.isUnlocked || false
+        isUnlocked: isUnlockedByDate || wc.isUnlocked || false
       };
 
       if (wc.contents && Array.isArray(wc.contents) && wc.contents.length > 0) {

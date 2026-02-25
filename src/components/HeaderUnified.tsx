@@ -7,7 +7,7 @@ import { useRouter } from 'next13-progressbar';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useSnapshot } from 'valtio';
-import { CiCircleChevLeft, CiCircleChevRight, CiMenuKebab } from 'react-icons/ci';
+import { CiCircleChevLeft, CiCircleChevRight } from 'react-icons/ci';
 import { AiOutlineBook } from 'react-icons/ai';
 import { LuSettings } from 'react-icons/lu';
 import { useAppSelector } from '../redux/hooks';
@@ -121,6 +121,18 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 			.catch(() => { if (!cancelled) { setUserLevel(null); setLevelProgress(0); setTotalCoherenceUnits(null); } });
 		return () => { cancelled = true; };
 	}, [auth.user]);
+
+	// Escuchar actualizaciones de coherencia (p. ej. al completar una semana en el Camino) para actualizar el número en el menú de perfil
+	useEffect(() => {
+		const handler = (e: CustomEvent<{ totalUnits?: number; level?: number; levelProgress?: number }>) => {
+			const d = e.detail;
+			if (typeof d.totalUnits === 'number') setTotalCoherenceUnits(d.totalUnits);
+			if (typeof d.level === 'number') setUserLevel(d.level);
+			if (typeof d.levelProgress === 'number') setLevelProgress(d.levelProgress);
+		};
+		window.addEventListener('coherence-tracking-updated', handler as EventListener);
+		return () => window.removeEventListener('coherence-tracking-updated', handler as EventListener);
+	}, []);
 
 	// Cerrar menú de perfil y dropdown Eventos/Mentoría al hacer clic fuera
 	useEffect(() => {
@@ -454,9 +466,12 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									</div>
 									);
 								})()}
-								<button type="button" className="rounded-full p-2 text-white border border-white/40 hover:bg-white/20 transition-colors" onClick={() => { if (onMenuClick && isMobile) onMenuClick(); else state.weeklyPathNavOpen = !snap.weeklyPathNavOpen; }} aria-label="Menú">
-									{sidebarOpen ? <XMarkIcon className="h-5 w-5" /> : <CiMenuKebab className="h-6 w-6" />}
-								</button>
+								{/* En mobile el sidebar del camino va debajo del video; no mostrar icono de menú */}
+								{(!isWeeklyPath || !isMobile) && (
+									<button type="button" className="rounded-full p-2 text-white border border-white/40 hover:bg-white/20 transition-colors" onClick={() => { if (onMenuClick && isMobile) onMenuClick(); else state.weeklyPathNavOpen = !snap.weeklyPathNavOpen; }} aria-label="Menú">
+										{sidebarOpen ? <XMarkIcon className="h-5 w-5" /> : <BsMenuButton className="h-6 w-6" />}
+									</button>
+								)}
 								</div>
 								{/* Solo desktop: Menú + Admin + usuario */}
 								<div className='hidden md:flex items-center gap-3'>
@@ -584,13 +599,17 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 					</div>
 					{/* Centro: Eventos y Mentoría; centrado sin login, más a la izquierda con login */}
 					<div className="flex flex-1 w-full justify-start items-center min-h-[2rem]">
-						<div className={`hidden md:flex items-center gap-6 ml-4 ${auth?.user ? '-translate-x-[15%]' : ''}`}>
+						<div className={`hidden  items-center gap-6 ml-4 ${auth?.user ? '-translate-x-[15%]' : ''} ${isMoveCrew || isBienvenida ? 'md:hidden' : 'md:flex'}`}>
 						<span className={`hidden md:block shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'}`}>|</span>
-							<Link href={routes.navegation.eventos} className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? 'text-white/80 hover:text-white' : 'text-palette-stone hover:text-palette-ink'}`}>
-								Eventos
+						<Link href={auth?.user?.subscription?.active || auth?.user?.isVip ? routes.navegation.membresiaHome : routes.navegation.moveCrew} className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? 'text-white/80 hover:text-white' : 'text-palette-stone hover:text-palette-ink'}`}>
+								Move Crew
 							</Link>
 							<Link href={routes.navegation.mentorship} className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? 'text-white/80 hover:text-white' : 'text-palette-stone hover:text-palette-ink'}`}>
 								Mentoría
+							</Link>
+			
+							<Link href={routes.navegation.eventos} className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? 'text-white/80 hover:text-white' : 'text-palette-stone hover:text-palette-ink'}`}>
+								Eventos
 							</Link>
 						</div>
 					</div>
@@ -609,8 +628,10 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							</button>
 							{eventsMentorshipOpen && (
 								<div className="absolute right-0 top-full mt-2 w-40 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
-									<Link href={routes.navegation.eventos} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
+														<Link href={auth?.user?.subscription?.active || auth?.user.isVip ? routes.navegation.membresiaHome : routes.navegation.moveCrew} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setEventsMentorshipOpen(false)}>Move Crew</Link>
 									<Link href={routes.navegation.mentorship} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
+				
+									<Link href={routes.navegation.eventos} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
 								</div>
 							)}
 						</div>
@@ -650,7 +671,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							</Link>
 						)}
 						<div className='flex items-center gap-3'>
-								{auth?.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin') && (
+								{auth?.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin') && (!isBienvenida) && (
 									<button
 										type='button'
 										data-tutorial-move-crew-target

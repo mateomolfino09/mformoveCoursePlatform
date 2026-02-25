@@ -3,6 +3,33 @@ import { EmailService, EmailType } from '../../../../services/email/emailService
 import connectDB from '../../../../config/connectDB';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
 
+// Datos de prueba para publicación Weekly Path (estética Move Crew, listos para vista previa)
+function buildWeeklyPathTestData(to: string, data?: any, simulatedWeek?: any) {
+  const weekNumber = simulatedWeek?.weekNumber ?? data?.weekNumber ?? 3;
+  const month = simulatedWeek?.month ?? data?.month ?? 1;
+  const year = simulatedWeek?.year ?? data?.year ?? 2025;
+  return {
+    name: data?.name ?? 'María',
+    email: to,
+    weekNumber,
+    month,
+    year,
+    text: simulatedWeek?.text ?? data?.text ?? 'Esta semana trabajamos la movilidad de cadera y la conexión con la respiración. El audio intro te guía para enfocar la práctica antes de las clases.',
+    audioUrl: simulatedWeek?.audioUrl ?? data?.audioUrl ?? '',
+    audioTitle: simulatedWeek?.audioTitle ?? data?.audioTitle ?? 'Introducción Semana 3',
+    coverImage: simulatedWeek?.coverImage ?? data?.coverImage ?? 'https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png',
+    videoDurationSeconds: simulatedWeek?.videoDurationSeconds ?? data?.videoDurationSeconds ?? 324,
+    bitacoraLink: data?.bitacoraLink ?? 'https://mateomove.com/weekly-path',
+    logbookTitle: simulatedWeek?.logbookTitle ?? data?.logbookTitle ?? 'Camino',
+    isFirstWeek: data?.isFirstWeek ?? weekNumber === 1,
+    weekContentsDetail: data?.weekContentsDetail ?? (simulatedWeek?.weekContentsDetail as any) ?? [
+      { type: 'video', title: 'Movilidad de cadera', description: 'Calentamiento y rango de movimiento.', moduleName: 'Movimiento consciente' },
+      { type: 'video', title: 'Respiración y postura', description: 'Integración respiración y columna.', moduleName: 'Fundamentos' },
+      { type: 'audio', title: 'Reflexión semanal', description: 'Cierre y consigna para los próximos días.', moduleName: 'Práctica' },
+    ],
+  };
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -49,20 +76,7 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      const defaultData = {
-        name: data?.name || 'Usuario de Prueba',
-        email: to,
-        weekNumber: simulatedWeek?.weekNumber || data?.weekNumber || 1,
-        month: simulatedWeek?.month || data?.month || 1,
-        year: simulatedWeek?.year || data?.year || 2025,
-        text: (simulatedWeek?.text || data?.text || 'Contenido de prueba para la semana.'),
-        audioUrl: simulatedWeek?.audioUrl || data?.audioUrl || '',
-        audioTitle: simulatedWeek?.audioTitle || data?.audioTitle || 'Audio de la semana',
-        coverImage: simulatedWeek?.coverImage || data?.coverImage || 'https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png',
-        videoDurationSeconds: simulatedWeek?.videoDurationSeconds || data?.videoDurationSeconds || 0,
-        bitacoraLink: data?.bitacoraLink || 'https://mateomove.com/weekly-path',
-        logbookTitle: simulatedWeek?.logbookTitle || data?.logbookTitle || 'Camino'
-      };
+      const defaultData = buildWeeklyPathTestData(to, data, simulatedWeek);
 
       const html = EmailService.renderTemplate(EmailType.WEEKLY_LOGBOOK_RELEASE, defaultData);
       return NextResponse.json({
@@ -122,20 +136,7 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      const defaultData = {
-        name: data?.name || 'Usuario de Prueba',
-        email: to,
-        weekNumber: simulatedWeek?.weekNumber || data?.weekNumber || 1,
-        month: simulatedWeek?.month || data?.month || 1,
-        year: simulatedWeek?.year || data?.year || 2025,
-        text: simulatedWeek?.text || data?.text || 'Contenido de prueba para la semana.',
-        audioUrl: simulatedWeek?.audioUrl || data?.audioUrl || '',
-        audioTitle: simulatedWeek?.audioTitle || data?.audioTitle || 'Audio de la semana',
-        coverImage: simulatedWeek?.coverImage || data?.coverImage || 'https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png',
-        videoDurationSeconds: simulatedWeek?.videoDurationSeconds || data?.videoDurationSeconds || 0,
-        bitacoraLink: data?.bitacoraLink || 'https://mateomove.com/weekly-path',
-        logbookTitle: simulatedWeek?.logbookTitle || data?.logbookTitle || 'Camino'
-      };
+      const defaultData = buildWeeklyPathTestData(to, data, simulatedWeek);
 
       try {
         const result = await emailService.sendEmail({
