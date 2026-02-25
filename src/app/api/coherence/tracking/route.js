@@ -5,10 +5,9 @@ import connectDB from '../../../../config/connectDB';
 import CoherenceTracking, { getGorillaIcon, getEvolutionName, getProgressToNextLevel } from '../../../../models/coherenceTrackingModel';
 import Users from '../../../../models/userModel';
 
-connectDB();
-
 export async function GET(req) {
   try {
+    await connectDB();
     // Obtener el token del usuario desde las cookies
     const cookieStore = cookies();
     const userToken = cookieStore.get('userToken')?.value;

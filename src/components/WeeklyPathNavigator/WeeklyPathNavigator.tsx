@@ -8,6 +8,7 @@ import { useSnapshot } from 'valtio';
 import state from '../../valtio';
 import { routes } from '../../constants/routes';
 import { IoCloseOutline } from 'react-icons/io5';
+import { WHATSAPP_GROUP_LINK } from '../../constants/community';
 
 interface Logbook {
   _id: string;
@@ -19,8 +20,6 @@ interface Logbook {
   createdAt: string;
   isBaseBitacora?: boolean;
 }
-
-const TELEGRAM_LINK = 'https://t.me/+_9hJulwT690yNWFh';
 
 const WeeklyPathNavigator = () => {
   const auth = useAuth();
@@ -36,7 +35,6 @@ const WeeklyPathNavigator = () => {
   const [isTutorialActive, setIsTutorialActive] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const snap = useSnapshot(state);
   const isLibrary = pathname === routes.navegation.membership.library;
@@ -50,15 +48,13 @@ const WeeklyPathNavigator = () => {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // En móvil, en Library o en Index (desktop) la visibilidad la controla el header/barra (weeklyPathNavOpen); en el resto de desktop, estado local (isOpen)
-  const isOpenEffective = (isMobile || isLibrary || isIndex) ? snap.weeklyPathNavOpen : isOpen;
+  // El botón Move Crew solo está en header/barra (siempre al lado de MENÚ); el panel se controla siempre con state.weeklyPathNavOpen
+  const isOpenEffective = snap.weeklyPathNavOpen;
 
-  // Sincronizar estado local cuando el header/barra cierra/abre (móvil, Library o Index) para closeMenu y tutorial
+  // Sincronizar estado local con el global para closeMenu y tutorial
   useEffect(() => {
-    if (isMobile || isLibrary || isIndex) {
-      setIsOpen(snap.weeklyPathNavOpen);
-    }
-  }, [isMobile, isLibrary, isIndex, snap.weeklyPathNavOpen]);
+    setIsOpen(snap.weeklyPathNavOpen);
+  }, [snap.weeklyPathNavOpen]);
 
   // Verificar si el usuario tiene acceso
   const hasAccess = auth.user && (
@@ -241,57 +237,13 @@ const WeeklyPathNavigator = () => {
     state.systemNavOpen = !snap.systemNavOpen;
   };
 
-  // En móvil el control está en la barra inferior; en desktop en Index y Library el botón Move Crew está en el header, no duplicar abajo
-  const showFloatingButton = !isMobile && !isLibrary && !isIndex;
-
   return (
     <div
       ref={dropdownRef}
       className={`fixed z-[200] ${isMobile ? 'inset-0 pointer-events-none' : `bottom-6 ${isLibrary ? 'right-6' : 'right-6'}`}`}
     >
-      <div className={`${isLibrary && showFloatingButton ? 'flex items-end gap-3 relative' : 'relative'} ${isMobile ? 'pointer-events-none' : ''}`}>
-        {/* Botón flotante - solo en desktop; en móvil el control está en el header */}
-        {showFloatingButton && (
-        <div>
-          <motion.button
-          ref={buttonRef}
-          onClick={() => {
-            // NO permitir cerrar el menú si el tutorial está activo
-            const tutorialActive = document.body.classList.contains('tutorial-active');
-            if (tutorialActive && isOpen) {
-              return; // No hacer nada si el tutorial está activo y el menú está abierto
-            }
-            if (tutorialActive && !isOpen) {
-              setIsOpen(true); // Solo permitir abrir si el tutorial está activo
-              return;
-            }
-            setIsOpen(!isOpen);
-          }}
-          className={`
-            font-montserrat font-light text-xs tracking-[0.12em] uppercase
-            rounded-full px-5 py-2 transition-all duration-200 cursor-pointer
-            ${hasWhiteBackground
-              ? 'text-palette-stone border border-palette-stone/50 hover:border-palette-cream hover:text-palette-cream'
-              : 'text-palette-stone border border-palette-stone/50 hover:border-palette-cream hover:text-palette-cream'}
-            ${isOpen ? 'ring-2 ring-palette-sage/30' : ''}
-          `}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          aria-label="Navegador de Weekly Path"
-        >
-          {isOpen ? (
-            <span className="flex items-center gap-1.5">
-              <IoCloseOutline className="h-5 w-5" />
-              <span>Cerrar</span>
-            </span>
-          ) : (
-            <span>Move Crew</span>
-          )}
-        </motion.button>
-        </div>
-        )}
-
-        {/* Menú Move Crew: mismo panel full-screen que el menú general (mobile y desktop) */}
+      <div className={`relative ${isMobile ? 'pointer-events-none' : ''}`}>
+        {/* Menú Move Crew: panel controlado solo por el botón del header/barra (siempre al lado de MENÚ) */}
         <AnimatePresence>
           {isOpenEffective && (
             <motion.div
@@ -328,11 +280,11 @@ const WeeklyPathNavigator = () => {
                   className="flex flex-col justify-end items-end -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] hover:text-[#fff] cursor-pointer text-left transition-colors"
                 >
                   <h2 className="font-light lg:text-xl">Programa de Movimiento</h2>
-                  <h1 className="text-4xl font-thin lg:text-6xl md:text-4xl">Weekly Path</h1>
+                  <h1 className="text-4xl font-thin lg:text-6xl md:text-4xl">Camino Semanal</h1>
                 </button>
 
                 <a
-                  href={TELEGRAM_LINK}
+                  href={WHATSAPP_GROUP_LINK}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => {
@@ -342,7 +294,7 @@ const WeeklyPathNavigator = () => {
                   }}
                   className="flex flex-col justify-end items-end -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] hover:text-[#fff] cursor-pointer no-underline transition-colors"
                 >
-                  <h2 className="font-light lg:text-xl">Telegram</h2>
+                  <h2 className="font-light lg:text-xl">WhatsApp</h2>
                   <h1 className="text-4xl font-thin lg:text-6xl md:text-4xl">Comunidad</h1>
                 </a>
 

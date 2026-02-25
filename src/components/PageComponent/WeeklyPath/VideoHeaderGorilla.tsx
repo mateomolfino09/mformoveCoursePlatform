@@ -49,9 +49,9 @@ const VideoHeaderGorilla = ({
           strokeLinecap="round"
         />
       </svg>
-      <div className="absolute inset-0 rounded-full bg-white/10 border border-white/20 shadow-lg backdrop-blur-sm z-10" />
+      <div className="absolute inset-0 rounded-full bg-palette-stone/20 border border-palette-stone/30 shadow-lg backdrop-blur-sm z-10" />
       <div
-        className="flex items-center justify-center w-full h-full text-2xl md:text-3xl leading-none text-amber-400 drop-shadow relative z-20"
+        className="flex items-center justify-center w-full h-full text-2xl md:text-3xl leading-none text-palette-sage drop-shadow relative z-20"
       >
         {gorillaIcon}
       </div>
@@ -82,8 +82,8 @@ const VideoHeaderGorilla = ({
           </linearGradient>
         </defs>
       </svg>
-      <div className="absolute -top-1 -right-1 rounded-full bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 border border-white/60 shadow-md px-1.5 py-[2px] min-w-[1.5rem] h-6 flex items-center justify-center z-40">
-        <span className="text-white text-[10px] md:text-xs font-bold leading-none">
+      <div className="absolute -top-1 -right-1 rounded-full bg-palette-sage border border-palette-stone/40 shadow-md px-1.5 py-[2px] min-w-[1.5rem] h-6 flex items-center justify-center z-40">
+        <span className="text-palette-ink text-[10px] md:text-xs font-bold leading-none">
           {level}
         </span>
       </div>

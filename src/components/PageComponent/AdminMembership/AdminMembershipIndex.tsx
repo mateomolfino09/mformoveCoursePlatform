@@ -5,7 +5,7 @@ import {
   PlusCircleIcon,
   TableCellsIcon,
 } from '@heroicons/react/24/solid';
-import { BookOpenIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
+import { BookOpenIcon, Squares2X2Icon, CalendarDaysIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -96,6 +96,17 @@ const AdminMembershipIndex = () => {
                   <Squares2X2Icon className='w-12 h-12 text-white transition-colors duration-300' />
                 </div>
                 <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Módulos de clase</p>
+                <p className='text-gray-500 text-sm font-montserrat mt-1'>módulos, submódulos y clases</p>
+              </div>
+            </Link>
+            <Link href={'/admin/memberships/bitacora'}>
+              <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
+                <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+                <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
+                  <CalendarDaysIcon className='w-12 h-12 text-white transition-colors duration-300' />
+                </div>
+                <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Caminos Semanales</p>
+                <p className='text-gray-500 text-sm font-montserrat mt-1'>Weekly Path / bitácora mensual</p>
               </div>
             </Link>
           </div>

@@ -357,6 +357,25 @@ export interface ClassModule {
   updatedAt?: Date;
 }
 
+/** Clase de módulo: video corto dentro de un submódulo. Nivel 1-10. Se crea solo desde crear/editar submódulo. */
+export interface ModuleClass {
+  _id: string;
+  moduleId: string;
+  submoduleSlug: string;
+  name: string;
+  description?: string;
+  videoUrl?: string;
+  videoId?: string;
+  videoThumbnail?: string;
+  duration?: number;
+  level: number;
+  order: number;
+  /** Materiales a usar en clase (baston, banda elastica, banco, pelota). */
+  materials?: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 export interface IndividualClass {
   _id: string;
   id: number;

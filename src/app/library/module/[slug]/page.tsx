@@ -1,57 +1,121 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { ClassTypes, IndividualClass } from '../../../../../typings';
-import ClassesCategory from '../../../../components/PageComponent/ClassCategory/ClassCategory';
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { IndividualClass } from '../../../../../typings';
+import type { ModuleForLibrary } from '../../../../components/PageComponent/ClassPage/LibraryModuleView';
 import OnboardingGuard from '../../../../components/OnboardingGuard';
+import LibraryModuleView from '../../../../components/PageComponent/ClassPage/LibraryModuleView';
+import ModuleLibrarySkeleton from '../../../../components/ModuleLibrarySkeleton';
+import { routes } from '../../../../constants/routes';
+
+function moduleHasVideo(mod: ModuleForLibrary | null): boolean {
+  if (!mod) return false;
+  const url = mod.videoUrl && String(mod.videoUrl).trim();
+  return !!(mod.videoId || url);
+}
 
 export default function LibraryModulePage({ params }: { params: { slug: string } }) {
   const { slug } = params;
+  const router = useRouter();
   const [classes, setClasses] = useState<IndividualClass[]>([]);
-  const [filters, setFilters] = useState<ClassTypes[]>([]);
+  const [module, setModule] = useState<ModuleForLibrary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [videoReady, setVideoReady] = useState(false);
+  const [notFound, setNotFound] = useState(false);
+  const handleVideoReady = useCallback(() => setVideoReady(true), []);
 
   useEffect(() => {
+    if (!slug) return;
+
     async function fetchData() {
       try {
-        const [classesRes, filtersRes] = await Promise.all([
+        const [moduleRes, classesRes] = await Promise.all([
+          fetch(`/api/class-modules/by-slug/${slug}`, {
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0' },
+          }),
           fetch(`/api/individualClass/getClassesByType/${slug}`, {
             cache: 'no-store',
             headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0' },
-            next: { tags: ['classes'] },
-          }),
-          fetch('/api/individualClass/getClassTypes', {
-            cache: 'no-store',
-            headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0' },
-            next: { tags: ['classFilters'] },
           }),
         ]);
+
+        if (!moduleRes.ok) {
+          if (moduleRes.status === 404) setNotFound(true);
+          setLoading(false);
+          return;
+        }
+
+        const moduleData = await moduleRes.json();
         const classesData = await classesRes.json();
-        const filtersData = await filtersRes.json();
+
+        setModule({
+          name: moduleData.name,
+          slug: moduleData.slug,
+          description: moduleData.description ?? null,
+          aboutDescription: moduleData.aboutDescription ?? null,
+          howToUse: Array.isArray(moduleData.howToUse) ? moduleData.howToUse : [],
+          videoUrl: moduleData.videoUrl ?? null,
+          videoId: moduleData.videoId ?? null,
+          videoThumbnail: moduleData.videoThumbnail ?? null,
+          submodules: moduleData.submodules ?? [],
+          practicesCount: moduleData.practicesCount ?? 0,
+          moduleClasses: Array.isArray(moduleData.moduleClasses) ? moduleData.moduleClasses : [],
+        });
         setClasses(Array.isArray(classesData) ? classesData : []);
-        setFilters(Array.isArray(filtersData) ? filtersData : []);
+        setVideoReady(false);
       } catch (err) {
-        console.error('Error fetching data:', err);
+        console.error('Error fetching module data:', err);
       } finally {
         setLoading(false);
       }
     }
-    if (slug) fetchData();
+
+    fetchData();
   }, [slug]);
 
   if (loading) {
     return (
       <OnboardingGuard>
-        <div className="flex justify-center items-center min-h-[50vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4F7CCF]" />
+        <ModuleLibrarySkeleton />
+      </OnboardingGuard>
+    );
+  }
+
+  if (notFound || !module) {
+    return (
+      <OnboardingGuard>
+        <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 px-6">
+          <p className="text-palette-ink text-lg">Módulo no encontrado.</p>
+          <button
+            type="button"
+            onClick={() => router.push(routes.navegation.membership.library)}
+            className="text-palette-sage hover:underline"
+          >
+            Volver a Biblioteca
+          </button>
         </div>
       </OnboardingGuard>
     );
   }
 
+  const showSkeletonOverlay = moduleHasVideo(module) && !videoReady;
+
   return (
     <OnboardingGuard>
-      <ClassesCategory classesDB={classes} filters={filters} filter={slug} />
+      <div className="relative">
+        <LibraryModuleView
+          module={module}
+          classes={classes}
+          onVideoReady={handleVideoReady}
+        />
+        {showSkeletonOverlay && (
+          <div className="fixed inset-0 z-[200] pointer-events-none">
+            <ModuleLibrarySkeleton />
+          </div>
+        )}
+      </div>
     </OnboardingGuard>
   );
 }

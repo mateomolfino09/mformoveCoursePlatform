@@ -2,18 +2,12 @@
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  CheckCircleIcon, 
   LockClosedIcon,
   CalendarIcon,
   PlayIcon,
-  ArrowLeftIcon,
-  ChevronDownIcon,
-  ChevronUpIcon
+  ChevronDownIcon
 } from '@heroicons/react/24/solid';
-import { LockClosedIcon as LockClosedIconOutline } from '@heroicons/react/24/outline';
 import { useAuth } from '../../../hooks/useAuth';
-import { useRouter } from 'next/navigation';
-import { routes } from '../../../constants/routes';
 
 interface DailyContent {
   dayNumber: number;
@@ -38,12 +32,26 @@ interface DailyContent {
   isUnlocked: boolean;
 }
 
+/** Ítem de contenido de la semana (clase de módulo, clase individual, audio) */
+interface WeekContentItem {
+  contentType?: 'moduleClass' | 'individualClass' | 'audio';
+  videoUrl?: string;
+  videoName?: string;
+  audioUrl?: string;
+  audioTitle?: string;
+  audioText?: string;
+  submoduleName?: string;
+  orden?: number;
+}
+
 interface WeeklyContent {
   weekNumber: number;
   moduleName?: string;
   weekTitle?: string;
   weekDescription?: string;
   dailyContents?: DailyContent[];
+  /** Varios contenidos por semana (clase módulo, clase individual, audio) */
+  contents?: WeekContentItem[];
   publishDate: string;
   isPublished: boolean;
   isUnlocked: boolean;
@@ -69,9 +77,13 @@ interface Props {
   selectedWeek: number | null;
   selectedDay: number | null;
   selectedContentType: 'visual' | 'audioText' | null;
-  onSelect: (weekNumber: number, dayNumber: number | null, contentType: 'visual' | 'audioText' | null) => void;
+  selectedContentIndex?: number | null;
+  onSelect: (weekNumber: number, dayNumber: number | null, contentType: 'visual' | 'audioText' | null, contentIndex?: number) => void;
   completedWeeks: Set<string>;
   completedDays: Set<string>;
+  /** Completados por contenido (key: logbookId-weekNumber-content-index) */
+  completedVideos?: Set<string>;
+  completedAudios?: Set<string>;
   onClose?: () => void;
 }
 
@@ -80,12 +92,14 @@ const WeeklyPathSidebar = ({
   selectedWeek,
   selectedDay,
   selectedContentType,
+  selectedContentIndex = null,
   onSelect,
   completedWeeks,
   completedDays,
+  completedVideos = new Set(),
+  completedAudios = new Set(),
   onClose
 }: Props) => {
-  const router = useRouter();
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
   
   const formatPublishDate = (dateString: string) => {
@@ -195,7 +209,6 @@ const WeeklyPathSidebar = ({
   // Auto-expandir el módulo de la semana seleccionada
   React.useEffect(() => {
     if (selectedWeek !== null) {
-      // Buscar en qué módulo está la semana seleccionada
       const moduleForWeek = modulesWithWeeks.find(module => 
         module.weeks.some(w => w.weekNumber === selectedWeek)
       );
@@ -205,54 +218,131 @@ const WeeklyPathSidebar = ({
     }
   }, [selectedWeek, modulesWithWeeks]);
 
+  // Porcentaje completado: de la semana seleccionada; si la semana está al 100%, mostrar progreso del mes (25/50/75/100%)
+  const progressInfo = React.useMemo(() => {
+    let weekTotal = 0;
+    let weekCompleted = 0;
+    const weeks = logbook.weeklyContents || [];
+    if (selectedWeek !== null) {
+      const week = weeks.find(w => w.weekNumber === selectedWeek);
+      if (week) {
+        const contents = week.contents;
+        if (Array.isArray(contents) && contents.length > 0) {
+          weekTotal = contents.length;
+          for (let i = 0; i < contents.length; i++) {
+            const key = `${logbook._id}-${week.weekNumber}-content-${i}`;
+            if (completedVideos.has(key) || completedAudios.has(key)) weekCompleted++;
+          }
+        } else {
+          if (week.videoUrl) { weekTotal++; if (completedVideos.has(`${logbook._id}-${week.weekNumber}-week-video`)) weekCompleted++; }
+          if (week.audioUrl || (week as WeeklyContent).text) { weekTotal++; if (completedAudios.has(`${logbook._id}-${week.weekNumber}-week-audio`)) weekCompleted++; }
+        }
+      }
+      const weekIsComplete = weekTotal > 0 && weekCompleted === weekTotal;
+      if (weekIsComplete && weeks.length > 0) {
+        let monthCompleted = 0;
+        weeks.forEach((w) => {
+          const c = w.contents;
+          if (Array.isArray(c) && c.length > 0) {
+            let allDone = true;
+            for (let i = 0; i < c.length; i++) {
+              const key = `${logbook._id}-${w.weekNumber}-content-${i}`;
+              if (!completedVideos.has(key) && !completedAudios.has(key)) { allDone = false; break; }
+            }
+            if (allDone) monthCompleted++;
+          } else {
+            const hasVideo = !!w.videoUrl;
+            const hasAudio = !!(w.audioUrl || (w as WeeklyContent).text);
+            const doneVideo = !hasVideo || completedVideos.has(`${logbook._id}-${w.weekNumber}-week-video`);
+            const doneAudio = !hasAudio || completedAudios.has(`${logbook._id}-${w.weekNumber}-week-audio`);
+            if ((hasVideo || hasAudio) && doneVideo && doneAudio) monthCompleted++;
+          }
+        });
+        const monthTotal = weeks.length;
+        const percentage = monthTotal > 0 ? Math.round((monthCompleted / monthTotal) * 100) : 0;
+        return { total: monthTotal, completed: monthCompleted, percentage, label: 'Mes', isMonthView: true };
+      }
+      const percentage = weekTotal > 0 ? Math.round((weekCompleted / weekTotal) * 100) : 0;
+      return { total: weekTotal, completed: weekCompleted, percentage, label: `Semana ${selectedWeek}`, isMonthView: false };
+    }
+    let total = 0;
+    let completed = 0;
+    weeks.forEach((week) => {
+      const contents = week.contents;
+      if (Array.isArray(contents) && contents.length > 0) {
+        total += contents.length;
+        contents.forEach((_, i) => {
+          const key = `${logbook._id}-${week.weekNumber}-content-${i}`;
+          if (completedVideos.has(key) || completedAudios.has(key)) completed++;
+        });
+      } else {
+        if (week.videoUrl) { total++; if (completedVideos.has(`${logbook._id}-${week.weekNumber}-week-video`)) completed++; }
+        if (week.audioUrl || (week as WeeklyContent).text) { total++; if (completedAudios.has(`${logbook._id}-${week.weekNumber}-week-audio`)) completed++; }
+      }
+    });
+    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+    return { total, completed, percentage, label: 'Camino', isMonthView: false };
+  }, [logbook._id, logbook.weeklyContents, selectedWeek, completedVideos, completedAudios]);
+
   return (
-    <div className='h-full flex flex-col bg-gradient-to-br from-white via-gray-50/50 to-amber-50/30 backdrop-blur-sm'>
-      {/* Header con botón de volver */}
-      <div className='p-6 md:pt-20 border-b border-amber-200/40 bg-gradient-to-r from-amber-100/30 via-orange-50/20 to-rose-100/30 flex-shrink-0'>
-        <button
-          onClick={() => router.push(routes.navegation.membership.library)}
-          className="flex items-center gap-2 text-gray-700 hover:text-gray-900 mb-4 transition-colors group"
-        >
-          <ArrowLeftIcon className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-          <span className="font-montserrat font-medium text-base">Volver a Library</span>
-        </button>
-        <h2 className='text-2xl font-bold text-gray-900 font-montserrat mb-1 tracking-tight'>
-          Contenido Semanal
+    <div className='h-full flex flex-col min-w-0 overflow-x-hidden'>
+      {/* Barra de progreso: porcentaje de la semana (o del camino) completado */}
+      <div className='px-4 pt-4 flex-shrink-0'>
+        <div className='flex items-center justify-between gap-2 mb-1.5'>
+          <span className='text-xs text-palette-stone font-montserrat font-light'>
+            {progressInfo.label} · {progressInfo.completed}/{progressInfo.total}
+            {progressInfo.isMonthView ? ' semanas' : ''}
+          </span>
+          <span className='text-xs text-palette-sage font-montserrat font-medium'>
+            {progressInfo.percentage}%
+          </span>
+        </div>
+        <div className='h-1.5 w-full rounded-full bg-palette-stone/30 overflow-hidden'>
+          <motion.div
+            className='h-full rounded-full bg-palette-sage'
+            initial={false}
+            animate={{ width: `${Math.min(100, progressInfo.percentage)}%` }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          />
+        </div>
+      </div>
+      {/* Título y mes */}
+      <div className='px-4 pt-3 pb-2 flex-shrink-0'>
+        <h2 className='text-lg font-semibold text-palette-cream font-montserrat tracking-tight'>
+          Contenido de la semana
         </h2>
-        <p className='text-base text-gray-600 font-montserrat font-light'>
-          {new Date(logbook.year, logbook.month - 1).toLocaleDateString('es-ES', { 
-            month: 'long', 
-            year: 'numeric' 
-          })}
+        <p className='text-sm text-palette-stone font-montserrat font-light mt-0.5'>
+          {(() => {
+            const str = new Date(logbook.year, logbook.month - 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+            return str.charAt(0).toUpperCase() + str.slice(1);
+          })()}
         </p>
       </div>
 
-      {/* Content Navigation */}
-      <div className='flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-amber-300/50 scrollbar-track-transparent py-4'>
-        {modulesWithWeeks.map(({ moduleName, weeks, moduleIndex }) => {
+      {/* Navegación por módulos/semanas */}
+      <div className='flex-1 overflow-y-auto overflow-x-hidden min-h-0 min-w-0 scrollbar-thin scrollbar-thumb-palette-stone/50 scrollbar-track-transparent py-2'>
+        {modulesWithWeeks.map(({ moduleName, weeks }) => {
           const isModuleExpanded = expandedModules.has(moduleName);
-          
-          // El nombre del módulo ya viene determinado en modulesWithWeeks
           const displayModuleName = moduleName;
 
           return (
-            <div key={moduleName} className='border-b border-amber-200/30 last:border-b-0'>
-              {/* Module Header */}
+            <div key={moduleName} className='border-b border-palette-stone/20 last:border-b-0'>
+              {/* Cabecera de módulo */}
               <button
                 onClick={() => toggleModule(moduleName)}
-                className='w-full p-4 text-left transition-all flex items-center justify-between hover:bg-amber-50/40'
+                className='w-full p-3 text-left transition-colors flex items-center justify-between hover:bg-palette-stone/20 rounded-lg mx-1'
               >
-                <div className='flex items-center gap-3'>
+                <div className='flex items-center gap-2'>
                   <motion.div
                     animate={{ rotate: isModuleExpanded ? 90 : 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <ChevronDownIcon className='h-5 w-5 text-gray-600 flex-shrink-0' />
+                    <ChevronDownIcon className='h-5 w-5 text-palette-stone flex-shrink-0' />
                   </motion.div>
-                  <span className='text-base font-semibold text-gray-900 font-montserrat'>
+                  <span className='text-sm font-semibold text-palette-cream font-montserrat'>
                     {displayModuleName}
                   </span>
-                  <span className='text-sm text-gray-500 font-montserrat font-light'>
+                  <span className='text-xs text-palette-stone font-montserrat font-light'>
                     ({weeks.length})
                   </span>
                 </div>
@@ -260,11 +350,10 @@ const WeeklyPathSidebar = ({
                   animate={{ rotate: isModuleExpanded ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <ChevronDownIcon className='h-5 w-5 text-gray-600 flex-shrink-0' />
+                  <ChevronDownIcon className='h-5 w-5 text-palette-stone flex-shrink-0' />
                 </motion.div>
               </button>
 
-              {/* Weeks dentro del módulo */}
               <AnimatePresence>
                 {isModuleExpanded && (
                   <motion.div
@@ -272,7 +361,7 @@ const WeeklyPathSidebar = ({
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                    className='bg-white/40 overflow-hidden'
+                    className='bg-palette-stone/5 overflow-hidden'
                   >
                     {weeks.map((week) => {
                       const weekKey = `${logbook._id}-${week.weekNumber}`;
@@ -281,21 +370,17 @@ const WeeklyPathSidebar = ({
                       const isWeekUnlocked = isContentUnlocked(week);
                       const isLastWeek = week.weekNumber === maxWeekNumber;
                       const isLastWeekReleaseDay = isLastWeek && isWeekUnlocked && isPublishDateToday(week.publishDate);
+                      const hasContents = Array.isArray(week.contents) && week.contents.length > 0;
                       const hasVideo = (week.dailyContents?.some(day => day.visualContent?.type === 'video' && day.visualContent.videoUrl)) || 
-                                      (week.videoUrl && (!week.dailyContents || week.dailyContents.length === 0));
+                                      (week.videoUrl && (!week.dailyContents || week.dailyContents.length === 0) && !hasContents);
                       const hasAudio = (week.dailyContents?.some(day => day.audioTextContent?.audioUrl || day.audioTextContent?.text)) ||
-                                      ((week.audioUrl || week.text) && (!week.dailyContents || week.dailyContents.length === 0));
-                      
-                      // Obtener nombres del video y audio (del primer día con contenido o de la semana legacy)
+                                      ((week.audioUrl || week.text) && (!week.dailyContents || week.dailyContents.length === 0) && !hasContents);
                       const firstDayWithVideo = week.dailyContents?.find(day => 
                         day.visualContent?.type === 'video' && day.visualContent.videoUrl
                       );
                       const firstDayWithAudio = week.dailyContents?.find(day => 
                         day.audioTextContent?.audioUrl || day.audioTextContent?.text
                       );
-                      
-                      // Para contenido diario, usar los nombres de dailyContents si existen
-                      // Para contenido legacy, usar videoName y audioTitle directamente del objeto de la semana
                       const videoName = firstDayWithVideo?.visualContent?.videoName 
                         || firstDayWithVideo?.visualContent?.nombre 
                         || (week as any).videoName 
@@ -306,89 +391,121 @@ const WeeklyPathSidebar = ({
                         || 'Reproducción de Audio';
 
                       return (
-                        <div key={week.weekNumber} className='pl-8 pr-4 py-3 border-b border-amber-200/20 last:border-b-0'>
-                          {/* Week Info */}
-                          <div className='mb-3'>
-                            <div className='flex items-center gap-2 mb-1'>
-                              <span className='text-base font-bold text-gray-900 font-montserrat tracking-tight'>
+                        <div key={week.weekNumber} className='pl-6 pr-3 py-2.5 border-b border-palette-stone/10 last:border-b-0'>
+                          <div className='mb-2'>
+                            <div className='flex items-center gap-2 mb-0.5'>
+                              <span className='text-sm font-semibold text-palette-cream font-montserrat tracking-tight'>
                                 Semana {week.weekNumber}
                               </span>
                               {isWeekCompleted && (
-                                <CheckCircleIcon className='h-5 w-5 text-amber-600 flex-shrink-0' />
+                                <span className='w-2 h-2 rounded-full bg-palette-sage shrink-0' title="Semana vista" aria-hidden />
                               )}
                               {!isWeekUnlocked && (
-                                <LockClosedIcon className='h-4 w-4 text-gray-400 flex-shrink-0' />
+                                <LockClosedIcon className='h-3.5 w-3.5 text-palette-stone flex-shrink-0' />
                               )}
                             </div>
                             {week.weekTitle && (
-                              <p className='text-sm text-gray-700/90 font-montserrat mb-1 font-medium'>
+                              <p className='text-xs text-palette-cream/80 font-montserrat font-medium mb-0.5'>
                                 {week.weekTitle}
                               </p>
                             )}
                             {isLastWeekReleaseDay && (
-                              <p className='text-xs text-amber-700 font-montserrat font-semibold'>
+                              <p className='text-xs text-palette-sage font-montserrat font-semibold'>
                                 Última semana liberada hoy
                               </p>
                             )}
-                            <div className='flex items-center gap-2 text-xs text-gray-600'>
+                            <div className='flex items-center gap-1.5 text-xs text-palette-stone'>
                               <CalendarIcon className='h-3 w-3' />
                               <span className='font-light'>{formatPublishDate(week.publishDate)}</span>
                             </div>
                           </div>
 
-                          {/* Botones de Video y Audio + Texto */}
-                          <div className='flex flex-col gap-2'>
-                            {/* Botón Video */}
-                            {hasVideo && (
-                              <motion.button
-                                onClick={() => {
-                                  if (!isWeekUnlocked && !isAdmin) return;
-                                  onSelect(week.weekNumber, null, 'visual');
-                                }}
-                                disabled={!isWeekUnlocked && !isAdmin}
-                                whileHover={isWeekUnlocked || isAdmin ? { scale: 1.02 } : {}}
-                                whileTap={isWeekUnlocked || isAdmin ? { scale: 0.98 } : {}}
-                                className={`w-full p-2.5 rounded-xl text-left transition-all relative overflow-hidden ${
-                                  !isWeekUnlocked
-                                    ? 'opacity-50 cursor-not-allowed'
-                                    : isWeekSelected && selectedContentType === 'visual'
-                                    ? 'bg-gradient-to-r from-amber-100/50 via-orange-50/40 to-rose-100/50 border border-amber-300/50 shadow-sm'
-                                    : 'hover:bg-amber-50/70 border border-transparent'
-                                }`}
-                              >
-                                <div className='flex items-center gap-2 relative z-10'>
-                                  <PlayIcon className='h-4 w-4 text-amber-700' />
-                                  <span className='text-sm text-gray-900 font-montserrat font-medium'>
-                                    {videoName}
-                                  </span>
-                                </div>
-                              </motion.button>
-                            )}
-
-                            {/* Botón Audio + Texto */}
-                            {hasAudio && (
-                              <motion.button
-                                onClick={() => {
-                                  if (!isWeekUnlocked && !isAdmin) return;
-                                  onSelect(week.weekNumber, null, 'audioText');
-                                }}
-                                disabled={!isWeekUnlocked && !isAdmin}
-                                whileHover={isWeekUnlocked || isAdmin ? { scale: 1.02 } : {}}
-                                whileTap={isWeekUnlocked || isAdmin ? { scale: 0.98 } : {}}
-                                className={`w-full p-2.5 rounded-xl text-left transition-all relative overflow-hidden ${
-                                  !isWeekUnlocked
-                                    ? 'opacity-50 cursor-not-allowed'
-                                    : isWeekSelected && selectedContentType === 'audioText'
-                                    ? 'bg-gradient-to-r from-amber-100/50 via-orange-50/40 to-rose-100/50 border border-amber-300/50 shadow-sm'
-                                    : 'hover:bg-amber-50/70 border border-transparent'
-                                }`}
-                              >
-                                <div className='flex items-center gap-2 relative z-10'>
-                                  <span className='text-sm text-gray-900 font-montserrat font-medium'>
-                                    {audioName}
-                                  </span>
-                                </div>
-                              </motion.button>
+                          <div className='flex flex-col gap-1.5'>
+                            {hasContents ? (
+                              week.contents!.map((c, contentIndex) => {
+                                const tipo = (c.contentType || 'moduleClass') as 'moduleClass' | 'individualClass' | 'audio';
+                                const isVisual = tipo !== 'audio';
+                                const isAudio = tipo === 'audio';
+                                const name = (isVisual ? c.videoName : c.audioTitle) || (isAudio ? 'Audio' : 'Clase');
+                                const isThisSelected = isWeekSelected && selectedContentIndex === contentIndex && (
+                                  (isVisual && selectedContentType === 'visual') || (isAudio && selectedContentType === 'audioText')
+                                );
+                                const contentKey = `${logbook._id}-${week.weekNumber}-content-${contentIndex}`;
+                                const isContentCompleted = isVisual ? completedVideos.has(contentKey) : completedAudios.has(contentKey);
+                                return (
+                                  <motion.button
+                                    key={contentIndex}
+                                    onClick={() => {
+                                      if (!isWeekUnlocked && !isAdmin) return;
+                                      onSelect(week.weekNumber, null, isVisual ? 'visual' : 'audioText', contentIndex);
+                                    }}
+                                    disabled={!isWeekUnlocked && !isAdmin}
+                                    whileHover={isWeekUnlocked || isAdmin ? { scale: 1.01 } : {}}
+                                    whileTap={isWeekUnlocked || isAdmin ? { scale: 0.99 } : {}}
+                                    className={`w-full p-2 rounded-lg text-left transition-colors text-sm font-montserrat flex items-center justify-between gap-2 ${
+                                      !isWeekUnlocked
+                                        ? 'opacity-50 cursor-not-allowed text-palette-stone'
+                                        : isThisSelected
+                                        ? 'bg-palette-sage/25 text-palette-cream font-medium'
+                                        : 'text-palette-cream/90 hover:bg-palette-stone/20'
+                                    }`}
+                                  >
+                                    <div className='flex items-center gap-2 min-w-0'>
+                                      {isVisual && <PlayIcon className='h-3.5 w-3.5 text-palette-sage shrink-0' />}
+                                      <span className='truncate' title={name}>{name}</span>
+                                    </div>
+                                    {isContentCompleted && (
+                                      <span className='w-2 h-2 rounded-full bg-palette-sage shrink-0' title="Completado" aria-hidden />
+                                    )}
+                                  </motion.button>
+                                );
+                              })
+                            ) : (
+                              <>
+                                {hasVideo && (
+                                  <motion.button
+                                    onClick={() => {
+                                      if (!isWeekUnlocked && !isAdmin) return;
+                                      onSelect(week.weekNumber, null, 'visual');
+                                    }}
+                                    disabled={!isWeekUnlocked && !isAdmin}
+                                    whileHover={isWeekUnlocked || isAdmin ? { scale: 1.01 } : {}}
+                                    whileTap={isWeekUnlocked || isAdmin ? { scale: 0.99 } : {}}
+                                    className={`w-full p-2 rounded-lg text-left transition-colors text-sm font-montserrat ${
+                                      !isWeekUnlocked
+                                        ? 'opacity-50 cursor-not-allowed text-palette-stone'
+                                        : isWeekSelected && selectedContentType === 'visual'
+                                        ? 'bg-palette-sage/25 text-palette-cream font-medium'
+                                        : 'text-palette-cream/90 hover:bg-palette-stone/20'
+                                    }`}
+                                  >
+                                    <div className='flex items-center gap-2'>
+                                      <PlayIcon className='h-3.5 w-3.5 text-palette-sage shrink-0' />
+                                      <span className='truncate'>{videoName}</span>
+                                    </div>
+                                  </motion.button>
+                                )}
+                                {hasAudio && (
+                                  <motion.button
+                                    onClick={() => {
+                                      if (!isWeekUnlocked && !isAdmin) return;
+                                      onSelect(week.weekNumber, null, 'audioText');
+                                    }}
+                                    disabled={!isWeekUnlocked && !isAdmin}
+                                    whileHover={isWeekUnlocked || isAdmin ? { scale: 1.01 } : {}}
+                                    whileTap={isWeekUnlocked || isAdmin ? { scale: 0.99 } : {}}
+                                    className={`w-full p-2 rounded-lg text-left transition-colors text-sm font-montserrat ${
+                                      !isWeekUnlocked
+                                        ? 'opacity-50 cursor-not-allowed text-palette-stone'
+                                        : isWeekSelected && selectedContentType === 'audioText'
+                                        ? 'bg-palette-sage/25 text-palette-cream font-medium'
+                                        : 'text-palette-cream/90 hover:bg-palette-stone/20'
+                                    }`}
+                                  >
+                                    <span className='truncate block'>{audioName}</span>
+                                  </motion.button>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>

@@ -22,7 +22,7 @@ const faqs = [
   {
     question: '¿Cómo funciona el soporte?',
     answer:
-      'Es asíncrono por Telegram: preguntas rápidas y feedback sin atarte a horarios. Además, cada miércoles grabo un Q&A para responder lo que vaya surgiendo.'
+      'Es asíncrono por WhatsApp: preguntas rápidas y feedback sin atarte a horarios. Además, cada miércoles grabo un Q&A para responder lo que vaya surgiendo.'
   },
   {
     question: '¿Qué pasa si me pierdo una semana?',
@@ -32,7 +32,7 @@ const faqs = [
   {
     question: '¿Cómo funcionan las U.C. y los canjes?',
     answer:
-      'Completá semanas y desafíos para sumar U.C. (Unidades de Coherencia). A los 3 meses sostenidos ganás la insignia “Núcleo Estable” y podés canjear U.C. por programas o futuras piezas de merch.'
+      'Una semana completada del Camino = 1 U.C. Acumulalas y canjealas por programas o merch. A los 3 meses sostenidos ganás la insignia “Núcleo Estable”.'
   },
   {
     question: '¿Hay garantía?',

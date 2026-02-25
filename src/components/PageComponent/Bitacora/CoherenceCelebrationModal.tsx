@@ -70,7 +70,7 @@ const CoherenceCelebrationModal = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-[200] bg-palette-deep-teal/80 backdrop-blur-md"
+            className="fixed inset-0 z-[200] bg-palette-ink/80 backdrop-blur-md"
             onClick={onClose}
           />
 
@@ -136,9 +136,9 @@ const CoherenceCelebrationModal = ({
                         <motion.div
                           animate={{ rotate: [0, 5, -5, 0] }}
                           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                          className="text-3xl md:text-4xl"
+                          className="text-lg md:text-xl font-bold font-montserrat tracking-tight text-palette-sage"
                         >
-                          🌱
+                          U.C.
                         </motion.div>
                       </motion.div>
                       {[...Array(6)].map((_, i) => (
@@ -197,17 +197,6 @@ const CoherenceCelebrationModal = ({
                     {isFirstTime ? '¡Felicidades por empezar tu camino!' : (levelUp ? (evolution ? `Tu gorila evoluciona al nivel ${newLevel}` : `Ahora eres nivel ${newLevel}`) : 'Cultivada con constancia')}
                   </motion.p>
 
-                  {evolution && gorillaIcon && (
-                    <motion.div
-                      initial={{ scale: 0, rotate: -180 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ type: 'spring', stiffness: 150, damping: 20, delay: 0.6 }}
-                      className="mb-4"
-                    >
-                      <div className="text-6xl">{gorillaIcon}</div>
-                    </motion.div>
-                  )}
-
                   {/* Badge +N U.C. — acento teal paleta */}
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -215,8 +204,8 @@ const CoherenceCelebrationModal = ({
                     transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
                     className="mb-4 md:mb-6"
                   >
-                    <div className="inline-flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full bg-palette-teal/10 border border-palette-teal/30">
-                      <span className="text-2xl md:text-3xl font-semibold font-montserrat text-palette-teal">
+                    <div className="inline-flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full bg-palette-sage/10 border border-palette-sage/30">
+                      <span className="text-2xl md:text-3xl font-semibold font-montserrat text-palette-sage">
                         +{ucsOtorgadas}
                       </span>
                       <span className="text-base md:text-lg font-medium font-montserrat tracking-tight text-palette-ink">
@@ -239,19 +228,16 @@ const CoherenceCelebrationModal = ({
                         transition={{ delay: 0.8 }}
                         className="space-y-4"
                       >
-                        <div className="p-5 rounded-xl border border-palette-stone/15 bg-palette-teal/5">
+                        <div className="p-5 rounded-xl border border-palette-stone/15 bg-palette-sage/5">
                           <h3 className="text-base font-semibold font-montserrat mb-3 text-center text-palette-ink uppercase tracking-[0.12em]">
                             ¿Qué es una U.C.?
                           </h3>
                           <div className="space-y-3 text-sm font-light font-montserrat leading-relaxed text-palette-ink">
                             <p>
-                              <strong className="text-palette-stone font-medium">U.C.</strong> significa <strong className="text-palette-stone font-medium">Unidad de Coherencia</strong>. Es tu sistema de puntos en Move Crew.
+                              <strong className="text-palette-stone font-medium">U.C.</strong> = <strong className="text-palette-stone font-medium">Unidad de Coherencia</strong>. Una semana completada del Camino = 1 U.C.
                             </p>
                             <p>
-                              <strong className="text-palette-stone font-medium">¿Cuándo se te da?</strong> Cada vez que completás una semana de tu Camino.
-                            </p>
-                            <p>
-                              <strong className="text-palette-stone font-medium">Podes canjearlas por programas especiales, elementos o material que vamos creando.</strong> 
+                              Acumulalas y canjealas por programas, material o lo que vayamos creando.
                             </p>
                             <p className="text-center mt-4 pt-3 border-t border-palette-stone/15">
                               <span className="font-medium text-palette-stone">Total actual: {totalUnits} U.C.</span>
@@ -282,7 +268,7 @@ const CoherenceCelebrationModal = ({
                             className="mt-4 p-4 rounded-xl border border-palette-stone/15 bg-palette-sage/10"
                           >
                             <p className="text-xs font-montserrat font-light leading-relaxed text-center text-palette-ink">
-                              Semana adicional: Cada semana adicional otorga 1 U.C. en total. Completa el contenido nuevo cada semana para maximizar tus puntos.
+                              Una semana completada = 1 U.C.
                             </p>
                           </motion.div>
                         )}
@@ -311,7 +297,7 @@ const CoherenceCelebrationModal = ({
                             transition={{ delay: 0.3 + index * 0.1 }}
                             className="flex flex-col items-center gap-2 mb-3 p-3 rounded-xl bg-palette-sage/10 border border-palette-stone/10"
                           >
-                            <span className="text-3xl text-palette-teal">{shapeIcon(achievement.name || index)}</span>
+                            <span className="text-3xl text-palette-sage">{shapeIcon(achievement.name || index)}</span>
                             <div className="text-center">
                               <p className="text-sm font-medium font-montserrat mb-1 text-palette-ink">
                                 {achievement.name}

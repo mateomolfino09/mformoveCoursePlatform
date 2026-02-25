@@ -17,7 +17,7 @@ const MoveCrewStructure = () => {
       description:
         'Busco tu constancia, autoconocimiento y exploración. Las U.C. incentivan tu camino en el movimiento.',
       bullets: [
-        'U.C. (Unidades de Coherencia) por completar semanas',
+        'U.C.: una semana completada = 1 U.C.',
         'Acceso a canjes y programas especiales al sostener tu racha de entrenamiento'
       ]
     },
@@ -33,9 +33,9 @@ const MoveCrewStructure = () => {
     {
       title: 'Soporte y Q&A',
       description:
-        'Te respondo por Telegram y grabamos un Q&A cada miércoles para cuidar tu tiempo.',
+        'Te respondo por WhatsApp y grabamos un Q&A cada miércoles para cuidar tu tiempo.',
       bullets: [
-        'Telegram para dudas rápidas y feedback',
+        'WhatsApp para dudas rápidas y feedback',
         'Q&A semanal grabado (los miércoles)',
         'Enfoque asíncrono para no bloquear tu agenda'
       ]
@@ -43,7 +43,7 @@ const MoveCrewStructure = () => {
   ];
 
   return (
-    <section className="py-16 md:py-20 bg-palette-deep-teal text-palette-cream font-montserrat" id="move-crew-structure">
+    <section className="py-16 md:py-20 bg-palette-ink text-palette-cream font-montserrat" id="move-crew-structure">
       <div className="w-[85%] max-w-6xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

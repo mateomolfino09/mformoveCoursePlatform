@@ -20,6 +20,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { TbMessageCircleCode } from 'react-icons/tb';
 import ProfileSkeleton from '../../ProfileSkeleton';
+import { WHATSAPP_GROUP_LINK } from '../../../constants/community';
 
 function Profile() {
   const router = useRouter();
@@ -191,7 +192,7 @@ function Profile() {
             >
               <div className='flex items-center gap-3 mb-6'>
                 <div className='p-2.5 bg-palette-sage/15 border border-palette-stone/30 rounded-xl'>
-                  <UserCircleIcon className='w-6 h-6 text-palette-teal' />
+                  <UserCircleIcon className='w-6 h-6 text-palette-sage' />
                 </div>
                 <h2 className='text-xl md:text-2xl font-montserrat font-semibold text-palette-ink tracking-tight'>
                   Información General
@@ -210,7 +211,7 @@ function Profile() {
                   </div>
                   <Link 
                     href='/resetEmail'
-                    className='text-sm md:text-base text-palette-teal hover:text-palette-ink font-medium underline underline-offset-2 transition-colors'
+                    className='text-sm md:text-base text-palette-sage hover:text-palette-ink font-medium underline underline-offset-2 transition-colors'
                   >
                     Cambiar Email
                   </Link>
@@ -227,7 +228,7 @@ function Profile() {
                   </div>
                   <Link 
                     href='/forget'
-                    className='text-sm md:text-base text-palette-teal hover:text-palette-ink font-medium underline underline-offset-2 transition-colors'
+                    className='text-sm md:text-base text-palette-sage hover:text-palette-ink font-medium underline underline-offset-2 transition-colors'
                   >
                     Cambiar Contraseña
                   </Link>
@@ -258,7 +259,7 @@ function Profile() {
               >
                 <div className='flex items-center gap-3 mb-6'>
                   <div className='p-2.5 bg-palette-sage/15 border border-palette-stone/30 rounded-xl'>
-                    <ChartBarIcon className='w-6 h-6 text-palette-teal' />
+                    <ChartBarIcon className='w-6 h-6 text-palette-sage' />
                   </div>
                   <h2 className='text-xl md:text-2xl font-montserrat font-semibold text-palette-ink tracking-tight'>
                     Mi Progreso
@@ -274,7 +275,7 @@ function Profile() {
                       initial={{ width: 0 }}
                       animate={{ width: `${coherenceTracking.progressToNextLevel ?? 0}%` }}
                       transition={{ duration: 0.6, ease: 'easeOut' }}
-                      className='h-full rounded-full bg-palette-teal'
+                      className='h-full rounded-full bg-palette-sage'
                     />
                   </div>
                   <p className='font-montserrat text-xs text-palette-stone'>{coherenceTracking.progressToNextLevel ?? 0}% hacia el siguiente nivel</p>
@@ -293,20 +294,20 @@ function Profile() {
               >
                 <div className='flex items-center gap-3 mb-4'>
                   <div className='p-2.5 bg-palette-sage/15 border border-palette-stone/30 rounded-xl'>
-                    <TbMessageCircleCode className='text-xl text-palette-teal w-6 h-6'/>
+                    <TbMessageCircleCode className='text-xl text-palette-sage w-6 h-6'/>
                   </div>
                   <h2 className='text-xl md:text-2xl font-montserrat font-semibold text-palette-ink tracking-tight'>
                     Comunidad Move Crew
                   </h2>
                 </div>
                 <p className='text-base text-palette-stone font-light mb-4 leading-relaxed'>
-                  Accedé al grupo privado de Telegram para soporte, avisos y novedades.
+                  Accedé al grupo privado de WhatsApp para soporte, avisos y novedades.
                 </p>
                 <a
-                  href='https://t.me/+_9hJulwT690yNWFh'
+                  href={WHATSAPP_GROUP_LINK}
                   target='_blank'
                   rel='noreferrer'
-                  className='inline-flex items-center gap-2 px-5 py-3 rounded-full font-montserrat font-semibold text-sm uppercase tracking-[0.2em] bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-teal hover:border-palette-teal transition-all duration-200 w-full md:w-auto justify-center text-center'
+                  className='inline-flex items-center gap-2 px-5 py-3 rounded-full font-montserrat font-semibold text-sm uppercase tracking-[0.2em] bg-palette-sage text-palette-ink border-2 border-palette-sage hover:bg-palette-sage/90 hover:border-palette-sage/90 transition-all duration-200 w-full md:w-auto justify-center text-center'
                 >
                   Unirme a la comunidad
                 </a>
@@ -320,7 +321,7 @@ function Profile() {
             >
               <div className='flex items-center gap-3 mb-6'>
                 <div className='p-2.5 bg-palette-sage/15 border border-palette-stone/30 rounded-xl'>
-                  <CreditCardIcon className='w-6 h-6 text-palette-teal' />
+                  <CreditCardIcon className='w-6 h-6 text-palette-sage' />
                 </div>
                 <h2 className='text-xl md:text-2xl font-montserrat font-semibold text-palette-ink tracking-tight'>
                   Detalles del Plan
@@ -335,7 +336,7 @@ function Profile() {
                         Estado
                       </p>
                       <div className='flex items-center gap-2'>
-                        <div className={`w-2 h-2 rounded-full ${auth?.user?.subscription?.isCanceled ? 'bg-amber-500' : 'bg-palette-teal'}`} />
+                        <div className={`w-2 h-2 rounded-full ${auth?.user?.subscription?.isCanceled ? 'bg-amber-500' : 'bg-palette-sage'}`} />
                         <p className='text-base md:text-lg text-palette-ink font-light'>
                           {loadingDates || !startDate 
                             ? 'Subscripción activa' 
@@ -359,7 +360,7 @@ function Profile() {
                     <div className='pt-4'>
                       <Link 
                         href='/account/myCourses'
-                        className='inline-flex items-center gap-2 text-sm md:text-base text-palette-teal hover:text-palette-ink font-medium underline underline-offset-2 transition-colors'
+                        className='inline-flex items-center gap-2 text-sm md:text-base text-palette-sage hover:text-palette-ink font-medium underline underline-offset-2 transition-colors'
                       >
                         Ver mis cursos
                         <ArrowRightIcon className='w-4 h-4' />
@@ -373,7 +374,7 @@ function Profile() {
                     </p>
                     <Link 
                       href='/mentorship'
-                      className='inline-flex items-center gap-2 px-6 py-3 font-montserrat font-semibold text-sm uppercase tracking-[0.2em] rounded-full bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-teal hover:border-palette-teal transition-all duration-200'
+                      className='inline-flex items-center gap-2 px-6 py-3 font-montserrat font-semibold text-sm uppercase tracking-[0.2em] rounded-full bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage transition-all duration-200'
                     >
                       Subscribirme
                       <ArrowRightIcon className='w-4 h-4' />
@@ -390,7 +391,7 @@ function Profile() {
             >
               <div className='flex items-center gap-3 mb-6'>
                 <div className='p-2.5 bg-palette-sage/15 border border-palette-stone/30 rounded-xl'>
-                  <ArrowRightOnRectangleIcon className='w-6 h-6 text-palette-teal' />
+                  <ArrowRightOnRectangleIcon className='w-6 h-6 text-palette-sage' />
                 </div>
                 <h2 className='text-xl md:text-2xl font-montserrat font-semibold text-palette-ink tracking-tight'>
                   Salir

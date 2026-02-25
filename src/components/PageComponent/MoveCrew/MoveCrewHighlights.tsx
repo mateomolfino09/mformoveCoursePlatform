@@ -233,7 +233,7 @@ const CTACard = ({ index }: { index: number }) => {
             className="object-cover"
             loader={imageLoader}
           />
-          <div className="absolute inset-0 bg-palette-deep-teal/85 md:bg-palette-ink/80" />
+          <div className="absolute inset-0 bg-palette-ink/85 md:bg-palette-ink/80" />
         </div>
 
         <motion.div

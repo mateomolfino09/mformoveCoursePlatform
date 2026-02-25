@@ -264,7 +264,7 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
                       {promocionPlan && precioConDescuento ? (
                         <>
                           <p className="text-2xl line-through text-palette-stone/70">{formatPrice(plan.currency, plan.amount)}</p>
-                          <p className="text-4xl font-bold text-palette-teal mt-1">{formatPrice(plan.currency, Math.round(precioConDescuento))}</p>
+                          <p className="text-4xl font-bold text-palette-sage mt-1">{formatPrice(plan.currency, Math.round(precioConDescuento))}</p>
                           <p className="text-palette-stone text-sm font-light mt-1">
                             Facturación {plan.frequency_label?.toLowerCase()}
                           </p>
@@ -275,7 +275,7 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
                       ) : (
                         <>
                           <div className="flex items-end gap-2">
-                            <p className={`text-4xl font-bold ${plan._id === annualPlan._id ? 'text-palette-teal' : 'text-palette-ink'}`}>
+                            <p className={`text-4xl font-bold ${plan._id === annualPlan._id ? 'text-palette-sage' : 'text-palette-ink'}`}>
                               {formatPrice(plan.currency, plan.amount)}
                             </p>
                             {plan._id === annualPlan._id && ahorroAnual !== null && ahorroAnual > 0 && (
@@ -361,7 +361,7 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
                   {promocionPlan && precioConDescuento ? (
                     <>
                       <p className="text-2xl line-through text-palette-stone/70">{formatPrice(plan.currency, plan.amount)}</p>
-                      <p className="text-4xl font-bold text-palette-teal mt-1">{formatPrice(plan.currency, Math.round(precioConDescuento))}</p>
+                      <p className="text-4xl font-bold text-palette-sage mt-1">{formatPrice(plan.currency, Math.round(precioConDescuento))}</p>
                       <p className="text-palette-stone text-sm font-light mt-1">
                         Facturación {plan.frequency_label?.toLowerCase()}
                       </p>

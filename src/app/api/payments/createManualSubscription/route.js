@@ -184,7 +184,8 @@ export async function POST(req) {
         email: user.email,
         name: name || user.name || 'Mover',
         dashboardUrl: `${origin}/library`,
-        telegramInviteUrl: 'https://t.me/+_9hJulwT690yNWFh'
+        telegramInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/',
+        whatsappInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/'
       });
     } catch (emailError) {
       console.error('Error al enviar email de bienvenida:', emailError);

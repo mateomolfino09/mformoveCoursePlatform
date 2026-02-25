@@ -17,15 +17,30 @@ const submoduleSchema = new mongoose.Schema(
   { _id: true }
 );
 
+const howToUseItemSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true, trim: true },
+    description: { type: String, default: '' }
+  },
+  { _id: true }
+);
+
 const classModuleSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, trim: true, lowercase: true },
     description: { type: String },
     shortDescription: { type: String },
+    /** Descripción para la sección "Sobre esta serie" en la página del módulo */
+    aboutDescription: { type: String },
     /** Galería de imágenes del módulo (subir con preview) */
     imageGallery: {
       type: [galleryImageSchema],
+      default: []
+    },
+    /** Cómo usar esta biblioteca: lista de bloques título + descripción (rectángulos en la página del módulo) */
+    howToUse: {
+      type: [howToUseItemSchema],
       default: []
     },
     /** Submódulos: ej. Locomotions, Squat Work, Floor Work (solo nombre, sin imagen) */

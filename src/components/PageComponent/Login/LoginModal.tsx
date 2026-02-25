@@ -23,7 +23,7 @@ const overlayVariants = {
 };
 
 const inputBase =
-  'w-full rounded-xl border border-palette-stone/40 bg-palette-cream px-4 py-3 text-palette-ink placeholder-palette-stone outline-none transition focus:ring-2 focus:ring-palette-teal/50 focus:border-palette-teal';
+  'w-full rounded-xl border border-palette-stone/40 bg-palette-cream px-4 py-3 text-palette-ink placeholder-palette-stone outline-none transition focus:ring-2 focus:ring-palette-sage/50 focus:border-palette-sage';
 
 const inputError = 'border-soft-error ring-1 ring-soft-error';
 
@@ -192,7 +192,7 @@ const LoginModal = () => {
           </div>
         ) : forgetSend ? (
           <div className="py-6 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-palette-teal/10 text-palette-teal">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-palette-sage/10 text-palette-sage">
               <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
@@ -202,7 +202,7 @@ const LoginModal = () => {
             <button
               type="button"
               onClick={() => { setForgetSend(false); setForgetForm(false); }}
-              className="mt-6 text-sm font-medium text-palette-teal hover:text-palette-deep-teal underline"
+              className="mt-6 text-sm font-medium text-palette-sage hover:text-palette-ink underline"
             >
               Volver al login
             </button>
@@ -255,7 +255,7 @@ const LoginModal = () => {
                 <button
                   type="button"
                   onClick={() => { setForgetForm(true); setErrorMessage(null); }}
-                  className="mt-1.5 text-xs text-palette-teal hover:text-palette-deep-teal font-medium"
+                  className="mt-1.5 text-xs text-palette-sage hover:text-palette-ink font-medium"
                 >
                   Olvidé mi contraseña
                 </button>
@@ -264,7 +264,7 @@ const LoginModal = () => {
 
             <Button
               type="submit"
-              className="w-full rounded-xl bg-palette-ink py-3.5 text-sm font-semibold text-palette-cream shadow-lg transition hover:bg-palette-ink/90 focus:outline-none focus:ring-2 focus:ring-palette-teal focus:ring-offset-2 active:scale-[0.99]"
+              className="w-full rounded-xl bg-palette-ink py-3.5 text-sm font-semibold text-palette-cream shadow-lg transition hover:bg-palette-ink/90 focus:outline-none focus:ring-2 focus:ring-palette-sage focus:ring-offset-2 active:scale-[0.99]"
             >
               {forgetForm ? 'Enviar enlace' : loginForm ? 'Ingresar' : 'Crear cuenta'}
             </Button>
@@ -277,7 +277,7 @@ const LoginModal = () => {
                     <button
                       type="button"
                       onClick={() => { setLoginForm(false); setErrorMessage(null); }}
-                      className="font-medium text-palette-teal hover:text-palette-deep-teal underline"
+                      className="font-medium text-palette-sage hover:text-palette-ink underline"
                     >
                       Registrate
                     </button>
@@ -288,7 +288,7 @@ const LoginModal = () => {
                     <button
                       type="button"
                       onClick={() => { setLoginForm(true); setErrorMessage(null); }}
-                      className="font-medium text-palette-teal hover:text-palette-deep-teal underline"
+                      className="font-medium text-palette-sage hover:text-palette-ink underline"
                     >
                       Ingresá acá
                     </button>

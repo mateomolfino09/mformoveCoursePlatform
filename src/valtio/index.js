@@ -17,7 +17,9 @@ const state = proxy({
   activeVideoId: null, // ID del video activo actualmente (string | null)
   systemNavOpen: false,
   weeklyPathNavOpen: false, // dropdown del navegador de camino (Move Crew), controlado desde header en móvil
-  weeklyPathTutorialHighlightButton: false, // paso 0 del tutorial: resaltar botón Move Crew (sombra celeste + titilar)
+  bitacoraNavOpen: false, // menú Bitacora/Navegador en home (controlado desde header o barra)
+  weeklyPathTutorialHighlightButton: false,
+  bitacoraTutorialHighlightButton: false, // paso 0 onboarding Bitacora: resaltar botón Menú
 });
 
 export default state;

@@ -4,13 +4,13 @@ import connectDB from '../../../config/connectDB';
 import ClassModule from '../../../models/classModuleModel';
 import Users from '../../../models/userModel';
 
-connectDB();
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
 
 /** GET: listar módulos. Por defecto solo activos; si ?all=1 y usuario admin, devuelve todos. */
 export async function GET(req) {
   try {
+    await connectDB();
     const { searchParams } = new URL(req.url);
     const all = searchParams.get('all') === '1';
     let filter = { isActive: true };
@@ -46,9 +46,28 @@ export async function GET(req) {
   }
 }
 
+/** Obtiene thumbnail de Vimeo vía oEmbed. videoUrlOrId: URL completa o id numérico. */
+async function fetchVimeoThumbnail(videoUrlOrId) {
+  try {
+    const url = typeof videoUrlOrId === 'string' && videoUrlOrId.trim()
+      ? /^\d+$/.test(videoUrlOrId.trim())
+        ? `https://vimeo.com/${videoUrlOrId.trim()}`
+        : videoUrlOrId.trim()
+      : '';
+    if (!url || !url.includes('vimeo.com')) return '';
+    const resp = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`);
+    if (!resp.ok) return '';
+    const data = await resp.json();
+    return data.thumbnail_url || '';
+  } catch {
+    return '';
+  }
+}
+
 /** POST: crear módulo (admin) */
 export async function POST(req) {
   try {
+    await connectDB();
     const { userEmail, ...body } = await req.json();
     if (!userEmail) {
       return NextResponse.json({ error: 'userEmail requerido' }, { status: 400 });
@@ -70,16 +89,25 @@ export async function POST(req) {
       );
     }
 
+    let videoThumbnail = body.videoThumbnail != null ? String(body.videoThumbnail).trim() : '';
+    const vimeoUrlOrId = (body.videoUrl && String(body.videoUrl).trim()) || (body.videoId && String(body.videoId).trim());
+    if (vimeoUrlOrId && !videoThumbnail) {
+      const thumb = await fetchVimeoThumbnail(vimeoUrlOrId);
+      if (thumb) videoThumbnail = thumb;
+    }
+
     const newModule = await ClassModule.create({
       name: body.name,
       slug,
       description: body.description,
       shortDescription: body.shortDescription,
+      aboutDescription: body.aboutDescription,
+      howToUse: Array.isArray(body.howToUse) ? body.howToUse : [],
       imageGallery: Array.isArray(body.imageGallery) ? body.imageGallery : [],
       submodules: Array.isArray(body.submodules) ? body.submodules : [],
       videoUrl: body.videoUrl,
       videoId: body.videoId,
-      videoThumbnail: body.videoThumbnail,
+      videoThumbnail: videoThumbnail || '',
       icon: body.icon,
       color: body.color,
       isActive: body.isActive !== false

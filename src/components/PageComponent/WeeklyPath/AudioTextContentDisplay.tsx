@@ -131,9 +131,8 @@ const AudioTextContentDisplay = ({
 
   if (!audioUrl && !text) {
     return (
-      <div className='relative rounded-3xl border border-amber-200/40 bg-gradient-to-br from-white via-gray-50/50 to-amber-50/30 backdrop-blur-sm p-12 text-center shadow-[0_4px_20px_rgba(0,0,0,0.04)]'>
-        <div className='absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-200/10 to-orange-200/5 rounded-full blur-3xl' />
-        <p className='relative z-10 text-gray-700/90 font-montserrat font-light'>No hay contenido disponible</p>
+      <div className='relative rounded-3xl border border-palette-stone/20 bg-palette-stone/10 backdrop-blur-sm p-12 text-center shadow-xl'>
+        <p className='relative z-10 text-palette-stone font-montserrat font-light'>No hay contenido disponible</p>
       </div>
     );
   }
@@ -147,20 +146,18 @@ const AudioTextContentDisplay = ({
     >
       {/* Audio Player Section */}
       {audioUrl && (
-        <div className='relative rounded-3xl  backdrop-blur-sm p-6 md:p-8 overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.04)]'>
-          <div className='absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-200/10 to-orange-200/5 rounded-full blur-3xl' />
-          
+        <div className='relative rounded-3xl bg-palette-stone/10 border border-palette-stone/20 backdrop-blur-sm p-6 md:p-8 overflow-hidden shadow-xl'>
           <div className='relative z-10 space-y-6'>
             {/* Title */}
             {(title || subtitle) && (
               <div>
                 {title && (
-                  <h3 className='text-3xl md:text-5xl font-bold text-gray-900 font-montserrat mb-2 tracking-tight'>
+                  <h3 className='text-3xl md:text-5xl font-bold text-palette-cream font-montserrat mb-2 tracking-tight'>
                     {title}
                   </h3>
                 )}
                 {subtitle && (
-                  <p className='text-amber-600 font-montserrat text-sm md:text-base font-light'>
+                  <p className='text-palette-sage font-montserrat text-sm md:text-base font-light'>
                     {subtitle}
                   </p>
                 )}
@@ -168,18 +165,18 @@ const AudioTextContentDisplay = ({
             )}
 
             {/* Audio Player */}
-            <div className='bg-white/60 rounded-xl border border-amber-200/30 p-4 shadow-sm space-y-4'>
+            <div className='bg-palette-ink rounded-xl border border-palette-stone/20 p-4 shadow-sm space-y-4'>
               <div className='flex items-center gap-4'>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={handlePlayPause}
-                  className='flex-shrink-0 h-12 w-12 rounded-full bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 border border-amber-300/40 flex items-center justify-center hover:border-amber-300/60 transition-all duration-300'
+                  className='flex-shrink-0 h-12 w-12 rounded-full bg-palette-sage/30 border border-palette-stone/40 flex items-center justify-center hover:bg-palette-sage/50 transition-all duration-300'
                 >
                   {isPlaying ? (
-                    <PauseIcon className='h-6 w-6 text-gray-900' />
+                    <PauseIcon className='h-6 w-6 text-palette-cream' />
                   ) : (
-                    <BsVolumeUp className='h-6 w-6 text-gray-900' />
+                    <BsVolumeUp className='h-6 w-6 text-palette-cream' />
                   )}
                 </motion.button>
                 
@@ -193,15 +190,15 @@ const AudioTextContentDisplay = ({
                       step='0.1'
                       value={audioProgress}
                       onChange={handleSeek}
-                      className='w-full h-1 bg-gray-300 rounded-full appearance-none cursor-pointer slider-minimal'
+                      className='w-full h-1 bg-palette-stone/30 rounded-full appearance-none cursor-pointer slider-minimal'
                       style={{
-                        background: `linear-gradient(to right, #1f2937 0%, #1f2937 ${audioProgress}%, #d1d5db ${audioProgress}%, #d1d5db 100%)`
+                        background: `linear-gradient(to right, var(--palette-sage) 0%, var(--palette-sage) ${audioProgress}%, var(--palette-stone) ${audioProgress}%, var(--palette-stone) 100%)`
                       }}
                     />
                   </div>
                   
                   {/* Tiempo actual / Duración total */}
-                  <div className='flex items-center justify-between text-xs text-gray-500 font-montserrat font-light'>
+                  <div className='flex items-center justify-between text-xs text-palette-stone font-montserrat font-light'>
                     <span>{formatDuration(currentTime)}</span>
                     <span>{formatDuration(duration || audioDuration)}</span>
                   </div>
@@ -259,10 +256,10 @@ const AudioTextContentDisplay = ({
                   className={`
                     flex items-center w-full gap-2 px-6 py-3 rounded-full font-montserrat font-medium transition-all duration-300
                     ${isCompleted
-                      ? 'bg-green-500/20 border border-green-500/40 text-green-700 cursor-default'
+                      ? 'bg-palette-sage/20 border border-palette-sage/40 text-palette-sage cursor-default'
                       : canComplete
-                      ? 'bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 text-gray-900 hover:border-amber-300/60 hover:shadow-lg hover:shadow-amber-500/20 cursor-pointer'
-                      : 'bg-gray-200/50 border border-gray-300/40 text-gray-500 cursor-not-allowed opacity-60'
+                      ? 'bg-palette-sage/30 border border-palette-stone/40 text-palette-cream hover:bg-palette-sage/50 cursor-pointer'
+                      : 'bg-palette-stone/20 border border-palette-stone/40 text-palette-stone cursor-not-allowed opacity-60'
                     }
                   `}
                 >
@@ -300,17 +297,15 @@ const AudioTextContentDisplay = ({
 
       {/* Text Content */}
       {text && (
-        <div className='relative rounded-3xl p-6 md:p-8 overflow-hidden '>
-          <div className='absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-200/10 to-orange-200/5 rounded-full blur-2xl' />
-          
+        <div className='relative rounded-3xl p-6 md:p-8 overflow-hidden bg-palette-stone/5 border border-palette-stone/20'>
           <div className='relative z-10'>
             {!audioUrl && title && (
-              <h3 className='text-2xl md:text-3xl font-bold text-gray-900 font-montserrat mb-4 tracking-tight'>
+              <h3 className='text-2xl md:text-3xl font-bold text-palette-cream font-montserrat mb-4 tracking-tight'>
                 {title}
               </h3>
             )}
             <div 
-              className='prose max-w-none text-gray-700/90 font-montserrat font-light leading-relaxed'
+              className='prose prose-invert max-w-none text-palette-cream/90 font-montserrat font-light leading-relaxed'
               dangerouslySetInnerHTML={{ __html: text.replace(/\n/g, '<br />') }}
             />
           </div>

@@ -61,7 +61,7 @@ const Success = () => {
 
   return (
     <MainSideBar where={''}>
-      <section className="relative w-full min-h-[100vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-palette-deep-teal">
+      <section className="relative w-full min-h-[100vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-palette-ink">
         {/* Imagen de fondo web */}
         <div className="absolute inset-0">
           <CldImage
@@ -75,7 +75,7 @@ const Success = () => {
             loader={imageLoader}
           />
           {/* Overlay paleta para coherencia Move Crew */}
-          <div className="absolute inset-0 bg-palette-deep-teal/50" />
+          <div className="absolute inset-0 bg-palette-ink/50" />
         </div>
 
         {/* Contenido principal — tipografía y jerarquía como Move Crew */}

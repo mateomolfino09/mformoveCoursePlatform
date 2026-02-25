@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../hooks/useAuth';
+import state from '../valtio';
 
 /**
  * Componente global que verifica continuamente el estado del onboarding
@@ -83,6 +84,8 @@ export default function OnboardingChecker() {
         if (response.ok) {
           const data = await response.json();
           console.log('[OnboardingChecker] Estado del onboarding:', data);
+
+          state.weeklyPathNavOpen = false; 
 
           // Si no tiene suscripción activa, no hacer nada
           if (data.sinSuscripcion) {

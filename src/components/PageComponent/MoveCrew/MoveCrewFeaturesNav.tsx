@@ -12,6 +12,7 @@ import {
   ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/solid';
 import { routes } from '../../../constants/routes';
+import { WHATSAPP_GROUP_LINK } from '../../../constants/community';
 import { useAuth } from '../../../hooks/useAuth';
 
 interface MoveCrewFeaturesNavProps {
@@ -22,8 +23,6 @@ interface MoveCrewFeaturesNavProps {
   hasActiveSubscription?: boolean;
   onlyGorila?: boolean;
 }
-
-const TELEGRAM_LINK = 'https://t.me/+_9hJulwT690yNWFh';
 
 const MoveCrewFeaturesNav = ({ 
   coherenceStreak = null, 
@@ -40,10 +39,10 @@ const MoveCrewFeaturesNav = ({
   // Verificar estado de onboarding
   const contratoAceptado = auth.user?.subscription?.onboarding?.contratoAceptado || false;
   
-  // Después del Contrato (Bienvenida) se desbloquean: Telegram, Biblioteca y Camino Base
+  // Después del Contrato (Bienvenida) se desbloquean: WhatsApp, Biblioteca y Camino Base
   // El Camino solo requiere contrato aceptado (Camino Base es opcional)
   const canAccessCaminoGorila = canAccess && contratoAceptado;
-  const canAccessTelegram = canAccess && contratoAceptado;
+  const canAccessWhatsApp = canAccess && contratoAceptado;
   const canAccessBiblioteca = canAccess && contratoAceptado;
 
   const handleCaminoGorilaClick = (e: React.MouseEvent) => {
@@ -73,16 +72,17 @@ const MoveCrewFeaturesNav = ({
         icon: VideoCameraIcon,
         available: canAccessBiblioteca, // Requiere contrato aceptado
         locked: !canAccessBiblioteca,
-        desc: 'Clases on demand y programas listos para seguir cuando quieras.'
+        desc: 'Programas de entrenamiento y clases individuales guiadas. A tu ritmo, cuando quieras.'
       },
       {
         name: 'Unite a la Crew',
-        href: TELEGRAM_LINK,
+        href: WHATSAPP_GROUP_LINK,
         icon: ChatBubbleLeftRightIcon,
-        available: canAccessTelegram, // Requiere contrato aceptado
-        locked: !canAccessTelegram,
-        desc: 'Grupo de Telegram para soporte, avisos y novedades.',
-        external: true
+        available: canAccessWhatsApp, // Requiere contrato aceptado
+        locked: !canAccessWhatsApp,
+        desc: 'Grupo de WhatsApp para soporte, avisos y novedades.',
+        external: true,
+        useSage: true // Color sage para la comunidad
       },
       {
         name: 'Comunidad',
@@ -112,6 +112,8 @@ const MoveCrewFeaturesNav = ({
             className={`relative flex items-center justify-center gap-2 px-4 py-2 rounded-full min-w-[190px] h-12 transition-all cursor-pointer shadow-md hover:shadow-lg ${
               isDisabled || isLocked
                 ? 'bg-gray-800/50 border border-white/10 opacity-60 cursor-not-allowed'
+                : canAccess && (feature as { useSage?: boolean }).useSage
+                ? 'bg-palette-sage/30 backdrop-blur-md border border-palette-sage/50 hover:bg-palette-sage/40 hover:border-palette-sage/60'
                 : canAccess
                 ? 'bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 hover:from-amber-400/30 hover:via-orange-400/30 hover:to-rose-400/30'
                 : 'bg-gray-800/50 border border-white/5 opacity-80 hover:opacity-100'

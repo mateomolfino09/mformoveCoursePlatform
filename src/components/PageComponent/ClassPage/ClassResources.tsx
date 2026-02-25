@@ -7,6 +7,7 @@ import { toast } from '../../../hooks/useToast';
 import AddResources from './AddResources';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 
 
@@ -99,7 +100,7 @@ const ClassResources = ({ clase }: Props) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleAdd}
-            className='flex items-center gap-2 text-white/70 hover:text-white font-montserrat font-medium transition-colors mb-4'
+            className='flex items-center gap-2 text-palette-stone hover:text-palette-ink font-montserrat font-medium transition-colors mb-4'
           >
             <ArrowLeftIcon className='h-5 w-5' />
             Volver
@@ -118,18 +119,18 @@ const ClassResources = ({ clase }: Props) => {
   return (
     <div className='w-full space-y-8'>
       {/* Header con botón de añadir para Admin */}
-            {auth?.user?.rol === 'Admin' && (
+      {auth?.user?.rol === 'Admin' && (
         <div className='flex justify-end'>
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={handleAdd}
-            className='bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 text-white px-6 py-3 rounded-full font-montserrat font-medium hover:border-amber-300/60 hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300 flex items-center gap-2'
+            className='bg-palette-sage/15 border border-palette-sage/40 text-palette-ink px-5 py-2.5 md:px-6 md:py-3 rounded-full font-montserrat font-medium hover:bg-palette-sage/25 hover:border-palette-sage transition-all duration-200 flex items-center gap-2'
           >
             <PlusIcon className='h-5 w-5' />
             Añadir Recursos
           </motion.button>
-                </div>
+        </div>
       )}
 
       {/* Estado vacío */}
@@ -137,20 +138,19 @@ const ClassResources = ({ clase }: Props) => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className='relative rounded-2xl border border-amber-300/20 bg-gradient-to-br from-white/5 via-amber-500/5 to-orange-500/5 backdrop-blur-md p-12 overflow-hidden text-center'
+          className='relative rounded-2xl border border-palette-stone/15 bg-white/60 p-8 md:p-12 overflow-hidden text-center'
         >
-          <div className='absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-400/10 to-orange-400/5 rounded-full blur-3xl' />
           <div className='relative z-10'>
-            <DocumentTextIcon className='h-16 w-16 text-white/20 mx-auto mb-4' />
-            <h3 className='text-xl font-semibold text-white font-montserrat mb-2'>
+            <DocumentTextIcon className='h-14 w-14 md:h-16 md:w-16 text-palette-stone/40 mx-auto mb-4' />
+            <h3 className='text-lg md:text-xl font-semibold text-palette-ink font-montserrat mb-2'>
               No hay recursos disponibles
             </h3>
-            <p className='text-gray-400 font-montserrat text-sm'>
-              {auth?.user?.rol === 'Admin' 
+            <p className='text-palette-stone font-montserrat text-sm'>
+              {auth?.user?.rol === 'Admin'
                 ? 'Comienza añadiendo archivos o enlaces útiles para esta clase'
                 : 'Esta clase aún no tiene recursos adicionales'}
             </p>
-                </div>           
+          </div>
         </motion.div>
       )}
 
@@ -162,7 +162,7 @@ const ClassResources = ({ clase }: Props) => {
           transition={{ duration: 0.4 }}
           className='space-y-4'
         >
-          <h3 className='text-xl md:text-2xl font-extrabold text-white font-montserrat mb-6'>
+          <h3 className='text-lg md:text-xl font-semibold text-palette-ink font-montserrat mb-4 md:mb-6'>
             Lecturas Recomendadas
           </h3>
           <div className='space-y-3'>
@@ -174,50 +174,46 @@ const ClassResources = ({ clase }: Props) => {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
-                  className='relative rounded-xl border border-gray-800/50 bg-gradient-to-br from-black/60 via-gray-900/40 to-black/60 backdrop-blur-sm p-5 overflow-hidden group hover:border-amber-300/30 transition-all duration-300'
+                  className='relative rounded-xl border border-palette-stone/15 bg-white/60 p-4 md:p-5 overflow-hidden group hover:border-palette-sage/40 transition-all duration-200'
                 >
-                  <div className='absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-400/5 to-orange-400/5 rounded-full blur-2xl' />
-                  
-                  <div className='relative z-10 flex items-center justify-between gap-4'>
-                    <div className='flex items-center gap-4 flex-1 min-w-0'>
-                      <div className='flex-shrink-0 h-12 w-12 rounded-lg bg-gradient-to-br from-amber-500/20 via-orange-500/20 to-rose-500/20 border border-amber-300/30 flex items-center justify-center'>
-                        <DocumentTextIcon className='h-6 w-6 text-white/90' />
+                  <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4'>
+                    <div className='flex items-center gap-3 sm:gap-4 flex-1 min-w-0'>
+                      <div className='flex-shrink-0 h-11 w-11 md:h-12 md:w-12 rounded-lg bg-palette-sage/15 border border-palette-sage/30 flex items-center justify-center'>
+                        <DocumentTextIcon className='h-5 w-5 md:h-6 md:w-6 text-palette-ink' />
                       </div>
                       <div className='flex-1 min-w-0'>
-                        <p className='text-white font-montserrat font-medium truncate'>
+                        <p className='text-palette-ink font-montserrat font-medium truncate'>
                           {file.name}
                         </p>
                         {file.format && (
-                          <p className='text-gray-400 text-sm font-montserrat'>
+                          <p className='text-palette-stone text-sm font-montserrat'>
                             {file.format.toUpperCase()}
                           </p>
                         )}
                       </div>
-                </div>           
-
-                    <div className='flex items-center gap-2'>
+                    </div>
+                    <div className='flex items-center gap-2 flex-shrink-0'>
                       <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => handleDownloadFile(file)}
-                        className='p-2 rounded-lg bg-gray-800/50 hover:bg-amber-500/20 text-gray-400 hover:text-amber-300 transition-all duration-200'
+                        className='p-2 rounded-lg bg-palette-stone/10 hover:bg-palette-sage/20 text-palette-stone hover:text-palette-ink transition-all duration-200'
                         title='Descargar'
                       >
                         <ArrowDownTrayIcon className='h-5 w-5' />
                       </motion.button>
-                      
                       {auth?.user?.rol === 'Admin' && (
                         <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => handleDeleteFile(file)}
-                          className='p-2 rounded-lg bg-gray-800/50 hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-all duration-200'
+                          className='p-2 rounded-lg bg-palette-stone/10 hover:bg-red-500/15 text-palette-stone hover:text-red-600 transition-all duration-200'
                           title='Eliminar'
                         >
                           <TrashIcon className='h-5 w-5' />
                         </motion.button>
-                              )}
-                              </div>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               ))}
@@ -234,7 +230,7 @@ const ClassResources = ({ clase }: Props) => {
           transition={{ duration: 0.4, delay: 0.1 }}
           className='space-y-4'
         >
-          <h3 className='text-xl md:text-2xl font-extrabold text-white font-montserrat mb-6'>
+          <h3 className='text-lg md:text-xl font-semibold text-palette-ink font-montserrat mb-4 md:mb-6'>
             Enlaces Relacionados
           </h3>
           <div className='space-y-3'>
@@ -246,53 +242,50 @@ const ClassResources = ({ clase }: Props) => {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
-                  className='relative rounded-xl border border-gray-800/50 bg-gradient-to-br from-black/60 via-gray-900/40 to-black/60 backdrop-blur-sm p-5 overflow-hidden group hover:border-amber-300/30 transition-all duration-300'
+                  className='relative rounded-xl border border-palette-stone/15 bg-white/60 p-4 md:p-5 overflow-hidden group hover:border-palette-sage/40 transition-all duration-200'
                 >
-                  <div className='absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-400/5 to-orange-400/5 rounded-full blur-2xl' />
-                  
-                  <div className='relative z-10 flex items-center justify-between gap-4'>
+                  <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4'>
                     <Link
                       href={formatLinkUrl(link.link_url)}
                       target='_blank'
                       rel='noopener noreferrer'
-                      className='flex items-center gap-4 flex-1 min-w-0 group/link'
+                      className='flex items-center gap-3 sm:gap-4 flex-1 min-w-0 group/link'
                     >
-                      <div className='flex-shrink-0 h-12 w-12 rounded-lg bg-gradient-to-br from-amber-500/20 via-orange-500/20 to-rose-500/20 border border-amber-300/30 flex items-center justify-center'>
-                        <LinkIcon className='h-6 w-6 text-white/90' />
+                      <div className='flex-shrink-0 h-11 w-11 md:h-12 md:w-12 rounded-lg bg-palette-sage/15 border border-palette-sage/30 flex items-center justify-center'>
+                        <LinkIcon className='h-5 w-5 md:h-6 md:w-6 text-palette-ink' />
                       </div>
                       <div className='flex-1 min-w-0'>
-                        <p className='text-white font-montserrat font-medium truncate group-hover/link:text-amber-300 transition-colors'>
+                        <p className='text-palette-ink font-montserrat font-medium truncate group-hover/link:text-palette-sage transition-colors'>
                           {link.link_url}
                         </p>
-                        <p className='text-gray-400 text-sm font-montserrat'>
+                        <p className='text-palette-stone text-sm font-montserrat'>
                           Enlace externo
                         </p>
                       </div>
                     </Link>
-
                     {auth?.user?.rol === 'Admin' && (
                       <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => handleDeleteLink(link)}
-                        className='p-2 rounded-lg bg-gray-800/50 hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-all duration-200 flex-shrink-0'
+                        className='p-2 rounded-lg bg-palette-stone/10 hover:bg-red-500/15 text-palette-stone hover:text-red-600 transition-all duration-200 flex-shrink-0 self-start sm:self-center'
                         title='Eliminar'
                       >
                         <TrashIcon className='h-5 w-5' />
                       </motion.button>
                     )}
-                    </div>
+                  </div>
                 </motion.div>
-                  ))}
+              ))}
             </AnimatePresence>
           </div>
         </motion.div>
-            )}
+      )}
             
       {/* Loading state */}
       {isLoading && (
         <div className='flex items-center justify-center py-12'>
-          <div className='h-10 w-10 border-2 border-amber-300/30 border-t-amber-300 rounded-full animate-spin' />
+          <div className='h-10 w-10 border-2 border-palette-stone/30 border-t-palette-sage rounded-full animate-spin' />
         </div>
       )}
     </div>

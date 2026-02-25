@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSnapshot } from 'valtio';
 import state from '../../valtio';
 import { IoCloseOutline } from 'react-icons/io5';
+import { WHATSAPP_GROUP_LINK } from '../../constants/community';
 
 interface Logbook {
   _id: string;
@@ -18,8 +19,6 @@ interface Logbook {
   createdAt: string;
   isBaseBitacora?: boolean;
 }
-
-const TELEGRAM_LINK = 'https://t.me/+_9hJulwT690yNWFh';
 
 const BitacoraNavigator = () => {
   const auth = useAuth();
@@ -332,7 +331,7 @@ const BitacoraNavigator = () => {
                 </button>
 
                 <a
-                  href={TELEGRAM_LINK}
+                  href={WHATSAPP_GROUP_LINK}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => {
@@ -342,7 +341,7 @@ const BitacoraNavigator = () => {
                   }}
                   className="flex flex-col justify-end items-end -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] hover:text-[#fff] cursor-pointer no-underline transition-colors"
                 >
-                  <h2 className="font-light lg:text-xl">Telegram</h2>
+                  <h2 className="font-light lg:text-xl">WhatsApp</h2>
                   <h1 className="text-4xl font-thin lg:text-6xl md:text-4xl">Comunidad</h1>
                 </a>
 

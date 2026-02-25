@@ -158,56 +158,110 @@ export async function PUT(req, { params }) {
       }
     };
 
+    // Solo guardamos IDs en contents; la hidratación (videoUrl, videoName, etc.) se hace al leer en /api/bitacora/month
+    const emptyVideoFields = {
+      videoUrl: '',
+      videoId: undefined,
+      videoName: '',
+      videoThumbnail: '',
+      videoDuration: undefined,
+      title: undefined,
+      description: undefined,
+      audioUrl: '',
+      audioTitle: '',
+      audioDuration: undefined,
+      audioText: '',
+      level: 1,
+      moduleId: undefined,
+      submoduleSlug: '',
+      submoduleName: ''
+    };
+
     const mapContentItem = async (item, orden) => {
-      const meta = await fetchVimeoMeta(item.videoUrl);
-      const audioMeta = item.audioUrl ? await fetchCloudinaryAudioMeta(item.audioUrl) : {};
-      if (item.moduleId && (item.submoduleSlug || item.submoduleName)) {
-        await ensureSubmodule(item.moduleId, item.submoduleSlug, item.submoduleName);
+      const contentType = ['moduleClass', 'individualClass', 'audio'].includes(item.contentType) ? item.contentType : 'moduleClass';
+      const ordenNum = Number(item.orden) || orden;
+
+      if (contentType === 'individualClass') {
+        const individualClassId = item.individualClassId && mongoose.Types.ObjectId.isValid(item.individualClassId) ? item.individualClassId : undefined;
+        return {
+          contentType: 'individualClass',
+          individualClassId: individualClassId || undefined,
+          moduleClassId: undefined,
+          orden: ordenNum,
+          ...emptyVideoFields
+        };
       }
+
+      if (contentType === 'moduleClass') {
+        if (item.moduleId && (item.submoduleSlug || item.submoduleName)) {
+          await ensureSubmodule(item.moduleId, item.submoduleSlug, item.submoduleName);
+        }
+        const moduleClassId = item.moduleClassId && mongoose.Types.ObjectId.isValid(item.moduleClassId) ? item.moduleClassId : undefined;
+        return {
+          contentType: 'moduleClass',
+          individualClassId: undefined,
+          moduleClassId: moduleClassId || undefined,
+          orden: ordenNum,
+          ...emptyVideoFields
+        };
+      }
+
+      // audio: no hay entidad por ID, guardamos solo los datos del audio
+      const audioMeta = item.audioUrl ? await fetchCloudinaryAudioMeta(item.audioUrl) : {};
       return {
-        videoUrl: item.videoUrl || '',
-        videoId: item.videoId || undefined,
-        videoName: (item.videoName || item.title || '').trim(),
-        videoThumbnail: item.videoThumbnail || meta.thumbnail || '',
-        videoDuration: item.videoDuration ?? meta.duration,
-        title: item.title || undefined,
-        description: item.description || undefined,
+        contentType: 'audio',
+        individualClassId: undefined,
+        moduleClassId: undefined,
+        videoUrl: '',
+        videoId: undefined,
+        videoName: '',
+        videoThumbnail: '',
+        videoDuration: undefined,
+        title: undefined,
+        description: undefined,
         audioUrl: item.audioUrl || '',
         audioTitle: (item.audioTitle || '').trim(),
         audioDuration: item.audioDuration ?? audioMeta.duration,
         audioText: item.audioText || '',
-        level: Math.min(10, Math.max(1, Number(item.level) || 1)),
-        moduleId: item.moduleId && mongoose.Types.ObjectId.isValid(item.moduleId) ? item.moduleId : undefined,
-        submoduleSlug: (item.submoduleSlug || '').trim() || (item.submoduleName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
-        submoduleName: (item.submoduleName || item.submoduleSlug || '').trim(),
-        orden: Number(item.orden) || orden
+        level: 1,
+        moduleId: undefined,
+        submoduleSlug: '',
+        submoduleName: '',
+        orden: ordenNum
       };
     };
 
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
     const mappedWeeklyContents = await Promise.all(weeklyContents.map(async wc => {
       const publishDate = new Date(wc.publishDate);
+      publishDate.setHours(0, 0, 0, 0);
+      const weekTitle = (wc.weekTitle || '').trim() || `Semana ${wc.weekNumber}`;
+      const isUnlockedByDate = publishDate <= now;
       const base = {
         weekNumber: wc.weekNumber,
-        moduleName: (wc.moduleName?.trim() || ''),
-        weekTitle: wc.weekTitle || `Semana ${wc.weekNumber}`,
+        moduleName: (wc.moduleName?.trim() || weekTitle || '').trim() || '',
+        weekTitle,
         weekDescription: wc.weekDescription || '',
         dailyContents: [],
         publishDate,
         isPublished: wc.isPublished || false,
-        isUnlocked: wc.isUnlocked || false
+        isUnlocked: isUnlockedByDate || wc.isUnlocked || false
       };
 
       if (wc.contents && Array.isArray(wc.contents) && wc.contents.length > 0) {
         base.contents = await Promise.all(wc.contents.map((item, idx) => mapContentItem(item, idx)));
-        base.videoUrl = (base.contents[0] && base.contents[0].videoUrl) || '';
-        base.videoId = (base.contents[0] && base.contents[0].videoId) || '';
-        base.videoName = (base.contents[0] && base.contents[0].videoName) || base.weekTitle;
-        base.videoThumbnail = (base.contents[0] && base.contents[0].videoThumbnail) || '';
-        base.videoDuration = (base.contents[0] && base.contents[0].videoDuration) || undefined;
-        base.audioUrl = (base.contents[0] && base.contents[0].audioUrl) || '';
-        base.audioTitle = (base.contents[0] && base.contents[0].audioTitle) || '';
-        base.audioDuration = (base.contents[0] && base.contents[0].audioDuration) || undefined;
-        base.text = (base.contents[0] && base.contents[0].audioText) || wc.text || '';
+        // No duplicar datos a nivel semana; la hidratación al leer rellena desde IndividualClass/ModuleClass
+        const first = base.contents[0];
+        base.videoUrl = first?.videoUrl || '';
+        base.videoId = first?.videoId || '';
+        base.videoName = first?.videoName || base.weekTitle;
+        base.videoThumbnail = first?.videoThumbnail || '';
+        base.videoDuration = first?.videoDuration || undefined;
+        base.audioUrl = first?.audioUrl || '';
+        base.audioTitle = first?.audioTitle || '';
+        base.audioDuration = first?.audioDuration || undefined;
+        base.text = first?.audioText || wc.text || '';
         return base;
       }
 

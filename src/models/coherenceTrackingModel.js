@@ -389,6 +389,48 @@ const coherenceTrackingSchema = new mongoose.Schema({
 // Índice para búsqueda rápida por usuario
 coherenceTrackingSchema.index({ userId: 1 });
 
+// Progreso de nivel: 8 = 100% del círculo (4 semanas × 25% = 1 nivel).
+// Cada contenido completado suma (2 / contenidosDeLaSemana); una semana completa = 25%.
+coherenceTrackingSchema.methods.addLevelProgressByContent = function (increment) {
+  if (this.levelProgress === undefined || this.levelProgress === null) {
+    this.levelProgress = 0;
+  }
+  this.levelProgress += Number(increment) || 0;
+  let levelUp = false;
+  let newLevel = this.level;
+  let evolution = false;
+  let gorillaIcon = getGorillaIcon(this.level);
+  let evolutionName = getEvolutionName(this.level);
+  const previousEvolution = this.characterEvolution !== undefined && this.characterEvolution !== null ? this.characterEvolution : 0;
+
+  while (this.levelProgress >= 8) {
+    this.levelProgress -= 8;
+    this.level = (this.level || 1) + 1;
+    this.monthsCompleted = (this.monthsCompleted || 0) + 1;
+    levelUp = true;
+    newLevel = this.level;
+    const newEvolution = Math.floor((this.level - 1) / 10);
+    const currentEvolution = this.characterEvolution !== undefined && this.characterEvolution !== null ? this.characterEvolution : 0;
+    if (newEvolution > currentEvolution) {
+      evolution = true;
+      this.characterEvolution = newEvolution;
+    }
+    gorillaIcon = getGorillaIcon(this.level);
+    evolutionName = getEvolutionName(this.level);
+  }
+
+  return {
+    levelUp,
+    newLevel,
+    evolution,
+    gorillaIcon,
+    evolutionName,
+    levelProgress: this.levelProgress,
+    level: this.level,
+    characterEvolution: this.characterEvolution
+  };
+};
+
 // Método para agregar una Unidad de Coherencia
 coherenceTrackingSchema.methods.addCoherenceUnit = async function(logbookId, contentType, weekNumber, programId = null, semanaActualDelLogbook = 0) {
   if (!weekNumber) {
@@ -490,7 +532,7 @@ coherenceTrackingSchema.methods.addCoherenceUnit = async function(logbookId, con
   const esSemanaAdicional = semanaActualDelPrograma > 0 && (weekNumber < semanaActualDelPrograma || weekNumber > semanaActualDelPrograma);
   
   // Verificar si ya completó este tipo de contenido para esta weekNumber
-  // Si ya está completado, no otorgar U.C. pero SÍ incrementar levelProgress
+  // Si ya está completado, no otorgar U.C. (el levelProgress se actualiza por contenido en la ruta complete)
   let yaCompletado = false;
   let ucsAOtorgar = 0;
   
@@ -533,61 +575,10 @@ coherenceTrackingSchema.methods.addCoherenceUnit = async function(logbookId, con
     this.totalUnits += ucsAOtorgar;
   }
   
-  // Incrementar progreso de nivel cuando se completa contenido
-  // Cada contenido completado incrementa el levelProgress en 1/8
+  // El progreso de nivel (levelProgress) ya no se actualiza aquí:
+  // se actualiza por contenido en la ruta bitacora/complete con addLevelProgressByContent.
   let levelUp = false;
   let evolution = false;
-  let previousLevel = this.level;
-  let previousEvolution = this.characterEvolution;
-  
-  // Inicializar levelProgress si no existe
-  if (this.levelProgress === undefined || this.levelProgress === null) {
-    this.levelProgress = 0;
-  }
-  
-  // Incrementar progreso de nivel en 1 por cada contenido completado
-  // (independientemente de si es semana adicional o no)
-  this.levelProgress += 1;
-
-  console.log('[addCoherenceUnit] Progreso de nivel inicial', {
-    levelProgress: this.levelProgress,
-    level: this.level,
-    esSemanaAdicional
-  });
-  
-  // Si llegó a 8, subir de nivel
-  if (this.levelProgress >= 8) {
-    this.level += 1;
-    this.levelProgress = 0; // Reiniciar a 0
-    // Incrementar meses completados cuando subes de nivel
-    if (this.monthsCompleted === undefined || this.monthsCompleted === null) {
-      this.monthsCompleted = 0;
-    }
-    this.monthsCompleted += 1;
-    levelUp = true;
-    
-    // Verificar si hay evolución (cada 10 niveles)
-    const newEvolution = Math.floor((this.level - 1) / 10);
-    if (newEvolution > previousEvolution) {
-      evolution = true;
-      this.characterEvolution = newEvolution;
-    }
-    
-    console.log('[addCoherenceUnit] Subida de nivel', { 
-      previousLevel, 
-      newLevel: this.level, 
-      levelUp, 
-      evolution,
-      newEvolution: this.characterEvolution,
-      monthsCompleted: this.monthsCompleted
-    });
-  }
-  
-  console.log('[addCoherenceUnit] Progreso de nivel actualizado', {
-    levelProgress: this.levelProgress,
-    level: this.level,
-    esSemanaAdicional
-  });
   
   // La racha siempre aumenta cuando se agrega una U.C.
   // Verificar si es continuación de la racha (basado en la última fecha de completación)

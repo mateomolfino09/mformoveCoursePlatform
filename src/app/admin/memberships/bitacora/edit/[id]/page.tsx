@@ -10,8 +10,16 @@ import { toast } from 'react-hot-toast';
 import { ArrowLeftIcon, CalendarIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { ClassModule } from '../../../../../../../typings';
+import { NO_SUBMODULE_SLUG } from '../../../../../../constants/moduleClassConstants';
+
+export type ContentType = 'moduleClass' | 'individualClass' | 'audio';
 
 export interface WeekContentItem {
+  contentType?: ContentType;
+  individualClassId?: string;
+  moduleClassId?: string;
+  moduleClassSource?: 'existing' | 'new';
+  individualClassSource?: 'existing' | 'new';
   videoUrl: string;
   videoId?: string;
   videoName?: string;
@@ -26,6 +34,11 @@ export interface WeekContentItem {
   submoduleSlug: string;
   submoduleName: string;
   orden: number;
+  newModuleClassName?: string;
+  newModuleClassMaterials?: string[];
+  submoduleMode?: 'existing' | 'new';
+  createdInWeeklyPathForm?: boolean;
+  createdClassDescription?: string;
 }
 
 interface WeekContent {
@@ -51,6 +64,10 @@ export default function EditBitacoraPage({ params }: PageProps) {
   const [logbookId, setLogbookId] = useState<string>(params.id);
 
   const [classModules, setClassModules] = useState<ClassModule[]>([]);
+  const [individualClasses, setIndividualClasses] = useState<{ _id: string; name: string }[]>([]);
+  const [moduleClassesCache, setModuleClassesCache] = useState<Record<string, { _id: string; name: string; videoUrl?: string; level?: number }[]>>({});
+  const [creatingClass, setCreatingClass] = useState<string | null>(null);
+  const [newSubmoduleName, setNewSubmoduleName] = useState<Record<string, string>>({});
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
   const [title, setTitle] = useState('Camino');
@@ -62,6 +79,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
   const prevYearRef = useRef<number>(year);
 
   const emptyContentItem = (orden: number): WeekContentItem => ({
+    contentType: 'moduleClass',
     videoUrl: '',
     videoName: '',
     videoThumbnail: '',
@@ -142,6 +160,11 @@ export default function EditBitacoraPage({ params }: PageProps) {
           let contents: WeekContentItem[] = [];
           if (week.contents && Array.isArray(week.contents) && week.contents.length > 0) {
             contents = week.contents.map((c: any, idx: number) => ({
+              contentType: ['moduleClass', 'individualClass', 'audio'].includes(c.contentType) ? c.contentType : 'moduleClass',
+              individualClassId: c.individualClassId ? String(c.individualClassId) : '',
+              moduleClassId: c.moduleClassId ? String(c.moduleClassId) : undefined,
+              moduleClassSource: c.moduleClassId ? 'existing' : 'new',
+              individualClassSource: c.individualClassId ? 'existing' : 'new',
               videoUrl: c.videoUrl || '',
               videoId: c.videoId,
               videoName: c.videoName || '',
@@ -159,6 +182,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
             }));
           } else {
             contents = [{
+              contentType: 'moduleClass' as ContentType,
               videoUrl: week.videoUrl || '',
               videoId: week.videoId,
               videoName: week.videoName || '',
@@ -204,6 +228,12 @@ export default function EditBitacoraPage({ params }: PageProps) {
       .then((r) => r.ok ? r.json() : [])
       .then((data) => setClassModules(Array.isArray(data) ? data : []))
       .catch(() => setClassModules([]));
+  }, []);
+  useEffect(() => {
+    fetch('/api/individualClass/getClasses?includeUnpublished=1', { credentials: 'include', cache: 'no-store' })
+      .then((r) => r.ok ? r.json() : [])
+      .then((data) => setIndividualClasses(Array.isArray(data) ? data : []))
+      .catch(() => setIndividualClasses([]));
   }, []);
 
   // Recalcular fechas de publicación solo si el usuario cambia mes o año manualmente
@@ -264,6 +294,179 @@ export default function EditBitacoraPage({ params }: PageProps) {
     setWeeks(newWeeks);
   };
 
+  useEffect(() => {
+    const keys = new Set<string>();
+    weeks.forEach((w) => {
+      (w.contents || []).forEach((c) => {
+        if ((c.contentType || '') === 'moduleClass' && c.moduleId && (c.submoduleSlug || c.submoduleName)) {
+          const slug = (c.submoduleSlug || '').trim() || (c.submoduleName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || NO_SUBMODULE_SLUG;
+          keys.add(`${c.moduleId}|${slug}`);
+        }
+      });
+    });
+    keys.forEach((key) => {
+      if (moduleClassesCache[key]) return;
+      const [moduleId, submoduleSlug] = key.split('|');
+      fetch(`/api/module-classes?moduleId=${encodeURIComponent(moduleId)}&submoduleSlug=${encodeURIComponent(submoduleSlug)}&includeUnpublished=1`, { credentials: 'include', cache: 'no-store' })
+        .then((r) => r.ok ? r.json() : [])
+        .then((list) => setModuleClassesCache((prev) => ({ ...prev, [key]: Array.isArray(list) ? list : [] })))
+        .catch(() => setModuleClassesCache((prev) => ({ ...prev, [key]: [] })));
+    });
+  }, [weeks]);
+
+  const addSubmoduleToModule = async (moduleId: string, name: string) => {
+    const r = await fetch(`/api/class-modules/${moduleId}/submodules`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ name: name.trim() })
+    });
+    if (!r.ok) {
+      const d = await r.json().catch(() => ({}));
+      throw new Error(d.error || 'Error al crear submódulo');
+    }
+    const created = await r.json();
+    const mod = classModules.find((m) => m._id === moduleId);
+    if (mod && created.slug) {
+      setClassModules((prev) => prev.map((m) => (m._id === moduleId ? { ...m, submodules: [...(m.submodules || []), { name: created.name || name, slug: created.slug }] } : m)));
+    }
+    return created;
+  };
+
+  const createModuleClassAndUse = async (weekIndex: number, contentIndex: number) => {
+    const c = weeks[weekIndex].contents[contentIndex];
+    const moduleId = c.moduleId?.trim();
+    const submoduleSlug = (c.submoduleSlug || '').trim() || (c.submoduleName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || NO_SUBMODULE_SLUG;
+    const name = (c.newModuleClassName || c.videoName || c.videoUrl || 'Nueva clase').trim();
+    if (!moduleId || !name) {
+      toast.error('Indica módulo y nombre de la clase');
+      return;
+    }
+    if (!c.videoUrl?.trim()) {
+      toast.error('Video URL es requerido para crear la clase');
+      return;
+    }
+    setCreatingClass(`module-${weekIndex}-${contentIndex}`);
+    try {
+      const description = (c.createdClassDescription ?? c.audioText ?? '').trim();
+      const r = await fetch('/api/module-classes/from-weekly-path', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          moduleId,
+          submoduleSlug: submoduleSlug || NO_SUBMODULE_SLUG,
+          name,
+          description: description || '',
+          videoUrl: c.videoUrl,
+          videoId: c.videoId || undefined,
+          level: c.level || 1,
+          materials: c.newModuleClassMaterials || []
+        })
+      });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        throw new Error(d.error || 'Error al crear clase');
+      }
+      const created = await r.json();
+      const key = `${moduleId}|${submoduleSlug || NO_SUBMODULE_SLUG}`;
+      setModuleClassesCache((prev) => ({ ...prev, [key]: [...(prev[key] || []), { _id: created._id, name: created.name, videoUrl: created.videoUrl, level: created.level }] }));
+      setWeeks((prev) => {
+        const next = [...prev];
+        const contents = [...(next[weekIndex].contents || [])];
+        contents[contentIndex] = {
+          ...contents[contentIndex],
+          moduleClassId: created._id,
+          videoName: created.name,
+          createdInWeeklyPathForm: true,
+          createdClassDescription: description || created.description || ''
+        };
+        next[weekIndex] = { ...next[weekIndex], contents };
+        return next;
+      });
+      toast.success('Clase creada. Quedará visible en la biblioteca al publicar la última semana.');
+    } catch (e: any) {
+      toast.error(e.message || 'Error al crear clase');
+    } finally {
+      setCreatingClass(null);
+    }
+  };
+
+  const createIndividualClassAndUse = async (weekIndex: number, contentIndex: number) => {
+    const c = weeks[weekIndex].contents[contentIndex];
+    const name = (c.videoName || c.videoUrl || '').trim();
+    const description = (c.audioText || 'Clase del Camino').trim();
+    const videoUrl = c.videoUrl?.trim();
+    if (!name || !videoUrl) {
+      toast.error('Nombre y Video URL son requeridos');
+      return;
+    }
+    setCreatingClass(`individual-${weekIndex}-${contentIndex}`);
+    try {
+      const r = await fetch('/api/individualClass/createFromWeeklyPath', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name, description, videoUrl, userEmail: auth.user?.email })
+      });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        throw new Error(d.error || 'Error al crear clase');
+      }
+      const created = await r.json();
+      setIndividualClasses((prev) => [...prev, { _id: created._id, name: created.name }]);
+      setWeeks((prev) => {
+        const next = [...prev];
+        const contents = [...(next[weekIndex].contents || [])];
+        contents[contentIndex] = {
+          ...contents[contentIndex],
+          individualClassId: created._id,
+          individualClassSource: 'existing' as const,
+          createdInWeeklyPathForm: true,
+          createdClassDescription: (c.audioText || '').trim()
+        };
+        next[weekIndex] = { ...next[weekIndex], contents };
+        return next;
+      });
+      toast.success('Clase creada. Quedará visible en la biblioteca al publicar la última semana.');
+    } catch (e: any) {
+      toast.error(e.message || 'Error al crear clase');
+    } finally {
+      setCreatingClass(null);
+    }
+  };
+
+  const deleteCreatedClassAndRemove = async (weekIndex: number, contentIndex: number) => {
+    const c = weeks[weekIndex].contents[contentIndex];
+    if (!c.createdInWeeklyPathForm) return;
+    const moduleClassId = c.moduleClassId;
+    const individualClassId = c.individualClassId;
+    try {
+      if (moduleClassId) {
+        const r = await fetch(`/api/module-classes/${moduleClassId}`, { method: 'DELETE', credentials: 'include' });
+        if (!r.ok) {
+          const d = await r.json().catch(() => ({}));
+          throw new Error(d.error || 'Error al eliminar la clase');
+        }
+      } else if (individualClassId) {
+        const r = await fetch(`/api/individualClass/delete/${individualClassId}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ classId: individualClassId })
+        });
+        if (!r.ok) {
+          const d = await r.json().catch(() => ({}));
+          throw new Error(d.error || 'Error al eliminar la clase');
+        }
+      }
+      removeContent(weekIndex, contentIndex);
+      toast.success('Clase eliminada de la base de datos y del contenido.');
+    } catch (e: any) {
+      toast.error(e.message || 'Error al eliminar');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
@@ -277,26 +480,44 @@ export default function EditBitacoraPage({ params }: PageProps) {
         }
         const contents = week.contents || [];
         if (contents.length === 0) {
-          toast.error(`Semana ${i + 1}: agrega al menos un contenido (video)`);
+          toast.error(`Semana ${i + 1}: agrega al menos un contenido`);
           setSubmitting(false);
           return;
         }
         for (let j = 0; j < contents.length; j++) {
           const c = contents[j];
-          if (!c.videoUrl?.trim()) {
-            toast.error(`Semana ${i + 1}, contenido ${j + 1}: URL del video es requerida`);
-            setSubmitting(false);
-            return;
-          }
-          if (!c.moduleId) {
-            toast.error(`Semana ${i + 1}, contenido ${j + 1}: selecciona un módulo`);
-            setSubmitting(false);
-            return;
-          }
-          if (!c.submoduleSlug?.trim() && !c.submoduleName?.trim()) {
-            toast.error(`Semana ${i + 1}, contenido ${j + 1}: indica submódulo o crea uno nuevo`);
-            setSubmitting(false);
-            return;
+          const tipo = (c.contentType || 'moduleClass') as ContentType;
+          if (tipo === 'moduleClass') {
+            if (c.moduleClassId) { /* ok */ } else {
+              if (!c.videoUrl?.trim()) {
+                toast.error(`Semana ${i + 1}, contenido ${j + 1}: selecciona una clase existente o crea una nueva (con video)`);
+                setSubmitting(false);
+                return;
+              }
+              if (!c.moduleId) {
+                toast.error(`Semana ${i + 1}, contenido ${j + 1}: selecciona un módulo`);
+                setSubmitting(false);
+                return;
+              }
+              const sub = (c.submoduleSlug || '').trim() || (c.submoduleName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+              if (!sub) {
+                toast.error(`Semana ${i + 1}, contenido ${j + 1}: indica submódulo o crea uno`);
+                setSubmitting(false);
+                return;
+              }
+            }
+          } else if (tipo === 'individualClass') {
+            if (!c.individualClassId?.trim()) {
+              toast.error(`Semana ${i + 1}, contenido ${j + 1}: selecciona una clase individual`);
+              setSubmitting(false);
+              return;
+            }
+          } else if (tipo === 'audio') {
+            if (!c.audioUrl?.trim()) {
+              toast.error(`Semana ${i + 1}, contenido ${j + 1}: URL del audio es requerida`);
+              setSubmitting(false);
+              return;
+            }
           }
         }
       }
@@ -316,7 +537,10 @@ export default function EditBitacoraPage({ params }: PageProps) {
           isPublished: week.isPublished,
           isUnlocked: false,
           contents: (week.contents || []).map((c, idx) => ({
-            videoUrl: c.videoUrl,
+            contentType: (c.contentType || 'moduleClass') as ContentType,
+            individualClassId: c.individualClassId || undefined,
+            moduleClassId: c.moduleClassId || undefined,
+            videoUrl: c.videoUrl || '',
             videoId: c.videoId || undefined,
             videoName: c.videoName || undefined,
             videoThumbnail: c.videoThumbnail || undefined,
@@ -455,9 +679,19 @@ export default function EditBitacoraPage({ params }: PageProps) {
                   transition={{ delay: weekIndex * 0.05 }}
                   className="border-2 border-gray-200 rounded-xl p-6 bg-gradient-to-br from-orange-50 to-amber-50"
                 >
-                  <div className="flex items-center gap-3 mb-4">
+                  <div className="flex flex-wrap items-center gap-3 mb-4">
                     <div className="px-4 py-2 bg-orange-500 text-white rounded-lg font-bold text-lg font-montserrat">
                       Semana {week.weekNumber}
+                    </div>
+                    <div className="flex-1 min-w-[200px]">
+                      <label className="block text-xs font-medium text-gray-600 mb-0.5 font-montserrat">Nombre de la semana</label>
+                      <input
+                        type="text"
+                        value={week.weekTitle || ''}
+                        onChange={(e) => updateWeek(weekIndex, 'weekTitle', e.target.value)}
+                        placeholder={`Semana ${week.weekNumber}`}
+                        className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat text-black bg-white text-sm"
+                      />
                     </div>
                     <div className="flex items-center gap-2 text-black font-montserrat">
                       <CalendarIcon className="w-5 h-5" />
@@ -479,100 +713,222 @@ export default function EditBitacoraPage({ params }: PageProps) {
                     </label>
                   </div>
 
-                  {(week.contents || []).map((content, contentIndex) => (
+                  {(week.contents || []).map((content, contentIndex) => {
+                    const tipo = (content.contentType || 'moduleClass') as ContentType;
+                    return (
                     <div key={contentIndex} className="mb-6 p-4 bg-white rounded-lg border border-gray-200">
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-sm font-medium text-gray-700">Contenido {contentIndex + 1}</span>
-                        <button
-                          type="button"
-                          onClick={() => removeContent(weekIndex, contentIndex)}
-                          className="text-red-600 hover:text-red-800 p-1"
-                          title="Quitar contenido"
-                        >
-                          <XMarkIcon className="w-5 h-5" />
-                        </button>
-                      </div>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600 mb-1">Video URL *</label>
-                          <input
-                            type="url"
-                            value={content.videoUrl}
-                            onChange={(e) => updateContent(weekIndex, contentIndex, 'videoUrl', e.target.value)}
-                            placeholder="https://..."
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
-                          />
-                          <label className="block text-xs font-medium text-gray-600 mb-1 mt-2">Nombre video</label>
-                          <input
-                            type="text"
-                            value={content.videoName || ''}
-                            onChange={(e) => updateContent(weekIndex, contentIndex, 'videoName', e.target.value)}
-                            placeholder="Opcional"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600 mb-1">Nivel (1-10) *</label>
+                        <div className="flex items-center gap-3">
+                          <label className="text-xs font-medium text-black">Tipo:</label>
                           <select
-                            value={content.level}
-                            onChange={(e) => updateContent(weekIndex, contentIndex, 'level', Number(e.target.value))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                            value={tipo}
+                            onChange={(e) => updateContent(weekIndex, contentIndex, 'contentType', e.target.value as ContentType)}
+                            className="px-3 py-1.5 border border-gray-300 rounded-lg text-gray-900 text-sm"
                           >
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-                              <option key={n} value={n}>{n}</option>
-                            ))}
+                            <option value="moduleClass">Clase de módulo</option>
+                            <option value="individualClass">Clase individual</option>
+                            <option value="audio">Audio</option>
                           </select>
-                          <label className="block text-xs font-medium text-gray-600 mb-1 mt-2">Módulo *</label>
-                          <select
-                            value={content.moduleId}
-                            onChange={(e) => updateContent(weekIndex, contentIndex, 'moduleId', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                          <button
+                            type="button"
+                            onClick={() => removeContent(weekIndex, contentIndex)}
+                            className="text-red-600 hover:text-red-800 p-1"
+                            title="Quitar contenido"
                           >
-                            <option value="">Seleccionar módulo</option>
-                            {classModules.map((m) => (
-                              <option key={m._id} value={m._id}>{m.name}</option>
-                            ))}
-                          </select>
-                          <label className="block text-xs font-medium text-gray-600 mb-1 mt-2">Submódulo (existente o crear) *</label>
-                          <input
-                            type="text"
-                            value={content.submoduleName || content.submoduleSlug || ''}
-                            onChange={(e) => updateContent(weekIndex, contentIndex, 'submoduleName', e.target.value)}
-                            placeholder="Ej: Locomotions o nombre nuevo"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
-                          />
+                            <XMarkIcon className="w-5 h-5" />
+                          </button>
                         </div>
                       </div>
-                      <div className="mt-3 grid md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600 mb-1">Audio URL (opcional)</label>
-                          <input
-                            type="url"
-                            value={content.audioUrl || ''}
-                            onChange={(e) => updateContent(weekIndex, contentIndex, 'audioUrl', e.target.value)}
-                            placeholder="https://..."
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
-                          />
-                          <label className="block text-xs font-medium text-gray-600 mb-1 mt-1">Título audio</label>
-                          <input
-                            type="text"
-                            value={content.audioTitle || ''}
-                            onChange={(e) => updateContent(weekIndex, contentIndex, 'audioTitle', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
-                          />
+
+                      {(content.createdInWeeklyPathForm && (content.moduleClassId || content.individualClassId)) && (
+                        <div className="mt-3 p-4 bg-gray-100 rounded-lg border border-gray-300">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-medium text-black">{content.videoName || 'Clase'}</p>
+                              {(content.createdClassDescription || content.audioText) && (
+                                <p className="text-sm text-gray-700 mt-1">{content.createdClassDescription || content.audioText}</p>
+                              )}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => deleteCreatedClassAndRemove(weekIndex, contentIndex)}
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded"
+                              title="Eliminar clase de la base de datos y quitar del contenido"
+                            >
+                              <XMarkIcon className="w-5 h-5" />
+                            </button>
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600 mb-1">Texto / reflexión (opcional)</label>
-                          <textarea
-                            value={content.audioText || ''}
-                            onChange={(e) => updateContent(weekIndex, contentIndex, 'audioText', e.target.value)}
-                            rows={2}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
-                          />
+                      )}
+
+                      {!content.createdInWeeklyPathForm && tipo === 'moduleClass' && (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-4">
+                            <span className="text-xs font-medium text-black">Origen:</span>
+                            <label className="flex items-center gap-1">
+                              <input type="radio" name={`moduleSource-${weekIndex}-${contentIndex}`} checked={(content.moduleClassSource || 'existing') === 'existing'} onChange={() => updateContent(weekIndex, contentIndex, 'moduleClassSource', 'existing')} className="text-orange-600" />
+                              <span className="text-sm text-black">Usar clase existente</span>
+                            </label>
+                            <label className="flex items-center gap-1">
+                              <input type="radio" name={`moduleSource-${weekIndex}-${contentIndex}`} checked={(content.moduleClassSource || 'existing') === 'new'} onChange={() => updateContent(weekIndex, contentIndex, 'moduleClassSource', 'new')} className="text-orange-600" />
+                              <span className="text-sm text-black">Crear clase nueva</span>
+                            </label>
+                          </div>
+                          {(content.moduleClassSource || 'existing') === 'existing' && (
+                            <div className="grid md:grid-cols-3 gap-4">
+                              <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Módulo *</label>
+                                <select value={content.moduleId} onChange={(e) => updateContent(weekIndex, contentIndex, 'moduleId', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm">
+                                  <option value="">Seleccionar módulo</option>
+                                  {classModules.map((m) => (<option key={m._id} value={m._id}>{m.name}</option>))}
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Submódulo *</label>
+                                <select value={content.submoduleSlug || (content.submoduleName ? content.submoduleName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') : '')} onChange={(e) => { const slug = e.target.value; const mod = classModules.find((m) => m._id === content.moduleId); const sub = mod?.submodules?.find((s) => (s.slug || '') === slug); updateContent(weekIndex, contentIndex, 'submoduleSlug', slug); updateContent(weekIndex, contentIndex, 'submoduleName', sub?.name || slug); }} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm">
+                                  <option value="">Seleccionar</option>
+                                  {content.moduleId && (() => { const mod = classModules.find((m) => m._id === content.moduleId); const subs = mod?.submodules || []; return (<><option value={NO_SUBMODULE_SLUG}>Clases del módulo</option>{subs.map((s) => (<option key={s.slug || s.name} value={s.slug || (s.name || '').toLowerCase().replace(/\s+/g, '-')}>{s.name}</option>))}</>); })()}
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Clase *</label>
+                                <select value={content.moduleClassId || ''} onChange={(e) => { const id = e.target.value; const slug = (content.submoduleSlug || content.submoduleName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || NO_SUBMODULE_SLUG; const list = moduleClassesCache[`${content.moduleId}|${slug}`] || []; const cls = list.find((x) => x._id === id); setWeeks((prev) => { const next = [...prev]; const contents = [...(next[weekIndex].contents || [])]; contents[contentIndex] = { ...contents[contentIndex], moduleClassId: id, ...(cls ? { videoUrl: cls.videoUrl || '', videoName: cls.name, level: cls.level ?? contents[contentIndex].level } : {}) }; next[weekIndex] = { ...next[weekIndex], contents }; return next; }); }} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm">
+                                  <option value="">Seleccionar clase</option>
+                                  {content.moduleId && (moduleClassesCache[`${content.moduleId}|${(content.submoduleSlug || content.submoduleName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || NO_SUBMODULE_SLUG}`] || []).map((cls) => (<option key={cls._id} value={cls._id}>{cls.name}</option>))}
+                                </select>
+                              </div>
+                            </div>
+                          )}
+                          {(content.moduleClassSource || 'existing') === 'new' && (
+                            <div className="grid md:grid-cols-2 gap-4 p-3 bg-gray-50 rounded-lg">
+                              <div><label className="block text-xs font-medium text-black mb-1">Módulo *</label><select value={content.moduleId} onChange={(e) => updateContent(weekIndex, contentIndex, 'moduleId', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"><option value="">Seleccionar módulo</option>{classModules.map((m) => (<option key={m._id} value={m._id}>{m.name}</option>))}</select></div>
+                              <div>
+                                <label className="block text-xs font-medium text-black mb-2">Submódulo</label>
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                  <button type="button" onClick={() => updateContent(weekIndex, contentIndex, 'submoduleMode', 'existing')} className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${(content.submoduleMode || 'existing') === 'existing' ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-black border-gray-300 hover:bg-gray-100'}`}>Seleccionar existente</button>
+                                  <button type="button" onClick={() => updateContent(weekIndex, contentIndex, 'submoduleMode', 'new')} className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${content.submoduleMode === 'new' ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-black border-gray-300 hover:bg-gray-100'}`}>Crear submódulo nuevo</button>
+                                </div>
+                                {(content.submoduleMode || 'existing') === 'existing' && content.moduleId && (<select value={content.submoduleSlug || ''} onChange={(e) => { const v = e.target.value; const mod = classModules.find((m) => m._id === content.moduleId); const sub = mod?.submodules?.find((s) => (s.slug || '') === v); updateContent(weekIndex, contentIndex, 'submoduleSlug', v); updateContent(weekIndex, contentIndex, 'submoduleName', sub?.name || v); }} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"><option value={NO_SUBMODULE_SLUG}>Clases del módulo</option>{classModules.find((m) => m._id === content.moduleId)?.submodules?.map((s) => (<option key={s.slug || s.name} value={s.slug || ''}>{s.name}</option>))}</select>)}
+                                {content.submoduleMode === 'new' && content.moduleId && (<div className="flex gap-2"><input type="text" placeholder="Nombre nuevo submódulo" value={newSubmoduleName[`${weekIndex}-${contentIndex}`] || ''} onChange={(e) => setNewSubmoduleName((prev) => ({ ...prev, [`${weekIndex}-${contentIndex}`]: e.target.value }))} className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /><button type="button" onClick={async () => { const name = newSubmoduleName[`${weekIndex}-${contentIndex}`]?.trim(); if (!name || !content.moduleId) return; try { const created = await addSubmoduleToModule(content.moduleId, name); updateContent(weekIndex, contentIndex, 'submoduleSlug', created.slug); updateContent(weekIndex, contentIndex, 'submoduleName', created.name); setNewSubmoduleName((prev) => ({ ...prev, [`${weekIndex}-${contentIndex}`]: '' })); toast.success('Submódulo creado'); } catch (err: any) { toast.error(err.message); } }} className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600">Crear</button></div>)}
+                              </div>
+                              <div><label className="block text-xs font-medium text-black mb-1">Nombre clase *</label><input type="text" value={content.newModuleClassName || content.videoName || ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'newModuleClassName', e.target.value)} placeholder="Ej: Locomotions básico" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                              <div><label className="block text-xs font-medium text-black mb-1">Video URL *</label><input type="url" value={content.videoUrl} onChange={(e) => updateContent(weekIndex, contentIndex, 'videoUrl', e.target.value)} placeholder="https://vimeo.com/..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                              <div><label className="block text-xs font-medium text-black mb-1">Video ID (Vimeo, opcional)</label><input type="text" value={content.videoId || ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'videoId', e.target.value)} placeholder="Ej: 123456789" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                              <div className="md:col-span-2"><label className="block text-xs font-medium text-black mb-1">Descripción</label><textarea value={content.createdClassDescription ?? content.audioText ?? ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'createdClassDescription', e.target.value)} placeholder="Descripción de la clase" rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                              <div className="md:col-span-2"><label className="block text-xs font-medium text-black mb-1">Materiales</label><div className="flex flex-wrap gap-3">{['baston', 'banda elastica', 'banco', 'pelota'].map((mat) => { const list = content.newModuleClassMaterials || []; const checked = list.includes(mat); return (<label key={mat} className="flex items-center gap-1.5 text-sm text-black"><input type="checkbox" checked={checked} onChange={() => { const next = checked ? list.filter((x) => x !== mat) : [...list, mat]; updateContent(weekIndex, contentIndex, 'newModuleClassMaterials', next); }} className="rounded border-gray-300 text-orange-600" /><span className="capitalize">{mat}</span></label>); })}</div></div>
+                              <div><label className="block text-xs font-medium text-black mb-1">Nivel (1-10)</label><select value={content.level} onChange={(e) => updateContent(weekIndex, contentIndex, 'level', Number(e.target.value))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm">{[1,2,3,4,5,6,7,8,9,10].map((n) => (<option key={n} value={n}>{n}</option>))}</select></div>
+                              <div className="md:col-span-2"><button type="button" disabled={creatingClass === `module-${weekIndex}-${contentIndex}` || !content.moduleId || !(content.newModuleClassName || content.videoName || content.videoUrl)?.trim() || !content.videoUrl?.trim()} onClick={() => createModuleClassAndUse(weekIndex, contentIndex)} className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">{creatingClass === `module-${weekIndex}-${contentIndex}` ? 'Creando...' : 'Crear clase y usar aquí'}</button>{content.moduleClassId && <span className="ml-2 text-sm text-green-600">Clase asignada</span>}</div>
+                            </div>
+                          )}
                         </div>
-                      </div>
+                      )}
+
+                      {!content.createdInWeeklyPathForm && tipo === 'individualClass' && (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-4">
+                            <span className="text-xs font-medium text-black">Origen:</span>
+                            <label className="flex items-center gap-1"><input type="radio" name={`individualSource-${weekIndex}-${contentIndex}`} checked={(content.individualClassSource || 'existing') === 'existing'} onChange={() => updateContent(weekIndex, contentIndex, 'individualClassSource', 'existing')} className="text-orange-600" /><span className="text-sm text-black">Usar clase existente</span></label>
+                            <label className="flex items-center gap-1"><input type="radio" name={`individualSource-${weekIndex}-${contentIndex}`} checked={(content.individualClassSource || 'existing') === 'new'} onChange={() => updateContent(weekIndex, contentIndex, 'individualClassSource', 'new')} className="text-orange-600" /><span className="text-sm text-black">Crear clase nueva</span></label>
+                          </div>
+                          {(content.individualClassSource || 'existing') === 'existing' && (
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Clase individual *</label>
+                              <select
+                                value={content.individualClassId || ''}
+                                onChange={(e) => {
+                                  const id = e.target.value;
+                                  const ic = individualClasses.find((x) => x._id === id);
+                                  setWeeks((prev) => {
+                                    const next = [...prev];
+                                    const contents = [...(next[weekIndex].contents || [])];
+                                    const current = contents[contentIndex] || {};
+                                    contents[contentIndex] = { ...current, individualClassId: id || undefined, videoName: ic?.name ?? current.videoName };
+                                    next[weekIndex] = { ...next[weekIndex], contents };
+                                    return next;
+                                  });
+                                }}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                              >
+                                <option value="">Seleccionar clase individual</option>
+                                {individualClasses.map((ic) => (<option key={ic._id} value={ic._id}>{ic.name}</option>))}
+                              </select>
+                            </div>
+                          )}
+                          {(content.individualClassSource || 'existing') === 'new' && (
+                            <div className="grid md:grid-cols-2 gap-4 p-3 bg-gray-50 rounded-lg">
+                              <div><label className="block text-xs font-medium text-gray-600 mb-1">Nombre clase *</label><input type="text" value={content.videoName || ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'videoName', e.target.value)} placeholder="Nombre de la clase" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                              <div><label className="block text-xs font-medium text-gray-600 mb-1">Video URL (Vimeo) *</label><input type="url" value={content.videoUrl} onChange={(e) => updateContent(weekIndex, contentIndex, 'videoUrl', e.target.value)} placeholder="https://vimeo.com/..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                              <div className="md:col-span-2"><label className="block text-xs font-medium text-gray-600 mb-1">Descripción *</label><textarea value={content.audioText || ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'audioText', e.target.value)} placeholder="Descripción de la clase" rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                              <div><button type="button" disabled={creatingClass === `individual-${weekIndex}-${contentIndex}` || !(content.videoName || content.videoUrl)?.trim() || !content.videoUrl?.trim()} onClick={() => createIndividualClassAndUse(weekIndex, contentIndex)} className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">{creatingClass === `individual-${weekIndex}-${contentIndex}` ? 'Creando...' : 'Crear clase y usar aquí'}</button>{content.individualClassId && <span className="ml-2 text-sm text-green-600">Clase asignada</span>}</div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {tipo === 'audio' && (
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Audio URL *</label>
+                            <input
+                              type="url"
+                              value={content.audioUrl || ''}
+                              onChange={(e) => updateContent(weekIndex, contentIndex, 'audioUrl', e.target.value)}
+                              placeholder="https://..."
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                            />
+                            <label className="block text-xs font-medium text-gray-600 mb-1 mt-2">Título audio</label>
+                            <input
+                              type="text"
+                              value={content.audioTitle || ''}
+                              onChange={(e) => updateContent(weekIndex, contentIndex, 'audioTitle', e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Texto / reflexión (opcional)</label>
+                            <textarea
+                              value={content.audioText || ''}
+                              onChange={(e) => updateContent(weekIndex, contentIndex, 'audioText', e.target.value)}
+                              rows={3}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {(tipo === 'moduleClass' || tipo === 'individualClass') && !content.createdInWeeklyPathForm && (
+                        <div className="mt-3 grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Audio URL (opcional)</label>
+                            <input
+                              type="url"
+                              value={content.audioUrl || ''}
+                              onChange={(e) => updateContent(weekIndex, contentIndex, 'audioUrl', e.target.value)}
+                              placeholder="https://..."
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                            />
+                            <label className="block text-xs font-medium text-gray-600 mb-1 mt-1">Título audio</label>
+                            <input
+                              type="text"
+                              value={content.audioTitle || ''}
+                              onChange={(e) => updateContent(weekIndex, contentIndex, 'audioTitle', e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Texto / reflexión (opcional)</label>
+                            <textarea
+                              value={content.audioText || ''}
+                              onChange={(e) => updateContent(weekIndex, contentIndex, 'audioText', e.target.value)}
+                              rows={2}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  ))}
+                  ); })}
 
                   <button
                     type="button"

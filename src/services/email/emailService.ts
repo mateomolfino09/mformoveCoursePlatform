@@ -4,11 +4,25 @@ import { palette } from '../../constants/colors';
 const p = palette;
 const mailchimpClient = mailchimp(process.env.MAILCHIMP_TRANSACTIONAL_API_KEY || "");
 
-// URLs de logos de la marca (fácil de modificar si cambian)
+// Logo MMOVE fino: imagen (reemplazar URL por tu asset) o texto fino
 const LOGO_URLS = {
-  DARK: 'https://res.cloudinary.com/dbeem2avp/image/upload/v1767042950/logo/MFORMOVE_v2.negro_rwdtje.png',
-  LIGHT: 'https://res.cloudinary.com/dbeem2avp/image/upload/v1767043250/logo/MFORMOVE_blanco_e4wxoj.png'
+  DARK: 'https://res.cloudinary.com/dbeem2avp/image/upload/logo/MMOVE_fino_negro.png',
+  LIGHT: 'https://res.cloudinary.com/dbeem2avp/image/upload/logo/MMOVE_fino_blanco.png'
 } as const;
+
+// Estilo minimalista Move Crew: tipografía fina, botones pill
+const EMAIL_BRAND = {
+  teamName: 'Move Crew',
+  copyright: 'MMOVE',
+  font: "'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+  fontWeightLight: 300,
+  fontWeightNormal: 400,
+  // Botón fino: borde sutil, texto ink/sage, pill
+  btnStyle: (href: string, label: string, isDarkBg = false) =>
+    `<a href="${href}" style="display:inline-block;color:${isDarkBg ? p.white : p.ink};background:transparent;border:1px solid ${isDarkBg ? 'rgba(250,248,244,0.4)' : 'rgba(20,20,17,0.25)'};text-decoration:none;font-weight:400;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;padding:12px 28px;border-radius:9999px;font-family:${EMAIL_BRAND.font};transition:opacity 0.2s;">${label}</a>`,
+  btnStyleFilled: (href: string, label: string) =>
+    `<a href="${href}" style="display:inline-block;color:${p.white};background:${p.ink};text-decoration:none;font-weight:400;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;padding:12px 28px;border-radius:9999px;font-family:${EMAIL_BRAND.font};border:none;">${label}</a>`,
+};
 
 // Tipos de email disponibles
 export enum EmailType {
@@ -54,10 +68,14 @@ export interface EmailConfig {
   bcc?: string[];
 }
 
-// Fuente ligera y legible en web y móvil (evita el aspecto grueso de Montserrat)
-const EMAIL_FONT = "'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+// Fuente fina Move Crew (minimalista, alineada al sitio)
+const EMAIL_FONT = EMAIL_BRAND.font;
 
-// Base template HTML para usuarios (paleta minimalista: cream, white, ink, stone, teal)
+// Logo MMOVE en texto fino (sin depender de imagen; estética minimalista)
+const LOGO_HTML_DARK = `<span style="font-family:${EMAIL_FONT};font-weight:300;letter-spacing:0.2em;font-size:16px;color:${p.ink};text-transform:uppercase;">MMOVE</span>`;
+const LOGO_HTML_LIGHT = `<span style="font-family:${EMAIL_FONT};font-weight:300;letter-spacing:0.2em;font-size:16px;color:${p.white};text-transform:uppercase;">MMOVE</span>`;
+
+// Base template HTML para usuarios (minimalista, fino, Move Crew)
 const getBaseTemplateUser = (content: string) => `
   <!DOCTYPE html>
   <html>
@@ -67,28 +85,24 @@ const getBaseTemplateUser = (content: string) => `
     <!--[if mso]>
     <style type="text/css">body, table, td { font-family: Arial, sans-serif !important; }</style>
     <![endif]-->
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
       body, table, td, p, a, li { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-      h1, h2, h3 { font-family: ${EMAIL_FONT} !important; font-weight: 500 !important; }
+      h1, h2, h3, p, span, a { font-family: ${EMAIL_FONT} !important; font-weight: 300 !important; }
     </style>
   </head>
   <body style="margin: 0; padding: 0; background-color: ${p.cream}; font-family: ${EMAIL_FONT}; font-weight: 300; -webkit-font-smoothing: antialiased;">
-    <div style="background-color: ${p.cream}; padding: 20px 10px;">
-      <div style="max-width: 600px; margin: 0 auto; background-color: ${p.white}; padding: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(20, 20, 17, 0.06);">
-        <div style="padding: 20px 16px; text-align: center; border-bottom: 1px solid rgba(120, 120, 103, 0.2);">
-          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto; width: 100%;">
-            <tr>
-              <td style="text-align: center; padding: 0;">
-                <img src="${LOGO_URLS.DARK}" alt="MforMove" width="56" style="max-width: 56px; height: auto; display: block; margin: 0 auto;" border="0" />
-              </td>
-            </tr>
+    <div style="background-color: ${p.cream}; padding: 32px 16px;">
+      <div style="max-width: 520px; margin: 0 auto; background-color: ${p.white}; padding: 0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(20, 20, 17, 0.04);">
+        <div style="padding: 28px 24px 24px; text-align: center; border-bottom: 1px solid rgba(120, 120, 103, 0.12);">
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
+            <tr><td style="text-align: center;">${LOGO_HTML_DARK}</td></tr>
           </table>
         </div>
       ${content}
-        <div style="padding: 20px; text-align: center; border-top: 1px solid rgba(120, 120, 103, 0.2);">
-          <p style="font-size: 13px; color: ${p.stone}; margin: 0 0 4px 0; font-weight: 300;">El equipo de MforMove</p>
-          <p style="font-size: 11px; color: ${p.stone}; margin: 0; font-weight: 300; opacity: 0.8;">© 2025 MForMove. Todos los derechos reservados.</p>
+        <div style="padding: 24px; text-align: center; border-top: 1px solid rgba(120, 120, 103, 0.12);">
+          <p style="font-size: 12px; color: ${p.stone}; margin: 0 0 6px 0; font-weight: 300; letter-spacing: 0.02em;">El equipo de ${EMAIL_BRAND.teamName}</p>
+          <p style="font-size: 11px; color: ${p.stone}; margin: 0; font-weight: 300; opacity: 0.7;">© 2025 ${EMAIL_BRAND.copyright}. Todos los derechos reservados.</p>
         </div>
       </div>
     </div>
@@ -96,31 +110,27 @@ const getBaseTemplateUser = (content: string) => `
   </html>
 `;
 
-// Base template HTML para admin (fondo deep-teal, minimalista)
+// Base template HTML para admin (fondo ink, minimalista, Move Crew)
 const getBaseTemplateAdmin = (content: string) => `
   <!DOCTYPE html>
   <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500&display=swap" rel="stylesheet">
   </head>
-  <body style="margin: 0; padding: 0; background-color: ${p.deepTeal}; font-family: ${EMAIL_FONT}; font-weight: 300;">
-    <div style="background-color: ${p.deepTeal}; padding: 20px 10px;">
-      <div style="max-width: 600px; margin: 0 auto; background-color: ${p.teal}; padding: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);">
-        <div style="padding: 20px 16px; text-align: center; border-bottom: 1px solid rgba(250, 248, 244, 0.12);">
-          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto; width: 100%;">
-            <tr>
-              <td style="text-align: center; padding: 0;">
-                <img src="${LOGO_URLS.LIGHT}" alt="MforMove" width="56" style="max-width: 56px; height: auto; display: block; margin: 0 auto;" border="0" />
-              </td>
-            </tr>
+  <body style="margin: 0; padding: 0; background-color: ${p.ink}; font-family: ${EMAIL_FONT}; font-weight: 300;">
+    <div style="background-color: ${p.ink}; padding: 32px 16px;">
+      <div style="max-width: 520px; margin: 0 auto; background-color: rgba(250, 248, 244, 0.03); padding: 0; border-radius: 8px; overflow: hidden; border: 1px solid rgba(250, 248, 244, 0.08);">
+        <div style="padding: 28px 24px 24px; text-align: center; border-bottom: 1px solid rgba(250, 248, 244, 0.08);">
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
+            <tr><td style="text-align: center;">${LOGO_HTML_LIGHT}</td></tr>
           </table>
         </div>
         ${content}
-        <div style="padding: 20px; text-align: center; border-top: 1px solid rgba(250, 248, 244, 0.12);">
-          <p style="font-size: 13px; color: ${p.white}; margin: 0 0 4px 0; font-weight: 300; opacity: 0.9;">El equipo de MforMove</p>
-          <p style="font-size: 11px; color: ${p.white}; margin: 0; font-weight: 300; opacity: 0.6;">© 2025 MForMove. Todos los derechos reservados.</p>
+        <div style="padding: 24px; text-align: center; border-top: 1px solid rgba(250, 248, 244, 0.08);">
+          <p style="font-size: 12px; color: ${p.white}; margin: 0 0 6px 0; font-weight: 300; opacity: 0.8; letter-spacing: 0.02em;">El equipo de ${EMAIL_BRAND.teamName}</p>
+          <p style="font-size: 11px; color: ${p.white}; margin: 0; font-weight: 300; opacity: 0.5;">© 2025 ${EMAIL_BRAND.copyright}. Todos los derechos reservados.</p>
         </div>
       </div>
     </div>
@@ -178,10 +188,8 @@ const emailTemplates = {
       </div>
       ` : ''}
       
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.adminUrl || 'https://mateomove.com/admin/mentorship/requests'}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
-          Ver Solicitud en el Panel
-        </a>
+      <div style="text-align: center; margin: 28px 0;">
+        ${EMAIL_BRAND.btnStyleFilled(data.adminUrl || 'https://mateomove.com/admin/mentorship/requests', 'Ver solicitud en el panel')}
       </div>
     `;
     return getBaseTemplateAdmin(content);
@@ -189,7 +197,7 @@ const emailTemplates = {
 
   [EmailType.MENTORSHIP_APPROVAL]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">Solicitud de Mentoría Aprobada</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">Solicitud de Mentoría Aprobada</h2>
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
         Hola <strong>${data.nombre}</strong>, hemos revisado tu solicitud de mentoría y estamos listos para comenzar.
       </p>
@@ -202,19 +210,14 @@ const emailTemplates = {
         <p style="margin: 8px 0; color: ${p.stone}; line-height: 1.6;">
           Descarga y completa este documento antes de nuestra primera sesión. Nos ayudará a crear tu plan personalizado.
         </p>
-                 <a href="https://asset.cloudinary.com/dbeem2avp/f6931c6ea72bb31622b8872d47b7ec5e" 
-            style="background-color: ${p.teal}; color: ${p.white}; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; display: inline-block; margin-top: 10px;">
-           📄 Descargar Evaluación
-         </a>
+        <div style="margin-top: 12px;">${EMAIL_BRAND.btnStyleFilled('https://asset.cloudinary.com/dbeem2avp/f6931c6ea72bb31622b8872d47b7ec5e', 'Descargar evaluación')}</div>
        </div>
        
-       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 30px; text-align: center;">
+       <p style="font-size: 14px; color: ${p.stone}; line-height: 1.6; margin-bottom: 28px; text-align: center; font-weight: 300;">
         Una vez completado, agenda tu llamada de consulta inicial para evaluar tus objetivos y crear tu plan personalizado:
       </p>
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.calendlyLink || 'https://calendly.com/mformovers/consulta-mentoria'}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
-          Agendar Consulta
-        </a>
+      <div style="text-align: center; margin: 28px 0;">
+        ${EMAIL_BRAND.btnStyleFilled(data.calendlyLink || 'https://calendly.com/mformovers/consulta-mentoria', 'Agendar consulta')}
       </div>
       
       <div style="background-color: ${p.cream}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
@@ -294,14 +297,14 @@ const emailTemplates = {
 
   [EmailType.SUBSCRIPTION_UPDATE]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.ink}; text-align: center; font-size: 24px; margin-bottom: 20px;">${data.title}</h2>
-      <p style="font-size: 16px; color: ${p.stone}; text-align: center; line-height: 1.6; margin-bottom: 30px;">
-        ${data.message}
-      </p>
-      <div style="text-align: center; margin: 20px 0;">
-        <a href="${data.buttonLink}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
-          ${data.buttonText}
-        </a>
+      <div style="padding: 32px 24px;">
+        <h2 style="color: ${p.ink}; text-align: center; font-size: 20px; font-weight: 400; margin: 0 0 12px 0; letter-spacing: 0.02em;">${data.title}</h2>
+        <p style="font-size: 14px; color: ${p.stone}; text-align: center; line-height: 1.65; margin: 0 0 28px 0; font-weight: 300;">
+          ${data.message}
+        </p>
+        <div style="text-align: center;">
+          ${EMAIL_BRAND.btnStyleFilled(data.buttonLink, data.buttonText)}
+        </div>
       </div>
     `;
     return getBaseTemplate(content);
@@ -309,37 +312,16 @@ const emailTemplates = {
 
   [EmailType.PASSWORD_RESET]: (data: EmailData) => {
     const content = `
-      <!-- Header con acento Move Crew -->
-      <div style="padding: 32px 20px 20px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08); background: linear-gradient(135deg, rgba(7, 70, 71, 0.06) 0%, rgba(172, 174, 137, 0.08) 100%);">
-        <div style="color: ${p.ink}; font-size: 28px; font-weight: 800; margin: 0 0 8px 0; letter-spacing: -0.3px; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">Restablecer contraseña</div>
-        <p style="color: rgba(0, 0, 0, 0.65); font-size: 14px; margin: 0; font-weight: 400; line-height: 1.6;">Recibimos una solicitud para actualizar tu acceso. Usá el enlace seguro para continuar.</p>
-      </div>
-
-      <!-- Contenido principal -->
-      <div style="padding: 26px 20px;">
-        <p style="font-size: 15px; color: rgba(0, 0, 0, 0.75); line-height: 1.6; margin: 0 0 20px 0; text-align: center; font-weight: 400;">
-          Si hiciste esta solicitud, tocá el botón para crear tu nueva contraseña. El enlace caduca en <strong style="font-weight: 600;">60 minutos</strong>.
+      <div style="padding: 32px 24px;">
+        <h2 style="color: ${p.ink}; text-align: center; font-size: 18px; font-weight: 400; margin: 0 0 8px 0; letter-spacing: 0.02em;">Restablecer contraseña</h2>
+        <p style="color: ${p.stone}; font-size: 13px; margin: 0 0 24px 0; font-weight: 300; line-height: 1.6; text-align: center;">Recibimos una solicitud para actualizar tu acceso. Usá el enlace seguro para continuar.</p>
+        <p style="font-size: 13px; color: ${p.stone}; line-height: 1.6; margin: 0 0 20px 0; text-align: center; font-weight: 300;">
+          Si hiciste esta solicitud, tocá el botón para crear tu nueva contraseña. El enlace caduca en <strong style="font-weight: 400;">60 minutos</strong>.
         </p>
-
-        <div style="text-align: center; margin: 10px 0 16px;">
-          <a href="${data.resetLink}" style="
-            display: inline-block;
-            background: linear-gradient(135deg, rgba(7, 70, 71, 0.08) 0%, rgba(172, 174, 137, 0.12) 100%);
-            color: ${p.ink};
-            padding: 14px 26px;
-            text-decoration: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 700;
-            font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            border: 1px solid rgba(7, 70, 71, 0.2);
-            box-shadow: 0 2px 10px rgba(7, 70, 71, 0.12);
-          ">
-            Restablecer contraseña
-          </a>
+        <div style="text-align: center; margin: 0 0 20px 0;">
+          ${EMAIL_BRAND.btnStyleFilled(data.resetLink, 'Restablecer contraseña')}
         </div>
-
-        <p style="font-size: 13px; color: rgba(0, 0, 0, 0.6); line-height: 1.5; margin: 12px 0 0 0; text-align: center; font-weight: 400;">
+        <p style="font-size: 12px; color: ${p.stone}; line-height: 1.5; margin: 0; text-align: center; font-weight: 300; opacity: 0.9;">
           Si no solicitaste este cambio, ignorá este correo. Tu contraseña actual seguirá funcionando.
         </p>
       </div>
@@ -350,8 +332,8 @@ const emailTemplates = {
   [EmailType.ACCOUNT_CREATED]: (data: EmailData) => {
     const content = `
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
-        <div style="color: ${p.ink}; font-size: 30px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -0.3px;">Tu acceso</div>
-        <p style="color: rgba(0, 0, 0, 0.65); font-size: 14px; margin: 0; font-weight: 400;">Hola ${data.name || 'Mover'}, acá van tus datos de ingreso.</p>
+        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 12px 0; letter-spacing: 0.02em;">Tu acceso</div>
+        <p style="color: rgba(0, 0, 0, 0.65); font-size: 14px; margin: 0; font-weight: 300;">Hola ${data.name || 'Mover'}, acá van tus datos de ingreso.</p>
       </div>
 
       <div style="padding: 24px 20px;">
@@ -388,18 +370,18 @@ const emailTemplates = {
 
   [EmailType.NEW_CLASS_NOTIFICATION]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Nueva Clase Disponible!</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Nueva Clase Disponible!</h2>
       <p style="font-size: 16px; color: ${p.stone}; text-align: center; line-height: 1.6; margin-bottom: 30px;">
         Una nueva clase ha sido subida y está disponible para ti. ¡Revisa los detalles a continuación y continúa tu aprendizaje!
       </p>
       <div style="background-color: ${p.cream}; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
-        <a href="${data.classUrl}" style="color: ${p.teal}; text-decoration: none; font-size: 18px; font-weight: bold;">
+        <a href="${data.classUrl}" style="color: ${p.sage}; text-decoration: none; font-size: 18px; font-weight: bold;">
           ${data.className}
         </a>
         <p style="font-size: 14px; color: ${p.stone}; margin-top: 10px;">${data.classDescription}</p>
       </div>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.classUrl}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="${data.classUrl}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Ver Clase
         </a>
       </div>
@@ -417,13 +399,13 @@ const emailTemplates = {
 
     const content = `
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
-        <div style="color: ${p.ink}; font-size: 30px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -0.3px;">¡Bienvenido!</div>
-        <p style="color: rgba(0, 0, 0, 0.65); font-size: 14px; margin: 0; font-weight: 400;">Hola ${data.name || 'Mover'}, ${message}</p>
+        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 12px 0; letter-spacing: 0.02em;">¡Bienvenido!</div>
+        <p style="color: rgba(0, 0, 0, 0.65); font-size: 14px; margin: 0; font-weight: 300;">Hola ${data.name || 'Mover'}, ${message}</p>
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 18px auto 0; max-width: 420px; width: 100%;">
           <tr>
             <td style="text-align: center; padding: 0;">
               <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764363987/my_uploads/mails/fondoMoveCrew_1_k98l1d.png" 
-                   alt="Bienvenida MForMove" 
+                   alt="Bienvenida Move Crew" 
                    width="420"
                    height="260"
                    style="width: 100%; max-width: 420px; height: auto; border-radius: 14px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
@@ -470,7 +452,7 @@ const emailTemplates = {
     const content = `
       <!-- Header minimalista -->
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
-        <div style="color: ${p.ink}; font-size: 32px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: -0.3px; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; mso-line-height-rule: exactly; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; display: block;">Tu viaje continúa</div>
+        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2;">Tu viaje continúa</div>
         <!-- Imagen debajo del título -->
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 16px auto 0; max-width: 400px; width: 100%;">
           <tr>
@@ -489,7 +471,7 @@ const emailTemplates = {
       <!-- Contenido principal -->
       <div style="padding: 28px 20px;">
         <p style="font-size: 16px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-          ¡Hola <strong style="font-weight: 600;">${data.name}</strong>! Entiendo que cada camino es único y respetamos tu decisión.
+          ¡Hola ${data.name}! Entiendo que cada camino es único y respetamos tu decisión.
         </p>
 
         <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
@@ -554,9 +536,9 @@ const emailTemplates = {
 
   [EmailType.PAYMENT_SUCCESS]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Pago Exitoso!</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Pago Exitoso!</h2>
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
-        ¡Hola <strong>${data.name}</strong>! Tu pago ha sido procesado exitosamente.
+        ¡Hola ${data.name}! Tu pago ha sido procesado exitosamente.
       </p>
       <div style="background-color: ${p.cream}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
         <h3 style="color: ${p.ink}; margin: 0 0 10px 0; font-size: 18px;">Detalles del pago:</h3>
@@ -566,7 +548,7 @@ const emailTemplates = {
         <p style="margin: 5px 0; color: ${p.stone};"><strong>ID de transacción:</strong> ${data.transactionId}</p>
       </div>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.accessUrl || 'https://mateomove.com/account'}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="${data.accessUrl || 'https://mateomove.com/account'}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Acceder al Contenido
         </a>
       </div>
@@ -580,7 +562,7 @@ const emailTemplates = {
     const content = `
       <!-- Header minimalista -->
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
-        <div style="color: ${p.ink}; font-size: 32px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: -0.3px; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; mso-line-height-rule: exactly; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; display: block;">Tu proceso es importante</div>
+        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2;">Tu proceso es importante</div>
         <!-- Imagen debajo del título -->
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 16px auto 0; max-width: 400px; width: 100%;">
           <tr>
@@ -599,7 +581,7 @@ const emailTemplates = {
       <!-- Contenido principal -->
       <div style="padding: 28px 20px;">
         <p style="font-size: 16px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-          ¡Hola <strong style="font-weight: 600;">${data.name}</strong>! Notamos que hubo un inconveniente al procesar tu pago.
+          ¡Hola ${data.name}! Notamos que hubo un inconveniente al procesar tu pago.
       </p>
 
         <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
@@ -673,9 +655,9 @@ const emailTemplates = {
 
   [EmailType.WELCOME_MENTORSHIP]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Bienvenido al Programa de Mentoría!</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Bienvenido al Programa de Mentoría!</h2>
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
-        ¡Hola <strong>${data.name}</strong>! Nos emociona que hayas decidido comenzar tu viaje de transformación con nuestro programa de mentoría.
+        ¡Hola ${data.name}! Nos emociona que hayas decidido comenzar tu viaje de transformación con nuestro programa de mentoría.
       </p>
       
       <div style="background-color: ${p.cream}; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
@@ -683,14 +665,11 @@ const emailTemplates = {
         <p style="margin: 8px 0; color: ${p.stone}; line-height: 1.6;">
           Para comenzar, descarga y completa este documento de evaluación. Nos ayudará a crear tu plan personalizado.
         </p>
-                 <a href="https://asset.cloudinary.com/dbeem2avp/f6931c6ea72bb31622b8872d47b7ec5e" 
-            style="background-color: ${p.teal}; color: ${p.white}; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; display: inline-block; margin-top: 10px;">
-           📄 Descargar Evaluación
-         </a>
+        <div style="margin-top: 12px;">${EMAIL_BRAND.btnStyleFilled('https://asset.cloudinary.com/dbeem2avp/f6931c6ea72bb31622b8872d47b7ec5e', 'Descargar evaluación')}</div>
       </div>
       
       <div style="background-color: ${p.cream}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-        <h3 style="color: ${p.ink}; margin: 0 0 10px 0; font-size: 18px;">Próximos pasos:</h3>
+        <h3 style="color: ${p.ink}; margin: 0 0 10px 0; font-size: 16px; font-weight: 400;">Próximos pasos:</h3>
         <ol style="margin: 0; padding-left: 20px; color: ${p.stone}; text-align: left;">
           <li style="margin: 5px 0;">Descarga y completa la evaluación inicial</li>
           <li style="margin: 5px 0;">Agenda tu primera llamada de consulta</li>
@@ -699,10 +678,8 @@ const emailTemplates = {
         </ol>
       </div>
       
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.calendlyLink || 'https://calendly.com/mformovers/consulta-mentoria'}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
-          📅 Agendar Primera Consulta
-        </a>
+      <div style="text-align: center; margin: 28px 0;">
+        ${EMAIL_BRAND.btnStyleFilled(data.calendlyLink || 'https://calendly.com/mformovers/consulta-mentoria', 'Agendar consulta')}
       </div>
     `;
     return getBaseTemplate(content);
@@ -712,7 +689,7 @@ const emailTemplates = {
     const content = `
       <!-- Header minimalista -->
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
-        <div style="color: ${p.ink}; font-size: 32px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: -0.3px; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; mso-line-height-rule: exactly; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; display: block; text-align: center;">¡Bienvenido a la Move Crew!</div>
+        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; text-align: center;">¡Bienvenido a la Move Crew!</div>
         <!-- Imagen debajo del título -->
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 16px auto 0; max-width: 400px; width: 100%;">
           <tr>
@@ -731,7 +708,7 @@ const emailTemplates = {
       <!-- Contenido principal -->
       <div style="padding: 28px 20px;">
         <p style="font-size: 16px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-          ¡Hola <strong style="font-weight: 600;">${data.name}</strong>! Emprendemos viaje hacia
+          ¡Hola ${data.name}! Emprendemos viaje hacia
 el bienestar fisico y emocional. 
         </p>
 
@@ -783,21 +760,21 @@ el bienestar fisico y emocional.
         </a>
         </div>
 
-        <!-- Invitación a la comunidad de Telegram -->
+        <!-- Invitación a la comunidad de WhatsApp -->
         <div style="text-align: center; margin: 18px 0 0;">
-          <a href="${data.telegramInviteUrl || 'https://t.me/+_9hJulwT690yNWFh'}"
+          <a href="${data.whatsappInviteUrl || data.telegramInviteUrl || 'https://chat.whatsapp.com/'}"
              style="display: inline-block;
-                    background: linear-gradient(135deg, ${p.teal} 0%, ${p.deepTeal} 100%);
-                    color: ${p.white};
+                    background: ${p.sage};
+                    color: ${p.ink};
                     padding: 12px 24px;
                     text-decoration: none;
                     border-radius: 12px;
                     font-size: 15px;
                     font-weight: 600;
                     font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-                    border: 1px solid rgba(7, 70, 71, 0.3);
-                    box-shadow: 0 2px 10px rgba(7, 70, 71, 0.2);">
-            Comunidad Telegram
+                    border: 1px solid rgba(172, 174, 137, 0.5);
+                    box-shadow: 0 2px 10px rgba(172, 174, 137, 0.3);">
+            Comunidad WhatsApp
           </a>
           <p style="font-size: 13px; color: rgba(0, 0, 0, 0.6); line-height: 1.5; margin: 10px 0 0; text-align: center; font-weight: 400; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
             Allí compartimos avisos, soporte y las novedades de la Move Crew.
@@ -810,9 +787,9 @@ el bienestar fisico y emocional.
 
   [EmailType.COURSE_COMPLETION]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Curso Completado!</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Curso Completado!</h2>
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
-        ¡Felicitaciones <strong>${data.name}</strong>! Has completado exitosamente el curso.
+        ¡Felicitaciones ${data.name}! Has completado exitosamente el curso.
       </p>
       <div style="background-color: ${p.cream}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
         <h3 style="color: ${p.ink}; margin: 0 0 10px 0; font-size: 18px;">Detalles del curso:</h3>
@@ -824,7 +801,7 @@ el bienestar fisico y emocional.
         ¡Sigue así! Tu dedicación y esfuerzo te están llevando a alcanzar tus objetivos.
       </p>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.nextCourseUrl || 'https://mateomove.com/courses'}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="${data.nextCourseUrl || 'https://mateomove.com/courses'}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Explorar Próximo Curso
         </a>
       </div>
@@ -834,9 +811,9 @@ el bienestar fisico y emocional.
 
   [EmailType.REMINDER_EMAIL]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">Recordatorio de Entrenamiento</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">Recordatorio de Entrenamiento</h2>
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
-        ¡Hola <strong>${data.name}</strong>! Te recordamos que tienes contenido pendiente por revisar.
+        ¡Hola ${data.name}! Te recordamos que tienes contenido pendiente por revisar.
       </p>
       <div style="background-color: ${p.cream}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
         <h3 style="color: ${p.ink}; margin: 0 0 10px 0; font-size: 18px;">Contenido pendiente:</h3>
@@ -848,7 +825,7 @@ el bienestar fisico y emocional.
         Mantén la consistencia en tu entrenamiento para ver los mejores resultados.
       </p>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.classUrl}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="${data.classUrl}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Continuar Entrenamiento
         </a>
       </div>
@@ -859,7 +836,7 @@ el bienestar fisico y emocional.
   [EmailType.EVENT_CONFIRMATION]: (data: EmailData) => {
     const isOnline = data.isOnline;
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">Reserva Confirmada</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">Reserva Confirmada</h2>
       
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
         Hola <strong>${data.customerName}</strong>, tu reserva para <strong>${data.eventName}</strong> ha sido confirmada exitosamente.
@@ -880,7 +857,7 @@ el bienestar fisico y emocional.
       <div style="background-color: ${p.cream}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
         <h3 style="color: ${p.ink}; margin: 0 0 15px 0; font-size: 18px; text-align: center;">Información para Evento Online</h3>
         <div style="text-align: center;">
-          ${data.eventLink ? `<p style="margin: 8px 0; color: ${p.stone};"><strong>Link de acceso:</strong> <a href="${data.eventLink}" style="color: ${p.teal}; text-decoration: underline;">Acceder al evento</a></p>` : `<p style="margin: 8px 0; color: ${p.stone};">El link de acceso se enviará 15 minutos antes del evento</p>`}
+          ${data.eventLink ? `<p style="margin: 8px 0; color: ${p.stone};"><strong>Link de acceso:</strong> <a href="${data.eventLink}" style="color: ${p.sage}; text-decoration: underline;">Acceder al evento</a></p>` : `<p style="margin: 8px 0; color: ${p.stone};">El link de acceso se enviará 15 minutos antes del evento</p>`}
           <p style="margin: 8px 0; color: ${p.stone};"><strong>Grabación:</strong> ${data.recordingInfo}</p>
         </div>
       </div>
@@ -906,7 +883,7 @@ el bienestar fisico y emocional.
       ` : ''}
 
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.eventPageUrl}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block; margin: 0 10px;">
+        <a href="${data.eventPageUrl}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block; margin: 0 10px;">
           Ver Detalles del Evento
         </a>
       </div>
@@ -917,7 +894,7 @@ el bienestar fisico y emocional.
           Si tienes alguna pregunta, no dudes en contactarnos:
         </p>
         <p style="margin: 5px 0; color: ${p.stone}; text-align: center;">
-          <strong>Email:</strong> <a href="mailto:${data.supportEmail}" style="color: ${p.teal}; text-decoration: underline;">${data.supportEmail}</a>
+          <strong>Email:</strong> <a href="mailto:${data.supportEmail}" style="color: ${p.sage}; text-decoration: underline;">${data.supportEmail}</a>
         </p>
       </div>
 
@@ -930,7 +907,7 @@ el bienestar fisico y emocional.
 
   [EmailType.PRODUCT_CONFIRMATION]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">Compra Confirmada</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">Compra Confirmada</h2>
       
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
         Hola <strong>${data.customerName}</strong>, tu compra de <strong>${data.productName}</strong> ha sido confirmada exitosamente.
@@ -946,7 +923,7 @@ el bienestar fisico y emocional.
       </div>
 
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.productPageUrl}" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block; margin: 0 10px;">
+        <a href="${data.productPageUrl}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block; margin: 0 10px;">
           Ver Producto
         </a>
       </div>
@@ -957,7 +934,7 @@ el bienestar fisico y emocional.
           Si tienes alguna pregunta sobre tu compra, no dudes en contactarnos:
         </p>
         <p style="margin: 5px 0; color: ${p.stone}; text-align: center;">
-          <strong>Email:</strong> <a href="mailto:${data.supportEmail}" style="color: ${p.teal}; text-decoration: underline;">${data.supportEmail}</a>
+          <strong>Email:</strong> <a href="mailto:${data.supportEmail}" style="color: ${p.sage}; text-decoration: underline;">${data.supportEmail}</a>
         </p>
       </div>
 
@@ -970,10 +947,10 @@ el bienestar fisico y emocional.
 
   [EmailType.TRANSFORMATIONAL_PROGRAM_WEEK]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Nuevo Contenido Disponible!</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Nuevo Contenido Disponible!</h2>
       
       <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
-        ¡Hola <strong>${data.name}</strong>! Tu contenido de la <strong>Semana ${data.semana}</strong> ya está disponible.
+        ¡Hola ${data.name}! Tu contenido de la Semana ${data.semana} ya está disponible.
       </p>
 
       <div style="background-color: ${p.cream}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
@@ -994,7 +971,7 @@ el bienestar fisico y emocional.
 
       <div style="text-align: center; margin: 30px 0;">
         <a href="https://mateomove.com/programa-transformacional/semana-${data.semana}" 
-           style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+           style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           🎬 Ver Contenido de la Semana ${data.semana}
         </a>
       </div>
@@ -1022,7 +999,7 @@ el bienestar fisico y emocional.
 
   [EmailType.ADMIN_NOTIFICATION]: (data: EmailData) => {
     const content = `
-      <h2 style="color: ${p.teal}; text-align: center; font-size: 24px; margin-bottom: 20px;">Nueva Compra Realizada</h2>
+      <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">Nueva Compra Realizada</h2>
       
       <div style="background-color: ${p.cream}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
         <h3 style="color: ${p.ink}; margin: 0 0 15px 0; font-size: 18px; text-align: center;">Información del Cliente</h3>
@@ -1057,7 +1034,7 @@ el bienestar fisico y emocional.
       ` : ''}
 
       <div style="text-align: center; margin: 30px 0;">
-        <a href="https://mateomove.com/admin" style="background-color: ${p.teal}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="https://mateomove.com/admin" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Ver en el Panel de Admin
         </a>
       </div>
@@ -1420,7 +1397,6 @@ el bienestar fisico y emocional.
   [EmailType.WEEKLY_LOGBOOK_RELEASE]: (data: EmailData) => {
     const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     const monthName = monthNames[(data.month || 1) - 1];
-    // Limpia nbsp y espacios múltiples
     const textClean = (data.text || '')
       .replace(/\u00A0/g, ' ')
       .replace(/\s+/g, ' ')
@@ -1438,12 +1414,34 @@ el bienestar fisico y emocional.
 
     const isFirstWeek = data.isFirstWeek || data.weekNumber === 1 || data.weekNumber === '1';
     const buttonText = isFirstWeek ? 'Empezar Camino' : 'Ver Clases';
-    
+
+    const escapeHtml = (s: string) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const weekContentsDetail = (data.weekContentsDetail || []) as Array<{ type: string; title: string; description?: string; moduleName?: string }>;
+    const hasContentsList = weekContentsDetail.length > 0;
+    const contentsListHtml = hasContentsList
+      ? `
+        <div style="margin: 0 auto 24px auto; max-width: 560px;">
+          <div style="font-size: 14px; font-weight: 600; color: ${p.ink}; margin-bottom: 12px; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">Contenidos de la semana</div>
+          ${weekContentsDetail
+            .map(
+              (item) => `
+            <div style="border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; background: rgba(0,0,0,0.02);">
+              ${item.moduleName ? `<div style="font-size: 11px; color: rgba(0,0,0,0.55); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">${escapeHtml(item.moduleName)}</div>` : ''}
+              <div style="font-size: 15px; font-weight: 600; color: ${p.ink}; margin-bottom: ${item.description ? '6px' : '0'}; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">${escapeHtml(item.title)}</div>
+              ${item.description ? `<div style="font-size: 14px; color: rgba(0,0,0,0.75); line-height: 1.5; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">${escapeHtml(item.description)}</div>` : ''}
+            </div>
+          `
+            )
+            .join('')}
+        </div>
+      `
+      : '';
+
     const content = `
       <!-- Header minimalista -->
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
-        <div style="color: ${p.ink}; font-size: 32px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: -0.3px; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; mso-line-height-rule: exactly; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; display: block; text-align: center;">El Camino</div>
-        <div style="color: rgba(0, 0, 0, 0.6); font-size: 18px; font-weight: 500; margin: 0; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;">
+        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; text-align: center;">El Camino</div>
+        <div style="color: rgba(0, 0, 0, 0.6); font-size: 16px; font-weight: 300; margin: 0; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; letter-spacing: 0.02em;">
           Semana ${data.weekNumber}
         </div>
       </div>
@@ -1451,7 +1449,7 @@ el bienestar fisico y emocional.
       <!-- Contenido principal -->
       <div style="padding: 28px 20px;">
         <p style="font-size: 16px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-          ¡Hola <strong style="font-weight: 600;">${data.name}</strong>! Tu contenido semanal del Camino está listo.
+          ¡Hola ${data.name}! Tu contenido semanal del Camino está listo.
         </p>
 
         ${data.coverImage ? `
@@ -1495,7 +1493,7 @@ el bienestar fisico y emocional.
           </div>
         ` : ''}
 
-        ${textClean ? `
+        ${hasContentsList ? contentsListHtml : textClean ? `
           <div style="font-size: 16px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 auto 24px auto; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly; white-space: normal; max-width: 640px;">
             ${textClean.trim()}
           </div>
@@ -1532,7 +1530,7 @@ el bienestar fisico y emocional.
     const content = `
       <!-- Header minimalista -->
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
-        <div style="color: ${p.ink}; font-size: 32px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: -0.3px; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; mso-line-height-rule: exactly; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; display: block; text-align: center;">¡Bienvenido a la Move Crew!</div>
+        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; text-align: center;">¡Bienvenido a la Move Crew!</div>
         <div style="color: rgba(0, 0, 0, 0.6); font-size: 18px; font-weight: 500; margin: 0; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;">
           Primer Círculo
         </div>
@@ -1548,7 +1546,7 @@ el bienestar fisico y emocional.
       <!-- Contenido principal -->
       <div style="padding: 28px 20px;">
         <p style="font-size: 16px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-          ¡Hola <strong style="font-weight: 600;">${data.name}</strong>! Tu viaje en Move Crew comienza ahora.
+          ¡Hola ${data.name}! Tu viaje en Move Crew comienza ahora.
         </p>
 
         <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
@@ -1578,21 +1576,21 @@ el bienestar fisico y emocional.
           </a>
         </div>
 
-        <!-- Link a Telegram -->
+        <!-- Link a WhatsApp -->
         <div style="text-align: center; margin: 24px 0 0; padding-top: 24px; border-top: 1px solid rgba(0, 0, 0, 0.08);">
-          <a href="${data.telegramInviteUrl || 'https://t.me/+_9hJulwT690yNWFh'}" 
+          <a href="${data.whatsappInviteUrl || data.telegramInviteUrl || 'https://chat.whatsapp.com/'}" 
              target="_blank"
              rel="noopener noreferrer"
              style="display: inline-block; 
-                    background: ${p.teal}; 
-                    color: ${p.white}; 
+                    background: ${p.sage}; 
+                    color: ${p.ink}; 
                     padding: 12px 24px; 
                     text-decoration: none; 
                     border-radius: 8px; 
                     font-size: 14px; 
                     font-weight: 600; 
                     font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-            Unite a la Crew (Telegram)
+            Unite a la Crew (WhatsApp)
           </a>
           <p style="font-size: 12px; color: rgba(0, 0, 0, 0.6); margin: 8px 0 0 0; line-height: 1.4;">
             Acceso directo al grupo privado para soporte, avisos y novedades.
@@ -1610,8 +1608,8 @@ el bienestar fisico y emocional.
 
     const content = `
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
-        <div style="color: ${p.ink}; font-size: 30px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -0.3px;">Camino Base completado!</div>
-        <p style="color: rgba(0, 0, 0, 0.65); font-size: 14px; margin: 0; font-weight: 400;">Hola ${data.name || 'Mover'}, has completado los fundamentos. Ahora podés acceder a todo el contenido.</p>
+        <div style="color: ${p.ink}; font-size: 26px; font-weight: 300; margin: 0 0 12px 0; letter-spacing: 0.02em;">Camino Base completado!</div>
+        <p style="color: rgba(0, 0, 0, 0.65); font-size: 14px; margin: 0; font-weight: 300;">Hola ${data.name || 'Mover'}, has completado los fundamentos. Ahora podés acceder a todo el contenido.</p>
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 18px auto 0; max-width: 420px; width: 100%;">
           <tr>
             <td style="text-align: center; padding: 0;">
@@ -1787,7 +1785,7 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.ACCOUNT_CREATED,
       to: data.email,
-      subject: 'Tu acceso a MForMove',
+      subject: 'Tu acceso a Move Crew',
       data
     });
   }
@@ -1805,7 +1803,7 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.WELCOME_EMAIL,
       to: data.email,
-      subject: '¡Bienvenido a MForMove!',
+      subject: '¡Bienvenido a Move Crew!',
       data
     });
   }

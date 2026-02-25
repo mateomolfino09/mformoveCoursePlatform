@@ -3,6 +3,8 @@ import { payments } from "./payments";
 const membershipRoutes = {
     /** Página principal de membresía (Library) */
     library: '/library',
+    /** Clases individuales (sin módulo) */
+    individualClasses: '/library/individual-classes',
     /** Camino semanal (antes "Bitácora") */
     weeklyPath: '/weekly-path',
     moveCrew: '/move-crew',

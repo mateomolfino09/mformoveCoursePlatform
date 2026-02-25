@@ -24,14 +24,14 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 const DURATION_MS = 4500;
 
 const typeStyles: Record<ToastType, string> = {
-  success: 'bg-palette-cream border-l-4 border-l-palette-teal text-palette-ink shadow-[0_2px_12px_rgba(20,20,17,0.08)]',
+  success: 'bg-palette-cream border-l-4 border-l-palette-sage text-palette-ink shadow-[0_2px_12px_rgba(20,20,17,0.08)]',
   error: 'bg-palette-cream border-l-4 border-l-soft-error text-palette-ink shadow-[0_2px_12px_rgba(20,20,17,0.08)]',
   info: 'bg-palette-cream border-l-4 border-l-palette-stone text-palette-ink shadow-[0_2px_12px_rgba(20,20,17,0.08)]',
   warning: 'bg-palette-cream border-l-4 border-l-palette-sage text-palette-ink shadow-[0_2px_12px_rgba(20,20,17,0.08)]',
 };
 
 const typeIconBg: Record<ToastType, string> = {
-  success: 'bg-palette-teal/15 text-palette-teal',
+  success: 'bg-palette-sage/15 text-palette-sage',
   error: 'bg-soft-error/15 text-soft-error',
   info: 'bg-palette-stone/20 text-palette-stone',
   warning: 'bg-palette-sage/25 text-palette-ink',

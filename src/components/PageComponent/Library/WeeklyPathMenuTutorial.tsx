@@ -94,38 +94,48 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
   // Paso 1: subrayar el botón Move Crew del header
   useEffect(() => {
     if (!isOpen || !showTutorial || currentStep !== 1) {
-      // Limpiar subrayado cuando no estamos en paso 1
+      // Limpiar resaltado del botón cuando no estamos en paso 1
       const moveCrewButtons = document.querySelectorAll('[data-tutorial-move-crew-target]');
       moveCrewButtons.forEach((btn) => {
         const button = btn as HTMLElement;
-        button.style.removeProperty('border-bottom');
-        button.style.removeProperty('padding-bottom');
-        button.style.removeProperty('display');
+        button.style.removeProperty('border');
+        button.style.removeProperty('border-radius');
+        button.style.removeProperty('box-shadow');
+        button.querySelectorAll('span').forEach((span) => {
+          (span as HTMLElement).style.removeProperty('border-bottom');
+          (span as HTMLElement).style.removeProperty('padding-bottom');
+          (span as HTMLElement).style.removeProperty('display');
+        });
       });
       return;
     }
 
-    // Aplicar subrayado al botón Move Crew
-    const applyUnderline = () => {
+    // Aplicar borde completo al botón Menú / Move Crew (resaltado total)
+    const applyButtonHighlight = () => {
       const moveCrewButtons = document.querySelectorAll('[data-tutorial-move-crew-target]');
       moveCrewButtons.forEach((btn) => {
         const button = btn as HTMLElement;
-        // Buscar el span que contiene el texto "Move Crew" o "Cerrar"
-        const spans = button.querySelectorAll('span');
-        const textSpan = Array.from(spans).find(span => 
-          span.textContent?.includes('Move Crew') || span.textContent?.includes('Cerrar')
-        ) || button;
-        
-        // Aplicar subrayado al elemento de texto
-        textSpan.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
-        textSpan.style.setProperty('padding-bottom', '0.25rem', 'important');
-        textSpan.style.setProperty('display', 'inline-block', 'important');
+        button.style.setProperty('border', '2px solid rgba(255, 255, 255, 0.95)', 'important');
+        button.style.setProperty('border-radius', '9999px', 'important');
+        button.style.setProperty('box-shadow', '0 0 0 1px rgba(255, 255, 255, 0.4), 0 0 12px 2px rgba(255, 255, 255, 0.35)', 'important');
+      });
+    };
+
+    const removeButtonHighlight = () => {
+      document.querySelectorAll('[data-tutorial-move-crew-target]').forEach((btn) => {
+        const button = btn as HTMLElement;
+        button.style.removeProperty('border');
+        button.style.removeProperty('border-radius');
+        button.style.removeProperty('box-shadow');
       });
     };
 
     // Aplicar después de un pequeño delay para asegurar que el DOM esté listo
-    const timer = setTimeout(applyUnderline, 100);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(applyButtonHighlight, 100);
+    return () => {
+      clearTimeout(timer);
+      removeButtonHighlight();
+    };
   }, [isOpen, showTutorial, currentStep]);
 
   // Detectar cuando el menú está abierto y bloquear su cierre
@@ -359,7 +369,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
     // Calcular la posición del elemento objetivo según el paso
     const calculateTargetPosition = () => {
       // Remover todos los resaltados anteriores (bordes, subrayados, etc.)
-      const allItems = document.querySelectorAll('button, a, div, h2');
+      const allItems = document.querySelectorAll('button, a, div, h1, h2, h3');
       allItems.forEach((item) => {
         const htmlItem = item as HTMLElement;
         // Remover resaltados antiguos (ámbar, cyan) y subrayados
@@ -414,11 +424,11 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
           // El modal se centrará sin necesidad de targetElement
           targetElement = null;
         } else if (currentStep === 2) {
-          // Paso 2: Apuntar al botón "El Camino" (Programa de Movimiento)
+          // Paso 2: Apuntar al botón "Camino Semanal"
           if (menuRoot) {
             const buttons = menuRoot.querySelectorAll('button');
             targetElement = Array.from(buttons).find(
-              (el) => (el.textContent || '').includes('El Camino')
+              (el) => (el.textContent || '').includes('Camino Semanal')
             ) as HTMLElement;
           }
         } else if (currentStep === 3) {
@@ -430,11 +440,11 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
             ) as HTMLElement;
           }
         } else if (currentStep === 4) {
-          // Paso 4: Apuntar a "Telegram"
+          // Paso 4: Apuntar a "WhatsApp"
           if (menuRoot) {
             const links = menuRoot.querySelectorAll('a');
             targetElement = Array.from(links).find(
-              (el) => (el.textContent || '').includes('Telegram')
+              (el) => (el.textContent || '').includes('WhatsApp')
             ) as HTMLElement;
           }
         }
@@ -444,29 +454,29 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
           if (currentStep === 1) {
             // Paso 1: No necesita subrayado (menú no está abierto)
           } else if (currentStep === 2) {
-            // Paso 2: Subrayar "Programa de Movimiento" (h2) dentro del botón "El Camino"
-            const h2Element = targetElement.querySelector('h2');
-            if (h2Element) {
-              h2Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
-              h2Element.style.setProperty('padding-bottom', '0.25rem', 'important');
-              h2Element.style.setProperty('display', 'inline-block', 'important');
+            // Paso 2: Subrayar "Camino Semanal" (h1) dentro del botón
+            const h1Element = targetElement.querySelector('h1');
+            if (h1Element) {
+              h1Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
+              h1Element.style.setProperty('padding-bottom', '0.25rem', 'important');
+              h1Element.style.setProperty('display', 'inline-block', 'important');
             }
             targetElement.style.setProperty('background-color', 'rgba(255, 255, 255, 0.1)', 'important');
           } else if (currentStep === 3) {
-            // Paso 3: Subrayar "Biblioteca" - buscar el h2 dentro del botón
-            const h2Element = targetElement.querySelector('h2');
-            if (h2Element) {
-              h2Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
-              h2Element.style.setProperty('padding-bottom', '0.25rem', 'important');
-              h2Element.style.setProperty('display', 'inline-block', 'important');
+            // Paso 3: Subrayar "Biblioteca" (h1), no "Clases a Demanda" (h2)
+            const h1Element = targetElement.querySelector('h1');
+            if (h1Element) {
+              h1Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
+              h1Element.style.setProperty('padding-bottom', '0.25rem', 'important');
+              h1Element.style.setProperty('display', 'inline-block', 'important');
             }
           } else if (currentStep === 4) {
-            // Paso 4: Subrayar "Telegram" - buscar el h2 "Comunidad" dentro del link
-            const h2Element = targetElement.querySelector('h2');
-            if (h2Element) {
-              h2Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
-              h2Element.style.setProperty('padding-bottom', '0.25rem', 'important');
-              h2Element.style.setProperty('display', 'inline-block', 'important');
+            // Paso 4: Subrayar "Comunidad" (h1), no "WhatsApp" (h2)
+            const h1Element = targetElement.querySelector('h1');
+            if (h1Element) {
+              h1Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
+              h1Element.style.setProperty('padding-bottom', '0.25rem', 'important');
+              h1Element.style.setProperty('display', 'inline-block', 'important');
             }
           }
 
@@ -615,7 +625,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
         
         // Limpiar subrayados anteriores de todos los elementos del menú
         if (menuRoot) {
-          const allItems = menuRoot.querySelectorAll('button, a, h2');
+          const allItems = menuRoot.querySelectorAll('button, a, h1, h2, h3');
           allItems.forEach((item) => {
             const htmlItem = item as HTMLElement;
             htmlItem.style.removeProperty('border-bottom');
@@ -635,39 +645,41 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
           targetElement = (firstContent as HTMLElement) || menuRoot;
         } else if (step === 2 && menuRoot) {
           const buttons = menuRoot.querySelectorAll('button');
-          targetElement = Array.from(buttons).find((el) => (el.textContent || '').includes('El Camino')) as HTMLElement;
+          targetElement = Array.from(buttons).find((el) => (el.textContent || '').includes('Camino Semanal')) as HTMLElement;
         } else if (step === 3 && menuRoot) {
           const buttons = menuRoot.querySelectorAll('button');
           targetElement = Array.from(buttons).find((el) => (el.textContent || '').includes('Biblioteca')) as HTMLElement;
         } else if (step === 4 && menuRoot) {
           const links = menuRoot.querySelectorAll('a');
-          targetElement = Array.from(links).find((el) => (el.textContent || '').includes('Telegram')) as HTMLElement;
+          targetElement = Array.from(links).find((el) => (el.textContent || '').includes('WhatsApp')) as HTMLElement;
         }
         
         // Aplicar subrayado al elemento objetivo
         if (targetElement && targetElement.getBoundingClientRect().width > 0) {
           if (step === 2) {
-            const h2Element = targetElement.querySelector('h2');
-            if (h2Element) {
-              h2Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
-              h2Element.style.setProperty('padding-bottom', '0.25rem', 'important');
-              h2Element.style.setProperty('display', 'inline-block', 'important');
+            const h1Element = targetElement.querySelector('h1');
+            if (h1Element) {
+              h1Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
+              h1Element.style.setProperty('padding-bottom', '0.25rem', 'important');
+              h1Element.style.setProperty('display', 'inline-block', 'important');
             }
             targetElement.style.setProperty('background-color', 'rgba(255, 255, 255, 0.1)', 'important');
           } else if (step === 3) {
-            const h2Element = targetElement.querySelector('h2');
-            if (h2Element) {
-              h2Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
-              h2Element.style.setProperty('padding-bottom', '0.25rem', 'important');
-              h2Element.style.setProperty('display', 'inline-block', 'important');
+            // Subrayar "Biblioteca" (h1), no "Clases a Demanda" (h2)
+            const h1Element = targetElement.querySelector('h1');
+            if (h1Element) {
+              h1Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
+              h1Element.style.setProperty('padding-bottom', '0.25rem', 'important');
+              h1Element.style.setProperty('display', 'inline-block', 'important');
             }
             targetElement.style.setProperty('background-color', 'rgba(255, 255, 255, 0.1)', 'important');
           } else if (step === 4) {
-            const h2Element = targetElement.querySelector('h2');
-            if (h2Element) {
-              h2Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
-              h2Element.style.setProperty('padding-bottom', '0.25rem', 'important');
-              h2Element.style.setProperty('display', 'inline-block', 'important');
+            // Subrayar "Comunidad" (h1), no "WhatsApp" (h2)
+            const h1Element = targetElement.querySelector('h1');
+            if (h1Element) {
+              h1Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
+              h1Element.style.setProperty('padding-bottom', '0.25rem', 'important');
+              h1Element.style.setProperty('display', 'inline-block', 'important');
             }
             targetElement.style.setProperty('background-color', 'rgba(255, 255, 255, 0.1)', 'important');
           }
@@ -759,7 +771,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
         
         // Limpiar subrayados anteriores de todos los elementos del menú
         if (menuRoot) {
-          const allItems = menuRoot.querySelectorAll('button, a, h2');
+          const allItems = menuRoot.querySelectorAll('button, a, h1, h2, h3');
           allItems.forEach((item) => {
             const htmlItem = item as HTMLElement;
             htmlItem.style.removeProperty('border-bottom');
@@ -779,39 +791,41 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
           targetElement = (firstContent as HTMLElement) || menuRoot;
         } else if (step === 2 && menuRoot) {
           const buttons = menuRoot.querySelectorAll('button');
-          targetElement = Array.from(buttons).find((el) => (el.textContent || '').includes('El Camino')) as HTMLElement;
+          targetElement = Array.from(buttons).find((el) => (el.textContent || '').includes('Camino Semanal')) as HTMLElement;
         } else if (step === 3 && menuRoot) {
           const buttons = menuRoot.querySelectorAll('button');
           targetElement = Array.from(buttons).find((el) => (el.textContent || '').includes('Biblioteca')) as HTMLElement;
         } else if (step === 4 && menuRoot) {
           const links = menuRoot.querySelectorAll('a');
-          targetElement = Array.from(links).find((el) => (el.textContent || '').includes('Telegram')) as HTMLElement;
+          targetElement = Array.from(links).find((el) => (el.textContent || '').includes('WhatsApp')) as HTMLElement;
         }
         
         // Aplicar subrayado al elemento objetivo
         if (targetElement && targetElement.getBoundingClientRect().width > 0) {
           if (step === 2) {
-            const h2Element = targetElement.querySelector('h2');
-            if (h2Element) {
-              h2Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
-              h2Element.style.setProperty('padding-bottom', '0.25rem', 'important');
-              h2Element.style.setProperty('display', 'inline-block', 'important');
+            const h1Element = targetElement.querySelector('h1');
+            if (h1Element) {
+              h1Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
+              h1Element.style.setProperty('padding-bottom', '0.25rem', 'important');
+              h1Element.style.setProperty('display', 'inline-block', 'important');
             }
             targetElement.style.setProperty('background-color', 'rgba(255, 255, 255, 0.1)', 'important');
           } else if (step === 3) {
-            const h2Element = targetElement.querySelector('h2');
-            if (h2Element) {
-              h2Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
-              h2Element.style.setProperty('padding-bottom', '0.25rem', 'important');
-              h2Element.style.setProperty('display', 'inline-block', 'important');
+            // Subrayar "Biblioteca" (h1), no "Clases a Demanda" (h2)
+            const h1Element = targetElement.querySelector('h1');
+            if (h1Element) {
+              h1Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
+              h1Element.style.setProperty('padding-bottom', '0.25rem', 'important');
+              h1Element.style.setProperty('display', 'inline-block', 'important');
             }
             targetElement.style.setProperty('background-color', 'rgba(255, 255, 255, 0.1)', 'important');
           } else if (step === 4) {
-            const h2Element = targetElement.querySelector('h2');
-            if (h2Element) {
-              h2Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
-              h2Element.style.setProperty('padding-bottom', '0.25rem', 'important');
-              h2Element.style.setProperty('display', 'inline-block', 'important');
+            // Subrayar "Comunidad" (h1), no "WhatsApp" (h2)
+            const h1Element = targetElement.querySelector('h1');
+            if (h1Element) {
+              h1Element.style.setProperty('border-bottom', '2px solid rgba(255, 255, 255, 0.9)', 'important');
+              h1Element.style.setProperty('padding-bottom', '0.25rem', 'important');
+              h1Element.style.setProperty('display', 'inline-block', 'important');
             }
             targetElement.style.setProperty('background-color', 'rgba(255, 255, 255, 0.1)', 'important');
           }
@@ -886,8 +900,8 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
     
     // Limpiar TODOS los estilos aplicados por el tutorial
     const cleanAllStyles = () => {
-      // Limpiar subrayados de todos los elementos del menú
-      const allItems = document.querySelectorAll('button, a, h2, span');
+      // Limpiar subrayados y resaltados de todos los elementos (incl. h1, h2, h3 "Camino Semanal")
+      const allItems = document.querySelectorAll('button, a, h1, h2, h3, span');
       allItems.forEach((item) => {
         const htmlItem = item as HTMLElement;
         htmlItem.style.removeProperty('border-bottom');
@@ -899,18 +913,21 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
         }
       });
       
-      // Limpiar subrayado del botón Move Crew
+      // Limpiar resaltado del botón Move Crew (borde completo + subrayados antiguos)
       const moveCrewButtons = document.querySelectorAll('[data-tutorial-move-crew-target]');
       moveCrewButtons.forEach((btn) => {
         const button = btn as HTMLElement;
+        button.style.removeProperty('border');
+        button.style.removeProperty('border-radius');
+        button.style.removeProperty('box-shadow');
         button.style.removeProperty('border-bottom');
         button.style.removeProperty('padding-bottom');
         button.style.removeProperty('display');
         const spans = button.querySelectorAll('span');
         spans.forEach(span => {
-          span.style.removeProperty('border-bottom');
-          span.style.removeProperty('padding-bottom');
-          span.style.removeProperty('display');
+          (span as HTMLElement).style.removeProperty('border-bottom');
+          (span as HTMLElement).style.removeProperty('padding-bottom');
+          (span as HTMLElement).style.removeProperty('display');
         });
       });
     };
@@ -924,7 +941,9 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
     
     // Quitar la clase que bloquea el botón (pero NO cerrar el menú: así un solo clic en "Cerrar" lo cierra)
     document.body.classList.remove('tutorial-active');
-    
+    console.log('se remueve la clase tutorial-active');
+    state.weeklyPathNavOpen = false; 
+    console.log('se cierra el menú');
     try {
       const response = await fetch('/api/onboarding/complete-bitacora-tutorial', {
         method: 'POST',
@@ -1040,8 +1059,8 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
             className="absolute pointer-events-none"
             style={{
               zIndex: 200,
-              left: isMobile ? '50%' : 'auto',
-              right: isMobile ? 'auto' : '15%',
+              left: isMobile ? '80%' : 'auto',
+              right: isMobile ? 'auto' : '10%',
               top: isMobile ? '75%' : '25%',
               width: isMobile ? 300 : 400,
               height: isMobile ? 300 : 400,
@@ -1283,10 +1302,10 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                   style={{ pointerEvents: 'none' }}
                 >
                   <h3 className="text-lg md:text-xl font-semibold text-palette-ink font-montserrat tracking-tight mb-3">
-                    El Camino
+                    Camino Semanal
                   </h3>
                   <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                    Contenido semanal guiado, progreso y Unidades de Coherencia (U.C.).
+                    Contenido nuevo cada semana, guiado y progresivo. Una semana completada = 1 U.C.
                   </p>
                 </motion.div>
               )}
@@ -1308,7 +1327,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                     Biblioteca de Clases
                   </h3>
                   <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                    Clases on-demand y programas disponibles. A tu ritmo, cuando quieras.
+                    Programas de entrenamiento y clases individuales guiadas. A tu ritmo, cuando quieras.
                   </p>
                 </motion.div>
               )}
@@ -1327,7 +1346,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                   style={{ pointerEvents: 'none' }}
                 >
                   <h3 className="text-lg md:text-xl font-semibold text-palette-ink font-montserrat tracking-tight mb-3">
-                    Grupo de Telegram
+                    Grupo de WhatsApp
                   </h3>
                   <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
                     Únete a la comunidad. Comparte avances, pregunta dudas y recibe soporte.
@@ -1461,10 +1480,10 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                       className="space-y-4"
                     >
                       <h3 className="text-lg md:text-xl font-semibold text-palette-ink font-montserrat tracking-tight mb-3">
-                        El Camino
+                        Camino Semanal
                       </h3>
                       <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                        Contenido semanal guiado, progreso y Unidades de Coherencia (U.C.).
+                        Contenido nuevo cada semana, guiado y progresivo. Una semana completada = 1 U.C.
                       </p>
                     </motion.div>
                   )}
@@ -1485,7 +1504,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                     Biblioteca de Clases
                   </h3>
                       <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                        Clases on-demand y programas disponibles. A tu ritmo, cuando quieras.
+                        Programas de entrenamiento y clases individuales guiadas. A tu ritmo, cuando quieras.
                   </p>
                     </motion.div>
                   )}
@@ -1503,7 +1522,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                       className="space-y-4"
                     >
                       <h3 className="text-lg md:text-xl font-semibold text-palette-ink font-montserrat tracking-tight mb-3">
-                    Grupo de Telegram
+                    Grupo de WhatsApp
                   </h3>
                       <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
                         Únete a la comunidad. Comparte avances, pregunta dudas y recibe soporte.

@@ -1704,13 +1704,13 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                       />
                     </label>
                     <label className='flex flex-col space-y-2'>
-                      <p className='text-sm font-medium text-gray-700'>Grupo de Telegram (opcional)</p>
+                      <p className='text-sm font-medium text-gray-700'>Grupo de WhatsApp (opcional)</p>
                       <input
                         type='url'
                         className='input border-gray-300 focus:border-purple-500 focus:ring-purple-500 transition-colors text-sm'
                         value={comunidad.grupoTelegram || ''}
                         onChange={e => setComunidad({...comunidad, grupoTelegram: e.target.value})}
-                        placeholder='https://t.me/...'
+                        placeholder='https://chat.whatsapp.com/...'
                       />
                     </label>
                     <label className='md:col-span-2'>

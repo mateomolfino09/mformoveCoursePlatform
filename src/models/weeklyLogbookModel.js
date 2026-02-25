@@ -81,9 +81,19 @@ const dailyContentSchema = new mongoose.Schema({
   }
 }, { _id: false });
 
-// Item de contenido dentro de una semana (varios por semana: videos + opcional audio, nivel, módulo, submódulo)
+// Item de contenido dentro de una semana (varios por semana: clases de módulo, clases individuales, audios)
 const weekContentItemSchema = new mongoose.Schema({
-  // Video
+  // Tipo: clase de módulo (video + módulo/submódulo), clase individual (referencia), o solo audio
+  contentType: {
+    type: String,
+    enum: ['moduleClass', 'individualClass', 'audio'],
+    default: 'moduleClass'
+  },
+  // Referencia a clase individual (cuando contentType === 'individualClass')
+  individualClassId: { type: mongoose.Schema.Types.ObjectId, ref: 'IndividualClass' },
+  // Referencia opcional a clase de módulo (cuando contentType === 'moduleClass')
+  moduleClassId: { type: mongoose.Schema.Types.ObjectId, ref: 'ModuleClass' },
+  // Video (clase de módulo o override para clase individual)
   videoUrl: { type: String, default: '' },
   videoId: { type: String },
   videoName: { type: String, default: '' },
@@ -91,12 +101,12 @@ const weekContentItemSchema = new mongoose.Schema({
   videoDuration: { type: Number },
   title: { type: String },
   description: { type: String },
-  // Audio opcional
+  // Audio (opcional en moduleClass/individualClass; principal en audio)
   audioUrl: { type: String, default: '' },
   audioTitle: { type: String, default: '' },
   audioDuration: { type: Number },
   audioText: { type: String, default: '' },
-  // Nivel 1-10, módulo y submódulo (clase)
+  // Nivel 1-10, módulo y submódulo (solo para contentType === 'moduleClass')
   level: { type: Number, min: 1, max: 10, default: 1 },
   moduleId: { type: mongoose.Schema.Types.ObjectId, ref: 'ClassModule' },
   submoduleSlug: { type: String, default: '' },
