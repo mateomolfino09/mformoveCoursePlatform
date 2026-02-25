@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verify } from 'jsonwebtoken';
 import mongoose from 'mongoose';
-import connectDB from '../../../../../config/connectDB';
-import ClassModule from '../../../../../models/classModuleModel';
-import ModuleClass from '../../../../../models/moduleClassModel';
-import Users from '../../../../../models/userModel';
+import connectDB from '../../../../../../config/connectDB';
+import ClassModule from '../../../../../../models/classModuleModel';
+import ModuleClass from '../../../../../../models/moduleClassModel';
+import Users from '../../../../../../models/userModel';
 
 connectDB();
 export const revalidate = 0;
