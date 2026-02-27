@@ -170,6 +170,7 @@ function WeeklyPathPageContent() {
     nextContentType: 'visual' | 'audioText';
     nextTitle?: string;
   } | null>(null);
+  const skipNextSelectionEffectRef = useRef(false);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -396,6 +397,11 @@ function WeeklyPathPageContent() {
 
       if (!response.ok) {
         const errorData = await response.json();
+        // Previsualizar por ID es solo para administradores
+        if (response.status === 403 && id) {
+          router.replace('/library');
+          return;
+        }
         // Si es un 404, intentar obtener la camino más reciente sin parámetros
         if (response.status === 404 && (id || month || year)) {
           // Si había parámetros específicos, intentar sin ellos
@@ -436,12 +442,9 @@ function WeeklyPathPageContent() {
     setLogbook(logbookData);
     
     if (logbookData && logbookData.weeklyContents) {
-        // Actualizar estados de desbloqueo basado solo en flags semanales (cron) y admin
+        // Respetar el flag isUnlocked que envía la API (no sobrescribir con isPublished)
         const processedWeeks = logbookData.weeklyContents.map((week: WeeklyContent) => {
-          const isWeekUnlocked =
-            isAdmin ||
-            week.isPublished ||
-            week.isUnlocked;
+          const isWeekUnlocked = isAdmin || week.isUnlocked;
 
           // No usamos dailyContents para gating ni UI
           week.dailyContents = [];
@@ -452,25 +455,22 @@ function WeeklyPathPageContent() {
       logbookData.weeklyContents = processedWeeks;
       setLogbook(logbookData);
       
-      // Seleccionar automáticamente la semana desbloqueada más reciente (sin dailyContents)
-      const unlockedWeeks = processedWeeks.filter((week: WeeklyContent) => week.isUnlocked);
+      // Seleccionar la primera semana desbloqueada (por número de semana asc); luego un useEffect ajustará a la primera no completada cuando coherence cargue
+      const unlockedWeeks = processedWeeks
+        .filter((week: WeeklyContent) => week.isUnlocked)
+        .sort((a: WeeklyContent, b: WeeklyContent) => a.weekNumber - b.weekNumber);
       if (unlockedWeeks.length > 0) {
-        const sortedUnlockedWeeks = unlockedWeeks.sort((a: WeeklyContent, b: WeeklyContent) => {
-          const dateA = new Date(a.publishDate).getTime();
-          const dateB = new Date(b.publishDate).getTime();
-          return dateB - dateA;
-        });
-        const mostRecentUnlockedWeek = sortedUnlockedWeeks[0];
-        setSelectedWeek(mostRecentUnlockedWeek.weekNumber);
+        const firstUnlocked = unlockedWeeks[0];
+        setSelectedWeek(firstUnlocked.weekNumber);
         setSelectedDay(null);
-        const weekContents = (mostRecentUnlockedWeek as WeeklyContent).contents;
+        const weekContents = (firstUnlocked as WeeklyContent).contents;
         if (Array.isArray(weekContents) && weekContents.length > 0) {
           setSelectedContentIndex(0);
           setSelectedContentType(weekContents[0].contentType === 'audio' ? 'audioText' : 'visual');
         } else {
           setSelectedContentIndex(null);
-          if (mostRecentUnlockedWeek.videoUrl) setSelectedContentType('visual');
-          else if (mostRecentUnlockedWeek.audioUrl || mostRecentUnlockedWeek.text) setSelectedContentType('audioText');
+          if (firstUnlocked.videoUrl) setSelectedContentType('visual');
+          else if (firstUnlocked.audioUrl || firstUnlocked.text) setSelectedContentType('audioText');
           else setSelectedContentType(null);
         }
       } else {
@@ -491,6 +491,77 @@ function WeeklyPathPageContent() {
     }
   };
 
+  // Abrir siempre en el primer contenido no completado (por semana e índice dentro de la semana).
+  // No ejecutar mientras el modal "Ir al siguiente" está abierto ni justo después de ir al siguiente (para no sobrescribir la selección).
+  useEffect(() => {
+    if (showNextContentModal || !logbook?._id || !logbook.weeklyContents?.length) return;
+    if (skipNextSelectionEffectRef.current) {
+      skipNextSelectionEffectRef.current = false;
+      return;
+    }
+    const unlocked = logbook.weeklyContents
+      .filter((w: WeeklyContent) => w.isUnlocked)
+      .sort((a: WeeklyContent, b: WeeklyContent) => a.weekNumber - b.weekNumber);
+    if (unlocked.length === 0) return;
+    const logbookId = logbook._id;
+    const { completedVideos, completedAudios } = coherence;
+
+    // Encontrar el primer ítem de contenido (por semana, luego por índice) que no esté completado
+    let targetWeek: WeeklyContent | null = null;
+    let targetContentIndex: number | null = null;
+    let targetContentType: 'visual' | 'audioText' | null = null;
+
+    for (const week of unlocked) {
+      const contents = (week as WeeklyContent).contents;
+      if (Array.isArray(contents) && contents.length > 0) {
+        for (let i = 0; i < contents.length; i++) {
+          const key = `${logbookId}-${week.weekNumber}-content-${i}`;
+          const item = contents[i];
+          const isVisual = item.contentType !== 'audio';
+          const isCompleted = isVisual ? completedVideos.has(key) : completedAudios.has(key);
+          if (!isCompleted) {
+            targetWeek = week;
+            targetContentIndex = i;
+            targetContentType = isVisual ? 'visual' : 'audioText';
+            break;
+          }
+        }
+        if (targetWeek) break;
+      } else {
+        // Semana legacy (un solo video y/o audio por semana)
+        const hasVideo = !!(week as WeeklyContent).videoUrl;
+        const hasAudio = !!(week as WeeklyContent).audioUrl || !!(week as WeeklyContent).text;
+        const videoKey = `${logbookId}-${week.weekNumber}-week-video`;
+        const audioKey = `${logbookId}-${week.weekNumber}-week-audio`;
+        const videoDone = !hasVideo || completedVideos.has(videoKey);
+        const audioDone = !hasAudio || completedAudios.has(audioKey);
+        if (!videoDone || !audioDone) {
+          targetWeek = week;
+          targetContentIndex = null;
+          targetContentType = !videoDone ? 'visual' : 'audioText';
+          break;
+        }
+      }
+    }
+
+    // Si todo está completado, usar la última semana desbloqueada y su primer contenido
+    if (!targetWeek) {
+      targetWeek = unlocked[unlocked.length - 1];
+      const contents = (targetWeek as WeeklyContent).contents;
+      if (Array.isArray(contents) && contents.length > 0) {
+        targetContentIndex = 0;
+        targetContentType = contents[0].contentType === 'audio' ? 'audioText' : 'visual';
+      } else {
+        targetContentIndex = null;
+        targetContentType = (targetWeek as WeeklyContent).videoUrl ? 'visual' : ((targetWeek as WeeklyContent).audioUrl || (targetWeek as WeeklyContent).text) ? 'audioText' : null;
+      }
+    }
+
+    setSelectedWeek(targetWeek.weekNumber);
+    setSelectedDay(null);
+    setSelectedContentIndex(targetContentIndex);
+    setSelectedContentType(targetContentType);
+  }, [logbook?._id, logbook?.weeklyContents, coherence, showNextContentModal]);
 
   const checkIfCompleted = async (logbookId: string, weekNumber: number) => {
     // Verificar si esta semana ya fue completada
@@ -515,33 +586,10 @@ function WeeklyPathPageContent() {
     const week = logbook.weeklyContents.find(w => w.weekNumber === selectedWeek);
     if (!week) return;
     
-    // Permitir completar incluso si está bloqueado para administradores
-    // Para usuarios normales, verificar desbloqueo
-    if (auth.user?.rol !== 'Admin') {
-      const now = new Date();
-      now.setHours(0, 0, 0, 0);
-      const weekPublishDate = new Date(week.publishDate);
-      weekPublishDate.setHours(0, 0, 0, 0);
-      const isWeekUnlocked = weekPublishDate.getTime() <= now.getTime();
-      
-      if (!isWeekUnlocked) {
-        toast.error('Esta semana aún no está disponible');
-        return;
-      }
-      
-      // Si hay contenido diario, verificar el día
-      if (selectedDay && week.dailyContents) {
-        const day = week.dailyContents.find(d => d.dayNumber === selectedDay);
-        if (day) {
-          const dayPublishDate = new Date(day.publishDate);
-          dayPublishDate.setHours(0, 0, 0, 0);
-          const isDayUnlocked = dayPublishDate.getTime() <= now.getTime();
-          if (!isDayUnlocked) {
-            toast.error('Este día aún no está disponible');
-            return;
-          }
-        }
-      }
+    // Permitir completar solo si la semana está desbloqueada (flag del API) o es admin
+    if (auth.user?.rol !== 'Admin' && !week.isUnlocked) {
+      toast.error('Esta semana aún no está disponible');
+      return;
     }
 
     setIsCompleting(true);
@@ -906,33 +954,8 @@ function WeeklyPathPageContent() {
             {/* Contenido Principal */}
             <div className="relative">
               {selectedContent && selectedWeekData && (
-                // Verificar desbloqueo: para contenido diario verificar día, para legacy verificar semana
-                (() => {
-                  if (auth.user?.rol === 'Admin') return true;
-                  
-                  const now = new Date();
-                  now.setHours(0, 0, 0, 0);
-                  
-                  // Verificar que la semana esté desbloqueada
-                  const weekPublishDate = new Date(selectedWeekData.publishDate);
-                  weekPublishDate.setHours(0, 0, 0, 0);
-                  const isWeekUnlocked = weekPublishDate.getTime() <= now.getTime();
-                  
-                  if (!isWeekUnlocked) return false;
-                  
-                  // Si hay contenido diario, verificar el día específico
-                  if (selectedDay && selectedWeekData.dailyContents) {
-                    const day = selectedWeekData.dailyContents.find(d => d.dayNumber === selectedDay);
-                    if (day) {
-                      const dayPublishDate = new Date(day.publishDate);
-                      dayPublishDate.setHours(0, 0, 0, 0);
-                      return dayPublishDate.getTime() <= now.getTime();
-                    }
-                  }
-                  
-                  // Para contenido legacy, solo verificar la semana
-                  return isWeekUnlocked;
-                })()
+                // Respetar el flag isUnlocked que viene del API (y admin)
+                (auth.user?.rol === 'Admin' || selectedWeekData.isUnlocked)
               ) ? (
                 <div className="relative w-full md:min-h-screen">
                   {selectedContent.type === 'visual' ? (
@@ -979,30 +1002,41 @@ function WeeklyPathPageContent() {
                   )}
                 </div>
               ) : selectedWeekData && !selectedWeekData.isUnlocked && auth.user?.rol !== 'Admin' ? (
-                <div className="relative rounded-3xl border border-palette-stone/20 bg-palette-ink p-10 text-left sm:text-center shadow-xl">
-                  <div className="relative z-10">
-                    <LockClosedIcon className="w-16 h-16 text-palette-sage sm:mx-auto mb-4" />
-                    <h2 className="text-2xl sm:text-3xl font-bold text-palette-cream font-montserrat mb-3 tracking-tight">
-                      {selectedDay ? `Día ${selectedDay}` : `Semana ${selectedWeek}`} bloqueada
-                    </h2>
-                    <p className="text-base sm:text-lg text-palette-stone mb-3 font-montserrat font-light">
-                      Este contenido se desbloqueará el{' '}
-                      {new Date(
-                        selectedDay && selectedWeekData.dailyContents
-                          ? selectedWeekData.dailyContents.find(d => d.dayNumber === selectedDay)?.publishDate || selectedWeekData.publishDate
-                          : selectedWeekData.publishDate
-                      ).toLocaleDateString('es-ES', { 
-                        weekday: 'long',
-                        day: 'numeric', 
-                        month: 'long',
-                        year: 'numeric'
-                      })}
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative rounded-2xl border border-palette-stone/20 bg-palette-ink/80 backdrop-blur-sm overflow-hidden"
+                >
+                  <div className="relative z-10 px-8 py-12 sm:px-12 sm:py-14 text-center">
+                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-palette-cream/10 border border-palette-cream/20 mb-6">
+                      <LockClosedIcon className="w-7 h-7 text-palette-cream/80" />
+                    </div>
+                    <p className="text-palette-cream font-montserrat font-light text-xl sm:text-2xl tracking-tight mb-2">
+                      {selectedDay ? `Día ${selectedDay}` : `Semana ${selectedWeek}`}
                     </p>
-                    <p className="text-base text-palette-stone font-montserrat font-light">
-                      Vuelve cuando llegue la fecha de publicación para acceder al contenido.
+                    <p className="text-palette-cream/80 font-montserrat font-extralight text-sm sm:text-base mb-6 max-w-md mx-auto">
+                      Se desbloquea el{' '}
+                      <span className="font-light text-palette-cream/90">
+                        {new Date(
+                          selectedDay && selectedWeekData.dailyContents?.length
+                            ? selectedWeekData.dailyContents.find(d => d.dayNumber === selectedDay)?.publishDate || selectedWeekData.publishDate
+                            : selectedWeekData.publishDate
+                        ).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                      </span>
                     </p>
+                    <p className="text-palette-cream/70 font-montserrat font-light text-xs sm:text-sm mb-8 max-w-sm mx-auto">
+                      Mientras tanto podés explorar clases y programas en la Biblioteca.
+                    </p>
+                    <Link
+                      href="/library"
+                      className="inline-flex items-center gap-2 font-montserrat font-normal text-sm tracking-[0.12em] uppercase text-palette-cream border border-palette-cream/30 hover:border-palette-cream/50 hover:bg-palette-cream/10 rounded-full px-6 py-3 transition-colors duration-200"
+                    >
+                      Ir a ver caminos
+                      <ChevronRightIcon className="w-4 h-4" strokeWidth={2} />
+                    </Link>
                   </div>
-                </div>
+                </motion.div>
               ) : (
                 <div className="relative rounded-3xl border border-palette-stone/20 bg-palette-ink p-10 text-left sm:text-center shadow-xl">
                   <p className="relative z-10 text-base sm:text-lg text-palette-cream font-montserrat font-light">Selecciona un contenido para comenzar</p>
@@ -1145,6 +1179,7 @@ function WeeklyPathPageContent() {
         }}
         onNext={() => {
           if (selectedWeek !== null && nextContentModalPayload) {
+            skipNextSelectionEffectRef.current = true;
             handleSelect(selectedWeek, null, nextContentModalPayload.nextContentType, nextContentModalPayload.nextContentIndex);
           }
           setShowNextContentModal(false);

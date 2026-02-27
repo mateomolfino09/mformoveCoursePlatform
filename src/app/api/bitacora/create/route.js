@@ -36,7 +36,7 @@ export async function POST(req) {
     }
 
     const body = await req.json();
-    const { month, year, title, description, weeklyContents, isBaseBitacora, userEmail } = body;
+    const { month, year, title, description, weeklyContents, modules: pathModules, isBaseBitacora, userEmail } = body;
 
     // Validar campos requeridos
     if (!weeklyContents || !Array.isArray(weeklyContents)) {
@@ -207,9 +207,14 @@ export async function POST(req) {
     const mapWeek = async (wc) => {
       const publishDate = new Date(wc.publishDate);
       const weekTitle = (wc.weekTitle || '').trim() || `Semana ${wc.weekNumber}`;
+      const weekModuleNum = wc.moduleNumber != null && wc.moduleNumber !== '' ? Number(wc.moduleNumber) : undefined;
+      const moduleNameFromPath = Array.isArray(pathModules) && pathModules.length > 0 && weekModuleNum != null
+        ? (pathModules.find((m) => Number(m.moduleNumber) === weekModuleNum)?.name || '').trim() || undefined
+        : undefined;
       const base = {
         weekNumber: wc.weekNumber,
-        moduleName: (wc.moduleName?.trim() || weekTitle || '').trim() || undefined,
+        moduleName: moduleNameFromPath || (wc.moduleName?.trim() || '').trim() || undefined,
+        moduleNumber: weekModuleNum,
         weekTitle,
         weekDescription: wc.weekDescription || undefined,
         dailyContents: [],
@@ -254,12 +259,20 @@ export async function POST(req) {
       };
     };
 
+    const modulesToSave = Array.isArray(pathModules)
+      ? pathModules.filter((m) => m != null && m.moduleNumber != null).map((m) => ({
+          moduleNumber: Number(m.moduleNumber),
+          name: (m.name && String(m.name).trim()) || ''
+        }))
+      : [];
+
     // Crear la nueva camino
     const newLogbook = await WeeklyLogbook.create({
       month: isBaseBitacora ? 1 : month, // Para camino base usar mes 1 como placeholder
       year: isBaseBitacora ? new Date().getFullYear() : year, // Para camino base usar año actual
       title: title || (isBaseBitacora ? 'Camino Base - Primer Círculo' : 'Camino'),
       description: description || '',
+      modules: modulesToSave,
       weeklyContents: await Promise.all(weeklyContents.map(mapWeek)),
       isBaseBitacora: isBaseBitacora || false
     });

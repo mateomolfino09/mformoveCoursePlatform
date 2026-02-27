@@ -367,7 +367,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									MMOVE ACADEMY
 								</Link>
 								{(auth?.user?.subscription?.active || auth?.user?.isVip || auth?.user?.rol === 'Admin') && !isMoveCrew && (
-									<>
+									<div className={`${auth?.user?.subscription?.active || auth?.user?.isVip ? 'ml-2' : ''}`}>
 										<span className={` shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'} ${isWeeklyPath ? 'hidden' : 'hidden md:block'}`}>|</span>
 										<div className="hidden md:flex items-center gap-6 shrink-0">
 											<Link
@@ -391,7 +391,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 											</Link>
 										</div>
 									
-									</>
+									</div>
 								)}
 								<div className="hidden md:flex items-center gap-6 shrink-0">
 								<span className={`hidden md:block shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'}`}>|</span>
@@ -599,12 +599,12 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 					</div>
 					{/* Centro: Eventos y Mentoría; centrado sin login, más a la izquierda con login */}
 					<div className="flex flex-1 w-full justify-start items-center min-h-[2rem]">
-						<div className={`hidden  items-center gap-6 ml-4 ${auth?.user ? '-translate-x-[15%]' : ''} ${isMoveCrew || isBienvenida ? 'md:hidden' : 'md:flex'}`}>
+						<div className={`hidden  items-center gap-6  ${auth?.user ? '-translate-x-[15%]' : ''} ${isMoveCrew || isBienvenida ? 'md:hidden' : 'md:flex'} ${auth?.user?.subscription?.active || auth?.user?.isVip ? 'ml-4' : auth?.user?.rol === 'Admin' ? 'ml-12' : 'ml-0'}`}>
 						<span className={`hidden md:block shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'}`}>|</span>
 						<Link href={auth?.user?.subscription?.active || auth?.user?.isVip ? routes.navegation.membresiaHome : routes.navegation.moveCrew} className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? 'text-white/80 hover:text-white' : 'text-palette-stone hover:text-palette-ink'}`}>
 								Move Crew
 							</Link>
-							<Link href={routes.navegation.mentorship} className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? 'text-white/80 hover:text-white' : 'text-palette-stone hover:text-palette-ink'}`}>
+							<Link href={routes.navegation.mentorship} className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? 'text-white/80 hover:text-white' : 'text-palette-stone hover:text-palette-ink'}` }>
 								Mentoría
 							</Link>
 			

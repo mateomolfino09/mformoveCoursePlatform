@@ -45,7 +45,7 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json();
-    const { month, year, title, description, weeklyContents, isBaseBitacora, userEmail } = body;
+    const { month, year, title, description, weeklyContents, modules: pathModules, isBaseBitacora, userEmail } = body;
 
     // Validar campos requeridos
     if (!weeklyContents || !Array.isArray(weeklyContents)) {
@@ -233,14 +233,26 @@ export async function PUT(req, { params }) {
 
     const now = new Date();
     now.setHours(0, 0, 0, 0);
+    const modulesToSave = Array.isArray(pathModules)
+      ? pathModules.filter((m) => m != null && m.moduleNumber != null).map((m) => ({
+          moduleNumber: Number(m.moduleNumber),
+          name: (m.name && String(m.name).trim()) || ''
+        }))
+      : [];
+
     const mappedWeeklyContents = await Promise.all(weeklyContents.map(async wc => {
       const publishDate = new Date(wc.publishDate);
       publishDate.setHours(0, 0, 0, 0);
       const weekTitle = (wc.weekTitle || '').trim() || `Semana ${wc.weekNumber}`;
       const isUnlockedByDate = publishDate <= now;
+      const weekModuleNum = wc.moduleNumber != null && wc.moduleNumber !== '' ? Number(wc.moduleNumber) : undefined;
+      const moduleNameFromPath = modulesToSave.length > 0 && weekModuleNum != null
+        ? (modulesToSave.find((m) => Number(m.moduleNumber) === weekModuleNum)?.name || '').trim() || ''
+        : '';
       const base = {
         weekNumber: wc.weekNumber,
-        moduleName: (wc.moduleName?.trim() || weekTitle || '').trim() || '',
+        moduleName: moduleNameFromPath || (wc.moduleName?.trim() || '').trim() || '',
+        moduleNumber: weekModuleNum,
         weekTitle,
         weekDescription: wc.weekDescription || '',
         dailyContents: [],
@@ -289,6 +301,7 @@ export async function PUT(req, { params }) {
     const updateData = {
       title: title || (isBaseBitacora ? 'Camino Base - Primer Círculo' : 'Camino'),
       description: description || '',
+      modules: modulesToSave,
       weeklyContents: mappedWeeklyContents,
       updatedAt: new Date(),
       isBaseBitacora: isBaseBitacora || false

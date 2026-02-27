@@ -783,17 +783,17 @@ export default function BienvenidaPage() {
                         height: `${shape.size * 0.7}px`,
                         left: `${shape.initialX}%`,
                         top: `${shape.initialY}%`,
-                        backgroundColor: shape.color,
+                        backgroundColor: 'rgba(20, 20, 17, 0.08)',
                         clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
-                        opacity: 0.3,
+                        opacity: 0.15,
                         zIndex: 0,
                       }}
                       animate={{
                         x: ['0vw', `${shape.moveX * 0.5}vw`, `${shape.moveX * 0.5}vw`, '0vw'],
                         y: ['0vh', `${shape.moveY * 0.5}vh`, `${shape.moveY * 0.5}vh`, '0vh'],
                         rotate: [shape.rotation, shape.rotation + 360],
-                        scale: [1, 1.1, 0.9, 1],
-                        opacity: [0.2, 0.4, 0.3, 0.2],
+                        scale: [1, 1.05, 0.98, 1],
+                        opacity: [0.08, 0.14, 0.1, 0.08],
                       }}
                       transition={{
                         duration: shape.duration * 1.5,
@@ -814,13 +814,12 @@ export default function BienvenidaPage() {
                 >
          
                   <h1
-                    className="text-[3rem] md:!text-[6rem] font-semibold tracking-tight text-left md:tracking-wide leading-[0.95]"
-                    style={{ textShadow: '0 2px 12px rgba(0, 0, 0, 0.2), 0 1px 6px rgba(0, 0, 0, 0.3)' }}
+                    className="text-[3rem] md:!text-[6rem] font-light tracking-tight text-left md:tracking-wide leading-[0.95]"
+                    style={{ textShadow: '0 1px 8px rgba(0, 0, 0, 0.15)' }}
                   >
-                    Bienvenido. 
-                 
+                    Bienvenido.
                   </h1>
-                  <h2 className="text-[3rem] relative bottom-2 left-1 md:left-2 md:bottom-4 md:!text-[4rem] font-semibold tracking-tight text-left md:tracking-wide leading-[0.95]">La Move Crew te espera.</h2> 
+                  <h2 className="text-[3rem] relative bottom-2 left-1 md:left-2 md:bottom-4 md:!text-[4rem] font-light tracking-tight text-left md:tracking-wide leading-[0.95]">La Move Crew te espera.</h2> 
                 </div>
                 <div className={`vimeo-player-container  pt-4 md:pt-0 ${isPlaying ? 'playing' : ''}`} style={wrapperStyles}>
                   {/* Skeleton loading dentro del contenedor del video para respetar bordes */}
@@ -845,14 +844,14 @@ export default function BienvenidaPage() {
                     <motion.button
                       type="button"
                       onClick={handlePlayClick}
-                      className="absolute bottom-4 left-4 z-[50] flex items-center justify-center bg-palette-cream/90 hover:bg-palette-cream hover:border-palette-sage/40 backdrop-blur-sm transition-colors rounded-full p-3 border border-palette-stone/20 shadow-lg cursor-pointer isolate"
+                      className="absolute bottom-4 left-4 z-[50] flex items-center justify-center bg-palette-cream/90 hover:bg-palette-cream hover:border-palette-ink/20 backdrop-blur-sm transition-colors rounded-full p-3 border border-palette-ink/15 shadow-sm cursor-pointer isolate"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      <PlayIcon className="h-5 w-5 text-palette-sage" />
+                      <PlayIcon className="h-5 w-5 text-palette-ink" />
                     </motion.button>
                   )}
                   {!isVideoLoading && isPlaying && (
@@ -875,16 +874,16 @@ export default function BienvenidaPage() {
                       type="button"
                       onClick={handleMuteToggle}
                       aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}
-                      className="absolute bottom-4 left-16 z-[50] flex items-center justify-center bg-palette-cream/90 hover:bg-palette-cream hover:border-palette-sage/40 backdrop-blur-sm transition-colors rounded-full p-3 border border-palette-stone/20 shadow-lg cursor-pointer isolate"
+                      className="absolute bottom-4 left-16 z-[50] flex items-center justify-center bg-palette-cream/90 hover:bg-palette-cream hover:border-palette-ink/20 backdrop-blur-sm transition-colors rounded-full p-3 border border-palette-ink/15 shadow-sm cursor-pointer isolate"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                     >
                       {isMuted ? (
-                        <SpeakerXMarkIcon className="h-5 w-5 text-palette-sage" />
+                        <SpeakerXMarkIcon className="h-5 w-5 text-palette-ink" />
                       ) : (
-                        <SpeakerWaveIcon className="h-5 w-5 text-palette-sage" />
+                        <SpeakerWaveIcon className="h-5 w-5 text-palette-ink" />
                       )}
                     </motion.button>
                   )}
@@ -898,11 +897,11 @@ export default function BienvenidaPage() {
                 {/* Base con paleta crema */}
                 <div className="absolute inset-0 bg-palette-cream" />
             
-            {/* Detalle sutil: grid muy suave con sage - estilo Move Crew limpio */}
+            {/* Grid sutil ink - minimalista */}
             <div
-              className="absolute inset-0 opacity-[0.04]"
+              className="absolute inset-0 opacity-[0.03]"
               style={{
-                backgroundImage: `linear-gradient(rgba(172, 174, 137, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(172, 174, 137, 0.4) 1px, transparent 1px)`,
+                backgroundImage: `linear-gradient(rgba(20, 20, 17, 0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(20, 20, 17, 0.3) 1px, transparent 1px)`,
                 backgroundSize: '48px 48px'
               }}
             />
@@ -948,19 +947,19 @@ export default function BienvenidaPage() {
             >
               <defs>
                 <linearGradient id="bienvenidaWave1" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#acae89" stopOpacity="0" />
-                  <stop offset="30%" stopColor="#acae89" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="#acae89" stopOpacity="0.45" />
+                  <stop offset="0%" stopColor="#141411" stopOpacity="0" />
+                  <stop offset="30%" stopColor="#141411" stopOpacity="0.06" />
+                  <stop offset="100%" stopColor="#141411" stopOpacity="0.12" />
                 </linearGradient>
                 <linearGradient id="bienvenidaWave2" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#acae89" stopOpacity="0" />
-                  <stop offset="40%" stopColor="#acae89" stopOpacity="0.15" />
-                  <stop offset="100%" stopColor="#acae89" stopOpacity="0.38" />
+                  <stop offset="0%" stopColor="#141411" stopOpacity="0" />
+                  <stop offset="40%" stopColor="#141411" stopOpacity="0.04" />
+                  <stop offset="100%" stopColor="#141411" stopOpacity="0.1" />
                 </linearGradient>
                 <linearGradient id="bienvenidaWave3" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#acae89" stopOpacity="0" />
-                  <stop offset="50%" stopColor="#acae89" stopOpacity="0.1" />
-                  <stop offset="100%" stopColor="#acae89" stopOpacity="0.28" />
+                  <stop offset="0%" stopColor="#141411" stopOpacity="0" />
+                  <stop offset="50%" stopColor="#141411" stopOpacity="0.03" />
+                  <stop offset="100%" stopColor="#141411" stopOpacity="0.08" />
                 </linearGradient>
               </defs>
               <motion.path
@@ -1017,17 +1016,17 @@ export default function BienvenidaPage() {
               <motion.div variants={itemVariants} className="relative">
                   <div
                     ref={textContainerRef}
-                    className="relative bg-palette-cream/95 p-5 md:p-10 lg:p-12 space-y-5 md:space-y-8 md:border-1 md:border-palette-ink/25 md:rounded-lg md:shadow-[0_12px_40px_rgba(20,20,17,0.14),0_4px_16px_rgba(20,20,17,0.08),inset_0_0_0_1px_rgba(20,20,17,0.06)]"
+                    className="relative bg-palette-cream/95 p-5 md:p-10 lg:p-12 space-y-5 md:space-y-8 md:border md:border-palette-ink/10 md:rounded-lg md:shadow-[0_2px_16px_rgba(20,20,17,0.06),inset_0_0_0_1px_rgba(20,20,17,0.04)]"
                   >
                     {/* Introducción */}
                     <motion.div
                       variants={textRevealVariants}
                       className="space-y-3 md:space-y-4"
                     >
-                      <p className="text-2xl md:text-3xl leading-relaxed text-palette-ink font-medium font-montserrat tracking-tight">
+                      <p className="text-2xl md:text-3xl leading-relaxed text-palette-ink font-light font-montserrat tracking-tight">
                         Contrato
                       </p>
-                      <p className="text-lg md:text-xl leading-relaxed text-palette-stone font-light font-montserrat">
+                      <p className="text-lg md:text-xl leading-relaxed text-palette-stone font-extralight font-montserrat">
                         Movimiento, fuerza y libertad. Acá tenés lo esencial:
                       </p>
                     </motion.div>
@@ -1037,7 +1036,7 @@ export default function BienvenidaPage() {
                       variants={textRevealVariants}
                       className="space-y-4 pt-4 md:pt-5 border-t border-palette-stone/10"
                     >
-                      <p className="text-base md:text-lg font-semibold text-palette-sage uppercase tracking-widest mb-3 md:mb-4 font-montserrat">
+                      <p className="text-base md:text-lg font-normal text-palette-ink/80 uppercase tracking-[0.12em] mb-3 md:mb-4 font-montserrat">
                         Qué tenés
                       </p>
                       <div className="space-y-4">
@@ -1062,12 +1061,12 @@ export default function BienvenidaPage() {
                             transition={{ delay: 1 + index * 0.15 }}
                             className="flex gap-3 md:gap-4 group"
                           >
-                            <div className="flex-shrink-0 w-8 h-8 md:w-7 md:h-7 rounded-full bg-palette-sage/20 border border-palette-sage/40 flex items-center justify-center mt-0.5">
-                              <div className="w-2.5 h-2.5 md:w-2 md:h-2 rounded-full bg-palette-sage" />
+                            <div className="flex-shrink-0 w-8 h-8 md:w-7 md:h-7 rounded-full bg-palette-ink/8 border border-palette-ink/20 flex items-center justify-center mt-0.5">
+                              <div className="w-2.5 h-2.5 md:w-2 md:h-2 rounded-full bg-palette-ink/50" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold text-palette-ink text-lg md:text-xl font-montserrat">{item.title}</h3>
-                              <p className="text-palette-stone text-base md:text-lg leading-relaxed font-montserrat">{item.text}</p>
+                              <h3 className="font-normal text-palette-ink text-lg md:text-xl font-montserrat">{item.title}</h3>
+                              <p className="text-palette-stone text-base md:text-lg leading-relaxed font-light font-montserrat">{item.text}</p>
                             </div>
                           </motion.div>
                         ))}
@@ -1080,12 +1079,12 @@ export default function BienvenidaPage() {
                       className="pt-4 md:pt-5 border-t border-palette-stone/10"
                     >
                       <p className="text-lg md:text-xl leading-relaxed text-palette-stone font-light font-montserrat">
-                        Simple y sostenible. <span className="font-medium text-palette-ink">Hecho para tu día a día.</span>
+                        Simple y sostenible. <span className="font-normal text-palette-ink">Hecho para tu día a día.</span>
                       </p>
-                      <p className="text-lg md:text-xl text-palette-ink font-medium mt-4 md:mt-5 font-montserrat">
+                      <p className="text-lg md:text-xl text-palette-ink font-normal mt-4 md:mt-5 font-montserrat">
                         Cuando estés listo, aceptá abajo.
                       </p>
-                      <p className="text-base text-palette-stone/80 mt-5 md:mt-6 font-montserrat">
+                      <p className="text-base text-palette-stone/80 mt-5 md:mt-6 font-light font-montserrat">
                         — Mateo.Move
                       </p>
                     </motion.div>
@@ -1122,24 +1121,21 @@ export default function BienvenidaPage() {
                   onClick={handleAccept}
                   disabled={!buttonEnabled || loading}
                   className={`
-                    relative px-10 py-5 rounded-2xl font-semibold text-lg md:text-xl font-montserrat uppercase tracking-[0.2em]
-                    transition-all duration-500 overflow-hidden
+                    relative px-10 py-5 rounded-2xl font-normal text-lg md:text-xl font-montserrat uppercase tracking-[0.18em]
+                    transition-all duration-300 overflow-hidden
                     ${buttonEnabled && !loading
-                      ? 'bg-palette-sage text-palette-ink border-2 border-palette-sage cursor-pointer shadow-[0_4px_24px_rgba(172,174,137,0.3)] hover:bg-palette-sage/90 hover:border-palette-sage/90'
-                      : 'bg-palette-stone/10 text-palette-stone/60 cursor-not-allowed border-2 border-palette-stone/25'
+                      ? 'bg-palette-ink text-palette-cream border border-palette-ink cursor-pointer shadow-[0_2px_12px_rgba(20,20,17,0.12)] hover:bg-palette-ink/95'
+                      : 'bg-palette-stone/5 text-palette-stone/50 cursor-not-allowed border border-palette-stone/20'
                     }
                     flex items-center gap-3 min-w-[280px] justify-center
                   `}
-                  whileHover={buttonEnabled && !loading ? { 
-                    scale: 1.02,
-                    boxShadow: "0 8px 32px rgba(172, 174, 137, 0.4)"
-                  } : {}}
-                  whileTap={buttonEnabled && !loading ? { scale: 0.98 } : {}}
+                  whileHover={buttonEnabled && !loading ? { scale: 1.01 } : {}}
+                  whileTap={buttonEnabled && !loading ? { scale: 0.99 } : {}}
                 >
                   {/* Efecto de brillo animado cuando está habilitado */}
                   {buttonEnabled && !loading && (
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-palette-cream/15 to-transparent"
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
                       animate={{
                         x: ['-100%', '100%']
                       }}
@@ -1203,7 +1199,7 @@ export default function BienvenidaPage() {
                           <motion.div
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            className="w-16 h-16 border-4 border-palette-stone/30 border-t-palette-sage rounded-full"
+                            className="w-16 h-16 border-4 border-palette-stone/20 border-t-palette-ink rounded-full"
                           />
                           <motion.div
                             initial={{ opacity: 0, y: 10 }}
@@ -1211,10 +1207,10 @@ export default function BienvenidaPage() {
                             transition={{ delay: 0.2 }}
                             className="text-center"
                           >
-                            <h3 className="text-2xl font-bold text-palette-cream font-montserrat mb-2">
+                            <h3 className="text-2xl font-light text-palette-cream font-montserrat mb-2">
                               Redirigiendo...
                             </h3>
-                            <p className="text-palette-stone font-montserrat text-sm">
+                            <p className="text-palette-stone font-light font-montserrat text-sm">
                               Preparando tu experiencia en Move Crew
                             </p>
                           </motion.div>

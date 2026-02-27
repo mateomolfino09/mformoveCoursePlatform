@@ -50,7 +50,6 @@ export enum EmailType {
   ADMIN_PAYMENT_FAILED = 'admin_payment_failed',
   WEEKLY_LOGBOOK_RELEASE = 'weekly_logbook_release',
   ONBOARDING_WELCOME = 'onboarding_welcome',
-  BITACORA_BASE_COMPLETED = 'bitacora_base_completed'
 }
 
 // Interfaz para datos de email
@@ -762,7 +761,7 @@ el bienestar fisico y emocional.
 
         <!-- Invitación a la comunidad de WhatsApp -->
         <div style="text-align: center; margin: 18px 0 0;">
-          <a href="${data.whatsappInviteUrl || data.telegramInviteUrl || 'https://chat.whatsapp.com/'}"
+          <a href="${data.whatsappInviteUrl || data.telegramInviteUrl || 'https://chat.whatsapp.com/LgVResfArGjIn9qByXXUSo'}"
              style="display: inline-block;
                     background: ${p.sage};
                     color: ${p.ink};
@@ -1549,10 +1548,6 @@ el bienestar fisico y emocional.
           ¡Hola ${data.name}! Tu viaje en Move Crew comienza ahora.
         </p>
 
-        <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-          Antes de acceder al contenido semanal, te invitamos a completar el Camino Base: una serie de fundamentos que te prepararán para aprovechar al máximo tu experiencia.
-        </p>
-
         <!-- Mensaje motivacional -->
         <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 24px 0; text-align: center; font-weight: 500; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
           La constancia se recompensa, porque ahí están los resultados en el movimiento.
@@ -1578,7 +1573,10 @@ el bienestar fisico y emocional.
 
         <!-- Link a WhatsApp -->
         <div style="text-align: center; margin: 24px 0 0; padding-top: 24px; border-top: 1px solid rgba(0, 0, 0, 0.08);">
-          <a href="${data.whatsappInviteUrl || data.telegramInviteUrl || 'https://chat.whatsapp.com/'}" 
+          <p style="font-size: 13px; color: rgba(0, 0, 0, 0.7); line-height: 1.5; margin: 0 0 10px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
+            Solicitá acceso a El Camino, Biblioteca y Laboratorio.
+          </p>
+          <a href="${data.whatsappInviteUrl || data.telegramInviteUrl || 'https://chat.whatsapp.com/LgVResfArGjIn9qByXXUSo'}" 
              target="_blank"
              rel="noopener noreferrer"
              style="display: inline-block; 
@@ -1600,57 +1598,6 @@ el bienestar fisico y emocional.
       </div>
     `;
     return getBaseTemplateUser(content);
-  },
-
-  [EmailType.BITACORA_BASE_COMPLETED]: (data: EmailData) => {
-    const primaryActionLink = data.dashboardLink || 'https://mateomove.com/library';
-    const primaryActionText = data.buttonText || 'Ir al Dashboard';
-
-    const content = `
-      <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
-        <div style="color: ${p.ink}; font-size: 26px; font-weight: 300; margin: 0 0 12px 0; letter-spacing: 0.02em;">Camino Base completado!</div>
-        <p style="color: rgba(0, 0, 0, 0.65); font-size: 14px; margin: 0; font-weight: 300;">Hola ${data.name || 'Mover'}, has completado los fundamentos. Ahora podés acceder a todo el contenido.</p>
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 18px auto 0; max-width: 420px; width: 100%;">
-          <tr>
-            <td style="text-align: center; padding: 0;">
-              <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764363987/my_uploads/mails/fondoMoveCrew_1_k98l1d.png" 
-                   alt="Camino Base Completado" 
-                   width="420"
-                   height="260"
-                   style="width: 100%; max-width: 420px; height: auto; border-radius: 14px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
-                   border="0" />
-            </td>
-          </tr>
-        </table>
-      </div>
-
-      <div style="padding: 24px 20px;">
-        <div style="background: ${p.cream}; padding: 18px 16px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.06); margin-bottom: 18px;">
-
-          <p style="margin: 12px 0 0 0; color: rgba(0,0,0,0.75); font-size: 14px; text-align:center;">Podés volver a visitar el Camino Base cuando lo necesites, siempre estará disponible para ti.</p>
-        </div>
-
-        <div style="text-align: center; margin: 22px 0 10px;">
-          <a href="${primaryActionLink}" style="
-            display: inline-block;
-            background: linear-gradient(135deg, rgba(7, 70, 71, 0.08) 0%, rgba(172, 174, 137, 0.12) 100%);
-            color: ${p.ink};
-            padding: 14px 28px;
-            text-decoration: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 700;
-            border: 1px solid rgba(7, 70, 71, 0.2);
-            box-shadow: 0 2px 8px rgba(7, 70, 71, 0.08);
-          ">
-            ${primaryActionText}
-          </a>
-        </div>
-
-        <p style="font-size: 13px; color: rgba(0,0,0,0.6); line-height: 1.5; margin: 10px 0 0 0; text-align: center;">Simple, claro y sostenible. <strong>Hecho para acompañar tu día a día.</strong></p>
-      </div>
-    `;
-    return getBaseTemplate(content);
   }
 };
 
@@ -1701,7 +1648,6 @@ export class EmailService {
         EmailType.WEEKLY_LOGBOOK_RELEASE,
         EmailType.WELCOME_EMAIL,
         EmailType.ONBOARDING_WELCOME,
-        EmailType.BITACORA_BASE_COMPLETED,
         EmailType.WELCOME_MEMBERSHIP,
         EmailType.WELCOME_MENTORSHIP,
         EmailType.COURSE_COMPLETION,
@@ -1858,15 +1804,6 @@ export class EmailService {
       type: EmailType.ONBOARDING_WELCOME,
       to: data.email,
       subject: '¡Bienvenido a Move Crew! - El Primer Círculo',
-      data
-    });
-  }
-
-  public async sendBitacoraBaseCompleted(data: EmailData) {
-    return this.sendEmail({
-      type: EmailType.BITACORA_BASE_COMPLETED,
-      to: data.email,
-      subject: 'Camino Base completado!',
       data
     });
   }

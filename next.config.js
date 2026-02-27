@@ -3,6 +3,10 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     serverActions: true,
+    // Evita error ENOENT con route groups (membership) en la fase de tracing del build
+    outputFileTracingExcludes: {
+      '*': ['**/node_modules/@swc/core*/**', '**/node_modules/webpack/**'],
+    },
   },
   eslint: {
     // Deshabilitar ESLint durante el build de producción

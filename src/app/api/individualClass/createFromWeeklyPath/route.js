@@ -45,7 +45,7 @@ export async function POST(req) {
     }
 
     const body = await req.json();
-    const { name, description, videoUrl, videoId, image_url, userEmail } = body;
+    const { name, description, videoUrl, videoId, image_url, userEmail, type: typeFilter, tags: tagsInput } = body;
 
     const vimeoId = videoId || extractVimeoId(videoUrl);
     if (!vimeoId) {
@@ -85,7 +85,12 @@ export async function POST(req) {
 
     const ClassModuleModel = (await import('../../../../models/classModuleModel')).default;
     const firstModule = await ClassModuleModel.findOne({ isActive: true }).sort({ createdAt: 1 }).select('_id slug').lean();
-    const typeValue = firstModule ? firstModule.slug : 'general';
+    const typeValue = (typeFilter && String(typeFilter).trim()) || (firstModule ? firstModule.slug : 'general');
+
+    const tagsArray = Array.isArray(tagsInput)
+      ? tagsInput.filter((t) => t != null && String(t).trim()).map((t) => String(t).trim())
+      : [];
+    const tags = tagsArray.map((title, index) => ({ id: index + 1, title }));
 
     const newClass = await IndividualClass.create({
       id: nextId,
@@ -103,7 +108,7 @@ export async function POST(req) {
       image_base_link: imageBaseLink,
       html: vimeoVideo.embed.html,
       link: vimeoId,
-      tags: [],
+      tags,
       visibleInLibrary: false
     });
 

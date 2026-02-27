@@ -143,14 +143,9 @@ const Index = () => {
                     </p>
                   </div>
                   <div className="flex space-x-2">
-                    <Link href={`/admin/transformational-programs/edit/${program._id}`}>
-                      <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
-                        Editar
-                      </button>
-                    </Link>
                     <Link href={`/admin/transformational-programs/view/${program._id}`}>
-                      <button className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm">
-                        Ver
+                      <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Ver / Editar
                       </button>
                     </Link>
                   </div>

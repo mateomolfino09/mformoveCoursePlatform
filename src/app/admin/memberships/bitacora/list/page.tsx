@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
-import { ArrowLeftIcon, CalendarIcon, CheckCircleIcon, ClockIcon, ChevronDownIcon, VideoCameraIcon, MusicalNoteIcon, DocumentTextIcon, EyeIcon, XMarkIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowTopRightOnSquareIcon, CalendarIcon, CheckCircleIcon, ClockIcon, ChevronDownIcon, VideoCameraIcon, MusicalNoteIcon, DocumentTextIcon, EyeIcon, XMarkIcon, PencilIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactPlayer from 'react-player';
@@ -37,6 +37,8 @@ interface IndividualClassForPreview {
 interface WeeklyContent {
   weekNumber: number;
   weekTitle?: string;
+  moduleNumber?: number;
+  moduleName?: string;
   publishDate: string;
   isPublished: boolean;
   /** Nuevo modelo: varios contenidos por semana */
@@ -264,6 +266,15 @@ const BitacoraListPage = () => {
                           {logbook.weeklyContents.length} semanas
                         </div>
                         <Link
+                          href={`/weekly-path?id=${logbook._id}`}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='px-4 py-2 text-sm font-semibold text-[#4F7CCF] bg-[#4F7CCF]/10 hover:bg-[#4F7CCF]/20 rounded-lg transition-all font-montserrat flex items-center gap-2'
+                        >
+                          <ArrowTopRightOnSquareIcon className='w-5 h-5' />
+                          Previsualizar
+                        </Link>
+                        <Link
                           href={`/admin/memberships/bitacora/edit/${logbook._id}`}
                           className='px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 rounded-lg transition-all shadow-md hover:shadow-lg font-montserrat flex items-center gap-2'
                         >
@@ -334,7 +345,7 @@ const BitacoraListPage = () => {
                         >
                           <div className='mt-6 pt-6 border-t border-gray-200'>
                             <h4 className='text-lg font-semibold text-gray-900 mb-4 font-montserrat'>
-                              Contenido de las Semanas
+                              Contenido por módulo
                             </h4>
                             <div className='space-y-4'>
                               {logbook.weeklyContents.map((week, weekIndex) => {
@@ -353,8 +364,7 @@ const BitacoraListPage = () => {
                                         <div className={`px-3 py-1 rounded-lg text-sm font-bold font-montserrat ${
                                           week.isPublished ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700'
                                         }`}>
-                                          Semana {week.weekNumber}
-                                          {week.weekTitle ? `: ${week.weekTitle}` : ''}
+                                          {week.moduleName?.trim() || (week.moduleNumber != null ? `Módulo ${week.moduleNumber}` : `Semana ${week.weekNumber}`)}
                                         </div>
                                         <div className='flex items-center gap-2 text-sm text-gray-600 font-montserrat'>
                                           <CalendarIcon className='w-4 h-4' />

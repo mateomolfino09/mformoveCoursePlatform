@@ -44,11 +44,16 @@ export interface WeekContentItem {
   createdInWeeklyPathForm?: boolean;
   /** Descripción guardada al crear la clase (para mostrar en el cuadro bloqueado) */
   createdClassDescription?: string;
+  /** Al crear clase individual nueva: valor del filtro "type" (ej. movimiento, movilidad) */
+  individualClassType?: string;
+  /** Al crear clase individual nueva: tags separados por comas */
+  individualClassTags?: string;
 }
 
 interface WeekContent {
   weekNumber: number;
   moduleName?: string;
+  moduleNumber?: number;
   weekTitle: string;
   publishDate: string;
   isPublished: boolean;
@@ -74,6 +79,7 @@ export default function CreateBitacoraPage() {
   const [submitting, setSubmitting] = useState(false);
   const [classModules, setClassModules] = useState<ClassModule[]>([]);
   const [individualClasses, setIndividualClasses] = useState<{ _id: string; name: string }[]>([]);
+  const [classFilters, setClassFilters] = useState<{ id: number; name: string; values?: { id?: number; value: string; label: string }[] }[]>([]);
   const [moduleClassesCache, setModuleClassesCache] = useState<Record<string, { _id: string; name: string; videoUrl?: string; level?: number }[]>>({});
   const [creatingClass, setCreatingClass] = useState<string | null>(null);
   const [newSubmoduleName, setNewSubmoduleName] = useState<Record<string, string>>({});
@@ -83,6 +89,8 @@ export default function CreateBitacoraPage() {
   const [title, setTitle] = useState('Camino');
   const [description, setDescription] = useState('');
 
+  /** Módulos del camino: se definen antes (cantidad 1-4 y nombre de cada uno). Las semanas solo se asocian por moduleNumber. */
+  const [pathModules, setPathModules] = useState<{ number: number; name: string }[]>([{ number: 1, name: '' }]);
   const [weeks, setWeeks] = useState<WeekContent[]>(Array.from({ length: 4 }).map((_, idx) => ({
     weekNumber: idx + 1,
     moduleName: '',
@@ -115,6 +123,12 @@ export default function CreateBitacoraPage() {
       .then((r) => r.ok ? r.json() : [])
       .then((data) => setClassModules(Array.isArray(data) ? data : []))
       .catch(() => setClassModules([]));
+  }, []);
+  useEffect(() => {
+    fetch('/api/individualClass/getClassTypes', { credentials: 'include', cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => setClassFilters(Array.isArray(data) ? data : []))
+      .catch(() => setClassFilters([]));
   }, []);
   useEffect(() => {
     fetch('/api/individualClass/getClasses?includeUnpublished=1', { credentials: 'include', cache: 'no-store' })
@@ -293,13 +307,27 @@ export default function CreateBitacoraPage() {
       toast.error('Nombre y Video URL son requeridos');
       return;
     }
+    const typeFilter = (c.individualClassType && c.individualClassType.trim()) || undefined;
+    if (!typeFilter) {
+      toast.error('Selecciona el tipo (filtro) de la clase');
+      return;
+    }
+    const tagsStr = (c.individualClassTags && c.individualClassTags.trim()) || '';
+    const tags = tagsStr ? tagsStr.split(',').map((s) => s.trim()).filter(Boolean) : [];
     setCreatingClass(`individual-${weekIndex}-${contentIndex}`);
     try {
       const r = await fetch('/api/individualClass/createFromWeeklyPath', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ name, description, videoUrl, userEmail: auth.user?.email })
+        body: JSON.stringify({
+          name,
+          description,
+          videoUrl,
+          userEmail: auth.user?.email,
+          type: typeFilter,
+          tags
+        })
       });
       if (!r.ok) {
         const d = await r.json().catch(() => ({}));
@@ -406,12 +434,6 @@ export default function CreateBitacoraPage() {
               setSubmitting(false);
               return;
             }
-          } else if (tipo === 'audio') {
-            if (!c.audioUrl?.trim()) {
-              toast.error(`Semana ${i + 1}, contenido ${j + 1}: URL del audio es requerida`);
-              setSubmitting(false);
-              return;
-            }
           }
         }
       }
@@ -426,9 +448,10 @@ export default function CreateBitacoraPage() {
           title,
           description,
           userEmail: auth.user?.email,
+          modules: pathModules.map((m) => ({ moduleNumber: m.number, name: (m.name || '').trim() })),
           weeklyContents: weeks.map((week) => ({
             weekNumber: week.weekNumber,
-            moduleName: week.moduleName?.trim() || undefined,
+            moduleNumber: week.moduleNumber != null ? Number(week.moduleNumber) : undefined,
             weekTitle: week.weekTitle,
             publishDate: new Date(week.publishDate).toISOString(),
             isPublished: week.isPublished,
@@ -498,7 +521,7 @@ export default function CreateBitacoraPage() {
             Crear Camino Mensual
           </h1>
           <p className="text-gray-600 mb-8 font-montserrat">
-            Configura 4 semanas; cada semana puede tener varios contenidos (videos). Audio opcional. Nivel, módulo y submódulo por contenido.
+            Configura 4 semanas; cada semana puede tener varios contenidos (videos). Nivel, módulo y submódulo por contenido.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -547,6 +570,40 @@ export default function CreateBitacoraPage() {
               />
             </div>
 
+            <div className="border border-gray-200 rounded-xl p-6 bg-gray-50">
+              <h2 className="text-lg font-semibold text-gray-900 mb-3 font-montserrat">Módulos del camino</h2>
+              <p className="text-sm text-gray-600 mb-4 font-montserrat">Definí la cantidad de módulos y sus nombres. Luego asociá cada semana a un módulo por número.</p>
+              <div className="flex flex-wrap items-end gap-4">
+                <div className="w-40">
+                  <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Cantidad de módulos</label>
+                  <select
+                    value={pathModules.length}
+                    onChange={(e) => {
+                      const n = Number(e.target.value);
+                      setPathModules((prev) => Array.from({ length: n }, (_, i) => prev[i] ?? { number: i + 1, name: '' }));
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg font-montserrat bg-white text-gray-900 text-sm"
+                  >
+                    {[1, 2, 3, 4].map((n) => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
+                  </select>
+                </div>
+                {pathModules.map((m, idx) => (
+                  <div key={m.number} className="flex-1 min-w-[180px]">
+                    <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Nombre módulo {m.number}</label>
+                    <input
+                      type="text"
+                      value={m.name}
+                      onChange={(e) => setPathModules((prev) => prev.map((x, i) => i === idx ? { ...x, name: e.target.value } : x))}
+                      placeholder={`Ej: Módulo ${m.number}`}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg font-montserrat bg-white text-gray-900 text-sm"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {weeks.map((week, weekIndex) => (
               <motion.div
                 key={week.weekNumber}
@@ -569,6 +626,21 @@ export default function CreateBitacoraPage() {
                       className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F7CCF] focus:border-[#4F7CCF] font-montserrat bg-white text-gray-900 text-sm"
                     />
                   </div>
+                  <div className="min-w-[200px]">
+                    <label className="block text-xs font-medium text-gray-600 mb-0.5 font-montserrat">Módulo</label>
+                    <select
+                      value={week.moduleNumber ?? ''}
+                      onChange={(e) => updateWeek(weekIndex, 'moduleNumber', e.target.value === '' ? undefined : Number(e.target.value))}
+                      className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F7CCF] focus:border-[#4F7CCF] font-montserrat bg-white text-gray-900 text-sm"
+                    >
+                      <option value="">—</option>
+                      {pathModules.map((m) => (
+                        <option key={m.number} value={m.number}>
+                          {m.name ? `Módulo ${m.number}: ${m.name}` : `Módulo ${m.number}`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <div className="flex items-center gap-2 text-gray-600 font-montserrat">
                     <CalendarIcon className="w-5 h-5" />
                     <input
@@ -582,11 +654,11 @@ export default function CreateBitacoraPage() {
 
                 {(week.contents || []).map((content, contentIndex) => {
                   const tipo = (content.contentType || 'moduleClass') as ContentType;
-                  if (content.createdInWeeklyPathForm && (content.moduleClassId || content.individualClassId)) {
+                    if (content.createdInWeeklyPathForm && (content.moduleClassId || content.individualClassId)) {
                     return (
                       <div key={contentIndex} className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                         <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm font-medium text-black">Clase creada en este camino (solo visible al publicar última semana)</span>
+                          <span className="text-sm font-medium text-black">Clase creada en este camino (solo visible al publicar última semana). Podés editarla desde el edit del camino una vez guardado.</span>
                           <button
                             type="button"
                             onClick={() => deleteCreatedClassAndRemove(weekIndex, contentIndex)}
@@ -1006,9 +1078,32 @@ export default function CreateBitacoraPage() {
                               />
                             </div>
                             <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Tipo (filtro) *</label>
+                              <select
+                                value={content.individualClassType ?? ''}
+                                onChange={(e) => updateContent(weekIndex, contentIndex, 'individualClassType', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                              >
+                                <option value="">Seleccionar tipo</option>
+                                {(classFilters[0]?.values ?? []).map((v: { value: string; label: string }) => (
+                                  <option key={v.value} value={v.value}>{v.label}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Tags (separados por comas)</label>
+                              <input
+                                type="text"
+                                value={content.individualClassTags ?? ''}
+                                onChange={(e) => updateContent(weekIndex, contentIndex, 'individualClassTags', e.target.value)}
+                                placeholder="Ej: principiante, fuerza, movilidad"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                              />
+                            </div>
+                            <div>
                               <button
                                 type="button"
-                                disabled={creatingClass === `individual-${weekIndex}-${contentIndex}` || !(content.videoName || content.videoUrl)?.trim() || !content.videoUrl?.trim()}
+                                disabled={creatingClass === `individual-${weekIndex}-${contentIndex}` || !(content.videoName || content.videoUrl)?.trim() || !content.videoUrl?.trim() || !(content.individualClassType ?? '').trim()}
                                 onClick={() => createIndividualClassAndUse(weekIndex, contentIndex)}
                                 className="px-4 py-2 bg-[#4F7CCF] text-white rounded-lg text-sm font-medium hover:bg-[#234C8C] disabled:opacity-50 disabled:cursor-not-allowed"
                               >

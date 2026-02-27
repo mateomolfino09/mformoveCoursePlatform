@@ -161,7 +161,7 @@ function Profile() {
     <div className='w-full min-h-screen bg-palette-cream font-montserrat'>
       <MainSideBar where={"index"}>
         <div className='w-full min-h-screen bg-palette-cream'>
-          <main className='w-[85%] max-w-6xl mx-auto px-4 md:px-8 py-16 mt-4 md:py-20'>
+          <main className='w-[95%] md:w-[85%] max-w-6xl mx-auto px-4 md:px-8 py-16 mt-4 md:py-20'>
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}

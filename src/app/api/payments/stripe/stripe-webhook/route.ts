@@ -112,7 +112,7 @@ export const POST = async (req: NextRequest) => {
                     email: user.email,
                     name: user.name || 'Miembro',
                     onboardingLink: `${origin}/onboarding/bienvenida`,
-                    whatsappInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/'
+                    whatsappInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/LgVResfArGjIn9qByXXUSo'
                   });
                 } catch (emailErr) {
                   console.error(`❌ Error enviando email de bienvenida a ${user.email}:`, emailErr);
