@@ -64,7 +64,7 @@ const BitacoraAdminPage = () => {
         </div>
 
         <div className='grid lg:grid-cols-3 gap-6 mb-8'>
-          <Link href={'/admin/bitacora/create'}>
+          <Link href={'/admin/memberships/bitacora/create'}>
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -83,7 +83,7 @@ const BitacoraAdminPage = () => {
             </motion.div>
           </Link>
           
-          <Link href={'/admin/bitacora/list'}>
+          <Link href={'/admin/memberships/bitacora/list'}>
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

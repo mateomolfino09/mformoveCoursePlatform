@@ -47,6 +47,7 @@ interface WeekContentItem {
 interface WeeklyContent {
   weekNumber: number;
   moduleName?: string;
+  moduleNumber?: number;
   weekTitle?: string;
   weekDescription?: string;
   dailyContents?: DailyContent[];
@@ -127,12 +128,10 @@ const WeeklyPathSidebar = ({
   };
 
   const isContentUnlocked = (week: WeeklyContent) => {
-    // Los administradores pueden ver todo el contenido
     if (isAdmin) return true;
-    
-    // Solo liberamos si el cron (o admin) marcó published/unlocked
-    if (week.isPublished || week.isUnlocked) return true;
-    return week.dailyContents?.some(day => day.isPublished || day.isUnlocked) || false;
+    // Respetar solo el flag isUnlocked que setea la API/cron
+    if (week.isUnlocked) return true;
+    return week.dailyContents?.some(day => day.isUnlocked) || false;
   };
 
   const toggleModule = (moduleName: string) => {
@@ -147,63 +146,69 @@ const WeeklyPathSidebar = ({
     });
   };
 
-  // Agrupar semanas por módulo
+  // Agrupar semanas por módulo (respeta moduleNumber y moduleName)
   const modulesWithWeeks = React.useMemo(() => {
-    const moduleMap = new Map<string, WeeklyContent[]>();
+    const moduleMap = new Map<string, { weeks: WeeklyContent[]; moduleNumber?: number }>();
     const moduleOrder: string[] = [];
-    
+
     logbook.weeklyContents.forEach(week => {
+      const num = week.moduleNumber != null ? Number(week.moduleNumber) : undefined;
       let moduleName = week.moduleName?.trim();
-      
-      // Si no tiene nombre de módulo, asignarle uno temporal para agrupar
-      // Las semanas sin módulo se agrupan por orden de aparición
+
       if (!moduleName || moduleName === '') {
-        // Buscar si hay semanas anteriores sin módulo asignado
         const previousWeeks = logbook.weeklyContents.filter(w => w.weekNumber < week.weekNumber);
         const hasPreviousEmpty = previousWeeks.some(w => !w.moduleName || w.moduleName.trim() === '');
-        
         if (hasPreviousEmpty) {
-          // Agrupar con el módulo vacío anterior más cercano
           const closestEmptyWeek = previousWeeks
             .filter(w => !w.moduleName || w.moduleName.trim() === '')
             .sort((a, b) => b.weekNumber - a.weekNumber)[0];
-          
-          // Usar un identificador temporal basado en la semana más antigua sin módulo
           moduleName = `__empty__${closestEmptyWeek?.weekNumber || week.weekNumber}`;
         } else {
-          // Nueva agrupación de semanas sin módulo
           moduleName = `__empty__${week.weekNumber}`;
         }
       }
-      
-      if (!moduleMap.has(moduleName)) {
-        moduleMap.set(moduleName, []);
-        moduleOrder.push(moduleName);
+
+      const key = num != null ? `__num__${num}__${moduleName}` : moduleName;
+      if (!moduleMap.has(key)) {
+        moduleMap.set(key, { weeks: [], moduleNumber: num });
+        moduleOrder.push(key);
       }
-      moduleMap.get(moduleName)!.push(week);
+      moduleMap.get(key)!.weeks.push(week);
     });
 
-    // Convertir a array y asignar nombres finales
     let moduleCounter = 1;
-    return moduleOrder.map((moduleKey) => {
-      const weeks = moduleMap.get(moduleKey)!;
-      const sortedWeeks = weeks.sort((a, b) => a.weekNumber - b.weekNumber);
-      
-      // Determinar el nombre final del módulo
+    const result = moduleOrder.map((moduleKey) => {
+      const { weeks, moduleNumber } = moduleMap.get(moduleKey)!;
+      const sortedWeeks = [...weeks].sort((a, b) => a.weekNumber - b.weekNumber);
+
       let displayName: string;
       if (moduleKey.startsWith('__empty__')) {
-        displayName = `Módulo ${moduleCounter}`;
+        displayName = moduleNumber != null ? `Módulo ${moduleNumber}` : `Módulo ${moduleCounter}`;
         moduleCounter++;
+      } else if (moduleKey.startsWith('__num__')) {
+        const namePart = moduleKey.replace(/^__num__\d+__/, '');
+        const useName = namePart && !namePart.startsWith('__empty__');
+        displayName = useName ? namePart : (moduleNumber != null ? `Módulo ${moduleNumber}` : `Módulo ${moduleCounter++}`);
       } else {
-        displayName = moduleKey;
+        displayName = moduleKey.startsWith('__empty__') ? (moduleNumber != null ? `Módulo ${moduleNumber}` : moduleKey) : moduleKey;
       }
-      
+
       return {
         moduleName: displayName,
         weeks: sortedWeeks,
-        moduleIndex: moduleCounter - 1
+        moduleIndex: moduleNumber ?? moduleCounter - 1,
+        moduleNumber
       };
     });
+
+    // Ordenar por moduleNumber cuando exista (respeta la organización de módulos)
+    result.sort((a, b) => {
+      const numA = a.moduleNumber != null ? a.moduleNumber : 9999;
+      const numB = b.moduleNumber != null ? b.moduleNumber : 9999;
+      if (numA !== numB) return numA - numB;
+      return 0;
+    });
+    return result;
   }, [logbook.weeklyContents]);
 
   // Auto-expandir el módulo de la semana seleccionada
@@ -330,19 +335,20 @@ const WeeklyPathSidebar = ({
               {/* Cabecera de módulo */}
               <button
                 onClick={() => toggleModule(moduleName)}
-                className='w-full p-3 text-left transition-colors flex items-center justify-between hover:bg-palette-stone/20 rounded-lg mx-1'
+                className='w-full py-3.5 px-3 text-left transition-colors flex items-center justify-between hover:bg-palette-stone/20 rounded-lg mx-1'
               >
-                <div className='flex items-center gap-2'>
+                <div className='flex items-center gap-2 min-w-0'>
                   <motion.div
                     animate={{ rotate: isModuleExpanded ? 90 : 0 }}
                     transition={{ duration: 0.2 }}
+                    className='flex-shrink-0'
                   >
-                    <ChevronDownIcon className='h-5 w-5 text-palette-stone flex-shrink-0' />
+                    <ChevronDownIcon className='h-5 w-5 text-palette-stone' />
                   </motion.div>
-                  <span className='text-sm font-semibold text-palette-cream font-montserrat'>
+                  <span className='text-base font-semibold text-palette-cream font-montserrat tracking-tight truncate'>
                     {displayModuleName}
                   </span>
-                  <span className='text-xs text-palette-stone font-montserrat font-light'>
+                  <span className='text-xs text-palette-stone font-montserrat font-light flex-shrink-0'>
                     ({weeks.length})
                   </span>
                 </div>

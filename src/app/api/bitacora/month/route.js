@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { verify } from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import connectDB from '../../../../config/connectDB';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
 import IndividualClass from '../../../../models/individualClassModel';
 import ModuleClass from '../../../../models/moduleClassModel';
+import Users from '../../../../models/userModel';
 
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
@@ -72,6 +74,24 @@ export async function GET(req) {
     const monthParam = searchParams.get('month');
     const yearParam = searchParams.get('year');
 
+    // Previsualizar por ID solo permitido para administradores
+    if (idParam) {
+      let decoded;
+      try {
+        decoded = verify(userToken, process.env.NEXTAUTH_SECRET);
+      } catch {
+        return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
+      }
+      const userId = decoded?.userId || decoded?._id || decoded?.id;
+      const user = await Users.findById(userId).select('rol').lean();
+      if (!user || user.rol !== 'Admin') {
+        return NextResponse.json(
+          { error: 'Solo administradores pueden previsualizar un camino por ID' },
+          { status: 403 }
+        );
+      }
+    }
+
     let logbook;
 
     // Si se proporciona un ID, buscar por ID directamente
@@ -130,16 +150,7 @@ export async function GET(req) {
     // Hidratar contenidos que solo tienen individualClassId o moduleClassId (traer videoUrl, videoName desde IndividualClass / ModuleClass)
     if (logbook.weeklyContents && logbook.weeklyContents.length > 0) {
       await hydrateWeeklyContents(logbook.weeklyContents);
-      // Liberar semana por fecha: si publishDate ya pasó, la semana está desbloqueada
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      for (const week of logbook.weeklyContents) {
-        const pub = week.publishDate ? new Date(week.publishDate) : null;
-        if (pub) {
-          pub.setHours(0, 0, 0, 0);
-          if (pub <= today) week.isUnlocked = true;
-        }
-      }
+      // No sobrescribir isUnlocked: se respeta el valor de la DB (lo setea el cron al publicar)
     }
 
     return NextResponse.json(

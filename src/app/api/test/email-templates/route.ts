@@ -175,8 +175,8 @@ export async function POST(req: NextRequest) {
         email: testEmail,
         name: 'Usuario de Prueba',
         dashboardUrl: 'https://mateomove.com/library',
-        telegramInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/',
-        whatsappInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/'
+        telegramInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/LgVResfArGjIn9qByXXUSo',
+        whatsappInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/LgVResfArGjIn9qByXXUSo'
       });
       results.push({
         emailType: 'WELCOME_MEMBERSHIP',

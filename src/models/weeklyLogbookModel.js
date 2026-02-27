@@ -126,6 +126,11 @@ const weeklyContentSchema = new mongoose.Schema({
     type: String, // Nombre del módulo al que pertenece esta semana
     default: ''
   },
+  moduleNumber: {
+    type: Number, // Número de módulo (1, 2, 3...) para ordenar y agrupar semanas
+    min: 1,
+    default: null
+  },
   weekTitle: {
     type: String, // Ej: "Semana 1: Fundamentos"
     default: ''
@@ -188,6 +193,12 @@ const weeklyContentSchema = new mongoose.Schema({
   }
 }, { _id: false });
 
+// Módulos del camino: se definen una vez (cantidad y nombres) y las semanas se asocian por moduleNumber
+const pathModuleSchema = new mongoose.Schema({
+  moduleNumber: { type: Number, required: true, min: 1, max: 4 },
+  name: { type: String, default: '' }
+}, { _id: false });
+
 // Schema principal para la Camino Mensual
 const weeklyLogbookSchema = new mongoose.Schema({
   month: {
@@ -207,6 +218,11 @@ const weeklyLogbookSchema = new mongoose.Schema({
   description: {
     type: String,
     default: ''
+  },
+  /** Módulos del camino (definidos antes): cantidad 1-4 y nombre de cada uno. Las semanas solo tienen moduleNumber. */
+  modules: {
+    type: [pathModuleSchema],
+    default: []
   },
   weeklyContents: [weeklyContentSchema],
   // Evita generar clases individuales duplicadas al publicar la última semana

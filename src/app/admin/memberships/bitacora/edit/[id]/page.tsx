@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 import AdmimDashboardLayout from '../../../../../../components/AdmimDashboardLayout';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
-import { ArrowLeftIcon, CalendarIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, CalendarIcon, PencilSquareIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { ClassModule } from '../../../../../../../typings';
 import { NO_SUBMODULE_SLUG } from '../../../../../../constants/moduleClassConstants';
@@ -39,11 +39,14 @@ export interface WeekContentItem {
   submoduleMode?: 'existing' | 'new';
   createdInWeeklyPathForm?: boolean;
   createdClassDescription?: string;
+  individualClassType?: string;
+  individualClassTags?: string;
 }
 
 interface WeekContent {
   weekNumber: number;
   moduleName?: string;
+  moduleNumber?: number;
   weekTitle: string;
   publishDate: string;
   isPublished: boolean;
@@ -65,6 +68,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
 
   const [classModules, setClassModules] = useState<ClassModule[]>([]);
   const [individualClasses, setIndividualClasses] = useState<{ _id: string; name: string }[]>([]);
+  const [classFilters, setClassFilters] = useState<{ id: number; name: string; values?: { id?: number; value: string; label: string }[] }[]>([]);
   const [moduleClassesCache, setModuleClassesCache] = useState<Record<string, { _id: string; name: string; videoUrl?: string; level?: number }[]>>({});
   const [creatingClass, setCreatingClass] = useState<string | null>(null);
   const [newSubmoduleName, setNewSubmoduleName] = useState<Record<string, string>>({});
@@ -73,10 +77,25 @@ export default function EditBitacoraPage({ params }: PageProps) {
   const [title, setTitle] = useState('Camino');
   const [description, setDescription] = useState('');
   const [isBaseBitacora, setIsBaseBitacora] = useState(false);
+  /** Módulos del camino: definidos antes; las semanas solo se asocian por moduleNumber. */
+  const [pathModules, setPathModules] = useState<{ number: number; name: string }[]>([{ number: 1, name: '' }]);
   const [weeks, setWeeks] = useState<WeekContent[]>([]);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const prevMonthRef = useRef<number>(month);
   const prevYearRef = useRef<number>(year);
+  /** Edición inline de clase creada en el camino (visibleInLibrary: false) */
+  const [editingCreatedClass, setEditingCreatedClass] = useState<{ weekIndex: number; contentIndex: number } | null>(null);
+  const [editingClassForm, setEditingClassForm] = useState<{
+    name: string;
+    description: string;
+    videoUrl: string;
+    videoId?: string;
+    level?: number;
+    materials?: string[];
+    type?: string;
+    tags?: string;
+  } | null>(null);
+  const [savingInlineClass, setSavingInlineClass] = useState(false);
 
   const emptyContentItem = (orden: number): WeekContentItem => ({
     contentType: 'moduleClass',
@@ -150,6 +169,14 @@ export default function EditBitacoraPage({ params }: PageProps) {
         setTitle(loadedLogbook.title || 'Camino');
         setDescription(loadedLogbook.description || '');
         setIsBaseBitacora(loadedLogbook.isBaseBitacora || false);
+        if (loadedLogbook.modules && Array.isArray(loadedLogbook.modules) && loadedLogbook.modules.length > 0) {
+          setPathModules(loadedLogbook.modules.map((m: { moduleNumber: number; name?: string }) => ({
+            number: Number(m.moduleNumber),
+            name: (m.name && String(m.name).trim()) || ''
+          })));
+        } else {
+          setPathModules([{ number: 1, name: '' }]);
+        }
 
         // Convertir a estructura con contents[] (nuevo formato o legacy)
         const formattedWeeks: WeekContent[] = (loadedLogbook.weeklyContents || []).map((week: any) => {
@@ -161,10 +188,10 @@ export default function EditBitacoraPage({ params }: PageProps) {
           if (week.contents && Array.isArray(week.contents) && week.contents.length > 0) {
             contents = week.contents.map((c: any, idx: number) => ({
               contentType: ['moduleClass', 'individualClass', 'audio'].includes(c.contentType) ? c.contentType : 'moduleClass',
-              individualClassId: c.individualClassId ? String(c.individualClassId) : '',
+              individualClassId: c.individualClassId ? String(c.individualClassId) : undefined,
               moduleClassId: c.moduleClassId ? String(c.moduleClassId) : undefined,
-              moduleClassSource: c.moduleClassId ? 'existing' : 'new',
-              individualClassSource: c.individualClassId ? 'existing' : 'new',
+              moduleClassSource: c.moduleClassId ? ('existing' as const) : ('new' as const),
+              individualClassSource: c.individualClassId ? ('existing' as const) : ('new' as const),
               videoUrl: c.videoUrl || '',
               videoId: c.videoId,
               videoName: c.videoName || '',
@@ -178,7 +205,14 @@ export default function EditBitacoraPage({ params }: PageProps) {
               moduleId: c.moduleId ? String(c.moduleId) : '',
               submoduleSlug: c.submoduleSlug || '',
               submoduleName: c.submoduleName || '',
-              orden: idx
+              orden: idx,
+              createdInWeeklyPathForm: !!c.createdInWeeklyPathForm,
+              createdClassDescription: c.createdClassDescription || undefined,
+              individualClassType: c.individualClassType,
+              individualClassTags: c.individualClassTags,
+              submoduleMode: c.submoduleMode || 'existing',
+              newModuleClassName: c.newModuleClassName,
+              newModuleClassMaterials: Array.isArray(c.newModuleClassMaterials) ? c.newModuleClassMaterials : undefined
             }));
           } else {
             contents = [{
@@ -201,6 +235,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
           return {
             weekNumber: week.weekNumber,
             moduleName: week.moduleName || '',
+            moduleNumber: week.moduleNumber,
             weekTitle: week.weekTitle || `Semana ${week.weekNumber}`,
             publishDate,
             isPublished: week.isPublished || false,
@@ -228,6 +263,12 @@ export default function EditBitacoraPage({ params }: PageProps) {
       .then((r) => r.ok ? r.json() : [])
       .then((data) => setClassModules(Array.isArray(data) ? data : []))
       .catch(() => setClassModules([]));
+  }, []);
+  useEffect(() => {
+    fetch('/api/individualClass/getClassTypes', { credentials: 'include', cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => setClassFilters(Array.isArray(data) ? data : []))
+      .catch(() => setClassFilters([]));
   }, []);
   useEffect(() => {
     fetch('/api/individualClass/getClasses?includeUnpublished=1', { credentials: 'include', cache: 'no-store' })
@@ -401,13 +442,27 @@ export default function EditBitacoraPage({ params }: PageProps) {
       toast.error('Nombre y Video URL son requeridos');
       return;
     }
+    const typeFilter = (c.individualClassType && c.individualClassType.trim()) || undefined;
+    if (!typeFilter) {
+      toast.error('Selecciona el tipo (filtro) de la clase');
+      return;
+    }
+    const tagsStr = (c.individualClassTags && c.individualClassTags.trim()) || '';
+    const tags = tagsStr ? tagsStr.split(',').map((s) => s.trim()).filter(Boolean) : [];
     setCreatingClass(`individual-${weekIndex}-${contentIndex}`);
     try {
       const r = await fetch('/api/individualClass/createFromWeeklyPath', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ name, description, videoUrl, userEmail: auth.user?.email })
+        body: JSON.stringify({
+          name,
+          description,
+          videoUrl,
+          userEmail: auth.user?.email,
+          type: typeFilter,
+          tags
+        })
       });
       if (!r.ok) {
         const d = await r.json().catch(() => ({}));
@@ -467,6 +522,111 @@ export default function EditBitacoraPage({ params }: PageProps) {
     }
   };
 
+  const startEditCreatedClass = async (weekIndex: number, contentIndex: number) => {
+    const c = weeks[weekIndex].contents[contentIndex];
+    const isModule = !!c.moduleClassId;
+    const id = isModule ? c.moduleClassId : c.individualClassId;
+    if (!id) return;
+    try {
+      const url = isModule ? `/api/module-classes/${id}` : `/api/individualClass/getByObjectId/${id}`;
+      const r = await fetch(url, { credentials: 'include', cache: 'no-store' });
+      if (!r.ok) throw new Error('No se pudo cargar la clase');
+      const data = await r.json();
+      if (isModule) {
+        setEditingClassForm({
+          name: data.name || '',
+          description: data.description || '',
+          videoUrl: data.videoUrl || '',
+          videoId: data.videoId || '',
+          level: data.level != null ? Number(data.level) : 1,
+          materials: Array.isArray(data.materials) ? [...data.materials] : []
+        });
+      } else {
+        setEditingClassForm({
+          name: data.name || '',
+          description: data.description || '',
+          videoUrl: data.link ? `https://vimeo.com/${data.link}` : '',
+          videoId: data.link || '',
+          type: data.type || '',
+          tags: Array.isArray(data.tags) ? data.tags.map((t: { title?: string }) => t?.title).filter(Boolean).join(', ') : ''
+        });
+      }
+      setEditingCreatedClass({ weekIndex, contentIndex });
+    } catch (err: any) {
+      toast.error(err.message || 'Error al cargar la clase');
+    }
+  };
+
+  const saveInlineClassEdit = async () => {
+    if (!editingCreatedClass || !editingClassForm) return;
+    const { weekIndex, contentIndex } = editingCreatedClass;
+    const c = weeks[weekIndex].contents[contentIndex];
+    const isModule = !!c.moduleClassId;
+    const id = isModule ? c.moduleClassId : c.individualClassId;
+    if (!id) return;
+    setSavingInlineClass(true);
+    try {
+      if (isModule) {
+        const r = await fetch(`/api/module-classes/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            name: editingClassForm.name.trim(),
+            description: editingClassForm.description.trim(),
+            videoUrl: editingClassForm.videoUrl.trim() || undefined,
+            videoId: editingClassForm.videoId?.trim() || undefined,
+            level: editingClassForm.level != null ? Math.min(10, Math.max(1, editingClassForm.level)) : undefined,
+            materials: editingClassForm.materials || []
+          })
+        });
+        if (!r.ok) {
+          const d = await r.json().catch(() => ({}));
+          throw new Error(d.error || 'Error al actualizar');
+        }
+        setWeeks((prev) => {
+          const next = [...prev];
+          const contents = [...(next[weekIndex].contents || [])];
+          contents[contentIndex] = { ...contents[contentIndex], videoName: editingClassForm!.name.trim(), createdClassDescription: editingClassForm!.description.trim() };
+          next[weekIndex] = { ...next[weekIndex], contents };
+          return next;
+        });
+      } else {
+        const r = await fetch(`/api/individualClass/update/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            name: editingClassForm.name.trim(),
+            description: editingClassForm.description.trim(),
+            link: editingClassForm.videoId?.trim() || editingClassForm.videoUrl?.trim(),
+            videoUrl: editingClassForm.videoUrl?.trim(),
+            type: editingClassForm.type?.trim(),
+            tags: editingClassForm.tags?.trim() ? editingClassForm.tags.split(',').map((s) => s.trim()).filter(Boolean) : []
+          })
+        });
+        if (!r.ok) {
+          const d = await r.json().catch(() => ({}));
+          throw new Error(d.error || 'Error al actualizar');
+        }
+        setWeeks((prev) => {
+          const next = [...prev];
+          const contents = [...(next[weekIndex].contents || [])];
+          contents[contentIndex] = { ...contents[contentIndex], videoName: editingClassForm!.name.trim(), createdClassDescription: editingClassForm!.description.trim() };
+          next[weekIndex] = { ...next[weekIndex], contents };
+          return next;
+        });
+      }
+      toast.success('Clase actualizada');
+      setEditingCreatedClass(null);
+      setEditingClassForm(null);
+    } catch (err: any) {
+      toast.error(err.message || 'Error al guardar');
+    } finally {
+      setSavingInlineClass(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
@@ -512,12 +672,6 @@ export default function EditBitacoraPage({ params }: PageProps) {
               setSubmitting(false);
               return;
             }
-          } else if (tipo === 'audio') {
-            if (!c.audioUrl?.trim()) {
-              toast.error(`Semana ${i + 1}, contenido ${j + 1}: URL del audio es requerida`);
-              setSubmitting(false);
-              return;
-            }
           }
         }
       }
@@ -529,9 +683,10 @@ export default function EditBitacoraPage({ params }: PageProps) {
         description,
         userEmail: auth.user?.email,
         isBaseBitacora,
+        modules: pathModules.map((m) => ({ moduleNumber: m.number, name: (m.name || '').trim() })),
         weeklyContents: weeks.map((week) => ({
           weekNumber: week.weekNumber,
-          moduleName: week.moduleName?.trim() || '',
+          moduleNumber: week.moduleNumber != null ? Number(week.moduleNumber) : undefined,
           weekTitle: week.weekTitle || `Semana ${week.weekNumber}`,
           publishDate: new Date(week.publishDate).toISOString(),
           isPublished: week.isPublished,
@@ -669,6 +824,40 @@ export default function EditBitacoraPage({ params }: PageProps) {
               />
             </div>
 
+            <div className="border border-gray-200 rounded-xl p-6 bg-gray-50">
+              <h2 className="text-lg font-semibold text-gray-900 mb-3 font-montserrat">Módulos del camino</h2>
+              <p className="text-sm text-gray-600 mb-4 font-montserrat">Definí la cantidad de módulos y sus nombres. Luego asociá cada semana a un módulo por número.</p>
+              <div className="flex flex-wrap items-end gap-4">
+                <div className="w-40">
+                  <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Cantidad de módulos</label>
+                  <select
+                    value={pathModules.length}
+                    onChange={(e) => {
+                      const n = Number(e.target.value);
+                      setPathModules((prev) => Array.from({ length: n }, (_, i) => prev[i] ?? { number: i + 1, name: '' }));
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg font-montserrat bg-white text-gray-900 text-sm"
+                  >
+                    {[1, 2, 3, 4].map((n) => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
+                  </select>
+                </div>
+                {pathModules.map((m, idx) => (
+                  <div key={m.number} className="flex-1 min-w-[180px]">
+                    <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Nombre módulo {m.number}</label>
+                    <input
+                      type="text"
+                      value={m.name}
+                      onChange={(e) => setPathModules((prev) => prev.map((x, i) => i === idx ? { ...x, name: e.target.value } : x))}
+                      placeholder={`Ej: Módulo ${m.number}`}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg font-montserrat bg-white text-gray-900 text-sm"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Semanas con contenidos */}
             <div className="space-y-8">
               {weeks.map((week, weekIndex) => (
@@ -693,6 +882,21 @@ export default function EditBitacoraPage({ params }: PageProps) {
                         className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat text-black bg-white text-sm"
                       />
                     </div>
+                    <div className="min-w-[200px]">
+                      <label className="block text-xs font-medium text-gray-600 mb-0.5 font-montserrat">Módulo</label>
+                      <select
+                        value={week.moduleNumber ?? ''}
+                        onChange={(e) => updateWeek(weekIndex, 'moduleNumber', e.target.value === '' ? undefined : Number(e.target.value))}
+                        className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-montserrat bg-white text-gray-900 text-sm"
+                      >
+                        <option value="">—</option>
+                        {pathModules.map((m) => (
+                          <option key={m.number} value={m.number}>
+                            {m.name ? `Módulo ${m.number}: ${m.name}` : `Módulo ${m.number}`}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                     <div className="flex items-center gap-2 text-black font-montserrat">
                       <CalendarIcon className="w-5 h-5" />
                       <input
@@ -715,6 +919,173 @@ export default function EditBitacoraPage({ params }: PageProps) {
 
                   {(week.contents || []).map((content, contentIndex) => {
                     const tipo = (content.contentType || 'moduleClass') as ContentType;
+                    if (content.createdInWeeklyPathForm && (content.moduleClassId || content.individualClassId)) {
+                      const isModule = !!content.moduleClassId;
+                      const isEditingThis = editingCreatedClass?.weekIndex === weekIndex && editingCreatedClass?.contentIndex === contentIndex;
+                      if (isEditingThis && editingClassForm) {
+                        return (
+                          <div key={contentIndex} className="mb-6 p-4 bg-white rounded-lg border border-gray-300 shadow-sm">
+                            <div className="flex justify-between items-center mb-4">
+                              <span className="text-sm font-medium text-black">Editar clase (creada en este camino)</span>
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={saveInlineClassEdit}
+                                  disabled={savingInlineClass || !editingClassForm.name?.trim()}
+                                  className="px-3 py-1.5 bg-[#4F7CCF] text-white rounded-lg text-sm font-medium hover:bg-[#234C8C] disabled:opacity-50"
+                                >
+                                  {savingInlineClass ? 'Guardando...' : 'Guardar cambios'}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => { setEditingCreatedClass(null); setEditingClassForm(null); }}
+                                  className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Nombre *</label>
+                                <input
+                                  type="text"
+                                  value={editingClassForm.name}
+                                  onChange={(e) => setEditingClassForm((f) => f ? { ...f, name: e.target.value } : null)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Descripción</label>
+                                <textarea
+                                  value={editingClassForm.description}
+                                  onChange={(e) => setEditingClassForm((f) => f ? { ...f, description: e.target.value } : null)}
+                                  rows={2}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">URL del video</label>
+                                <input
+                                  type="url"
+                                  value={editingClassForm.videoUrl}
+                                  onChange={(e) => setEditingClassForm((f) => f ? { ...f, videoUrl: e.target.value } : null)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">ID de video (Vimeo)</label>
+                                <input
+                                  type="text"
+                                  value={editingClassForm.videoId ?? ''}
+                                  onChange={(e) => setEditingClassForm((f) => f ? { ...f, videoId: e.target.value } : null)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                                />
+                              </div>
+                              {isModule && editingClassForm.level != null && (
+                                <>
+                                  <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Nivel (1-10)</label>
+                                    <select
+                                      value={editingClassForm.level}
+                                      onChange={(e) => setEditingClassForm((f) => f ? { ...f, level: Number(e.target.value) } : null)}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                                    >
+                                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                                        <option key={n} value={n}>{n}</option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                  <div className="md:col-span-2">
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Materiales</label>
+                                    <div className="flex flex-wrap gap-3">
+                                      {['baston', 'banda elastica', 'banco', 'pelota'].map((mat) => {
+                                        const list = editingClassForm.materials || [];
+                                        const checked = list.includes(mat);
+                                        return (
+                                          <label key={mat} className="flex items-center gap-1.5 text-sm text-black">
+                                            <input
+                                              type="checkbox"
+                                              checked={checked}
+                                              onChange={() => setEditingClassForm((f) => {
+                                                if (!f) return null;
+                                                const next = checked ? list.filter((x) => x !== mat) : [...list, mat];
+                                                return { ...f, materials: next };
+                                              })}
+                                              className="rounded border-gray-300 text-orange-600"
+                                            />
+                                            <span className="capitalize">{mat}</span>
+                                          </label>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+                              {!isModule && (
+                                <>
+                                  <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Tipo (filtro)</label>
+                                    <select
+                                      value={editingClassForm.type ?? ''}
+                                      onChange={(e) => setEditingClassForm((f) => f ? { ...f, type: e.target.value } : null)}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                                    >
+                                      <option value="">Seleccionar tipo</option>
+                                      {(classFilters[0]?.values ?? []).map((v: { value: string; label: string }) => (
+                                        <option key={v.value} value={v.value}>{v.label}</option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Tags (separados por comas)</label>
+                                    <input
+                                      type="text"
+                                      value={editingClassForm.tags ?? ''}
+                                      onChange={(e) => setEditingClassForm((f) => f ? { ...f, tags: e.target.value } : null)}
+                                      placeholder="Ej: principiante, fuerza"
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                                    />
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      }
+                      return (
+                        <div key={contentIndex} className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm font-medium text-black">Clase creada en este camino (solo visible al publicar última semana)</span>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => startEditCreatedClass(weekIndex, contentIndex)}
+                                className="inline-flex items-center gap-1 px-2 py-1.5 text-[#4F7CCF] hover:bg-[#4F7CCF]/10 rounded-lg text-sm font-medium"
+                                title="Editar clase"
+                              >
+                                <PencilSquareIcon className="w-4 h-4" />
+                                Editar clase
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => deleteCreatedClassAndRemove(weekIndex, contentIndex)}
+                                className="p-1.5 text-red-600 hover:bg-red-50 rounded-full"
+                                title="Eliminar clase de la base de datos y quitar del contenido"
+                              >
+                                <XMarkIcon className="w-5 h-5" />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="text-black">
+                            <p className="font-medium">{content.videoName || 'Clase'}</p>
+                            {content.createdClassDescription && (
+                              <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{content.createdClassDescription}</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    }
                     return (
                     <div key={contentIndex} className="mb-6 p-4 bg-white rounded-lg border border-gray-200">
                       <div className="flex justify-between items-center mb-3">
@@ -741,28 +1112,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
                         </div>
                       </div>
 
-                      {(content.createdInWeeklyPathForm && (content.moduleClassId || content.individualClassId)) && (
-                        <div className="mt-3 p-4 bg-gray-100 rounded-lg border border-gray-300">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <p className="font-medium text-black">{content.videoName || 'Clase'}</p>
-                              {(content.createdClassDescription || content.audioText) && (
-                                <p className="text-sm text-gray-700 mt-1">{content.createdClassDescription || content.audioText}</p>
-                              )}
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => deleteCreatedClassAndRemove(weekIndex, contentIndex)}
-                              className="p-1.5 text-red-600 hover:bg-red-50 rounded"
-                              title="Eliminar clase de la base de datos y quitar del contenido"
-                            >
-                              <XMarkIcon className="w-5 h-5" />
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-                      {!content.createdInWeeklyPathForm && tipo === 'moduleClass' && (
+                      {tipo === 'moduleClass' && (
                         <div className="space-y-4">
                           <div className="flex items-center gap-4">
                             <span className="text-xs font-medium text-black">Origen:</span>
@@ -824,7 +1174,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
                         </div>
                       )}
 
-                      {!content.createdInWeeklyPathForm && tipo === 'individualClass' && (
+                      {tipo === 'individualClass' && (
                         <div className="space-y-4">
                           <div className="flex items-center gap-4">
                             <span className="text-xs font-medium text-black">Origen:</span>
@@ -860,73 +1210,25 @@ export default function EditBitacoraPage({ params }: PageProps) {
                               <div><label className="block text-xs font-medium text-gray-600 mb-1">Nombre clase *</label><input type="text" value={content.videoName || ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'videoName', e.target.value)} placeholder="Nombre de la clase" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
                               <div><label className="block text-xs font-medium text-gray-600 mb-1">Video URL (Vimeo) *</label><input type="url" value={content.videoUrl} onChange={(e) => updateContent(weekIndex, contentIndex, 'videoUrl', e.target.value)} placeholder="https://vimeo.com/..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
                               <div className="md:col-span-2"><label className="block text-xs font-medium text-gray-600 mb-1">Descripción *</label><textarea value={content.audioText || ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'audioText', e.target.value)} placeholder="Descripción de la clase" rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
-                              <div><button type="button" disabled={creatingClass === `individual-${weekIndex}-${contentIndex}` || !(content.videoName || content.videoUrl)?.trim() || !content.videoUrl?.trim()} onClick={() => createIndividualClassAndUse(weekIndex, contentIndex)} className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">{creatingClass === `individual-${weekIndex}-${contentIndex}` ? 'Creando...' : 'Crear clase y usar aquí'}</button>{content.individualClassId && <span className="ml-2 text-sm text-green-600">Clase asignada</span>}</div>
+                              <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Tipo (filtro) *</label>
+                                <select value={content.individualClassType ?? ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'individualClassType', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm">
+                                  <option value="">Seleccionar tipo</option>
+                                  {(classFilters[0]?.values ?? []).map((v: { value: string; label: string }) => (
+                                    <option key={v.value} value={v.value}>{v.label}</option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Tags (separados por comas)</label>
+                                <input type="text" value={content.individualClassTags ?? ''} onChange={(e) => updateContent(weekIndex, contentIndex, 'individualClassTags', e.target.value)} placeholder="Ej: principiante, fuerza, movilidad" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" />
+                              </div>
+                              <div><button type="button" disabled={creatingClass === `individual-${weekIndex}-${contentIndex}` || !(content.videoName || content.videoUrl)?.trim() || !content.videoUrl?.trim() || !(content.individualClassType ?? '').trim()} onClick={() => createIndividualClassAndUse(weekIndex, contentIndex)} className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">{creatingClass === `individual-${weekIndex}-${contentIndex}` ? 'Creando...' : 'Crear clase y usar aquí'}</button>{content.individualClassId && <span className="ml-2 text-sm text-green-600">Clase asignada</span>}</div>
                             </div>
                           )}
                         </div>
                       )}
 
-                      {tipo === 'audio' && (
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Audio URL *</label>
-                            <input
-                              type="url"
-                              value={content.audioUrl || ''}
-                              onChange={(e) => updateContent(weekIndex, contentIndex, 'audioUrl', e.target.value)}
-                              placeholder="https://..."
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
-                            />
-                            <label className="block text-xs font-medium text-gray-600 mb-1 mt-2">Título audio</label>
-                            <input
-                              type="text"
-                              value={content.audioTitle || ''}
-                              onChange={(e) => updateContent(weekIndex, contentIndex, 'audioTitle', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Texto / reflexión (opcional)</label>
-                            <textarea
-                              value={content.audioText || ''}
-                              onChange={(e) => updateContent(weekIndex, contentIndex, 'audioText', e.target.value)}
-                              rows={3}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      {(tipo === 'moduleClass' || tipo === 'individualClass') && !content.createdInWeeklyPathForm && (
-                        <div className="mt-3 grid md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Audio URL (opcional)</label>
-                            <input
-                              type="url"
-                              value={content.audioUrl || ''}
-                              onChange={(e) => updateContent(weekIndex, contentIndex, 'audioUrl', e.target.value)}
-                              placeholder="https://..."
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
-                            />
-                            <label className="block text-xs font-medium text-gray-600 mb-1 mt-1">Título audio</label>
-                            <input
-                              type="text"
-                              value={content.audioTitle || ''}
-                              onChange={(e) => updateContent(weekIndex, contentIndex, 'audioTitle', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Texto / reflexión (opcional)</label>
-                            <textarea
-                              value={content.audioText || ''}
-                              onChange={(e) => updateContent(weekIndex, contentIndex, 'audioText', e.target.value)}
-                              rows={2}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
-                            />
-                          </div>
-                        </div>
-                      )}
                     </div>
                   ); })}
 
