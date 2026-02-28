@@ -16,7 +16,7 @@ import { parseCookies } from 'nookies';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { routes } from '../../../constants/routes';
 
 interface User {

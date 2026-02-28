@@ -14,7 +14,7 @@ import {
   PencilIcon,
   PlayIcon
 } from '@heroicons/react/24/outline';
-import { toast } from 'react-toastify';
+import { toast } from '../../../../../hooks/useToast';
 
 const ViewProgramPage = () => {
   const router = useRouter();
@@ -124,11 +124,11 @@ const ViewProgramPage = () => {
               <span>Ejecutar Automatización</span>
             </button>
             <button
-              onClick={() => router.push(`/admin/transformational-programs/edit/${params.id}`)}
+              onClick={() => router.push('/admin/transformational-programs')}
               className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded flex items-center space-x-2"
             >
               <PencilIcon className="w-4 h-4" />
-              <span>Editar</span>
+              <span>Volver</span>
             </button>
           </div>
         </div>

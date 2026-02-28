@@ -3,23 +3,43 @@ import connectDB from '../../../../config/connectDB';
 import IndividualClass from '../../../../models/individualClassModel';
 import { revalidateTag } from 'next/cache';
 
-connectDB();
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const search = searchParams.get('search') || "";
+  const search = searchParams.get('search') || '';
+  const populateModule = searchParams.get('populateModule') === '1';
+  const moduleId = searchParams.get('moduleId') || '';
+  const submoduleSlug = searchParams.get('submoduleSlug') || '';
+  const includeUnpublished = searchParams.get('includeUnpublished') === '1';
 
   try {
-    let classes;
-    if (search !== "") {
-      classes = await IndividualClass.find({ name: { $regex: search, $options: 'i' } });
-    } else {
-      classes = await IndividualClass.find({});
+    await connectDB();
+    let query = {};
+    if (search !== '') {
+      query.name = { $regex: search, $options: 'i' };
     }
+    if (moduleId) {
+      const mongoose = await import('mongoose');
+      if (mongoose.default.Types.ObjectId.isValid(moduleId)) {
+        query.moduleId = new mongoose.default.Types.ObjectId(moduleId);
+      }
+    }
+    if (submoduleSlug) {
+      query.submoduleSlug = submoduleSlug;
+    }
+    if (!includeUnpublished) {
+      query.visibleInLibrary = { $ne: false };
+    }
+    let classes = await IndividualClass.find(query)
+      .populate(populateModule ? 'moduleId' : null)
+      .lean();
 
-    revalidateTag('classes'); // Invalidar el caché relacionado con las clases
+    // No asignar un módulo por defecto a las clases sin moduleId: así se distinguen
+    // las "clases individuales" (sin moduleId) de las que pertenecen a un módulo.
+
+    revalidateTag('classes');
     return NextResponse.json(classes, {
       status: 200,
       headers: {

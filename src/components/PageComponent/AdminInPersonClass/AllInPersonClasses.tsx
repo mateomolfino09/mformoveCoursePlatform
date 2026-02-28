@@ -5,7 +5,7 @@ import { InPersonClass, VirtualClass } from '../../../../typings';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../hooks/useAuth';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { 
   PencilIcon, 
   TrashIcon, 

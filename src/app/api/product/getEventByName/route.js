@@ -59,7 +59,6 @@ export async function GET(req) {
       // Listar todos los eventos disponibles para debug (solo en desarrollo)
       if (process.env.NODE_ENV === 'development') {
         const allEvents = await Product.find({ tipo: 'evento' }).select('nombre activo').lean();
-        console.log('Eventos disponibles:', allEvents);
       }
       
       return NextResponse.json(

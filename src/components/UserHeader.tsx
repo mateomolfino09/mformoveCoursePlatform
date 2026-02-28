@@ -42,7 +42,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
   const [domLoaded, setDomLoaded] = useState(false);
   const snap = useSnapshot(state);
   const headerScroll = useAppSelector(
-    (state: any) => state.headerHomeReducer.value.scrollHeader
+    (state: any) => state.headerLibraryReducer.value.scrollHeader
     );
 
   useEffect(() => {
@@ -67,7 +67,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
 
   useEffect(() => {
     setDomLoaded(true);
-      where === "home" ?
+      where === "library" ?
       headerAnimation.start({
         y: 100,
         transition: {
@@ -98,10 +98,10 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
             opacity: 1
           }}
           animate={headerAnimation}
-          className={`bg-transparent fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${(isScrolled || headerScroll) && 'bg-white/80'} ${where === "home" ? "mt-28" : ""}`}
+          className={`bg-transparent fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${(isScrolled || headerScroll) && 'bg-white/80'} ${where === "library" ? "mt-28" : ""}`}
         >
           <div className=''>
-            <Link href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/home' : '/'}>
+            <Link href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/library' : '/'}>
             <>
               {showNav ? (
                 <>

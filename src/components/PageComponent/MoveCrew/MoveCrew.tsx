@@ -3,12 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import FooterProfile from '../Profile/FooterProfile';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
-import { toggleScroll } from '../../../redux/features/headerHomeSlice';
+import { toggleScroll } from '../../../redux/features/headerLibrarySlice';
+import { useAuth } from '../../../hooks/useAuth';
 import { Plan } from '../../../../typings';
 import MoveCrewHero from './MoveCrewHero';
 import MoveCrewHighlights from './MoveCrewHighlights';
-import MoveCrewMethodVideo from './MoveCrewMethodVideo';
-import MoveCrewIsForYou from './MoveCrewIsForYou';
 import MoveCrewCommunitySlider from './MoveCrewCommunitySlider';
 import MoveCrewTestimonials from './MoveCrewTestimonials';
 import MoveCrewResultsSlider from './MoveCrewResultsSlider';
@@ -18,6 +17,8 @@ import MoveCrewStructure from './MoveCrewStructure';
 import MoveCrewFAQ from './MoveCrewFAQ';
 import MoveCrewCTA from './MoveCrewCTA';
 import PromocionFooter from '../Membership/PromocionFooter';
+import MoveCrewMobileBottomBar, { MoveCrewBottomBarButtons } from './MoveCrewMobileBottomBar';
+import MoveCrewWhatWeTeach from './MoveCrewWhatWeTeach';
 
 interface Promocion {
   _id: string;
@@ -36,6 +37,7 @@ interface MoveCrewProps {
 
 const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
   const dispatch = useAppDispatch();
+  const auth = useAuth();
   const [promocionActiva, setPromocionActiva] = useState<Promocion | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -48,11 +50,24 @@ const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
     const el = scrollContainerRef.current;
     if (!el) return;
 
+    let lastScrollTop = el.scrollTop;
+    let rafId: number | null = null;
+
     const emitScrollEvent = () => {
+      const scrollTop = el.scrollTop;
+      
+      // Siempre emitir cuando el scroll llega a 0 o cuando cambia significativamente
+      const isAtTop = scrollTop === 0;
+      const hasChanged = Math.abs(scrollTop - lastScrollTop) >= 1;
+      
+      if (!isAtTop && !hasChanged) return;
+      
+      lastScrollTop = scrollTop;
+      
       window.dispatchEvent(
         new CustomEvent('movecrew-scroll', {
           detail: {
-            scrollTop: el.scrollTop,
+            scrollTop: scrollTop,
             scrollHeight: el.scrollHeight,
             clientHeight: el.clientHeight,
           },
@@ -60,12 +75,27 @@ const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
       );
     };
 
-    // Emitir una vez al montar para establecer el estado inicial
-    emitScrollEvent();
+    const handleScroll = () => {
+      // Usar requestAnimationFrame para optimizar
+      if (rafId !== null) return;
+      
+      rafId = requestAnimationFrame(() => {
+        emitScrollEvent();
+        rafId = null;
+      });
+    };
 
-    el.addEventListener('scroll', emitScrollEvent, { passive: true });
+    // Emitir una vez al montar para establecer el estado inicial
+    const timeoutId = setTimeout(() => {
+      emitScrollEvent();
+    }, 100);
+
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    
     return () => {
-      el.removeEventListener('scroll', emitScrollEvent);
+      clearTimeout(timeoutId);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      el.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -106,13 +136,10 @@ const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
         {/* 2. Highlights - Valor inmediato (qué recibís) */}
         <MoveCrewHighlights />
         
-        {/* 2.5. Method Video - Demostración del método (después de valor) */}
-        <MoveCrewMethodVideo />
+        {/* 2.5. Lo que enseñamos - Disciplinas (fotos de Index) */}
+        <MoveCrewWhatWeTeach />
         
-        {/* 3. IsForYou - Calificación temprana (filtra antes de precios) */}
-        <MoveCrewIsForYou />
-        
-        {/* 3.5. Community Slider - Refuerzo social (después de identificación) */}
+        {/* 3. Community Slider - Refuerzo social */}
         <MoveCrewCommunitySlider />
         
         {/* 4. Testimonials - Prueba social (construye confianza) */}
@@ -137,11 +164,19 @@ const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
         <MoveCrewCTA />
         
         <FooterProfile />
-        {promocionActiva && (
+        {promocionActiva && !auth.user?.subscription?.active && (
           <div className="pb-24 md:pb-28">
-            <PromocionFooter promocion={promocionActiva} onCtaClick={handlePromocionClick} variant="movecrew" plans={plans} />
+            <PromocionFooter
+              promocion={promocionActiva}
+              onCtaClick={handlePromocionClick}
+              variant="movecrew"
+              plans={plans}
+              rightActions={<MoveCrewBottomBarButtons />}
+            />
           </div>
         )}
+        {/* En móvil sin descuento: barra fija con Empezar Camino + Menú centrada a la derecha */}
+        {(!promocionActiva || auth.user?.subscription?.active) && <MoveCrewMobileBottomBar />}
       </MainSideBar>
     </div>
   );

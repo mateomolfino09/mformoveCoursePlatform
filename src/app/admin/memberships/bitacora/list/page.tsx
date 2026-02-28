@@ -6,19 +6,48 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
-import { ArrowLeftIcon, CalendarIcon, CheckCircleIcon, ClockIcon, ChevronDownIcon, VideoCameraIcon, MusicalNoteIcon, DocumentTextIcon, EyeIcon, XMarkIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowTopRightOnSquareIcon, CalendarIcon, CheckCircleIcon, ClockIcon, ChevronDownIcon, VideoCameraIcon, MusicalNoteIcon, DocumentTextIcon, EyeIcon, XMarkIcon, PencilIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactPlayer from 'react-player';
 
+/** Ítem de contenido dentro de una semana (clase de módulo, clase individual o audio) */
+interface WeekContentItem {
+  contentType?: 'moduleClass' | 'individualClass' | 'audio';
+  moduleClassId?: string;
+  individualClassId?: string;
+  videoUrl?: string;
+  videoId?: string;
+  videoName?: string;
+  audioUrl?: string;
+  audioTitle?: string;
+  audioText?: string;
+  submoduleName?: string;
+  orden?: number;
+}
+
+/** Clase individual devuelta por getClasses (para previsualizar cuando no hay videoUrl en el ítem) */
+interface IndividualClassForPreview {
+  _id: string;
+  name?: string;
+  link?: string;
+  html?: string;
+}
+
 interface WeeklyContent {
   weekNumber: number;
-  videoUrl: string;
-  videoId?: string;
-  audioUrl: string;
-  text: string;
+  weekTitle?: string;
+  moduleNumber?: number;
+  moduleName?: string;
   publishDate: string;
   isPublished: boolean;
+  /** Nuevo modelo: varios contenidos por semana */
+  contents?: WeekContentItem[];
+  /** Legacy: un video/audio/texto por semana */
+  videoUrl?: string;
+  videoId?: string;
+  audioUrl?: string;
+  text?: string;
 }
 
 interface Logbook {
@@ -39,8 +68,23 @@ const BitacoraListPage = () => {
   const [logbooks, setLogbooks] = useState<Logbook[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [expandedLogbookId, setExpandedLogbookId] = useState<string | null>(null);
-  const [previewingVideo, setPreviewingVideo] = useState<{ logbookId: string; weekIndex: number; url: string } | null>(null);
-  const [previewingAudio, setPreviewingAudio] = useState<{ logbookId: string; weekIndex: number; url: string } | null>(null);
+  const [previewingVideo, setPreviewingVideo] = useState<{ logbookId: string; weekIndex: number; contentIndex?: number; url: string } | null>(null);
+  const [previewingAudio, setPreviewingAudio] = useState<{ logbookId: string; weekIndex: number; contentIndex?: number; url: string } | null>(null);
+  const [loadingIndividualPreview, setLoadingIndividualPreview] = useState<string | null>(null); // 'logbookId-weekIndex-contentIndex'
+
+  const fetchIndividualClassVideoUrl = async (individualClassId: string): Promise<string | null> => {
+    try {
+      const res = await fetch('/api/individualClass/getClasses?includeUnpublished=1', { credentials: 'include', cache: 'no-store' });
+      if (!res.ok) return null;
+      const classes: IndividualClassForPreview[] = await res.json();
+      const cls = Array.isArray(classes) ? classes.find((c) => c._id === individualClassId) : null;
+      if (!cls?.link) return null;
+      const link = String(cls.link).trim();
+      return /^\d+$/.test(link) ? `https://vimeo.com/${link}` : link.includes('vimeo.com') ? link : `https://vimeo.com/${link}`;
+    } catch {
+      return null;
+    }
+  };
 
   const monthNames = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -80,18 +124,18 @@ const BitacoraListPage = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Error al obtener las bitácoras');
+        throw new Error('Error al obtener las caminos');
       }
 
       const data = await response.json();
       if (data.success) {
         setLogbooks(data.logbooks || []);
       } else {
-        setError(data.error || 'Error al cargar las bitácoras');
+        setError(data.error || 'Error al cargar las caminos');
       }
     } catch (err: any) {
       console.error('Error fetching logbooks:', err);
-      setError(err.message || 'Error al cargar las bitácoras');
+      setError(err.message || 'Error al cargar las caminos');
     } finally {
       setLoading(false);
     }
@@ -126,7 +170,7 @@ const BitacoraListPage = () => {
     return (
       <AdmimDashboardLayout>
         <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
         </div>
       </AdmimDashboardLayout>
     );
@@ -135,8 +179,8 @@ const BitacoraListPage = () => {
   return (
     <AdmimDashboardLayout>
       <Head>
-        <title>Admin - Lista de Bitácoras</title>
-        <meta name='description' content='Lista de Bitácoras Semanales' />
+        <title>Admin - Lista de Caminos</title>
+        <meta name='description' content='Lista de Caminos Semanales' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <div 
@@ -159,10 +203,10 @@ const BitacoraListPage = () => {
           
           <div className='mb-12 mt-8'>
             <h1 className='text-4xl md:text-5xl font-bold text-gray-900 font-montserrat mb-4'>
-              Lista de Bitácoras
+              Lista de Caminos
             </h1>
             <p className='text-gray-600 text-lg font-montserrat'>
-              Gestiona y visualiza todas las bitácoras mensuales creadas
+              Gestiona y visualiza todas las caminos mensuales creadas
             </p>
           </div>
 
@@ -176,16 +220,16 @@ const BitacoraListPage = () => {
             <div className="bg-white rounded-xl shadow-lg p-12 border border-gray-200 text-center">
               <CalendarIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2 font-montserrat">
-                No hay bitácoras creadas
+                No hay caminos creadas
               </h3>
               <p className="text-gray-600 mb-6 font-montserrat">
-                Comienza creando tu primera bitácora mensual
+                Comienza creando tu primera camino mensual
               </p>
               <Link
                 href="/admin/memberships/bitacora/create"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#234C8C] to-[#4F7CCF] text-white rounded-lg font-semibold hover:from-[#1A3A6B] hover:to-[#234C8C] transition-all shadow-lg hover:shadow-xl font-montserrat"
               >
-                Crear Primera Bitácora
+                Crear Primera Camino
               </Link>
             </div>
           )}
@@ -211,7 +255,7 @@ const BitacoraListPage = () => {
                     <div className='flex items-start justify-between mb-4'>
                       <div className='flex-1'>
                         <h3 className='text-xl font-bold text-gray-900 font-montserrat mb-1'>
-                          {logbook.title || 'Camino del Gorila'}
+                          {logbook.title || 'Camino'}
                         </h3>
                         <p className='text-lg text-gray-600 font-montserrat'>
                           {monthNames[logbook.month - 1]} {logbook.year}
@@ -221,6 +265,15 @@ const BitacoraListPage = () => {
                         <div className='px-3 py-1 bg-[#4F7CCF] text-white rounded-lg text-sm font-bold font-montserrat'>
                           {logbook.weeklyContents.length} semanas
                         </div>
+                        <Link
+                          href={`/weekly-path?id=${logbook._id}`}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='px-4 py-2 text-sm font-semibold text-[#4F7CCF] bg-[#4F7CCF]/10 hover:bg-[#4F7CCF]/20 rounded-lg transition-all font-montserrat flex items-center gap-2'
+                        >
+                          <ArrowTopRightOnSquareIcon className='w-5 h-5' />
+                          Previsualizar
+                        </Link>
                         <Link
                           href={`/admin/memberships/bitacora/edit/${logbook._id}`}
                           className='px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 rounded-lg transition-all shadow-md hover:shadow-lg font-montserrat flex items-center gap-2'
@@ -292,161 +345,244 @@ const BitacoraListPage = () => {
                         >
                           <div className='mt-6 pt-6 border-t border-gray-200'>
                             <h4 className='text-lg font-semibold text-gray-900 mb-4 font-montserrat'>
-                              Contenido de las Semanas
+                              Contenido por módulo
                             </h4>
                             <div className='space-y-4'>
-                              {logbook.weeklyContents.map((week, weekIndex) => (
-                                <motion.div
-                                  key={weekIndex}
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: weekIndex * 0.1 }}
-                                  className='bg-gray-50 rounded-lg p-4 border border-gray-200'
-                                >
-                                  <div className='flex items-center justify-between mb-3'>
-                                    <div className='flex items-center gap-3'>
-                                      <div className={`px-3 py-1 rounded-lg text-sm font-bold font-montserrat ${
-                                        week.isPublished
-                                          ? 'bg-green-500 text-white'
-                                          : 'bg-gray-300 text-gray-700'
-                                      }`}>
-                                        Semana {week.weekNumber}
-                                      </div>
-                                      <div className='flex items-center gap-2 text-sm text-gray-600 font-montserrat'>
-                                        <CalendarIcon className='w-4 h-4' />
-                                        <span>{formatDate(week.publishDate)}</span>
-                                      </div>
-                                    </div>
-                                    {week.isPublished && (
-                                      <span className='px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded font-montserrat'>
-                                        Publicada
-                                      </span>
-                                    )}
-                                  </div>
-
-                                  <div className='grid md:grid-cols-2 gap-4'>
-                                    <div className='bg-white rounded-lg p-3 border border-gray-200'>
-                                      <div className='flex items-center justify-between mb-2'>
-                                        <div className='flex items-center gap-2'>
-                                          <VideoCameraIcon className='w-5 h-5 text-[#4F7CCF]' />
-                                          <span className='text-sm font-semibold text-gray-900 font-montserrat'>Video</span>
+                              {logbook.weeklyContents.map((week, weekIndex) => {
+                                const contents = Array.isArray(week.contents) ? week.contents : [];
+                                const hasContents = contents.length > 0;
+                                return (
+                                  <motion.div
+                                    key={weekIndex}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: weekIndex * 0.1 }}
+                                    className='bg-gray-50 rounded-lg p-4 border border-gray-200'
+                                  >
+                                    <div className='flex items-center justify-between mb-3'>
+                                      <div className='flex items-center gap-3'>
+                                        <div className={`px-3 py-1 rounded-lg text-sm font-bold font-montserrat ${
+                                          week.isPublished ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700'
+                                        }`}>
+                                          {week.moduleName?.trim() || (week.moduleNumber != null ? `Módulo ${week.moduleNumber}` : `Semana ${week.weekNumber}`)}
                                         </div>
-                                        {week.videoUrl && (
-                                          <button
-                                            onClick={() => {
-                                              if (previewingVideo?.logbookId === logbook._id && previewingVideo?.weekIndex === weekIndex) {
-                                                setPreviewingVideo(null);
-                                              } else {
-                                                setPreviewingVideo({ logbookId: logbook._id, weekIndex, url: week.videoUrl });
-                                                setPreviewingAudio(null);
-                                              }
-                                            }}
-                                            className='text-xs px-2 py-1 bg-[#4F7CCF] text-white rounded hover:bg-[#234C8C] transition-colors font-montserrat'
-                                          >
-                                            {previewingVideo?.logbookId === logbook._id && previewingVideo?.weekIndex === weekIndex ? 'Ocultar' : 'Previsualizar'}
-                                          </button>
+                                        <div className='flex items-center gap-2 text-sm text-gray-600 font-montserrat'>
+                                          <CalendarIcon className='w-4 h-4' />
+                                          <span>{formatDate(week.publishDate)}</span>
+                                        </div>
+                                        {hasContents && (
+                                          <span className='text-xs text-gray-500 font-montserrat'>
+                                            {contents.length} contenido{contents.length !== 1 ? 's' : ''}
+                                          </span>
                                         )}
                                       </div>
-                                      <a
-                                        href={week.videoUrl}
-                                        target='_blank'
-                                        rel='noopener noreferrer'
-                                        className='text-xs text-[#4F7CCF] hover:underline break-all font-montserrat block mb-2'
-                                      >
-                                        {week.videoUrl || 'No especificado'}
-                                      </a>
-                                      {week.videoId && (
-                                        <span className='text-xs text-gray-500 font-montserrat block mt-1'>
-                                          ID: {week.videoId}
+                                      {week.isPublished && (
+                                        <span className='px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded font-montserrat'>
+                                          Publicada
                                         </span>
                                       )}
-                                      
-                                      {previewingVideo?.logbookId === logbook._id && previewingVideo?.weekIndex === weekIndex && week.videoUrl && (
-                                        <div className='mt-3 rounded-lg overflow-hidden border border-gray-300'>
-                                          <div className='relative aspect-video bg-black'>
-                                            <ReactPlayer
-                                              url={week.videoUrl}
-                                              width="100%"
-                                              height="100%"
-                                              controls
-                                              config={{
-                                                file: {
-                                                  attributes: {
-                                                    crossorigin: 'anonymous',
-                                                    playsInline: true
+                                    </div>
+
+                                    {hasContents ? (
+                                      <ul className='space-y-2'>
+                                        {contents.map((c, contentIndex) => {
+                                          const tipo = (c.contentType || 'moduleClass') as 'moduleClass' | 'individualClass' | 'audio';
+                                          const label =
+                                            tipo === 'moduleClass'
+                                              ? 'Clase de módulo'
+                                              : tipo === 'individualClass'
+                                                ? 'Clase individual'
+                                                : 'Audio';
+                                          const name = c.videoName || c.audioTitle || (tipo === 'audio' ? 'Audio' : 'Clase');
+                                          const hasVideo = !!(c.videoUrl && c.videoUrl.trim());
+                                          const hasAudio = !!(c.audioUrl && c.audioUrl.trim());
+                                          const isIndividualWithoutVideo = tipo === 'individualClass' && !hasVideo && !!(c as WeekContentItem).individualClassId;
+                                          const previewKey = `${logbook._id}-${weekIndex}-${contentIndex}`;
+                                          const isLoadingPreview = loadingIndividualPreview === previewKey;
+                                          const isPreviewingVideo =
+                                            previewingVideo?.logbookId === logbook._id &&
+                                            previewingVideo?.weekIndex === weekIndex &&
+                                            previewingVideo?.contentIndex === contentIndex;
+                                          const isPreviewingAudio =
+                                            previewingAudio?.logbookId === logbook._id &&
+                                            previewingAudio?.weekIndex === weekIndex &&
+                                            previewingAudio?.contentIndex === contentIndex;
+                                          const videoUrlToPreview = isPreviewingVideo && previewingVideo?.url ? previewingVideo.url : (hasVideo ? c.videoUrl : undefined);
+                                          return (
+                                            <li key={contentIndex} className='bg-white rounded-lg p-3 border border-gray-200 flex flex-wrap items-center justify-between gap-2'>
+                                              <div className='flex items-center gap-2 min-w-0'>
+                                                {tipo === 'audio' ? (
+                                                  <MusicalNoteIcon className='w-5 h-5 text-[#4F7CCF] shrink-0' />
+                                                ) : (
+                                                  <VideoCameraIcon className='w-5 h-5 text-[#4F7CCF] shrink-0' />
+                                                )}
+                                                <span className='text-xs font-semibold text-gray-500 font-montserrat uppercase'>{label}</span>
+                                                <span className='text-sm text-gray-900 font-montserrat truncate' title={name}>{name}</span>
+                                                {c.submoduleName && (
+                                                  <span className='text-xs text-gray-400 font-montserrat'>· {c.submoduleName}</span>
+                                                )}
+                                              </div>
+                                              <div className='flex items-center gap-2'>
+                                                {(hasVideo || isIndividualWithoutVideo) && (
+                                                  <>
+                                                    {hasVideo && (
+                                                      <a href={c.videoUrl} target='_blank' rel='noopener noreferrer' className='text-xs text-[#4F7CCF] hover:underline font-montserrat'>
+                                                        Ver video
+                                                      </a>
+                                                    )}
+                                                    <button
+                                                      type='button'
+                                                      disabled={isLoadingPreview}
+                                                      onClick={async () => {
+                                                        if (isPreviewingVideo) {
+                                                          setPreviewingVideo(null);
+                                                          return;
+                                                        }
+                                                        if (isIndividualWithoutVideo && (c as WeekContentItem).individualClassId) {
+                                                          setLoadingIndividualPreview(previewKey);
+                                                          setPreviewingAudio(null);
+                                                          const url = await fetchIndividualClassVideoUrl((c as WeekContentItem).individualClassId!);
+                                                          setLoadingIndividualPreview(null);
+                                                          if (url) setPreviewingVideo({ logbookId: logbook._id, weekIndex, contentIndex, url });
+                                                          return;
+                                                        }
+                                                        if (hasVideo) {
+                                                          setPreviewingVideo({ logbookId: logbook._id, weekIndex, contentIndex, url: c.videoUrl! });
+                                                          setPreviewingAudio(null);
+                                                        }
+                                                      }}
+                                                      className='text-xs px-2 py-1 bg-[#4F7CCF] text-white rounded hover:bg-[#234C8C] disabled:opacity-50 font-montserrat'
+                                                    >
+                                                      {isLoadingPreview ? '...' : isPreviewingVideo ? 'Ocultar' : 'Previsualizar'}
+                                                    </button>
+                                                  </>
+                                                )}
+                                                {hasAudio && tipo === 'audio' && (
+                                                  <>
+                                                    <a href={c.audioUrl} target='_blank' rel='noopener noreferrer' className='text-xs text-[#4F7CCF] hover:underline font-montserrat'>
+                                                      Ver audio
+                                                    </a>
+                                                    <button
+                                                      type='button'
+                                                      onClick={() => {
+                                                        if (isPreviewingAudio) setPreviewingAudio(null);
+                                                        else {
+                                                          setPreviewingAudio({ logbookId: logbook._id, weekIndex, contentIndex, url: c.audioUrl! });
+                                                          setPreviewingVideo(null);
+                                                        }
+                                                      }}
+                                                      className='text-xs px-2 py-1 bg-[#4F7CCF] text-white rounded hover:bg-[#234C8C] font-montserrat'
+                                                    >
+                                                      {isPreviewingAudio ? 'Ocultar' : 'Previsualizar'}
+                                                    </button>
+                                                  </>
+                                                )}
+                                                {!hasVideo && !hasAudio && !isIndividualWithoutVideo && (
+                                                  <span className='text-xs text-gray-400 font-montserrat'>—</span>
+                                                )}
+                                              </div>
+                                              {isPreviewingVideo && videoUrlToPreview && (
+                                                <div className='w-full mt-2 rounded-lg overflow-hidden border border-gray-300'>
+                                                  <div className='relative aspect-video bg-black'>
+                                                    <ReactPlayer url={videoUrlToPreview} width="100%" height="100%" controls />
+                                                  </div>
+                                                </div>
+                                              )}
+                                              {isPreviewingAudio && c.audioUrl && (
+                                                <div className='w-full mt-2 rounded-lg border border-gray-300 bg-white p-3'>
+                                                  <audio controls className='w-full h-10' preload='metadata' src={c.audioUrl}>
+                                                    Tu navegador no soporta audio.
+                                                  </audio>
+                                                </div>
+                                              )}
+                                            </li>
+                                          );
+                                        })}
+                                      </ul>
+                                    ) : (
+                                      /* Legacy: un video, un audio y texto por semana */
+                                      <div className='grid md:grid-cols-2 gap-4'>
+                                        <div className='bg-white rounded-lg p-3 border border-gray-200'>
+                                          <div className='flex items-center justify-between mb-2'>
+                                            <div className='flex items-center gap-2'>
+                                              <VideoCameraIcon className='w-5 h-5 text-[#4F7CCF]' />
+                                              <span className='text-sm font-semibold text-gray-900 font-montserrat'>Video</span>
+                                            </div>
+                                            {week.videoUrl && (
+                                              <button
+                                                type='button'
+                                                onClick={() => {
+                                                  if (previewingVideo?.logbookId === logbook._id && previewingVideo?.weekIndex === weekIndex) setPreviewingVideo(null);
+                                                  else {
+                                                    setPreviewingVideo({ logbookId: logbook._id, weekIndex, url: week.videoUrl! });
+                                                    setPreviewingAudio(null);
                                                   }
-                                                }
-                                              }}
-                                            />
+                                                }}
+                                                className='text-xs px-2 py-1 bg-[#4F7CCF] text-white rounded hover:bg-[#234C8C] font-montserrat'
+                                              >
+                                                {previewingVideo?.logbookId === logbook._id && previewingVideo?.weekIndex === weekIndex ? 'Ocultar' : 'Previsualizar'}
+                                              </button>
+                                            )}
                                           </div>
+                                          <a href={week.videoUrl} target='_blank' rel='noopener noreferrer' className='text-xs text-[#4F7CCF] hover:underline break-all font-montserrat block'>
+                                            {week.videoUrl || 'No especificado'}
+                                          </a>
+                                          {previewingVideo?.logbookId === logbook._id && previewingVideo?.weekIndex === weekIndex && week.videoUrl && (
+                                            <div className='mt-3 rounded-lg overflow-hidden border border-gray-300'>
+                                              <div className='relative aspect-video bg-black'>
+                                                <ReactPlayer url={week.videoUrl} width="100%" height="100%" controls />
+                                              </div>
+                                            </div>
+                                          )}
                                         </div>
-                                      )}
-                                    </div>
-
-                                    <div className='bg-white rounded-lg p-3 border border-gray-200'>
-                                      <div className='flex items-center justify-between mb-2'>
-                                        <div className='flex items-center gap-2'>
-                                          <MusicalNoteIcon className='w-5 h-5 text-[#4F7CCF]' />
-                                          <span className='text-sm font-semibold text-gray-900 font-montserrat'>Audio</span>
+                                        <div className='bg-white rounded-lg p-3 border border-gray-200'>
+                                          <div className='flex items-center justify-between mb-2'>
+                                            <div className='flex items-center gap-2'>
+                                              <MusicalNoteIcon className='w-5 h-5 text-[#4F7CCF]' />
+                                              <span className='text-sm font-semibold text-gray-900 font-montserrat'>Audio</span>
+                                            </div>
+                                            {week.audioUrl && (
+                                              <button
+                                                type='button'
+                                                onClick={() => {
+                                                  if (previewingAudio?.logbookId === logbook._id && previewingAudio?.weekIndex === weekIndex) setPreviewingAudio(null);
+                                                  else {
+                                                    setPreviewingAudio({ logbookId: logbook._id, weekIndex, url: week.audioUrl! });
+                                                    setPreviewingVideo(null);
+                                                  }
+                                                }}
+                                                className='text-xs px-2 py-1 bg-[#4F7CCF] text-white rounded hover:bg-[#234C8C] font-montserrat'
+                                              >
+                                                {previewingAudio?.logbookId === logbook._id && previewingAudio?.weekIndex === weekIndex ? 'Ocultar' : 'Previsualizar'}
+                                              </button>
+                                            )}
+                                          </div>
+                                          <a href={week.audioUrl} target='_blank' rel='noopener noreferrer' className='text-xs text-[#4F7CCF] hover:underline break-all font-montserrat block'>
+                                            {week.audioUrl || 'No especificado'}
+                                          </a>
+                                          {previewingAudio?.logbookId === logbook._id && previewingAudio?.weekIndex === weekIndex && week.audioUrl && (
+                                            <div className='mt-3 rounded-lg border border-gray-300 bg-white p-3'>
+                                              <audio controls className='w-full h-12' preload='metadata' src={week.audioUrl}>Tu navegador no soporta audio.</audio>
+                                            </div>
+                                          )}
                                         </div>
-                                        {week.audioUrl && (
-                                          <button
-                                            onClick={() => {
-                                              if (previewingAudio?.logbookId === logbook._id && previewingAudio?.weekIndex === weekIndex) {
-                                                setPreviewingAudio(null);
-                                              } else {
-                                                setPreviewingAudio({ logbookId: logbook._id, weekIndex, url: week.audioUrl });
-                                                setPreviewingVideo(null);
-                                              }
-                                            }}
-                                            className='text-xs px-2 py-1 bg-[#4F7CCF] text-white rounded hover:bg-[#234C8C] transition-colors font-montserrat'
-                                          >
-                                            {previewingAudio?.logbookId === logbook._id && previewingAudio?.weekIndex === weekIndex ? 'Ocultar' : 'Previsualizar'}
-                                          </button>
-                                        )}
                                       </div>
-                                      <a
-                                        href={week.audioUrl}
-                                        target='_blank'
-                                        rel='noopener noreferrer'
-                                        className='text-xs text-[#4F7CCF] hover:underline break-all font-montserrat block mb-2'
-                                      >
-                                        {week.audioUrl || 'No especificado'}
-                                      </a>
-                                      
-                                      {previewingAudio?.logbookId === logbook._id && previewingAudio?.weekIndex === weekIndex && week.audioUrl && (
-                                        <motion.div
-                                          initial={{ opacity: 0, height: 0 }}
-                                          animate={{ opacity: 1, height: 'auto' }}
-                                          exit={{ opacity: 0, height: 0 }}
-                                          className='mt-3 rounded-lg border border-gray-300 bg-white p-4'
-                                        >
-                                          <audio
-                                            controls
-                                            className='w-full h-12'
-                                            style={{ width: '100%', outline: 'none' }}
-                                            preload='metadata'
-                                            controlsList='nodownload'
-                                          >
-                                            <source src={week.audioUrl} />
-                                            Tu navegador no soporta el elemento de audio.
-                                          </audio>
-                                        </motion.div>
-                                      )}
-                                    </div>
-                                  </div>
+                                    )}
 
-                                  <div className='mt-4 bg-white rounded-lg p-3 border border-gray-200'>
-                                    <div className='flex items-center gap-2 mb-2'>
-                                      <DocumentTextIcon className='w-5 h-5 text-[#4F7CCF]' />
-                                      <span className='text-sm font-semibold text-gray-900 font-montserrat'>Texto</span>
-                                    </div>
-                                    <div className='text-sm text-gray-700 font-montserrat max-h-32 overflow-y-auto whitespace-pre-wrap'>
-                                      {week.text || 'No hay texto especificado'}
-                                    </div>
-                                  </div>
-                                </motion.div>
-                              ))}
+                                    {!hasContents && week.text && (
+                                      <div className='mt-4 bg-white rounded-lg p-3 border border-gray-200'>
+                                        <div className='flex items-center gap-2 mb-2'>
+                                          <DocumentTextIcon className='w-5 h-5 text-[#4F7CCF]' />
+                                          <span className='text-sm font-semibold text-gray-900 font-montserrat'>Texto</span>
+                                        </div>
+                                        <div className='text-sm text-gray-700 font-montserrat max-h-32 overflow-y-auto whitespace-pre-wrap'>
+                                          {week.text}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </motion.div>
+                                );
+                              })}
                             </div>
                           </div>
                         </motion.div>

@@ -17,8 +17,12 @@ import MainSideBar from '../../MainSidebar/MainSideBar';
 import LoginModalForm from './AccountForm';
 import NewsletterF from '../Index/NewsletterForm';
 import { CldImage } from 'next-cloudinary';
+import { getAndClearRedirectUrl } from '../../../utils/redirectQueue';
+import { executePlanIntent } from '../../../utils/executePlanIntent';
+import AuthSkeleton from '../../AuthSkeleton';
 
 function LoginForm() {
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<any>([]);
   const [verifyInfo, setVerifyInfo] = useState<{ email: string; message?: string } | null>(null);
@@ -33,6 +37,32 @@ function LoginForm() {
       document.addEventListener('keyup', testCapsLock);
     }
   }, []);
+
+  useEffect(() => {
+    // Mostrar skeleton al inicio y luego ocultarlo
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 800);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Si ya está logueado, redirigir según rol y suscripción
+  useEffect(() => {
+    if (!auth.user) {
+      auth.fetchUser();
+      return;
+    }
+    if (auth.user.rol === 'Admin') {
+      router.replace('/admin');
+      return;
+    }
+    if (auth.user.subscription?.active || auth.user.isVip) {
+      router.replace('/library');
+      return;
+    }
+    router.replace('/');
+  }, [auth, auth.user, router]);
 
   function testCapsLock(event: any) {
     if (event.code === 'CapsLock') {
@@ -51,10 +81,81 @@ function LoginForm() {
     const email = data.get('email') as string;
     const password = data.get('password') as string;
 
-    auth.signIn(email, password).then((res: any) => {
+    try {
+      const res = await auth.signIn(email, password);
+      
       if (res.type != 'error') {
+        // Mostrar mensaje de éxito
+        setMessage((current: any) => [
+          ...current,
+          {
+            message: '¡Login exitoso! Redirigiendo...',
+            type: alertTypes.success.type
+          }
+        ]);
+        setLoading(false);
+
+        // Verificar estado de onboarding solo si el usuario tiene suscripción activa
+        try {
+          const onboardingRes = await fetch('/api/onboarding/status', {
+            credentials: 'include'
+          });
+          
+          if (onboardingRes.ok) {
+            const onboardingData = await onboardingRes.json();
+            
+            // Si el usuario no tiene suscripción, no necesita onboarding
+            if (onboardingData.sinSuscripcion) {
+              setTimeout(() => {
+                router.push('/move-crew');
+              }, 1000);
+              return;
+            }
+            
+            // Si necesita onboarding (tiene suscripción activa pero no completó el onboarding)
+            if (onboardingData.necesitaOnboarding) {
+              // Si no aceptó el contrato, ir a la pantalla de bienvenida
+              if (!onboardingData.contratoAceptado) {
+                setTimeout(() => {
+                  router.push('/onboarding/bienvenida');
+                }, 1000);
+                return;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error verificando onboarding:', error);
+          // Si hay error, continuar con el flujo normal de login
+        }
+
+        // Verificar si hay una intención de plan guardada para ejecutarla
+        const userEmail = res?.user?.email || auth.user?.email;
+        const userId = res?.user?._id || auth.user?._id;
+        
+        if (userEmail && userId) {
+          const planIntentExecuted = await executePlanIntent(userEmail, userId, router);
+          
+          if (planIntentExecuted) {
+            // Si se ejecutó una intención de plan, no hacer nada más (ya redirigió)
+            return;
+          }
+        }
+        
+        // Si no hay intención de plan, verificar si hay una URL guardada para redirigir
+        const redirectUrl = getAndClearRedirectUrl();
+        
+        if (redirectUrl) {
+          // Si hay una URL guardada, redirigir ahí
+          setTimeout(() => {
+            router.push(redirectUrl);
+          }, 1000);
+        } else {
+          // Si el onboarding está completo o no es necesario, redirigir normalmente
           const hasActiveSub = res?.user?.subscription?.active || auth.user?.subscription?.active;
-          router.push(hasActiveSub ? '/home' : '/move-crew');
+          setTimeout(() => {
+            router.push(hasActiveSub ? '/library' : '/move-crew');
+          }, 1000);
+        }
       } else {
         if (res.validate) {
           setVerifyInfo({ email, message: res.message });
@@ -70,7 +171,17 @@ function LoginForm() {
         }
         setLoading(false);
       }
-    });
+    } catch (error: any) {
+      console.error('Error en login:', error);
+      setMessage((current: any) => [
+        ...current,
+        {
+          message: error?.message || 'Error al iniciar sesión',
+          type: alertTypes.error.type
+        }
+      ]);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -100,6 +211,10 @@ function LoginForm() {
     }
     setLoading(false);
   };
+
+  if (initialLoading) {
+    return <AuthSkeleton />;
+  }
 
   return (
     <div>

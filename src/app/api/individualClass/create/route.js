@@ -20,6 +20,7 @@ export async function POST(req) {
         totalTime,
         level,
         typeId,
+        moduleId,
         userEmail,
         description,
         videoId,
@@ -57,6 +58,19 @@ export async function POST(req) {
         }));
       }
 
+      const ClassModuleModel = (await import('../../../../models/classModuleModel')).default;
+      let effectiveModuleId = moduleId;
+      if (!effectiveModuleId) {
+        const firstModule = await ClassModuleModel.findOne({ isActive: true }).sort({ createdAt: 1 }).select('_id slug').lean();
+        if (firstModule) effectiveModuleId = firstModule._id;
+      }
+      let typeValue = typeId;
+      if (effectiveModuleId) {
+        const module_ = await ClassModuleModel.findById(effectiveModuleId).select('slug').lean();
+        if (module_) typeValue = module_.slug;
+      }
+      if (!typeValue) typeValue = 'general';
+
       const newClass = await new IndividualClass({
         id: JSON.stringify(lastClass) != '[]' ? lastClass[0].id + 1 : 1,
         name,
@@ -67,7 +81,8 @@ export async function POST(req) {
         minutes: minutes,
         hours: hours,
         level,
-        type: typeId,
+        type: typeValue,
+        moduleId: effectiveModuleId || undefined,
         isFree: isFree,
         image_base_link: vimeoVideo?.pictures?.base_link,
         html: vimeoVideo?.embed?.html,

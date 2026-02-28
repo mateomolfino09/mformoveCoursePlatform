@@ -1,427 +1,341 @@
+'use client';
+
 import { useAuth } from '../../../hooks/useAuth';
 import state from '../../../valtio';
-import { Button, Transition } from '@headlessui/react';
-import {
-  CreditCardIcon,
-  HomeIcon,
-  PlusCircleIcon,
-  TableCellsIcon,
-  UserIcon
-} from '@heroicons/react/24/solid';
-import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
+import { Button } from '@headlessui/react';
+import { AnimatePresence, m } from 'framer-motion';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import React, { Fragment, forwardRef, useEffect, useState } from 'react';
-import { useSnapshot } from 'valtio';
-import Image from 'next/image';
-import imageLoader from '../../../../imageLoader';
-import { CiBookmarkCheck, CiUnlock, CiMobile4 } from "react-icons/ci";
-import { HiComputerDesktop } from "react-icons/hi2";
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { CldImage } from 'next-cloudinary';
-import { IoCloseCircle } from 'react-icons/io5';
-import endpoints from '../../../services/api';
-import { toast } from 'react-toastify';
-import { LoadingSpinner } from '../../LoadingSpinner';
-import { alertTypes } from '../../../constants/alertTypes';
+import { IoClose } from 'react-icons/io5';
+import { toast } from '../../../hooks/useToast';
+import { useSnapshot } from 'valtio';
 import { MiniLoadingSpinner } from '../Products/MiniSpinner';
-import { MdEmail } from 'react-icons/md';
-import { MdOutlineMarkEmailRead } from "react-icons/md";
-import Cookies from 'js-cookie';
+import { getAndClearRedirectUrl } from '../../../utils/redirectQueue';
+import { executePlanIntent } from '../../../utils/executePlanIntent';
+import endpoints from '../../../services/api';
 
+const overlayVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.2 } },
+  exit: { opacity: 0, transition: { duration: 0.15 } },
+};
 
+const inputBase =
+  'w-full rounded-xl border border-palette-stone/40 bg-palette-cream px-4 py-3 text-palette-ink placeholder-palette-stone outline-none transition focus:ring-2 focus:ring-palette-sage/50 focus:border-palette-sage';
 
-interface Props {
-}
+const inputError = 'border-soft-error ring-1 ring-soft-error';
 
 const LoginModal = () => {
   const router = useRouter();
-  const pathname = usePathname();
-  const animation = useAnimation();
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const animationPhones = useAnimation();
   const auth = useAuth();
-  const [errorMessage, setErrorMessage] = useState(null);
+  const snap = useSnapshot(state);
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loginForm, setLoginForm] = useState(false);
   const [forgetForm, setForgetForm] = useState(false);
   const [forgetSend, setForgetSend] = useState(false);
-
   const [loading, setLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  const { register, handleSubmit, formState: { errors,  } } = useForm()
-
-  const handleResize = () => {
-    setWindowWidth(window.innerWidth);
-  };
+  const { register, handleSubmit } = useForm();
 
   useEffect(() => {
-    // Attach the event listener when the component mounts
-    window.addEventListener('resize', handleResize);
-
-    // Cleanup the event listener when the component unmounts
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []); //
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
-    if(!auth.user) {
-      auth.fetchUser()
-    }
+    if (!auth.user) auth.fetchUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- auth.user is the intended dependency
   }, [auth.user]);
 
-  const accentColor = '#FBBF24';
+  useEffect(() => {
+    if (!mounted) return;
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, [mounted]);
+
+  const close = () => {
+    state.loginForm = false;
+    setErrorMessage(null);
+    setForgetSend(false);
+  };
 
   const signupUser = async (name: string, email: string) => {
-    // const { email, firstname, lastname, gender, country } = register
+    setLoading(true);
+    setErrorMessage(null);
     try {
-      setLoading(true);
-
       const res = await fetch(endpoints.auth.easyRegisterSubscribe, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, name, gender: "", country: "" }),
-      })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, gender: '', country: '' }),
+      });
+      const data = await res.json();
 
-      const data = await res.json()
       if (data.ok) {
-        const { token } = data;
-        await auth.signInPostRegister(token).then(() => {
-          toast.success('¡Cuenta creada! Ya estás dentro. Revisa tu correo para confirmar tu cuenta.');
-          state.loginForm = false;
-        });
-        setLoading(false);
-        return;
-      }
-      else if(data?.error) {
-        setErrorMessage(data?.error)
+        const { token, newUser } = data;
+        await auth.signInPostRegister(token).then(async (res: any) => {
+          toast.success('¡Cuenta creada! Revisa tu correo para confirmar.');
+          close();
+          const userEmail = newUser?.email || res?.user?.email || auth.user?.email;
+          const userId = newUser?._id || res?.user?._id || auth.user?._id;
+          if (userEmail && userId) {
+            const planIntentExecuted = await executePlanIntent(userEmail, userId, router);
+            if (!planIntentExecuted) {
+              const redirectUrl = getAndClearRedirectUrl();
+              if (redirectUrl) setTimeout(() => router.push(redirectUrl), 500);
+            }
+          } else {
+            const redirectUrl = getAndClearRedirectUrl();
+            if (redirectUrl) setTimeout(() => router.push(redirectUrl), 500);
+          }
+        }).catch(console.error);
+      } else if (data?.error) {
+        setErrorMessage(data.error);
         toast.error(data.error);
       }
-
-    } catch (error: any) {
-      setErrorMessage(error?.response?.data?.error)
-      toast.error(error?.response?.data?.error); 
+    } catch (err: any) {
+      const msg = err?.response?.data?.error ?? 'Error al crear la cuenta';
+      setErrorMessage(msg);
+      toast.error(msg);
     }
     setLoading(false);
   };
 
   const signinUser = async (email: string, password: string) => {
-    
     setLoading(true);
-
-    await auth.signIn(email, password).then((res: any) => {
-      if(res.type != 'error') {
-        toast.success('¡Login Exitoso!')
-        state.loginForm = false
-      } 
-      else {
-        setErrorMessage(res.message);
+    setErrorMessage(null);
+    await auth.signIn(email, password).then(async (res: any) => {
+      if (res?.type === 'error') {
+        setErrorMessage(res?.message ?? 'Error al ingresar');
         setLoading(false);
-      } 
-    })
+        return;
+      }
+      toast.success('¡Login exitoso!');
+      close();
+      const userEmail = res?.user?.email ?? auth.user?.email;
+      const userId = res?.user?._id ?? auth.user?._id;
+      if (userEmail && userId) {
+        const planIntentExecuted = await executePlanIntent(userEmail, userId, router);
+        if (!planIntentExecuted) {
+          const redirectUrl = getAndClearRedirectUrl();
+          if (redirectUrl) setTimeout(() => router.push(redirectUrl), 500);
+        }
+      } else {
+        const redirectUrl = getAndClearRedirectUrl();
+        if (redirectUrl) setTimeout(() => router.push(redirectUrl), 500);
+      }
+    });
   };
 
   const forgetPassword = async (email: string) => {
-    
     setLoading(true);
-    
+    setErrorMessage(null);
     try {
-      const data = await auth.resetPasswordSendMailchamp(email)
-
-      if(data?.error) {
+      const data = await auth.resetPasswordSendMailchamp(email);
+      if (data?.error) {
         setErrorMessage(data.error);
-        setLoading(false)
-        return
+        setLoading(false);
+        return;
       }
-
-      toast.success(data?.message)
+      toast.success(data?.message);
       setForgetSend(true);
-
-    } catch (error: any) {
-      setErrorMessage(error?.response?.data?.error)
+    } catch (err: any) {
+      setErrorMessage(err?.response?.data?.error ?? 'Error al enviar');
     }
     setLoading(false);
-    
   };
-
-
-  const snap = useSnapshot(state);
-
-  useEffect(() => {
-    animation.start({
-      color: '#d1cfcf6e',
-      x: 0,
-      transition: {
-        damping: 5,
-        stiffness: 40,
-        restDelta: 0.001,
-        duration: 0.2
-      }
-    });
-    animationPhones.start({
-      x: 0,
-      transition: {
-        damping: 5,
-        stiffness: 40,
-        restDelta: 0.001,
-        duration: 0.2
-      }
-    });
-  }, []);
 
   const onSubmit = async (data: any) => {
     const { name, email, password } = data;
-    if(loginForm && !forgetForm) await signinUser(email, password)
-    else if(loginForm && forgetForm) await forgetPassword(email);
+    if (loginForm && !forgetForm) await signinUser(email, password);
+    else if (loginForm && forgetForm) await forgetPassword(email);
     else await signupUser(name, email);
-  }
+  };
 
-  //   flex flex-col space-y-2 py-16 md:space-y-4 h-[75vh] lg:h-[90vh] justify-end lg:items-end mr-12 lg:mr-24
+  const modalCard = (
+    <div className="relative w-full max-w-[400px] rounded-2xl bg-palette-cream shadow-2xl border border-palette-stone/20">
+      {/* Header */}
+      <div className="flex items-start justify-between border-b border-palette-stone/30 px-6 py-5">
+        <div>
+          <p className="text-[11px] uppercase tracking-widest text-palette-stone font-medium">
+            {forgetForm ? 'Recuperar' : loginForm ? 'Acceso' : 'Registro'}
+          </p>
+          <h2 className="mt-0.5 text-xl font-semibold text-palette-ink">
+            {forgetSend
+              ? 'Revisá tu correo'
+              : forgetForm
+                ? 'Recuperar contraseña'
+                : loginForm
+                  ? 'Ingresá a tu cuenta'
+                  : 'Crear cuenta'}
+          </h2>
+        </div>
+        <button
+          type="button"
+          onClick={close}
+          className="rounded-full p-1.5 text-palette-stone hover:bg-palette-stone/10 hover:text-palette-ink transition"
+          aria-label="Cerrar"
+        >
+          <IoClose className="w-6 h-6" />
+        </button>
+      </div>
+
+      <div className="px-6 py-5">
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <MiniLoadingSpinner />
+          </div>
+        ) : forgetSend ? (
+          <div className="py-6 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-palette-sage/10 text-palette-sage">
+              <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <p className="text-palette-ink font-medium">Te enviamos un enlace a tu email.</p>
+            <p className="mt-1 text-sm text-palette-stone">Revisá la bandeja de entrada y el spam.</p>
+            <button
+              type="button"
+              onClick={() => { setForgetSend(false); setForgetForm(false); }}
+              className="mt-6 text-sm font-medium text-palette-sage hover:text-palette-ink underline"
+            >
+              Volver al login
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {!loginForm && !forgetForm && (
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-palette-ink mb-1.5">
+                  Nombre
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Tu nombre"
+                  className={`${inputBase} ${errorMessage ? inputError : 'border-palette-stone/40'}`}
+                  {...register('name', { required: true })}
+                />
+              </div>
+            )}
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-palette-ink mb-1.5">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="ejemplo@gmail.com"
+                className={`${inputBase} ${errorMessage ? inputError : 'border-palette-stone/40'}`}
+                {...register('email', { required: true })}
+              />
+              {errorMessage && (
+                <p className="mt-1.5 text-xs text-soft-error">{errorMessage}</p>
+              )}
+            </div>
+
+            {loginForm && !forgetForm && (
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-palette-ink mb-1.5">
+                  Contraseña
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  className={`${inputBase} ${errorMessage ? inputError : 'border-palette-stone/40'}`}
+                  {...register('password', { required: true })}
+                />
+                <button
+                  type="button"
+                  onClick={() => { setForgetForm(true); setErrorMessage(null); }}
+                  className="mt-1.5 text-xs text-palette-sage hover:text-palette-ink font-medium"
+                >
+                  Olvidé mi contraseña
+                </button>
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full rounded-xl bg-palette-ink py-3.5 text-sm font-semibold text-palette-cream shadow-lg transition hover:bg-palette-ink/90 focus:outline-none focus:ring-2 focus:ring-palette-sage focus:ring-offset-2 active:scale-[0.99]"
+            >
+              {forgetForm ? 'Enviar enlace' : loginForm ? 'Ingresar' : 'Crear cuenta'}
+            </Button>
+
+            {!forgetForm && (
+              <p className="text-center text-sm text-palette-stone">
+                {loginForm ? (
+                  <>
+                    ¿No tenés cuenta?{' '}
+                    <button
+                      type="button"
+                      onClick={() => { setLoginForm(false); setErrorMessage(null); }}
+                      className="font-medium text-palette-sage hover:text-palette-ink underline"
+                    >
+                      Registrate
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    ¿Ya tenés cuenta?{' '}
+                    <button
+                      type="button"
+                      onClick={() => { setLoginForm(true); setErrorMessage(null); }}
+                      className="font-medium text-palette-sage hover:text-palette-ink underline"
+                    >
+                      Ingresá acá
+                    </button>
+                  </>
+                )}
+              </p>
+            )}
+
+            {!loginForm && !forgetForm && (
+              <p className="text-xs text-palette-stone text-center leading-relaxed">
+                Al registrarte aceptás{' '}
+                <Link href="/privacy" target="_blank" className="text-palette-ink hover:underline">Privacidad</Link>
+                {' y '}
+                <a href="/documents/terms-and-conditions.pdf" download target="_blank" rel="noopener noreferrer" className="text-palette-ink hover:underline">Términos</a>.
+              </p>
+        )}
+      </form>
+        )}
+      </div>
+    </div>
+  );
+
+  if (!mounted) return null;
 
   return (
-    <>
-      {!loginForm ? (
-        <div className='fixed flex justify-center items-end md:items-center w-full h-full bg-black/80 z-[300] font-montserrat px-3 pb-4 md:pb-0'>
-          <div className='w-full max-w-md md:max-w-[32rem] h-full max-h-[95vh] relative rounded-t-2xl md:rounded-2xl overflow-hidden'>
-            <CldImage
-              layout='fill'
-              alt=""
-              src={"my_uploads/fondos/DSC01436_sy7os9"}
-              className="object-cover object-top"
-            />
-            <div className='absolute inset-0 bg-black/70' />
-            <div className='absolute inset-0 h-full w-full overflow-y-auto scrollbar-hide px-6 md:px-8 pt-10 pb-10'>
-              <div className='w-full relative flex justify-between items-start'>
-                <div className="space-y-2 pr-10">
-                  <p className='text-[11px] uppercase tracking-[0.25em] text-white/60'>Acceso</p>
-                  <h1 className='text-white font-extrabold text-3xl md:text-4xl leading-tight'>Registrate para empezar</h1>
-                  <p className='text-white/70 text-sm md:text-base'>Acceso inmediato y progreso guardado.</p>
-                </div>
-                <IoCloseCircle className='w-8 h-8 text-white cursor-pointer' onClick={() => state.loginForm = false}/>
-              </div>
-              <div className='mt-8 space-y-4 text-white/85'>
-                <div className='flex gap-3 items-start'>
-                  <CiUnlock className='w-7 h-7 flex-shrink-0 text-white' />
-                  <div className='space-y-1'>
-                    <h4 className='text-lg font-semibold'>Acceso instantáneo</h4>
-                    <p className='text-sm text-white/70'>Entrás y seguís tu práctica al instante.</p>
-                  </div>
-                </div>
-                <div className='flex gap-3 items-start'>
-                  <CiBookmarkCheck className='w-7 h-7 flex-shrink-0 text-white' />
-                  <div className='space-y-1'>
-                    <h4 className='text-lg font-semibold'>Progreso sincronizado</h4>
-                    <p className='text-sm text-white/70'>Guardamos tu avance y biblioteca.</p>
-                  </div>
-                </div>
-                <div className='flex gap-3 items-start'>
-                  <CiMobile4 className='w-7 h-7 flex-shrink-0 text-white' />
-                  <div className='space-y-1'>
-                    <h4 className='text-lg font-semibold'>En cualquier dispositivo</h4>
-                    <p className='text-sm text-white/70'>Móvil y escritorio, sin fricción.</p>
-                  </div>
-                </div>
-              </div>
-
-              {loading ? (
-                <div className='mt-10 flex justify-center'>
-                  <MiniLoadingSpinner />
-                </div>
-              ) : (
-                <form className="mt-10 rounded-2xl bg-[#0f1115]/85 border border-white/15 p-5 backdrop-blur space-y-4 shadow-2xl" onSubmit={handleSubmit(onSubmit)}>
-                  <div>
-                    <label className="block text-white text-sm font-medium mb-2" htmlFor="name">
-                      Nombre
-                    </label>
-                    <input className={`w-full rounded-lg border-0 bg-white/5 py-2.5 px-3 text-white placeholder-white/50 leading-tight focus:outline-none focus:ring-2 focus:ring-white/25 ${errorMessage ? 'ring-1 ring-red-400' : ''}`} id="name" type="text" placeholder="Nombre" {...register('name', { required: true })} />
-                  </div>
-                  <div>
-                    <label className="block text-white text-sm font-medium mb-2" htmlFor="email">
-                      Email
-                    </label>
-                    <input className={`w-full rounded-lg border-0 bg-white/5 py-2.5 px-3 text-white placeholder-white/50 leading-tight focus:outline-none focus:ring-2 focus:ring-white/25 ${errorMessage ? 'ring-1 ring-red-400' : ''}`} id="email" type="email" placeholder="example@gmail.com" {...register('email', { required: true })} />
-                    <p className={`text-red-400 text-xs mt-1 ${errorMessage ? 'block' : 'hidden'}`}>{errorMessage}</p>
-                  </div>
-                  <div className="flex items-center justify-between h-12">
-                    <Button
-                      type='submit'
-                      className='w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-white via-[#f7f7f7] to-[#eaeaea] text-black py-3 px-6 text-base font-semibold shadow-lg shadow-black/25 border border-white/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-black/40 hover:scale-[1.01] focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-white/50'
-                    >
-                      Crear cuenta
-                    </Button>
-                  </div>
-                  <div className="text-xs text-white/70 space-y-1">
-                    <p>Al suscribirte aceptás nuestras <a target='_blank' href="/privacy" rel='noopener noreferrer' className="underline">Políticas de Privacidad</a> y <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" rel='noopener noreferrer' className="underline">Términos y Condiciones</a>.</p>
-                  </div>
-                  <div className="flex items-center mt-2">
-                    <p className="text-sm text-white/80">
-                      ¿Ya tenés una cuenta?{' '}
-                      <span onClick={() => setLoginForm(true)} className="underline cursor-pointer" style={{ color: accentColor }}>Ingresá acá</span>
-                    </p>
-                  </div>
-                </form>
-              )}
-
-            </div>
-
-
-        </div>
-        </div>
-      ) :
-      (
-        <>
-      {forgetForm ? (
-                <div className='fixed flex justify-center md:items-center items-end w-full h-full bg-black/70 z-[300]'>
-                <div className='w-96 md:w-[30rem] h-[25rem] relative bottom-0 md:mb-12 md:h-[25rem] md:mt-12 bg-white rounded-t-2xl md:rounded-2xl'>
-                    <CldImage layout='fill'
-
-                    alt="" src={"my_uploads/image00006_vimnul"} className="object-cover object-top rounded-2xl" />
-                    {loading ? (
-                      <>
-                    <div className='absolute bg-gradient-to-w from-stone-50 to-slate-50  h-full w-full rounded-2xl overflow-scroll scrollbar-hide'>
-                      
-                      <div className='w-full pt-12 pb-6 px-8 flex flex-col'> 
-                        <div className='w-full h-full relative flex justify-between'>
-                          <h1 className='text-black font-bold text-2xl md:text-3xl pr-12 mt-4 capitalize'>Recuperar Contraseña</h1>
-                          <IoCloseCircle className='w-8 h-8 absolute -right-3 -top-8 text-black cursor-pointer' onClick={() => state.loginForm = false}/>                     
-                        </div>        
-                      </div>
-     
-                        <div className='h-12 mt-6 w-full flex items-center justify-center'>
-                          <MiniLoadingSpinner />    
-                        </div>
-                        </div>
-                      </>
-    
-
-                      ) : (
-                        <>
-                      <div className='absolute bg-gradient-to-w from-stone-50 to-slate-50  h-full w-full rounded-2xl overflow-scroll scrollbar-hide'>
-                      <div className='w-full pt-12 pb-6 px-8 flex flex-col'> 
-                        <div className='w-full relative flex justify-between'>
-                          <h1 className='text-black font-bold text-2xl md:text-3xl pr-12 mt-4 capitalize'>Recuperar Contraseña</h1>
-                          <IoCloseCircle className='w-8 h-8 absolute -right-3 -top-8 text-black cursor-pointer' onClick={() => state.loginForm = false}/>
-                        </div>
-        
-                      </div>
-                        <form className={`rounded px-8 pb-8 ${forgetSend ? 'flex flex-col items-center h-48 justify-start bg-gray-400/30 rounded-md mx-4 mb-12' : ''}`} onSubmit={handleSubmit(onSubmit)}>
-                          {forgetSend ? (
-                            <>
-                                <div className="w-[80%] h-full">
-                                  <div className='w-full flex flex-col justify-center items-center'>
-                                    <MdOutlineMarkEmailRead className='w-16 h-16 mb-4 text-[#a38951]'/>
-                                    <h5 className='text-lg md:text-xl font-bold text-black'>¡Email enviado!</h5>
-                                    <h6 className='text-sm md:text-base font-medium text-black'>Chequea tu Inbox</h6>
-                                  </div>
-                              </div>  
-                              <div className="flex items-center mb-1 mt-3">
-                                <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">
-                                <p onClick={() =>  {
-                                  setForgetSend(false);
-                                  setForgetForm(false);
-                                }} className="text-[#234C8C] underline cursor-pointer"> Volver al Login</p></label>
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <div className="mb-0">
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-                                  Email
-                                </label>
-                                <input className={`shadow appearance-none border ${errorMessage ? 'border-red-500' : ''} rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline`} id="email" type="email" placeholder="example@gmail.com" {...register('email', { required: true })} />
-                                <p className={`text-red-500 text-xs italic ${errorMessage ? 'block' : 'hidden'}`}>{errorMessage}</p>
-                              </div>
-                              <div className="flex items-center justify-between h-12">
-                              <button
-                              type='submit'
-                                className='w-full block bg-black border border-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-semibold group relative shadow'
-                              >
-                                <div className="absolute inset-0 w-0 bg-[#a38951] transition-all duration-[750ms] rounded-md ease-out group-hover:w-full"></div>
-                                <span className='text-white transition-all group-hover:text-black duration-[500ms] ease-out relative'>Recuperar{' '}
-                                </span>
-                              </button>
-                              </div>
-                              <div className="flex items-center mb-1 mt-3">
-                                <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">
-                                <p onClick={() => setForgetForm(false)} className="text-[#234C8C] underline cursor-pointer"> Volver al Login</p></label>
-                              </div>
-                            
-                            </>
-                          )}
-                      </form>
-                      </div>
-                        </>
-                      )} 
-                </div>
-                </div>
-      ) : 
-      (
-        <div className='fixed flex justify-center md:items-center items-end w-full h-full bg-black/70 z-[300]'>
-        <div className='w-full max-w-md md:max-w-[32rem] h-full max-h-[65vh] relative bottom-0 md:mb-12 md:min-h-fit md:mt-12 rounded-t-2xl md:rounded-2xl overflow-hidden'>
-            <CldImage layout='fill'
-            alt="" src={"my_uploads/fondos/DSC01436_sy7os9"} className="object-cover object-top rounded-2xl" />
-            <div className='absolute inset-0 bg-black/70' />
-            <div className='absolute h-full w-full overflow-y-auto scrollbar-hide font-montserrat px-8 pt-10 pb-12'>
-              <div className='w-full relative flex justify-between items-start mb-4'>
-                <h1 className='text-white font-bold text-2xl md:text-3xl pr-12 leading-snug'>Ingresa a tu cuenta</h1>
-                <IoCloseCircle className='w-8 h-8 text-white cursor-pointer' onClick={() => state.loginForm = false}/>
-              </div>
-              {loading ? (
-                <div className='mt-12'>
-                  <MiniLoadingSpinner />
-
-                </div>
-              ) : (
-                <>
-                <form className="rounded-2xl bg-[#0f1115]/85 border border-white/15 p-5 backdrop-blur space-y-4 shadow-2xl" onSubmit={handleSubmit(onSubmit)}>
-                  <div className="mb-0">
-                    <label className="block text-white text-sm font-medium mb-2" htmlFor="email">
-                      Email
-                    </label>
-                    <input className={`w-full rounded-lg border-0 bg-white/5 py-2.5 px-3 text-white placeholder-white/50 leading-tight focus:outline-none focus:ring-2 focus:ring-white/25 ${errorMessage ? 'ring-1 ring-red-400' : ''}`} id="email" type="email" placeholder="example@gmail.com" {...register('email', { required: true })} />
-                    <p className={`text-red-400 text-xs mt-1 ${errorMessage ? 'block' : 'hidden'}`}>{errorMessage}</p>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-white text-sm font-medium mb-2" htmlFor="name">
-                      Contraseña
-                    </label>
-                    <input className={`w-full rounded-lg border-0 bg-white/5 py-2.5 px-3 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-white/25 ${errorMessage ? 'ring-1 ring-red-400' : ''}`} type="password" id="password" placeholder="••••••••" {...register('password', { required: true })} />
-                  </div>
-                  <div className="flex items-center w-ull justify-end relative -top-2 mb-3 text-xs">
-                    <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-white/80">
-                    <p onClick={() => {
-                      setForgetForm(true)
-                                                } } className="text-white underline cursor-pointer"> Olvidé mi Contraseña</p></label>
-                  </div>
-                  <div className="flex items-center justify-between h-12">
-                  <Button
-                      type='submit'
-                      className='w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-white via-[#f7f7f7] to-[#eaeaea] text-black py-3 px-6 text-base font-semibold shadow-lg shadow-black/25 border border-white/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-black/40 hover:scale-[1.01]'
-                      >
-                    Ingresar
-                      </Button>
-  
-                  </div>
-                  <div className="flex items-center mb-1 mt-3">
-                    <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-white/80">¿No tenés una cuenta?
-                                                <p onClick={() => setLoginForm(false)} className="text-white underline cursor-pointer"> Click aquí</p></label>
-                  </div>
-              </form>
-                </>
-              )}
-            
-            </div>
-
-
-        </div>
-        </div>
+    <AnimatePresence mode="wait">
+      {snap.loginForm && (
+        <m.div
+          key="login-modal"
+          variants={overlayVariants}
+          initial={false}
+          animate="visible"
+          exit="exit"
+          className="fixed inset-0 z-[300] flex items-end justify-center bg-palette-ink/60 p-4 md:items-center md:p-6 font-montserrat"
+          onClick={(e) => e.target === e.currentTarget && close()}
+        >
+          <m.div
+            initial={false}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-h-[90vh] overflow-y-auto flex justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {modalCard}
+          </m.div>
+        </m.div>
       )}
-        </>
-      )}
-
-    </>
+    </AnimatePresence>
   );
 };
 

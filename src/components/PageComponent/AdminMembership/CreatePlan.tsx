@@ -8,7 +8,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import { useAppSelector } from '../../../redux/hooks';

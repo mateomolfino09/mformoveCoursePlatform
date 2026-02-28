@@ -7,7 +7,7 @@ import { LoadingSpinner } from '../../components/LoadingSpinner';
 import InPersonClassesSchedule from '../../components/PageComponent/ClassesSchedule/InPersonClassesSchedule';
 import ClassSections from '../../components/PageComponent/ClassesSchedule/ClassSections';
 import { useAppDispatch } from '../../hooks/useTypeSelector';
-import { toggleScroll } from '../../redux/features/headerHomeSlice';
+import { toggleScroll } from '../../redux/features/headerLibrarySlice';
 import { UserGroupIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';

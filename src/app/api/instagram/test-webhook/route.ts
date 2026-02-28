@@ -5,7 +5,6 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
-    console.log('🧪 [TEST] Probando configuración del webhook...');
 
     // Verificar credenciales
     const instagramService = InstagramService.getInstance();
@@ -74,7 +73,6 @@ export async function GET(req: NextRequest) {
       ]
     };
 
-    console.log('✅ [TEST] Resultado de la prueba:', testResult);
     return NextResponse.json(testResult);
 
   } catch (error) {

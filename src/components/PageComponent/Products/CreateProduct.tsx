@@ -13,7 +13,7 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next13-progressbar';
 import { parseCookies } from 'nookies';
 import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 
 const CreateProduct = () => {
   const [state, setState] = useState({
@@ -200,7 +200,6 @@ const CreateProduct = () => {
         setLoading(false);
         return;
       }
-      console.log('📄 Tamaño del PDF:', pdfSize.toFixed(2), 'MB');
     }
 
     try {
@@ -328,7 +327,6 @@ const CreateProduct = () => {
       // Subir PDF a Cloudinary si existe (antes de crear el producto)
       let pdfPresentacionUrl = undefined;
       if ((productType === 'evento' || productType === 'programa_transformacional') && pdfPresentacion) {
-        console.log('📄 Subiendo PDF a Cloudinary...');
         const pdfFormData = new FormData();
         pdfFormData.append('file', pdfPresentacion);
         pdfFormData.append('upload_preset', 'my_uploads');
@@ -340,7 +338,6 @@ const CreateProduct = () => {
           });
           const pdfData = await pdfResponse.json();
           pdfPresentacionUrl = pdfData.public_id;
-          console.log('✅ PDF subido:', pdfPresentacionUrl);
         } catch (pdfError) {
           console.error('❌ Error subiendo PDF:', pdfError);
           toast.error('Error al subir el PDF. Intenta con un archivo más pequeño.');
@@ -370,9 +367,7 @@ const CreateProduct = () => {
             method: 'GET',
             headers: { 'Cache-Control': 'no-cache' }
           });
-          console.log('✅ Caché de eventos revalidado');
         } catch (cacheError) {
-          console.log('⚠️ Error revalidando caché:', cacheError);
         }
       }
       

@@ -12,23 +12,25 @@ import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../imageLoader';
 import { toast } from 'react-hot-toast';
 import Cookies from 'js-cookie';
-import BitacoraSidebar from '../../components/PageComponent/Bitacora/BitacoraSidebar';
-import VideoContentDisplay from '../../components/PageComponent/Bitacora/VideoContentDisplay';
-import AudioTextContentDisplay from '../../components/PageComponent/Bitacora/AudioTextContentDisplay';
+import WeeklyPathSidebar from '../../components/PageComponent/WeeklyPath/WeeklyPathSidebar';
+import VideoContentDisplay from '../../components/PageComponent/WeeklyPath/VideoContentDisplay';
+import AudioTextContentDisplay from '../../components/PageComponent/WeeklyPath/AudioTextContentDisplay';
 import MoveCrewLoading from '../../components/PageComponent/MoveCrew/MoveCrewLoading';
 import MainSideBar from '../../components/MainSidebar/MainSideBar';
+import WeeklyPathSkeleton from '../../components/WeeklyPathSkeleton';
 import { CoherenceProvider, useCoherence } from '../../contexts/CoherenceContext';
-import CoherenceCelebrationModal from '../../components/PageComponent/Bitacora/CoherenceCelebrationModal';
-import CoherenceInfoModal from '../../components/PageComponent/Bitacora/CoherenceInfoModal';
-import GorillaLevelDisplay from '../../components/PageComponent/Bitacora/GorillaLevelDisplay';
-import VideoHeaderGorilla from '../../components/PageComponent/Bitacora/VideoHeaderGorilla';
-import BitacoraLoading from '../../components/PageComponent/MoveCrew/BitacoraLoading';
+import CoherenceCelebrationModal from '../../components/PageComponent/WeeklyPath/CoherenceCelebrationModal';
+import CoherenceInfoModal from '../../components/PageComponent/WeeklyPath/CoherenceInfoModal';
+import GorillaLevelDisplay from '../../components/PageComponent/WeeklyPath/GorillaLevelDisplay';
+import VideoHeaderGorilla from '../../components/PageComponent/WeeklyPath/VideoHeaderGorilla';
+import WeeklyPathLoading from '../../components/PageComponent/MoveCrew/WeeklyPathLoading';
 import FooterProfile from '../../components/PageComponent/Profile/FooterProfile';
+import WeeklyReportModal from '../../components/WeeklyReportModal';
 
 import Footer from '../../components/Footer';
 import Link from 'next/link';
 
-const BitacoraFooter = () => (
+const WeeklyPathFooter = () => (
   <footer className="bg-black text-white mt-12">
     <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row md:items-start md:justify-between gap-8">
       <div className="flex items-center gap-4">
@@ -42,7 +44,7 @@ const BitacoraFooter = () => (
           />
         </Link>
         <p className="text-sm text-white/70 font-light font-montserrat">
-          Move Crew - Camino del Gorila
+          Move Crew - Camino
         </p>
       </div>
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm text-white/80 font-light font-montserrat">
@@ -66,7 +68,7 @@ const GorillaHoverInfo = ({ children }: { children: React.ReactNode }) => (
     <div
       className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-72 -translate-x-1/2 rounded-xl bg-black/80 px-3 py-2 text-xs text-white opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
     >
-      Sube de nivel completando semanas del Camino del Gorila. Gana U.C. y canjea por programas o merch que iremos creando.
+      Una semana completada = 1 U.C. Completá semanas del Camino y canjeá por programas o merch.
     </div>
   </div>
 );
@@ -78,6 +80,8 @@ interface DailyContent {
     type: 'video' | 'none';
     videoUrl?: string;
     videoId?: string;
+    videoName?: string;
+    nombre?: string;
     thumbnailUrl?: string;
     duration?: number;
     title?: string;
@@ -86,6 +90,8 @@ interface DailyContent {
   audioTextContent?: {
     audioUrl?: string;
     audioDuration?: number;
+    audioTitle?: string;
+    nombre?: string;
     text?: string;
     title?: string;
     subtitle?: string;
@@ -106,7 +112,9 @@ interface WeeklyContent {
   // Legacy fields para compatibilidad
   videoUrl?: string;
   videoId?: string;
+  videoName?: string;
   audioUrl?: string;
+  audioTitle?: string;
   text?: string;
   isLocked?: boolean;
 }
@@ -132,7 +140,7 @@ interface CoherenceTracking {
   }>;
 }
 
-function BitacoraPageContent() {
+function WeeklyPathPageContent() {
   const router = useRouter();
   const auth = useAuth();
   const coherence = useCoherence();
@@ -145,19 +153,27 @@ function BitacoraPageContent() {
   const [selectedContentType, setSelectedContentType] = useState<'visual' | 'audioText' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [isChangingContent, setIsChangingContent] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false); // Cerrado por defecto (especialmente en mobile)
   const [isDesktop, setIsDesktop] = useState(false);
   const [openTooltip, setOpenTooltip] = useState<'menu' | 'progress' | 'uc' | null>(null);
   const isMobile = !isDesktop;
   const tooltipTexts: Record<'menu' | 'progress' | 'uc', string> = {
-    menu: 'Sube de nivel completando semanas del Camino del Gorila. Gana U.C. y canjealas por programas, elementos, material o ropa, lo iremos mejorando y mejorando.',
-    progress: 'Porcentaje de avance del mes actual del Camino del Gorila.',
-    uc: 'Unidades de Coherencia acumuladas (2 por semana ideal: 1 audio + 1 video). Canjealas por programas, elementos, material o ropa, lo iremos mejorando y mejorando.'
+    menu: 'Completá semanas del Camino y ganá U.C. para canjear por programas, material o merch.',
+    progress: 'Avance del mes en el Camino.',
+    uc: 'Una semana completada = 1 U.C. Acumulalas y canjealas por programas, material o lo que vayamos creando.'
   };
   
   // Estados para los modales de celebración e información
   const [showCelebrationModal, setShowCelebrationModal] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [showLevelUpEffect, setShowLevelUpEffect] = useState(false);
+  const [levelUpData, setLevelUpData] = useState<{
+    newLevel?: number;
+    evolution?: boolean;
+    gorillaIcon?: string;
+  } | null>(null);
   const [celebrationData, setCelebrationData] = useState<{
     ucsOtorgadas: number;
     totalUnits: number;
@@ -229,7 +245,18 @@ function BitacoraPageContent() {
         return;
       }
 
-      fetchBitacora();
+      // Verificar acceso al Camino (solo requiere contrato aceptado)
+      // La Camino Base es opcional (se puede saltear pero se pierden U.C.)
+      if (auth.user && auth.user.rol !== 'Admin') {
+        const contratoAceptado = auth.user.subscription?.onboarding?.contratoAceptado || false;
+
+        if (!contratoAceptado) {
+          router.push('/onboarding/bienvenida');
+          return;
+        }
+      }
+
+      fetchWeeklyPath();
       coherence.fetchCoherenceTracking();
     };
 
@@ -239,17 +266,19 @@ function BitacoraPageContent() {
   }, []);
 
   // Calcular porcentaje completado del mes
-  // Cada contenido (video o audio) representa 6.25% (dos contenidos por semana = 12.5%).
+  // El porcentaje depende de la cantidad de contenidos completados vs el total disponible
   const calculateMonthProgress = (): number => {
     if (!logbook || !logbook.weeklyContents) return 0;
 
     let completedContentsCount = 0;
+    let totalContentsCount = 0;
 
     logbook.weeklyContents.forEach((week) => {
       if (week.dailyContents && week.dailyContents.length > 0) {
         week.dailyContents.forEach((day) => {
           // Video diario
           if (day.visualContent && day.visualContent.videoUrl) {
+            totalContentsCount++;
             const videoKey = `${logbook._id}-${week.weekNumber}-${day.dayNumber}-video`;
             if (coherence.completedVideos.has(videoKey)) {
               completedContentsCount++;
@@ -258,6 +287,7 @@ function BitacoraPageContent() {
 
           // Audio diario
           if (day.audioTextContent && day.audioTextContent.audioUrl) {
+            totalContentsCount++;
             const audioKey = `${logbook._id}-${week.weekNumber}-${day.dayNumber}-audio`;
             if (coherence.completedAudios.has(audioKey)) {
               completedContentsCount++;
@@ -266,12 +296,14 @@ function BitacoraPageContent() {
         });
       } else if (week.videoUrl) {
         // Estructura legacy: video semanal
+        totalContentsCount++;
         const videoKey = `${logbook._id}-${week.weekNumber}-week-video`;
         if (coherence.completedVideos.has(videoKey)) {
           completedContentsCount++;
         }
         // Estructura legacy: audio semanal (si existe)
         if ((week).audioUrl) {
+          totalContentsCount++;
           const audioKey = `${logbook._id}-${week.weekNumber}-week-audio`;
           if (coherence.completedAudios.has(audioKey)) {
             completedContentsCount++;
@@ -280,8 +312,10 @@ function BitacoraPageContent() {
       }
     });
 
-    // Cada contenido aporta 6.25%
-    return Math.min(completedContentsCount * 6.25, 100);
+    // Calcular porcentaje basado en completados / total
+    if (totalContentsCount === 0) return 0;
+    const percentage = Math.round((completedContentsCount / totalContentsCount) * 100);
+    return Math.min(percentage, 100);
   };
 
   const monthProgress = calculateMonthProgress();
@@ -327,35 +361,30 @@ function BitacoraPageContent() {
           if (response.ok) {
             const data = await response.json();
             
-            if (data.levelUp) {
-              console.log('[BitacoraPage] Mes completado - Subida de nivel', {
-                newLevel: data.newLevel,
-                evolution: data.evolution,
-                gorillaIcon: data.gorillaIcon
-              });
-              
-              // Actualizar tracking con el nuevo nivel
-              if (data.tracking) {
-                coherence.updateTracking(data.tracking);
-              }
-              
-              // Mostrar modal de celebración con información de nivel
+            // Actualizar tracking siempre, independientemente de si hay levelUp
+            if (data.tracking) {
+              coherence.updateTracking(data.tracking);
+            }
+            
+            // Mostrar modal de celebración si hay levelUp o si hay logros nuevos
+            if (data.levelUp || (data.newAchievements && data.newAchievements.length > 0)) {
+              // Usar los valores del tracking actualizado (ya incluye gorillaIcon calculado)
+              const updatedTracking = data.tracking || coherence.coherenceTracking;
               setCelebrationData({
                 ucsOtorgadas: 0,
-                totalUnits: data.tracking?.totalUnits || 0,
-                currentStreak: data.tracking?.currentStreak || 0,
+                totalUnits: updatedTracking?.totalUnits || 0,
+                currentStreak: updatedTracking?.currentStreak || 0,
                 esSemanaAdicional: false,
                 newAchievements: data.newAchievements || [],
-                levelUp: true,
-                newLevel: data.newLevel,
-                evolution: data.evolution,
-                gorillaIcon: data.gorillaIcon
+                levelUp: data.levelUp || false,
+                newLevel: updatedTracking?.level || data.newLevel || 1,
+                evolution: data.evolution || false,
+                gorillaIcon: updatedTracking?.gorillaIcon || data.gorillaIcon || '🦍'
               });
               setShowCelebrationModal(true);
             }
           }
         } catch (error) {
-          console.error('[BitacoraPage] Error completando mes', error);
           // Si hay error, permitir intentar de nuevo
           setMonthCompletionChecked(false);
         }
@@ -370,26 +399,72 @@ function BitacoraPageContent() {
     checkMonthCompletion();
   }, [monthProgress, logbook, coherence, monthCompletionChecked]);
 
-  const fetchBitacora = async () => {
+  const fetchWeeklyPath = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/bitacora/month', {
+      // Obtener parámetros de la URL
+      const searchParams = new URLSearchParams(window.location.search);
+      const id = searchParams.get('id');
+      const month = searchParams.get('month');
+      const year = searchParams.get('year');
+      
+      // Construir URL con parámetros si existen
+      let url = '/api/bitacora/month';
+      if (id) {
+        url += `?id=${id}`;
+      } else if (month && year) {
+        url += `?month=${month}&year=${year}`;
+      }
+      
+      const response = await fetch(url, {
         credentials: 'include',
         cache: 'no-store'
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al obtener la bitácora');
+        // Si es un 404, intentar obtener la camino más reciente sin parámetros
+        if (response.status === 404 && (id || month || year)) {
+          // Si había parámetros específicos, intentar sin ellos
+          const fallbackResponse = await fetch('/api/bitacora/month', {
+            credentials: 'include',
+            cache: 'no-store'
+          });
+          if (fallbackResponse.ok) {
+            const fallbackData = await fallbackResponse.json();
+            // Procesar el logbook del fallback igual que el normal
+            processLogbookData(fallbackData.logbook);
+            setInitialLoading(false);
+            setLoading(false);
+            return;
+          }
+        }
+        throw new Error(errorData.error || 'Error al obtener la camino');
       }
 
       const data = await response.json();
-      setLogbook(data.logbook);
       
       // Procesar semanas y días para determinar qué está desbloqueado
-      if (data.logbook && data.logbook.weeklyContents) {
+      processLogbookData(data.logbook);
+      
+      setInitialLoading(false);
+    } catch (err: any) {
+      setError(err.message || 'Error al cargar la camino');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const processLogbookData = (logbookData: Logbook | null) => {
+    if (!logbookData) {
+      return;
+    }
+    
+    setLogbook(logbookData);
+    
+    if (logbookData && logbookData.weeklyContents) {
         // Actualizar estados de desbloqueo basado solo en flags semanales (cron) y admin
-        const processedWeeks = data.logbook.weeklyContents.map((week: WeeklyContent) => {
+        const processedWeeks = logbookData.weeklyContents.map((week: WeeklyContent) => {
           const isWeekUnlocked =
             isAdmin ||
             week.isPublished ||
@@ -401,46 +476,38 @@ function BitacoraPageContent() {
           return week;
         });
         
-        data.logbook.weeklyContents = processedWeeks;
-        setLogbook(data.logbook);
-        
-        // Seleccionar automáticamente la semana desbloqueada más reciente (sin dailyContents)
-        const unlockedWeeks = processedWeeks.filter((week: WeeklyContent) => week.isUnlocked);
-        if (unlockedWeeks.length > 0) {
-          const sortedUnlockedWeeks = unlockedWeeks.sort((a: WeeklyContent, b: WeeklyContent) => {
-            const dateA = new Date(a.publishDate).getTime();
-            const dateB = new Date(b.publishDate).getTime();
-            return dateB - dateA;
-          });
-          const mostRecentUnlockedWeek = sortedUnlockedWeeks[0];
-          setSelectedWeek(mostRecentUnlockedWeek.weekNumber);
-          setSelectedDay(null);
-          if (mostRecentUnlockedWeek.videoUrl) {
-            setSelectedContentType('visual');
-          } else if (mostRecentUnlockedWeek.audioUrl || mostRecentUnlockedWeek.text) {
-            setSelectedContentType('audioText');
-          } else {
-            setSelectedContentType(null);
-          }
+      logbookData.weeklyContents = processedWeeks;
+      setLogbook(logbookData);
+      
+      // Seleccionar automáticamente la semana desbloqueada más reciente (sin dailyContents)
+      const unlockedWeeks = processedWeeks.filter((week: WeeklyContent) => week.isUnlocked);
+      if (unlockedWeeks.length > 0) {
+        const sortedUnlockedWeeks = unlockedWeeks.sort((a: WeeklyContent, b: WeeklyContent) => {
+          const dateA = new Date(a.publishDate).getTime();
+          const dateB = new Date(b.publishDate).getTime();
+          return dateB - dateA;
+        });
+        const mostRecentUnlockedWeek = sortedUnlockedWeeks[0];
+        setSelectedWeek(mostRecentUnlockedWeek.weekNumber);
+        setSelectedDay(null);
+        if (mostRecentUnlockedWeek.videoUrl) {
+          setSelectedContentType('visual');
+        } else if (mostRecentUnlockedWeek.audioUrl || mostRecentUnlockedWeek.text) {
+          setSelectedContentType('audioText');
         } else {
-          setSelectedWeek(processedWeeks[0]?.weekNumber || null);
-          setSelectedDay(null);
-          if (processedWeeks[0]?.videoUrl) {
-            setSelectedContentType('visual');
-          } else if (processedWeeks[0]?.audioUrl || processedWeeks[0]?.text) {
-            setSelectedContentType('audioText');
-          } else {
-            setSelectedContentType(null);
-          }
+          setSelectedContentType(null);
+        }
+      } else {
+        setSelectedWeek(processedWeeks[0]?.weekNumber || null);
+        setSelectedDay(null);
+        if (processedWeeks[0]?.videoUrl) {
+          setSelectedContentType('visual');
+        } else if (processedWeeks[0]?.audioUrl || processedWeeks[0]?.text) {
+          setSelectedContentType('audioText');
+        } else {
+          setSelectedContentType(null);
         }
       }
-      
-      setInitialLoading(false);
-    } catch (err: any) {
-      console.error('Error obteniendo bitácora:', err);
-      setError(err.message || 'Error al cargar la bitácora');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -452,9 +519,20 @@ function BitacoraPageContent() {
   };
 
   const handleSelect = (weekNumber: number, dayNumber: number | null, contentType: 'visual' | 'audioText' | null) => {
-    setSelectedWeek(weekNumber);
-    setSelectedDay(dayNumber);
-    setSelectedContentType(contentType);
+    // Activar loading
+    setIsChangingContent(true);
+    
+    // Pequeño delay para mostrar el loading y luego cambiar el contenido
+    setTimeout(() => {
+      setSelectedWeek(weekNumber);
+      setSelectedDay(dayNumber);
+      setSelectedContentType(contentType);
+      
+      // Desactivar loading después de que el contenido haya comenzado a renderizarse
+      setTimeout(() => {
+        setIsChangingContent(false);
+      }, 300);
+    }, 150);
   };
 
   const handleComplete = async () => {
@@ -501,12 +579,6 @@ function BitacoraPageContent() {
       contentType: selectedContentType // Enviar el tipo de contenido (visual o audioText)
     };
 
-    console.log('[BitacoraPage] handleComplete: Enviando petición');
-    console.log('  - logbookId:', logbook._id);
-    console.log('  - weekNumber:', selectedWeek);
-    console.log('  - dayNumber:', selectedDay);
-    console.log('  - contentType:', selectedContentType);
-
     try {
       const response = await fetch('/api/bitacora/complete', {
         method: 'POST',
@@ -524,15 +596,6 @@ function BitacoraPageContent() {
 
       const data = await response.json();
       
-      console.log('[BitacoraPage] handleComplete: Respuesta recibida');
-      console.log('  - success:', data.success);
-      console.log('  - totalUnits:', data.tracking?.totalUnits);
-      console.log('  - esSemanaAdicional:', data.esSemanaAdicional);
-      console.log('  - ucsOtorgadas:', data.ucsOtorgadas);
-      console.log('  - weekNumber:', data.weekNumber);
-      console.log('  - contentType:', data.contentType);
-      console.log('  - message:', data.message);
-      
       // Si no se pudo agregar U.C. (pero la clase se completó)
       if (data.success === false) {
         // La clase se completó pero no se otorgó U.C.
@@ -540,7 +603,7 @@ function BitacoraPageContent() {
         
         // Mostrar modal informativo con el motivo
         setInfoModalData({
-          message: data.message || 'No se pudo agregar la Unidad de Coherencia',
+          message: data.message || 'Una semana completada = 1 U.C. Este contenido ya estaba completado.',
           tip: data.tip || undefined,
           reason: data.reason || undefined,
           weekNumber: data.weekNumber || selectedWeek || undefined,
@@ -553,7 +616,10 @@ function BitacoraPageContent() {
           coherence.updateTracking({
             totalUnits: data.tracking.totalUnits,
             currentStreak: data.tracking.currentStreak,
-            longestStreak: data.tracking.longestStreak
+            longestStreak: data.tracking.longestStreak,
+            levelProgress: data.levelProgress !== undefined && data.levelProgress !== null ? data.levelProgress : (coherence.coherenceTracking?.levelProgress ?? 0),
+            progressToNextLevel: data.progressToNextLevel !== undefined && data.progressToNextLevel !== null ? data.progressToNextLevel : (coherence.coherenceTracking?.progressToNextLevel ?? 0),
+            level: data.newLevel !== undefined && data.newLevel !== null ? data.newLevel : (coherence.coherenceTracking?.level ?? 1)
           });
         }
         
@@ -584,28 +650,24 @@ function BitacoraPageContent() {
       
       // Marcar como completado usando el contexto con los datos del servidor
       if (data.completedDays && data.completedDays.length > 0) {
-        console.log('[BitacoraPage] handleComplete: Marcando días completados', data.completedDays);
         data.completedDays.forEach((key: string) => {
           coherence.markDayCompleted(key);
         });
       }
       
       if (data.completedWeeks && data.completedWeeks.length > 0) {
-        console.log('[BitacoraPage] handleComplete: Marcando semanas completadas', data.completedWeeks);
         data.completedWeeks.forEach((key: string) => {
           coherence.markWeekCompleted(key);
         });
       }
       
       if (data.completedVideos && data.completedVideos.length > 0) {
-        console.log('[BitacoraPage] handleComplete: Marcando videos completados', data.completedVideos);
         data.completedVideos.forEach((key: string) => {
           coherence.markVideoCompleted(key, 1);
         });
       }
       
       if (data.completedAudios && data.completedAudios.length > 0) {
-        console.log('[BitacoraPage] handleComplete: Marcando audios completados', data.completedAudios);
         data.completedAudios.forEach((key: string) => {
           coherence.markAudioCompleted(key);
         });
@@ -613,20 +675,43 @@ function BitacoraPageContent() {
       
       // Actualizar tracking en el contexto directamente desde la respuesta (sin reload)
       if (data.tracking) {
-        console.log('[BitacoraPage] handleComplete: Actualizando tracking', {
-          totalUnitsAntes: coherence.coherenceTracking?.totalUnits,
-          totalUnitsNuevo: data.tracking.totalUnits
-        });
-        
-        coherence.updateTracking({
-          totalUnits: data.tracking.totalUnits,
-          currentStreak: data.tracking.currentStreak,
-          longestStreak: data.tracking.longestStreak
-        });
-        
-        console.log('[BitacoraPage] handleComplete: Tracking actualizado', {
-          totalUnitsDespues: coherence.coherenceTracking?.totalUnits
-        });
+        // Si hubo level up, actualizar todos los campos juntos incluyendo el nuevo nivel
+        if (data.levelUp) {
+          coherence.updateTracking({
+            totalUnits: data.tracking.totalUnits,
+            currentStreak: data.tracking.currentStreak,
+            longestStreak: data.tracking.longestStreak,
+            level: data.newLevel, // Nuevo nivel después del level up
+            levelProgress: data.levelProgress !== undefined && data.levelProgress !== null ? data.levelProgress : 0, // Se reinicia a 0 después del level up
+            progressToNextLevel: data.progressToNextLevel !== undefined && data.progressToNextLevel !== null ? data.progressToNextLevel : 0,
+            gorillaIcon: data.gorillaIcon,
+            evolutionName: data.evolutionName,
+            characterEvolution: data.evolution ? (coherence.coherenceTracking?.characterEvolution ?? 0) + 1 : (coherence.coherenceTracking?.characterEvolution ?? 0)
+          });
+          
+          // Mostrar efecto visual de level up
+          setLevelUpData({
+            newLevel: data.newLevel,
+            evolution: data.evolution,
+            gorillaIcon: data.gorillaIcon
+          });
+          setShowLevelUpEffect(true);
+          
+          // Ocultar el efecto después de 3 segundos
+          setTimeout(() => {
+            setShowLevelUpEffect(false);
+            setLevelUpData(null);
+          }, 3000);
+        } else {
+          // Si no hay level up, actualizar tracking normalmente
+          coherence.updateTracking({
+            totalUnits: data.tracking.totalUnits,
+            currentStreak: data.tracking.currentStreak,
+            longestStreak: data.tracking.longestStreak,
+            levelProgress: data.levelProgress !== undefined && data.levelProgress !== null ? data.levelProgress : (coherence.coherenceTracking?.levelProgress ?? 0),
+            progressToNextLevel: data.progressToNextLevel !== undefined && data.progressToNextLevel !== null ? data.progressToNextLevel : (coherence.coherenceTracking?.progressToNextLevel ?? 0)
+          });
+        }
         
         // Actualizar achievements si hay nuevos
         if (data.newAchievements && data.newAchievements.length > 0) {
@@ -648,19 +733,27 @@ function BitacoraPageContent() {
       const ucsOtorgadas = data.ucsOtorgadas || 1;
       const currentStreak = data.tracking?.currentStreak || coherence.coherenceTracking?.currentStreak || 0;
       
-      // Configurar datos del modal de celebración
-      setCelebrationData({
-        ucsOtorgadas,
-        totalUnits,
-        currentStreak,
-        esSemanaAdicional,
-        newAchievements: data.newAchievements || []
-      });
-      setShowCelebrationModal(true);
+      // Verificar si necesita reporte semanal
+      if (data.necesitaReporte) {
+        setShowReportModal(true);
+      } else {
+        // Configurar datos del modal de celebración
+        setCelebrationData({
+          ucsOtorgadas,
+          totalUnits,
+          currentStreak,
+          esSemanaAdicional,
+          newAchievements: data.newAchievements || [],
+          levelUp: data.levelUp || false,
+          newLevel: data.newLevel,
+          evolution: data.evolution || false,
+          gorillaIcon: data.gorillaIcon
+        });
+        setShowCelebrationModal(true);
+      }
 
     } catch (err: any) {
-      console.error('Error completando:', err);
-      toast.error(err.message || 'Error al completar la bitácora');
+      toast.error(err.message || 'Error al completar la camino');
     } finally {
       setIsCompleting(false);
     }
@@ -703,7 +796,7 @@ function BitacoraPageContent() {
         type: 'visual' as const,
         videoUrl: week.videoUrl,
         videoId,
-        title: week.weekTitle || `Semana ${week.weekNumber}`,
+        title: week.videoName || week.weekTitle || `Semana ${week.weekNumber}`,
         duration: (week as any).videoDuration
       };
     };
@@ -714,7 +807,7 @@ function BitacoraPageContent() {
         type: 'audioText' as const,
         audioUrl: week.audioUrl,
         text: week.text,
-        title: week.weekTitle || `Semana ${week.weekNumber}`
+        title: week.audioTitle || week.weekTitle || `Semana ${week.weekNumber}`
       };
     };
 
@@ -724,12 +817,7 @@ function BitacoraPageContent() {
   };
 
   if (initialLoading || loading) {
-    return (
-      <>
-        <BitacoraLoading show={initialLoading || loading} />
-        <div className="min-h-screen bg-gray-50" />
-      </>
-    );
+    return <WeeklyPathSkeleton />;
   }
 
   if (error || !logbook) {
@@ -737,13 +825,13 @@ function BitacoraPageContent() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 font-montserrat">
         <div className="text-center max-w-md px-6">
           <h1 className="text-2xl font-normal text-gray-900 mb-4 font-montserrat">
-            No hay bitácora disponible
+            No hay camino disponible
           </h1>
           <p className="text-gray-700/90 mb-6 font-montserrat font-light">
             {error || 'No hay contenido disponible. Pronto estará disponible.'}
           </p>
           <button
-            onClick={() => router.push('/home')}
+            onClick={() => router.push('/library')}
             className="px-6 py-3 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 text-gray-900 rounded-full font-medium hover:border-amber-300/60 hover:shadow-lg transition-all duration-300 font-montserrat"
           >
             Volver al inicio
@@ -759,13 +847,12 @@ function BitacoraPageContent() {
   return (
     <>
     <MainSideBar
-      where={'bitacora'}
+      where={'weekly-path'}
       forceStandardHeader
       onMenuClick={() => setSidebarOpen(prev => !prev)}
       sidebarOpen={sidebarOpen}
       forceLightTheme={selectedContentType === 'audioText'}
     >  
-      <MoveCrewLoading show={initialLoading} />
       <div className="min-h-screen bg-gray-50 font-montserrat relative">
         {/* Layout principal con flex */}
         <div className="flex relative justify-between">
@@ -813,7 +900,7 @@ function BitacoraPageContent() {
               transition-opacity duration-150
               overflow-hidden
             `}>
-              <BitacoraSidebar
+              <WeeklyPathSidebar
                 logbook={logbook}
                 selectedWeek={selectedWeek}
                 selectedDay={selectedDay}
@@ -850,7 +937,7 @@ function BitacoraPageContent() {
                 {/* Imagen de fondo */}
                 <CldImage
                   src="my_uploads/msbtxfaeeizafeo9axkq"
-                  alt="El Camino del Gorila"
+                  alt="El Camino"
                   fill
                   className="object-cover opacity-40"
                   priority
@@ -866,82 +953,27 @@ function BitacoraPageContent() {
                   <div className="flex flex-row-reverse items-center gap-6 flex-1 max-w-7xl mx-auto w-full">
                     {/* Icono de gorila con círculo de progreso */}
                     <div className="relative flex-shrink-0 flex flex-col items-center">
-                      <svg className="w-20 h-20 md:w-24 md:h-24 transform -rotate-90" viewBox="0 0 100 100">
-                        {/* Círculo de fondo */}
-                        <circle
-                          cx="50"
-                          cy="50"
-                          r="45"
-                          fill="none"
-                          stroke="rgba(251, 191, 36, 0.2)"
-                          strokeWidth="8"
-                        />
-                        {/* Círculo de progreso con gradiente Move Crew */}
-                        <circle
-                          cx="50"
-                          cy="50"
-                          r="45"
-                          fill="none"
-                          stroke="url(#progressGradient)"
-                          strokeWidth="8"
-                          strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 45}`}
-                          strokeDashoffset={`${2 * Math.PI * 45 * (1 - monthProgress / 100)}`}
-                          className="transition-all duration-500 ease-out"
-                        />
-                        {/* Definición del gradiente */}
-                        <defs>
-                          <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.9" />
-                            <stop offset="50%" stopColor="#F97316" stopOpacity="0.9" />
-                            <stop offset="100%" stopColor="#E11D48" stopOpacity="0.9" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                      
-                      <div className="flex flex-col items-center">
-                        {/* Componente de gorila con nivel y progreso */}
-                        <div className="absolute inset-0 flex items-center bottom-11 md:bottom-12 justify-center" aria-label="gorilla-level">
-                          {(() => {
-                            // Usar tracking siempre (con fallback) para que entre al primer branch
-                            const fallbackTracking = {
-                              level: 0,
-                              monthsCompleted: 0,
-                              gorillaIcon: '🦍',
-                              evolutionName: 'Gorila Bebé',
-                              progressToNextLevel: 0
-                            };
-                            const tracking = coherence.coherenceTracking || fallbackTracking;
-                            const monthsCompleted = tracking.monthsCompleted ?? 0;
-                            const levelDisplay = monthsCompleted > 0
-                              ? (tracking.level ?? monthsCompleted ?? 1)
-                              : 1;
-                            const gorillaIcon = monthsCompleted > 0
-                              ? (tracking.gorillaIcon || '🦍')
-                              : '🦍';
-                            const evolutionName = monthsCompleted > 0
-                              ? (tracking.evolutionName || 'Gorila Bebé')
-                              : 'Gorila Bebé';
-                            const progressToNextLevel = tracking.progressToNextLevel ?? 0;
-
-                            return (
-                              <GorillaHoverInfo>
-                                <GorillaLevelDisplay
-                                  level={levelDisplay}
-                                  gorillaIcon={gorillaIcon}
-                                  evolutionName={evolutionName}
-                                  progressToNextLevel={progressToNextLevel}
-                                  monthsCompleted={monthsCompleted}
-                                  size="sm"
-                                  showProgressBar={false}
-                                  showLevel={true}
-                                  layout="centered"
-                                  showInfoText={false}
-                                />
-                              </GorillaHoverInfo>
-                            );
-                          })()}
-                      </div>
+                      <div className="flex flex-col items-center relative">
+                        {/* Componente de gorila con nivel y progreso - El SVG del círculo de progreso está dentro del componente */}
+                        <div className="flex items-center justify-center" aria-label="gorilla-level">
+                          {coherence.coherenceTracking ? (
+                            <GorillaHoverInfo>
+                              <GorillaLevelDisplay
+                                level={coherence.coherenceTracking.level || 1}
+                                gorillaIcon={coherence.coherenceTracking.gorillaIcon || '🦍'}
+                                evolutionName={coherence.coherenceTracking.evolutionName || 'Gorila Bebé'}
+                                progressToNextLevel={coherence.coherenceTracking.progressToNextLevel || 0}
+                                monthsCompleted={coherence.coherenceTracking.monthsCompleted || 0}
+                                levelProgress={coherence.coherenceTracking.levelProgress !== undefined && coherence.coherenceTracking.levelProgress !== null ? coherence.coherenceTracking.levelProgress : 0}
+                                size="sm"
+                                showProgressBar={false}
+                                showLevel={true}
+                                layout="centered"
+                                showInfoText={false}
+                              />
+                            </GorillaHoverInfo>
+                          ) : null}
+                        </div>
 
                         {/* Texto fuera del círculo para no afectar su tamaño */}
                         {(() => {
@@ -967,7 +999,7 @@ function BitacoraPageContent() {
                     {/* Información del usuario y progreso */}
                     <div className="flex-1 min-w-0">
                       <h1 className="text-3xl md:text-5xl lg:text-4xl font-bold text-white font-montserrat tracking-tight mb-2 drop-shadow-lg">
-                        El Camino del Gorila
+                        El Camino
                       </h1>
                       <p className="text-base hidden md:block md:text-lg text-white/90 font-montserrat font-light mb-1 drop-shadow-md">
                         {auth.user?.nombre || 'Usuario'}
@@ -989,7 +1021,12 @@ function BitacoraPageContent() {
                         </div>
                         {coherence.coherenceTracking && (
                           <div className="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-lg">
-                            <span className="text-amber-400 text-lg md:text-xl flex-shrink-0">▲</span>
+                            <img 
+                              src="/images/svg/icosahedron-thick.svg" 
+                              alt="Icosaedro" 
+                              className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
+                              style={{ filter: 'brightness(0) invert(1)' }}
+                            />
                             <span className="text-xl md:text-2xl font-bold text-white font-montserrat">
                               {coherence.coherenceTracking?.totalUnits || 0}
                             </span>
@@ -1021,6 +1058,7 @@ function BitacoraPageContent() {
                       <VideoHeaderGorilla
                         level={coherence.coherenceTracking.level || 1}
                         gorillaIcon={coherence.coherenceTracking.gorillaIcon || '🦍'}
+                        levelProgress={coherence.coherenceTracking.levelProgress !== undefined && coherence.coherenceTracking.levelProgress !== null ? coherence.coherenceTracking.levelProgress : 0}
                       />
  
                     </div>
@@ -1052,7 +1090,12 @@ function BitacoraPageContent() {
                         className="relative flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-sm"
                         onClick={() => setOpenTooltip(openTooltip === 'uc' ? null : 'uc')}
                       >
-                        <span className="text-amber-600 text-sm flex-shrink-0">▲</span>
+                        <img 
+                          src="/images/svg/icosahedron-thick.svg" 
+                          alt="Icosaedro" 
+                          className="w-5 h-5 flex-shrink-0"
+                          style={{ filter: 'brightness(0)' }}
+                        />
                         <span className="text-base font-bold text-gray-900 font-montserrat">
                           {coherence.coherenceTracking?.totalUnits || 0}
                         </span>
@@ -1083,6 +1126,7 @@ function BitacoraPageContent() {
                         <VideoHeaderGorilla
                           level={coherence.coherenceTracking.level || 1}
                           gorillaIcon={coherence.coherenceTracking.gorillaIcon || '🦍'}
+                          levelProgress={coherence.coherenceTracking.levelProgress !== undefined && coherence.coherenceTracking.levelProgress !== null ? coherence.coherenceTracking.levelProgress : 0}
                         />
                       </GorillaHoverInfo>
                     )}
@@ -1103,7 +1147,12 @@ function BitacoraPageContent() {
                       {/* U.C. */}
                       {coherence.coherenceTracking && (
                         <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-sm">
-                          <span className="text-amber-600 text-sm flex-shrink-0">▲</span>
+                          <img 
+                            src="/images/svg/icosahedron-thick.svg" 
+                            alt="Icosaedro" 
+                            className="w-5 h-5 flex-shrink-0"
+                            style={{ filter: 'brightness(0)' }}
+                          />
                           <span className="text-base font-bold text-gray-900 font-montserrat">
                             {coherence.coherenceTracking?.totalUnits || 0}
                           </span>
@@ -1148,42 +1197,60 @@ function BitacoraPageContent() {
                   return isWeekUnlocked;
                 })()
               ) ? (
-                <AnimatePresence mode="wait">
-                  {selectedContent.type === 'visual' ? (
-                    <VideoContentDisplay
-                      key={`visual-${selectedWeek}-${selectedDay}`}
-                      videoUrl={selectedContent.videoUrl}
-                      videoId={selectedContent.videoId}
-                      thumbnailUrl={'thumbnailUrl' in selectedContent ? selectedContent.thumbnailUrl : undefined}
-                      title={selectedContent.title}
-                      description={'description' in selectedContent ? selectedContent.description : undefined}
-                      duration={'duration' in selectedContent ? selectedContent.duration : undefined}
-                      onComplete={handleComplete}
-                      isCompleted={selectedDay 
-                        ? coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-video`) 
-                        : coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-week-video`)}
-                      logbookId={logbook?._id}
-                      weekNumber={selectedWeek || undefined}
-                      dayNumber={selectedDay || undefined}
-                    />
-                  ) : (
-                    <AudioTextContentDisplay
-                      key={`audioText-${selectedWeek}-${selectedDay}`}
-                      audioUrl={'audioUrl' in selectedContent ? selectedContent.audioUrl : undefined}
-                      audioDuration={'audioDuration' in selectedContent ? selectedContent.audioDuration : undefined}
-                      text={'text' in selectedContent ? selectedContent.text : undefined}
-                      title={selectedContent.title}
-                      subtitle={'subtitle' in selectedContent ? selectedContent.subtitle : undefined}
-                      onComplete={handleComplete}
-                      isCompleted={selectedDay 
-                        ? coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-audio`) 
-                        : coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-week-audio`)}
-                      logbookId={logbook?._id}
-                      weekNumber={selectedWeek || undefined}
-                      dayNumber={selectedDay || undefined}
-                    />
-                  )}
-                </AnimatePresence>
+                <div className="relative w-full min-h-[70vh]">
+                  <AnimatePresence mode="wait">
+                    {selectedContent.type === 'visual' ? (
+                      <motion.div
+                        key={`visual-${selectedWeek}-${selectedDay}`}
+                        className="w-full"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                      >
+                        <VideoContentDisplay
+                          videoUrl={selectedContent.videoUrl}
+                          videoId={selectedContent.videoId}
+                          thumbnailUrl={'thumbnailUrl' in selectedContent ? selectedContent.thumbnailUrl : undefined}
+                          title={selectedContent.title}
+                          description={'description' in selectedContent ? selectedContent.description : undefined}
+                          duration={'duration' in selectedContent ? selectedContent.duration : undefined}
+                          onComplete={handleComplete}
+                          isCompleted={selectedDay 
+                            ? coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-video`) 
+                            : coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-week-video`)}
+                          logbookId={logbook?._id}
+                          weekNumber={selectedWeek || undefined}
+                          dayNumber={selectedDay || undefined}
+                        />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key={`audioText-${selectedWeek}-${selectedDay}`}
+                        className="w-full"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                      >
+                        <AudioTextContentDisplay
+                          audioUrl={'audioUrl' in selectedContent ? selectedContent.audioUrl : undefined}
+                          audioDuration={'audioDuration' in selectedContent ? selectedContent.audioDuration : undefined}
+                          text={'text' in selectedContent ? selectedContent.text : undefined}
+                          title={selectedContent.title}
+                          subtitle={'subtitle' in selectedContent ? selectedContent.subtitle : undefined}
+                          onComplete={handleComplete}
+                          isCompleted={selectedDay 
+                            ? coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-${selectedDay}-audio`) 
+                            : coherence.completedAudios.has(`${logbook?._id}-${selectedWeek}-week-audio`)}
+                          logbookId={logbook?._id}
+                          weekNumber={selectedWeek || undefined}
+                          dayNumber={selectedDay || undefined}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               ) : selectedWeekData && !selectedWeekData.isUnlocked && auth.user?.rol !== 'Admin' ? (
                 <div className="relative rounded-3xl border border-gray-200 bg-white p-10 text-left sm:text-center shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
                   <div className="relative z-10">
@@ -1284,22 +1351,11 @@ function BitacoraPageContent() {
                       ¿Qué es la Coherencia?
                     </h3>
                     <p className="text-base sm:text-lg text-gray-800 leading-relaxed mb-3 font-montserrat font-light text-left">
-                      La coherencia es la constancia en tu práctica. Cada semana que completes el Camino del Gorila, 
-                      cultivas una Unidad de Coherencia (U.C.) y mantenés tu racha activa.
+                      Una semana completada del Camino = 1 Unidad de Coherencia (U.C.). Mantené la constancia y acumulá U.C. para canjear por programas, material o lo que vayamos creando.
                     </p>
-                    <p className="text-base sm:text-lg text-gray-800 leading-relaxed mb-4 font-montserrat font-light text-left">
-                      Se premia la constancia, porque ahí están los resultados en el movimiento.
+                    <p className="text-base sm:text-lg text-gray-800 leading-relaxed font-montserrat font-light text-left">
+                      Se premia la constancia: ahí están los resultados en el movimiento.
                     </p>
-                    <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                      <p className="text-lg sm:text-base text-gray-800 leading-relaxed font-montserrat font-normal mb-2 text-left">
-                        Sistema de Constancia:
-                      </p>
-                      <ul className="text-base sm:text-base text-gray-700 leading-relaxed font-montserrat font-light space-y-2 list-disc list-inside text-left">
-                        <li><strong>Constancia ideal:</strong> Completa 2 U.C. por semana (1 video + 1 audio) para obtener el máximo de puntos.</li>
-                        <li><strong>Si te atrasas:</strong> Si completas más de 2 U.C. en una semana calendario, cada semana adicional solo otorga 1 U.C. en total (no 2).</li>
-                        <li><strong>Ejemplo:</strong> Si completas 3 semanas en una semana calendario, obtienes 4 U.C. (2 de la primera semana + 1 de cada semana adicional) en lugar de 6.</li>
-                      </ul>
-                    </div>
                   </div>
                 </motion.div>
               </div>
@@ -1323,7 +1379,6 @@ function BitacoraPageContent() {
           totalUnits={celebrationData.totalUnits}
           currentStreak={celebrationData.currentStreak}
           esSemanaAdicional={celebrationData.esSemanaAdicional}
-          newAchievements={celebrationData.newAchievements}
           levelUp={celebrationData.levelUp}
           newLevel={celebrationData.newLevel}
           evolution={celebrationData.evolution}
@@ -1347,15 +1402,66 @@ function BitacoraPageContent() {
         />
       )}
 
+      {/* Modal de Reporte Semanal */}
+      <WeeklyReportModal
+        isOpen={showReportModal}
+        onClose={() => {
+          setShowReportModal(false);
+          // Mostrar modal de celebración después de cerrar el reporte
+          if (celebrationData) {
+            setShowCelebrationModal(true);
+          }
+        }}
+        onComplete={() => {
+          // Mostrar modal de celebración después de completar el reporte
+          if (celebrationData) {
+            setShowCelebrationModal(true);
+          }
+        }}
+      />
+
       {renderMobileTooltip()}
+
+      {/* Efecto visual de Level Up — estilo Move Crew: épico y fino */}
+      <AnimatePresence>
+        {showLevelUpEffect && levelUpData && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="fixed inset-0 z-[300] flex items-center justify-center pointer-events-none bg-palette-ink/95 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
+              className="absolute inset-0 flex flex-col items-center justify-center w-full px-4"
+            >
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-palette-sage/60" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-palette-sage/30" />
+              <p className="text-[10px] md:text-xs font-montserrat uppercase tracking-[0.35em] text-palette-sage/90 mb-2">
+                {levelUpData.evolution ? 'Evolución' : 'Nivel'}
+              </p>
+              <p className="text-4xl md:text-6xl lg:text-7xl font-semibold font-montserrat tracking-tight text-palette-cream mb-1">
+                {levelUpData.newLevel}
+              </p>
+              <p className="text-lg md:text-xl font-montserrat font-light text-palette-stone/90 tracking-wide">
+                {levelUpData.evolution ? 'Tu camino sigue creciendo' : 'Subiste de nivel'}
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
 
-export default function BitacoraPage() {
+export default function WeeklyPathPage() {
   return (
     <CoherenceProvider>
-      <BitacoraPageContent />
+      <WeeklyPathPageContent />
     </CoherenceProvider>
   );
 }

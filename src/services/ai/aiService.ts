@@ -53,7 +53,6 @@ export class AIService {
     try {
       // Determinar qué IA usar según el tipo de contenido
       const aiProvider = this.selectBestAI(data.type, data.style);
-      console.log('aiProvider', aiProvider);
       
       let emailContent: EmailContent;
 
@@ -139,8 +138,6 @@ FORMATO:
 - Longitud: 15-25 líneas total
 
 Escribí el email completo como Mateo, con mi voz auténtica y este estilo directo que genera conexión real.`;
-
-    console.log('prompt', prompt);
     
     const completion = await openai?.chat.completions.create({
       model: 'gpt-4o',
@@ -227,7 +224,6 @@ FORMATO:
 
 Escribí el mensaje completo como Mateo, con mi voz auténtica y este estilo directo que genera conexión real en WhatsApp.`;
 
-    console.log('WhatsApp prompt:', prompt);
     
     const completion = await openai?.chat.completions.create({
       model: 'gpt-4o',

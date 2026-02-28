@@ -9,7 +9,7 @@ import Cookies from 'js-cookie';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../../../hooks/useAuth';
 import DeleteProduct from './DeleteProduct';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import endpoints from '../../../services/api';
 import { Dialog } from '@headlessui/react';
 import Link from 'next/link';

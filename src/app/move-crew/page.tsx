@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import MoveCrew from '../../components/PageComponent/MoveCrew/MoveCrew';
-import MoveCrewLoading from '../../components/PageComponent/MoveCrew/MoveCrewLoading';
 import { Plan } from '../../../typings';
 
 export const revalidate = 0;
@@ -21,13 +20,11 @@ interface Promocion {
 export default function MoveCrewPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [promociones, setPromociones] = useState<Promocion[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        setLoading(true);
         setError(null);
         const response = await fetch('/api/payments/getPlans?type=membership', {
           cache: 'no-store',
@@ -42,7 +39,6 @@ export default function MoveCrewPage() {
         }
 
         const data = await response.json();
-        // Manejar compatibilidad: puede ser array de planes o objeto con plans y promociones
         if (Array.isArray(data)) {
           setPlans(data);
           setPromociones([]);
@@ -53,20 +49,11 @@ export default function MoveCrewPage() {
       } catch (err) {
         console.error('Error obteniendo planes de Move Crew', err);
         setError(err instanceof Error ? err.message : 'Error desconocido');
-      } finally {
-        // Pequeño delay para asegurar que todo esté listo
-        setTimeout(() => {
-          setLoading(false);
-        }, 300);
       }
     };
 
     fetchPlans();
   }, []);
-
-  if (loading) {
-    return <MoveCrewLoading show={true} />;
-  }
 
   if (error) {
     return (
@@ -87,7 +74,7 @@ export default function MoveCrewPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, delay: 0.4 }}
+      transition={{ duration: 0.4 }}
     >
       <MoveCrew plans={plans} promociones={promociones} />
     </motion.div>

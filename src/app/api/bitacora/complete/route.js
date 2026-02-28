@@ -5,6 +5,16 @@ import mongoose from 'mongoose';
 import connectDB from '../../../../config/connectDB';
 import CoherenceTracking from '../../../../models/coherenceTrackingModel';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
+import Users from '../../../../models/userModel';
+
+// Función para obtener el número de semana del año
+function getWeekNumber(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return `${d.getUTCFullYear()}-W${Math.ceil((((d - yearStart) / 86400000) + 1) / 7)}`;
+}
 
 export async function POST(req) {
   try {
@@ -40,9 +50,6 @@ export async function POST(req) {
       || null;
 
     if (!userId) {
-      console.warn('[bitacora/complete] Token decodificado sin userId', {
-        decodedKeys: Object.keys(decoded || {})
-      });
       return NextResponse.json(
         { error: 'No autorizado: userId no encontrado en el token' },
         { status: 401 }
@@ -51,7 +58,7 @@ export async function POST(req) {
 
     // Obtener el body de la petición
     const body = await req.json();
-    const { logbookId, weekNumber, dayNumber, contentType } = body;
+    const { logbookId, weekNumber, dayNumber, contentType, contentIndex } = body;
 
     if (!logbookId) {
       return NextResponse.json(
@@ -59,14 +66,6 @@ export async function POST(req) {
         { status: 400 }
       );
     }
-
-    console.log('[bitacora/complete] Iniciando', { 
-      userId, 
-      weekNumber, 
-      dayNumber, 
-      contentType, 
-      logbookId
-    });
 
     // Obtener el logbook para calcular la semana actual
     let semanaActualDelLogbook = 0;
@@ -100,14 +99,9 @@ export async function POST(req) {
             }
           }
           
-          console.log('[bitacora/complete] Semana actual del logbook calculada', { 
-            semanaActualDelLogbook, 
-            weekNumberCompletando: weekNumber,
-            esSemanaAdicional: semanaActualDelLogbook > 0 && (weekNumber < semanaActualDelLogbook || weekNumber > semanaActualDelLogbook)
-          });
         }
       } catch (error) {
-        console.error('[bitacora/complete] Error obteniendo logbook', error.message);
+        // Error silencioso al obtener logbook
       }
     }
 
@@ -123,13 +117,15 @@ export async function POST(req) {
     // Generar las claves de completado - SEPARADAS por tipo de contenido
     const dayKey = dayNumber && weekNumber ? `${logbookId}-${weekNumber}-${dayNumber}` : null;
     const weekKey = weekNumber ? `${logbookId}-${weekNumber}` : null;
-    
+    const useContentIndex = contentIndex !== undefined && contentIndex !== null && !dayKey;
+
     // Claves específicas por tipo de contenido (video y audio son independientes)
-    const videoKey = contentType === 'visual' 
-      ? (dayKey ? `${dayKey}-video` : `${logbookId}-${weekNumber}-week-video`)
+    // Con contentIndex: una clave por ítem de la semana (varios contenidos por semana)
+    const videoKey = contentType === 'visual'
+      ? (useContentIndex ? `${logbookId}-${weekNumber}-content-${contentIndex}` : (dayKey ? `${dayKey}-video` : `${logbookId}-${weekNumber}-week-video`))
       : null;
     const audioKey = (contentType === 'audio' || contentType === 'audioText')
-      ? (dayKey ? `${dayKey}-audio` : `${logbookId}-${weekNumber}-week-audio`)
+      ? (useContentIndex ? `${logbookId}-${weekNumber}-content-${contentIndex}` : (dayKey ? `${dayKey}-audio` : `${logbookId}-${weekNumber}-week-audio`))
       : null;
 
 
@@ -161,10 +157,10 @@ export async function POST(req) {
 
     let newAchievements = [];
     let ucResult = null; // Guardar el resultado de addCoherenceUnit para usarlo en la respuesta
+    let ucGranted = false; // Flag para saber si realmente se otorgó U.C.
     
-    // Si no está completado, procesar la completación
+    // Agregar a los arrays de completados solo si no está completado
     if (!alreadyCompleted) {
-      // Agregar a los arrays de completados
       if (dayKey) {
         if (!tracking.completedDays.includes(dayKey)) {
           tracking.completedDays.push(dayKey);
@@ -175,110 +171,112 @@ export async function POST(req) {
           tracking.completedWeeks.push(weekKey);
         }
       }
-      // Procesar video o audio para agregar U.C.
-      if ((videoKey && contentType === 'visual') || (audioKey && (contentType === 'audio' || contentType === 'audioText'))) {
-        const contentKey = videoKey || audioKey;
-        
-        // Verificar si ya está completado este contenido específico
-        const alreadyCompletedContent = isVideo 
-          ? tracking.completedVideos.includes(videoKey)
-          : tracking.completedAudios.includes(audioKey);
-        
-        if (!alreadyCompletedContent) {
-          if (isVideo && videoKey) {
-            tracking.completedVideos.push(videoKey);
-          } else if (isAudio && audioKey) {
-            tracking.completedAudios.push(audioKey);
+      if (isVideo && videoKey) {
+        tracking.completedVideos.push(videoKey);
+      } else if (isAudio && audioKey) {
+        tracking.completedAudios.push(audioKey);
+      }
+    }
+
+    // Progreso de nivel por contenido: 25% de la barra por semana completa = 2/8.
+    // Cada contenido completado suma (2 / contenidosDeLaSemana).
+    let levelProgressResult = null;
+    if (!alreadyCompleted && (videoKey || audioKey)) {
+      let contentsLength = 2; // legacy: 2 contenidos por semana
+      if (useContentIndex && logbookId && weekNumber !== undefined && weekNumber !== null) {
+        try {
+          const logbookDoc = await WeeklyLogbook.findById(logbookId).lean();
+          const week = logbookDoc?.weeklyContents?.find((w) => w.weekNumber === weekNumber);
+          const contents = week?.contents;
+          if (Array.isArray(contents) && contents.length > 0) {
+            contentsLength = contents.length;
           }
-          
-          // Intentar agregar U.C. (addCoherenceUnit verificará si ya se completó este tipo para esta semana)
-          try {
-            const result = await tracking.addCoherenceUnit(logbookId, contentType, weekNumber, null, semanaActualDelLogbook);
-            ucResult = result; // Guardar el resultado
-            console.log('[bitacora/complete] Resultado', { 
-              success: result.success, 
-              totalUnits: result.totalUnits,
-              esSemanaAdicional: result.esSemanaAdicional
-            });
-            
-            if (result.success) {
-              newAchievements = result.newAchievements || [];
-              // Actualizar el tracking con los valores del resultado
-              if (result.totalUnits !== undefined) {
-                tracking.totalUnits = result.totalUnits;
-              }
-              if (result.currentStreak !== undefined) {
-                tracking.currentStreak = result.currentStreak;
-              }
-              if (result.longestStreak !== undefined) {
-                tracking.longestStreak = result.longestStreak;
-              }
-            } else {
-              // Si no se pudo agregar U.C., pero el contenido SÍ se completó
-              // IMPORTANTE: Guardar el tracking para que se actualice el porcentaje de completado
-              console.log('[bitacora/complete] No se agregó U.C., pero guardando completado', { message: result.message, reason: result.reason });
-              
-              // Guardar el tracking actualizado (aunque no se haya otorgado U.C.)
-              const updateData = {
-                totalUnits: tracking.totalUnits,
-                currentStreak: tracking.currentStreak,
-                longestStreak: tracking.longestStreak,
-                lastCompletedDate: tracking.lastCompletedDate,
-                completedDays: tracking.completedDays || [],
-                completedWeeks: tracking.completedWeeks || [],
-                completedVideos: tracking.completedVideos || [],
-                completedAudios: tracking.completedAudios || []
-              };
-              
-              await CoherenceTracking.findOneAndUpdate(
-                { userId },
-                { $set: updateData },
-                { new: true, upsert: false }
-              );
-              
-              // Devolver respuesta indicando que se completó pero no se otorgó U.C.
-              return NextResponse.json(
-                {
-                  success: false,
-                  message: result.message || 'No se pudo agregar la Unidad de Coherencia',
-                  reason: result.reason || 'UNKNOWN',
-                  tip: result.tip || null,
-                  weekNumber: result.weekNumber || weekNumber,
-                  contentType: result.contentType || contentType,
-                  tracking: {
-                    totalUnits: tracking.totalUnits,
-                    currentStreak: tracking.currentStreak,
-                    longestStreak: tracking.longestStreak,
-                  },
-                  completedDays: tracking.completedDays || [],
-                  completedWeeks: tracking.completedWeeks || [],
-                  completedVideos: tracking.completedVideos || [],
-                  completedAudios: tracking.completedAudios || []
-                },
-                { status: 200 } // Status 200 porque la clase se completó, solo que no se otorgó U.C.
-              );
+        } catch (_) {}
+      }
+      const increment = contentsLength > 0 ? 2 / contentsLength : 0;
+      if (increment > 0) {
+        levelProgressResult = tracking.addLevelProgressByContent(increment);
+      }
+    }
+    
+    // U.C.: con contentIndex (varios contenidos por semana) solo se otorga 1 U.C. cuando la semana está completa.
+    // Sin contentIndex (legacy): se llama addCoherenceUnit por cada contenido.
+    const shouldCallAddUC = (videoKey && contentType === 'visual') || (audioKey && (contentType === 'audio' || contentType === 'audioText'));
+    if (shouldCallAddUC) {
+      try {
+        let callAddUC = false;
+        if (useContentIndex) {
+          const logbookDoc = await WeeklyLogbook.findById(logbookId).lean();
+          const week = logbookDoc?.weeklyContents?.find((w) => w.weekNumber === weekNumber);
+          const contents = week?.contents;
+          if (Array.isArray(contents) && contents.length > 0) {
+            let completedCount = 0;
+            for (let i = 0; i < contents.length; i++) {
+              const key = `${logbookId}-${weekNumber}-content-${i}`;
+              if ((tracking.completedVideos || []).includes(key) || (tracking.completedAudios || []).includes(key)) completedCount++;
             }
-          } catch (error) {
-            console.error('[bitacora/complete] Error agregando U.C.', error.message);
+            if (completedCount === contents.length) callAddUC = true;
+          } else {
+            callAddUC = true;
+          }
+        } else {
+          callAddUC = true;
+        }
+        if (callAddUC) {
+          const result = await tracking.addCoherenceUnit(logbookId, contentType, weekNumber, null, semanaActualDelLogbook);
+          ucResult = result; // Guardar el resultado
+        
+        if (result.success) {
+          newAchievements = result.newAchievements || [];
+          ucGranted = (result.ucsOtorgadas || 0) > 0;
+          // Actualizar el tracking con los valores del resultado
+          if (result.totalUnits !== undefined) {
+            tracking.totalUnits = result.totalUnits;
+          }
+          if (result.currentStreak !== undefined) {
+            tracking.currentStreak = result.currentStreak;
+          }
+          if (result.longestStreak !== undefined) {
+            tracking.longestStreak = result.longestStreak;
+          }
+          // Actualizar levelProgress y level si están en el resultado
+          if (result.levelProgress !== undefined && result.levelProgress !== null) {
+            tracking.levelProgress = result.levelProgress;
+          }
+          if (result.newLevel !== undefined && result.newLevel !== null) {
+            tracking.level = result.newLevel;
+          } else if (result.levelUp && result.newLevel !== undefined) {
+            // Si hubo level up, usar el nuevo nivel
+            tracking.level = result.newLevel;
+          }
+          if (result.characterEvolution !== undefined) {
+            tracking.characterEvolution = result.characterEvolution;
           }
         }
+        }
+      } catch (error) {
+        // Error silencioso al agregar U.C.
       }
     }
 
     // Guardar el tracking actualizado usando findOneAndUpdate para asegurar que los arrays se guarden
     
     // Usar findOneAndUpdate para asegurar que los arrays se guarden correctamente
+    // Asegurar que levelProgress y level se incluyan siempre
     const updateData = {
       totalUnits: tracking.totalUnits,
       currentStreak: tracking.currentStreak,
       longestStreak: tracking.longestStreak,
       lastCompletedDate: tracking.lastCompletedDate,
+      level: tracking.level !== undefined && tracking.level !== null ? tracking.level : 1,
+      levelProgress: tracking.levelProgress !== undefined && tracking.levelProgress !== null ? tracking.levelProgress : 0,
+      monthsCompleted: tracking.monthsCompleted !== undefined && tracking.monthsCompleted !== null ? tracking.monthsCompleted : 0,
+      characterEvolution: tracking.characterEvolution !== undefined && tracking.characterEvolution !== null ? tracking.characterEvolution : 0,
       completedDays: tracking.completedDays || [],
       completedWeeks: tracking.completedWeeks || [],
       completedVideos: tracking.completedVideos || [],
       completedAudios: tracking.completedAudios || []
     };
-    
     
     const trackingActualizado = await CoherenceTracking.findOneAndUpdate(
       { userId },
@@ -292,30 +290,114 @@ export async function POST(req) {
     // Usar el tracking actualizado para la respuesta
     const trackingParaRespuesta = trackingVerificado || trackingActualizado || tracking;
     
+    // Incrementar contador de prácticas semanales si se completó un video (no audio)
+    let necesitaReporte = false;
+    if (contentType === 'video') {
+      try {
+        const user = await Users.findById(userId);
+        if (user && user.subscription?.active) {
+          const semanaActual = getWeekNumber(new Date());
+          
+          user.subscription.onboarding = user.subscription.onboarding || {};
+          user.subscription.onboarding.practicasSemanales = user.subscription.onboarding.practicasSemanales || [];
+          
+          let semanaEntry = user.subscription.onboarding.practicasSemanales.find(
+            p => p.semana === semanaActual
+          );
+          
+          if (!semanaEntry) {
+            semanaEntry = {
+              semana: semanaActual,
+              cantidadPracticas: 0,
+              reporteCompletado: false
+            };
+            user.subscription.onboarding.practicasSemanales.push(semanaEntry);
+          }
+          
+          semanaEntry.cantidadPracticas = (semanaEntry.cantidadPracticas || 0) + 1;
+          
+          // Verificar si necesita reporte (2 prácticas y no completado)
+          if (semanaEntry.cantidadPracticas >= 2 && !semanaEntry.reporteCompletado) {
+            necesitaReporte = true;
+          }
+          
+          await user.save();
+        }
+        } catch (error) {
+        // Error silencioso al incrementar práctica
+      }
+    }
+    
+    // Obtener información de level up: addCoherenceUnit ya no sube nivel; viene de addLevelProgressByContent (levelProgressResult)
+    const levelUp = (ucResult?.levelUp || levelProgressResult?.levelUp) || false;
+    const newLevel = ucResult?.newLevel ?? levelProgressResult?.newLevel;
+    const evolution = (ucResult?.evolution || levelProgressResult?.evolution) || false;
+    const gorillaIcon = ucResult?.gorillaIcon ?? levelProgressResult?.gorillaIcon;
+    const evolutionName = ucResult?.evolutionName ?? levelProgressResult?.evolutionName;
+
     // Construir mensaje según el resultado
     const esSemanaAdicional = ucResult?.esSemanaAdicional || false;
-    const ucsOtorgadas = ucResult?.ucsOtorgadas || 1;
+    const ucsOtorgadas = ucResult?.ucsOtorgadas || 0;
     
     let message = '';
-    if (esSemanaAdicional) {
-      message = `¡Clase completada! Obtuviste ${ucsOtorgadas} U.C. (semana adicional).`;
+    let responseSuccess = true;
+    let reason = undefined;
+    let tip = undefined;
+    
+    if (ucGranted) {
+      message = ucsOtorgadas === 1
+        ? '¡Semana completada! Obtuviste 1 U.C.'
+        : `¡Semana completada! Obtuviste ${ucsOtorgadas} U.C.`;
+      responseSuccess = true;
     } else {
-      message = `¡Clase completada! Obtuviste ${ucsOtorgadas} U.C.`;
+      // No se otorgó U.C. (contenido ya estaba completado o límite de semana adicional)
+      responseSuccess = false;
+      reason = ucResult?.reason || 'ALREADY_COMPLETED_NO_UC';
+      tip = ucResult?.tip || 'Una semana completada = 1 U.C. Este contenido ya estaba completado.';
+      message = ucResult?.message || 'Contenido ya completado. Una semana completada = 1 U.C.';
+      // Si hubo level up (por U.C. o por contenido), seguir considerándolo éxito para que se procese el efecto
+      if (levelUp) {
+        responseSuccess = true;
+      }
     }
 
+    console.log('ucResult', ucResult);
+    console.log('levelUp', levelUp);
+    
+    // Si hay level up, obtener el tracking actualizado para obtener la información completa
+    let finalTracking = trackingParaRespuesta;
+    if (levelUp) {
+      const updatedTracking = await CoherenceTracking.findOne({ userId });
+      if (updatedTracking) {
+        finalTracking = updatedTracking;
+      }
+    }
+    
+    // Obtener levelProgress del tracking final o del resultado por contenido
+    const levelProgress = (finalTracking?.levelProgress !== undefined && finalTracking?.levelProgress !== null)
+      ? finalTracking.levelProgress
+      : (levelProgressResult?.levelProgress !== undefined && levelProgressResult?.levelProgress !== null)
+        ? levelProgressResult.levelProgress
+        : (ucResult?.levelProgress !== undefined && ucResult?.levelProgress !== null ? ucResult.levelProgress : 0);
+
+    console.log('levelProgress', levelProgress);
+    
     return NextResponse.json(
       {
-        success: true,
+        success: responseSuccess,
+        ucGranted,
         message,
+        reason,
+        tip,
         tracking: {
-          totalUnits: trackingParaRespuesta.totalUnits,
-          currentStreak: trackingParaRespuesta.currentStreak,
-          longestStreak: trackingParaRespuesta.longestStreak,
+          totalUnits: finalTracking.totalUnits,
+          currentStreak: finalTracking.currentStreak,
+          longestStreak: finalTracking.longestStreak,
         },
-        completedDays: trackingParaRespuesta.completedDays || [],
-        completedWeeks: trackingParaRespuesta.completedWeeks || [],
-        completedVideos: trackingParaRespuesta.completedVideos || [],
-        completedAudios: trackingParaRespuesta.completedAudios || [],
+        completedDays: finalTracking.completedDays || [],
+        completedWeeks: finalTracking.completedWeeks || [],
+        completedVideos: finalTracking.completedVideos || [],
+        completedAudios: finalTracking.completedAudios || [],
         newAchievements: newAchievements.map(ach => ({
           name: ach.name,
           description: ach.description,
@@ -324,14 +406,21 @@ export async function POST(req) {
         esSemanaAdicional,
         ucsOtorgadas,
         weekNumber,
-        contentType
+        contentType,
+        necesitaReporte,
+        levelUp: levelUp,
+        newLevel: newLevel,
+        evolution: evolution,
+        gorillaIcon: gorillaIcon,
+        evolutionName: evolutionName,
+        levelProgress: levelProgress,
+        progressToNextLevel: Math.round((levelProgress / 8) * 100)
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error('[bitacora/complete] Error', error.message);
     return NextResponse.json(
-      { error: 'Error al completar la bitácora', message: error.message },
+      { error: 'Error al completar la camino', message: error.message },
       { status: 500 }
     );
   }

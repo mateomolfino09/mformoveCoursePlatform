@@ -53,7 +53,6 @@ const EventCard: React.FC<Props> = ({ evento }) => {
       const earlyBirdEnd = new Date(earlyBird.end);
       if (ahora >= earlyBirdStart && ahora <= earlyBirdEnd) {
         const precioFormateado = formatearPrecioEventoSync(earlyBird.price, evento);
-        console.log(precioFormateado, 'precioFormateado');
         const precioOriginal = general?.price || lastTickets?.price;
         const descuento = precioOriginal ? formatearPrecioConDescuentoSync(earlyBird.price, precioOriginal, evento) : null;
         

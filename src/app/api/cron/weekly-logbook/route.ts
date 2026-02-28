@@ -4,107 +4,59 @@ import connectDB from '../../../../config/connectDB';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
 import Users from '../../../../models/userModel';
 import IndividualClass from '../../../../models/individualClassModel';
-import ClassFilters from '../../../../models/classFiltersModel';
+import ModuleClass from '../../../../models/moduleClassModel';
+import ClassModule from '../../../../models/classModuleModel';
 import { EmailService, EmailType } from '../../../../services/email/emailService';
 
 export const dynamic = 'force-dynamic';
 
 type LogbookWithWeeks = any;
 
-const buildIframeHtml = (src: string) =>
-  `<iframe src="${src}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-
-const durationParts = (duration: number) => {
-  const safeDuration = Number(duration || 0);
-  return {
-    hours: Math.floor(safeDuration / 3600),
-    minutes: Math.floor((safeDuration % 3600) / 60),
-    seconds: Math.floor(safeDuration % 60)
-  };
-};
-
-async function createIndividualClassesForLogbook(logbook: LogbookWithWeeks) {
-  try {
-    const existingMax = await IndividualClass.findOne().sort({ id: -1 }).lean();
-    let nextId = existingMax?.id || 0;
-
-    const firstType = await ClassFilters.findOne().sort({ id: 1 }).lean();
-    const typeName = process.env.BITACORA_CLASS_TYPE_NAME || firstType?.name || (firstType as any)?.value || 'fuerza';
-    const fallbackImage =
-      process.env.DEFAULT_CLASS_IMAGE_URL ||
-      'https://mateomove.com/images/MFORMOVE_blanco.png';
-
-    const classesToInsert: any[] = [];
-
-    for (const content of logbook.weeklyContents || []) {
-      const videoSource = content?.videoUrl || content?.videoId;
-      if (!videoSource) {
-        continue;
+/** Construye el detalle de contenidos de la semana para el email: título, descripción, nombre del módulo */
+async function buildWeekContentsDetail(content: any): Promise<Array<{ type: string; title: string; description?: string; moduleName?: string }>> {
+  const contents = (content as any)?.contents;
+  if (Array.isArray(contents) && contents.length > 0) {
+    const detail: Array<{ type: string; title: string; description?: string; moduleName?: string }> = [];
+    for (const item of contents) {
+      const contentType = item.contentType || 'moduleClass';
+      if (contentType === 'moduleClass' && item.moduleClassId) {
+        const mc = await ModuleClass.findById(item.moduleClassId).select('name description moduleId').lean();
+        if (mc) {
+          let moduleName = '';
+          if ((mc as any).moduleId) {
+            const mod = await ClassModule.findById((mc as any).moduleId).select('name').lean();
+            if (mod && (mod as any).name) moduleName = (mod as any).name;
+          }
+          detail.push({
+            type: 'Clase de módulo',
+            title: (mc as any).name || 'Clase',
+            description: (mc as any).description || undefined,
+            moduleName: moduleName || undefined
+          });
+        }
+      } else if (contentType === 'individualClass' && item.individualClassId) {
+        const ic = await IndividualClass.findById(item.individualClassId).select('name description').lean();
+        if (ic) {
+          detail.push({
+            type: 'Clase individual',
+            title: (ic as any).name || (item.videoName || '') || 'Clase',
+            description: (ic as any).description || undefined
+          });
+        }
+      } else if (contentType === 'audio') {
+        detail.push({
+          type: 'Audio',
+          title: (item.audioTitle || '').trim() || content.weekTitle || 'Audio',
+          description: (item.audioText || '').trim() || undefined
+        });
       }
-
-      const duration = Number(content?.videoDuration || 0);
-      const { hours, minutes, seconds } = durationParts(duration);
-      const name =
-        content?.weekTitle ||
-        content?.videoName ||
-        `Semana ${content?.weekNumber ?? ''}`.trim();
-      const description =
-        content?.weekDescription ||
-        content?.text ||
-        logbook?.description ||
-        'Contenido de la Bitácora';
-      const imageUrl =
-        content?.videoThumbnail ||
-        (content as any)?.thumbnailUrl ||
-        content?.dailyContents?.[0]?.visualContent?.thumbnailUrl ||
-        fallbackImage;
-      const link = content?.videoId || content?.videoUrl;
-      if (!link) {
-        continue;
-      }
-      const html = buildIframeHtml(content?.videoUrl || content?.videoId);
-      const tagBase = `${logbook?.month}-${logbook?.year}`;
-      const tags = [
-        { id: 1, title: 'Bitácora' },
-        { id: 2, title: `Mes ${tagBase}` },
-        { id: 3, title: `Semana ${content?.weekNumber ?? ''}` }
-      ];
-
-      nextId += 1;
-
-      classesToInsert.push({
-        id: nextId,
-        name,
-        description,
-        image_url: imageUrl,
-        totalTime: duration,
-        seconds,
-        minutes,
-        hours,
-        level: '1',
-        type: typeName,
-        isFree: false,
-        image_base_link: imageUrl,
-        html,
-        link,
-        tags
-      });
     }
-
-    if (classesToInsert.length === 0) {
-      return { created: 0 };
-    }
-
-    await IndividualClass.insertMany(classesToInsert);
-    await WeeklyLogbook.findByIdAndUpdate(logbook._id, {
-      individualClassesCreated: true,
-      updatedAt: new Date()
-    });
-
-    return { created: classesToInsert.length };
-  } catch (error) {
-    return { created: 0, error: (error as Error).message };
+    return detail;
   }
+  // Legacy: semana con un solo contenido a nivel semana
+  const title = (content as any)?.weekTitle || (content as any)?.videoName || `Semana ${content.weekNumber}`;
+  const text = (content as any)?.text || (content as any)?.weekDescription || '';
+  return [{ type: 'Contenido', title, description: text.trim() || undefined }];
 }
 
 export async function GET(req: NextRequest) {
@@ -237,10 +189,10 @@ export async function GET(req: NextRequest) {
     let clasesIndividualesCreadas = 0;
     const resultados = [];
     
-    // Buscar todas las bitácoras
+    // Buscar todas las caminos
     const logbooks = await WeeklyLogbook.find().lean();
     
-    // Procesar cada bitácora
+    // Procesar cada camino
     for (const logbook of logbooks) {
       if (!logbook.weeklyContents || logbook.weeklyContents.length === 0) {
         continue;
@@ -254,26 +206,33 @@ export async function GET(req: NextRequest) {
       );
       let resumenBitacora: any = null;
       
-      // Procesar cada semana de contenido
+      // Marcar como publicadas y desbloqueadas TODAS las semanas con publishDate <= hoy
+      const updates: Record<string, boolean> = {};
+      const indicesParaEmail: number[] = []; // semanas que aún no estaban publicadas (enviar email)
       for (let i = 0; i < logbook.weeklyContents.length; i++) {
         const content = logbook.weeklyContents[i];
         const publishDate = new Date(content.publishDate);
         publishDate.setHours(0, 0, 0, 0);
+        if (publishDate <= ahora) {
+          updates[`weeklyContents.${i}.isPublished`] = true;
+          updates[`weeklyContents.${i}.isUnlocked`] = true;
+          if (!content.isPublished) indicesParaEmail.push(i);
+        }
+      }
+      if (Object.keys(updates).length > 0) {
+        await WeeklyLogbook.findByIdAndUpdate(logbook._id, { $set: updates });
+      }
+
+      // Enviar email solo por las semanas que se publican por primera vez (una pausa entre semanas evita que el proveedor colapse varios envíos al mismo destinatario)
+      const delayMs = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+      for (let idx = 0; idx < indicesParaEmail.length; idx++) {
+        if (idx > 0) await delayMs(2000);
+        const i = indicesParaEmail[idx];
+        const content = logbook.weeklyContents[i];
         
-        // Verificar si es momento de publicar este contenido
-        // Publicar si la fecha llegó Y aún no está publicado
-        if (publishDate <= ahora && !content.isPublished) {
-          
-          // 1. Marcar como publicado
-          await WeeklyLogbook.findByIdAndUpdate(logbook._id, {
-            $set: {
-              [`weeklyContents.${i}.isPublished`]: true
-            }
-          });
-          
-          publicacionesEnEstaBitacora++;
-          
-          // 2. Obtener todos los miembros activos de Move Crew
+        publicacionesEnEstaBitacora++;
+        
+        // Obtener todos los miembros activos de Move Crew
           const miembrosActivos = await Users.find({
             $or: [
               { 'subscription.active': true },
@@ -285,8 +244,13 @@ export async function GET(req: NextRequest) {
           const emailText = content.text || '';
           const audioUrl = content.audioUrl || '';
           const audioTitle = content.weekTitle || `Semana ${content.weekNumber}`;
-          // Obtener imagen con mejor calidad
-          let coverImage = (content as any)?.videoThumbnail || (content as any)?.thumbnailUrl || null;
+          // Imagen: primer video de la semana (contents[0] o legacy)
+          const firstContent = (content as any)?.contents?.[0];
+          let coverImage =
+            (firstContent?.videoThumbnail) ||
+            (content as any)?.videoThumbnail ||
+            (content as any)?.thumbnailUrl ||
+            null;
           
           // Mejorar calidad de imagen si es de Vimeo (reemplazar tamaño pequeño por Full HD)
           if (coverImage && coverImage.includes('vimeocdn.com')) {
@@ -317,10 +281,11 @@ export async function GET(req: NextRequest) {
           }
           
           const videoDurationSeconds = (content as any)?.videoDuration || null;
+          const weekContentsDetail = await buildWeekContentsDetail(content);
 
           // 3. Enviar email a cada miembro
           const baseUrl = process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://mateomove.com';
-          const bitacoraLink = `${baseUrl}/bitacora`;
+          const bitacoraLink = `${baseUrl}/weekly-path`;
           
           for (const usuario of miembrosActivos) {
             try {
@@ -332,7 +297,7 @@ export async function GET(req: NextRequest) {
               await emailService.sendEmail({
                 type: EmailType.WEEKLY_LOGBOOK_RELEASE,
                 to: usuario.email,
-                subject: `El Camino del Gorila - Semana ${content.weekNumber} está disponible`,
+                subject: `El Camino - Semana ${content.weekNumber} está disponible`,
                 data: {
                   name: usuario.name || 'Miembro',
                   email: usuario.email,
@@ -345,20 +310,20 @@ export async function GET(req: NextRequest) {
                   coverImage,
                   videoDurationSeconds,
                   bitacoraLink: bitacoraLink,
-                  logbookTitle: logbook.title || 'Camino del Gorila',
-                  isFirstWeek: content.weekNumber === 1 || content.weekNumber === '1'
+                  logbookTitle: logbook.title || 'Camino',
+                  isFirstWeek: content.weekNumber === 1 || content.weekNumber === '1',
+                  weekContentsDetail
                 }
               });
               
               emailsEnEstaBitacora++;
             } catch (error) {
-              // Error silencioso para no interrumpir el proceso
+              console.error(`[cron weekly-logbook] Error enviando email Semana ${content.weekNumber} a ${usuario.email}:`, error);
             }
           }
 
-          if (content.weekNumber === maxWeekNumber) {
-            ultimaSemanaPublicadaAhora = true;
-          }
+        if (content.weekNumber === maxWeekNumber) {
+          ultimaSemanaPublicadaAhora = true;
         }
       }
       
@@ -375,19 +340,58 @@ export async function GET(req: NextRequest) {
         };
         resultados.push(resumenBitacora);
       }
-      if (ultimaSemanaPublicadaAhora && !logbook.individualClassesCreated) {
-        const resultadoClases = await createIndividualClassesForLogbook(logbook);
-        clasesIndividualesCreadas += resultadoClases.created;
-        if (resultadoClases.created > 0) {
-          if (resumenBitacora) {
-            resumenBitacora.clasesIndividualesCreadas = resultadoClases.created;
-          } else {
-            resultados.push({
-              logbookId: logbook._id,
-              month: logbook.month,
-              year: logbook.year,
-              clasesIndividualesCreadas: resultadoClases.created
-            });
+      // Recolectar todas las clases (módulo e individuales) referenciadas en este camino
+      const moduleClassIds: string[] = [];
+      const individualClassIds: string[] = [];
+      for (const wc of logbook.weeklyContents || []) {
+        const contents = (wc as any)?.contents;
+        if (Array.isArray(contents)) {
+          for (const c of contents) {
+            if (c.moduleClassId) moduleClassIds.push(String(c.moduleClassId));
+            if (c.individualClassId) individualClassIds.push(String(c.individualClassId));
+          }
+        }
+      }
+
+      const lastWeekContent = logbook.weeklyContents?.find((w: any) => Number(w.weekNumber) === maxWeekNumber);
+      const lastWeekPublishDate = lastWeekContent?.publishDate ? new Date(lastWeekContent.publishDate) : null;
+      if (lastWeekPublishDate) lastWeekPublishDate.setHours(0, 0, 0, 0);
+      const caminoCompletoPublicado = lastWeekPublishDate ? lastWeekPublishDate.getTime() <= ahora.getTime() : false;
+
+      if (moduleClassIds.length > 0 || individualClassIds.length > 0) {
+        if (caminoCompletoPublicado) {
+          // La última semana ya está publicada (hoy o antes): hacer visibles en biblioteca
+          if (moduleClassIds.length > 0) {
+            const r = await ModuleClass.updateMany(
+              { _id: { $in: moduleClassIds } },
+              { $set: { visibleInLibrary: true } }
+            );
+            if (r.modifiedCount > 0) {
+              console.log(`[cron weekly-logbook] visibleInLibrary=true para ${r.modifiedCount} ModuleClass(es) del camino ${logbook._id}`);
+            }
+          }
+          if (individualClassIds.length > 0) {
+            const r = await IndividualClass.updateMany(
+              { _id: { $in: individualClassIds } },
+              { $set: { visibleInLibrary: true } }
+            );
+            if (r.modifiedCount > 0) {
+              console.log(`[cron weekly-logbook] visibleInLibrary=true para ${r.modifiedCount} IndividualClass(es) del camino ${logbook._id}`);
+            }
+          }
+        } else {
+          // Camino aún no terminado (última semana en el futuro): poblar con visibleInLibrary: false
+          if (moduleClassIds.length > 0) {
+            await ModuleClass.updateMany(
+              { _id: { $in: moduleClassIds } },
+              { $set: { visibleInLibrary: false } }
+            );
+          }
+          if (individualClassIds.length > 0) {
+            await IndividualClass.updateMany(
+              { _id: { $in: individualClassIds } },
+              { $set: { visibleInLibrary: false } }
+            );
           }
         }
       }

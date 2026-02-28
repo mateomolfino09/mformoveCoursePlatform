@@ -2,7 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    serverActions: true
+    serverActions: true,
+    // Evita error ENOENT con route groups (membership) en la fase de tracing del build
+    outputFileTracingExcludes: {
+      '*': ['**/node_modules/@swc/core*/**', '**/node_modules/webpack/**'],
+    },
   },
   eslint: {
     // Deshabilitar ESLint durante el build de producción
@@ -18,6 +22,7 @@ const nextConfig = {
       'rickandmortyapi.com',
       'image.tmdb.org',
       'rb.gy',
+      'res.cloudinary.com',
       'https://www.googleapis.com/youtube/v3/playlistItems'
     ],
     loader: 'custom',
@@ -25,6 +30,14 @@ const nextConfig = {
   },
   env: {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET
+  },
+  async redirects() {
+    return [
+      { source: '/home', destination: '/library', permanent: true },
+      { source: '/home/:path*', destination: '/library/:path*', permanent: true },
+      { source: '/bitacora', destination: '/weekly-path', permanent: true },
+      { source: '/bitacora/:path*', destination: '/weekly-path/:path*', permanent: true },
+    ];
   },
   async headers() {
     return [

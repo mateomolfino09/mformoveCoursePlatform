@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import endpoints from '../../../services/api';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import Link from 'next/link';
 
 interface Promocion {

@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
 
     if (videoId && caption) {
       // Usar el video específico enviado desde el frontend
-      console.log('📹 [INFO] Usando video específico:', videoId);
       videoContent = {
         caption: caption,
         videoUrl: `https://www.instagram.com/p/${videoId}/`,
@@ -20,7 +19,6 @@ export async function POST(req: NextRequest) {
       };
     } else {
       // Fallback: Obtener el último video de Instagram
-      console.log('📹 [INFO] Obteniendo último video de Instagram...');
       const instagramService = InstagramService.getInstance();
       
       if (!instagramService.hasCredentials()) {
@@ -49,21 +47,14 @@ export async function POST(req: NextRequest) {
       };
     }
 
-    console.log('📄 [INFO] Generando email con contenido:', videoContent.caption.substring(0, 100) + '...');
-
     const emailContent = await aiService.generateEmail({
       type: 'newsletter', // OpenAI para creatividad y copywriting
       content: videoContent.caption,
       topic: 'create email from video'
     });
 
-    console.log('📄 [INFO] AI Response length:', emailContent.html.length);
-    console.log('📄 [INFO] AI Response preview:', emailContent.html.substring(0, 200) + '...');
-    console.log('📄 [INFO] AI Response completo:', emailContent.html);
-
     // Parsear el contenido del AI
     const generatedContent = emailContent.html.trim();
-    console.log('✂️ [STEP 5] Parseando contenido del AI...');
     
     // Intentar extraer contenido estructurado primero
     const subjectMatch = generatedContent.match(/SUBJECT:\s*(.+?)(?=\n|$)/i);
@@ -124,16 +115,6 @@ export async function POST(req: NextRequest) {
       emotionalAppeals: emotionalAppeals
     };
 
-    console.log('📧 [INFO] Email object created:', {
-      subject: email.subject,
-      bodyLength: email.body.length,
-      cta: email.cta,
-      hashtags: email.hashtags,
-      triggersCount: email.psychologicalTriggers.length,
-      appealsCount: email.emotionalAppeals.length
-    });
-
-    console.log('✅ [SUCCESS] Email generado desde video exitosamente');
 
     const response = {
       success: true,

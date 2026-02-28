@@ -11,7 +11,7 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next13-progressbar';
 import { parseCookies } from 'nookies';
 import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { ProductDB } from '../../../../typings';
 
 interface Props {

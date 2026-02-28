@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Paleta de colores del sistema */
+:root {
+  --palette-ink: #141411;
+  --palette-sage: #acae89;
+  --palette-stone: #787867;
+  --palette-deep-teal: #001b1c;
+  --palette-teal: #074647;
+  --palette-white: #FAF8F4;
+  --palette-cream: #FAF8F4;
+}
+
 @layer base {
   html {
     font-size: 16px;
@@ -196,6 +207,19 @@
     100% {
       transform: rotate(360deg);
     }
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 1.8s ease-in-out infinite;
   }
   .loading-spinner {
     width: 50px;
@@ -533,7 +557,7 @@
   animation: whatsappSlideIn 0.3s ease-out;
 }
 
-/* Estilos para el slider de audio en bitácora - minimalista */
+/* Estilos para el slider de audio en camino - minimalista */
 .slider-minimal {
   -webkit-appearance: none;
   appearance: none;
@@ -606,4 +630,20 @@
   background: transparent;
   height: 4px;
   border-radius: 9999px;
+}
+
+/* Popups de práctica: entrada suave */
+@keyframes practice-popup-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.practice-popup-card {
+  animation: practice-popup-in 0.4s ease-out forwards;
 }

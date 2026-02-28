@@ -11,7 +11,7 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import endpoints from '../../../services/api';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import {  setProductId } from '../../../redux/features/productId';
 import { redirect } from 'next/navigation';
 import { useRouter } from 'next/navigation';

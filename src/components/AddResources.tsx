@@ -9,7 +9,7 @@ import { useAuth } from '../hooks/useAuth';
 import { ClassesDB } from '../../typings';
 import requests from '../utils/requests';
 import { useGetClassQuery, useAddFilesMutation, useAddLinksMutation } from '../redux/services/classApi';
-import { toast } from 'react-toastify';
+import { toast } from '../hooks/useToast';
 import FileUploader from './FileUploader';
 import LinkUploader from './LinkUploader';
 

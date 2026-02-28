@@ -3,6 +3,33 @@ import { EmailService, EmailType } from '../../../../services/email/emailService
 import connectDB from '../../../../config/connectDB';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
 
+// Datos de prueba para publicación Weekly Path (estética Move Crew, listos para vista previa)
+function buildWeeklyPathTestData(to: string, data?: any, simulatedWeek?: any) {
+  const weekNumber = simulatedWeek?.weekNumber ?? data?.weekNumber ?? 3;
+  const month = simulatedWeek?.month ?? data?.month ?? 1;
+  const year = simulatedWeek?.year ?? data?.year ?? 2025;
+  return {
+    name: data?.name ?? 'María',
+    email: to,
+    weekNumber,
+    month,
+    year,
+    text: simulatedWeek?.text ?? data?.text ?? 'Esta semana trabajamos la movilidad de cadera y la conexión con la respiración. El audio intro te guía para enfocar la práctica antes de las clases.',
+    audioUrl: simulatedWeek?.audioUrl ?? data?.audioUrl ?? '',
+    audioTitle: simulatedWeek?.audioTitle ?? data?.audioTitle ?? 'Introducción Semana 3',
+    coverImage: simulatedWeek?.coverImage ?? data?.coverImage ?? 'https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png',
+    videoDurationSeconds: simulatedWeek?.videoDurationSeconds ?? data?.videoDurationSeconds ?? 324,
+    bitacoraLink: data?.bitacoraLink ?? 'https://mateomove.com/weekly-path',
+    logbookTitle: simulatedWeek?.logbookTitle ?? data?.logbookTitle ?? 'Camino',
+    isFirstWeek: data?.isFirstWeek ?? weekNumber === 1,
+    weekContentsDetail: data?.weekContentsDetail ?? (simulatedWeek?.weekContentsDetail as any) ?? [
+      { type: 'video', title: 'Movilidad de cadera', description: 'Calentamiento y rango de movimiento.', moduleName: 'Movimiento consciente' },
+      { type: 'video', title: 'Respiración y postura', description: 'Integración respiración y columna.', moduleName: 'Fundamentos' },
+      { type: 'audio', title: 'Reflexión semanal', description: 'Cierre y consigna para los próximos días.', moduleName: 'Práctica' },
+    ],
+  };
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -45,45 +72,23 @@ export async function POST(req: NextRequest) {
             }
           }
         } catch (err) {
-          console.warn('No se pudo simular desde bitácora:', err);
+          console.warn('No se pudo simular desde camino:', err);
         }
       }
 
-      const defaultData = {
-        name: data?.name || 'Usuario de Prueba',
-        email: to,
-        weekNumber: simulatedWeek?.weekNumber || data?.weekNumber || 1,
-        month: simulatedWeek?.month || data?.month || 1,
-        year: simulatedWeek?.year || data?.year || 2025,
-        text: (simulatedWeek?.text || data?.text || 'Contenido de prueba para la semana.'),
-        audioUrl: simulatedWeek?.audioUrl || data?.audioUrl || '',
-        audioTitle: simulatedWeek?.audioTitle || data?.audioTitle || 'Audio de la semana',
-        coverImage: simulatedWeek?.coverImage || data?.coverImage || 'https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png',
-        videoDurationSeconds: simulatedWeek?.videoDurationSeconds || data?.videoDurationSeconds || 0,
-        bitacoraLink: data?.bitacoraLink || 'https://mateomove.com/bitacora',
-        logbookTitle: simulatedWeek?.logbookTitle || data?.logbookTitle || 'Camino del Gorila'
-      };
-
-      console.log('Preview WEEKLY_LOGBOOK_RELEASE', {
-        to,
-        weekNumber: defaultData.weekNumber,
-        coverImage: defaultData.coverImage,
-        videoDurationSeconds: defaultData.videoDurationSeconds,
-        hasText: !!defaultData.text,
-        simulated: !!simulatedWeek
-      });
+      const defaultData = buildWeeklyPathTestData(to, data, simulatedWeek);
 
       const html = EmailService.renderTemplate(EmailType.WEEKLY_LOGBOOK_RELEASE, defaultData);
       return NextResponse.json({
         success: true,
         preview: true,
         to,
-        subject: subject || `El Camino del Gorila - Semana ${defaultData.weekNumber} está disponible`,
+        subject: subject || `El Camino - Semana ${defaultData.weekNumber} está disponible`,
         html
       });
     }
 
-    // Envío directo de template específico (p.ej. bitácora)
+    // Envío directo de template específico (p.ej. camino)
     if (type === EmailType.WEEKLY_LOGBOOK_RELEASE) {
       if (!data?.email && !testEmail) {
         return NextResponse.json(
@@ -94,7 +99,7 @@ export async function POST(req: NextRequest) {
 
       const to = data?.email || testEmail;
 
-      // Opcional: simular desde bitácora real también en envío (no solo preview)
+      // Opcional: simular desde camino real también en envío (no solo preview)
       let simulatedWeek: any = null;
       if (data?.simulateFromLogbookId) {
         try {
@@ -127,30 +132,17 @@ export async function POST(req: NextRequest) {
             }
           }
         } catch (err) {
-          console.warn('No se pudo simular desde bitácora (send):', err);
+          console.warn('No se pudo simular desde camino (send):', err);
         }
       }
 
-      const defaultData = {
-        name: data?.name || 'Usuario de Prueba',
-        email: to,
-        weekNumber: simulatedWeek?.weekNumber || data?.weekNumber || 1,
-        month: simulatedWeek?.month || data?.month || 1,
-        year: simulatedWeek?.year || data?.year || 2025,
-        text: simulatedWeek?.text || data?.text || 'Contenido de prueba para la semana.',
-        audioUrl: simulatedWeek?.audioUrl || data?.audioUrl || '',
-        audioTitle: simulatedWeek?.audioTitle || data?.audioTitle || 'Audio de la semana',
-        coverImage: simulatedWeek?.coverImage || data?.coverImage || 'https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png',
-        videoDurationSeconds: simulatedWeek?.videoDurationSeconds || data?.videoDurationSeconds || 0,
-        bitacoraLink: data?.bitacoraLink || 'https://mateomove.com/bitacora',
-        logbookTitle: simulatedWeek?.logbookTitle || data?.logbookTitle || 'Camino del Gorila'
-      };
+      const defaultData = buildWeeklyPathTestData(to, data, simulatedWeek);
 
       try {
         const result = await emailService.sendEmail({
           type: EmailType.WEEKLY_LOGBOOK_RELEASE,
           to,
-          subject: subject || `El Camino del Gorila - Semana ${defaultData.weekNumber} está disponible`,
+          subject: subject || `El Camino - Semana ${defaultData.weekNumber} está disponible`,
           data: defaultData
         });
 
@@ -182,8 +174,9 @@ export async function POST(req: NextRequest) {
       const result = await emailService.sendWelcomeMembership({
         email: testEmail,
         name: 'Usuario de Prueba',
-        dashboardUrl: 'https://mateomove.com/home',
-        telegramInviteUrl: 'https://t.me/+_9hJulwT690yNWFh'
+        dashboardUrl: 'https://mateomove.com/library',
+        telegramInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/LgVResfArGjIn9qByXXUSo',
+        whatsappInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/LgVResfArGjIn9qByXXUSo'
       });
       results.push({
         emailType: 'WELCOME_MEMBERSHIP',

@@ -2,7 +2,7 @@ import filterClass from "./features/filterClass";
 import filterProduct from "./features/filterProduct"; 
 import { configureStore } from "@reduxjs/toolkit";
 import classesModalReducer from './features/createClassSlice';
-import headerHomeReducer from './features/headerHomeSlice';
+import headerLibraryReducer from './features/headerLibrarySlice';
 import createCourseReducer from './features/createCoursesSlice';
 import { classApi } from "./services/classApi";
 import { individualClassApi } from "./services/individualClassApi";
@@ -19,7 +19,7 @@ export const store = configureStore({
     createCourseReducer,
     filterClass,
     filterProduct,
-    headerHomeReducer,
+    headerLibraryReducer,
     [classApi.reducerPath]: classApi.reducer,
     [individualClassApi.reducerPath]: individualClassApi.reducer,
     productIdReducer,

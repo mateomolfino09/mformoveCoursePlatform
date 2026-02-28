@@ -1,11 +1,11 @@
 'use client';
 
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import imageLoader from '../../../../imageLoader';
 import { Plan, ProductDB, User } from '../../../../typings';
 import { useAuth } from '../../../hooks/useAuth';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
-import { toggleScroll } from '../../../redux/features/headerHomeSlice';
+import { toggleScroll } from '../../../redux/features/headerLibrarySlice';
 import Footer from '../../Footer';
 import { LoadingSpinner } from '../../LoadingSpinner';
 import MainSideBar from '../../MainSidebar/MainSideBar';

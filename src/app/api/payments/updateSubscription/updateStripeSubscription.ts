@@ -18,6 +18,10 @@ export async function updateStripeSubscription(customerEmail?: string) {
         }
         
         user.subscription = latestSub;
+        if (user.validEmail !== 'yes') {
+          user.validEmail = 'yes';
+          user.emailToken = undefined;
+        }
         await user.save();
         user.password = null;
         return latestSub;

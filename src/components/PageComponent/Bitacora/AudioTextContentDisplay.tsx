@@ -210,11 +210,23 @@ const AudioTextContentDisplay = ({
                 <audio
                   ref={audioRef}
                   src={audioUrl}
-                  onEnded={() => {
+                  onEnded={async () => {
                     setIsPlaying(false);
                     if (audioRef.current) {
                       audioRef.current.currentTime = 0;
                       setCurrentTime(0);
+                    }
+                    // Completar automáticamente cuando el audio termine
+                    if (!isCompleted && !isCompleting && onComplete && canComplete) {
+                      setIsCompleting(true);
+                      try {
+                        await onComplete();
+                        toast.success('¡Clase completada! 🎉');
+                      } catch (error: any) {
+                        toast.error(error.message || 'Error al completar la clase');
+                      } finally {
+                        setIsCompleting(false);
+                      }
                     }
                   }}
                   onPause={() => setIsPlaying(false)}

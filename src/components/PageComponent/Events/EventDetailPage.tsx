@@ -8,7 +8,7 @@ import EventDescription from './EventDescription';
 import EventCTA from './EventCTA';
 import ProgramaTransformacionalInfo from './ProgramaTransformacionalInfo';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import Footer from '../../Footer';
 

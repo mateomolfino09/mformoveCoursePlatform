@@ -31,14 +31,8 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
         <div className='h-1 w-full bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5]' />
         
         <div className='flex justify-center mt-8 mb-12'>
-          <Link href={routes.navegation.membership.home}>
-            <picture>
-              <img
-                alt='icon image'
-                src='/images/MFORMOVE_blanco.png'
-                className='cursor-pointer object-contain w-28 h-auto transition duration-500 hover:scale-105 opacity-90 hover:opacity-100'
-              />
-            </picture>
+          <Link href={routes.navegation.membership.library} className='cursor-pointer transition duration-500 hover:scale-105 opacity-90 hover:opacity-100 text-center'>
+            <span className='text-xl font-bold tracking-[0.2em] text-white font-montserrat uppercase'>MMOVE DASHBOARD</span>
           </Link>
         </div>
 
@@ -55,7 +49,7 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
                 <HomeIcon className={`h-5 w-5 ${pathname == '/admin' ? 'text-[#4F7CCF]' : ''}`} />
               </div>
               <div className='flex-1 min-w-0'>
-                <p className='truncate font-medium'>Home</p>
+                <p className='truncate font-medium'>Library</p>
               </div>
             </div>
           </Link>
@@ -84,7 +78,13 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
                 pathname == '/admin/memberships/classes' ||
                 pathname == '/admin/memberships/classes/createClass' ||
                 pathname == '/admin/memberships/classes/allClasses' ||
-                pathname == '/admin/memberships/classes/createClassType'
+                pathname == '/admin/memberships/classes/createClassType' ||
+                pathname == '/admin/memberships/class-modules' ||
+                pathname?.startsWith('/admin/memberships/class-modules/') ||
+                pathname == '/admin/memberships/submodules' ||
+                pathname?.startsWith('/admin/memberships/submodules/') ||
+                pathname == '/admin/memberships/bitacora' ||
+                pathname?.startsWith('/admin/memberships/bitacora/')
                   ? 'bg-white/10 text-white border-l-2 border-[#4F7CCF] shadow-lg'
                   : 'text-gray-400 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
               }`}
@@ -95,9 +95,15 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
                   pathname == '/admin/memberships/plans' ||
                   pathname == '/admin/memberships/createPlan' ||
                   pathname == '/admin/memberships/classes' ||
-                  pathname == '/admin/memberships/classes/createClass' ||
+                    pathname == '/admin/memberships/classes/createClass' ||
                   pathname == '/admin/memberships/classes/allClasses' ||
-                  pathname == '/admin/memberships/classes/createClassType'
+                  pathname == '/admin/memberships/classes/createClassType' ||
+                  pathname == '/admin/memberships/class-modules' ||
+                  pathname?.startsWith('/admin/memberships/class-modules/') ||
+                  pathname == '/admin/memberships/submodules' ||
+                  pathname?.startsWith('/admin/memberships/submodules/') ||
+                  pathname == '/admin/memberships/bitacora' ||
+                  pathname?.startsWith('/admin/memberships/bitacora/')
                     ? 'text-[#4F7CCF]' : ''
                 }`} />
               </div>

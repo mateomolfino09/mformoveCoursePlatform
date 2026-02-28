@@ -12,7 +12,7 @@ const ProfileHeader = () => {
 
   return (
     <motion.header className={`bg-black w-full h-16 py-1 `} initial={{ opacity: 0 }} transition={{ duration: 0.8, ease: 'linear' }} animate={{ opacity: 1 }}>
-    <Link href={`${auth?.user?.subscription?.active ? '/home' : '/mentorship' }`}>
+    <Link href={`${auth?.user?.subscription?.active ? '/library' : '/mentorship' }`}>
       <img
         src='/images/MFORMOVE_blanco03.png'
         width={180}

@@ -9,7 +9,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, { MouseEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import Cookies from 'js-cookie';
 import endpoints from '../../../services/api';
 import { clearData as clear, addEmail,addStepOne,addStepTwo } from '../../../redux/features/register';
@@ -27,6 +27,8 @@ import { useAuth } from '../../../hooks/useAuth';
 import { routes } from '../../../constants/routes';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import Footer from '../../Footer';
+import { saveRedirectUrl } from '../../../utils/redirectQueue';
+import AuthSkeleton from '../../AuthSkeleton';
 
 interface Inputs {
   email: string;
@@ -34,6 +36,7 @@ interface Inputs {
 }
 
 function Register() {
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>()
   const animationstepcero = useAnimation();
@@ -137,6 +140,32 @@ function Register() {
     }, 1000);
     return () => clearInterval(t);
   }, [resendCooldown]);
+
+  useEffect(() => {
+    // Mostrar skeleton al inicio y luego ocultarlo
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 800);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Si ya está logueado, redirigir según rol y suscripción
+  useEffect(() => {
+    if (!auth.user) {
+      auth.fetchUser();
+      return;
+    }
+    if (auth.user.rol === 'Admin') {
+      router.replace('/admin');
+      return;
+    }
+    if (auth.user.subscription?.active || auth.user.isVip) {
+      router.replace('/library');
+      return;
+    }
+    router.replace('/');
+  }, [auth, auth.user, router]);
 
   const clearData = () => {
     setState({
@@ -316,6 +345,10 @@ function Register() {
   //     setCaptchaToken(null);
   //   }
   // };
+
+  if (initialLoading) {
+    return <AuthSkeleton />;
+  }
 
   return (
     <div>

@@ -10,6 +10,7 @@ interface Props {
   videoId?: string;
   thumbnailUrl?: string;
   title?: string;
+  videoName?: string;
   description?: string;
   duration?: number;
   onComplete?: () => void;
@@ -24,6 +25,7 @@ const VideoContentDisplay = ({
   videoId,
   thumbnailUrl,
   title,
+  videoName,
   description,
   duration,
   onComplete,
@@ -51,11 +53,41 @@ const VideoContentDisplay = ({
   const isVimeo = Boolean(finalVideoId) || (videoUrl && videoUrl.includes('vimeo.com'));
   const vimeoId = finalVideoId;
 
+  const [privateToken, setPrivateToken] = useState<string | null>(null);
+  const [tokenLoaded, setTokenLoaded] = useState(false);
+
+  // Obtener token privado para videos UNLISTED
+  useEffect(() => {
+    const computedVideoId = videoId || extractVimeoId(videoUrl) || null;
+    if (!computedVideoId) return;
+
+    const fetchPrivateToken = async () => {
+      try {
+        const res = await fetch('/api/vimeo/getPrivateToken', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ videoId: computedVideoId }),
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          setPrivateToken(data.privateToken);
+        }
+      } catch (error) {
+        console.error('Error obteniendo token privado:', error);
+      } finally {
+        setTokenLoaded(true);
+      }
+    };
+
+    fetchPrivateToken();
+  }, [videoId, videoUrl]);
+
   // Inicializar Vimeo Player y tracking de progreso
   useEffect(() => {
     const computedVideoId = videoId || extractVimeoId(videoUrl) || null;
     
-    if (!computedVideoId || !playerContainerRef.current) return;
+    if (!computedVideoId || !playerContainerRef.current || !tokenLoaded) return;
 
     const numericVideoId = Number(computedVideoId);
     if (!numericVideoId || isNaN(numericVideoId)) return;
@@ -83,15 +115,26 @@ const VideoContentDisplay = ({
       if (!isMounted || !playerContainerRef.current || isDestroyed) return;
 
       try {
-        // Crear nuevo reproductor
-        player = new Player(playerContainerRef.current, {
-          id: numericVideoId,
+        // Crear opciones del reproductor
+        const playerOptions: any = {
           autoplay: false,
           loop: false,
           muted: false,
           playsinline: true,
           responsive: true,
-        });
+        };
+
+        // Para videos UNLISTED, usar la URL completa con el hash en lugar del ID
+        if (privateToken) {
+          // Usar URL completa con hash para videos UNLISTED
+          playerOptions.url = `https://player.vimeo.com/video/${numericVideoId}?h=${privateToken}`;
+        } else {
+          // Para videos públicos, usar solo el ID
+          playerOptions.id = numericVideoId;
+        }
+
+        // Crear nuevo reproductor
+        player = new Player(playerContainerRef.current, playerOptions);
 
         if (!isMounted || isDestroyed) {
           player.destroy().catch(() => {});
@@ -183,11 +226,48 @@ const VideoContentDisplay = ({
           }
         };
 
+        const handleEnded = async () => {
+          // Completar automáticamente cuando el video termine
+          if (!isCompleted && !isCompleting && onComplete) {
+            // Verificar que el progreso sea suficiente (al menos 95%)
+            try {
+              if (totalDuration > 0) {
+                const currentTime = await player!.getCurrentTime();
+                const progress = (currentTime / totalDuration) * 100;
+                if (progress >= 95) {
+                  setIsCompleting(true);
+                  try {
+                    await onComplete();
+                    toast.success('¡Clase completada! 🎉');
+                  } catch (error: any) {
+                    toast.error(error.message || 'Error al completar la clase');
+                  } finally {
+                    setIsCompleting(false);
+                  }
+                }
+              }
+            } catch (error) {
+              // Si no se puede obtener el tiempo, intentar completar de todas formas
+              // porque el evento ended indica que el video terminó
+              setIsCompleting(true);
+              try {
+                await onComplete();
+                toast.success('¡Clase completada! 🎉');
+              } catch (error: any) {
+                toast.error(error.message || 'Error al completar la clase');
+              } finally {
+                setIsCompleting(false);
+              }
+            }
+          }
+        };
+
         // Registrar eventos
         player.on('ready', handleReady);
         player.on('timeupdate', handleTimeUpdate);
         player.on('progress', handleProgress);
         player.on('play', handlePlay);
+        player.on('ended', handleEnded);
 
       } catch (error) {
         console.error('Error creando reproductor Vimeo:', error);
@@ -215,6 +295,7 @@ const VideoContentDisplay = ({
           player.off('timeupdate');
           player.off('progress');
           player.off('play');
+          player.off('ended');
         } catch (e) {
           // Ignorar errores al remover eventos
         }
@@ -230,7 +311,7 @@ const VideoContentDisplay = ({
       playerRef.current = null;
       player = null;
     };
-  }, [videoId, videoUrl, isCompleted]);
+  }, [videoId, videoUrl, isCompleted, onComplete, privateToken, tokenLoaded]);
 
   // Para videos HTML5 nativos
   useEffect(() => {
@@ -260,7 +341,7 @@ const VideoContentDisplay = ({
       videoElement.removeEventListener('progress', updateProgress);
       videoElement.removeEventListener('play', updateProgress);
     };
-  }, [videoUrl, finalVideoId, isCompleted]);
+  }, [videoUrl, finalVideoId, isCompleted, onComplete]);
 
   const handleCompleteClick = async () => {
     if (!canComplete || isCompleting || isCompleted || !onComplete) return;
@@ -276,6 +357,9 @@ const VideoContentDisplay = ({
     }
   };
 
+  // Usar videoName si está disponible, sino title como fallback
+  const displayName = videoName || title;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -283,12 +367,14 @@ const VideoContentDisplay = ({
       transition={{ duration: 0.5 }}
       className='w-full space-y-6'
     >
-      {title && (
+      {/* Nombre de la clase arriba del video */}
+      {displayName && (
         <h2 className='text-3xl mt-8 md:text-5xl md:mb-4 font-bold text-gray-900 font-montserrat tracking-tight'>
-          {title}
+          {displayName}
         </h2>
       )}
 
+      {/* Video */}
       <div className='relative w-full rounded-2xl md:rounded-3xl overflow-hidden bg-black border border-gray-800/50 shadow-[0_15px_45px_rgba(0,0,0,0.6)] md:!mt-0 !mt-4'>
         {isVimeo && vimeoId ? (
           <div 
@@ -303,6 +389,20 @@ const VideoContentDisplay = ({
               controls
               className='w-full h-full'
               preload='metadata'
+              onEnded={async () => {
+                // Completar automáticamente cuando el video termine
+                if (!isCompleted && !isCompleting && onComplete && canComplete) {
+                  setIsCompleting(true);
+                  try {
+                    await onComplete();
+                    toast.success('¡Clase completada! 🎉');
+                  } catch (error: any) {
+                    toast.error(error.message || 'Error al completar la clase');
+                  } finally {
+                    setIsCompleting(false);
+                  }
+                }
+              }}
             />
           </div>
         ) : (
@@ -312,14 +412,9 @@ const VideoContentDisplay = ({
         )}
       </div>
 
-      {title && (
-        <h3 className='text-gray-800 text-2xl md:text-3xl font-montserrat !mt-8 font-normal leading-relaxed'>
-          {title}
-        </h3>
-      )}
-
+      {/* Descripción abajo del video */}
       {description && (
-        <p className='text-gray-400 text-sm md:text-base font-montserrat !mt-3 font-light leading-relaxed'>
+        <p className='text-gray-700 text-base md:text-lg font-montserrat !mt-6 font-light leading-relaxed'>
           {description}
         </p>
       )}

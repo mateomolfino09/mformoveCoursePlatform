@@ -68,7 +68,7 @@ const BitacoraLoading = ({ show }: { show: boolean }) => {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-4xl md:text-6xl font-bold mb-6"
             >
-              Camino del Gorila
+              Camino
             </motion.h1>
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}

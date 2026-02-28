@@ -18,8 +18,10 @@ import MainSideBar from '../../MainSidebar/MainSideBar';
 import AccountForm from '../Login/AccountForm';
 import NewsletterF from '../Index/NewsletterForm';
 import Footer from '../../Footer';
+import AuthSkeleton from '../../AuthSkeleton';
 
 function ForgetForm() {
+  const [initialLoading, setInitialLoading] = useState(true);
   const [message, setMessage] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -31,6 +33,15 @@ function ForgetForm() {
       document.addEventListener('keydown', testCapsLock);
       document.addEventListener('keyup', testCapsLock);
     }
+  }, []);
+
+  useEffect(() => {
+    // Mostrar skeleton al inicio y luego ocultarlo
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 800);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -101,6 +112,10 @@ function ForgetForm() {
       ]);
     }
   };
+
+  if (initialLoading) {
+    return <AuthSkeleton />;
+  }
 
   return (
     <div>

@@ -13,7 +13,7 @@ import {
   CheckCircleIcon,
   XCircleIcon
 } from '@heroicons/react/24/outline';
-import { toast } from 'react-toastify';
+import { toast } from '../../../../hooks/useToast';
 
 const AutomationPage = () => {
   const router = useRouter();

@@ -3,17 +3,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
-// Colores naturales Move Crew - Crema y Salmón
-const CREAM = '#FFFDFD';
-const CREAM_LIGHT = '#FEFCF8';
-const CREAM_DARK = '#F5F1E8';
-const SALMON = '#F97316'; // Salmón/naranja cálido
-const SALMON_LIGHT = '#FB923C';
-const SALMON_DARK = '#EA580C';
-const SALMON_SOFT = '#FED7AA'; // Salmón suave para fondos
-const EARTH_BROWN = '#8B4513'; // Marrón tierra para textos
-const NATURAL_GRAY = '#6B7280'; // Gris natural
-
 const shapeIcon = (seed: string | number) => {
   const shapes = ['▲', '■', '●', '◆', '▴', '▢'];
   const code = typeof seed === 'number' ? seed : seed.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
@@ -36,6 +25,7 @@ interface CoherenceCelebrationModalProps {
   newLevel?: number;
   evolution?: boolean;
   gorillaIcon?: string;
+  isFirstTime?: boolean;
 }
 
 const CoherenceCelebrationModal = ({
@@ -49,52 +39,42 @@ const CoherenceCelebrationModal = ({
   levelUp = false,
   newLevel,
   evolution = false,
-  gorillaIcon
+  gorillaIcon,
+  isFirstTime = false
 }: CoherenceCelebrationModalProps) => {
   const [showAchievements, setShowAchievements] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      // Mostrar achievements después de 1.5 segundos
-      const timer = setTimeout(() => {
-        setShowAchievements(true);
-      }, 1500);
+      const timer = setTimeout(() => setShowAchievements(true), 1500);
       return () => clearTimeout(timer);
     } else {
       setShowAchievements(false);
     }
   }, [isOpen]);
 
-  // Auto-cerrar después de 5 segundos
   useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => {
-        onClose();
-      }, 5000);
+    if (isOpen && !isFirstTime) {
+      const timer = setTimeout(onClose, 5000);
       return () => clearTimeout(timer);
     }
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isFirstTime]);
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Overlay suave y natural */}
+          {/* Overlay — estilo Move Crew (deep-teal/ink) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-[200]"
-            style={{
-              background: `linear-gradient(135deg, rgba(139, 69, 19, 0.3) 0%, rgba(249, 115, 22, 0.2) 100%)`,
-              backdropFilter: 'blur(8px)'
-            }}
+            className="fixed inset-0 z-[200] bg-palette-ink/80 backdrop-blur-md"
             onClick={onClose}
           />
 
-          {/* Modal principal */}
-          <div className="fixed inset-0 flex items-center justify-center z-[201] pointer-events-none">
+          <div className="fixed inset-0 flex items-center justify-center z-[201] pointer-events-none p-4 pt-20 md:pt-28 overflow-y-auto">
             <motion.div
               initial={{ scale: 0.5, opacity: 0, y: 50 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -105,55 +85,37 @@ const CoherenceCelebrationModal = ({
                 damping: 25,
                 duration: 0.6
               }}
-              className="pointer-events-auto relative w-full max-w-md mx-4"
+              className="pointer-events-auto relative w-full max-w-md mx-auto my-auto max-h-[85vh] md:max-h-[calc(100vh-8rem)] overflow-y-auto"
             >
-              {/* Contenedor principal minimalista y natural */}
-              <div 
-                className="relative rounded-3xl shadow-2xl overflow-hidden border"
-                style={{
-                  background: `linear-gradient(135deg, ${CREAM} 0%, ${CREAM_LIGHT} 50%, ${CREAM_DARK} 100%)`,
-                  borderColor: `${SALMON}30`,
-                  borderWidth: '1px'
-                }}
-              >
-                {/* Efectos de fondo sutiles y naturales - partículas orgánicas */}
-                <div className="absolute inset-0 overflow-hidden opacity-40">
+              {/* Contenedor — cream + bordes paleta como Move Crew */}
+              <div className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-palette-stone/20 bg-palette-cream shadow-[0_12px_40px_rgba(20,20,17,0.12)]">
+                {/* Efectos de fondo sutiles — sage paleta */}
+                <div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none">
                   {[...Array(12)].map((_, i) => (
                     <motion.div
                       key={i}
-                      className="absolute rounded-full"
+                      className="absolute rounded-full bg-palette-sage/25 w-2 h-2"
                       style={{
-                        width: `${4 + Math.random() * 6}px`,
-                        height: `${4 + Math.random() * 6}px`,
-                        backgroundColor: i % 2 === 0 
-                          ? `${SALMON}20` 
-                          : `${SALMON_SOFT}30`
+                        left: `${15 + (i * 7) % 80}%`,
+                        top: `${10 + (i * 11) % 75}%`
                       }}
-                      initial={{
-                        x: Math.random() * 400,
-                        y: Math.random() * 400,
-                        scale: 0,
-                        rotate: 0
-                      }}
+                      initial={{ scale: 0, opacity: 0.6 }}
                       animate={{
-                        scale: [0, 1.2, 0],
-                        rotate: [0, 180, 360],
-                        x: Math.random() * 400,
-                        y: Math.random() * 400,
+                        scale: [0, 1, 0],
+                        opacity: [0.6, 0.9, 0.6]
                       }}
                       transition={{
-                        duration: 3 + Math.random() * 2,
+                        duration: 4 + (i % 3),
                         repeat: Infinity,
-                        delay: Math.random() * 3,
+                        delay: i * 0.2,
                         ease: 'easeInOut'
                       }}
                     />
                   ))}
                 </div>
 
-                {/* Contenido */}
-                <div className="relative p-8 text-center">
-                  {/* Icono natural y orgánico - semilla/hoja */}
+                <div className="relative p-4 md:p-8 text-center font-montserrat">
+                  {/* Icono */}
                   <motion.div
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
@@ -163,68 +125,41 @@ const CoherenceCelebrationModal = ({
                       damping: 20,
                       delay: 0.2
                     }}
-                    className="flex justify-center mb-6"
+                    className="flex justify-center mb-4 md:mb-6"
                   >
                     <div className="relative">
-                      {/* Círculo orgánico con gradiente análogo a Completados/U.C */}
                       <motion.div
-                        animate={{
-                          scale: [1, 1.1, 1],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: 'easeInOut'
-                        }}
-                        className="w-20 h-20 rounded-full flex items-center justify-center backdrop-blur-sm border"
-                        style={{
-                          background: `linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(249, 115, 22, 0.3) 50%, rgba(225, 29, 72, 0.3) 100%)`,
-                          borderColor: 'rgba(251, 191, 36, 0.4)',
-                          borderWidth: '1px',
-                          boxShadow: `0 8px 24px rgba(245, 158, 11, 0.2)`
-                        }}
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                        className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center border border-palette-sage/40 bg-palette-sage/25"
                       >
-                        {/* Icono de semilla/hoja - usando emoji o símbolo natural */}
                         <motion.div
-                          animate={{
-                            rotate: [0, 5, -5, 0]
-                          }}
-                          transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            ease: 'easeInOut'
-                          }}
-                          className="text-4xl"
+                          animate={{ rotate: [0, 5, -5, 0] }}
+                          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                          className="text-lg md:text-xl font-bold font-montserrat tracking-tight text-palette-sage"
                         >
-                          🌱
+                          U.C.
                         </motion.div>
                       </motion.div>
-                      {/* Partículas orgánicas alrededor */}
                       {[...Array(6)].map((_, i) => (
                         <motion.div
                           key={i}
-                          className="absolute rounded-full"
+                          className="absolute w-1.5 h-1.5 rounded-full bg-palette-sage/70"
                           style={{
-                            width: '8px',
-                            height: '8px',
-                            backgroundColor: SALMON_SOFT,
                             left: '50%',
-                            top: '50%'
+                            top: '50%',
+                            x: '-50%',
+                            y: '-50%',
+                            marginLeft: Math.cos((i * Math.PI) / 3) * 48 - 3,
+                            marginTop: Math.sin((i * Math.PI) / 3) * 48 - 3
                           }}
-                          initial={{
-                            x: 0,
-                            y: 0,
-                            scale: 0,
-                            opacity: 0
-                          }}
+                          initial={{ scale: 0, opacity: 0 }}
                           animate={{
-                            x: Math.cos((i * Math.PI) / 3) * 50,
-                            y: Math.sin((i * Math.PI) / 3) * 50,
                             scale: [0, 1, 0],
-                            opacity: [0, 1, 0]
+                            opacity: [0, 0.7, 0]
                           }}
                           transition={{
-                            duration: 2,
+                            duration: 2.5,
                             delay: 0.5 + i * 0.15,
                             repeat: Infinity,
                             repeatDelay: 3
@@ -234,106 +169,114 @@ const CoherenceCelebrationModal = ({
                     </div>
                   </motion.div>
 
-                  {/* Título minimalista y natural */}
+                  {/* Label superior — estilo Move Crew (uppercase tracking) */}
+                  <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="font-montserrat uppercase tracking-[0.2em] text-xs md:text-sm text-palette-stone mb-2"
+                  >
+                    {isFirstTime ? 'Primera U.C.' : (levelUp ? (evolution ? 'Evolución' : 'Nivel') : 'Coherencia')}
+                  </motion.p>
+
+                  {/* Título */}
                   <motion.h2
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="text-3xl font-light font-montserrat tracking-wide mb-3"
-                    style={{ color: EARTH_BROWN }}
+                    className="text-2xl md:text-3xl font-semibold font-montserrat tracking-tight text-palette-ink mb-2 md:mb-3"
                   >
-                    {levelUp ? (evolution ? '¡Evolución del Gorila!' : '¡Subiste de Nivel!') : 'Unidad de Coherencia'}
+                    {isFirstTime ? '¡Tu Primera U.C.!' : (levelUp ? (evolution ? '¡Evolución del Gorila!' : '¡Subiste de Nivel!') : 'Unidad de Coherencia')}
                   </motion.h2>
                   <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}
-                    className="text-sm font-montserrat font-light mb-4"
-                    style={{ color: NATURAL_GRAY }}
+                    className="text-xs md:text-sm font-light font-montserrat text-palette-stone mb-3 md:mb-4"
                   >
-                    {levelUp ? (evolution ? `Tu gorila evoluciona al nivel ${newLevel}` : `Ahora eres nivel ${newLevel}`) : 'Cultivada con constancia'}
+                    {isFirstTime ? '¡Felicidades por empezar tu camino!' : (levelUp ? (evolution ? `Tu gorila evoluciona al nivel ${newLevel}` : `Ahora eres nivel ${newLevel}`) : 'Cultivada con constancia')}
                   </motion.p>
 
-                  {/* Mostrar icono del gorila si hay evolución */}
-                  {evolution && gorillaIcon && (
-                    <motion.div
-                      initial={{ scale: 0, rotate: -180 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 150,
-                        damping: 20,
-                        delay: 0.6
-                      }}
-                      className="mb-4"
-                    >
-                      <div className="text-6xl">{gorillaIcon}</div>
-                    </motion.div>
-                  )}
-
-                  {/* Mensaje de U.C. otorgadas - minimalista */}
+                  {/* Badge +N U.C. — acento teal paleta */}
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
-                    className="mb-6"
+                    className="mb-4 md:mb-6"
                   >
-                    <div 
-                      className="inline-flex items-center gap-3 px-8 py-4 rounded-full"
-                      style={{
-                        background: `linear-gradient(135deg, ${SALMON_SOFT} 0%, ${SALMON_SOFT}80 100%)`,
-                        border: `1px solid ${SALMON}30`
-                      }}
-                    >
-                      <span className="text-3xl font-light font-montserrat" style={{ color: SALMON_DARK }}>
+                    <div className="inline-flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full bg-palette-sage/10 border border-palette-sage/30">
+                      <span className="text-2xl md:text-3xl font-semibold font-montserrat text-palette-sage">
                         +{ucsOtorgadas}
                       </span>
-                      <span className="text-lg font-light font-montserrat tracking-wide" style={{ color: EARTH_BROWN }}>
+                      <span className="text-base md:text-lg font-medium font-montserrat tracking-tight text-palette-ink">
                         U.C.
                       </span>
                     </div>
                   </motion.div>
 
-                  {/* Información adicional - minimalista */}
+                  {/* Información adicional */}
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.7 }}
-                    className="space-y-3 mb-5"
+                    className="space-y-2 md:space-y-3 mb-4 md:mb-5"
                   >
-                    <div className="flex items-center justify-center gap-4">
-                      <p className="text-base font-light font-montserrat" style={{ color: EARTH_BROWN }}>
-                        Total: <span className="font-medium" style={{ color: SALMON_DARK }}>{totalUnits} U.C.</span>
-                      </p>
-                      {currentStreak > 0 && (
-                        <>
-                          <span className="text-sm" style={{ color: SALMON_SOFT }}>•</span>
-                          <p className="text-base font-light font-montserrat" style={{ color: EARTH_BROWN }}>
-                            Racha: <span className="font-medium" style={{ color: SALMON_DARK }}>{currentStreak}</span>
-                          </p>
-                        </>
-                      )}
-                    </div>
-                    {esSemanaAdicional && (
+                    {isFirstTime ? (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.9 }}
-                        className="mt-4 p-4 rounded-lg border"
-                        style={{
-                          backgroundColor: `${SALMON_SOFT}30`,
-                          borderColor: `${SALMON}20`
-                        }}
+                        transition={{ delay: 0.8 }}
+                        className="space-y-4"
                       >
-                        <p className="text-xs font-montserrat font-light leading-relaxed text-center" style={{ color: EARTH_BROWN }}>
-                          Semana adicional: Cada semana adicional otorga 1 U.C. en total. 
-                          Completa 2 U.C. por semana (1 video + 1 audio) para maximizar tus puntos.
-                        </p>
+                        <div className="p-5 rounded-xl border border-palette-stone/15 bg-palette-sage/5">
+                          <h3 className="text-base font-semibold font-montserrat mb-3 text-center text-palette-ink uppercase tracking-[0.12em]">
+                            ¿Qué es una U.C.?
+                          </h3>
+                          <div className="space-y-3 text-sm font-light font-montserrat leading-relaxed text-palette-ink">
+                            <p>
+                              <strong className="text-palette-stone font-medium">U.C.</strong> = <strong className="text-palette-stone font-medium">Unidad de Coherencia</strong>. Una semana completada del Camino = 1 U.C.
+                            </p>
+                            <p>
+                              Acumulalas y canjealas por programas, material o lo que vayamos creando.
+                            </p>
+                            <p className="text-center mt-4 pt-3 border-t border-palette-stone/15">
+                              <span className="font-medium text-palette-stone">Total actual: {totalUnits} U.C.</span>
+                            </p>
+                          </div>
+                        </div>
                       </motion.div>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-center gap-3 md:gap-4 flex-wrap">
+                          <p className="text-sm md:text-base font-light font-montserrat text-palette-ink">
+                            Total: <span className="font-medium text-palette-stone">{totalUnits} U.C.</span>
+                          </p>
+                          {currentStreak > 0 && (
+                            <>
+                              <span className="text-xs md:text-sm text-palette-sage">•</span>
+                              <p className="text-sm md:text-base font-light font-montserrat text-palette-ink">
+                                Racha: <span className="font-medium text-palette-stone">{currentStreak}</span>
+                              </p>
+                            </>
+                          )}
+                        </div>
+                        {esSemanaAdicional && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.9 }}
+                            className="mt-4 p-4 rounded-xl border border-palette-stone/15 bg-palette-sage/10"
+                          >
+                            <p className="text-xs font-montserrat font-light leading-relaxed text-center text-palette-ink">
+                              Una semana completada = 1 U.C.
+                            </p>
+                          </motion.div>
+                        )}
+                      </>
                     )}
                   </motion.div>
 
-                  {/* Logros nuevos - estilo natural */}
+                  {/* Logros nuevos */}
                   <AnimatePresence>
                     {showAchievements && newAchievements.length > 0 && (
                       <motion.div
@@ -341,10 +284,9 @@ const CoherenceCelebrationModal = ({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ delay: 0.2 }}
-                        className="mt-5 pt-5"
-                        style={{ borderTop: `1px solid ${SALMON}20` }}
+                        className="mt-5 pt-5 border-t border-palette-stone/15"
                       >
-                        <p className="text-xs font-light font-montserrat mb-3 tracking-wide uppercase text-center" style={{ color: NATURAL_GRAY }}>
+                        <p className="font-montserrat uppercase tracking-[0.2em] text-xs text-palette-stone mb-3 text-center">
                           Nuevo Logro
                         </p>
                         {newAchievements.map((achievement, index) => (
@@ -353,17 +295,14 @@ const CoherenceCelebrationModal = ({
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 + index * 0.1 }}
-                            className="flex flex-col items-center gap-2 mb-3 p-3 rounded-lg"
-                            style={{
-                              backgroundColor: `${SALMON_SOFT}20`
-                            }}
+                            className="flex flex-col items-center gap-2 mb-3 p-3 rounded-xl bg-palette-sage/10 border border-palette-stone/10"
                           >
-                            <span className="text-3xl">{shapeIcon(achievement.name || index)}</span>
+                            <span className="text-3xl text-palette-sage">{shapeIcon(achievement.name || index)}</span>
                             <div className="text-center">
-                              <p className="text-sm font-medium font-montserrat mb-1" style={{ color: EARTH_BROWN }}>
+                              <p className="text-sm font-medium font-montserrat mb-1 text-palette-ink">
                                 {achievement.name}
                               </p>
-                              <p className="text-xs font-light font-montserrat leading-relaxed" style={{ color: NATURAL_GRAY }}>
+                              <p className="text-xs font-light font-montserrat leading-relaxed text-palette-stone">
                                 {achievement.description}
                               </p>
                             </div>
@@ -373,20 +312,13 @@ const CoherenceCelebrationModal = ({
                     )}
                   </AnimatePresence>
 
-                  {/* Botón de cerrar - con gradiente análogo a Completados/U.C */}
+                  {/* Botón CTA — mismo estilo Move Crew (ink + cream, rounded-full, uppercase) */}
                   <motion.button
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1 }}
                     onClick={onClose}
-                    className="mt-6 w-full font-light font-montserrat py-3 px-6 rounded-full transition-all duration-300 hover:scale-105 backdrop-blur-sm border"
-                    style={{
-                      background: `linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(249, 115, 22, 0.3) 50%, rgba(225, 29, 72, 0.3) 100%)`,
-                      borderColor: 'rgba(251, 191, 36, 0.4)',
-                      borderWidth: '1px',
-                      color: EARTH_BROWN,
-                      boxShadow: `0 4px 12px rgba(245, 158, 11, 0.15)`
-                    }}
+                    className="mt-4 md:mt-6 w-full font-montserrat font-semibold text-sm uppercase tracking-[0.2em] py-3 md:py-3.5 px-6 rounded-full bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-ink/90 hover:border-palette-ink/90 transition-all duration-200"
                   >
                     Continuar
                   </motion.button>
@@ -401,4 +333,3 @@ const CoherenceCelebrationModal = ({
 };
 
 export default CoherenceCelebrationModal;
-

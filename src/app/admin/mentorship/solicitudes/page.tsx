@@ -4,7 +4,7 @@ import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout';
 import InfoModal from '../../../../components/InfoModal';
 import InfoModalSection from '../../../../components/InfoModalSection';
 import InfoModalField from '../../../../components/InfoModalField';
-import { toast } from 'react-toastify';
+import { toast } from '../../../../hooks/useToast';
 
 interface Solicitud {
   _id: string;
@@ -14,6 +14,8 @@ interface Solicitud {
   interesadoEn: string[];
   dondeEntrena: string;
   nivelActual: string;
+  nivelBuscado: string;
+  principalFrenoJustificacion: string;
   principalFreno: string;
   porQueElegirme: string;
   whatsapp: string;
@@ -307,11 +309,25 @@ export default function SolicitudesMentoriaAdmin() {
             </div>
           </InfoModalSection>
 
-          {/* Motivación y objetivos */}
-          <InfoModalSection title="Motivación y Objetivos">
+          {/* Objetivos */}
+          <InfoModalSection title="Objetivos">
             <div className="space-y-4">
               <InfoModalField 
-                label="¿Cuál es tu principal freno para conseguir tus objetivos?" 
+                label="¿Cuáles son tus objetivos con tu cuerpo?" 
+                value={detalle?.nivelBuscado || ''} 
+              />
+            </div>
+          </InfoModalSection>
+
+          {/* Motivación y objetivos */}
+          <InfoModalSection title="Motivación y Obstáculos">
+            <div className="space-y-4">
+              <InfoModalField 
+                label="¿Te gustaría detallar la justificación de tu elección?" 
+                value={detalle?.principalFrenoJustificacion || ''} 
+              />
+              <InfoModalField 
+                label="¿Qué te está frenando para conseguir tus objetivos?" 
                 value={detalle?.principalFreno || ''} 
               />
               <InfoModalField 

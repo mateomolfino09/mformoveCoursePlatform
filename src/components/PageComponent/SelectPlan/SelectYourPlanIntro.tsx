@@ -4,13 +4,14 @@ import VimeoPlayer from '../ClassPage/VimeoPlayer'
 import VimeoPlayerPlan from './VimeoPlayerPlan';
 import { CheckCircleIcon, ChevronDownIcon, ClipboardDocumentCheckIcon, ClipboardDocumentIcon, CloudArrowDownIcon, DevicePhoneMobileIcon, PhoneIcon, UserCircleIcon, UserGroupIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 import { MiniLoadingSpinner } from '../Products/MiniSpinner';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import { useAuth } from '../../../hooks/useAuth';
 import endpoints from '../../../services/api';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { Plan } from '../../../../typings';
 import state from '../../../valtio';
+import { savePlanIntent } from '../../../utils/redirectQueue';
 import { Button } from '@headlessui/react';
 import SelectPlanOptions from './SelectPlanOptions';
 import SelectPlanPlans from './SelectPlanPlans';
@@ -28,7 +29,17 @@ const SelectYourPlanIntro = ({ planSelected, origin }: Props) => {
 
     const handleClick = async () => {
       if(!auth.user) {
-          toast.error('Usuario no encontrado')
+          // Guardar la intención del plan para ejecutarla después del login/registro
+          if (typeof window !== 'undefined' && planSelected) {
+            savePlanIntent({
+              planId: planSelected.id,
+              provider: planSelected.provider || 'dlocalgo',
+              origin: origin,
+              plan_token: planSelected.plan_token
+            });
+            state.loginForm = true;
+          }
+          toast.error('Debes iniciar sesión para continuar')
           return
       }
       const email = auth.user.email
@@ -152,7 +163,20 @@ const SelectYourPlanIntro = ({ planSelected, origin }: Props) => {
           ) : (
             <Button
             type='button'
-            className='w-full block secondary-bg-color border text-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-normal md:max-w-[300px] !mt-5 group relative shadow-2xl' onClick={() => (state.loginForm = true)}
+            className='w-full block secondary-bg-color border text-white rounded-md transition duration-500 hover:bg-rich-black py-3 font-normal md:max-w-[300px] !mt-5 group relative shadow-2xl' 
+            onClick={() => {
+              // Guardar la intención del plan para ejecutarla después del login/registro
+              if (typeof window !== 'undefined' && planSelected) {
+                console.log('[SelectYourPlanIntro] Guardando intención del plan:', planSelected);
+                savePlanIntent({
+                  planId: planSelected.id,
+                  provider: planSelected.provider || 'dlocalgo',
+                  origin: origin,
+                  plan_token: planSelected.plan_token
+                });
+              }
+              state.loginForm = true;
+            }}
             >Empezar
             </Button>
           )}

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { ClassTypes, IndividualClass } from "../../../../typings";
 import ClassesCategory from "../../../components/PageComponent/ClassCategory/ClassCategory";
-import HomeSearch from "../../../components/PageComponent/HomeSearch/HomeSearch";
+import LibrarySearch from "../../../components/PageComponent/LibrarySearch/LibrarySearch";
 
 export default function Page({ params }: { params: { classType: string } }) {
   const { classType } = params;

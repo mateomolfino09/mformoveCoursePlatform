@@ -5,10 +5,9 @@ import connectDB from '../../../../config/connectDB';
 import CoherenceTracking, { getGorillaIcon, getEvolutionName, getProgressToNextLevel } from '../../../../models/coherenceTrackingModel';
 import Users from '../../../../models/userModel';
 
-connectDB();
-
 export async function GET(req) {
   try {
+    await connectDB();
     // Obtener el token del usuario desde las cookies
     const cookieStore = cookies();
     const userToken = cookieStore.get('userToken')?.value;
@@ -58,7 +57,7 @@ export async function GET(req) {
       );
     }
     
-    // Obtener o crear el tracking de coherencia (si el usuario entra a bitácora sin tenerlo)
+    // Obtener o crear el tracking de coherencia (si el usuario entra a camino sin tenerlo)
     const tracking = await (CoherenceTracking.getOrCreate 
       ? CoherenceTracking.getOrCreate(user._id) 
       : (CoherenceTracking.schema?.statics?.getOrCreate 
@@ -71,11 +70,12 @@ export async function GET(req) {
     
     // Calcular información de nivel y evolución
     const level = tracking.level || 1;
+    const levelProgress = tracking.levelProgress !== undefined && tracking.levelProgress !== null ? tracking.levelProgress : 0;
     const monthsCompleted = tracking.monthsCompleted || 0;
     const characterEvolution = tracking.characterEvolution || 0;
     const gorillaIcon = getGorillaIcon(level);
     const evolutionName = getEvolutionName(level);
-    const progressToNextLevel = getProgressToNextLevel(level);
+    const progressToNextLevel = getProgressToNextLevel(levelProgress);
     
     const responseData = {
       success: true,
@@ -86,6 +86,7 @@ export async function GET(req) {
         lastCompletedDate: tracking.lastCompletedDate,
         achievements: tracking.achievements,
         level: level,
+        levelProgress: levelProgress,
         monthsCompleted: monthsCompleted,
         characterEvolution: characterEvolution,
         gorillaIcon: gorillaIcon,

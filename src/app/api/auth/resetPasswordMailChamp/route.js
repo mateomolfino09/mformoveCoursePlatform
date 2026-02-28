@@ -9,6 +9,9 @@ connectDB();
 
 const mailchimpClient = mailchimp(process.env.MAILCHIMP_TRANSACTIONAL_API_KEY);
 
+// URL del logo de la marca (fondo claro - logo oscuro)
+const LOGO_URL_DARK = 'https://res.cloudinary.com/dbeem2avp/image/upload/v1767042950/logo/MFORMOVE_v2.negro_rwdtje.png';
+
 export async function POST(req) {
   try {
     const { email } = await req.json();
@@ -46,6 +49,21 @@ export async function POST(req) {
     <div style="background:#f5f7fb; padding:24px 12px;">
       <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(15,23,42,0.12); border:1px solid #e5e7eb;">
         
+        <!-- Logo de la marca -->
+        <div style="padding:20px 20px 16px; text-align:center; border-bottom:1px solid rgba(0,0,0,0.08);">
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto; width:100%;">
+            <tr>
+              <td style="text-align:center; padding:0;">
+                <img src="${LOGO_URL_DARK}" 
+                     alt="MforMove" 
+                     width="60"
+                     style="max-width:60px; height:auto; display:block; margin:0 auto; border:0; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; opacity:0.85;"
+                     border="0" />
+              </td>
+            </tr>
+          </table>
+        </div>
+
         <!-- Header con acento Move Crew -->
         <div style="padding:28px 24px; text-align:center; background:linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(249, 115, 22, 0.06) 50%, rgba(251, 113, 133, 0.06) 100%);">
           <div style="color:#000000; font-size:26px; font-weight:800; margin:0 0 6px 0; letter-spacing:-0.3px;">Restablecer contraseña</div>

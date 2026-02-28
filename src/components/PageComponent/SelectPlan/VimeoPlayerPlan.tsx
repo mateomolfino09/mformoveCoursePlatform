@@ -26,17 +26,56 @@ const VimeoPlayerPlan = ({ videoId }: { videoId: string }) => {
     }
   }, [isButtonVisible]);
 
+  const [privateToken, setPrivateToken] = useState<string | null>(null);
+  const [tokenLoaded, setTokenLoaded] = useState(false);
+
+  // Obtener token privado para videos UNLISTED
   useEffect(() => {
-      if (playerContainerRef?.current) {
-        const player = new Player(playerContainerRef?.current, {
-          id: Number(videoId), // Convertir string a número
+    const fetchPrivateToken = async () => {
+      try {
+        const res = await fetch('/api/vimeo/getPrivateToken', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ videoId }),
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          setPrivateToken(data.privateToken);
+        }
+      } catch (error) {
+        console.error('Error obteniendo token privado:', error);
+      } finally {
+        setTokenLoaded(true);
+      }
+    };
+
+    if (videoId) {
+      fetchPrivateToken();
+    }
+  }, [videoId]);
+
+  useEffect(() => {
+      if (playerContainerRef?.current && tokenLoaded) {
+        const playerOptions: any = {
           autoplay: true,
           loop: true,
           muted: isMobile, // Muteado solo en dispositivos móviles
           controls: false,
           playsinline: true,
           responsive: true, // Esto permite que el video se ajuste automáticamente
-        });
+        };
+
+        // Para videos UNLISTED, usar la URL completa con el hash en lugar del ID
+        if (privateToken) {
+          // Usar URL completa con hash para videos UNLISTED
+          playerOptions.url = `https://player.vimeo.com/video/${videoId}?h=${privateToken}`;
+        } else {
+          // Para videos públicos, usar solo el ID
+          playerOptions.id = Number(videoId);
+        }
+
+        const player = new Player(playerContainerRef?.current, playerOptions);
 
         player.on('loaded', () => {
           setLoading(false); // El video ha terminado de cargar
@@ -54,26 +93,39 @@ const VimeoPlayerPlan = ({ videoId }: { videoId: string }) => {
           player.setMuted(false)
         })
         player.on('pause', () => setIsPlaying(false));
+
+        return () => {
+          player.destroy().catch(() => {});
+        };
     }
-  }, [videoId, playerContainerRef]);
+  }, [videoId, playerContainerRef, privateToken, tokenLoaded, isMobile]);
 
   const handleMouseMove = () => {
     setIsButtonVisible(true); // Mostrar botón al mover el mouse
   };
 
 
-  const handlePlayPause = () => {
+  const handlePlayPause = async () => {
     if (playerContainerRef?.current) {
-      const player = new Player(playerContainerRef?.current);
+      // Obtener la instancia del player existente desde el contenedor
+      // El Player de Vimeo se puede obtener del iframe dentro del contenedor
+      const iframe = playerContainerRef.current.querySelector('iframe');
+      if (!iframe) return;
 
-      if (isPlaying) {
-        player.pause();
-        setIsPlaying(false)
-      } else {
-        player.play();
-        player.setMuted(false)
-        setIsPlaying(true)
+      // Crear una nueva instancia del player usando el iframe existente
+      const player = new Player(iframe);
 
+      try {
+        if (isPlaying) {
+          await player.pause();
+          setIsPlaying(false);
+        } else {
+          await player.play();
+          await player.setMuted(false);
+          setIsPlaying(true);
+        }
+      } catch (error) {
+        console.error('Error controlando reproducción:', error);
       }
     }
   };

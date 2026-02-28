@@ -13,29 +13,29 @@ import { routes } from '../../../constants/routes';
 
 interface MoveCrewQuickAccessProps {
   coherenceStreak?: number | null;
-  hasBitacoraContent?: boolean;
+  hasWeeklyPathContent?: boolean;
 }
 
 const MoveCrewQuickAccess = ({ 
   coherenceStreak = null, 
-  hasBitacoraContent = true 
+  hasWeeklyPathContent = true 
 }: MoveCrewQuickAccessProps) => {
   const features = [
     {
-      name: 'Bitácora',
-      description: 'Camino del Gorila',
-      href: routes.navegation.membership.bitacora,
+      name: 'Camino',
+      description: 'Camino',
+      href: routes.navegation.membership.weeklyPath,
       icon: FireIcon,
       color: 'from-amber-500 to-orange-500',
       bgColor: 'bg-amber-500/10',
       textColor: 'text-amber-600',
-      available: hasBitacoraContent,
+      available: hasWeeklyPathContent,
       badge: coherenceStreak && coherenceStreak > 0 ? coherenceStreak : null
     },
     {
       name: 'Clases',
       description: 'Entrenamientos',
-      href: routes.navegation.membership.home,
+      href: routes.navegation.membership.library,
       icon: VideoCameraIcon,
       color: 'from-amber-500 to-orange-500',
       bgColor: 'bg-amber-500/10',

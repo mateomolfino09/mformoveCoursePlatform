@@ -21,22 +21,22 @@ function Membership({ user, handleVisibility, plan, loading }: Props) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.1 }}
-      className='bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow duration-300'
+      className='bg-palette-cream border border-palette-stone/25 rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-[0_4px_24px_rgba(20,20,17,0.06)] transition-shadow duration-300 hover:border-palette-stone/40'
     >
       <div className='flex items-center gap-3 mb-6'>
-        <div className='p-2 bg-gray-100 rounded-lg'>
-          <CreditCardIcon className='w-6 h-6 text-gray-700' />
+        <div className='p-2.5 bg-palette-sage/15 border border-palette-stone/30 rounded-xl'>
+          <CreditCardIcon className='w-6 h-6 text-palette-sage' />
         </div>
-        <h2 className='text-xl md:text-2xl font-semibold text-black'>
+        <h2 className='text-xl md:text-2xl font-montserrat font-semibold text-palette-ink tracking-tight'>
           Membresía
         </h2>
       </div>
 
       <div className='space-y-6'>
         {/* Provider Logo */}
-        <div className='flex items-center justify-between pb-6 border-b border-gray-100'>
+        <div className='flex items-center justify-between pb-6 border-b border-palette-stone/20'>
           <div className='space-y-1'>
-            <p className='text-sm text-gray-500 font-light uppercase tracking-wide'>
+            <p className='font-montserrat text-xs uppercase tracking-[0.2em] text-palette-stone'>
               Método de pago
             </p>
             {loading ? (
@@ -66,12 +66,12 @@ function Membership({ user, handleVisibility, plan, loading }: Props) {
                         width={150}
                       />
                     )}
-                    <span className='text-base text-gray-700 font-light'>
+                    <span className='text-base text-palette-ink font-light'>
                       {plan.provider === 'stripe' ? 'Stripe' : 'dLocal'}
                     </span>
                   </div>
                 ) : (
-                  <p className='text-base text-gray-500 font-light pt-2'>
+                  <p className='text-base text-palette-stone font-light pt-2'>
                     No disponible
                   </p>
                 )}
@@ -85,7 +85,7 @@ function Membership({ user, handleVisibility, plan, loading }: Props) {
           <div className='pt-2'>
             <button
               onClick={handleVisibility}
-              className='w-full md:w-auto px-6 py-3 bg-white border border-red-200 text-red-600 rounded-lg font-medium hover:bg-red-50 hover:border-red-300 transition-colors'
+              className='w-full md:w-auto px-6 py-3 font-montserrat font-medium text-sm text-palette-stone border border-palette-stone/40 rounded-full hover:border-palette-stone hover:text-palette-ink transition-colors'
             >
               Cancelar Suscripción
             </button>
@@ -94,9 +94,9 @@ function Membership({ user, handleVisibility, plan, loading }: Props) {
 
         {auth?.user?.subscription?.isCanceled && (
           <div className='pt-2'>
-            <div className='flex items-center gap-2 px-4 py-3 bg-orange-50 border border-orange-200 rounded-lg'>
-              <XMarkIcon className='w-5 h-5 text-orange-600' />
-              <p className='text-sm text-orange-700 font-medium'>
+            <div className='flex items-center gap-2 px-4 py-3 bg-palette-sage/15 border border-palette-stone/30 rounded-xl'>
+              <XMarkIcon className='w-5 h-5 text-palette-sage flex-shrink-0' />
+              <p className='text-sm text-palette-stone font-light'>
                 Tu suscripción está cancelada y finalizará al término del período actual.
               </p>
             </div>

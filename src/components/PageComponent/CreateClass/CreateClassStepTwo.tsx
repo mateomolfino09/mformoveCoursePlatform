@@ -5,7 +5,7 @@ import { AppDispatch } from '../../../redux/store';
 import IsFreeComponent from './IsFreeComponent';
 import React, { useEffect, useState } from 'react';
 import Select, { StylesConfig } from 'react-select';
-import { toast as t } from 'react-toastify';
+import { toast as t } from '../../../hooks/useToast';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import { RxCrossCircled } from 'react-icons/rx';
 import { useDispatch } from 'react-redux';

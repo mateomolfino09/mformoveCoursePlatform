@@ -1,11 +1,11 @@
 'use client';
 
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 import imageLoader from '../../../../imageLoader';
 import { Plan, User } from '../../../../typings';
 import { useAuth } from '../../../hooks/useAuth';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
-import { toggleScroll } from '../../../redux/features/headerHomeSlice';
+import { toggleScroll } from '../../../redux/features/headerLibrarySlice';
 import Footer from '../../Footer';
 import { LoadingSpinner } from '../../LoadingSpinner';
 import MainSideBar from '../../MainSidebar/MainSideBar';
@@ -125,7 +125,7 @@ const SuccessOneTimePayment = () => {
              </>
            ) : (
              <div className='flex px-24 py-3 mt-6 border-white border rounded-full justify-center items-center w-full group cursor-pointer hover:bg-white hover:text-black'>
-               <button className='w-full' onClick={() => router.push('/home')}>
+               <button className='w-full' onClick={() => router.push('/library')}>
                  Empezar{' '}
                </button>
                <ArrowRightIcon className='w-4 h-4 relative left-4' />

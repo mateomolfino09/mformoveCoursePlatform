@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useMemo, useEffect } from 'react';
 
 // Colores naturales Move Crew
 const SALMON = '#F97316';
@@ -15,6 +16,7 @@ interface GorillaLevelDisplayProps {
   evolutionName: string;
   progressToNextLevel: number;
   monthsCompleted: number;
+  levelProgress?: number; // Nuevo prop para el progreso de nivel (0-8)
   size?: 'sm' | 'md' | 'lg';
   showProgressBar?: boolean;
   showLevel?: boolean;
@@ -28,6 +30,7 @@ const GorillaLevelDisplay = ({
   evolutionName,
   progressToNextLevel,
   monthsCompleted,
+  levelProgress,
   size = 'md',
   showProgressBar = true,
   showLevel = true,
@@ -69,6 +72,22 @@ const GorillaLevelDisplay = ({
   const nextLevel = Math.ceil(level / 10) * 10;
   const currentEvolutionLevel = Math.floor((level - 1) / 10) * 10 + 10;
   const badgePosition = layout === 'centered' ? '-top-2 -right-2 translate-x-1' : '-bottom-2 -right-2';
+  
+  // Calcular progreso de nivel (0-8)
+  const currentLevelProgress = levelProgress !== undefined && levelProgress !== null ? levelProgress : 0;
+  const levelProgressPercent = (currentLevelProgress / 8) * 100;
+  
+  // Generar IDs únicos para evitar conflictos si hay múltiples instancias
+  const gradientId = useMemo(() => `gorillaGradient-${Math.random().toString(36).substr(2, 9)}`, []);
+  const progressGradientId = useMemo(() => `levelProgressGradient-${Math.random().toString(36).substr(2, 9)}`, []);
+  
+  // Calcular el círculo completo de progreso (360 grados)
+  const radius = 55;
+  const circumference = 2 * Math.PI * radius;
+  // strokeDasharray: [longitud visible, longitud invisible]
+  // strokeDashoffset: cuanto desplazar el inicio
+  const strokeDasharray = `${circumference} ${circumference}`;
+  const strokeDashoffset = circumference * (1 - levelProgressPercent / 100);
 
   return (
     <div
@@ -78,29 +97,71 @@ const GorillaLevelDisplay = ({
       {/* Contenedor del gorila y nivel */}
       <div className="relative flex flex-col items-center">
         <div className={`relative flex items-center justify-center flex-shrink-0 ${layout === 'centered' ? centeredCircle : currentSize.circle}`}>
-          {/* Círculo SVG envolviendo al icono */}
-          <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full" role="presentation">
+          {/* Círculo SVG de fondo */}
+          <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full z-0 transform -rotate-90" role="presentation" style={{ pointerEvents: 'none' }}>
+            {/* Círculo de fondo */}
             <circle cx="60" cy="60" r="58" fill="#fff" />
-            <circle cx="60" cy="60" r="58" fill="url(#gorillaGradient)" fillOpacity="0.08" />
-            <circle cx="60" cy="60" r="55" fill="none" stroke="#F97316" strokeOpacity="0.18" strokeWidth="4" />
+            <circle cx="60" cy="60" r="58" fill={`url(#${gradientId})`} fillOpacity="0.08" />
+            {/* Círculo de fondo (referencia) */}
+            <circle
+              cx="60"
+              cy="60"
+              r="55"
+              fill="none"
+              stroke="#F97316"
+              strokeOpacity="0.18"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
             <defs>
-              <linearGradient id="gorillaGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="#F59E0B" />
                 <stop offset="50%" stopColor="#F97316" />
                 <stop offset="100%" stopColor="#E11D48" />
+              </linearGradient>
+              <linearGradient id={progressGradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.9" />
+                <stop offset="50%" stopColor="#F97316" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.9" />
               </linearGradient>
             </defs>
           </svg>
 
           {/* Icono del gorila */}
-          <motion.div
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          <div
             className={`${currentSize.icon} relative z-10 flex items-center justify-center text-orange-600 leading-none`}
             style={{ filter: 'drop-shadow(0 2px 6px rgba(249,115,22,0.25))' }}
           >
             {gorillaIcon}
-          </motion.div>
+          </div>
+
+          {/* SVG del círculo de progreso - por encima del gorila */}
+          <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full z-20 transform -rotate-90" role="presentation" style={{ pointerEvents: 'none' }}>
+            {/* Círculo de progreso de nivel (0-8) */}
+            <circle
+              cx="60"
+              cy="60"
+              r="55"
+              fill="none"
+              stroke={`url(#${progressGradientId})`}
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeDasharray={strokeDasharray}
+              strokeDashoffset={strokeDashoffset}
+              className="transition-all duration-500 ease-out"
+              style={{ 
+                opacity: 1
+              }}
+              data-debug={`progress: ${levelProgressPercent}%, dashoffset: ${strokeDashoffset}, dasharray: ${strokeDasharray}`}
+            />
+            <defs>
+              <linearGradient id={progressGradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.9" />
+                <stop offset="50%" stopColor="#F97316" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.9" />
+              </linearGradient>
+            </defs>
+          </svg>
 
           {/* Badge de nivel */}
           {showLevel && (

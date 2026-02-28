@@ -17,13 +17,15 @@ import { usePathname, useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { toast } from 'react-toastify';
+import { toast } from '../../../hooks/useToast';
 
 interface Props {
   classTypes: ClassTypes[];
+  /** Módulos de clase para selector principal; si hay, se usan en lugar del primer filtro */
+  classModules?: import('../../../../typings').ClassModule[];
 }
 
-const CreateClass = ({ classTypes }: Props) => {
+const CreateClass = ({ classTypes, classModules = [] }: Props) => {
   const [state, setState] = useState({
     stepCero: true,
     stepOne: false,
@@ -40,6 +42,7 @@ const CreateClass = ({ classTypes }: Props) => {
   );
   const {
     typeId,
+    moduleId,
     image_url,
     descriptionLength,
     description,
@@ -149,11 +152,12 @@ const CreateClass = ({ classTypes }: Props) => {
           name,
           image_url: imgUrl,
           totalTime: 0,
-          level:levelStepTwo,
-          typeId,
+          level: levelStepTwo,
+          typeId: moduleId ? undefined : typeId,
+          moduleId: moduleId || undefined,
           userEmail,
           description: descriptionStepTwo,
-          videoId:videoIdStepTwo,
+          videoId: videoIdStepTwo,
           isFree: isFreeStepTwo,
           tags: tagsStepTwo,
         },
@@ -192,6 +196,7 @@ const CreateClass = ({ classTypes }: Props) => {
               <CreateClassStepOne
                 step0ToStep1={step0ToStep1}
                 types={classTypes}
+                classModules={classModules}
               />
             </>
           )}

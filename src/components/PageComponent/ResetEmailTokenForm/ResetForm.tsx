@@ -8,16 +8,18 @@ import { MiniLoadingSpinner } from '../../MiniLoadingSpinner';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './resetStyle.css';
 import { alertTypes } from '../../../constants/alertTypes';
 import AlertComponent from '../../AlertComponent';
+import AuthSkeleton from '../../AuthSkeleton';
 
 interface Props {
   token: string;
 }
 
 function ResetEmailForm({ token }: Props) {
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<any>([]);
   const auth = useAuth();
@@ -29,6 +31,15 @@ function ResetEmailForm({ token }: Props) {
       document.addEventListener('keydown', testCapsLock);
       document.addEventListener('keyup', testCapsLock);
     }
+  }, []);
+
+  useEffect(() => {
+    // Mostrar skeleton al inicio y luego ocultarlo
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 800);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   function testCapsLock(event: any) {
@@ -113,6 +124,10 @@ function ResetEmailForm({ token }: Props) {
       ]);
     }
   };
+
+  if (initialLoading) {
+    return <AuthSkeleton />;
+  }
 
   return (
     <div className="main-container">
