@@ -39,13 +39,17 @@ export async function POST(req) {
 
     const { email, planId, name, isProd } = body;
 
-    // Determinar qué conexión usar según isProd
+    // Determinar qué conexión usar según isProd (nunca hardcodear credenciales; usar .env)
     let mongoUri;
     if (isProd === true) {
-      // Usar conexión de producción específica
-      mongoUri = 'mongodb://admin:abcd*1234@3.224.88.8:27017/MForMoveProduccion';
+      if (!process.env.MONGODB_URI_PRODUCTION) {
+        return NextResponse.json(
+          { error: 'MONGODB_URI_PRODUCTION no está configurada en las variables de entorno' },
+          { status: 500 }
+        );
+      }
+      mongoUri = process.env.MONGODB_URI_PRODUCTION;
     } else {
-      // Usar MONGODB_URI del .env
       if (!process.env.MONGODB_URI) {
         return NextResponse.json(
           { error: 'MONGODB_URI no está configurada en las variables de entorno' },
@@ -93,16 +97,28 @@ export async function POST(req) {
     let manualSubscription;
     let selectedPlan = null;
 
-    // Si isProd es true, usar los datos crudos de producción
+    // Si isProd es true, usar plantilla de producción desde variables de entorno (nunca hardcodear IDs/secretos)
     if (isProd === true) {
-      // Datos crudos de producción como plantilla
+      const subId = process.env.MANUAL_SUB_PROD_TEMPLATE_SUB_ID;
+      const planIdEnv = process.env.MANUAL_SUB_PROD_TEMPLATE_PLAN_ID;
+      const subToken = process.env.MANUAL_SUB_PROD_TEMPLATE_SUBSCRIPTION_TOKEN;
+      const pmCode = process.env.MANUAL_SUB_PROD_TEMPLATE_PAYMENT_METHOD_CODE;
+      const clientIdEnv = process.env.MANUAL_SUB_PROD_TEMPLATE_CLIENT_ID;
+      if (!subId || !planIdEnv || !subToken || !pmCode || !clientIdEnv) {
+        return NextResponse.json(
+          {
+            error: 'Para isProd=true deben configurarse en .env: MANUAL_SUB_PROD_TEMPLATE_SUB_ID, MANUAL_SUB_PROD_TEMPLATE_PLAN_ID, MANUAL_SUB_PROD_TEMPLATE_SUBSCRIPTION_TOKEN, MANUAL_SUB_PROD_TEMPLATE_PAYMENT_METHOD_CODE, MANUAL_SUB_PROD_TEMPLATE_CLIENT_ID'
+          },
+          { status: 500 }
+        );
+      }
       const prodSubscriptionTemplate = {
-        id: "sub_1RoFRfJzWKYFnVw7otv6jGMC",
-        planId: "price_1RkTRgJzWKYFnVw7jOvowdZb",
-        subscription_token: "in_1RoFRfJzWKYFnVw7vhoFMvbq",
-        status: "active",
-        payment_method_code: "pm_1RoFReJzWKYFnVw74XAOzXxC",
-        client_id: "cus_SjitjJDFYJvlOj",
+        id: subId,
+        planId: planIdEnv,
+        subscription_token: subToken,
+        status: 'active',
+        payment_method_code: pmCode,
+        client_id: clientIdEnv,
         client_first_name: user.name?.split(' ')[0] || '',
         client_last_name: user.name?.split(' ').slice(1).join(' ') || '',
         client_document_type: null,
@@ -110,7 +126,7 @@ export async function POST(req) {
         client_email: user.email,
         active: true,
         isCanceled: false,
-        cancellation_reason: "",
+        cancellation_reason: '',
         created_at: new Date()
       };
 
