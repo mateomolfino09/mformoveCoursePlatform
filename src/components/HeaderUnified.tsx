@@ -457,9 +457,6 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 										{profileMenuOpen && (
 											<div className="absolute right-0 top-full mt-2 w-44 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
 												<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
-												{totalCoherenceUnits != null && (
-													<div className="px-4 py-2 text-sm font-montserrat text-palette-stone/90 border-t border-palette-stone/20">Unidades de coherencia: {totalCoherenceUnits} U.C.</div>
-												)}
 												<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-stone/20 transition-colors" onClick={() => { auth.signOut(); setProfileMenuOpen(false); router.push('/'); }}>Cerrar sesión</button>
 											</div>
 										)}
@@ -551,9 +548,6 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 										{profileMenuOpen && (
 											<div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
 												<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
-												{totalCoherenceUnits != null && (
-													<div className="px-4 py-2 text-sm font-montserrat text-palette-stone/90 border-t border-palette-stone/20">Unidades de coherencia: {totalCoherenceUnits} U.C.</div>
-												)}
 												<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-stone/20 transition-colors" onClick={() => { auth.signOut(); setProfileMenuOpen(false); router.push('/'); }}>Cerrar sesión</button>
 											</div>
 										)}
@@ -651,9 +645,6 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								{profileMenuOpen && (
 									<div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
 										<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
-										{totalCoherenceUnits != null && (
-											<div className="px-4 py-2 text-sm font-montserrat text-palette-stone/90 border-t border-palette-stone/20">Unidades de coherencia: {totalCoherenceUnits} U.C.</div>
-										)}
 										<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-stone/20 transition-colors" onClick={() => { auth.signOut(); setProfileMenuOpen(false); router.push('/'); }}>Cerrar sesión</button>
 									</div>
 								)}
@@ -721,9 +712,6 @@ className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase round
 									{profileMenuOpen && (
 										<div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
 											<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
-											{totalCoherenceUnits != null && (
-												<div className="px-4 py-2 text-sm font-montserrat text-palette-stone/90 border-t border-palette-stone/20">Unidades de coherencia: {totalCoherenceUnits} U.C.</div>
-											)}
 											<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-stone/20 transition-colors" onClick={() => { auth.signOut(); setProfileMenuOpen(false); router.push('/'); }}>Cerrar sesión</button>
 										</div>
 									)}

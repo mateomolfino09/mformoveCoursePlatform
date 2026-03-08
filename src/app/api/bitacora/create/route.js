@@ -151,8 +151,21 @@ export async function POST(req) {
     };
 
     const mapContentItem = async (item, orden) => {
-      const contentType = ['moduleClass', 'individualClass', 'audio'].includes(item.contentType) ? item.contentType : 'moduleClass';
+      const contentType = ['moduleClass', 'individualClass', 'audio', 'zoomEvent'].includes(item.contentType) ? item.contentType : 'moduleClass';
       const ordenNum = Number(item.orden) || orden;
+
+      if (contentType === 'zoomEvent') {
+        const moveCrewEventId = item.moveCrewEventId && mongoose.Types.ObjectId.isValid(item.moveCrewEventId) ? item.moveCrewEventId : undefined;
+        return {
+          contentType: 'zoomEvent',
+          moveCrewEventId: moveCrewEventId || undefined,
+          moveCrewEventCreatedInPath: !!item.moveCrewEventCreatedInPath,
+          individualClassId: undefined,
+          moduleClassId: undefined,
+          orden: ordenNum,
+          ...emptyVideoFields
+        };
+      }
 
       if (contentType === 'individualClass') {
         const individualClassId = item.individualClassId && mongoose.Types.ObjectId.isValid(item.individualClassId) ? item.individualClassId : undefined;
@@ -160,6 +173,7 @@ export async function POST(req) {
           contentType: 'individualClass',
           individualClassId: individualClassId || undefined,
           moduleClassId: undefined,
+          moveCrewEventId: undefined,
           orden: ordenNum,
           ...emptyVideoFields
         };
@@ -174,6 +188,7 @@ export async function POST(req) {
           contentType: 'moduleClass',
           individualClassId: undefined,
           moduleClassId: moduleClassId || undefined,
+          moveCrewEventId: undefined,
           orden: ordenNum,
           ...emptyVideoFields
         };
@@ -185,6 +200,7 @@ export async function POST(req) {
         contentType: 'audio',
         individualClassId: undefined,
         moduleClassId: undefined,
+        moveCrewEventId: undefined,
         videoUrl: '',
         videoId: undefined,
         videoName: '',

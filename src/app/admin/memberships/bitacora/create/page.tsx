@@ -12,12 +12,15 @@ import Link from 'next/link';
 import { ClassModule } from '../../../../../../typings';
 import { NO_SUBMODULE_SLUG } from '../../../../../constants/moduleClassConstants';
 
-export type ContentType = 'moduleClass' | 'individualClass' | 'audio';
+export type ContentType = 'moduleClass' | 'individualClass' | 'audio' | 'zoomEvent';
 
 export interface WeekContentItem {
   contentType: ContentType;
   individualClassId?: string;
   moduleClassId?: string;
+  moveCrewEventId?: string;
+  /** True si el evento se creó desde este formulario (solo eliminable del camino) */
+  moveCrewEventCreatedInPath?: boolean;
   /** 'existing' = elegir de lista; 'new' = crear clase (no publicada hasta última semana) */
   moduleClassSource?: 'existing' | 'new';
   individualClassSource?: 'existing' | 'new';
@@ -83,6 +86,13 @@ export default function CreateBitacoraPage() {
   const [moduleClassesCache, setModuleClassesCache] = useState<Record<string, { _id: string; name: string; videoUrl?: string; level?: number }[]>>({});
   const [creatingClass, setCreatingClass] = useState<string | null>(null);
   const [newSubmoduleName, setNewSubmoduleName] = useState<Record<string, string>>({});
+  const [moveCrewEvents, setMoveCrewEvents] = useState<{ _id: string; title: string; eventDate: string | null; startTime: string; repeatsWeekly?: boolean; weekday?: number }[]>([]);
+  const [newEventModalOpen, setNewEventModalOpen] = useState(false);
+  const [newEventForm, setNewEventForm] = useState({ title: '', description: '', zoomLink: '', eventDate: '', startTime: '18:00', durationMinutes: 60, repeatsWeekly: false, weekday: 2 });
+  const [creatingEvent, setCreatingEvent] = useState(false);
+  const [newEventForContent, setNewEventForContent] = useState<{ weekIndex: number; contentIndex: number } | null>(null);
+  /** Por contenido zoom: 'existing' = selector, 'new' = crear nuevo (solo uno visible) */
+  const [zoomEventSourceMode, setZoomEventSourceMode] = useState<Record<string, 'existing' | 'new'>>({});
 
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
@@ -136,25 +146,31 @@ export default function CreateBitacoraPage() {
       .then((data) => setIndividualClasses(Array.isArray(data) ? data : []))
       .catch(() => setIndividualClasses([]));
   }, []);
+  useEffect(() => {
+    fetch('/api/move-crew-events', { credentials: 'include', cache: 'no-store' })
+      .then((r) => r.ok ? r.json() : [])
+      .then((data) => setMoveCrewEvents(Array.isArray(data) ? data : []))
+      .catch(() => setMoveCrewEvents([]));
+  }, []);
 
   const calculatePublishDates = () => {
     const newWeeks = [...weeks];
-    const firstMonday = getFirstMondayOfMonth(year, month);
+    const firstTuesday = getFirstTuesdayOfMonth(year, month);
     newWeeks.forEach((week, index) => {
-      const mondayDate = new Date(firstMonday);
-      mondayDate.setDate(firstMonday.getDate() + (index * 7));
-      week.publishDate = mondayDate.toISOString().split('T')[0];
+      const tuesdayDate = new Date(firstTuesday);
+      tuesdayDate.setDate(firstTuesday.getDate() + (index * 7));
+      week.publishDate = tuesdayDate.toISOString().split('T')[0];
     });
     setWeeks(newWeeks);
   };
 
-  const getFirstMondayOfMonth = (year: number, month: number): Date => {
+  const getFirstTuesdayOfMonth = (year: number, month: number): Date => {
     const firstDay = new Date(year, month - 1, 1);
     const dayOfWeek = firstDay.getDay();
-    const daysToMonday = dayOfWeek === 0 ? 1 : dayOfWeek === 1 ? 0 : 8 - dayOfWeek;
-    const firstMonday = new Date(firstDay);
-    firstMonday.setDate(1 + daysToMonday);
-    return firstMonday;
+    const daysToTuesday = dayOfWeek <= 2 ? (2 - dayOfWeek) : (9 - dayOfWeek);
+    const firstTuesday = new Date(firstDay);
+    firstTuesday.setDate(1 + daysToTuesday);
+    return firstTuesday;
   };
 
   const updateWeek = (weekIndex: number, field: keyof WeekContent, value: any) => {
@@ -434,6 +450,12 @@ export default function CreateBitacoraPage() {
               setSubmitting(false);
               return;
             }
+          } else if (tipo === 'zoomEvent') {
+            if (!c.moveCrewEventId?.trim()) {
+              toast.error(`Semana ${i + 1}, contenido ${j + 1}: selecciona un evento existente o creá uno nuevo`);
+              setSubmitting(false);
+              return;
+            }
           }
         }
       }
@@ -460,6 +482,8 @@ export default function CreateBitacoraPage() {
               contentType: c.contentType || 'moduleClass',
               individualClassId: c.individualClassId || undefined,
               moduleClassId: c.moduleClassId || undefined,
+              moveCrewEventId: c.moveCrewEventId || undefined,
+              moveCrewEventCreatedInPath: c.moveCrewEventCreatedInPath || undefined,
               videoUrl: c.videoUrl || '',
               videoId: c.videoId || undefined,
               videoName: c.videoName || undefined,
@@ -691,6 +715,7 @@ export default function CreateBitacoraPage() {
                           <option value="moduleClass">Clase de módulo</option>
                           <option value="individualClass">Clase individual</option>
                           <option value="audio">Audio</option>
+                          <option value="zoomEvent">Clase en vivo (Zoom)</option>
                         </select>
                         <button
                           type="button"
@@ -1116,6 +1141,84 @@ export default function CreateBitacoraPage() {
                       </div>
                     )}
 
+                    {tipo === 'zoomEvent' && content.moveCrewEventCreatedInPath && content.moveCrewEventId && (
+                      <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium text-black">Evento creado en este camino. Solo podés quitarlo del camino.</span>
+                          <button
+                            type="button"
+                            onClick={() => removeContent(weekIndex, contentIndex)}
+                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-full"
+                            title="Quitar del camino"
+                          >
+                            <XMarkIcon className="w-5 h-5" />
+                          </button>
+                        </div>
+                        <div className="text-black">
+                          <p className="font-medium">{moveCrewEvents.find((e) => e._id === content.moveCrewEventId)?.title || 'Clase en vivo'}</p>
+                        </div>
+                      </div>
+                    )}
+                    {tipo === 'zoomEvent' && !(content.moveCrewEventCreatedInPath && content.moveCrewEventId) && (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-4">
+                          <span className="text-xs font-medium text-black">Origen:</span>
+                          <label className="flex items-center gap-1">
+                            <input
+                              type="radio"
+                              name={`zoomSource-${weekIndex}-${contentIndex}`}
+                              checked={(zoomEventSourceMode[`${weekIndex}-${contentIndex}`] || (content.moveCrewEventId ? 'existing' : 'existing')) === 'existing'}
+                              onChange={() => setZoomEventSourceMode((m) => ({ ...m, [`${weekIndex}-${contentIndex}`]: 'existing' }))}
+                              className="text-[#4F7CCF]"
+                            />
+                            <span className="text-sm text-black">Seleccionar evento existente</span>
+                          </label>
+                          <label className="flex items-center gap-1">
+                            <input
+                              type="radio"
+                              name={`zoomSource-${weekIndex}-${contentIndex}`}
+                              checked={(zoomEventSourceMode[`${weekIndex}-${contentIndex}`] || 'existing') === 'new'}
+                              onChange={() => setZoomEventSourceMode((m) => ({ ...m, [`${weekIndex}-${contentIndex}`]: 'new' }))}
+                              className="text-[#4F7CCF]"
+                            />
+                            <span className="text-sm text-black">Crear nuevo evento</span>
+                          </label>
+                        </div>
+                        {(zoomEventSourceMode[`${weekIndex}-${contentIndex}`] || (content.moveCrewEventId ? 'existing' : 'existing')) === 'existing' && (
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Evento Move Crew *</label>
+                            <select
+                              value={content.moveCrewEventId || ''}
+                              onChange={(e) => updateContent(weekIndex, contentIndex, 'moveCrewEventId', e.target.value || undefined)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                            >
+                              <option value="">Seleccionar evento en vivo</option>
+                              {moveCrewEvents.map((ev) => (
+                                <option key={ev._id} value={ev._id}>
+                                  {ev.title} — {ev.repeatsWeekly ? `Semanal ${ev.weekday != null ? ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][ev.weekday] : ''}` : ev.eventDate ? new Date(ev.eventDate).toLocaleDateString('es') : ''} {ev.startTime || ''}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                        {(zoomEventSourceMode[`${weekIndex}-${contentIndex}`] || 'existing') === 'new' && (
+                          <div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setNewEventForContent({ weekIndex, contentIndex });
+                                setNewEventForm({ title: '', description: '', zoomLink: '', eventDate: '', startTime: '18:00', durationMinutes: 60, repeatsWeekly: false, weekday: 2 });
+                                setNewEventModalOpen(true);
+                              }}
+                              className="px-4 py-2 border border-[#4F7CCF] text-[#4F7CCF] rounded-lg text-sm font-medium hover:bg-[#4F7CCF]/10"
+                            >
+                              Crear nuevo evento y usar aquí
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     {tipo === 'audio' && (
                       <div className="grid md:grid-cols-2 gap-4">
                         <div>
@@ -1186,6 +1289,162 @@ export default function CreateBitacoraPage() {
           </form>
         </motion.div>
       </div>
+
+      {newEventModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6">
+            <h3 className="text-lg font-semibold text-gray-900 font-montserrat mb-4">Nuevo evento Move Crew</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Título *</label>
+                <input
+                  type="text"
+                  value={newEventForm.title}
+                  onChange={(e) => setNewEventForm((f) => ({ ...f, title: e.target.value }))}
+                  placeholder="Ej: Clase en vivo - Martes"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Link Zoom *</label>
+                <input
+                  type="url"
+                  value={newEventForm.zoomLink}
+                  onChange={(e) => setNewEventForm((f) => ({ ...f, zoomLink: e.target.value }))}
+                  placeholder="https://zoom.us/j/..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Descripción</label>
+                <textarea
+                  value={newEventForm.description}
+                  onChange={(e) => setNewEventForm((f) => ({ ...f, description: e.target.value }))}
+                  rows={2}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="newEvRepeat"
+                  checked={newEventForm.repeatsWeekly}
+                  onChange={(e) => setNewEventForm((f) => ({ ...f, repeatsWeekly: e.target.checked }))}
+                  className="rounded border-gray-300 text-[#4F7CCF]"
+                />
+                <label htmlFor="newEvRepeat" className="text-sm text-gray-700">Se repite todas las semanas</label>
+              </div>
+              {newEventForm.repeatsWeekly ? (
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Día</label>
+                  <select
+                    value={newEventForm.weekday}
+                    onChange={(e) => setNewEventForm((f) => ({ ...f, weekday: Number(e.target.value) }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                  >
+                    {[{ value: 0, label: 'Domingo' }, { value: 1, label: 'Lunes' }, { value: 2, label: 'Martes' }, { value: 3, label: 'Miércoles' }, { value: 4, label: 'Jueves' }, { value: 5, label: 'Viernes' }, { value: 6, label: 'Sábado' }].map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Fecha (Uruguay) *</label>
+                  <input
+                    type="date"
+                    value={newEventForm.eventDate}
+                    onChange={(e) => setNewEventForm((f) => ({ ...f, eventDate: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                  />
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Hora (Uruguay) *</label>
+                  <input
+                    type="time"
+                    value={newEventForm.startTime}
+                    onChange={(e) => setNewEventForm((f) => ({ ...f, startTime: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Duración (min)</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={480}
+                    value={newEventForm.durationMinutes}
+                    onChange={(e) => setNewEventForm((f) => ({ ...f, durationMinutes: Number(e.target.value) || 60 }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                type="button"
+                onClick={() => { setNewEventModalOpen(false); setNewEventForContent(null); }}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 text-sm font-montserrat"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={creatingEvent || !newEventForm.title.trim() || !newEventForm.zoomLink.trim() || (!newEventForm.repeatsWeekly && !newEventForm.eventDate)}
+                onClick={async () => {
+                  setCreatingEvent(true);
+                  try {
+                    const res = await fetch('/api/move-crew-events', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      credentials: 'include',
+                      body: JSON.stringify({
+                        title: newEventForm.title.trim(),
+                        description: newEventForm.description.trim(),
+                        zoomLink: newEventForm.zoomLink.trim(),
+                        eventDate: newEventForm.repeatsWeekly ? null : newEventForm.eventDate || null,
+                        startTime: newEventForm.startTime.trim(),
+                        durationMinutes: newEventForm.durationMinutes,
+                        repeatsWeekly: newEventForm.repeatsWeekly,
+                        weekday: newEventForm.repeatsWeekly ? newEventForm.weekday : undefined,
+                        timezone: 'America/Montevideo',
+                      }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || 'Error al crear');
+                    const listRes = await fetch('/api/move-crew-events', { credentials: 'include', cache: 'no-store' });
+                    const list = await listRes.json();
+                    setMoveCrewEvents(Array.isArray(list) ? list : []);
+                    if (newEventForContent && data._id) {
+                      setWeeks((prev) => {
+                        const next = [...prev];
+                        const contents = [...(next[newEventForContent!.weekIndex].contents || [])];
+                        const c = contents[newEventForContent!.contentIndex];
+                        if (c) {
+                          contents[newEventForContent!.contentIndex] = { ...c, moveCrewEventId: data._id, moveCrewEventCreatedInPath: true };
+                        }
+                        next[newEventForContent!.weekIndex] = { ...next[newEventForContent!.weekIndex], contents };
+                        return next;
+                      });
+                    }
+                    toast.success('Evento creado y asignado');
+                    setNewEventModalOpen(false);
+                    setNewEventForContent(null);
+                  } catch (err: any) {
+                    toast.error(err.message || 'Error al crear evento');
+                  } finally {
+                    setCreatingEvent(false);
+                  }
+                }}
+                className="px-4 py-2 bg-[#4F7CCF] text-white rounded-lg text-sm font-montserrat disabled:opacity-50"
+              >
+                {creatingEvent ? 'Creando...' : 'Crear y usar aquí'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AdmimDashboardLayout>
   );
 }

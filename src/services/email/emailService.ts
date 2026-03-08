@@ -50,6 +50,10 @@ export enum EmailType {
   ADMIN_PAYMENT_FAILED = 'admin_payment_failed',
   WEEKLY_LOGBOOK_RELEASE = 'weekly_logbook_release',
   ONBOARDING_WELCOME = 'onboarding_welcome',
+  MOVE_CREW_EVENT_REMINDER = 'move_crew_event_reminder',
+  MOVE_CREW_EVENT_REMINDER_15M = 'move_crew_event_reminder_15m',
+  /** Grabación de sesión en vivo disponible en el camino (tras reemplazar evento por clase individual). */
+  LIVE_SESSION_RECORDING_AVAILABLE = 'live_session_recording_available',
 }
 
 // Interfaz para datos de email
@@ -65,6 +69,8 @@ export interface EmailConfig {
   data: EmailData;
   cc?: string[];
   bcc?: string[];
+  /** Fecha/hora UTC en ISO para envío programado (Mandrill send_at). Si se indica, el email se programa en lugar de enviarse de inmediato. */
+  sendAt?: string;
 }
 
 // Fuente fina Move Crew (minimalista, alineada al sitio)
@@ -139,6 +145,19 @@ const getBaseTemplateAdmin = (content: string) => `
 
 // Mantener compatibilidad con código existente
 const getBaseTemplate = getBaseTemplateUser;
+
+/** Mail crudo/minimalista: fondo del dispositivo (sin color), texto oscuro, alineado a la izquierda (estilo personal). */
+const getMinimalPersonalTemplate = (content: string) => `
+  <!DOCTYPE html>
+  <html>
+  <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+  <body style="margin:0;padding:0;font-family:'Source Sans 3',Helvetica,Arial,sans-serif;">
+    <div style="max-width:520px;margin:0 auto;padding:32px 24px;text-align:left;">
+      ${content}
+    </div>
+  </body>
+  </html>
+`;
 
 // Templates específicos
 const emailTemplates = {
@@ -1393,6 +1412,57 @@ el bienestar fisico y emocional.
     return getBaseTemplateAdmin(content);
   },
 
+  [EmailType.MOVE_CREW_EVENT_REMINDER]: (data: EmailData) => {
+    const escapeHtml = (s: string) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const name = escapeHtml(data.name || 'Miembro');
+    const fecha = escapeHtml(data.eventDateFormatted || '');
+    const zoomLink = (data.zoomLink || '').trim();
+    const linkHtml = zoomLink ? `<a href="${escapeHtml(zoomLink)}" style="color:#074647;text-decoration:underline;">${escapeHtml(zoomLink)}</a>` : '';
+    const content = `
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;">Hola ${name},</p>
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;">Te recuerdo - tenemos clase hoy ${fecha} - empezamos en una hora.</p>
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;"><strong>Sumate acá:</strong> ${linkHtml}</p>
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;">¡Nos vemos ahí!</p>
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 24px 0;">Mateo</p>
+    `;
+    return getMinimalPersonalTemplate(content);
+  },
+
+  [EmailType.MOVE_CREW_EVENT_REMINDER_15M]: (data: EmailData) => {
+    const escapeHtml = (s: string) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const name = escapeHtml(data.name || 'Miembro');
+    const zoomLink = (data.zoomLink || '').trim();
+    const linkHtml = zoomLink ? `<a href="${escapeHtml(zoomLink)}" style="color:#074647;text-decoration:underline;">${escapeHtml(zoomLink)}</a>` : '';
+    const content = `
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;">Hola ${name},</p>
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;">Empezamos en 15 minutos.</p>
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;"><strong>Sumate acá:</strong> ${linkHtml}</p>
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;">¡Nos vemos ahí!</p>
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 24px 0;">Mateo</p>
+    `;
+    return getMinimalPersonalTemplate(content);
+  },
+
+  [EmailType.LIVE_SESSION_RECORDING_AVAILABLE]: (data: EmailData) => {
+    const escapeHtml = (s: string) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const fullName = (data.name || 'Miembro').toString().trim();
+    const firstName = fullName ? fullName.split(/\s+/)[0]?.trim() || fullName : '';
+    const name = escapeHtml(firstName ? firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase() : 'Miembro');
+    const pathUrl = (data.pathUrl || '').trim() || 'https://mateomove.com/weekly-path';
+    const content = `
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;">Hola ${name},</p>
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;">Acabamos de terminar la sesión en vivo, y estuvo genial. Si estuviste presente, gracias. Si no pudiste venir, no te preocupes, habrá más.</p>
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;">Estoy comprometido a ofrecer al menos una sesión en vivo por semana. Estas sesiones son una parte fundamental de la comunidad: una oportunidad para practicar juntos, hacer preguntas y recibir orientación en tiempo real. Quiero verlos a todos ahí.</p>
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;">La sesión en vivo está disponible en la plataforma. La podés ver en el camino semanal y cuando termine el camino quedará publicada como clase para que veas cuando quieras.</p>
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 24px 0;">¡Qué placer compartir el movimiento juntos!</p>
+      <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 24px 0;">Mateo</p>
+      <div style="text-align: left; margin: 28px 0 0 0;">
+        <a href="${escapeHtml(pathUrl)}" style="display:inline-block;color:#fff;background:#1a1a1a;text-decoration:none;font-weight:400;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;padding:12px 28px;border-radius:9999px;font-family:'Source Sans 3',Helvetica,Arial,sans-serif;">Ver la clase en el camino</a>
+      </div>
+    `;
+    return getMinimalPersonalTemplate(content);
+  },
+
   [EmailType.WEEKLY_LOGBOOK_RELEASE]: (data: EmailData) => {
     const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     const monthName = monthNames[(data.month || 1) - 1];
@@ -1415,16 +1485,16 @@ el bienestar fisico y emocional.
     const buttonText = isFirstWeek ? 'Empezar Camino' : 'Ver Clases';
 
     const escapeHtml = (s: string) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    const weekContentsDetail = (data.weekContentsDetail || []) as Array<{ type: string; title: string; description?: string; moduleName?: string }>;
+    const weekContentsDetail = (data.weekContentsDetail || []) as Array<{ type: string; title: string; description?: string; moduleName?: string; dayLabel?: string }>;
     const hasContentsList = weekContentsDetail.length > 0;
     const contentsListHtml = hasContentsList
       ? `
         <div style="margin: 0 auto 24px auto; max-width: 560px;">
-          <div style="font-size: 14px; font-weight: 600; color: ${p.ink}; margin-bottom: 12px; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">Contenidos de la semana</div>
           ${weekContentsDetail
             .map(
               (item) => `
             <div style="border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; background: rgba(0,0,0,0.02);">
+              ${(item as any).dayLabel ? `<div style="font-size: 11px; color: rgba(0,0,0,0.55); font-weight: 600; margin-bottom: 4px;">${escapeHtml((item as any).dayLabel)}</div>` : ''}
               ${item.moduleName ? `<div style="font-size: 11px; color: rgba(0,0,0,0.55); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">${escapeHtml(item.moduleName)}</div>` : ''}
               <div style="font-size: 15px; font-weight: 600; color: ${p.ink}; margin-bottom: ${item.description ? '6px' : '0'}; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">${escapeHtml(item.title)}</div>
               ${item.description ? `<div style="font-size: 14px; color: rgba(0,0,0,0.75); line-height: 1.5; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">${escapeHtml(item.description)}</div>` : ''}
@@ -1448,7 +1518,7 @@ el bienestar fisico y emocional.
       <!-- Contenido principal -->
       <div style="padding: 28px 20px;">
         <p style="font-size: 16px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-          ¡Hola ${data.name}! Tu contenido semanal del Camino está listo.
+          Hola ${data.name}, ya está disponible la semana ${data.weekNumber} del Camino. Acá te dejo todo para que organices tu semana :)
         </p>
 
         ${data.coverImage ? `
@@ -1498,12 +1568,13 @@ el bienestar fisico y emocional.
           </div>
         ` : ''}
 
-        <!-- Mensaje motivacional -->
-        <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 24px 0; text-align: center; font-weight: 500; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-          La constancia se recompensa, porque ahí están los resultados en el movimiento.
+        <!-- Cierre en voz de Mateo -->
+        <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 24px 0 8px 0; text-align: center; font-weight: 500; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
+          La constancia hace la diferencia. Nos vemos ahí.
         </p>
+        <p style="font-size: 15px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">Mateo</p>
 
-        <!-- Botón CTA para ir a la camino -->
+        <!-- Botón CTA para ir al camino -->
         <div style="text-align: center; margin: 28px 0 0;">
           <a href="${data.bitacoraLink || 'https://mateomove.com/weekly-path'}" 
              style="display: inline-block; 
@@ -1628,7 +1699,7 @@ export class EmailService {
   }
 
   // Método principal para enviar emails
-  public async sendEmail(config: EmailConfig): Promise<{ success: boolean; message: string; error?: string }> {
+  public async sendEmail(config: EmailConfig): Promise<{ success: boolean; message: string; error?: string; scheduledId?: string }> {
     try {
       const template = emailTemplates[config.type];
       if (!template) {
@@ -1646,6 +1717,9 @@ export class EmailService {
 
       const personalTypes: EmailType[] = [
         EmailType.WEEKLY_LOGBOOK_RELEASE,
+        EmailType.MOVE_CREW_EVENT_REMINDER,
+        EmailType.MOVE_CREW_EVENT_REMINDER_15M,
+        EmailType.LIVE_SESSION_RECORDING_AVAILABLE,
         EmailType.WELCOME_EMAIL,
         EmailType.ONBOARDING_WELCOME,
         EmailType.WELCOME_MEMBERSHIP,
@@ -1662,20 +1736,38 @@ export class EmailService {
           ? { from_email: 'mateo@mateomove.com', from_name: 'Mateo Molfino' }
           : { from_email: 'noreply@mateomove.com' };
 
-      await mailchimpClient.messages.send({
+      const payload: { message: any; send_at?: string } = {
         message: {
           ...sender,
           subject: config.subject,
           html: html,
           to: allRecipients,
         },
-      });
+      };
+      // Mandrill espera send_at en formato "YYYY-MM-DD HH:MM:SS" (UTC), no ISO con T y Z
+      if (config.sendAt) {
+        const d = new Date(config.sendAt);
+        if (!Number.isNaN(d.getTime())) {
+          const y = d.getUTCFullYear();
+          const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+          const day = String(d.getUTCDate()).padStart(2, '0');
+          const h = String(d.getUTCHours()).padStart(2, '0');
+          const min = String(d.getUTCMinutes()).padStart(2, '0');
+          const s = String(d.getUTCSeconds()).padStart(2, '0');
+          payload.send_at = `${y}-${m}-${day} ${h}:${min}:${s}`;
+        } else {
+          payload.send_at = config.sendAt;
+        }
+      }
+      const response = await mailchimpClient.messages.send(payload);
+      const scheduledId = config.sendAt && Array.isArray(response) && response[0] && (response[0] as any)._id
+        ? (response[0] as any)._id
+        : undefined;
 
-  
-      
       return {
         success: true,
-        message: `Email enviado exitosamente a ${recipients.join(', ')}`
+        message: `Email enviado exitosamente a ${recipients.join(', ')}`,
+        ...(scheduledId && { scheduledId })
       };
 
     } catch (error: any) {
@@ -1686,6 +1778,17 @@ export class EmailService {
         message: 'Error al enviar email',
         error: error.message
       };
+    }
+  }
+
+  /** Cancela un email programado en Mandrill por su id (devuelto al programar con send_at). */
+  public async cancelScheduledEmail(mandrillScheduledId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      await mailchimpClient.messages.cancelScheduled({ id: mandrillScheduledId });
+      return { success: true };
+    } catch (error: any) {
+      console.error('❌ Error al cancelar email programado:', error);
+      return { success: false, error: error?.message };
     }
   }
 
