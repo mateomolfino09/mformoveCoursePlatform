@@ -7,17 +7,20 @@ import Cookies from 'js-cookie';
 import AdmimDashboardLayout from '../../../../../../components/AdmimDashboardLayout';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
-import { ArrowLeftIcon, CalendarIcon, PencilSquareIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowPathIcon, Bars3Icon, CalendarIcon, DocumentDuplicateIcon, PencilSquareIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { ClassModule } from '../../../../../../../typings';
 import { NO_SUBMODULE_SLUG } from '../../../../../../constants/moduleClassConstants';
 
-export type ContentType = 'moduleClass' | 'individualClass' | 'audio';
+export type ContentType = 'moduleClass' | 'individualClass' | 'audio' | 'zoomEvent';
 
 export interface WeekContentItem {
   contentType?: ContentType;
   individualClassId?: string;
   moduleClassId?: string;
+  moveCrewEventId?: string;
+  /** True si el evento se creó desde este formulario (solo eliminable del camino) */
+  moveCrewEventCreatedInPath?: boolean;
   moduleClassSource?: 'existing' | 'new';
   individualClassSource?: 'existing' | 'new';
   videoUrl: string;
@@ -59,6 +62,69 @@ interface PageProps {
   };
 }
 
+function SortableContentCard({
+  weekIndex,
+  contentIndex,
+  reorderContent,
+  draggingContent,
+  setDraggingContent,
+  children,
+}: {
+  weekIndex: number;
+  contentIndex: number;
+  reorderContent: (w: number, from: number, to: number) => void;
+  draggingContent: { weekIndex: number; contentIndex: number } | null;
+  setDraggingContent: (v: { weekIndex: number; contentIndex: number } | null) => void;
+  children: React.ReactNode;
+}) {
+  const isDragging = draggingContent?.weekIndex === weekIndex && draggingContent?.contentIndex === contentIndex;
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData('application/json', JSON.stringify({ weekIndex, contentIndex }));
+    e.dataTransfer.effectAllowed = 'move';
+    setDraggingContent({ weekIndex, contentIndex });
+  };
+  const handleDragEnd = () => {
+    setDraggingContent(null);
+  };
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const raw = e.dataTransfer.getData('application/json');
+    if (!raw) return;
+    try {
+      const { weekIndex: fromWeek, contentIndex: fromIndex } = JSON.parse(raw);
+      if (fromWeek !== weekIndex) return;
+      if (fromIndex === contentIndex) return;
+      reorderContent(weekIndex, fromIndex, contentIndex);
+    } finally {
+      setDraggingContent(null);
+    }
+  };
+  return (
+    <div
+      className={`flex gap-0 mb-6 ${isDragging ? 'opacity-50' : ''}`}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      <div
+        draggable
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        className="w-8 self-stretch flex items-center justify-center cursor-grab active:cursor-grabbing border border-gray-200 border-r-0 bg-gray-100 rounded-l-lg"
+        title="Arrastrar para reordenar"
+      >
+        <Bars3Icon className="w-5 h-5 text-gray-500" />
+      </div>
+      <div className="flex-1 min-w-0">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function EditBitacoraPage({ params }: PageProps) {
   const router = useRouter();
   const auth = useAuth();
@@ -96,6 +162,22 @@ export default function EditBitacoraPage({ params }: PageProps) {
     tags?: string;
   } | null>(null);
   const [savingInlineClass, setSavingInlineClass] = useState(false);
+  const [moveCrewEvents, setMoveCrewEvents] = useState<{ _id: string; title: string; eventDate: string | null; startTime: string; repeatsWeekly?: boolean; weekday?: number }[]>([]);
+  const [newEventModalOpen, setNewEventModalOpen] = useState(false);
+  const [newEventForm, setNewEventForm] = useState({ title: '', description: '', zoomLink: '', eventDate: '', startTime: '18:00', durationMinutes: 60, repeatsWeekly: false, weekday: 2 });
+  const [creatingEvent, setCreatingEvent] = useState(false);
+  const [newEventForContent, setNewEventForContent] = useState<{ weekIndex: number; contentIndex: number } | null>(null);
+  /** Por contenido zoom: 'existing' = selector, 'new' = crear nuevo (solo uno visible) */
+  const [zoomEventSourceMode, setZoomEventSourceMode] = useState<Record<string, 'existing' | 'new'>>({});
+  /** Índice de la semana a replicar al resto (null = modal cerrado) */
+  const [replicateWeekIndex, setReplicateWeekIndex] = useState<number | null>(null);
+  /** Modal cambiar evento por clase individual (grabación) */
+  const [replaceEventModal, setReplaceEventModal] = useState<{ weekIndex: number; contentIndex: number; eventName?: string } | null>(null);
+  const [replaceModalSelectedId, setReplaceModalSelectedId] = useState<string>('');
+  const [replaceModalMode, setReplaceModalMode] = useState<'select' | 'create'>('select');
+  const [replaceModalCreateForm, setReplaceModalCreateForm] = useState({ name: '', description: '', videoUrl: '', type: '' });
+  const [replaceModalLoading, setReplaceModalLoading] = useState(false);
+  const [replaceModalError, setReplaceModalError] = useState<string | null>(null);
 
   const emptyContentItem = (orden: number): WeekContentItem => ({
     contentType: 'moduleClass',
@@ -109,27 +191,27 @@ export default function EditBitacoraPage({ params }: PageProps) {
     orden
   });
 
-  const getFirstMondayOfMonth = useCallback((year: number, month: number): Date => {
+  const getFirstTuesdayOfMonth = useCallback((year: number, month: number): Date => {
     const firstDay = new Date(year, month - 1, 1);
     const dayOfWeek = firstDay.getDay();
-    const daysToMonday = dayOfWeek === 0 ? 1 : dayOfWeek === 1 ? 0 : 8 - dayOfWeek;
-    const firstMonday = new Date(firstDay);
-    firstMonday.setDate(1 + daysToMonday);
-    return firstMonday;
+    const daysToTuesday = dayOfWeek <= 2 ? (2 - dayOfWeek) : (9 - dayOfWeek);
+    const firstTuesday = new Date(firstDay);
+    firstTuesday.setDate(1 + daysToTuesday);
+    return firstTuesday;
   }, []);
 
   const calculatePublishDates = useCallback((currentWeeks: WeekContent[]) => {
     const newWeeks = [...currentWeeks];
-    const firstMonday = getFirstMondayOfMonth(year, month);
+    const firstTuesday = getFirstTuesdayOfMonth(year, month);
 
     newWeeks.forEach((week, index) => {
-      const mondayDate = new Date(firstMonday);
-      mondayDate.setDate(firstMonday.getDate() + (index * 7));
-      week.publishDate = mondayDate.toISOString().split('T')[0];
+      const tuesdayDate = new Date(firstTuesday);
+      tuesdayDate.setDate(firstTuesday.getDate() + (index * 7));
+      week.publishDate = tuesdayDate.toISOString().split('T')[0];
     });
 
     setWeeks(newWeeks);
-  }, [year, month, getFirstMondayOfMonth]);
+  }, [year, month, getFirstTuesdayOfMonth]);
 
   useEffect(() => {
     const cookies: any = Cookies.get('userToken');
@@ -178,18 +260,43 @@ export default function EditBitacoraPage({ params }: PageProps) {
           setPathModules([{ number: 1, name: '' }]);
         }
 
+        // Primer martes del mes (para desbloqueo por contenido desde el martes)
+        const getFirstTuesday = (y: number, m: number) => {
+          const first = new Date(y, m - 1, 1);
+          const day = first.getDay();
+          const daysToTuesday = day <= 2 ? (2 - day) : (9 - day);
+          const tuesday = new Date(first);
+          tuesday.setDate(1 + daysToTuesday);
+          return tuesday;
+        };
+        const logbookMonth = loadedLogbook.month ?? new Date().getMonth() + 1;
+        const logbookYear = loadedLogbook.year ?? new Date().getFullYear();
+
         // Convertir a estructura con contents[] (nuevo formato o legacy)
         const formattedWeeks: WeekContent[] = (loadedLogbook.weeklyContents || []).map((week: any) => {
           let publishDate = '';
           if (week.publishDate) {
-            publishDate = typeof week.publishDate === 'string' ? week.publishDate.split('T')[0] : new Date(week.publishDate).toISOString().split('T')[0];
+            const d = typeof week.publishDate === 'string' ? new Date(week.publishDate) : new Date(week.publishDate);
+            if (!Number.isNaN(d.getTime())) {
+              publishDate = d.toISOString().split('T')[0];
+            }
+          }
+          // Si no hay publishDate válido, crear desde primer martes del mes (desbloqueo por contenido desde martes)
+          if (!publishDate) {
+            const firstTuesday = getFirstTuesday(logbookYear, logbookMonth);
+            const weekNum = Math.max(1, Number(week.weekNumber) || 1);
+            const tuesdayForWeek = new Date(firstTuesday);
+            tuesdayForWeek.setDate(firstTuesday.getDate() + (weekNum - 1) * 7);
+            publishDate = tuesdayForWeek.toISOString().split('T')[0];
           }
           let contents: WeekContentItem[] = [];
           if (week.contents && Array.isArray(week.contents) && week.contents.length > 0) {
             contents = week.contents.map((c: any, idx: number) => ({
-              contentType: ['moduleClass', 'individualClass', 'audio'].includes(c.contentType) ? c.contentType : 'moduleClass',
+              contentType: ['moduleClass', 'individualClass', 'audio', 'zoomEvent'].includes(c.contentType) ? c.contentType : 'moduleClass',
               individualClassId: c.individualClassId ? String(c.individualClassId) : undefined,
               moduleClassId: c.moduleClassId ? String(c.moduleClassId) : undefined,
+              moveCrewEventId: c.moveCrewEventId ? String(c.moveCrewEventId) : undefined,
+              moveCrewEventCreatedInPath: !!c.moveCrewEventCreatedInPath,
               moduleClassSource: c.moduleClassId ? ('existing' as const) : ('new' as const),
               individualClassSource: c.individualClassId ? ('existing' as const) : ('new' as const),
               videoUrl: c.videoUrl || '',
@@ -276,6 +383,12 @@ export default function EditBitacoraPage({ params }: PageProps) {
       .then((data) => setIndividualClasses(Array.isArray(data) ? data : []))
       .catch(() => setIndividualClasses([]));
   }, []);
+  useEffect(() => {
+    fetch('/api/move-crew-events', { credentials: 'include', cache: 'no-store' })
+      .then((r) => r.ok ? r.json() : [])
+      .then((data) => setMoveCrewEvents(Array.isArray(data) ? data : []))
+      .catch(() => setMoveCrewEvents([]));
+  }, []);
 
   // Recalcular fechas de publicación solo si el usuario cambia mes o año manualmente
   // No recalcular cuando se cargan los datos iniciales
@@ -334,6 +447,18 @@ export default function EditBitacoraPage({ params }: PageProps) {
     newWeeks[weekIndex].contents = contents.map((c, i) => ({ ...c, orden: i }));
     setWeeks(newWeeks);
   };
+
+  const reorderContent = (weekIndex: number, fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
+    const newWeeks = [...weeks];
+    const contents = [...(newWeeks[weekIndex].contents || [])];
+    const [removed] = contents.splice(fromIndex, 1);
+    contents.splice(toIndex, 0, removed);
+    newWeeks[weekIndex].contents = contents.map((c, i) => ({ ...c, orden: i }));
+    setWeeks(newWeeks);
+  };
+
+  const [draggingContent, setDraggingContent] = useState<{ weekIndex: number; contentIndex: number } | null>(null);
 
   useEffect(() => {
     const keys = new Set<string>();
@@ -672,6 +797,12 @@ export default function EditBitacoraPage({ params }: PageProps) {
               setSubmitting(false);
               return;
             }
+          } else if (tipo === 'zoomEvent') {
+            if (!c.moveCrewEventId?.trim()) {
+              toast.error(`Semana ${i + 1}, contenido ${j + 1}: selecciona un evento existente o creá uno nuevo`);
+              setSubmitting(false);
+              return;
+            }
           }
         }
       }
@@ -695,6 +826,8 @@ export default function EditBitacoraPage({ params }: PageProps) {
             contentType: (c.contentType || 'moduleClass') as ContentType,
             individualClassId: c.individualClassId || undefined,
             moduleClassId: c.moduleClassId || undefined,
+            moveCrewEventId: c.moveCrewEventId || undefined,
+            moveCrewEventCreatedInPath: c.moveCrewEventCreatedInPath || undefined,
             videoUrl: c.videoUrl || '',
             videoId: c.videoId || undefined,
             videoName: c.videoName || undefined,
@@ -915,16 +1048,82 @@ export default function EditBitacoraPage({ params }: PageProps) {
                       />
                       <span>Publicada</span>
                     </label>
+                    {weeks.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setReplicateWeekIndex(weekIndex)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-orange-500 text-orange-600 rounded-lg text-sm font-medium hover:bg-orange-50 font-montserrat"
+                        title="Replicar la estructura de esta semana en el resto de las semanas del mes"
+                      >
+                        <DocumentDuplicateIcon className="w-4 h-4" />
+                        Replicar esta semana al resto
+                      </button>
+                    )}
                   </div>
 
                   {(week.contents || []).map((content, contentIndex) => {
                     const tipo = (content.contentType || 'moduleClass') as ContentType;
+                    if (tipo === 'zoomEvent' && content.moveCrewEventCreatedInPath && content.moveCrewEventId) {
+                      return (
+                        <SortableContentCard
+                          key={contentIndex}
+                          weekIndex={weekIndex}
+                          contentIndex={contentIndex}
+                          reorderContent={reorderContent}
+                          draggingContent={draggingContent}
+                          setDraggingContent={setDraggingContent}
+                        >
+                          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <p className="text-sm font-medium text-black mb-2">
+                              {moveCrewEvents.find((e) => e._id === content.moveCrewEventId)?.title || content.videoName || 'Clase en vivo'}
+                            </p>
+                            <p className="text-xs text-gray-600 mb-3">
+                              Evento creado en este camino. Podés reemplazarlo por la grabación (clase individual) o quitarlo del camino.
+                            </p>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                    setReplaceEventModal({ weekIndex, contentIndex, eventName: moveCrewEvents.find((e) => e._id === content.moveCrewEventId)?.title || content.videoName || 'Clase en vivo' });
+                                    setReplaceModalSelectedId('');
+                                    setReplaceModalMode('select');
+                                    setReplaceModalCreateForm({ name: '', description: '', videoUrl: '', type: '' });
+                                    setReplaceModalError(null);
+                                  }}
+                                className="inline-flex items-center gap-1.5 px-3 py-2 text-amber-800 bg-amber-100 hover:bg-amber-200 rounded-lg text-sm font-medium border border-amber-300"
+                                title="Reemplazar por la clase individual (grabación). Se mantiene la publicación."
+                              >
+                                <ArrowPathIcon className="w-4 h-4 shrink-0" />
+                                Cambiar por grabación
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => removeContent(weekIndex, contentIndex)}
+                                className="inline-flex items-center gap-1.5 px-3 py-2 text-red-700 bg-red-50 hover:bg-red-100 rounded-lg text-sm font-medium border border-red-200"
+                                title="Quitar del camino"
+                              >
+                                <XMarkIcon className="w-4 h-4 shrink-0" />
+                                Quitar del camino
+                              </button>
+                            </div>
+                          </div>
+                        </SortableContentCard>
+                      );
+                    }
                     if (content.createdInWeeklyPathForm && (content.moduleClassId || content.individualClassId)) {
                       const isModule = !!content.moduleClassId;
                       const isEditingThis = editingCreatedClass?.weekIndex === weekIndex && editingCreatedClass?.contentIndex === contentIndex;
                       if (isEditingThis && editingClassForm) {
                         return (
-                          <div key={contentIndex} className="mb-6 p-4 bg-white rounded-lg border border-gray-300 shadow-sm">
+                          <SortableContentCard
+                            key={contentIndex}
+                            weekIndex={weekIndex}
+                            contentIndex={contentIndex}
+                            reorderContent={reorderContent}
+                            draggingContent={draggingContent}
+                            setDraggingContent={setDraggingContent}
+                          >
+                          <div className="p-4 bg-white rounded-lg border border-gray-300 shadow-sm">
                             <div className="flex justify-between items-center mb-4">
                               <span className="text-sm font-medium text-black">Editar clase (creada en este camino)</span>
                               <div className="flex gap-2">
@@ -1051,10 +1250,19 @@ export default function EditBitacoraPage({ params }: PageProps) {
                               )}
                             </div>
                           </div>
+                          </SortableContentCard>
                         );
                       }
                       return (
-                        <div key={contentIndex} className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <SortableContentCard
+                          key={contentIndex}
+                          weekIndex={weekIndex}
+                          contentIndex={contentIndex}
+                          reorderContent={reorderContent}
+                          draggingContent={draggingContent}
+                          setDraggingContent={setDraggingContent}
+                        >
+                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                           <div className="flex justify-between items-center mb-2">
                             <span className="text-sm font-medium text-black">Clase creada en este camino (solo visible al publicar última semana)</span>
                             <div className="flex items-center gap-2">
@@ -1084,10 +1292,19 @@ export default function EditBitacoraPage({ params }: PageProps) {
                             )}
                           </div>
                         </div>
+                        </SortableContentCard>
                       );
                     }
                     return (
-                    <div key={contentIndex} className="mb-6 p-4 bg-white rounded-lg border border-gray-200">
+                    <SortableContentCard
+                      key={contentIndex}
+                      weekIndex={weekIndex}
+                      contentIndex={contentIndex}
+                      reorderContent={reorderContent}
+                      draggingContent={draggingContent}
+                      setDraggingContent={setDraggingContent}
+                    >
+                    <div className="p-4 bg-white rounded-lg border border-gray-200">
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-sm font-medium text-gray-700">Contenido {contentIndex + 1}</span>
                         <div className="flex items-center gap-3">
@@ -1098,9 +1315,27 @@ export default function EditBitacoraPage({ params }: PageProps) {
                             className="px-3 py-1.5 border border-gray-300 rounded-lg text-gray-900 text-sm"
                           >
                             <option value="moduleClass">Clase de módulo</option>
-                            <option value="individualClass">Clase individual</option>
+<option value="individualClass">Clase individual</option>
                             <option value="audio">Audio</option>
-                          </select>
+                            <option value="zoomEvent">Clase en vivo (Zoom)</option>
+                        </select>
+                          {tipo === 'zoomEvent' && (
+                            <button
+                              type="button"
+                                onClick={() => {
+                                  setReplaceEventModal({ weekIndex, contentIndex, eventName: content.videoName || 'Clase en vivo' });
+                                  setReplaceModalSelectedId('');
+                                  setReplaceModalMode('select');
+                                  setReplaceModalCreateForm({ name: '', description: '', videoUrl: '', type: '' });
+                                  setReplaceModalError(null);
+                                }}
+                              className="inline-flex items-center gap-1 px-2 py-1.5 text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-lg text-sm font-medium"
+                              title="Reemplazar por la clase individual (grabación)"
+                            >
+                              <ArrowPathIcon className="w-4 h-4" />
+                              Cambiar por grabación
+                            </button>
+                          )}
                           <button
                             type="button"
                             onClick={() => removeContent(weekIndex, contentIndex)}
@@ -1229,7 +1464,68 @@ export default function EditBitacoraPage({ params }: PageProps) {
                         </div>
                       )}
 
+                      {tipo === 'zoomEvent' && !(content.moveCrewEventCreatedInPath && content.moveCrewEventId) && (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-4">
+                            <span className="text-xs font-medium text-black">Origen:</span>
+                            <label className="flex items-center gap-1">
+                              <input
+                                type="radio"
+                                name={`zoomSource-${weekIndex}-${contentIndex}`}
+                                checked={(zoomEventSourceMode[`${weekIndex}-${contentIndex}`] || (content.moveCrewEventId ? 'existing' : 'existing')) === 'existing'}
+                                onChange={() => setZoomEventSourceMode((m) => ({ ...m, [`${weekIndex}-${contentIndex}`]: 'existing' }))}
+                                className="text-orange-500"
+                              />
+                              <span className="text-sm text-black">Seleccionar evento existente</span>
+                            </label>
+                            <label className="flex items-center gap-1">
+                              <input
+                                type="radio"
+                                name={`zoomSource-${weekIndex}-${contentIndex}`}
+                                checked={(zoomEventSourceMode[`${weekIndex}-${contentIndex}`] || 'existing') === 'new'}
+                                onChange={() => setZoomEventSourceMode((m) => ({ ...m, [`${weekIndex}-${contentIndex}`]: 'new' }))}
+                                className="text-orange-500"
+                              />
+                              <span className="text-sm text-black">Crear nuevo evento</span>
+                            </label>
+                          </div>
+                          {(zoomEventSourceMode[`${weekIndex}-${contentIndex}`] || (content.moveCrewEventId ? 'existing' : 'existing')) === 'existing' && (
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Evento Move Crew *</label>
+                              <select
+                                value={content.moveCrewEventId || ''}
+                                onChange={(e) => updateContent(weekIndex, contentIndex, 'moveCrewEventId', e.target.value || undefined)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                              >
+                                <option value="">Seleccionar evento en vivo</option>
+                                {moveCrewEvents.map((ev) => (
+                                  <option key={ev._id} value={ev._id}>
+                                    {ev.title} — {ev.repeatsWeekly ? `Semanal ${ev.weekday != null ? ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][ev.weekday] : ''}` : ev.eventDate ? new Date(ev.eventDate).toLocaleDateString('es') : ''} {ev.startTime || ''}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                          {(zoomEventSourceMode[`${weekIndex}-${contentIndex}`] || 'existing') === 'new' && (
+                            <div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setNewEventForContent({ weekIndex, contentIndex });
+                                  setNewEventForm({ title: '', description: '', zoomLink: '', eventDate: '', startTime: '18:00', durationMinutes: 60, repeatsWeekly: false, weekday: 2 });
+                                  setNewEventModalOpen(true);
+                                }}
+                                className="px-4 py-2 border border-orange-500 text-orange-600 rounded-lg text-sm font-medium hover:bg-orange-50"
+                              >
+                                Crear nuevo evento y usar aquí
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
                     </div>
+                    </SortableContentCard>
                   ); })}
 
                   <button
@@ -1270,6 +1566,380 @@ export default function EditBitacoraPage({ params }: PageProps) {
           </form>
         </motion.div>
       </div>
+
+      {newEventModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6">
+            <h3 className="text-lg font-semibold text-gray-900 font-montserrat mb-4">Nuevo evento Move Crew</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Título *</label>
+                <input type="text" value={newEventForm.title} onChange={(e) => setNewEventForm((f) => ({ ...f, title: e.target.value }))} placeholder="Ej: Clase en vivo" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Link Zoom *</label>
+                <input type="url" value={newEventForm.zoomLink} onChange={(e) => setNewEventForm((f) => ({ ...f, zoomLink: e.target.value }))} placeholder="https://zoom.us/j/..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Descripción</label>
+                <textarea value={newEventForm.description} onChange={(e) => setNewEventForm((f) => ({ ...f, description: e.target.value }))} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" />
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="editNewEvRepeat" checked={newEventForm.repeatsWeekly} onChange={(e) => setNewEventForm((f) => ({ ...f, repeatsWeekly: e.target.checked }))} className="rounded border-gray-300 text-orange-500" />
+                <label htmlFor="editNewEvRepeat" className="text-sm text-gray-700">Se repite todas las semanas</label>
+              </div>
+              {newEventForm.repeatsWeekly ? (
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Día</label>
+                  <select value={newEventForm.weekday} onChange={(e) => setNewEventForm((f) => ({ ...f, weekday: Number(e.target.value) }))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm">
+                    {[{ value: 0, label: 'Domingo' }, { value: 1, label: 'Lunes' }, { value: 2, label: 'Martes' }, { value: 3, label: 'Miércoles' }, { value: 4, label: 'Jueves' }, { value: 5, label: 'Viernes' }, { value: 6, label: 'Sábado' }].map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Fecha (Uruguay) *</label>
+                  <input type="date" value={newEventForm.eventDate} onChange={(e) => setNewEventForm((f) => ({ ...f, eventDate: e.target.value }))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" />
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Hora (Uruguay) *</label>
+                  <input type="time" value={newEventForm.startTime} onChange={(e) => setNewEventForm((f) => ({ ...f, startTime: e.target.value }))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Duración (min)</label>
+                  <input type="number" min={1} max={480} value={newEventForm.durationMinutes} onChange={(e) => setNewEventForm((f) => ({ ...f, durationMinutes: Number(e.target.value) || 60 }))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" />
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <button type="button" onClick={() => { setNewEventModalOpen(false); setNewEventForContent(null); }} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 text-sm font-montserrat">Cancelar</button>
+              <button
+                type="button"
+                disabled={creatingEvent || !newEventForm.title.trim() || !newEventForm.zoomLink.trim() || (!newEventForm.repeatsWeekly && !newEventForm.eventDate)}
+                onClick={async () => {
+                  setCreatingEvent(true);
+                  try {
+                    const res = await fetch('/api/move-crew-events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ title: newEventForm.title.trim(), description: newEventForm.description.trim(), zoomLink: newEventForm.zoomLink.trim(), eventDate: newEventForm.repeatsWeekly ? null : newEventForm.eventDate || null, startTime: newEventForm.startTime.trim(), durationMinutes: newEventForm.durationMinutes, repeatsWeekly: newEventForm.repeatsWeekly, weekday: newEventForm.repeatsWeekly ? newEventForm.weekday : undefined, timezone: 'America/Montevideo' }) });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || 'Error al crear');
+                    const listRes = await fetch('/api/move-crew-events', { credentials: 'include', cache: 'no-store' });
+                    const list = await listRes.json();
+                    setMoveCrewEvents(Array.isArray(list) ? list : []);
+                    if (newEventForContent && data._id) {
+                      setWeeks((prev) => {
+                        const next = [...prev];
+                        const contents = [...(next[newEventForContent!.weekIndex].contents || [])];
+                        const c = contents[newEventForContent!.contentIndex];
+                        if (c) {
+                          contents[newEventForContent!.contentIndex] = { ...c, moveCrewEventId: data._id, moveCrewEventCreatedInPath: true };
+                        }
+                        next[newEventForContent!.weekIndex] = { ...next[newEventForContent!.weekIndex], contents };
+                        return next;
+                      });
+                    }
+                    toast.success('Evento creado y asignado');
+                    setNewEventModalOpen(false);
+                    setNewEventForContent(null);
+                  } catch (err: any) {
+                    toast.error(err.message || 'Error al crear evento');
+                  } finally {
+                    setCreatingEvent(false);
+                  }
+                }}
+                className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-montserrat disabled:opacity-50"
+              >
+                {creatingEvent ? 'Creando...' : 'Crear y usar aquí'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {replaceEventModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold text-gray-900 font-montserrat mb-2">Cambiar evento por grabación</h3>
+            <p className="text-sm text-gray-600 font-montserrat mb-4">
+              Reemplazá el evento &quot;{replaceEventModal.eventName || 'Clase en vivo'}&quot; por la clase individual (grabación). La posición y la publicación se mantienen.
+            </p>
+            <div className="flex gap-2 mb-4 border-b border-gray-200">
+              <button
+                type="button"
+                onClick={() => { setReplaceModalMode('select'); setReplaceModalError(null); }}
+                className={`px-3 py-2 text-sm font-medium font-montserrat rounded-t-lg ${replaceModalMode === 'select' ? 'bg-amber-100 text-amber-800 border-b-2 border-amber-500 -mb-px' : 'text-gray-600 hover:bg-gray-100'}`}
+              >
+                Seleccionar existente
+              </button>
+              <button
+                type="button"
+                onClick={() => { setReplaceModalMode('create'); setReplaceModalError(null); }}
+                className={`px-3 py-2 text-sm font-medium font-montserrat rounded-t-lg ${replaceModalMode === 'create' ? 'bg-amber-100 text-amber-800 border-b-2 border-amber-500 -mb-px' : 'text-gray-600 hover:bg-gray-100'}`}
+              >
+                Crear clase nueva
+              </button>
+            </div>
+
+            {replaceModalMode === 'select' ? (
+              <>
+                <label className="block text-xs font-medium text-gray-700 font-montserrat mb-2">Clase individual (grabación) *</label>
+                <select
+                  value={replaceModalSelectedId}
+                  onChange={(e) => setReplaceModalSelectedId(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm font-montserrat mb-4"
+                >
+                  <option value="">Seleccionar clase...</option>
+                  {individualClasses.map((cls: { _id: string; name?: string }) => (
+                    <option key={cls._id} value={cls._id}>{cls.name || cls._id}</option>
+                  ))}
+                </select>
+              </>
+            ) : (
+              <div className="space-y-3 mb-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 font-montserrat mb-1">Nombre de la clase *</label>
+                  <input
+                    type="text"
+                    value={replaceModalCreateForm.name}
+                    onChange={(e) => setReplaceModalCreateForm((f) => ({ ...f, name: e.target.value }))}
+                    placeholder="Ej: Clase en vivo - Grabación"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm font-montserrat"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 font-montserrat mb-1">Descripción *</label>
+                  <textarea
+                    value={replaceModalCreateForm.description}
+                    onChange={(e) => setReplaceModalCreateForm((f) => ({ ...f, description: e.target.value }))}
+                    placeholder="Breve descripción de la clase"
+                    rows={2}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm font-montserrat"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 font-montserrat mb-1">URL o ID de Vimeo *</label>
+                  <input
+                    type="text"
+                    value={replaceModalCreateForm.videoUrl}
+                    onChange={(e) => setReplaceModalCreateForm((f) => ({ ...f, videoUrl: e.target.value }))}
+                    placeholder="https://vimeo.com/123456789 o 123456789"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm font-montserrat"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 font-montserrat mb-1">Tipo (filtro)</label>
+                  <select
+                    value={replaceModalCreateForm.type}
+                    onChange={(e) => setReplaceModalCreateForm((f) => ({ ...f, type: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm font-montserrat"
+                  >
+                    <option value="">Seleccionar tipo</option>
+                    {(classFilters[0]?.values ?? []).map((v: { value: string; label: string }) => (
+                      <option key={v.value} value={v.value}>{v.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {replaceModalError && (
+              <p className="text-sm text-red-600 font-montserrat mb-4">{replaceModalError}</p>
+            )}
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => { setReplaceEventModal(null); setReplaceModalError(null); }}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 text-sm font-montserrat hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              {replaceModalMode === 'select' ? (
+                <button
+                  type="button"
+                  disabled={replaceModalLoading || !replaceModalSelectedId}
+                  onClick={async () => {
+                    if (!replaceModalSelectedId || !replaceEventModal || !logbookId) return;
+                    const { weekIndex, contentIndex } = replaceEventModal;
+                    const content = weeks[weekIndex]?.contents?.[contentIndex];
+                    if (!content || (content.contentType || '') !== 'zoomEvent') return;
+                    setReplaceModalLoading(true);
+                    setReplaceModalError(null);
+                    try {
+                      const res = await fetch('/api/bitacora/replace-event-with-recording', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                          logbookId,
+                          weekIndex,
+                          contentIndex,
+                          individualClassId: replaceModalSelectedId,
+                        }),
+                      });
+                      const data = await res.json();
+                      if (!res.ok) {
+                        setReplaceModalError(data.error || 'Error al reemplazar');
+                        return;
+                      }
+                      const ic = individualClasses.find((c: { _id: string; name?: string; link?: string }) => c._id === replaceModalSelectedId);
+                      const link = (ic as { link?: string })?.link && String((ic as { link?: string }).link).trim();
+                      const toUrl = (s: string) => (s.startsWith('http') ? s : `https://vimeo.com/${s}`);
+                      const videoUrl = link ? toUrl(link) : '';
+                      const videoId = link && /^\d+$/.test(link) ? link : link?.match(/(?:vimeo\.com\/)(\d+)/)?.[1];
+                      const newItem: WeekContentItem = {
+                        ...emptyContentItem(content.orden ?? contentIndex),
+                        contentType: 'individualClass',
+                        individualClassId: replaceModalSelectedId,
+                        videoUrl,
+                        videoId: videoId || undefined,
+                        videoName: (ic as { name?: string })?.name || content.videoName || '',
+                      };
+                      setWeeks((prev) => {
+                        const next = [...prev];
+                        const contents = [...(next[weekIndex].contents || [])];
+                        contents[contentIndex] = newItem;
+                        next[weekIndex] = { ...next[weekIndex], contents };
+                        return next;
+                      });
+                      setReplaceEventModal(null);
+                      toast.success('Evento reemplazado por la grabación. Guardá el camino para persistir los cambios.');
+                    } catch (e: any) {
+                      setReplaceModalError(e.message || 'Error de conexión');
+                    } finally {
+                      setReplaceModalLoading(false);
+                    }
+                  }}
+                  className="px-4 py-2 bg-amber-500 text-white rounded-lg text-sm font-montserrat hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {replaceModalLoading ? 'Guardando...' : 'Cambiar por grabación'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled={replaceModalLoading || !replaceModalCreateForm.name.trim() || !replaceModalCreateForm.description.trim() || !replaceModalCreateForm.videoUrl.trim()}
+                  onClick={async () => {
+                    if (!replaceEventModal || !logbookId) return;
+                    const { weekIndex, contentIndex } = replaceEventModal;
+                    const content = weeks[weekIndex]?.contents?.[contentIndex];
+                    if (!content || (content.contentType || '') !== 'zoomEvent') return;
+                    const { name, description, videoUrl, type } = replaceModalCreateForm;
+                    if (!name.trim() || !description.trim() || !videoUrl.trim()) return;
+                    setReplaceModalLoading(true);
+                    setReplaceModalError(null);
+                    try {
+                      const createRes = await fetch('/api/individualClass/createFromWeeklyPath', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                          name: name.trim(),
+                          description: description.trim(),
+                          videoUrl: videoUrl.trim(),
+                          userEmail: auth.user?.email,
+                          type: type.trim() || undefined,
+                          tags: [],
+                        }),
+                      });
+                      if (!createRes.ok) {
+                        const d = await createRes.json().catch(() => ({}));
+                        throw new Error(d.error || 'Error al crear la clase');
+                      }
+                      const created = await createRes.json();
+                      const newId = created._id;
+                      setIndividualClasses((prev) => [...(Array.isArray(prev) ? prev : []), { _id: newId, name: created.name }]);
+
+                      const res = await fetch('/api/bitacora/replace-event-with-recording', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                          logbookId,
+                          weekIndex,
+                          contentIndex,
+                          individualClassId: newId,
+                        }),
+                      });
+                      const data = await res.json();
+                      if (!res.ok) {
+                        setReplaceModalError(data.error || 'Error al reemplazar en el camino');
+                        return;
+                      }
+                      const newItem: WeekContentItem = {
+                        ...emptyContentItem(content.orden ?? contentIndex),
+                        contentType: 'individualClass',
+                        individualClassId: newId,
+                        videoUrl: videoUrl.trim().startsWith('http') ? videoUrl.trim() : `https://vimeo.com/${videoUrl.trim()}`,
+                        videoId: /^\d+$/.test(videoUrl.trim()) ? videoUrl.trim() : videoUrl.trim().match(/(?:vimeo\.com\/)(\d+)/)?.[1],
+                        videoName: created.name || name.trim(),
+                      };
+                      setWeeks((prev) => {
+                        const next = [...prev];
+                        const contents = [...(next[weekIndex].contents || [])];
+                        contents[contentIndex] = newItem;
+                        next[weekIndex] = { ...next[weekIndex], contents };
+                        return next;
+                      });
+                      setReplaceEventModal(null);
+                      toast.success('Clase creada y reemplazando el evento. Guardá el camino para persistir.');
+                    } catch (e: any) {
+                      setReplaceModalError(e.message || 'Error');
+                    } finally {
+                      setReplaceModalLoading(false);
+                    }
+                  }}
+                  className="px-4 py-2 bg-amber-500 text-white rounded-lg text-sm font-montserrat hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {replaceModalLoading ? 'Creando...' : 'Crear clase y usar'}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {replicateWeekIndex !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 font-montserrat mb-4">Replicar semana al resto del mes</h3>
+            <p className="text-gray-700 font-montserrat text-sm leading-relaxed mb-6">
+              ¿Estás seguro que querés cambiar toda la estructura de este mes? Lo que haremos será pisar las otras semanas replicando la semana seleccionada (Semana {weeks[replicateWeekIndex]?.weekNumber ?? replicateWeekIndex + 1}).
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setReplicateWeekIndex(null)}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 text-sm font-montserrat hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const sourceIndex = replicateWeekIndex;
+                  const sourceContents = weeks[sourceIndex]?.contents || [];
+                  setWeeks((prev) =>
+                    prev.map((w, i) =>
+                      i === sourceIndex
+                        ? w
+                        : {
+                            ...w,
+                            contents: sourceContents.map((c, idx) => ({ ...JSON.parse(JSON.stringify(c)), orden: idx }))
+                          }
+                    )
+                  );
+                  setReplicateWeekIndex(null);
+                  toast.success('Estructura de la semana replicada en el resto del mes.');
+                }}
+                className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-montserrat hover:bg-orange-600"
+              >
+                Sí, replicar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AdmimDashboardLayout>
   );
 }

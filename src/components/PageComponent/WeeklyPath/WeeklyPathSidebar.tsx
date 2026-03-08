@@ -5,7 +5,8 @@ import {
   LockClosedIcon,
   CalendarIcon,
   PlayIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  ComputerDesktopIcon
 } from '@heroicons/react/24/solid';
 import { useAuth } from '../../../hooks/useAuth';
 
@@ -32,16 +33,20 @@ interface DailyContent {
   isUnlocked: boolean;
 }
 
-/** Ítem de contenido de la semana (clase de módulo, clase individual, audio) */
+/** Ítem de contenido de la semana (clase de módulo, clase individual, audio, clase en vivo) */
 interface WeekContentItem {
-  contentType?: 'moduleClass' | 'individualClass' | 'audio';
+  contentType?: 'moduleClass' | 'individualClass' | 'audio' | 'zoomEvent';
   videoUrl?: string;
   videoName?: string;
+  title?: string;
   audioUrl?: string;
   audioTitle?: string;
   audioText?: string;
   submoduleName?: string;
   orden?: number;
+  isUnlocked?: boolean;
+  /** Fecha de liberación (ISO) para mostrar "Se libera el..." en contenidos bloqueados */
+  releaseDate?: string;
 }
 
 interface WeeklyContent {
@@ -77,9 +82,9 @@ interface Props {
   logbook: Logbook;
   selectedWeek: number | null;
   selectedDay: number | null;
-  selectedContentType: 'visual' | 'audioText' | null;
+  selectedContentType: 'visual' | 'audioText' | 'zoomEvent' | null;
   selectedContentIndex?: number | null;
-  onSelect: (weekNumber: number, dayNumber: number | null, contentType: 'visual' | 'audioText' | null, contentIndex?: number) => void;
+  onSelect: (weekNumber: number, dayNumber: number | null, contentType: 'visual' | 'audioText' | 'zoomEvent' | null, contentIndex?: number) => void;
   completedWeeks: Set<string>;
   completedDays: Set<string>;
   /** Completados por contenido (key: logbookId-weekNumber-content-index) */
@@ -401,7 +406,7 @@ const WeeklyPathSidebar = ({
                           <div className='mb-2'>
                             <div className='flex items-center gap-2 mb-0.5'>
                               <span className='text-sm font-semibold text-palette-cream font-montserrat tracking-tight'>
-                                Semana {week.weekNumber}
+                                {week.weekTitle && String(week.weekTitle).trim() && week.weekTitle !== `Semana ${week.weekNumber}` ? week.weekTitle : `Semana ${week.weekNumber}`}
                               </span>
                               {isWeekCompleted && (
                                 <span className='w-2 h-2 rounded-full bg-palette-sage shrink-0' title="Semana vista" aria-hidden />
@@ -410,11 +415,6 @@ const WeeklyPathSidebar = ({
                                 <LockClosedIcon className='h-3.5 w-3.5 text-palette-stone flex-shrink-0' />
                               )}
                             </div>
-                            {week.weekTitle && (
-                              <p className='text-xs text-palette-cream/80 font-montserrat font-medium mb-0.5'>
-                                {week.weekTitle}
-                              </p>
-                            )}
                             {isLastWeekReleaseDay && (
                               <p className='text-xs text-palette-sage font-montserrat font-semibold'>
                                 Última semana liberada hoy
@@ -429,41 +429,60 @@ const WeeklyPathSidebar = ({
                           <div className='flex flex-col gap-1.5'>
                             {hasContents ? (
                               week.contents!.map((c, contentIndex) => {
-                                const tipo = (c.contentType || 'moduleClass') as 'moduleClass' | 'individualClass' | 'audio';
-                                const isVisual = tipo !== 'audio';
+                                const tipo = (c.contentType || 'moduleClass') as 'moduleClass' | 'individualClass' | 'audio' | 'zoomEvent';
+                                const isVisual = tipo !== 'audio' && tipo !== 'zoomEvent';
                                 const isAudio = tipo === 'audio';
-                                const name = (isVisual ? c.videoName : c.audioTitle) || (isAudio ? 'Audio' : 'Clase');
+                                const isZoom = tipo === 'zoomEvent';
+                                const contentUnlocked = (c as WeekContentItem).isUnlocked !== undefined ? (c as WeekContentItem).isUnlocked : isWeekUnlocked;
+                                const name = isZoom ? (c.title || c.videoName || 'Movimiento Online') : (isVisual ? c.videoName : c.audioTitle) || (isAudio ? 'Audio' : 'Clase');
+                                const releaseDateStr = (c as WeekContentItem).releaseDate;
+                                const releaseLabel = releaseDateStr
+                                  ? (() => {
+                                      const iso = releaseDateStr.slice(0, 10);
+                                      const [y, m, d] = iso.split('-').map(Number);
+                                      return new Date(y, m - 1, d).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+                                    })()
+                                  : null;
                                 const isThisSelected = isWeekSelected && selectedContentIndex === contentIndex && (
-                                  (isVisual && selectedContentType === 'visual') || (isAudio && selectedContentType === 'audioText')
+                                  (isVisual && selectedContentType === 'visual') || (isAudio && selectedContentType === 'audioText') || (isZoom && selectedContentType === 'zoomEvent')
                                 );
                                 const contentKey = `${logbook._id}-${week.weekNumber}-content-${contentIndex}`;
-                                const isContentCompleted = isVisual ? completedVideos.has(contentKey) : completedAudios.has(contentKey);
+                                const isContentCompleted = isZoom ? completedVideos.has(contentKey) : isVisual ? completedVideos.has(contentKey) : completedAudios.has(contentKey);
+                                const selectType = isZoom ? 'zoomEvent' : isVisual ? 'visual' : 'audioText';
                                 return (
-                                  <motion.button
-                                    key={contentIndex}
-                                    onClick={() => {
-                                      if (!isWeekUnlocked && !isAdmin) return;
-                                      onSelect(week.weekNumber, null, isVisual ? 'visual' : 'audioText', contentIndex);
-                                    }}
-                                    disabled={!isWeekUnlocked && !isAdmin}
-                                    whileHover={isWeekUnlocked || isAdmin ? { scale: 1.01 } : {}}
-                                    whileTap={isWeekUnlocked || isAdmin ? { scale: 0.99 } : {}}
-                                    className={`w-full p-2 rounded-lg text-left transition-colors text-sm font-montserrat flex items-center justify-between gap-2 ${
-                                      !isWeekUnlocked
-                                        ? 'opacity-50 cursor-not-allowed text-palette-stone'
-                                        : isThisSelected
-                                        ? 'bg-palette-sage/25 text-palette-cream font-medium'
-                                        : 'text-palette-cream/90 hover:bg-palette-stone/20'
-                                    }`}
-                                  >
-                                    <div className='flex items-center gap-2 min-w-0'>
-                                      {isVisual && <PlayIcon className='h-3.5 w-3.5 text-palette-sage shrink-0' />}
-                                      <span className='truncate' title={name}>{name}</span>
-                                    </div>
-                                    {isContentCompleted && (
-                                      <span className='w-2 h-2 rounded-full bg-palette-sage shrink-0' title="Completado" aria-hidden />
+                                  <motion.div key={contentIndex} className='flex flex-col gap-0.5'>
+                                    <motion.button
+                                      onClick={() => {
+                                        if (!contentUnlocked && !isAdmin) return;
+                                        onSelect(week.weekNumber, null, selectType, contentIndex);
+                                      }}
+                                      disabled={!contentUnlocked && !isAdmin}
+                                      whileHover={contentUnlocked || isAdmin ? { scale: 1.01 } : {}}
+                                      whileTap={contentUnlocked || isAdmin ? { scale: 0.99 } : {}}
+                                      className={`w-full p-2 rounded-lg text-left transition-colors text-sm font-montserrat flex items-center justify-between gap-2 ${
+                                        !contentUnlocked && !isAdmin
+                                          ? 'opacity-50 cursor-not-allowed text-palette-stone'
+                                          : isThisSelected
+                                          ? 'bg-palette-sage/25 text-palette-cream font-medium'
+                                          : 'text-palette-cream/90 hover:bg-palette-stone/20'
+                                      }`}
+                                    >
+                                      <div className='flex items-center gap-2 min-w-0'>
+                                        {isZoom && <ComputerDesktopIcon className='h-3.5 w-3.5 text-palette-sage shrink-0' />}
+                                        {isVisual && !isZoom && <PlayIcon className='h-3.5 w-3.5 text-palette-sage shrink-0' />}
+                                        <span className='truncate' title={name}>{name}</span>
+                                      </div>
+                                      {!contentUnlocked && !isAdmin && <LockClosedIcon className='h-3 w-3 text-palette-stone shrink-0' />}
+                                      {isContentCompleted && (contentUnlocked || isAdmin) && (
+                                        <span className='w-2 h-2 rounded-full bg-palette-sage shrink-0' title="Completado" aria-hidden />
+                                      )}
+                                    </motion.button>
+                                    {!contentUnlocked && !isAdmin && releaseLabel && (
+                                      <p className='text-[11px] text-palette-stone/90 font-montserrat font-light pl-9 pr-2 -mt-0.5'>
+                                        Se libera el {releaseLabel}
+                                      </p>
                                     )}
-                                  </motion.button>
+                                  </motion.div>
                                 );
                               })
                             ) : (

@@ -45,7 +45,7 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json();
-    const { month, year, title, description, weeklyContents, modules: pathModules, isBaseBitacora, userEmail } = body;
+    const { month, year, title, description, weeklyContents, modules: pathModules, isBaseBitacora, userEmail, unlockPerContent: bodyUnlockPerContent } = body;
 
     // Validar campos requeridos
     if (!weeklyContents || !Array.isArray(weeklyContents)) {
@@ -178,8 +178,21 @@ export async function PUT(req, { params }) {
     };
 
     const mapContentItem = async (item, orden) => {
-      const contentType = ['moduleClass', 'individualClass', 'audio'].includes(item.contentType) ? item.contentType : 'moduleClass';
+      const contentType = ['moduleClass', 'individualClass', 'audio', 'zoomEvent'].includes(item.contentType) ? item.contentType : 'moduleClass';
       const ordenNum = Number(item.orden) || orden;
+
+      if (contentType === 'zoomEvent') {
+        const moveCrewEventId = item.moveCrewEventId && mongoose.Types.ObjectId.isValid(item.moveCrewEventId) ? item.moveCrewEventId : undefined;
+        return {
+          contentType: 'zoomEvent',
+          moveCrewEventId: moveCrewEventId || undefined,
+          moveCrewEventCreatedInPath: !!item.moveCrewEventCreatedInPath,
+          individualClassId: undefined,
+          moduleClassId: undefined,
+          orden: ordenNum,
+          ...emptyVideoFields
+        };
+      }
 
       if (contentType === 'individualClass') {
         const individualClassId = item.individualClassId && mongoose.Types.ObjectId.isValid(item.individualClassId) ? item.individualClassId : undefined;
@@ -187,6 +200,7 @@ export async function PUT(req, { params }) {
           contentType: 'individualClass',
           individualClassId: individualClassId || undefined,
           moduleClassId: undefined,
+          moveCrewEventId: undefined,
           orden: ordenNum,
           ...emptyVideoFields
         };
@@ -201,6 +215,7 @@ export async function PUT(req, { params }) {
           contentType: 'moduleClass',
           individualClassId: undefined,
           moduleClassId: moduleClassId || undefined,
+          moveCrewEventId: undefined,
           orden: ordenNum,
           ...emptyVideoFields
         };
@@ -212,6 +227,7 @@ export async function PUT(req, { params }) {
         contentType: 'audio',
         individualClassId: undefined,
         moduleClassId: undefined,
+        moveCrewEventId: undefined,
         videoUrl: '',
         videoId: undefined,
         videoName: '',
@@ -233,6 +249,33 @@ export async function PUT(req, { params }) {
 
     const now = new Date();
     now.setHours(0, 0, 0, 0);
+
+    // Martes de publicación: siempre en el mes del path. Si publishDate no es martes o no pertenece al mes, usar el martes correspondiente a esa semana.
+    const getFirstTuesdayOfMonth = (y, m) => {
+      for (let d = 0; d < 7; d++) {
+        const date = new Date(y, m - 1, 1 + d);
+        if (date.getDay() === 2) return new Date(date.getTime());
+      }
+      return new Date(y, m - 1, 1);
+    };
+    const getTuesdayForWeek = (y, m, weekNum) => {
+      const firstTue = getFirstTuesdayOfMonth(y, m);
+      const result = new Date(firstTue);
+      result.setDate(result.getDate() + (Math.max(1, Number(weekNum) || 1) - 1) * 7);
+      return result;
+    };
+    const normalizePublishDate = (publishDateVal, y, m, weekNum) => {
+      const d = publishDateVal ? new Date(publishDateVal) : null;
+      if (!d || Number.isNaN(d.getTime())) return getTuesdayForWeek(y, m, weekNum);
+      d.setHours(0, 0, 0, 0);
+      const isTuesday = d.getDay() === 2;
+      const inPathMonth = d.getFullYear() === y && d.getMonth() === m - 1;
+      if (isTuesday && inPathMonth) return d;
+      return getTuesdayForWeek(y, m, weekNum);
+    };
+    const logbookMonth = month != null ? Number(month) : now.getMonth() + 1;
+    const logbookYear = year != null ? Number(year) : now.getFullYear();
+
     const modulesToSave = Array.isArray(pathModules)
       ? pathModules.filter((m) => m != null && m.moduleNumber != null).map((m) => ({
           moduleNumber: Number(m.moduleNumber),
@@ -241,7 +284,8 @@ export async function PUT(req, { params }) {
       : [];
 
     const mappedWeeklyContents = await Promise.all(weeklyContents.map(async wc => {
-      const publishDate = new Date(wc.publishDate);
+      const weekNum = Math.max(1, Number(wc.weekNumber) || 1);
+      const publishDate = normalizePublishDate(wc.publishDate, logbookYear, logbookMonth, weekNum);
       publishDate.setHours(0, 0, 0, 0);
       const weekTitle = (wc.weekTitle || '').trim() || `Semana ${wc.weekNumber}`;
       const isUnlockedByDate = publishDate <= now;
@@ -249,6 +293,8 @@ export async function PUT(req, { params }) {
       const moduleNameFromPath = modulesToSave.length > 0 && weekModuleNum != null
         ? (modulesToSave.find((m) => Number(m.moduleNumber) === weekModuleNum)?.name || '').trim() || ''
         : '';
+      const existingWeek = existingLogbook.weeklyContents?.find((w) => Number(w.weekNumber) === weekNum);
+      const maxContentIndexUnlocked = wc.maxContentIndexUnlocked ?? existingWeek?.maxContentIndexUnlocked ?? -1;
       const base = {
         weekNumber: wc.weekNumber,
         moduleName: moduleNameFromPath || (wc.moduleName?.trim() || '').trim() || '',
@@ -258,7 +304,8 @@ export async function PUT(req, { params }) {
         dailyContents: [],
         publishDate,
         isPublished: wc.isPublished || false,
-        isUnlocked: isUnlockedByDate || wc.isUnlocked || false
+        isUnlocked: isUnlockedByDate || wc.isUnlocked || false,
+        maxContentIndexUnlocked: maxContentIndexUnlocked >= -1 ? maxContentIndexUnlocked : -1
       };
 
       if (wc.contents && Array.isArray(wc.contents) && wc.contents.length > 0) {
@@ -297,6 +344,11 @@ export async function PUT(req, { params }) {
       };
     }));
 
+    // unlockPerContent: si no viene en body y el existente no lo tiene, inicializar a true al editar
+    const unlockPerContent = bodyUnlockPerContent !== undefined
+      ? !!bodyUnlockPerContent
+      : (existingLogbook.unlockPerContent !== undefined && existingLogbook.unlockPerContent !== null ? !!existingLogbook.unlockPerContent : true);
+
     // Preparar datos de actualización
     const updateData = {
       title: title || (isBaseBitacora ? 'Camino Base - Primer Círculo' : 'Camino'),
@@ -304,7 +356,8 @@ export async function PUT(req, { params }) {
       modules: modulesToSave,
       weeklyContents: mappedWeeklyContents,
       updatedAt: new Date(),
-      isBaseBitacora: isBaseBitacora || false
+      isBaseBitacora: isBaseBitacora || false,
+      unlockPerContent
     };
 
     // Solo actualizar month/year si no es camino base

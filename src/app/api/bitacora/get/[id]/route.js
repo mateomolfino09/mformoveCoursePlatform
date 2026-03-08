@@ -7,6 +7,7 @@ import WeeklyLogbook from '../../../../../models/weeklyLogbookModel';
 import IndividualClass from '../../../../../models/individualClassModel';
 import ModuleClass from '../../../../../models/moduleClassModel';
 import ClassModule from '../../../../../models/classModuleModel';
+import MoveCrewEvent from '../../../../../models/moveCrewEventModel';
 
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
@@ -25,6 +26,30 @@ function extractVimeoId(urlOrId) {
   if (match) return match[1];
   if (/^\d+$/.test(trimmed)) return trimmed;
   return null;
+}
+
+/** Martes de publicación en el mes del path; si publishDate no es martes o no pertenece al mes, usar el martes de esa semana. */
+function getFirstTuesdayOfMonth(y, m) {
+  for (let d = 0; d < 7; d++) {
+    const date = new Date(y, m - 1, 1 + d);
+    if (date.getDay() === 2) return new Date(date.getTime());
+  }
+  return new Date(y, m - 1, 1);
+}
+function getTuesdayForWeek(y, m, weekNum) {
+  const firstTue = getFirstTuesdayOfMonth(y, m);
+  const result = new Date(firstTue);
+  result.setDate(result.getDate() + (Math.max(1, Number(weekNum) || 1) - 1) * 7);
+  return result;
+}
+function normalizePublishDate(publishDateVal, y, m, weekNum) {
+  const d = publishDateVal ? new Date(publishDateVal) : null;
+  if (!d || Number.isNaN(d.getTime())) return getTuesdayForWeek(y, m, weekNum);
+  d.setHours(0, 0, 0, 0);
+  const isTuesday = d.getDay() === 2;
+  const inPathMonth = d.getFullYear() === y && d.getMonth() === m - 1;
+  if (isTuesday && inPathMonth) return d;
+  return getTuesdayForWeek(y, m, weekNum);
 }
 
 /**
@@ -87,6 +112,20 @@ async function hydrateWeeklyContents(weeklyContents) {
           }
         }
       }
+      // Hidratar por moveCrewEventId (clase en vivo Zoom)
+      else if (item.moveCrewEventId && mongoose.Types.ObjectId.isValid(item.moveCrewEventId)) {
+        const ev = await MoveCrewEvent.findById(item.moveCrewEventId).lean();
+        if (ev) {
+          item.contentType = 'zoomEvent';
+          item.title = (ev.title && String(ev.title).trim()) || 'Clase en vivo';
+          item.videoName = item.title;
+          item.description = (ev.description && String(ev.description).trim()) || '';
+          item.zoomLink = (ev.zoomLink && String(ev.zoomLink).trim()) || '';
+          item.eventDate = ev.eventDate;
+          item.startTime = ev.startTime;
+          item.durationMinutes = ev.durationMinutes;
+        }
+      }
     }
   }
 }
@@ -133,7 +172,16 @@ export async function GET(req, { params }) {
       );
     }
 
-    if (logbook.weeklyContents && Array.isArray(logbook.weeklyContents)) {
+    if (logbook.unlockPerContent === undefined || logbook.unlockPerContent === null) {
+      logbook.unlockPerContent = true;
+    }
+    if (logbook.weeklyContents && Array.isArray(logbook.weeklyContents) && logbook.year != null && logbook.month != null) {
+      const y = logbook.year;
+      const m = logbook.month;
+      for (const week of logbook.weeklyContents) {
+        const weekNum = Math.max(1, Number(week.weekNumber) || 1);
+        week.publishDate = normalizePublishDate(week.publishDate, y, m, weekNum);
+      }
       await hydrateWeeklyContents(logbook.weeklyContents);
     }
 
