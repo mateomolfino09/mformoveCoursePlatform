@@ -16,6 +16,7 @@ import Cookies from 'js-cookie';
 import WeeklyPathSidebar from '../../components/PageComponent/WeeklyPath/WeeklyPathSidebar';
 import VideoContentDisplay from '../../components/PageComponent/WeeklyPath/VideoContentDisplay';
 import AudioTextContentDisplay from '../../components/PageComponent/WeeklyPath/AudioTextContentDisplay';
+import ZoomEventContentDisplay from '../../components/PageComponent/WeeklyPath/ZoomEventContentDisplay';
 import MoveCrewLoading from '../../components/PageComponent/MoveCrew/MoveCrewLoading';
 import MainSideBar from '../../components/MainSidebar/MainSideBar';
 import WeeklyPathSkeleton from '../../components/WeeklyPathSkeleton';
@@ -58,9 +59,9 @@ interface DailyContent {
   isUnlocked: boolean;
 }
 
-/** Ítem de contenido de la semana (clase de módulo, clase individual, audio) */
+/** Ítem de contenido de la semana (clase de módulo, clase individual, audio, clase en vivo Zoom) */
 interface WeekContentItem {
-  contentType?: 'moduleClass' | 'individualClass' | 'audio';
+  contentType?: 'moduleClass' | 'individualClass' | 'audio' | 'zoomEvent';
   videoUrl?: string;
   videoId?: string;
   videoName?: string;
@@ -69,6 +70,17 @@ interface WeekContentItem {
   audioText?: string;
   submoduleName?: string;
   orden?: number;
+  /** Clase en vivo: link Zoom, título, descripción, fecha/hora, id para calendario */
+  zoomLink?: string;
+  title?: string;
+  description?: string;
+  eventDate?: string;
+  startTime?: string;
+  durationMinutes?: number;
+  moveCrewEventId?: string;
+  isUnlocked?: boolean;
+  /** Fecha de liberación (ISO) para mostrar "Se libera el..." en contenidos bloqueados */
+  releaseDate?: string;
 }
 
 interface WeeklyContent {
@@ -122,7 +134,7 @@ function WeeklyPathPageContent() {
   const [logbook, setLogbook] = useState<Logbook | null>(null);
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [selectedContentType, setSelectedContentType] = useState<'visual' | 'audioText' | null>(null);
+  const [selectedContentType, setSelectedContentType] = useState<'visual' | 'audioText' | 'zoomEvent' | null>(null);
   const [selectedContentIndex, setSelectedContentIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
@@ -131,10 +143,11 @@ function WeeklyPathPageContent() {
   const [isDesktop, setIsDesktop] = useState(false);
   const [openTooltip, setOpenTooltip] = useState<'menu' | 'progress' | 'uc' | null>(null);
   const isMobile = !isDesktop;
+  // Tooltips: U.C. comentado hasta tener la tienda. Se incorporará obtención de unidades de coherencia más adelante.
   const tooltipTexts: Record<'menu' | 'progress' | 'uc', string> = {
-    menu: 'Completá semanas del Camino y ganá U.C. para canjear por programas, material o merch.',
+    menu: 'Completá las semanas del Camino para llevar registro de tu avance.',
     progress: 'Avance del mes en el Camino (las clases completadas representan el 25 % del camino).',
-    uc: 'Una semana completada = 1 U.C. Acumulalas y canjealas por programas, material o lo que vayamos creando.'
+    uc: 'Unidades de coherencia (U.C.) se incorporarán cuando la tienda esté lista.'
   };
   
   // Estados para los modales de celebración e información
@@ -167,7 +180,7 @@ function WeeklyPathPageContent() {
   const [showNextContentModal, setShowNextContentModal] = useState(false);
   const [nextContentModalPayload, setNextContentModalPayload] = useState<{
     nextContentIndex: number;
-    nextContentType: 'visual' | 'audioText';
+    nextContentType: 'visual' | 'audioText' | 'zoomEvent';
     nextTitle?: string;
   } | null>(null);
   const skipNextSelectionEffectRef = useRef(false);
@@ -466,7 +479,7 @@ function WeeklyPathPageContent() {
         const weekContents = (firstUnlocked as WeeklyContent).contents;
         if (Array.isArray(weekContents) && weekContents.length > 0) {
           setSelectedContentIndex(0);
-          setSelectedContentType(weekContents[0].contentType === 'audio' ? 'audioText' : 'visual');
+          setSelectedContentType(weekContents[0].contentType === 'audio' ? 'audioText' : weekContents[0].contentType === 'zoomEvent' ? 'zoomEvent' : 'visual');
         } else {
           setSelectedContentIndex(null);
           if (firstUnlocked.videoUrl) setSelectedContentType('visual');
@@ -480,7 +493,7 @@ function WeeklyPathPageContent() {
         const weekContents = (firstWeek as WeeklyContent)?.contents;
         if (Array.isArray(weekContents) && weekContents.length > 0) {
           setSelectedContentIndex(0);
-          setSelectedContentType(weekContents[0].contentType === 'audio' ? 'audioText' : 'visual');
+          setSelectedContentType(weekContents[0].contentType === 'audio' ? 'audioText' : weekContents[0].contentType === 'zoomEvent' ? 'zoomEvent' : 'visual');
         } else {
           setSelectedContentIndex(null);
           if (firstWeek?.videoUrl) setSelectedContentType('visual');
@@ -488,16 +501,46 @@ function WeeklyPathPageContent() {
           else setSelectedContentType(null);
         }
       }
+
+      // Deep link: si la URL tiene ?week=X&content=Y, abrir esa clase directamente
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const weekParam = params.get('week');
+        const contentParam = params.get('content');
+        if (weekParam != null && contentParam != null) {
+          const weekNum = parseInt(weekParam, 10);
+          const contentIdx = parseInt(contentParam, 10);
+          if (!Number.isNaN(weekNum) && !Number.isNaN(contentIdx)) {
+            const week = processedWeeks.find((w: WeeklyContent) => Number(w.weekNumber) === weekNum);
+            if (week) {
+              const contents = (week as WeeklyContent).contents;
+              if (Array.isArray(contents) && contentIdx >= 0 && contentIdx < contents.length) {
+                const item = contents[contentIdx];
+                const contentType = item?.contentType === 'audio' ? 'audioText' : item?.contentType === 'zoomEvent' ? 'zoomEvent' : 'visual';
+                setSelectedWeek(weekNum);
+                setSelectedDay(null);
+                setSelectedContentIndex(contentIdx);
+                setSelectedContentType(contentType);
+              }
+            }
+          }
+        }
+      }
     }
   };
 
   // Abrir siempre en el primer contenido no completado (por semana e índice dentro de la semana).
   // No ejecutar mientras el modal "Ir al siguiente" está abierto ni justo después de ir al siguiente (para no sobrescribir la selección).
+  // No ejecutar si la URL tiene deep link (?week=&content=) para no pisar la selección del enlace.
   useEffect(() => {
     if (showNextContentModal || !logbook?._id || !logbook.weeklyContents?.length) return;
     if (skipNextSelectionEffectRef.current) {
       skipNextSelectionEffectRef.current = false;
       return;
+    }
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('week') != null && params.get('content') != null) return;
     }
     const unlocked = logbook.weeklyContents
       .filter((w: WeeklyContent) => w.isUnlocked)
@@ -509,7 +552,7 @@ function WeeklyPathPageContent() {
     // Encontrar el primer ítem de contenido (por semana, luego por índice) que no esté completado
     let targetWeek: WeeklyContent | null = null;
     let targetContentIndex: number | null = null;
-    let targetContentType: 'visual' | 'audioText' | null = null;
+    let targetContentType: 'visual' | 'audioText' | 'zoomEvent' | null = null;
 
     for (const week of unlocked) {
       const contents = (week as WeeklyContent).contents;
@@ -517,12 +560,14 @@ function WeeklyPathPageContent() {
         for (let i = 0; i < contents.length; i++) {
           const key = `${logbookId}-${week.weekNumber}-content-${i}`;
           const item = contents[i];
-          const isVisual = item.contentType !== 'audio';
-          const isCompleted = isVisual ? completedVideos.has(key) : completedAudios.has(key);
+          const isAudio = item.contentType === 'audio';
+          const isZoom = item.contentType === 'zoomEvent';
+          const isVisual = !isAudio && !isZoom;
+          const isCompleted = isAudio ? completedAudios.has(key) : completedVideos.has(key);
           if (!isCompleted) {
             targetWeek = week;
             targetContentIndex = i;
-            targetContentType = isVisual ? 'visual' : 'audioText';
+            targetContentType = isZoom ? 'zoomEvent' : isAudio ? 'audioText' : 'visual';
             break;
           }
         }
@@ -550,7 +595,7 @@ function WeeklyPathPageContent() {
       const contents = (targetWeek as WeeklyContent).contents;
       if (Array.isArray(contents) && contents.length > 0) {
         targetContentIndex = 0;
-        targetContentType = contents[0].contentType === 'audio' ? 'audioText' : 'visual';
+        targetContentType = contents[0].contentType === 'audio' ? 'audioText' : contents[0].contentType === 'zoomEvent' ? 'zoomEvent' : 'visual';
       } else {
         targetContentIndex = null;
         targetContentType = (targetWeek as WeeklyContent).videoUrl ? 'visual' : ((targetWeek as WeeklyContent).audioUrl || (targetWeek as WeeklyContent).text) ? 'audioText' : null;
@@ -563,13 +608,35 @@ function WeeklyPathPageContent() {
     setSelectedContentType(targetContentType);
   }, [logbook?._id, logbook?.weeklyContents, coherence, showNextContentModal]);
 
+  // Deep link: ?id=...&week=X&content=Y abre directamente esa clase (ej. desde el email "grabación disponible").
+  useEffect(() => {
+    if (typeof window === 'undefined' || !logbook?.weeklyContents?.length) return;
+    const params = new URLSearchParams(window.location.search);
+    const weekParam = params.get('week');
+    const contentParam = params.get('content');
+    if (weekParam == null || contentParam == null) return;
+    const weekNum = parseInt(weekParam, 10);
+    const contentIdx = parseInt(contentParam, 10);
+    if (Number.isNaN(weekNum) || Number.isNaN(contentIdx)) return;
+    const week = logbook.weeklyContents.find((w: WeeklyContent) => Number(w.weekNumber) === weekNum);
+    if (!week) return;
+    const contents = (week as WeeklyContent).contents;
+    if (!Array.isArray(contents) || contentIdx < 0 || contentIdx >= contents.length) return;
+    const item = contents[contentIdx];
+    const contentType = item?.contentType === 'audio' ? 'audioText' : item?.contentType === 'zoomEvent' ? 'zoomEvent' : 'visual';
+    setSelectedWeek(weekNum);
+    setSelectedDay(null);
+    setSelectedContentIndex(contentIdx);
+    setSelectedContentType(contentType);
+  }, [logbook?._id, logbook?.weeklyContents?.length]);
+
   const checkIfCompleted = async (logbookId: string, weekNumber: number) => {
     // Verificar si esta semana ya fue completada
     const weekKey = `${logbookId}-${weekNumber}`;
     // Por ahora asumimos que no está completada, esto se puede mejorar consultando la API
   };
 
-  const handleSelect = (weekNumber: number, dayNumber: number | null, contentType: 'visual' | 'audioText' | null, contentIndex?: number) => {
+  const handleSelect = (weekNumber: number, dayNumber: number | null, contentType: 'visual' | 'audioText' | 'zoomEvent' | null, contentIndex?: number) => {
     setIsChangingContent(true);
     setTimeout(() => {
       setSelectedWeek(weekNumber);
@@ -641,54 +708,23 @@ function WeeklyPathPageContent() {
         });
       }
 
-      // Actualizar tracking si viene en la respuesta
+      // Actualizar tracking si viene en la respuesta (se mantiene para estado interno; UI de U.C. comentada hasta tener la tienda)
       if (data.tracking) {
-        if (data.levelUp) {
-          coherence.updateTracking({
-            totalUnits: data.tracking.totalUnits,
-            currentStreak: data.tracking.currentStreak,
-            longestStreak: data.tracking.longestStreak,
-            level: data.newLevel,
-            levelProgress: data.levelProgress !== undefined && data.levelProgress !== null ? data.levelProgress : 0,
-            progressToNextLevel: data.progressToNextLevel !== undefined && data.progressToNextLevel !== null ? data.progressToNextLevel : 0,
-            gorillaIcon: data.gorillaIcon,
-            evolutionName: data.evolutionName,
-            characterEvolution: data.evolution ? (coherence.coherenceTracking?.characterEvolution ?? 0) + 1 : (coherence.coherenceTracking?.characterEvolution ?? 0)
-          });
-          setLevelUpData({
-            newLevel: data.newLevel,
-            evolution: data.evolution,
-            gorillaIcon: data.gorillaIcon
-          });
-          setShowLevelUpEffect(true);
-          setTimeout(() => {
-            setShowLevelUpEffect(false);
-            setLevelUpData(null);
-          }, 3000);
-        } else {
-          coherence.updateTracking({
-            totalUnits: data.tracking.totalUnits,
-            currentStreak: data.tracking.currentStreak,
-            longestStreak: data.tracking.longestStreak,
-            levelProgress: data.levelProgress !== undefined && data.levelProgress !== null ? data.levelProgress : (coherence.coherenceTracking?.levelProgress ?? 0),
-            progressToNextLevel: data.progressToNextLevel !== undefined && data.progressToNextLevel !== null ? data.progressToNextLevel : (coherence.coherenceTracking?.progressToNextLevel ?? 0),
-            level: data.newLevel !== undefined && data.newLevel !== null ? data.newLevel : (coherence.coherenceTracking?.level ?? 1)
-          });
-        }
+        coherence.updateTracking({
+          totalUnits: data.tracking.totalUnits,
+          currentStreak: data.tracking.currentStreak,
+          longestStreak: data.tracking.longestStreak,
+          level: data.newLevel ?? data.tracking.level ?? coherence.coherenceTracking?.level ?? 1,
+          levelProgress: data.levelProgress !== undefined && data.levelProgress !== null ? data.levelProgress : (coherence.coherenceTracking?.levelProgress ?? 0),
+          progressToNextLevel: data.progressToNextLevel !== undefined && data.progressToNextLevel !== null ? data.progressToNextLevel : (coherence.coherenceTracking?.progressToNextLevel ?? 0),
+          gorillaIcon: data.gorillaIcon,
+          evolutionName: data.evolutionName,
+          characterEvolution: data.evolution ? (coherence.coherenceTracking?.characterEvolution ?? 0) + 1 : (coherence.coherenceTracking?.characterEvolution ?? 0)
+        });
       }
-
-      // Notificar al header para que actualice el número de U.C. en el icono de perfil
-      if (data.tracking && typeof data.tracking.totalUnits === 'number') {
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('coherence-tracking-updated', {
-            detail: {
-              totalUnits: data.tracking.totalUnits,
-              level: data.newLevel ?? data.tracking.level,
-              levelProgress: data.levelProgress
-            }
-          }));
-        }
-      }
+      // Obtención de U.C. / celebración / level-up — comentado hasta tener la tienda
+      // if (data.tracking && data.levelUp) { setLevelUpData(...); setShowLevelUpEffect(true); ... }
+      // window.dispatchEvent('coherence-tracking-updated', ...) — comentado
 
       // Siempre: siguiente contenido de la semana o felicitaciones por completar la semana (sin modal "Contenido ya completado")
       const contents = week.contents;
@@ -698,8 +734,8 @@ function WeeklyPathPageContent() {
 
       if (hasNextInWeek) {
         const nextItem = contents![nextIndex];
-        const nextContentType = (nextItem.contentType === 'audio' ? 'audioText' : 'visual') as 'visual' | 'audioText';
-        const nextTitle = (nextItem as WeekContentItem).videoName || (nextItem as WeekContentItem).audioTitle;
+        const nextContentType = (nextItem.contentType === 'audio' ? 'audioText' : nextItem.contentType === 'zoomEvent' ? 'zoomEvent' : 'visual') as 'visual' | 'audioText' | 'zoomEvent';
+        const nextTitle = (nextItem as WeekContentItem).videoName || (nextItem as WeekContentItem).audioTitle || (nextItem as WeekContentItem).title;
         setNextContentModalPayload({
           nextContentIndex: nextIndex,
           nextContentType,
@@ -707,35 +743,17 @@ function WeeklyPathPageContent() {
         });
         setShowNextContentModal(true);
       } else {
-        // Semana completada: reporte si aplica o celebración (U.C. puede ser 0 si ya estaba todo completado)
-        const totalUnits = data.tracking?.totalUnits || coherence.coherenceTracking?.totalUnits || 0;
-        const esSemanaAdicional = data.esSemanaAdicional || false;
-        const ucsOtorgadas = data.ucsOtorgadas !== undefined && data.ucsOtorgadas !== null ? data.ucsOtorgadas : 1;
-        const currentStreak = data.tracking?.currentStreak || coherence.coherenceTracking?.currentStreak || 0;
-        if (data.necesitaReporte) {
-          setCelebrationData({
-            ucsOtorgadas,
-            totalUnits,
-            currentStreak,
-            esSemanaAdicional,
-            levelUp: data.levelUp || false,
-            newLevel: data.newLevel,
-            evolution: data.evolution || false,
-            gorillaIcon: data.gorillaIcon
-          });
-          setShowReportModal(true);
-        } else {
-          setCelebrationData({
-            ucsOtorgadas,
-            totalUnits,
-            currentStreak,
-            esSemanaAdicional,
-            levelUp: data.levelUp || false,
-            newLevel: data.newLevel,
-            evolution: data.evolution || false,
-            gorillaIcon: data.gorillaIcon
-          });
-          setShowCelebrationModal(true);
+        // Semana completada: llevar a la siguiente semana (primer contenido) en lugar de quedar en la clase en vivo u otro de la misma semana
+        const sortedWeeks = (logbook?.weeklyContents || []).slice().sort((a: any, b: any) => a.weekNumber - b.weekNumber);
+        const currentIdx = sortedWeeks.findIndex((w: any) => w.weekNumber === selectedWeek);
+        const nextWeek = currentIdx >= 0 && currentIdx < sortedWeeks.length - 1 ? sortedWeeks[currentIdx + 1] : null;
+        if (nextWeek && (nextWeek.isUnlocked || auth.user?.rol === 'Admin')) {
+          const nextContents = nextWeek.contents;
+          const firstContentType = Array.isArray(nextContents) && nextContents.length > 0
+            ? (nextContents[0].contentType === 'audio' ? 'audioText' : nextContents[0].contentType === 'zoomEvent' ? 'zoomEvent' : 'visual')
+            : 'visual';
+          skipNextSelectionEffectRef.current = true;
+          handleSelect(nextWeek.weekNumber, null, firstContentType, 0);
         }
       }
 
@@ -764,6 +782,14 @@ function WeeklyPathPageContent() {
     title?: string;
     dayTitle?: string;
     subtitle?: string;
+  } | {
+    type: 'zoomEvent';
+    title?: string;
+    description?: string;
+    zoomLink?: string;
+    eventDate?: string;
+    startTime?: string;
+    moveCrewEventId?: string;
   } | null => {
     if (!logbook || selectedWeek === null) return null;
     
@@ -808,6 +834,35 @@ function WeeklyPathPageContent() {
 
     if (useContents && c) {
       if (c.contentType === 'audio') return pickAudioFromContent(c);
+      if (c.contentType === 'zoomEvent') {
+        // Eventos recurrentes (repeatsWeekly) no tienen eventDate. Usar el índice real del ítem en la semana (0=martes, 1=miércoles, …).
+        let eventDate = c.eventDate;
+        const contentIndexInWeek = useContents && c ? contents.indexOf(c) : -1;
+        const indexForDate = contentIndexInWeek >= 0 ? contentIndexInWeek : effectiveIndex;
+        if ((eventDate == null || eventDate === '') && indexForDate >= 0 && logbook?.month && logbook?.year) {
+          const y = logbook.year;
+          const m = logbook.month - 1; // 0-indexed
+          const dOffset = [0, 1, 2, 3, 4, 5, 6].find((d) => new Date(y, m, 1 + d).getDay() === 2) ?? 0;
+          const firstTuesday = new Date(y, m, 1 + dOffset);
+          firstTuesday.setHours(0, 0, 0, 0);
+          const weekOffset = (selectedWeek ?? 1) - 1;
+          const tuesdayOfWeek = new Date(firstTuesday);
+          tuesdayOfWeek.setDate(tuesdayOfWeek.getDate() + weekOffset * 7);
+          const effective = new Date(tuesdayOfWeek);
+          effective.setDate(effective.getDate() + indexForDate); // +1 día por cada contenido anterior (0=martes, 1=miércoles, …)
+          eventDate = effective.toISOString().slice(0, 10);
+        }
+        const zoomPayload = {
+          type: 'zoomEvent' as const,
+          title: c.title || c.videoName || 'Movimiento Online',
+          description: c.description,
+          zoomLink: c.zoomLink,
+          eventDate: eventDate ?? undefined,
+          startTime: c.startTime,
+          moveCrewEventId: c.moveCrewEventId
+        };
+        return zoomPayload;
+      }
       return pickVideoFromContent(c);
     }
 
@@ -816,6 +871,7 @@ function WeeklyPathPageContent() {
 
     if (selectedContentType === 'visual') return pickVideo();
     if (selectedContentType === 'audioText') return pickAudio();
+    if (selectedContentType === 'zoomEvent') return null;
     return pickVideo() || pickAudio() || null;
   };
 
@@ -915,7 +971,7 @@ function WeeklyPathPageContent() {
                           {auth.user.email}
                         </p>
                       )}
-                      {/* Completado y U.C. */}
+                      {/* Completado (U.C. comentado hasta tener la tienda — obtención de unidades de coherencia se incorporará más adelante) */}
                       <div className="flex items-center gap-4 flex-wrap">
                         <div className="flex items-center gap-3 px-4 py-2.5 bg-palette-stone/20 backdrop-blur-md border border-palette-stone/40 rounded-full shadow-lg">
                           <span className="text-xl md:text-2xl font-bold text-palette-cream font-montserrat">
@@ -925,6 +981,7 @@ function WeeklyPathPageContent() {
                             Completado
                           </span>
                         </div>
+                        {/* Badge U.C. — comentado hasta incorporar tienda
                         {coherence.coherenceTracking && (
                           <div className="flex items-center gap-3 px-4 py-2.5 bg-palette-stone/20 backdrop-blur-md border border-palette-stone/40 rounded-full shadow-lg">
                             <img 
@@ -941,6 +998,7 @@ function WeeklyPathPageContent() {
                             </span>
                           </div>
                         )}
+                        */}
                       </div>
                     </div>
                   </div>
@@ -978,6 +1036,22 @@ function WeeklyPathPageContent() {
                         logbookId={logbook?._id}
                         weekNumber={selectedWeek || undefined}
                         dayNumber={selectedDay || undefined}
+                      />
+                    </div>
+                  ) : selectedContent.type === 'zoomEvent' ? (
+                    <div key={`zoomEvent-wrap-${selectedWeek}-${selectedContentIndex ?? 0}`} className="w-full flex justify-center items-center min-h-[80vh] px-3 sm:px-4 py-6 sm:py-8">
+                      <ZoomEventContentDisplay
+                        title={selectedContent.title}
+                        description={selectedContent.description}
+                        zoomLink={selectedContent.zoomLink}
+                        eventDate={selectedContent.eventDate}
+                        startTime={selectedContent.startTime}
+                        moveCrewEventId={selectedContent.moveCrewEventId}
+                        onComplete={handleComplete}
+                        isCompleted={selectedContentIndex != null && coherence.completedVideos.has(`${logbook?._id}-${selectedWeek}-content-${selectedContentIndex}`)}
+                        logbookId={logbook?._id}
+                        weekNumber={selectedWeek || undefined}
+                        contentIndex={selectedContentIndex ?? undefined}
                       />
                     </div>
                   ) : (
@@ -1068,7 +1142,7 @@ function WeeklyPathPageContent() {
                 </section>
               )}
 
-              {/* Información sobre Coherencia - texto fino, sin contenedores con borde */}
+              {/* Información sobre Coherencia / U.C. — comentado hasta tener la tienda. Se incorporará obtención de unidades de coherencia más adelante.
               <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -1085,6 +1159,7 @@ function WeeklyPathPageContent() {
                       Se premia la constancia: ahí están los resultados en el movimiento.
                     </p>
                 </motion.div>
+                */}
               </div>
             </div>
             <div className="pb-4 md:pb-6" >
@@ -1151,14 +1226,11 @@ function WeeklyPathPageContent() {
       </div>
       </MainSideBar>
 
-      {/* Modal de celebración cuando se obtiene U.C. */}
+      {/* Modal de celebración U.C. — comentado hasta tener la tienda (obtención unidades de coherencia se incorporará más adelante)
       {celebrationData && (
         <CoherenceCelebrationModal
           isOpen={showCelebrationModal}
-          onClose={() => {
-            setShowCelebrationModal(false);
-            setCelebrationData(null);
-          }}
+          onClose={() => { setShowCelebrationModal(false); setCelebrationData(null); }}
           ucsOtorgadas={celebrationData.ucsOtorgadas}
           totalUnits={celebrationData.totalUnits}
           currentStreak={celebrationData.currentStreak}
@@ -1169,6 +1241,7 @@ function WeeklyPathPageContent() {
           gorillaIcon={celebrationData.gorillaIcon}
         />
       )}
+      */}
 
       {/* Modal: ir al siguiente contenido de la semana */}
       <NextContentModal
@@ -1188,14 +1261,11 @@ function WeeklyPathPageContent() {
         nextTitle={nextContentModalPayload?.nextTitle}
       />
 
-      {/* Modal informativo cuando NO se obtiene U.C. */}
+      {/* Modal informativo cuando NO se obtiene U.C. — comentado hasta tener la tienda
       {infoModalData && (
         <CoherenceInfoModal
           isOpen={showInfoModal}
-          onClose={() => {
-            setShowInfoModal(false);
-            setInfoModalData(null);
-          }}
+          onClose={() => { setShowInfoModal(false); setInfoModalData(null); }}
           message={infoModalData.message}
           tip={infoModalData.tip}
           reason={infoModalData.reason}
@@ -1203,63 +1273,27 @@ function WeeklyPathPageContent() {
           contentType={infoModalData.contentType}
         />
       )}
+      */}
 
-      {/* Modal de Reporte Semanal */}
+      {/* Modal de Reporte Semanal (U.C.) — comentado hasta tener la tienda
       <WeeklyReportModal
         isOpen={showReportModal}
-        onClose={() => {
-          setShowReportModal(false);
-          // Mostrar modal de celebración después de cerrar el reporte
-          if (celebrationData) {
-            setShowCelebrationModal(true);
-          }
-        }}
-        onComplete={() => {
-          // Mostrar modal de celebración después de completar el reporte
-          if (celebrationData) {
-            setShowCelebrationModal(true);
-          }
-        }}
+        onClose={() => { setShowReportModal(false); if (celebrationData) setShowCelebrationModal(true); }}
+        onComplete={() => { if (celebrationData) setShowCelebrationModal(true); }}
       />
+      */}
 
       {renderMobileTooltip()}
 
-      {/* Efecto visual de Level Up — estilo Move Crew: épico y fino */}
+      {/* Efecto visual Level Up (U.C.) — comentado hasta tener la tienda
       <AnimatePresence>
         {showLevelUpEffect && levelUpData && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="fixed inset-0 z-[300] flex items-center justify-center pointer-events-none bg-palette-ink/95 backdrop-blur-md"
-          >
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
-              className="absolute inset-0 flex flex-col items-center justify-center w-full px-4"
-            >
-              {/* Línea superior — marca Move Crew */}
-              <div className="absolute top-0 left-0 right-0 h-0.5 bg-palette-sage/60" />
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-palette-sage/30" />
-              {/* Mensaje centrado, tipografía refinada */}
-              <p
-                className="text-[10px] md:text-xs font-montserrat uppercase tracking-[0.35em] text-palette-sage/90 mb-2"
-              >
-                {levelUpData.evolution ? 'Evolución' : 'Nivel'}
-              </p>
-              <p className="text-4xl md:text-6xl lg:text-7xl font-semibold font-montserrat tracking-tight text-palette-cream mb-1">
-                {levelUpData.newLevel}
-              </p>
-              <p className="text-lg md:text-xl font-montserrat font-light text-palette-stone/90 tracking-wide">
-                {levelUpData.evolution ? 'Tu camino sigue creciendo' : 'Subiste de nivel'}
-              </p>
-            </motion.div>
+          <motion.div ...>
+            ...
           </motion.div>
         )}
       </AnimatePresence>
+      */}
     </>
   );
 }

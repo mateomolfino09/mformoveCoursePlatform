@@ -7,6 +7,7 @@ import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
 import User from '../../../../models/userModel';
 import IndividualClass from '../../../../models/individualClassModel';
 import ModuleClass from '../../../../models/moduleClassModel';
+import MoveCrewEvent from '../../../../models/moveCrewEventModel';
 
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
@@ -54,6 +55,12 @@ async function hydrateWeeklyContentsForList(weeklyContents) {
           item.videoUrl = url ? toVimeoUrl(url) : (item.videoUrl && String(item.videoUrl).trim()) || '';
           if (mc.videoId) item.videoId = mc.videoId;
           if (mc.duration != null) item.videoDuration = mc.duration;
+        }
+      } else if (item.contentType === 'zoomEvent' && item.moveCrewEventId && mongoose.Types.ObjectId.isValid(item.moveCrewEventId)) {
+        const ev = await MoveCrewEvent.findById(item.moveCrewEventId).select('title description zoomLink eventDate startTime').lean();
+        if (ev) {
+          item.videoName = (ev.title && String(ev.title).trim()) || 'Clase en vivo';
+          item.title = item.videoName;
         }
       }
     }

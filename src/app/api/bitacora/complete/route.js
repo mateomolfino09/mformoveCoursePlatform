@@ -120,8 +120,8 @@ export async function POST(req) {
     const useContentIndex = contentIndex !== undefined && contentIndex !== null && !dayKey;
 
     // Claves específicas por tipo de contenido (video y audio son independientes)
-    // Con contentIndex: una clave por ítem de la semana (varios contenidos por semana)
-    const videoKey = contentType === 'visual'
+    // Con contentIndex: una clave por ítem de la semana (varios contenidos por semana). zoomEvent se marca como video.
+    const videoKey = (contentType === 'visual' || contentType === 'zoomEvent')
       ? (useContentIndex ? `${logbookId}-${weekNumber}-content-${contentIndex}` : (dayKey ? `${dayKey}-video` : `${logbookId}-${weekNumber}-week-video`))
       : null;
     const audioKey = (contentType === 'audio' || contentType === 'audioText')
@@ -143,8 +143,8 @@ export async function POST(req) {
       tracking.completedAudios = [];
     }
 
-    // Verificar si ya está completado ESTE CONTENIDO ESPECÍFICO (video o audio)
-    const isVideo = contentType === 'visual';
+    // Verificar si ya está completado ESTE CONTENIDO ESPECÍFICO (video, zoomEvent o audio)
+    const isVideo = contentType === 'visual' || contentType === 'zoomEvent';
     const isAudio = contentType === 'audio' || contentType === 'audioText';
     const contentKey = videoKey || audioKey;
     
@@ -201,7 +201,7 @@ export async function POST(req) {
     
     // U.C.: con contentIndex (varios contenidos por semana) solo se otorga 1 U.C. cuando la semana está completa.
     // Sin contentIndex (legacy): se llama addCoherenceUnit por cada contenido.
-    const shouldCallAddUC = (videoKey && contentType === 'visual') || (audioKey && (contentType === 'audio' || contentType === 'audioText'));
+    const shouldCallAddUC = (videoKey && (contentType === 'visual' || contentType === 'zoomEvent')) || (audioKey && (contentType === 'audio' || contentType === 'audioText'));
     if (shouldCallAddUC) {
       try {
         let callAddUC = false;

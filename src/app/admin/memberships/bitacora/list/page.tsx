@@ -6,16 +6,17 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
-import { ArrowLeftIcon, ArrowTopRightOnSquareIcon, CalendarIcon, CheckCircleIcon, ClockIcon, ChevronDownIcon, VideoCameraIcon, MusicalNoteIcon, DocumentTextIcon, EyeIcon, XMarkIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowPathIcon, ArrowTopRightOnSquareIcon, CalendarIcon, CheckCircleIcon, ClockIcon, ChevronDownIcon, VideoCameraIcon, MusicalNoteIcon, DocumentTextIcon, EyeIcon, XMarkIcon, PencilIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactPlayer from 'react-player';
 
-/** Ítem de contenido dentro de una semana (clase de módulo, clase individual o audio) */
+/** Ítem de contenido dentro de una semana (clase de módulo, clase individual, audio o evento en vivo) */
 interface WeekContentItem {
-  contentType?: 'moduleClass' | 'individualClass' | 'audio';
+  contentType?: 'moduleClass' | 'individualClass' | 'audio' | 'zoomEvent';
   moduleClassId?: string;
   individualClassId?: string;
+  moveCrewEventId?: string;
   videoUrl?: string;
   videoId?: string;
   videoName?: string;
@@ -71,6 +72,14 @@ const BitacoraListPage = () => {
   const [previewingVideo, setPreviewingVideo] = useState<{ logbookId: string; weekIndex: number; contentIndex?: number; url: string } | null>(null);
   const [previewingAudio, setPreviewingAudio] = useState<{ logbookId: string; weekIndex: number; contentIndex?: number; url: string } | null>(null);
   const [loadingIndividualPreview, setLoadingIndividualPreview] = useState<string | null>(null); // 'logbookId-weekIndex-contentIndex'
+  const [replaceEventModal, setReplaceEventModal] = useState<{ logbookId: string; weekIndex: number; contentIndex: number; eventName?: string } | null>(null);
+  const [replaceModalClasses, setReplaceModalClasses] = useState<{ _id: string; name?: string }[]>([]);
+  const [replaceModalSelectedId, setReplaceModalSelectedId] = useState<string>('');
+  const [replaceModalMode, setReplaceModalMode] = useState<'select' | 'create'>('select');
+  const [replaceModalCreateForm, setReplaceModalCreateForm] = useState({ name: '', description: '', videoUrl: '', type: '' });
+  const [replaceModalClassTypes, setReplaceModalClassTypes] = useState<{ value: string; label: string }[]>([]);
+  const [replaceModalLoading, setReplaceModalLoading] = useState(false);
+  const [replaceModalError, setReplaceModalError] = useState<string | null>(null);
 
   const fetchIndividualClassVideoUrl = async (individualClassId: string): Promise<string | null> => {
     try {
@@ -386,13 +395,15 @@ const BitacoraListPage = () => {
                                     {hasContents ? (
                                       <ul className='space-y-2'>
                                         {contents.map((c, contentIndex) => {
-                                          const tipo = (c.contentType || 'moduleClass') as 'moduleClass' | 'individualClass' | 'audio';
+                                          const tipo = (c.contentType || 'moduleClass') as 'moduleClass' | 'individualClass' | 'audio' | 'zoomEvent';
                                           const label =
                                             tipo === 'moduleClass'
                                               ? 'Clase de módulo'
                                               : tipo === 'individualClass'
                                                 ? 'Clase individual'
-                                                : 'Audio';
+                                                : tipo === 'zoomEvent'
+                                                  ? 'Clase en vivo'
+                                                  : 'Audio';
                                           const name = c.videoName || c.audioTitle || (tipo === 'audio' ? 'Audio' : 'Clase');
                                           const hasVideo = !!(c.videoUrl && c.videoUrl.trim());
                                           const hasAudio = !!(c.audioUrl && c.audioUrl.trim());
@@ -479,6 +490,43 @@ const BitacoraListPage = () => {
                                                 )}
                                                 {!hasVideo && !hasAudio && !isIndividualWithoutVideo && (
                                                   <span className='text-xs text-gray-400 font-montserrat'>—</span>
+                                                )}
+                                                {tipo === 'zoomEvent' && (
+                                                  <button
+                                                    type='button'
+                                                    onClick={() => {
+                                                      setReplaceEventModal({
+                                                        logbookId: logbook._id,
+                                                        weekIndex,
+                                                        contentIndex,
+                                                        eventName: c.videoName || 'Clase en vivo',
+                                                      });
+                                                      setReplaceModalSelectedId('');
+                                                      setReplaceModalMode('select');
+                                                      setReplaceModalCreateForm({ name: '', description: '', videoUrl: '', type: '' });
+                                                      setReplaceModalError(null);
+                                                      fetch('/api/individualClass/getClasses?includeUnpublished=1', { credentials: 'include', cache: 'no-store' })
+                                                        .then((r) => r.json())
+                                                        .then((list) => {
+                                                          const arr = Array.isArray(list) ? list : [];
+                                                          setReplaceModalClasses(arr.map((x: any) => ({ _id: x._id, name: x.name || x.title || '' })));
+                                                        })
+                                                        .catch(() => setReplaceModalClasses([]));
+                                                      fetch('/api/individualClass/getClassTypes', { credentials: 'include', cache: 'no-store' })
+                                                        .then((r) => r.ok ? r.json() : [])
+                                                        .then((data) => {
+                                                          const first = Array.isArray(data) ? data[0] : null;
+                                                          const values = first?.values ?? [];
+                                                          setReplaceModalClassTypes(values.map((v: any) => ({ value: v.value || '', label: v.label || v.value || '' })));
+                                                        })
+                                                        .catch(() => setReplaceModalClassTypes([]));
+                                                    }}
+                                                    className='text-xs px-2 py-1 bg-amber-500 text-white rounded hover:bg-amber-600 font-montserrat flex items-center gap-1'
+                                                    title='Reemplazar este evento por la clase individual (grabación). Se mantiene la publicación en el camino.'
+                                                  >
+                                                    <ArrowPathIcon className='w-3.5 h-3.5' />
+                                                    Cambiar por grabación
+                                                  </button>
                                                 )}
                                               </div>
                                               {isPreviewingVideo && videoUrlToPreview && (
@@ -592,6 +640,206 @@ const BitacoraListPage = () => {
                 </motion.div>
               );
             })}
+            </div>
+          )}
+
+          {/* Modal: Cambiar evento por clase individual (grabación) */}
+          {replaceEventModal && (
+            <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50'>
+              <div className='bg-white rounded-2xl shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto'>
+                <h3 className='text-lg font-semibold text-gray-900 font-montserrat mb-2'>
+                  Cambiar evento por grabación
+                </h3>
+                <p className='text-sm text-gray-600 font-montserrat mb-4'>
+                  Reemplazá el evento &quot;{replaceEventModal.eventName || 'Clase en vivo'}&quot; por la clase individual (grabación). La posición y la publicación en el camino se mantienen.
+                </p>
+                <div className='flex gap-2 mb-4 border-b border-gray-200'>
+                  <button
+                    type='button'
+                    onClick={() => { setReplaceModalMode('select'); setReplaceModalError(null); }}
+                    className={`px-3 py-2 text-sm font-medium font-montserrat rounded-t-lg ${replaceModalMode === 'select' ? 'bg-amber-100 text-amber-800 border-b-2 border-amber-500 -mb-px' : 'text-gray-600 hover:bg-gray-100'}`}
+                  >
+                    Seleccionar existente
+                  </button>
+                  <button
+                    type='button'
+                    onClick={() => { setReplaceModalMode('create'); setReplaceModalError(null); }}
+                    className={`px-3 py-2 text-sm font-medium font-montserrat rounded-t-lg ${replaceModalMode === 'create' ? 'bg-amber-100 text-amber-800 border-b-2 border-amber-500 -mb-px' : 'text-gray-600 hover:bg-gray-100'}`}
+                  >
+                    Crear clase nueva
+                  </button>
+                </div>
+
+                {replaceModalMode === 'select' ? (
+                  <>
+                    <label className='block text-xs font-medium text-gray-700 font-montserrat mb-2'>Clase individual (grabación) *</label>
+                    <select
+                      value={replaceModalSelectedId}
+                      onChange={(e) => setReplaceModalSelectedId(e.target.value)}
+                      className='w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm font-montserrat mb-4'
+                    >
+                      <option value=''>Seleccionar clase...</option>
+                      {replaceModalClasses.map((cls) => (
+                        <option key={cls._id} value={cls._id}>{cls.name || cls._id}</option>
+                      ))}
+                    </select>
+                  </>
+                ) : (
+                  <div className='space-y-3 mb-4'>
+                    <div>
+                      <label className='block text-xs font-medium text-gray-700 font-montserrat mb-1'>Nombre de la clase *</label>
+                      <input
+                        type='text'
+                        value={replaceModalCreateForm.name}
+                        onChange={(e) => setReplaceModalCreateForm((f) => ({ ...f, name: e.target.value }))}
+                        placeholder='Ej: Clase en vivo - Grabación'
+                        className='w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm font-montserrat'
+                      />
+                    </div>
+                    <div>
+                      <label className='block text-xs font-medium text-gray-700 font-montserrat mb-1'>Descripción *</label>
+                      <textarea
+                        value={replaceModalCreateForm.description}
+                        onChange={(e) => setReplaceModalCreateForm((f) => ({ ...f, description: e.target.value }))}
+                        placeholder='Breve descripción de la clase'
+                        rows={2}
+                        className='w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm font-montserrat'
+                      />
+                    </div>
+                    <div>
+                      <label className='block text-xs font-medium text-gray-700 font-montserrat mb-1'>URL o ID de Vimeo *</label>
+                      <input
+                        type='text'
+                        value={replaceModalCreateForm.videoUrl}
+                        onChange={(e) => setReplaceModalCreateForm((f) => ({ ...f, videoUrl: e.target.value }))}
+                        placeholder='https://vimeo.com/123456789 o 123456789'
+                        className='w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm font-montserrat'
+                      />
+                    </div>
+                    <div>
+                      <label className='block text-xs font-medium text-gray-700 font-montserrat mb-1'>Tipo (filtro)</label>
+                      <select
+                        value={replaceModalCreateForm.type}
+                        onChange={(e) => setReplaceModalCreateForm((f) => ({ ...f, type: e.target.value }))}
+                        className='w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm font-montserrat'
+                      >
+                        <option value=''>Seleccionar tipo</option>
+                        {replaceModalClassTypes.map((v) => (
+                          <option key={v.value} value={v.value}>{v.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {replaceModalError && (
+                  <p className='text-sm text-red-600 font-montserrat mb-4'>{replaceModalError}</p>
+                )}
+                <div className='flex justify-end gap-3'>
+                  <button
+                    type='button'
+                    onClick={() => { setReplaceEventModal(null); setReplaceModalError(null); }}
+                    className='px-4 py-2 border border-gray-300 rounded-lg text-gray-700 text-sm font-montserrat hover:bg-gray-50'
+                  >
+                    Cancelar
+                  </button>
+                  {replaceModalMode === 'select' ? (
+                    <button
+                      type='button'
+                      disabled={replaceModalLoading || !replaceModalSelectedId}
+                      onClick={async () => {
+                        if (!replaceModalSelectedId || !replaceEventModal) return;
+                        setReplaceModalLoading(true);
+                        setReplaceModalError(null);
+                        try {
+                          const res = await fetch('/api/bitacora/replace-event-with-recording', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              logbookId: replaceEventModal.logbookId,
+                              weekIndex: replaceEventModal.weekIndex,
+                              contentIndex: replaceEventModal.contentIndex,
+                              individualClassId: replaceModalSelectedId,
+                            }),
+                          });
+                          const data = await res.json();
+                          if (!res.ok) {
+                            setReplaceModalError(data.error || 'Error al reemplazar');
+                            return;
+                          }
+                          setReplaceEventModal(null);
+                          fetchLogbooks();
+                        } catch (e: any) {
+                          setReplaceModalError(e.message || 'Error de conexión');
+                        } finally {
+                          setReplaceModalLoading(false);
+                        }
+                      }}
+                      className='px-4 py-2 bg-amber-500 text-white rounded-lg text-sm font-montserrat hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed'
+                    >
+                      {replaceModalLoading ? 'Guardando...' : 'Cambiar por grabación'}
+                    </button>
+                  ) : (
+                    <button
+                      type='button'
+                      disabled={replaceModalLoading || !replaceModalCreateForm.name.trim() || !replaceModalCreateForm.description.trim() || !replaceModalCreateForm.videoUrl.trim()}
+                      onClick={async () => {
+                        if (!replaceEventModal) return;
+                        const { name, description, videoUrl, type } = replaceModalCreateForm;
+                        if (!name.trim() || !description.trim() || !videoUrl.trim()) return;
+                        setReplaceModalLoading(true);
+                        setReplaceModalError(null);
+                        try {
+                          const createRes = await fetch('/api/individualClass/createFromWeeklyPath', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              name: name.trim(),
+                              description: description.trim(),
+                              videoUrl: videoUrl.trim(),
+                              type: type.trim() || undefined,
+                              tags: [],
+                            }),
+                          });
+                          if (!createRes.ok) {
+                            const d = await createRes.json().catch(() => ({}));
+                            throw new Error(d.error || 'Error al crear la clase');
+                          }
+                          const created = await createRes.json();
+                          const newId = created._id;
+                          const res = await fetch('/api/bitacora/replace-event-with-recording', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              logbookId: replaceEventModal.logbookId,
+                              weekIndex: replaceEventModal.weekIndex,
+                              contentIndex: replaceEventModal.contentIndex,
+                              individualClassId: newId,
+                            }),
+                          });
+                          const data = await res.json();
+                          if (!res.ok) {
+                            setReplaceModalError(data.error || 'Error al reemplazar en el camino');
+                            return;
+                          }
+                          setReplaceEventModal(null);
+                          fetchLogbooks();
+                        } catch (e: any) {
+                          setReplaceModalError(e.message || 'Error');
+                        } finally {
+                          setReplaceModalLoading(false);
+                        }
+                      }}
+                      className='px-4 py-2 bg-amber-500 text-white rounded-lg text-sm font-montserrat hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed'
+                    >
+                      {replaceModalLoading ? 'Creando...' : 'Crear clase y usar'}
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>

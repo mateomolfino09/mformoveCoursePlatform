@@ -3,13 +3,21 @@ import { EmailService, EmailType } from '../../../../services/email/emailService
 import connectDB from '../../../../config/connectDB';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
 
+/** Primer letra mayúscula, resto minúscula (para nombre en mails del cron). */
+function formatFirstName(s: string): string {
+  if (!s || typeof s !== 'string') return s || '';
+  const t = s.trim();
+  if (!t) return t;
+  return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+}
+
 // Datos de prueba para publicación Weekly Path (estética Move Crew, listos para vista previa)
 function buildWeeklyPathTestData(to: string, data?: any, simulatedWeek?: any) {
   const weekNumber = simulatedWeek?.weekNumber ?? data?.weekNumber ?? 3;
   const month = simulatedWeek?.month ?? data?.month ?? 1;
   const year = simulatedWeek?.year ?? data?.year ?? 2025;
   return {
-    name: data?.name ?? 'María',
+    name: formatFirstName(data?.name ?? 'María'),
     email: to,
     weekNumber,
     month,
@@ -22,10 +30,11 @@ function buildWeeklyPathTestData(to: string, data?: any, simulatedWeek?: any) {
     bitacoraLink: data?.bitacoraLink ?? 'https://mateomove.com/weekly-path',
     logbookTitle: simulatedWeek?.logbookTitle ?? data?.logbookTitle ?? 'Camino',
     isFirstWeek: data?.isFirstWeek ?? weekNumber === 1,
+    // Un solo evento en vivo: Movimiento Online (id 69aa06ebec4d762ea8659f68). Sin duplicar clases en vivo.
     weekContentsDetail: data?.weekContentsDetail ?? (simulatedWeek?.weekContentsDetail as any) ?? [
-      { type: 'video', title: 'Movilidad de cadera', description: 'Calentamiento y rango de movimiento.', moduleName: 'Movimiento consciente' },
-      { type: 'video', title: 'Respiración y postura', description: 'Integración respiración y columna.', moduleName: 'Fundamentos' },
-      { type: 'audio', title: 'Reflexión semanal', description: 'Cierre y consigna para los próximos días.', moduleName: 'Práctica' },
+      { type: 'video', title: 'Movilidad de cadera', description: 'Calentamiento y rango de movimiento.', moduleName: 'Movimiento consciente', dayLabel: 'Martes' },
+      { type: 'Clase en vivo', title: 'Movimiento Online', description: 'Clase en vivo por Zoom.', moduleName: 'Move Crew', dayLabel: 'Miércoles' },
+      { type: 'audio', title: 'Reflexión semanal', description: 'Cierre y consigna para los próximos días.', moduleName: 'Práctica', dayLabel: 'Jueves' },
     ],
   };
 }
@@ -155,6 +164,82 @@ export async function POST(req: NextRequest) {
       } catch (error: any) {
         return NextResponse.json(
           { success: false, message: 'Error enviando WEEKLY_LOGBOOK_RELEASE', error: error?.message },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Envío directo de template recordatorio clase en vivo 1h (Zoom)
+    if (type === EmailType.MOVE_CREW_EVENT_REMINDER) {
+      if (!data?.email && !testEmail) {
+        return NextResponse.json(
+          { success: false, message: 'Email requerido (data.email o testEmail)' },
+          { status: 400 }
+        );
+      }
+      const to = data?.email || testEmail;
+      const eventData = {
+        name: formatFirstName(data?.name ?? 'María'),
+        eventTitle: data?.eventTitle ?? 'Movimiento Online',
+        eventDateFormatted: data?.eventDateFormatted ?? 'Martes, 28 de enero',
+        eventTime: data?.eventTime ?? '18:00 (hora Uruguay)',
+        eventDescription: data?.eventDescription ?? 'Una hora de práctica guiada en vivo por Zoom.',
+        zoomLink: data?.zoomLink ?? 'https://zoom.us/j/ejemplo'
+      };
+      try {
+        const result = await emailService.sendEmail({
+          type: EmailType.MOVE_CREW_EVENT_REMINDER,
+          to,
+          subject: subject || 'Te recuerdo - clase en Martes, 28 de enero',
+          data: eventData
+        });
+        return NextResponse.json({
+          success: result.success,
+          message: result.message,
+          type: 'MOVE_CREW_EVENT_REMINDER',
+          to
+        });
+      } catch (error: any) {
+        return NextResponse.json(
+          { success: false, message: 'Error enviando MOVE_CREW_EVENT_REMINDER', error: error?.message },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Envío directo de template recordatorio 15 min antes (Zoom)
+    if (type === EmailType.MOVE_CREW_EVENT_REMINDER_15M) {
+      if (!data?.email && !testEmail) {
+        return NextResponse.json(
+          { success: false, message: 'Email requerido (data.email o testEmail)' },
+          { status: 400 }
+        );
+      }
+      const to = data?.email || testEmail;
+      const eventData15 = {
+        name: formatFirstName(data?.name ?? 'María'),
+        eventTitle: data?.eventTitle ?? 'Movimiento Online',
+        eventDateFormatted: data?.eventDateFormatted ?? 'Martes, 28 de enero',
+        eventTime: data?.eventTime ?? '18:00 (hora Uruguay)',
+        eventDescription: data?.eventDescription ?? '',
+        zoomLink: data?.zoomLink ?? 'https://zoom.us/j/ejemplo'
+      };
+      try {
+        const result = await emailService.sendEmail({
+          type: EmailType.MOVE_CREW_EVENT_REMINDER_15M,
+          to,
+          subject: subject || 'Estamos por empezar - Movimiento Online',
+          data: eventData15
+        });
+        return NextResponse.json({
+          success: result.success,
+          message: result.message,
+          type: 'MOVE_CREW_EVENT_REMINDER_15M',
+          to
+        });
+      } catch (error: any) {
+        return NextResponse.json(
+          { success: false, message: 'Error enviando MOVE_CREW_EVENT_REMINDER_15M', error: error?.message },
           { status: 500 }
         );
       }
@@ -359,6 +444,90 @@ export async function POST(req: NextRequest) {
     } catch (error: any) {
       results.push({
         emailType: 'ADMIN_PAYMENT_FAILED',
+        success: false,
+        message: 'Error al enviar',
+        error: error.message
+      });
+    }
+
+    // Test mail inicial del martes (contenidos de la semana) - 1 de 3 mails del cron
+    try {
+      const defaultData = buildWeeklyPathTestData(testEmail, { name: 'Usuario de Prueba' });
+      const result = await emailService.sendEmail({
+        type: EmailType.WEEKLY_LOGBOOK_RELEASE,
+        to: testEmail,
+        subject: `Semana ${defaultData.weekNumber} del Camino - lista para vos`,
+        data: defaultData
+      });
+      results.push({
+        emailType: 'WEEKLY_LOGBOOK_RELEASE',
+        success: result.success,
+        message: result.message,
+        error: result.error
+      });
+    } catch (error: any) {
+      results.push({
+        emailType: 'WEEKLY_LOGBOOK_RELEASE',
+        success: false,
+        message: 'Error al enviar',
+        error: error.message
+      });
+    }
+
+    // Test mail recordatorio 1h antes (Zoom) - 2 de 3 mails del cron
+    try {
+      const result = await emailService.sendEmail({
+        type: EmailType.MOVE_CREW_EVENT_REMINDER,
+        to: testEmail,
+        subject: 'Te recuerdo - clase en Martes, 28 de enero',
+        data: {
+          name: formatFirstName('Usuario de Prueba'),
+          eventTitle: 'Movimiento Online',
+          eventDateFormatted: 'Martes, 28 de enero',
+          eventTime: '18:00 (hora Uruguay)',
+          eventDescription: 'Una hora de práctica guiada en vivo por Zoom.',
+          zoomLink: 'https://zoom.us/j/ejemplo'
+        }
+      });
+      results.push({
+        emailType: 'MOVE_CREW_EVENT_REMINDER',
+        success: result.success,
+        message: result.message,
+        error: result.error
+      });
+    } catch (error: any) {
+      results.push({
+        emailType: 'MOVE_CREW_EVENT_REMINDER',
+        success: false,
+        message: 'Error al enviar',
+        error: error.message
+      });
+    }
+
+    // Test mail recordatorio 15 min antes (Zoom) - 3 de 3 mails del cron
+    try {
+      const result = await emailService.sendEmail({
+        type: EmailType.MOVE_CREW_EVENT_REMINDER_15M,
+        to: testEmail,
+        subject: 'Estamos por empezar - Movimiento Online',
+        data: {
+          name: formatFirstName('Usuario de Prueba'),
+          eventTitle: 'Movimiento Online',
+          eventDateFormatted: 'Martes, 28 de enero',
+          eventTime: '18:00 (hora Uruguay)',
+          eventDescription: '',
+          zoomLink: 'https://zoom.us/j/ejemplo'
+        }
+      });
+      results.push({
+        emailType: 'MOVE_CREW_EVENT_REMINDER_15M',
+        success: result.success,
+        message: result.message,
+        error: result.error
+      });
+    } catch (error: any) {
+      results.push({
+        emailType: 'MOVE_CREW_EVENT_REMINDER_15M',
         success: false,
         message: 'Error al enviar',
         error: error.message

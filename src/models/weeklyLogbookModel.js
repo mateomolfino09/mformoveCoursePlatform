@@ -83,16 +83,20 @@ const dailyContentSchema = new mongoose.Schema({
 
 // Item de contenido dentro de una semana (varios por semana: clases de módulo, clases individuales, audios)
 const weekContentItemSchema = new mongoose.Schema({
-  // Tipo: clase de módulo (video + módulo/submódulo), clase individual (referencia), o solo audio
+  // Tipo: clase de módulo (video + módulo/submódulo), clase individual (referencia), audio, o clase en vivo (Zoom)
   contentType: {
     type: String,
-    enum: ['moduleClass', 'individualClass', 'audio'],
+    enum: ['moduleClass', 'individualClass', 'audio', 'zoomEvent'],
     default: 'moduleClass'
   },
   // Referencia a clase individual (cuando contentType === 'individualClass')
   individualClassId: { type: mongoose.Schema.Types.ObjectId, ref: 'IndividualClass' },
   // Referencia opcional a clase de módulo (cuando contentType === 'moduleClass')
   moduleClassId: { type: mongoose.Schema.Types.ObjectId, ref: 'ModuleClass' },
+  // Referencia a evento Move Crew / clase en vivo Zoom (cuando contentType === 'zoomEvent')
+  moveCrewEventId: { type: mongoose.Schema.Types.ObjectId, ref: 'MoveCrewEvent' },
+  // True si el evento se creó desde el formulario del camino (solo se puede quitar del camino, no editar)
+  moveCrewEventCreatedInPath: { type: Boolean, default: false },
   // Video (clase de módulo o override para clase individual)
   videoUrl: { type: String, default: '' },
   videoId: { type: String },
@@ -190,6 +194,12 @@ const weeklyContentSchema = new mongoose.Schema({
   isUnlocked: {
     type: Boolean,
     default: false
+  },
+  /** Índice máximo de contenido desbloqueado por el cron: martes = 1 (contenidos 0 y 1), jueves = 2 (también 2). -1 = usar lógica por fecha (publishDate + i). */
+  maxContentIndexUnlocked: {
+    type: Number,
+    default: -1,
+    min: -1
   }
 }, { _id: false });
 
@@ -229,6 +239,11 @@ const weeklyLogbookSchema = new mongoose.Schema({
   individualClassesCreated: {
     type: Boolean,
     default: false
+  },
+  /** Si true (por defecto), los contenidos se desbloquean uno por día (martes el primero, miércoles el segundo, etc.). Si false, se desbloquea la semana entera al pasar publishDate. */
+  unlockPerContent: {
+    type: Boolean,
+    default: true
   },
   // Indica si es la camino base (Primer Círculo)
   isBaseBitacora: {

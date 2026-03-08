@@ -6,18 +6,53 @@ import Users from '../../../../models/userModel';
 import IndividualClass from '../../../../models/individualClassModel';
 import ModuleClass from '../../../../models/moduleClassModel';
 import ClassModule from '../../../../models/classModuleModel';
+import MoveCrewEvent from '../../../../models/moveCrewEventModel';
 import { EmailService, EmailType } from '../../../../services/email/emailService';
+import { scheduleMoveCrewRemindersForLogbook } from '../../../../lib/scheduleMoveCrewReminders';
 
 export const dynamic = 'force-dynamic';
 
 type LogbookWithWeeks = any;
 
-/** Construye el detalle de contenidos de la semana para el email: título, descripción, nombre del módulo */
-async function buildWeekContentsDetail(content: any): Promise<Array<{ type: string; title: string; description?: string; moduleName?: string }>> {
+const WEEK_DAY_LABELS = ['Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo', 'Lunes'];
+
+/** Primera letra mayúscula, resto minúscula (para nombre en mails). */
+function formatFirstName(s: string): string {
+  if (!s || typeof s !== 'string') return s || '';
+  const t = s.trim();
+  if (!t) return t;
+  return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+}
+
+/** Primer martes del mes (UTC midnight). */
+function getFirstTuesdayOfMonth(year: number, month: number): Date {
+  const d = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0, 0));
+  for (let i = 0; i < 7; i++) {
+    if (d.getUTCDay() === 2) return d;
+    d.setUTCDate(d.getUTCDate() + 1);
+  }
+  return d;
+}
+
+/** Número de semana (1-4) que contiene esta fecha según el camino: semana 1 = primer martes del mes, 2 = +7d, etc. Si la fecha es anterior al primer martes, devuelve null. */
+function getWeekNumberForDate(date: Date, logbookYear: number, logbookMonth: number): number | null {
+  const firstTue = getFirstTuesdayOfMonth(logbookYear, logbookMonth);
+  const t = date.getTime();
+  const first = firstTue.getTime();
+  if (t < first) return null;
+  const diffDays = (t - first) / (24 * 60 * 60 * 1000);
+  const weekNum = 1 + Math.floor(diffDays / 7);
+  return weekNum < 1 ? 1 : Math.min(weekNum, 4);
+}
+
+/** Construye el detalle de contenidos de la semana para el email: día, título, descripción, nombre del módulo (mapa de la semana) */
+async function buildWeekContentsDetail(content: any): Promise<Array<{ type: string; title: string; description?: string; moduleName?: string; dayLabel?: string }>> {
   const contents = (content as any)?.contents;
   if (Array.isArray(contents) && contents.length > 0) {
-    const detail: Array<{ type: string; title: string; description?: string; moduleName?: string }> = [];
-    for (const item of contents) {
+    const detail: Array<{ type: string; title: string; description?: string; moduleName?: string; dayLabel?: string }> = [];
+    for (let idx = 0; idx < contents.length; idx++) {
+      const item = contents[idx];
+      const dayLabel = WEEK_DAY_LABELS[idx % WEEK_DAY_LABELS.length];
       const contentType = item.contentType || 'moduleClass';
       if (contentType === 'moduleClass' && item.moduleClassId) {
         const mc = await ModuleClass.findById(item.moduleClassId).select('name description moduleId').lean();
@@ -31,7 +66,8 @@ async function buildWeekContentsDetail(content: any): Promise<Array<{ type: stri
             type: 'Clase de módulo',
             title: (mc as any).name || 'Clase',
             description: (mc as any).description || undefined,
-            moduleName: moduleName || undefined
+            moduleName: moduleName || undefined,
+            dayLabel
           });
         }
       } else if (contentType === 'individualClass' && item.individualClassId) {
@@ -40,15 +76,27 @@ async function buildWeekContentsDetail(content: any): Promise<Array<{ type: stri
           detail.push({
             type: 'Clase individual',
             title: (ic as any).name || (item.videoName || '') || 'Clase',
-            description: (ic as any).description || undefined
+            description: (ic as any).description || undefined,
+            dayLabel
           });
         }
       } else if (contentType === 'audio') {
         detail.push({
           type: 'Audio',
           title: (item.audioTitle || '').trim() || content.weekTitle || 'Audio',
-          description: (item.audioText || '').trim() || undefined
+          description: (item.audioText || '').trim() || undefined,
+          dayLabel
         });
+      } else if (contentType === 'zoomEvent' && item.moveCrewEventId) {
+        const ev = await MoveCrewEvent.findById(item.moveCrewEventId).select('title description').lean();
+        if (ev) {
+          detail.push({
+            type: 'Clase en vivo',
+            title: (ev as any).title || 'Clase en vivo',
+            description: (ev as any).description || undefined,
+            dayLabel
+          });
+        }
       }
     }
     return detail;
@@ -56,7 +104,7 @@ async function buildWeekContentsDetail(content: any): Promise<Array<{ type: stri
   // Legacy: semana con un solo contenido a nivel semana
   const title = (content as any)?.weekTitle || (content as any)?.videoName || `Semana ${content.weekNumber}`;
   const text = (content as any)?.text || (content as any)?.weekDescription || '';
-  return [{ type: 'Contenido', title, description: text.trim() || undefined }];
+  return [{ type: 'Contenido', title, description: text.trim() || undefined, dayLabel: 'Martes' }];
 }
 
 export async function GET(req: NextRequest) {
@@ -181,9 +229,20 @@ export async function GET(req: NextRequest) {
     await connectDB();
     
     const emailService = EmailService.getInstance();
-    const ahora = new Date();
-    ahora.setHours(0, 0, 0, 0);
-    
+    const { searchParams: sp } = new URL(req.url);
+    const simulateDateParam = sp.get('simulateDate'); // YYYY-MM-DD para probar como si fuera ese día (ej: un martes)
+    let ahora = new Date();
+    let useSimulateDate = false;
+    if (simulateDateParam && /^\d{4}-\d{2}-\d{2}$/.test(simulateDateParam)) {
+      ahora = new Date(simulateDateParam + 'T00:00:00.000Z');
+      useSimulateDate = true;
+    } else {
+      ahora.setHours(0, 0, 0, 0);
+    }
+    const dayOfWeek = useSimulateDate ? ahora.getUTCDay() : ahora.getDay(); // 0=Dom, 1=Lun, 2=Mar, …
+    const isTuesday = dayOfWeek === 2;
+    const isThursday = dayOfWeek === 4;
+
     let totalPublicaciones = 0;
     let totalEmailsEnviados = 0;
     let clasesIndividualesCreadas = 0;
@@ -206,26 +265,48 @@ export async function GET(req: NextRequest) {
       );
       let resumenBitacora: any = null;
       
-      // Marcar como publicadas y desbloqueadas TODAS las semanas con publishDate <= hoy
-      const updates: Record<string, boolean> = {};
-      const indicesParaEmail: number[] = []; // semanas que aún no estaban publicadas (enviar email)
-      for (let i = 0; i < logbook.weeklyContents.length; i++) {
-        const content = logbook.weeklyContents[i];
-        const publishDate = new Date(content.publishDate);
-        publishDate.setHours(0, 0, 0, 0);
-        if (publishDate <= ahora) {
-          updates[`weeklyContents.${i}.isPublished`] = true;
-          updates[`weeklyContents.${i}.isUnlocked`] = true;
-          if (!content.isPublished) indicesParaEmail.push(i);
+      // No depender de publishDate: la semana actual es la que contiene la fecha (primer martes del mes = semana 1, +7 = semana 2, …). Usar fecha en UTC para consistencia.
+      const ahoraUtc = new Date(Date.UTC(ahora.getUTCFullYear(), ahora.getUTCMonth(), ahora.getUTCDate(), 0, 0, 0, 0));
+      const logbookYear = (logbook as any).year != null ? Number((logbook as any).year) : null;
+      const logbookMonth = (logbook as any).month != null ? Number((logbook as any).month) : null;
+      const currentWeekNum = logbookYear != null && logbookMonth != null ? getWeekNumberForDate(ahoraUtc, logbookYear, logbookMonth) : null;
+      const weekIndex = currentWeekNum != null ? logbook.weeklyContents.findIndex((w: any) => Number(w.weekNumber) === currentWeekNum) : -1;
+
+      const updates: Record<string, boolean | number> = {};
+      const indicesParaEmail: number[] = []; // solo la semana actual el martes (enviar mail)
+      if (weekIndex >= 0) {
+        const content = logbook.weeklyContents[weekIndex];
+        const currentMax = (content as any).maxContentIndexUnlocked ?? -1;
+        if (isTuesday) {
+          updates[`weeklyContents.${weekIndex}.isPublished`] = true;
+          updates[`weeklyContents.${weekIndex}.maxContentIndexUnlocked`] = Math.max(currentMax, 1);
+          indicesParaEmail.push(weekIndex);
+        } else if (isThursday) {
+          updates[`weeklyContents.${weekIndex}.maxContentIndexUnlocked`] = Math.max(currentMax, 2);
+          updates[`weeklyContents.${weekIndex}.isPublished`] = true;
         }
       }
       if (Object.keys(updates).length > 0) {
         await WeeklyLogbook.findByIdAndUpdate(logbook._id, { $set: updates });
       }
 
-      // Enviar email solo por las semanas que se publican por primera vez (una pausa entre semanas evita que el proveedor colapse varios envíos al mismo destinatario)
+      // Martes: programar recordatorios Zoom (1h antes) solo para el logbook del MES ACTUAL y solo para las semanas que se publican hoy
+      const currentYear = ahora.getUTCFullYear();
+      const currentMonth = ahora.getUTCMonth() + 1;
+      const isCurrentMonthLogbook = logbookYear === currentYear && logbookMonth === currentMonth;
+      if (isTuesday && !(logbook as any).isBaseBitacora && (logbook as any).month != null && (logbook as any).year != null && indicesParaEmail.length > 0 && isCurrentMonthLogbook) {
+        try {
+          const weekNumbersToSchedule = indicesParaEmail.map((idx: number) => (logbook.weeklyContents[idx] as any).weekNumber);
+          await scheduleMoveCrewRemindersForLogbook(logbook as any, { onlyWeekNumbers: weekNumbersToSchedule });
+        } catch (e) {
+          console.error('[cron weekly-logbook] Error programando recordatorios Zoom:', e);
+        }
+      }
+
+      // Enviar email de contenidos de la semana solo para el logbook del MES ACTUAL (evitar mails de meses anteriores)
       const delayMs = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
       for (let idx = 0; idx < indicesParaEmail.length; idx++) {
+        if (!isCurrentMonthLogbook) continue;
         if (idx > 0) await delayMs(2000);
         const i = indicesParaEmail[idx];
         const content = logbook.weeklyContents[i];
@@ -297,9 +378,9 @@ export async function GET(req: NextRequest) {
               await emailService.sendEmail({
                 type: EmailType.WEEKLY_LOGBOOK_RELEASE,
                 to: usuario.email,
-                subject: `El Camino - Semana ${content.weekNumber} está disponible`,
+                subject: `Semana ${content.weekNumber} del Camino`,
                 data: {
-                  name: usuario.name || 'Miembro',
+                  name: formatFirstName(((usuario as any).name || 'Miembro').toString().trim().split(/\s+/)[0] || 'Miembro'),
                   email: usuario.email,
                   weekNumber: content.weekNumber,
                   month: logbook.month,
@@ -353,31 +434,21 @@ export async function GET(req: NextRequest) {
         }
       }
 
-      const lastWeekContent = logbook.weeklyContents?.find((w: any) => Number(w.weekNumber) === maxWeekNumber);
-      const lastWeekPublishDate = lastWeekContent?.publishDate ? new Date(lastWeekContent.publishDate) : null;
-      if (lastWeekPublishDate) lastWeekPublishDate.setHours(0, 0, 0, 0);
-      const caminoCompletoPublicado = lastWeekPublishDate ? lastWeekPublishDate.getTime() <= ahora.getTime() : false;
-
+      const caminoCompletoPublicado = currentWeekNum != null && currentWeekNum >= maxWeekNumber;
       if (moduleClassIds.length > 0 || individualClassIds.length > 0) {
         if (caminoCompletoPublicado) {
           // La última semana ya está publicada (hoy o antes): hacer visibles en biblioteca
           if (moduleClassIds.length > 0) {
-            const r = await ModuleClass.updateMany(
+            await ModuleClass.updateMany(
               { _id: { $in: moduleClassIds } },
               { $set: { visibleInLibrary: true } }
             );
-            if (r.modifiedCount > 0) {
-              console.log(`[cron weekly-logbook] visibleInLibrary=true para ${r.modifiedCount} ModuleClass(es) del camino ${logbook._id}`);
-            }
           }
           if (individualClassIds.length > 0) {
-            const r = await IndividualClass.updateMany(
+            await IndividualClass.updateMany(
               { _id: { $in: individualClassIds } },
               { $set: { visibleInLibrary: true } }
             );
-            if (r.modifiedCount > 0) {
-              console.log(`[cron weekly-logbook] visibleInLibrary=true para ${r.modifiedCount} IndividualClass(es) del camino ${logbook._id}`);
-            }
           }
         } else {
           // Camino aún no terminado (última semana en el futuro): poblar con visibleInLibrary: false
@@ -396,11 +467,12 @@ export async function GET(req: NextRequest) {
         }
       }
     }
-    
+
     return NextResponse.json({
       success: true,
       message: 'Cron job ejecutado exitosamente',
       fechaEjecucion: ahora,
+      ...(useSimulateDate && { simulateDate: simulateDateParam, diaSemana: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'][dayOfWeek] }),
       resumen: {
         totalPublicaciones,
         totalEmailsEnviados,

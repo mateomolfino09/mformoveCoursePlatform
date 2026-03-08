@@ -1,0 +1,24 @@
+---
+description: Formularios admin y inputs deben tener texto visible (negro sobre fondo claro)
+globs: **/*.tsx,**/*.jsx
+---
+
+# Inputs y formularios: texto siempre visible
+
+En este proyecto suele ocurrir que los inputs de formularios hereden color de texto claro (blanco) y queden ilegibles sobre fondos claros del admin.
+
+**Regla:** En todos los formularios (admin o público), los `<input>`, `<textarea>` y `<select>` deben llevar **siempre** clases explícitas de color de texto y fondo:
+
+- **Texto:** `text-gray-900` (o `text-black`) para que el valor sea negro/oscuro.
+- **Fondo:** `bg-white` para que el campo tenga fondo blanco.
+- **Placeholder (inputs/textarea):** `placeholder:text-gray-500` para placeholders visibles.
+
+Ejemplo de clase para input/textarea/select en formularios admin:
+
+```
+className="... text-gray-900 bg-white placeholder:text-gray-500"
+```
+
+Para `<select>` no hace falta `placeholder:text-gray-500`, pero sí `text-gray-900 bg-white`.
+
+Al crear o editar cualquier formulario, incluir estas clases en los controles para evitar texto blanco en inputs.

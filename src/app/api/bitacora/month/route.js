@@ -6,6 +6,7 @@ import connectDB from '../../../../config/connectDB';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
 import IndividualClass from '../../../../models/individualClassModel';
 import ModuleClass from '../../../../models/moduleClassModel';
+import MoveCrewEvent from '../../../../models/moveCrewEventModel';
 import Users from '../../../../models/userModel';
 
 export const revalidate = 0;
@@ -30,9 +31,21 @@ async function hydrateWeeklyContents(weeklyContents) {
     for (const item of contents) {
       const needsVideo = (item.contentType === 'individualClass' || item.contentType === 'moduleClass') &&
         (!item.videoUrl || !String(item.videoUrl).trim());
-      if (!needsVideo) continue;
+      const needsZoomHydration = item.contentType === 'zoomEvent' && item.moveCrewEventId && mongoose.Types.ObjectId.isValid(item.moveCrewEventId);
+      if (!needsVideo && !needsZoomHydration) continue;
 
-      if (item.contentType === 'individualClass' && item.individualClassId && mongoose.Types.ObjectId.isValid(item.individualClassId)) {
+      if (needsZoomHydration) {
+        const ev = await MoveCrewEvent.findById(item.moveCrewEventId).lean();
+        if (ev) {
+          item.title = (ev.title && String(ev.title).trim()) || item.title || 'Clase en vivo';
+          item.description = (ev.description && String(ev.description).trim()) || item.description || '';
+          item.videoName = item.title;
+          item.zoomLink = (ev.zoomLink && String(ev.zoomLink).trim()) || '';
+          item.eventDate = ev.eventDate;
+          item.startTime = ev.startTime;
+          item.durationMinutes = ev.durationMinutes;
+        }
+      } else if (item.contentType === 'individualClass' && item.individualClassId && mongoose.Types.ObjectId.isValid(item.individualClassId)) {
         const ic = await IndividualClass.findById(item.individualClassId).select('link name').lean();
         if (ic) {
           const link = (ic.link && String(ic.link).trim()) || '';
@@ -48,6 +61,111 @@ async function hydrateWeeklyContents(weeklyContents) {
           if (mc.videoId) item.videoId = mc.videoId;
           if (mc.duration != null) item.videoDuration = mc.duration;
         }
+      }
+    }
+  }
+}
+
+/** Martes de publicación en el mes del path: si publishDate no es martes o no pertenece al mes, usar el martes de esa semana. */
+function getFirstTuesdayOfMonth(y, m) {
+  for (let d = 0; d < 7; d++) {
+    const date = new Date(y, m - 1, 1 + d);
+    if (date.getDay() === 2) return new Date(date.getTime());
+  }
+  return new Date(y, m - 1, 1);
+}
+function getTuesdayForWeek(y, m, weekNum) {
+  const firstTue = getFirstTuesdayOfMonth(y, m);
+  const result = new Date(firstTue);
+  result.setDate(result.getDate() + (Math.max(1, Number(weekNum) || 1) - 1) * 7);
+  return result;
+}
+/** Número de semana (1-4) que contiene esta fecha: primer martes del mes = semana 1. Si la fecha es anterior al primer martes, null. */
+function getWeekNumberForDate(date, logbookYear, logbookMonth) {
+  const firstTue = getFirstTuesdayOfMonth(logbookYear, logbookMonth);
+  firstTue.setHours(0, 0, 0, 0);
+  const t = date.getTime();
+  const first = firstTue.getTime();
+  if (t < first) return null;
+  const diffDays = (t - first) / (24 * 60 * 60 * 1000);
+  const weekNum = 1 + Math.floor(diffDays / 7);
+  return weekNum < 1 ? 1 : Math.min(weekNum, 4);
+}
+function normalizePublishDate(publishDateVal, y, m, weekNum) {
+  const d = publishDateVal ? new Date(publishDateVal) : null;
+  if (!d || Number.isNaN(d.getTime())) return getTuesdayForWeek(y, m, weekNum);
+  d.setHours(0, 0, 0, 0);
+  const isTuesday = d.getDay() === 2;
+  const inPathMonth = d.getFullYear() === y && d.getMonth() === m - 1;
+  if (isTuesday && inPathMonth) return d;
+  return getTuesdayForWeek(y, m, weekNum);
+}
+
+/** Jueves de la semana (publishDate es el martes, +2 días). */
+function getThursdayOfWeek(publishDate) {
+  const d = new Date(publishDate);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 2);
+  return d;
+}
+
+/** Desbloqueo: la semana está desbloqueada si es anterior o igual a la semana actual (por fecha, no por publishDate). Contenidos según maxContentIndexUnlocked (martes 0 y 1, jueves +2). */
+function applyPerContentUnlock(weeklyContents, logbookYear, logbookMonth, unlockPerContent) {
+  if (!Array.isArray(weeklyContents)) return;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const currentWeekNum = logbookYear != null && logbookMonth != null ? getWeekNumberForDate(today, logbookYear, logbookMonth) : null;
+  const perContent = unlockPerContent !== false;
+  for (const week of weeklyContents) {
+    const weekNum = Math.max(1, Number(week.weekNumber) || 1);
+    if (logbookYear != null && logbookMonth != null) {
+      week.publishDate = normalizePublishDate(week.publishDate, logbookYear, logbookMonth, weekNum);
+    }
+    const contents = week.contents;
+    const publishDate = new Date(week.publishDate);
+    publishDate.setHours(0, 0, 0, 0);
+    week.isUnlocked = currentWeekNum != null && weekNum <= currentWeekNum;
+    const maxIdx = week.maxContentIndexUnlocked != null && Number.isInteger(week.maxContentIndexUnlocked) ? Number(week.maxContentIndexUnlocked) : -1;
+    const useCronSchedule = maxIdx >= 0;
+    const isPastWeek = currentWeekNum != null && weekNum < currentWeekNum;
+    if (!Array.isArray(contents)) continue;
+    if (perContent) {
+      if (useCronSchedule) {
+        for (let i = 0; i < contents.length; i++) {
+          contents[i].isUnlocked = week.isUnlocked && i <= maxIdx;
+          const releaseDay = i <= 1 ? publishDate : getThursdayOfWeek(publishDate);
+          const y = releaseDay.getFullYear();
+          const mo = String(releaseDay.getMonth() + 1).padStart(2, '0');
+          const d = String(releaseDay.getDate()).padStart(2, '0');
+          contents[i].releaseDate = `${y}-${mo}-${d}`;
+        }
+      } else if (isPastWeek) {
+        for (let i = 0; i < contents.length; i++) {
+          contents[i].isUnlocked = true;
+          const releaseDay = i <= 1 ? publishDate : getThursdayOfWeek(publishDate);
+          const y = releaseDay.getFullYear();
+          const mo = String(releaseDay.getMonth() + 1).padStart(2, '0');
+          const d = String(releaseDay.getDate()).padStart(2, '0');
+          contents[i].releaseDate = `${y}-${mo}-${d}`;
+        }
+      } else {
+        for (let i = 0; i < contents.length; i++) {
+          const unlockDate = new Date(publishDate);
+          unlockDate.setDate(unlockDate.getDate() + i);
+          contents[i].isUnlocked = unlockDate.getTime() <= today.getTime();
+          const y = unlockDate.getFullYear();
+          const mo = String(unlockDate.getMonth() + 1).padStart(2, '0');
+          const d = String(unlockDate.getDate()).padStart(2, '0');
+          contents[i].releaseDate = `${y}-${mo}-${d}`;
+        }
+      }
+    } else {
+      for (let i = 0; i < contents.length; i++) {
+        contents[i].isUnlocked = week.isUnlocked;
+        const y = publishDate.getFullYear();
+        const mo = String(publishDate.getMonth() + 1).padStart(2, '0');
+        const d = String(publishDate.getDate()).padStart(2, '0');
+        contents[i].releaseDate = `${y}-${mo}-${d}`;
       }
     }
   }
@@ -147,10 +265,11 @@ export async function GET(req) {
       );
     }
 
-    // Hidratar contenidos que solo tienen individualClassId o moduleClassId (traer videoUrl, videoName desde IndividualClass / ModuleClass)
+    // unlockPerContent: si viene null/undefined se trata como true (desbloqueo por contenido)
+    const unlockPerContent = logbook.unlockPerContent !== false;
     if (logbook.weeklyContents && logbook.weeklyContents.length > 0) {
+      applyPerContentUnlock(logbook.weeklyContents, logbook.year, logbook.month, unlockPerContent);
       await hydrateWeeklyContents(logbook.weeklyContents);
-      // No sobrescribir isUnlocked: se respeta el valor de la DB (lo setea el cron al publicar)
     }
 
     return NextResponse.json(
