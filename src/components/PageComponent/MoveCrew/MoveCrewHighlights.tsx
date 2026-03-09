@@ -19,23 +19,23 @@ const highlights = [
   },
   {
     icon: PiCircleLight,
-    title: 'Premios por constancia',
-    description: 'Motivación, repetición, integración y más movimiento.'
+    title: 'Clases en Vivo',
+    description: 'Todas las semanas, horarios fijos y grabadas.'
   },
   {
     icon: PiTriangleLight,
     title: 'Biblioteca de Clases',
-    description: 'Clases grabadas y disponibles para ver en cualquier momento.'
+    description: 'Módulos de entrenamiento y clases pregrabadas.'
   },
   {
     icon: PiSquareLight,
     title: 'Comunidad de movimiento',
-    description: 'No estás solo en el proceso.'
+    description: 'Grupo de WhatsApp para soporte, avisos y novedades.'
   },
   {
     icon: PiDiamondLight,
-    title: 'Llamada mensual y Q&A',
-    description: 'Resuelvo dudas los Jueves y en una llamada mensual.'
+    title: 'Consultas y Soporte',
+    description: 'Soporte por Whatsapp y llamadas en vivo.'
   }
 ];
 

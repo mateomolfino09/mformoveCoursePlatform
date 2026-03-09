@@ -37,7 +37,7 @@ export default function MoveCrewWhatWeTeach() {
             Disciplinas de movimiento
           </h2>
           <p className="font-raleway italic text-palette-stone text-base md:text-lg max-w-2xl mx-auto md:mx-0 leading-relaxed">
-            Conocé, encarná y viví. Movimiento, HandBalance y Movilidad en un mismo espacio.
+            Conocé, practicá y viví. Movimiento, HandBalance, fuerza y movilidad en un mismo espacio.
           </p>
         </motion.div>
 

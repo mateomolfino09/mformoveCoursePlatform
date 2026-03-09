@@ -7,37 +7,32 @@ const faqs = [
   {
     question: '¿Qué diferencia a Move Crew de la mentoría?',
     answer:
-      'En la mentoría voy 1:1 y personalizo todo. Move Crew es grupal: seguís el Camino semanal, con contenido nuevo todas las semanas, U.C. y soporte asíncrono. Ideal si querés avanzar acompañado sin un plan a medida.'
+      'En la mentoría trabajo con vos solo y armo todo a tu medida. Move Crew es grupal: seguís el Camino semanal con contenido nuevo cada semana y te respondo por WhatsApp cuando necesites. Los contenidos por módulo pueden ayudarte a armar tu ruta según tu nivel y necesidades.'
   },
   {
     question: '¿Necesito experiencia previa?',
     answer:
-      'No. Uso el Triple Filtro de Exploración: hay opciones para principiantes, intermedios y avanzados. Ajustás intensidad y progresiones según tu nivel.'
+      'No. Hay opciones para todos: si recién arrancás, si ya tenés base o si querés más desafío. Vos elegís la intensidad según cómo te sentís.'
   },
   {
     question: '¿Cuánto tiempo tengo que dedicar?',
     answer:
-      '2 horas semanales maximo. Las clases duran 15-25 minutos; podés repartirlas en la semana y cerrar con un bloque un poco más largo si querés.'
+      'Unas 2 horas por semana como mucho. Las clases en vivo son de una hora y el material grabado es de 20 a 30 minutos; podés hacerlas cuando quieras en la semana y sumar una un poco más larga si tenés ganas.'
   },
   {
     question: '¿Cómo funciona el soporte?',
     answer:
-      'Es asíncrono por WhatsApp: preguntas rápidas y feedback sin atarte a horarios. Además, cada miércoles grabo un Q&A para responder lo que vaya surgiendo.'
+      'Por WhatsApp: escribime cuando tengas dudas y te respondo. No hay horarios fijos.'
   },
   {
     question: '¿Qué pasa si me pierdo una semana?',
     answer:
-      'Las semanas quedan guardadas. Si frenás, retomás donde te quedaste. Reinicio ciclos para que puedas volver sin culpa.'
-  },
-  {
-    question: '¿Cómo funcionan las U.C. y los canjes?',
-    answer:
-      'Una semana completada del Camino = 1 U.C. Acumulalas y canjealas por programas o merch. A los 3 meses sostenidos ganás la insignia “Núcleo Estable”.'
+      'Las semanas quedan guardadas. Si parás un tiempo, retomás donde te quedaste. Podés volver cuando quieras, sin culpa.'
   },
   {
     question: '¿Hay garantía?',
     answer:
-      'Sí, ofrezco garantía de devolución de 30 días, pero con condiciones claras para asegurar que realmente intentaste el programa. Para acceder a la devolución necesitás: haber completado al menos 6 sesiones de entrenamiento (2 por semana durante 3 semanas), haber participado activamente en la comunidad al menos 3 veces, y demostrar que seguiste las planificaciones propuestas. Si cumplís estos mínimos y aún así no te funciona, te devuelvo el dinero sin preguntas. La garantía es para proteger a quienes realmente intentan, no para quienes quieren probar gratis.'
+      'No. La Move Crew es un programa de entrenamiento continuo y sostenible. Si no te sientes cómodo/a con el contenido, podés cambiar de plan o cancelar tu membresía en cualquier momento.'
   }
 ];
 

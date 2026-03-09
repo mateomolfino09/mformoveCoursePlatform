@@ -181,7 +181,7 @@ const MoveCrewResultsSlider = () => {
             Unite a más personas sintiendose mejor en movimiento
           </h2>
           <p className="font-raleway italic text-palette-stone text-base md:text-lg max-w-2xl mx-auto md:mx-0 leading-relaxed">
-            Cada semana trabajamos en hacernos más fuertes, más moviles y más disponibles en el movimiento.
+            Cada semana creamos más espacio en el cuerpo para descubrir nuevas posibilidades.
           </p>
         </motion.div>
 

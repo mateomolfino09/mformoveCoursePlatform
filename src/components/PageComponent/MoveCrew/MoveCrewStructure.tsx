@@ -8,36 +8,37 @@ const MoveCrewStructure = () => {
       description:
         'Contenido nuevo todas las semanas para que avances a tu ritmo.',
       bullets: [
-        'Contenido nuevo todas las semanas',
-        'Progresiones pensadas para principiantes, intermedios y avanzados',
+        'Contenido nuevo todas las semanas.',
+        'Clases en vivo y grabadas.',
       ]
     },
     {
       title: 'Filosofía',
       description:
-        'Busco tu constancia, autoconocimiento y exploración. Las U.C. incentivan tu camino en el movimiento.',
+        'Aceptación, autoconocimiento y exploración. Practicar el practicar.',
       bullets: [
-        'U.C.: una semana completada = 1 U.C.',
-        'Acceso a canjes y programas especiales al sostener tu racha de entrenamiento'
+        'La constancia es la clave para crecer en la práctica.',
+        'Necesitamos jugar más y exigir menos.',
+        'Variabilidad como forma única de reconocernos en lo inevitable.'
       ]
     },
     {
       title: 'Dedicación semanal',
       description:
-        'Quiero que cumplas la semana sin quemarte.',
+        'Quiero crear una buena agenda de movimiento para mis alumnos.',
       bullets: [
-        'Planificación pensada para agenda real',
-        'Bloques breves y acumulativos',
+        'Planificación pensada para agenda real.',
+        'Bloques breves y acumulativos.',
+        'Clases en vivo.',
       ]
     },
     {
-      title: 'Soporte y Q&A',
+      title: 'Comunidad y Soporte',
       description:
-        'Te respondo por WhatsApp y grabamos un Q&A cada miércoles para cuidar tu tiempo.',
+        'Te respondo por WhatsApp.',
       bullets: [
-        'WhatsApp para dudas rápidas y feedback',
-        'Q&A semanal grabado (los miércoles)',
-        'Enfoque asíncrono para no bloquear tu agenda'
+        'WhatsApp para dudas.',
+        'Enfoque asíncrono para no bloquear tu agenda.'
       ]
     }
   ];
@@ -57,7 +58,7 @@ const MoveCrewStructure = () => {
             Un ritmo pensado para servir a tu vida
           </h2>
           <p className="font-raleway italic text-palette-cream/80 text-base md:text-lg max-w-3xl leading-relaxed">
-            Programación semanal. Contenido nuevo todas las semanas.
+            Quiero que mis alumnos tengan una agenda clara y completa de movimiento.
           </p>
         </motion.div>
 
