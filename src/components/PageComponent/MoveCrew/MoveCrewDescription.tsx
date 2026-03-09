@@ -10,7 +10,7 @@ const paragraphs = [
 const MoveCrewDescription = () => {
   return (
     <section className="py-16 md:py-20 bg-palette-cream font-montserrat">
-      <div className="w-[85%] max-w-5xl mx-auto px-4">
+      <div className="w-[85%] max-w-6xl mx-auto px-4 text-left">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

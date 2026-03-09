@@ -169,7 +169,7 @@ const MoveCrewHero = () => {
           {tagline}
         </p>
       </div>
-      <div className="w-[85%] max-w-7xl mx-auto pt-24 mt-20 pb-10 md:py-14 flex flex-col md:flex-row md:items-start md:gap-10 lg:gap-14">
+      <div className="w-[85%] max-w-6xl mx-auto pt-24 mt-20 pb-10 md:py-14 flex flex-col md:flex-row md:items-start md:gap-10 lg:gap-14">
 
         <div className="w-full min-w-0 order-2 md:order-1 md:flex-1 text-center">
         <motion.div

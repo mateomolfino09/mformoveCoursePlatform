@@ -281,7 +281,7 @@ const CTACard = ({ index }: { index: number }) => {
 const MoveCrewHighlights = () => {
   return (
     <section className="relative py-16 md:py-20 bg-palette-cream font-montserrat">
-      <div className="w-[85%] max-w-7xl mx-auto px-4">
+      <div className="w-[85%] max-w-6xl mx-auto px-4 text-left">
         {/* Cabecera alineada al concepto del Hero: tagline Raleway + título Montserrat */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -297,7 +297,7 @@ const MoveCrewHighlights = () => {
           </h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12 items-stretch">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 items-stretch">
           {highlights.map((item, index) => (
             <HighlightCard key={item.title} item={item} index={index} />
           ))}
