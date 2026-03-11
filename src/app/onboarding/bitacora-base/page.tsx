@@ -21,7 +21,7 @@ const GorillaHoverInfo = ({ children }: { children: React.ReactNode }) => (
     <div
       className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-72 -translate-x-1/2 rounded-xl bg-black/80 px-3 py-2 text-xs text-white opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
     >
-      Una semana completada = 1 U.C. Completá el Camino Base y canjeá por programas o merch.
+      Completá el Camino Base para desbloquear todo el contenido.
     </div>
   </div>
 );
@@ -195,8 +195,8 @@ function BitacoraBasePageContent() {
           coherence.updateTracking(data.tracking);
         }
         
-        // Mostrar modal de celebración si se otorgó U.C. o si hay levelUp/logros nuevos
-        if ((data.ucsOtorgadas > 0 || data.levelUp || (data.newAchievements && data.newAchievements.length > 0)) && data.tracking) {
+        // Mostrar modal de celebración si hay levelUp o logros nuevos (U.C. deshabilitado: ya no por ucsOtorgadas)
+        if ((data.levelUp || (data.newAchievements && data.newAchievements.length > 0)) && data.tracking) {
           setCelebrationData({
             ucsOtorgadas: data.ucsOtorgadas || 0,
             totalUnits: data.tracking.totalUnits || 0,
@@ -432,7 +432,7 @@ function BitacoraBasePageContent() {
                         </GorillaHoverInfo>
                       )}
 
-                      {/* Información de progreso y U.C. */}
+                      {/* Información de progreso (U.C. comentado) */}
                       <div className="flex-1 flex items-center gap-2">
                         {/* Porcentaje completado */}
                         <div
@@ -445,38 +445,22 @@ function BitacoraBasePageContent() {
                           <span className="text-[10px] text-gray-700 font-montserrat font-light uppercase tracking-wide">
                             Completado
                           </span>
-                          {openTooltip === 'progress' && !isMobile && (
+                          {openTooltip === 'progress' && isDesktop && (
                             <div className="absolute left-1/2 top-full z-20 mt-2 w-64 -translate-x-1/2 rounded-xl bg-black px-4 py-3 text-xs text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)] border border-white/10">
                               {tooltipTexts.progress}
                             </div>
                           )}
                         </div>
-                        
-                        {/* U.C. */}
+                        {/* U.C. deshabilitado en onboarding
                         {coherence.coherenceTracking && (
-                          <div
-                            className="relative flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-sm"
-                            onClick={() => setOpenTooltip(openTooltip === 'uc' ? null : 'uc')}
-                          >
-                            <img 
-                              src="/images/svg/icosahedron-thick.svg" 
-                              alt="Icosaedro" 
-                              className="w-4 h-4 flex-shrink-0"
-                              style={{ filter: 'brightness(0)' }}
-                            />
-                            <span className="text-base font-bold text-gray-900 font-montserrat">
-                              {coherence.coherenceTracking?.totalUnits || 0}
-                            </span>
-                            <span className="text-[10px] text-gray-700 font-montserrat font-light uppercase tracking-wide">
-                              U.C.
-                            </span>
-                            {openTooltip === 'uc' && isDesktop && (
-                              <div className="absolute left-1/2 top-full z-20 mt-2 w-64 -translate-x-1/2 rounded-xl bg-black px-4 py-3 text-xs text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)] border border-white/10">
-                                {tooltipTexts.uc}
-                              </div>
-                            )}
+                          <div ...>
+                            <img src="/images/svg/icosahedron-thick.svg" ... />
+                            <span>{coherence.coherenceTracking?.totalUnits || 0}</span>
+                            <span>U.C.</span>
+                            ...
                           </div>
                         )}
+                        */}
                       </div>
                     </div>
                   </div>
@@ -498,7 +482,7 @@ function BitacoraBasePageContent() {
                           </GorillaHoverInfo>
                         )}
 
-                        {/* Información de progreso y U.C. */}
+                        {/* Información de progreso (U.C. comentado) */}
                         <div className="flex items-center gap-2">
                           {/* Porcentaje completado */}
                           <div
@@ -517,32 +501,7 @@ function BitacoraBasePageContent() {
                               </div>
                             )}
                           </div>
-                          
-                          {/* U.C. */}
-                          {coherence.coherenceTracking && (
-                            <div
-                              className="relative flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 rounded-full shadow-sm"
-                              onClick={() => setOpenTooltip(openTooltip === 'uc' ? null : 'uc')}
-                            >
-                              <img 
-                                src="/images/svg/icosahedron-thick.svg" 
-                                alt="Icosaedro" 
-                                className="w-6 h-6 flex-shrink-0"
-                                style={{ filter: 'brightness(0)' }}
-                              />
-                              <span className="text-base font-bold text-gray-900 font-montserrat">
-                                {coherence.coherenceTracking?.totalUnits || 0}
-                              </span>
-                              <span className="text-[10px] text-gray-700 font-montserrat font-light uppercase tracking-wide">
-                                U.C.
-                              </span>
-                              {openTooltip === 'uc' && isDesktop && (
-                                <div className="absolute left-1/2 top-full z-20 mt-2 w-64 -translate-x-1/2 rounded-xl bg-black px-4 py-3 text-xs text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)] border border-white/10">
-                                  {tooltipTexts.uc}
-                                </div>
-                              )}
-                            </div>
-                          )}
+                          {/* U.C. deshabilitado en onboarding — badge de U.C. comentado */}
                         </div>
                       </div>
                     </div>
@@ -749,7 +708,7 @@ function BitacoraBasePageContent() {
                     className="text-sm md:text-base font-montserrat font-light mb-4 md:mb-5 leading-relaxed"
                     style={{ color: '#8B4513' }}
                   >
-                    Si saltás el Camino Base, <span className="font-medium" style={{ color: '#EA580C' }}>te perdés las U.C. de estos 4 videos</span>.
+                    Si saltás el Camino Base, <span className="font-medium" style={{ color: '#EA580C' }}>no sumás el avance de estos 4 videos</span>.
                   </motion.p>
 
                   {/* Mensaje secundario */}
@@ -760,7 +719,7 @@ function BitacoraBasePageContent() {
                     className="text-xs md:text-sm font-montserrat font-light mb-6 md:mb-7"
                     style={{ color: '#6B7280' }}
                   >
-                    Podés acceder igual al Camino: una semana completada = 1 U.C.
+                    Podés acceder igual al Camino mensual cuando esté disponible.
                   </motion.p>
 
                   {/* Botones */}
@@ -816,7 +775,7 @@ function BitacoraBasePageContent() {
       )}
     </AnimatePresence>
 
-    {/* Modal de celebración cuando se obtiene U.C. */}
+    {/* Modal de celebración (levelUp / logros; U.C. deshabilitado) */}
     {celebrationData && (
       <CoherenceCelebrationModal
         isOpen={showCelebrationModal}

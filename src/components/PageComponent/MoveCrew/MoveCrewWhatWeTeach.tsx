@@ -22,7 +22,7 @@ const disciplines = [
 export default function MoveCrewWhatWeTeach() {
   return (
     <section className="py-16 md:py-20 bg-palette-cream font-montserrat">
-      <div className="w-[85%] max-w-6xl mx-auto px-4">
+      <div className="w-[85%] max-w-6xl mx-auto px-4 text-left">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -37,11 +37,11 @@ export default function MoveCrewWhatWeTeach() {
             Disciplinas de movimiento
           </h2>
           <p className="font-raleway italic text-palette-stone text-base md:text-lg max-w-2xl mx-auto md:mx-0 leading-relaxed">
-            Conocé, encarná y viví. Movimiento, HandBalance y Movilidad en un mismo espacio.
+            Conocé, practicá y viví. Movimiento, HandBalance, fuerza y movilidad en un mismo espacio.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {disciplines.map((item, i) => (
             <motion.div
               key={item.label}

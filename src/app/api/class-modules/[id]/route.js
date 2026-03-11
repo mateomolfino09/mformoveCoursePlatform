@@ -101,6 +101,11 @@ export async function PUT(req, { params }) {
     if (body.icon != null) module_.icon = body.icon;
     if (body.color != null) module_.color = body.color;
     if (typeof body.isActive === 'boolean') module_.isActive = body.isActive;
+    if (body.warmUpClassId !== undefined) {
+      module_.warmUpClassId = (body.warmUpClassId && mongoose.Types.ObjectId.isValid(body.warmUpClassId))
+        ? new mongoose.Types.ObjectId(body.warmUpClassId)
+        : null;
+    }
 
     await module_.save();
 

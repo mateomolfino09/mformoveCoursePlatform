@@ -168,7 +168,7 @@ const MoveCrewResultsSlider = () => {
 
   return (
     <section ref={sectionRef} className="py-16 md:py-20 bg-palette-cream font-montserrat">
-      <div className="w-[85%] max-w-6xl mx-auto px-4">
+      <div className="w-[85%] max-w-6xl mx-auto px-4 text-left">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -181,7 +181,7 @@ const MoveCrewResultsSlider = () => {
             Unite a más personas sintiendose mejor en movimiento
           </h2>
           <p className="font-raleway italic text-palette-stone text-base md:text-lg max-w-2xl mx-auto md:mx-0 leading-relaxed">
-            Cada semana trabajamos en hacernos más fuertes, más moviles y más disponibles en el movimiento.
+            Cada semana creamos más espacio en el cuerpo para descubrir nuevas posibilidades.
           </p>
         </motion.div>
 

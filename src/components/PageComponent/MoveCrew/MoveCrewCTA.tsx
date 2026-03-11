@@ -9,7 +9,7 @@ const MoveCrewCTA = () => {
 
   return (
     <section className="py-16 md:py-20 bg-palette-ink text-palette-cream font-montserrat">
-      <div className="w-[85%] max-w-5xl mx-auto px-4 text-center md:text-left">
+      <div className="w-[85%] max-w-6xl mx-auto px-4 text-left">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

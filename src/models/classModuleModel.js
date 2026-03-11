@@ -55,7 +55,13 @@ const classModuleSchema = new mongoose.Schema(
     /** Opcionales para UI (icono, color) */
     icon: { type: String },
     color: { type: String },
-    isActive: { type: Boolean, default: true }
+    isActive: { type: Boolean, default: true },
+    /** Clase del módulo (ModuleClass) recomendada como "Warm Up": se sugiere hacerla primero al empezar a ver clases de este módulo. */
+    warmUpClassId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ModuleClass',
+      default: null
+    }
   },
   { timestamps: true }
 );

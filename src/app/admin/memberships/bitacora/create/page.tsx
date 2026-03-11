@@ -60,6 +60,8 @@ interface WeekContent {
   weekTitle: string;
   publishDate: string;
   isPublished: boolean;
+  /** Si esta semana muestra el calentamiento del mes */
+  hasWarmUp?: boolean;
   contents: WeekContentItem[];
 }
 
@@ -101,6 +103,8 @@ export default function CreateBitacoraPage() {
 
   /** Módulos del camino: se definen antes (cantidad 1-4 y nombre de cada uno). Las semanas solo se asocian por moduleNumber. */
   const [pathModules, setPathModules] = useState<{ number: number; name: string }[]>([{ number: 1, name: '' }]);
+  /** Warm Up del mes: contenido global recomendado para hacer primero. Las semanas con hasWarmUp lo muestran. */
+  const [warmUpContent, setWarmUpContent] = useState<WeekContentItem | null>(null);
   const [weeks, setWeeks] = useState<WeekContent[]>(Array.from({ length: 4 }).map((_, idx) => ({
     weekNumber: idx + 1,
     moduleName: '',
@@ -213,7 +217,7 @@ export default function CreateBitacoraPage() {
     setWeeks(newWeeks);
   };
 
-  // Cargar clases de módulo cuando hay moduleId + submoduleSlug en algún contenido
+  // Cargar clases de módulo cuando hay moduleId + submoduleSlug en algún contenido (semanas y warm up)
   useEffect(() => {
     const keys = new Set<string>();
     weeks.forEach((w) => {
@@ -224,6 +228,10 @@ export default function CreateBitacoraPage() {
         }
       });
     });
+    if (warmUpContent && (warmUpContent.contentType || '') === 'moduleClass' && warmUpContent.moduleId && (warmUpContent.submoduleSlug || warmUpContent.submoduleName)) {
+      const slug = (warmUpContent.submoduleSlug || '').trim() || (warmUpContent.submoduleName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || NO_SUBMODULE_SLUG;
+      keys.add(`${warmUpContent.moduleId}|${slug}`);
+    }
     keys.forEach((key) => {
       if (moduleClassesCache[key]) return;
       const [moduleId, submoduleSlug] = key.split('|');
@@ -234,7 +242,7 @@ export default function CreateBitacoraPage() {
         })
         .catch(() => setModuleClassesCache((prev) => ({ ...prev, [key]: [] })));
     });
-  }, [weeks]);
+  }, [weeks, warmUpContent]);
 
   const addSubmoduleToModule = async (moduleId: string, name: string) => {
     const r = await fetch(`/api/class-modules/${moduleId}/submodules`, {
@@ -372,6 +380,59 @@ export default function CreateBitacoraPage() {
     }
   };
 
+  const createWarmUpIndividualClassAndUse = async () => {
+    if (!warmUpContent) return;
+    const name = (warmUpContent.videoName || warmUpContent.videoUrl || '').trim();
+    const description = (warmUpContent.audioText || 'Calentamiento del Camino').trim();
+    const videoUrl = warmUpContent.videoUrl?.trim();
+    if (!name || !videoUrl) {
+      toast.error('Nombre y Video URL son requeridos');
+      return;
+    }
+    const typeFilter = (warmUpContent.individualClassType && warmUpContent.individualClassType.trim()) || undefined;
+    if (!typeFilter) {
+      toast.error('Selecciona el tipo (filtro) de la clase');
+      return;
+    }
+    const tagsStr = (warmUpContent.individualClassTags && warmUpContent.individualClassTags.trim()) || '';
+    const tags = tagsStr ? tagsStr.split(',').map((s) => s.trim()).filter(Boolean) : [];
+    setCreatingClass('warmup-individual');
+    try {
+      const r = await fetch('/api/individualClass/createFromWeeklyPath', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          name,
+          description,
+          videoUrl,
+          userEmail: auth.user?.email,
+          type: typeFilter,
+          tags
+        })
+      });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        throw new Error(d.error || 'Error al crear clase');
+      }
+      const created = await r.json();
+      setIndividualClasses((prev) => [...prev, { _id: created._id, name: created.name }]);
+      setWarmUpContent((prev) => prev ? {
+        ...prev,
+        individualClassId: created._id,
+        individualClassSource: 'existing',
+        videoName: created.name,
+        createdInWeeklyPathForm: true,
+        createdClassDescription: description
+      } : null);
+      toast.success('Clase de calentamiento creada.');
+    } catch (e: any) {
+      toast.error(e.message || 'Error al crear clase');
+    } finally {
+      setCreatingClass(null);
+    }
+  };
+
   const deleteCreatedClassAndRemove = async (weekIndex: number, contentIndex: number) => {
     const c = weeks[weekIndex].contents[contentIndex];
     if (!c.createdInWeeklyPathForm) return;
@@ -471,6 +532,29 @@ export default function CreateBitacoraPage() {
           description,
           userEmail: auth.user?.email,
           modules: pathModules.map((m) => ({ moduleNumber: m.number, name: (m.name || '').trim() })),
+          warmUpContent: warmUpContent && (warmUpContent.contentType || warmUpContent.videoUrl || warmUpContent.individualClassId || warmUpContent.moduleClassId || warmUpContent.moveCrewEventId || warmUpContent.audioUrl)
+            ? {
+                contentType: (warmUpContent.contentType || 'moduleClass') as ContentType,
+                individualClassId: warmUpContent.individualClassId || undefined,
+                moduleClassId: warmUpContent.moduleClassId || undefined,
+                moveCrewEventId: warmUpContent.moveCrewEventId || undefined,
+                moveCrewEventCreatedInPath: warmUpContent.moveCrewEventCreatedInPath || undefined,
+                videoUrl: warmUpContent.videoUrl || '',
+                videoId: warmUpContent.videoId || undefined,
+                videoName: warmUpContent.videoName || undefined,
+                videoThumbnail: warmUpContent.videoThumbnail || undefined,
+                videoDuration: warmUpContent.videoDuration || undefined,
+                audioUrl: warmUpContent.audioUrl || undefined,
+                audioTitle: warmUpContent.audioTitle || undefined,
+                audioDuration: warmUpContent.audioDuration || undefined,
+                audioText: warmUpContent.audioText || undefined,
+                level: Math.min(10, Math.max(1, warmUpContent.level ?? 1)),
+                moduleId: warmUpContent.moduleId || undefined,
+                submoduleSlug: warmUpContent.submoduleSlug || (warmUpContent.submoduleName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+                submoduleName: warmUpContent.submoduleName || undefined,
+                orden: 0
+              }
+            : null,
           weeklyContents: weeks.map((week) => ({
             weekNumber: week.weekNumber,
             moduleNumber: week.moduleNumber != null ? Number(week.moduleNumber) : undefined,
@@ -478,6 +562,7 @@ export default function CreateBitacoraPage() {
             publishDate: new Date(week.publishDate).toISOString(),
             isPublished: week.isPublished,
             isUnlocked: false,
+            hasWarmUp: week.hasWarmUp === true,
             contents: (week.contents || []).map((c, idx) => ({
               contentType: c.contentType || 'moduleClass',
               individualClassId: c.individualClassId || undefined,
@@ -628,6 +713,173 @@ export default function CreateBitacoraPage() {
               </div>
             </div>
 
+            {/* Warm Up del mes: contenido global recomendado para hacer primero. Las semanas con "Tiene Warm Up" lo muestran. */}
+            <div className="border border-amber-200 rounded-xl p-6 bg-amber-50/50">
+              <h2 className="text-lg font-semibold text-gray-900 mb-1 font-montserrat">Warm Up del mes</h2>
+              <p className="text-sm text-gray-600 mb-4 font-montserrat">Contenido único recomendado para hacer primero al empezar el camino. En cada semana podés marcar si tiene Warm Up o no.</p>
+              {warmUpContent === null ? (
+                <button
+                  type="button"
+                  onClick={() => setWarmUpContent(emptyContentItem(0))}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg text-sm font-medium hover:bg-amber-600 font-montserrat"
+                >
+                  <PlusIcon className="w-5 h-5" />
+                  Agregar Warm Up del mes
+                </button>
+              ) : (
+                <div className="p-4 bg-white rounded-lg border border-amber-200">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-sm font-medium text-gray-700 font-montserrat">Contenido Warm Up</span>
+                    <div className="flex items-center gap-3">
+                      <label className="text-xs font-medium text-black font-montserrat">Tipo:</label>
+                      <select
+                        value={warmUpContent.contentType || 'moduleClass'}
+                        onChange={(e) => setWarmUpContent((prev) => prev ? { ...prev, contentType: e.target.value as ContentType } : null)}
+                        className="px-3 py-1.5 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                      >
+                        <option value="moduleClass">Clase de módulo</option>
+                        <option value="individualClass">Clase individual</option>
+                        <option value="audio">Audio</option>
+                        <option value="zoomEvent">Clase en vivo (Zoom)</option>
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setWarmUpContent(null)}
+                        className="text-red-600 hover:text-red-800 p-1 font-montserrat text-sm"
+                        title="Quitar Warm Up"
+                      >
+                        <XMarkIcon className="w-5 h-5 inline" /> Quitar Warm Up
+                      </button>
+                    </div>
+                  </div>
+                  {(warmUpContent.contentType || 'moduleClass') === 'moduleClass' && (
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Módulo *</label>
+                        <select value={warmUpContent.moduleId} onChange={(e) => setWarmUpContent((prev) => prev ? { ...prev, moduleId: e.target.value } : null)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm">
+                          <option value="">Seleccionar módulo</option>
+                          {classModules.map((m) => (<option key={m._id} value={m._id}>{m.name}</option>))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Submódulo *</label>
+                        <select
+                          value={warmUpContent.submoduleSlug || (warmUpContent.submoduleName ? warmUpContent.submoduleName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') : '')}
+                          onChange={(e) => {
+                            const slug = e.target.value;
+                            const mod = classModules.find((m) => m._id === warmUpContent.moduleId);
+                            const sub = mod?.submodules?.find((s) => (s.slug || '') === slug);
+                            setWarmUpContent((prev) => prev ? { ...prev, submoduleSlug: slug, submoduleName: sub?.name || slug } : null);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                        >
+                          <option value="">Seleccionar</option>
+                          {warmUpContent.moduleId && (() => {
+                            const mod = classModules.find((m) => m._id === warmUpContent.moduleId);
+                            const subs = mod?.submodules || [];
+                            return (<><option value={NO_SUBMODULE_SLUG}>Clases del módulo</option>{subs.map((s) => (<option key={s.slug || s.name} value={s.slug || (s.name || '').toLowerCase().replace(/\s+/g, '-')}>{s.name}</option>))}</>);
+                          })()}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Clase *</label>
+                        <select
+                          value={warmUpContent.moduleClassId || ''}
+                          onChange={(e) => {
+                            const id = e.target.value;
+                            const slug = (warmUpContent.submoduleSlug || warmUpContent.submoduleName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || NO_SUBMODULE_SLUG;
+                            const list = moduleClassesCache[`${warmUpContent.moduleId}|${slug}`] || [];
+                            const cls = list.find((x) => x._id === id);
+                            setWarmUpContent((prev) => prev ? { ...prev, moduleClassId: id, videoUrl: cls?.videoUrl || prev.videoUrl || '', videoName: cls?.name ?? prev.videoName, level: cls?.level ?? prev.level } : null);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                        >
+                          <option value="">Seleccionar clase</option>
+                          {warmUpContent.moduleId && (moduleClassesCache[`${warmUpContent.moduleId}|${(warmUpContent.submoduleSlug || warmUpContent.submoduleName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || NO_SUBMODULE_SLUG}`] || []).map((cls) => (<option key={cls._id} value={cls._id}>{cls.name}</option>))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                  {(warmUpContent.contentType || '') === 'individualClass' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                        <span className="text-xs font-medium text-black font-montserrat">Origen:</span>
+                        <label className="flex items-center gap-1">
+                          <input type="radio" name="warmUp-individualSource" checked={(warmUpContent.individualClassSource || 'existing') === 'existing'} onChange={() => setWarmUpContent((prev) => prev ? { ...prev, individualClassSource: 'existing' } : null)} className="text-orange-600" />
+                          <span className="text-sm text-black font-montserrat">Usar clase existente</span>
+                        </label>
+                        <label className="flex items-center gap-1">
+                          <input type="radio" name="warmUp-individualSource" checked={(warmUpContent.individualClassSource || 'existing') === 'new'} onChange={() => setWarmUpContent((prev) => prev ? { ...prev, individualClassSource: 'new' } : null)} className="text-orange-600" />
+                          <span className="text-sm text-black font-montserrat">Crear clase nueva</span>
+                        </label>
+                      </div>
+                      {(warmUpContent.individualClassSource || 'existing') === 'existing' && (
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Clase individual *</label>
+                          <select
+                            value={warmUpContent.individualClassId || ''}
+                            onChange={(e) => {
+                              const id = e.target.value;
+                              const ic = individualClasses.find((x) => x._id === id);
+                              setWarmUpContent((prev) => prev ? { ...prev, individualClassId: id || undefined, videoName: ic?.name ?? prev.videoName } : null);
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                          >
+                            <option value="">Seleccionar clase individual</option>
+                            {individualClasses.map((ic) => (<option key={ic._id} value={ic._id}>{ic.name}</option>))}
+                          </select>
+                        </div>
+                      )}
+                      {(warmUpContent.individualClassSource || 'existing') === 'new' && (
+                        <div className="grid md:grid-cols-2 gap-4 p-3 bg-gray-50 rounded-lg">
+                          <div><label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Nombre clase *</label><input type="text" value={warmUpContent.videoName || ''} onChange={(e) => setWarmUpContent((prev) => prev ? { ...prev, videoName: e.target.value } : null)} placeholder="Nombre de la clase" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                          <div><label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Video URL (Vimeo) *</label><input type="url" value={warmUpContent.videoUrl || ''} onChange={(e) => setWarmUpContent((prev) => prev ? { ...prev, videoUrl: e.target.value } : null)} placeholder="https://vimeo.com/..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                          <div className="md:col-span-2"><label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Descripción *</label><textarea value={warmUpContent.audioText || ''} onChange={(e) => setWarmUpContent((prev) => prev ? { ...prev, audioText: e.target.value } : null)} placeholder="Descripción de la clase" rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" /></div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Tipo (filtro) *</label>
+                            <select value={warmUpContent.individualClassType ?? ''} onChange={(e) => setWarmUpContent((prev) => prev ? { ...prev, individualClassType: e.target.value } : null)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm">
+                              <option value="">Seleccionar tipo</option>
+                              {(classFilters[0]?.values ?? []).map((v: { value: string; label: string }) => (<option key={v.value} value={v.value}>{v.label}</option>))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Tags (separados por comas)</label>
+                            <input type="text" value={warmUpContent.individualClassTags ?? ''} onChange={(e) => setWarmUpContent((prev) => prev ? { ...prev, individualClassTags: e.target.value } : null)} placeholder="Ej: principiante, fuerza, movilidad" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" />
+                          </div>
+                          <div><button type="button" disabled={creatingClass === 'warmup-individual' || !(warmUpContent.videoName || warmUpContent.videoUrl)?.trim() || !warmUpContent.videoUrl?.trim() || !(warmUpContent.individualClassType ?? '').trim()} onClick={createWarmUpIndividualClassAndUse} className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed font-montserrat">{creatingClass === 'warmup-individual' ? 'Creando...' : 'Crear clase y usar aquí'}</button>{warmUpContent.individualClassId && <span className="ml-2 text-sm text-green-600">Clase asignada</span>}</div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {(warmUpContent.contentType || '') === 'audio' && (
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">URL del audio *</label>
+                        <input type="url" value={warmUpContent.audioUrl || ''} onChange={(e) => setWarmUpContent((prev) => prev ? { ...prev, audioUrl: e.target.value } : null)} placeholder="https://res.cloudinary.com/..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Título del audio</label>
+                        <input type="text" value={warmUpContent.audioTitle || ''} onChange={(e) => setWarmUpContent((prev) => prev ? { ...prev, audioTitle: e.target.value } : null)} placeholder="Ej: Meditación guiada" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm" />
+                      </div>
+                    </div>
+                  )}
+                  {(warmUpContent.contentType || '') === 'zoomEvent' && (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Evento Move Crew *</label>
+                      <select
+                        value={warmUpContent.moveCrewEventId || ''}
+                        onChange={(e) => setWarmUpContent((prev) => prev ? { ...prev, moveCrewEventId: e.target.value || undefined } : null)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm"
+                      >
+                        <option value="">Seleccionar evento en vivo</option>
+                        {moveCrewEvents.map((ev) => (<option key={ev._id} value={ev._id}>{ev.title} {ev.eventDate ? `(${ev.eventDate})` : ''}</option>))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {weeks.map((week, weekIndex) => (
               <motion.div
                 key={week.weekNumber}
@@ -674,6 +926,15 @@ export default function CreateBitacoraPage() {
                       className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F7CCF] focus:border-[#4F7CCF] font-montserrat bg-white text-gray-900"
                     />
                   </div>
+                  <label className="flex items-center gap-2 text-black font-montserrat" title="Mostrar popup de calentamiento antes de clases de esta semana">
+                    <input
+                      type="checkbox"
+                      checked={!!week.hasWarmUp}
+                      onChange={(e) => updateWeek(weekIndex, 'hasWarmUp', e.target.checked)}
+                      className="form-checkbox h-4 w-4 text-[#4F7CCF]"
+                    />
+                    <span>Tiene calentamiento</span>
+                  </label>
                 </div>
 
                 {(week.contents || []).map((content, contentIndex) => {

@@ -5,12 +5,11 @@ import MentorshipPlan from '../../../../models/mentorshipPlanModel';
 import Promocion from '../../../../models/promocionModel';
 import { revalidateTag } from 'next/cache';
 
-// Conectar a la base de datos
-connectDB();
 export const revalidate = 0;
 export const fetchCache = 'force-no-store'
 export async function GET(request) {
   try {
+    await connectDB();
     const { searchParams } = new URL(request.url);
     const planType = searchParams.get('type') || 'membership';
     const planId = searchParams.get('id');

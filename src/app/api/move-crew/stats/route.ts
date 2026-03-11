@@ -3,10 +3,9 @@ import connectDB from '../../../../config/connectDB';
 import User from '../../../../models/userModel';
 import IndividualClass from '../../../../models/individualClassModel';
 
-connectDB();
-
 export async function GET() {
   try {
+    await connectDB();
     const activeMembers = await User.countDocuments({
       $or: [
         { 'subscription.active': true },
