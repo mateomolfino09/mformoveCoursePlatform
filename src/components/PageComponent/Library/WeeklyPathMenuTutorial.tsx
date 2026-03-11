@@ -1305,7 +1305,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                     Camino Semanal
                   </h3>
                   <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                    Contenido nuevo cada semana, guiado y progresivo. Una semana completada = 1 U.C.
+                    Clases en vivo y contenido nuevo cada semana.
                   </p>
                 </motion.div>
               )}
@@ -1483,7 +1483,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                         Camino Semanal
                       </h3>
                       <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                        Contenido nuevo cada semana, guiado y progresivo. Una semana completada = 1 U.C.
+                        Clases en vivo y contenido nuevo cada semana.
                       </p>
                     </motion.div>
                   )}

@@ -268,7 +268,7 @@ const CoherenceCelebrationModal = ({
                             className="mt-4 p-4 rounded-xl border border-palette-stone/15 bg-palette-sage/10"
                           >
                             <p className="text-xs font-montserrat font-light leading-relaxed text-center text-palette-ink">
-                              Una semana completada = 1 U.C.
+                              Clases en vivo y contenido nuevo cada semana.
                             </p>
                           </motion.div>
                         )}

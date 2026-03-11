@@ -372,19 +372,19 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 										<div className="hidden md:flex items-center gap-6 shrink-0">
 											<Link
 												href={routes.navegation.membership.library}
-												className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${
+												className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${
 													isLightText 
-															? 'text-white/80 hover:text-white/100' 
-															: 'text-palette-stone hover:text-palette-ink'
+															? (isLibraryArea ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') 
+															: (isLibraryArea ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')
 												}`}
 											>
 												Biblioteca
 											</Link>
 											<Link
 												href={routes.navegation.membership.weeklyPath}
-												className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${isLightText 
-															? 'text-white/80 hover:text-white/100' 
-															: 'text-palette-stone hover:text-palette-ink'
+												className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${isLightText 
+															? (isWeeklyPath ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') 
+															: (isWeeklyPath ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')
 												}`}
 											>
 												Camino
@@ -395,10 +395,10 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								)}
 								<div className="hidden md:flex items-center gap-6 shrink-0">
 								<span className={`hidden md:block shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'}`}>|</span>
-									<Link href={routes.navegation.eventos} className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${isLightText ? 'text-white/80 hover:text-white' : 'text-palette-stone hover:text-palette-ink'}`}>
+									<Link href={routes.navegation.eventos} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${isLightText ? (isEvents ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isEvents ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}`}>
 										Eventos
 									</Link>
-									<Link href={routes.navegation.mentorship} className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${isLightText ? 'text-white/80 hover:text-white' : 'text-palette-stone hover:text-palette-ink'}`}>
+									<Link href={routes.navegation.mentorship} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${isLightText ? (isMentorship ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isMentorship ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}`}>
 										Mentoría
 									</Link>
 								</div>
@@ -420,8 +420,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									</button>
 									{eventsMentorshipOpen && (
 										<div className="absolute right-0 top-full mt-2 w-40 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
-											<Link href={routes.navegation.eventos} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
-											<Link href={routes.navegation.mentorship} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
+											<Link href={routes.navegation.eventos} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isEvents ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
+											<Link href={routes.navegation.mentorship} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMentorship ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
 										</div>
 									)}
 								</div>
@@ -570,18 +570,18 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								<div className="hidden md:flex items-center gap-6">
 									<Link
 										href={routes.navegation.membership.library}
-										className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight 
-													? 'text-white/80 hover:text-white/100' 
-													: 'text-palette-stone hover:text-palette-ink'
+										className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight 
+													? (isLibraryArea ? 'text-white font-semibold' : 'text-white/80 hover:text-white/100 font-light') 
+													: (isLibraryArea ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')
 										}`}
 									>
 										Biblioteca
 									</Link>
 									<Link
 										href={routes.navegation.membership.weeklyPath}
-										className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight 
-													? 'text-white/80 hover:text-white/100' 
-													: 'text-palette-stone hover:text-palette-ink'
+										className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight 
+													? (isWeeklyPath ? 'text-white font-semibold' : 'text-white/80 hover:text-white/100 font-light') 
+													: (isWeeklyPath ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')
 										}`}
 									>
 										Camino
@@ -595,14 +595,14 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 					<div className="flex flex-1 w-full justify-start items-center min-h-[2rem]">
 						<div className={`hidden  items-center gap-6  ${auth?.user ? '-translate-x-[15%]' : ''} ${isMoveCrew || isBienvenida ? 'md:hidden' : 'md:flex'} ${auth?.user?.subscription?.active || auth?.user?.isVip ? 'ml-4' : auth?.user?.rol === 'Admin' ? 'ml-12' : 'ml-0'}`}>
 						<span className={`hidden md:block shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'}`}>|</span>
-						<Link href={auth?.user?.subscription?.active || auth?.user?.isVip ? routes.navegation.membresiaHome : routes.navegation.moveCrew} className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? 'text-white/80 hover:text-white' : 'text-palette-stone hover:text-palette-ink'}`}>
+						<Link href={routes.navegation.moveCrew} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? (isMoveCrew ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isMoveCrew ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}`}>
 								Move Crew
 							</Link>
-							<Link href={routes.navegation.mentorship} className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? 'text-white/80 hover:text-white' : 'text-palette-stone hover:text-palette-ink'}` }>
+							<Link href={routes.navegation.mentorship} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? (isMentorship ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isMentorship ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}` }>
 								Mentoría
 							</Link>
 			
-							<Link href={routes.navegation.eventos} className={`font-montserrat font-light text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? 'text-white/80 hover:text-white' : 'text-palette-stone hover:text-palette-ink'}`}>
+							<Link href={routes.navegation.eventos} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? (isEvents ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isEvents ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}`}>
 								Eventos
 							</Link>
 						</div>
@@ -622,10 +622,10 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							</button>
 							{eventsMentorshipOpen && (
 								<div className="absolute right-0 top-full mt-2 w-40 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
-														<Link href={auth?.user?.subscription?.active || auth?.user.isVip ? routes.navegation.membresiaHome : routes.navegation.moveCrew} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setEventsMentorshipOpen(false)}>Move Crew</Link>
-									<Link href={routes.navegation.mentorship} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
+														<Link href={routes.navegation.moveCrew} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMoveCrew ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Move Crew</Link>
+									<Link href={routes.navegation.mentorship} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMentorship ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
 				
-									<Link href={routes.navegation.eventos} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
+									<Link href={routes.navegation.eventos} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isEvents ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
 								</div>
 							)}
 						</div>

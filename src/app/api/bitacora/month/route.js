@@ -271,6 +271,12 @@ export async function GET(req) {
       applyPerContentUnlock(logbook.weeklyContents, logbook.year, logbook.month, unlockPerContent);
       await hydrateWeeklyContents(logbook.weeklyContents);
     }
+    // Hidratar también el contenido global de calentamiento (warmUpContent) si existe,
+    // usando la misma función que para los contenidos semanales.
+    if (logbook.warmUpContent && typeof logbook.warmUpContent === 'object') {
+      const fakeWeek = { contents: [logbook.warmUpContent] };
+      await hydrateWeeklyContents([fakeWeek]);
+    }
 
     return NextResponse.json(
       { logbook },

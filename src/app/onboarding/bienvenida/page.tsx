@@ -8,7 +8,6 @@ import { CheckCircleIcon, LockClosedIcon, PlayIcon, PauseIcon, SpeakerWaveIcon, 
 import Player from '@vimeo/player';
 import MainSideBar from '../../../components/MainSidebar/MainSideBar';
 import ShimmerBox from '../../../components/ShimmerBox';
-import CoherenceCelebrationModal from '../../../components/PageComponent/WeeklyPath/CoherenceCelebrationModal';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function BienvenidaPage() {
@@ -22,12 +21,6 @@ export default function BienvenidaPage() {
   const [isVisible, setIsVisible] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
-  const [showCoherenceModal, setShowCoherenceModal] = useState(false);
-  const [coherenceData, setCoherenceData] = useState<{
-    ucsOtorgadas: number;
-    totalUnits: number;
-    currentStreak: number;
-  } | null>(null);
   const videoRef = useRef<HTMLDivElement>(null);
   const vimeoPlayerRef = useRef<Player | null>(null);
   const textContainerRef = useRef<HTMLDivElement>(null);
@@ -398,33 +391,10 @@ export default function BienvenidaPage() {
       });
 
       if (response.ok) {
-        const data = await response.json();
-                
         setLoading(false);
-        
-        // Mostrar el modal si:
-        // 1. Se otorgó una U.C. (ucOtorgada === true), O
-        // 2. Es la primera vez que acepta el contrato (esPrimeraVez === true)
-        // Esto asegura que el usuario vea el modal explicativo incluso si ya tiene U.C. de otras fuentes
-        const debeMostrarModal = (data.ucOtorgada === true || data.esPrimeraVez === true) && 
-                                  data.totalUnits !== undefined && 
-                                  data.totalUnits !== null;
-        
-        if (debeMostrarModal) {
-          setCoherenceData({
-            ucsOtorgadas: data.ucOtorgada ? 1 : 0, // Mostrar 0 si no se otorgó nueva U.C.
-            totalUnits: data.totalUnits,
-            currentStreak: 0
-          });
-          setShowCoherenceModal(true);
-          // NO refrescar el usuario aquí para evitar que OnboardingChecker redirija
-          // El usuario se refrescará cuando se cierre el modal en handleCloseCoherenceModal
-        } else {
-          // Si no es primera vez y no se otorgó U.C., mostrar overlay y redirigir
-          setIsRedirecting(true);
-          await auth.fetchUser();
-          router.push('/library');
-        }
+        setIsRedirecting(true);
+        await auth.fetchUser();
+        router.push('/library');
       } else {
         const error = await response.json();
         alert(error.error || 'Error al aceptar el contrato');
@@ -436,21 +406,6 @@ export default function BienvenidaPage() {
       setLoading(false);
     }
   };
-
-  const handleCloseCoherenceModal = async () => {
-    setShowCoherenceModal(false);
-    
-    // Activar loading de redirección
-    setIsRedirecting(true);
-    
-    // Refrescar el usuario desde el servidor antes de redirigir
-    // Esto asegura que los datos estén actualizados
-    await auth.fetchUser();
-    
-    // Después de cerrar el modal y refrescar el usuario, redirigir al dashboard
-    router.push('/library');
-  };
-
 
   // Función para generar números pseudoaleatorios consistentes
   const seededRandom = (seed: number) => {
@@ -1051,7 +1006,7 @@ export default function BienvenidaPage() {
                           },
                           {
                             title: 'Contenido nuevo cada semana',
-                            text: 'Tu ruta semanal. Una semana completada = 1 U.C. Canjealas por programas, material o lo que vayamos creando.'
+                            text: 'Tu ruta semanal con clases y programas que se renuevan cada semana.'
                           }
                         ].map((item, index) => (
                           <motion.div
@@ -1167,25 +1122,7 @@ export default function BienvenidaPage() {
             </div>
             </div>
 
-            {/* Modal de celebración de primera U.C. */}
-                  {/* Renderizar el modal siempre que coherenceData exista, independientemente de showCoherenceModal */}
-                  {/* El modal manejará su propia visibilidad con la prop isOpen */}
-                  {coherenceData && (
-                    <CoherenceCelebrationModal
-                      isOpen={showCoherenceModal}
-                      onClose={handleCloseCoherenceModal}
-                      ucsOtorgadas={coherenceData.ucsOtorgadas}
-                      totalUnits={coherenceData.totalUnits}
-                      currentStreak={coherenceData.currentStreak}
-                      esSemanaAdicional={false}
-                      newAchievements={[]}
-                      levelUp={false}
-                      evolution={false}
-                      isFirstTime={true}
-                    />
-                  )}
-
-                  {/* Overlay de loading durante la redirección */}
+            {/* Overlay de loading durante la redirección */}
                   <AnimatePresence>
                     {isRedirecting && (
                       <motion.div

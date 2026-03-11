@@ -36,7 +36,7 @@ export async function POST(req) {
     }
 
     const body = await req.json();
-    const { month, year, title, description, weeklyContents, modules: pathModules, isBaseBitacora, userEmail } = body;
+    const { month, year, title, description, weeklyContents, modules: pathModules, isBaseBitacora, userEmail, warmUpContent: bodyWarmUpContent } = body;
 
     // Validar campos requeridos
     if (!weeklyContents || !Array.isArray(weeklyContents)) {
@@ -236,7 +236,8 @@ export async function POST(req) {
         dailyContents: [],
         publishDate,
         isPublished: wc.isPublished || false,
-        isUnlocked: wc.isUnlocked || false
+        isUnlocked: wc.isUnlocked || false,
+        hasWarmUp: wc.hasWarmUp === true
       };
 
       if (wc.contents && Array.isArray(wc.contents) && wc.contents.length > 0) {
@@ -282,6 +283,18 @@ export async function POST(req) {
         }))
       : [];
 
+    const hasWarmUpPayload = bodyWarmUpContent && typeof bodyWarmUpContent === 'object' && (
+      bodyWarmUpContent.contentType ||
+      bodyWarmUpContent.videoUrl ||
+      bodyWarmUpContent.individualClassId ||
+      bodyWarmUpContent.moduleClassId ||
+      bodyWarmUpContent.moveCrewEventId ||
+      bodyWarmUpContent.audioUrl
+    );
+    const mappedWarmUpContent = hasWarmUpPayload
+      ? await mapContentItem(bodyWarmUpContent, 0)
+      : null;
+
     // Crear la nueva camino
     const newLogbook = await WeeklyLogbook.create({
       month: isBaseBitacora ? 1 : month, // Para camino base usar mes 1 como placeholder
@@ -289,6 +302,7 @@ export async function POST(req) {
       title: title || (isBaseBitacora ? 'Camino Base - Primer Círculo' : 'Camino'),
       description: description || '',
       modules: modulesToSave,
+      warmUpContent: mappedWarmUpContent,
       weeklyContents: await Promise.all(weeklyContents.map(mapWeek)),
       isBaseBitacora: isBaseBitacora || false
     });

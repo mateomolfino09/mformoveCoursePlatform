@@ -433,6 +433,11 @@ export async function GET(req: NextRequest) {
           }
         }
       }
+      // Incluir también la práctica de Warm Up mensual si es una clase individual
+      const warmUp = (logbook as any)?.warmUpContent;
+      if (warmUp?.individualClassId) {
+        individualClassIds.push(String(warmUp.individualClassId));
+      }
 
       const caminoCompletoPublicado = currentWeekNum != null && currentWeekNum >= maxWeekNumber;
       if (moduleClassIds.length > 0 || individualClassIds.length > 0) {
