@@ -42,8 +42,8 @@ export default function NextContentModal({
               className="pointer-events-auto w-full max-w-sm"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="rounded-2xl border border-palette-stone/20 bg-palette-cream shadow-xl overflow-hidden">
-                <div className="p-6 text-center font-montserrat">
+              <div className="rounded-2xl border border-palette-stone/20 bg-palette-cream shadow-xl overflow-hidden min-h-[220px] md:min-h-[260px] flex items-stretch">
+                <div className="p-6 md:p-7 text-center font-montserrat flex flex-col justify-between w-full">
                   <div className="w-14 h-14 rounded-full bg-palette-sage/20 flex items-center justify-center mx-auto mb-4">
                     <PlayIcon className="w-7 h-7 text-palette-sage" />
                   </div>

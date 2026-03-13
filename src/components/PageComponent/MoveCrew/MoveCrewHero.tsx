@@ -275,7 +275,7 @@ const MoveCrewHero = () => {
       </div>
 
       {/* Indicador de scroll: icono de mouse centrado abajo */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5">
+      <div className="absolute bottom-3 md:bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5">
         <div className="w-6 h-9 rounded-full border-2 border-palette-ink/70 flex justify-center pt-1.5">
           <div className="w-0.5 h-2 rounded-full bg-palette-ink/70 animate-pulse" />
         </div>

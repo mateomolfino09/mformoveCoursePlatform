@@ -44,6 +44,16 @@ export default function EditClassModulePage({ params }: { params: { id: string }
   const [newClassLevel, setNewClassLevel] = useState(1);
   const [newClassMaterials, setNewClassMaterials] = useState<string[]>([]);
   const [submittingClass, setSubmittingClass] = useState(false);
+  const [hasWarmUpModule, setHasWarmUpModule] = useState(false);
+  const [warmUpClassId, setWarmUpClassId] = useState<string>('');
+  const [individualClasses, setIndividualClasses] = useState<{ _id: string; name: string }[]>([]);
+  const [warmUpSource, setWarmUpSource] = useState<'existing' | 'new'>('existing');
+  const [newWarmUpName, setNewWarmUpName] = useState('');
+  const [newWarmUpVideoUrl, setNewWarmUpVideoUrl] = useState('');
+  const [newWarmUpDescription, setNewWarmUpDescription] = useState('');
+  const [newWarmUpType, setNewWarmUpType] = useState('');
+  const [classFilters, setClassFilters] = useState<{ id?: number; name?: string; values?: { value: string; label: string }[] }[]>([]);
+  const [creatingWarmUpClass, setCreatingWarmUpClass] = useState(false);
 
   const toggleNewClassMaterial = (mat: string) => {
     setNewClassMaterials((prev) => (prev.includes(mat) ? prev.filter((m) => m !== mat) : [...prev, mat]));
@@ -98,7 +108,7 @@ export default function EditClassModulePage({ params }: { params: { id: string }
           router.push('/admin/memberships/class-modules');
           return;
         }
-        const m: ClassModule = await res.json();
+        const m: ClassModule & { warmUpClassId?: string } = await res.json();
         setName(m.name);
         setSlug(m.slug);
         setDescription(m.description || '');
@@ -116,6 +126,13 @@ export default function EditClassModulePage({ params }: { params: { id: string }
           name: s.name,
           slug: s.slug || s.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
         })));
+        if (m.warmUpClassId) {
+          setHasWarmUpModule(true);
+          setWarmUpClassId(String(m.warmUpClassId));
+        } else {
+          setHasWarmUpModule(false);
+          setWarmUpClassId('');
+        }
       } catch (err) {
         console.error(err);
         router.push('/admin/memberships/class-modules');
@@ -125,6 +142,30 @@ export default function EditClassModulePage({ params }: { params: { id: string }
     }
     if (id) fetchModule();
   }, [id, router]);
+
+  // Cargar clases individuales y tipos para Warm Up del módulo
+  useEffect(() => {
+    fetch('/api/individualClass/getClasses?includeUnpublished=1', { credentials: 'include', cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => {
+        const arr = Array.isArray(data) ? [...data] : [];
+        arr.sort((a: any, b: any) => {
+          const aTime = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const bTime = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return bTime - aTime;
+        });
+        setIndividualClasses(
+          arr.map((x: any) => ({ _id: String(x._id), name: x.name || x.title || 'Clase sin nombre' }))
+        );
+      })
+      .catch(() => setIndividualClasses([]));
+  }, []);
+  useEffect(() => {
+    fetch('/api/individualClass/getClassTypes', { credentials: 'include', cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => setClassFilters(Array.isArray(data) ? data : []))
+      .catch(() => setClassFilters([]));
+  }, []);
 
   useEffect(() => {
     if (!id) {
@@ -217,6 +258,48 @@ export default function EditClassModulePage({ params }: { params: { id: string }
     }
   };
 
+  const createWarmUpIndividualClassAndUse = async () => {
+    const name = newWarmUpName.trim();
+    const videoUrl = newWarmUpVideoUrl.trim();
+    const description = (newWarmUpDescription || 'Calentamiento del módulo').trim();
+    if (!name || !videoUrl) {
+      toast.error('Nombre y URL del video son requeridos');
+      return;
+    }
+    setCreatingWarmUpClass(true);
+    try {
+      const r = await fetch('/api/individualClass/createFromWeeklyPath', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          name,
+          description,
+          videoUrl,
+          userEmail: auth.user?.email,
+          type: newWarmUpType.trim() || undefined
+        })
+      });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        throw new Error(d.error || 'Error al crear clase');
+      }
+      const created = await r.json();
+      setIndividualClasses((prev) => [...prev, { _id: created._id, name: created.name }]);
+      setWarmUpClassId(created._id);
+      setWarmUpSource('existing');
+      setNewWarmUpName('');
+      setNewWarmUpVideoUrl('');
+      setNewWarmUpDescription('');
+      setNewWarmUpType('');
+      toast.success('Clase de calentamiento creada.');
+    } catch (e: any) {
+      toast.error(e.message || 'Error al crear clase');
+    } finally {
+      setCreatingWarmUpClass(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -258,6 +341,7 @@ export default function EditClassModulePage({ params }: { params: { id: string }
           videoId: videoId || undefined,
           videoThumbnail: videoThumbnail || undefined,
           isActive,
+          warmUpClassId: hasWarmUpModule && warmUpClassId ? warmUpClassId : null,
         }),
       });
       const data = await res.json();
@@ -388,6 +472,139 @@ export default function EditClassModulePage({ params }: { params: { id: string }
                     </button>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+
+          {/* Warm Up del módulo (clase individual global para este módulo) */}
+          <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <p className="text-sm font-medium text-gray-900">Warm Up del módulo</p>
+                <p className="text-xs text-gray-600">
+                  Práctica de <span className="font-semibold">clase individual</span> recomendada como calentamiento general antes de las demás clases de este módulo.
+                </p>
+              </div>
+              <label className="inline-flex items-center gap-2 text-sm text-gray-900">
+                <input
+                  type="checkbox"
+                  checked={hasWarmUpModule}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setHasWarmUpModule(checked);
+                    if (!checked) setWarmUpClassId('');
+                  }}
+                  className="rounded border-gray-300 text-[#4F7CCF]"
+                />
+                <span>Calentamiento</span>
+              </label>
+            </div>
+            {hasWarmUpModule && (
+              <div className="mt-3 space-y-3">
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-1 text-sm text-gray-900">
+                    <input
+                      type="radio"
+                      name="warmUp-source"
+                      checked={warmUpSource === 'existing'}
+                      onChange={() => setWarmUpSource('existing')}
+                      className="text-[#4F7CCF]"
+                    />
+                    Usar clase existente
+                  </label>
+                  <label className="flex items-center gap-1 text-sm text-gray-900">
+                    <input
+                      type="radio"
+                      name="warmUp-source"
+                      checked={warmUpSource === 'new'}
+                      onChange={() => setWarmUpSource('new')}
+                      className="text-[#4F7CCF]"
+                    />
+                    Crear clase nueva
+                  </label>
+                </div>
+                {warmUpSource === 'existing' && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-900 mb-1">Clase individual como calentamiento</label>
+                    <select
+                      value={warmUpClassId}
+                      onChange={(e) => setWarmUpClassId(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 text-sm"
+                    >
+                      <option value="">Seleccionar clase individual</option>
+                      {individualClasses.map((ic) => (
+                        <option key={ic._id} value={ic._id}>
+                          {ic.name}
+                        </option>
+                      ))}
+                    </select>
+                    {individualClasses.length === 0 && (
+                      <p className="mt-1 text-xs text-gray-500">
+                        No hay clases individuales cargadas. Elegí &quot;Crear clase nueva&quot; para crear una desde acá.
+                      </p>
+                    )}
+                  </div>
+                )}
+                {warmUpSource === 'new' && (
+                  <div className="grid gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-900 mb-1">Nombre de la clase *</label>
+                      <input
+                        type="text"
+                        value={newWarmUpName}
+                        onChange={(e) => setNewWarmUpName(e.target.value)}
+                        placeholder="Ej: Calentamiento general"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-900 mb-1">Video URL (Vimeo) *</label>
+                      <input
+                        type="url"
+                        value={newWarmUpVideoUrl}
+                        onChange={(e) => setNewWarmUpVideoUrl(e.target.value)}
+                        placeholder="https://vimeo.com/..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-900 mb-1">Descripción *</label>
+                      <textarea
+                        value={newWarmUpDescription}
+                        onChange={(e) => setNewWarmUpDescription(e.target.value)}
+                        placeholder="Descripción de la clase"
+                        rows={2}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-900 mb-1">Tipo (filtro)</label>
+                      <select
+                        value={newWarmUpType}
+                        onChange={(e) => setNewWarmUpType(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 text-sm"
+                      >
+                        <option value="">Seleccionar tipo (opcional)</option>
+                        {(classFilters[0]?.values ?? []).map((v: { value: string; label: string }) => (
+                          <option key={v.value} value={v.value}>{v.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={createWarmUpIndividualClassAndUse}
+                        disabled={creatingWarmUpClass || !newWarmUpName.trim() || !newWarmUpVideoUrl.trim()}
+                        className="px-4 py-2 bg-[#4F7CCF] text-white rounded-lg text-sm font-medium hover:bg-[#234C8C] disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {creatingWarmUpClass ? 'Creando...' : 'Crear clase y usar como calentamiento'}
+                      </button>
+                      {warmUpClassId && (
+                        <span className="text-sm text-green-600">Clase asignada</span>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

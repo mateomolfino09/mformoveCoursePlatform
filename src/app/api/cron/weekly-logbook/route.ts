@@ -247,7 +247,7 @@ export async function GET(req: NextRequest) {
     let totalEmailsEnviados = 0;
     let clasesIndividualesCreadas = 0;
     const resultados = [];
-    
+
     // Buscar todas las caminos
     const logbooks = await WeeklyLogbook.find().lean();
     

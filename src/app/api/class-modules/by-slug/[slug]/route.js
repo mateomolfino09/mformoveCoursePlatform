@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '../../../../../config/connectDB';
 import ClassModule from '../../../../../models/classModuleModel';
 import ModuleClass from '../../../../../models/moduleClassModel';
+import IndividualClass from '../../../../../models/individualClassModel';
 
 connectDB();
 export const revalidate = 0;
@@ -30,8 +31,22 @@ export async function GET(req, { params }) {
       .sort({ submoduleSlug: 1, order: 1, createdAt: 1 })
       .lean();
 
+    // Cargar también la clase individual de Warm Up del módulo (si existe)
+    let warmUpClass = null;
+    if (module_.warmUpClassId) {
+      warmUpClass = await IndividualClass.findById(module_.warmUpClassId)
+        .select('id name image_url image_base_link minutes type')
+        .lean();
+    }
+
     return NextResponse.json(
-      { ...module_, practicesCountFromSubmodules: countModuleClasses, practicesCount, moduleClasses },
+      {
+        ...module_,
+        practicesCountFromSubmodules: countModuleClasses,
+        practicesCount,
+        moduleClasses,
+        warmUpClass,
+      },
       { status: 200 }
     );
   } catch (error) {

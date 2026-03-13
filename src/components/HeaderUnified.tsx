@@ -97,8 +97,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 
 	// Si suscrito: obtener tracking de coherencia (level, levelProgress para Camino; totalUnits para menú perfil)
 	useEffect(() => {
-		const hasAccess = auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin');
-		if (!hasAccess || !auth.user) {
+		const hasAccess = auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin');
+		if (!hasAccess || !auth?.user) {
 			setUserLevel(null);
 			setLevelProgress(0);
 			setTotalCoherenceUnits(null);
@@ -120,7 +120,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 			})
 			.catch(() => { if (!cancelled) { setUserLevel(null); setLevelProgress(0); setTotalCoherenceUnits(null); } });
 		return () => { cancelled = true; };
-	}, [auth.user]);
+	}, [auth?.user]);
 
 	// Escuchar actualizaciones de coherencia (p. ej. al completar una semana en el Camino) para actualizar el número en el menú de perfil
 	useEffect(() => {
@@ -425,7 +425,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 										</div>
 									)}
 								</div>
-								{auth?.user && (() => {
+								{auth && auth.user && (() => {
 									const hasSub = auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin';
 									const size = 40;
 									const r = 17;
@@ -473,7 +473,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								{/* Solo desktop: Menú + Admin + usuario */}
 								<div className='hidden md:flex items-center gap-3'>
 								{/* Sin acceso → Empezar Camino; con acceso → botón Menú (abre navegador Move Crew) */}
-								{isMoveCrew && !(auth?.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin')) && (
+								{isMoveCrew && !(auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin')) && (
 									<Link
 										href={`${routes.navegation.membership.moveCrew}#move-crew-plans`}
 										className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-5 py-2 shrink-0 transition-all duration-200 ${(isAnyMenuOpen || isWeeklyPath) ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : 'bg-black text-white border border-black hover:bg-palette-sage hover:border-palette-sage'}`}
@@ -504,7 +504,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 											)}
 										</button>
 									)}
-									{auth.user?.rol === 'Admin' && (
+								{auth?.user?.rol === 'Admin' && (
 										<button
 											type='button'
 											onClick={() => router.push('/admin')}
@@ -653,7 +653,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 					</div>
 					{/* Desktop: Menú (navegador Move Crew), Admin, avatar */}
 					<div className='hidden md:flex items-center gap-3 shrink-0'>
-						{isMoveCrew && !(auth?.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin')) && (
+						{isMoveCrew && !(auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin')) && (
 							<Link
 								href={`${routes.navegation.membership.moveCrew}#move-crew-plans`}
 								className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-5 py-2 transition-all duration-200 ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : 'bg-black text-white border border-black hover:bg-palette-sage hover:border-palette-sage'}`}
@@ -662,7 +662,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							</Link>
 						)}
 						<div className='flex items-center gap-3'>
-								{auth?.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin') && (!isBienvenida) && (
+								{auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin') && (!isBienvenida) && (
 									<button
 										type='button'
 										data-tutorial-move-crew-target
@@ -684,7 +684,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 										)}
 									</button>
 								)}
-								{auth.user?.rol === 'Admin' && (
+								{auth?.user?.rol === 'Admin' && (
 									<button
 										type='button'
 										onClick={() => router.push('/admin')}

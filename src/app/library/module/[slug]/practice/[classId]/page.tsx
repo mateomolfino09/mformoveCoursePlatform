@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   ArrowLeftIcon,
   CheckCircleIcon,
@@ -100,6 +101,7 @@ export default function ModulePracticePage({
   params: { slug: string; classId: string };
 }) {
   const { slug, classId } = params;
+  const router = useRouter();
   const [practice, setPractice] = useState<Practice | null>(null);
   const [moduleClasses, setModuleClasses] = useState<ModuleClass[]>([]);
   const [loading, setLoading] = useState(true);
@@ -118,6 +120,9 @@ export default function ModulePracticePage({
   const mobilePlayerRef = useRef<MoveCrewVideoPlayerHandle>(null);
   const desktopVideoRef = useRef<HTMLVideoElement>(null);
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
+  const [warmUpClass, setWarmUpClass] = useState<any | null>(null);
+  const [showWarmUpModal, setShowWarmUpModal] = useState(false);
+  const [warmUpCountdown, setWarmUpCountdown] = useState(12);
 
   /** Al pausar se abre el sidebar; al dar play se cierra y se pausa el otro reproductor (web/mobile). */
   const handlePlayingChangeDesktop = useCallback((playing: boolean) => {
@@ -160,12 +165,16 @@ export default function ModulePracticePage({
     fetch(`/api/class-modules/by-slug/${slug}`, { cache: 'no-store' })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (!cancelled && data?.moduleClasses) {
+        if (cancelled || !data) return;
+        if (data.moduleClasses) {
           setModuleClasses(
             (data.moduleClasses as ModuleClass[]).sort(
               (a, b) => (a.order ?? 0) - (b.order ?? 0)
             )
           );
+        }
+        if (data.warmUpClass) {
+          setWarmUpClass(data.warmUpClass);
         }
       })
       .catch(() => {});
@@ -197,11 +206,34 @@ export default function ModulePracticePage({
     setCountdown(INTRO_COUNTDOWN_SEC);
     setVideoCurrentTime(0);
     setVideoPlayingSource(null);
-  }, [classId]);
+    // Reiniciar modal de calentamiento al cambiar de clase
+    if (warmUpClass) {
+      setWarmUpCountdown(12);
+      setShowWarmUpModal(true);
+    } else {
+      setShowWarmUpModal(false);
+    }
+  }, [classId, warmUpClass]);
+
+  // Countdown del popup de calentamiento
+  useEffect(() => {
+    if (!showWarmUpModal || warmUpCountdown <= 0) return;
+    const t = setInterval(() => {
+      setWarmUpCountdown((c) => (c <= 0 ? 0 : c - 1));
+    }, 1000);
+    return () => clearInterval(t);
+  }, [showWarmUpModal, warmUpCountdown]);
+
+  // Cerrar modal de calentamiento automáticamente cuando llega a 0
+  useEffect(() => {
+    if (!showWarmUpModal || warmUpCountdown > 0) return;
+    setShowWarmUpModal(false);
+  }, [showWarmUpModal, warmUpCountdown]);
 
   // Countdown del popup de inicio (solo cuando el popup está visible)
   useEffect(() => {
     if (introDismissed || !practice) return;
+    if (showWarmUpModal) return; // Esperar a que termine el modal de calentamiento
     if (countdown <= 0) return;
     const t = setInterval(() => setCountdown((c) => (c <= 0 ? 0 : c - 1)), 1000);
     return () => clearInterval(t);
@@ -316,8 +348,62 @@ export default function ModulePracticePage({
         <div className="flex flex-col min-h-screen bg-palette-ink text-palette-cream font-montserrat overflow-x-clip max-w-[100vw] min-w-0 w-full" style={{ overflowX: 'clip' }}>
           {/* Video: mobile = 100% width + altura del video (aspect); web = 100vh, se achica al abrir sidebar */}
           <section className="relative w-full max-w-full md:h-screen md:min-h-[100vh] bg-palette-ink overflow-hidden overflow-x-clip shrink-0">
-            {/* Popup inicio: en mobile a pantalla completa, overlay 50%; en desktop card centrada */}
-            {!introDismissed && practice && (
+            {/* Popup calentamiento: mismo estilo que weekly path, previo al modal de Empieza en */}
+            {showWarmUpModal && warmUpClass && (
+              <div
+                className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 md:bg-black/70 md:backdrop-blur-sm transition-opacity duration-300"
+                role="dialog"
+                aria-labelledby="warmup-popup-title"
+              >
+                <div
+                  className="practice-popup-card w-full min-h-[200px] md:min-h-0 md:max-w-sm flex flex-col justify-center rounded-none md:rounded-3xl border-0 md:border md:border-palette-stone/20 bg-palette-ink md:shadow-2xl transition-all duration-500 ease-out"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex flex-col items-center gap-6 md:gap-5 p-6 md:px-8 pt-20 max-w-md mx-auto w-full text-center">
+                    <header className="space-y-1 text-center flex flex-col items-center">
+                      <h2 id="warmup-popup-title" className="font-montserrat text-lg md:text-xl font-light text-white tracking-wide leading-tight">
+                        ¿Ya calentaste?
+                      </h2>
+                      <p className="text-palette-cream/80 text-xs font-light">
+                        {warmUpClass.name}
+                      </p>
+                    </header>
+                    <div className="flex flex-col items-center justify-center py-2 md:py-4 border-y border-palette-stone/20 w-full">
+                      <span className="text-palette-stone/80 text-xs font-light uppercase tracking-wider">
+                        Empieza en
+                      </span>
+                      <span className="font-montserrat text-2xl md:text-3xl font-light tabular-nums text-palette-sage mt-1 transition-all duration-300">
+                        {warmUpCountdown > 0 ? warmUpCountdown : '¡Listo!'}
+                      </span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3 pt-1 w-full justify-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const targetId = warmUpClass.id ?? warmUpClass._id;
+                          setShowWarmUpModal(false);
+                          if (targetId) {
+                            router.push(`/library/individual-classes/${targetId}`);
+                          }
+                        }}
+                        className="flex-1 rounded-xl bg-palette-sage text-palette-ink text-sm font-light py-3 px-4 transition-all duration-200 hover:bg-palette-sage/90 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-palette-sage focus:ring-offset-2 focus:ring-offset-palette-ink"
+                      >
+                        Hacer Calentamiento
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowWarmUpModal(false)}
+                        className="flex-1 rounded-xl border border-palette-stone/40 bg-palette-stone/10 text-palette-cream text-sm font-light py-3 px-4 transition-all duration-200 hover:bg-palette-stone/20 hover:border-palette-stone/50 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-palette-stone focus:ring-offset-2 focus:ring-offset-palette-ink"
+                      >
+                        Ya entré en calor
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {/* Popup inicio: en mobile a pantalla completa, overlay 50%; en desktop card centrada (solo después del calentamiento) */}
+            {!introDismissed && practice && !showWarmUpModal && (
               <div
                 className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 md:bg-black/70 md:backdrop-blur-sm transition-opacity duration-300"
                 role="dialog"
@@ -328,7 +414,7 @@ export default function ModulePracticePage({
                   className="practice-popup-card w-full min-h-0 md:max-w-sm flex flex-col justify-center rounded-none md:rounded-3xl border-0 md:border md:border-palette-stone/20 bg-palette-ink md:shadow-2xl transition-all duration-500 ease-out"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className="flex flex-col items-center gap-6 md:gap-5 p-6 md:p-8 max-w-md mx-auto w-full text-center">
+                  <div className="flex flex-col items-center gap-6 md:gap-5 p-6 md:px-8 pt-16 max-w-md mx-auto w-full text-center">
                     {/* Título y duración: sin ancho forzado, más espacio debajo */}
                     <header className="space-y-1 text-center flex flex-col items-center">
                       <h2 id="intro-popup-title" className="font-montserrat text-lg md:text-xl font-light text-white tracking-wide leading-tight">

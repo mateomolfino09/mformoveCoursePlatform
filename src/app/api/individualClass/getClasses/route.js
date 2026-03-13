@@ -33,6 +33,8 @@ export async function GET(request) {
       query.visibleInLibrary = { $ne: false };
     }
     let classes = await IndividualClass.find(query)
+      // Orden descendente: primero las clases más nuevas / últimas creadas/publicadas
+      .sort({ createdAt: -1, id: -1 })
       .populate(populateModule ? 'moduleId' : null)
       .lean();
 
