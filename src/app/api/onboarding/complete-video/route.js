@@ -4,7 +4,6 @@ import connectDB from '../../../../config/connectDB';
 import jwt from 'jsonwebtoken';
 import { EmailService } from '../../../../services/email/emailService';
 import CoherenceTracking, { getGorillaIcon, getEvolutionName, getProgressToNextLevel } from '../../../../models/coherenceTrackingModel';
-import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
 
 const VIDEOS_ORDER = ['elCinturon', 'laEspiral', 'elRango', 'elCuerpoUtil'];
 
@@ -117,112 +116,28 @@ export async function POST(req) {
 
     await user.save();
 
-    // Otorgar U.C. por completar el video usando addCoherenceUnit
-    let ucResult = null;
+    // U.C. deshabilitado: ya no se otorgan unidades por completar videos del camino base
     let tracking = null;
-    let newAchievements = [];
     try {
-      // Obtener el logbookId de la camino base
-      const bitacoraBase = await WeeklyLogbook.findOne({ isBaseBitacora: true })
-        .sort({ createdAt: -1 })
-        .lean();
-      
-      if (!bitacoraBase) {
-        throw new Error('Camino base no encontrada');
-      }
-
-      const logbookId = bitacoraBase._id.toString();
-      
-      // Obtener o crear tracking usando el método estático
       tracking = await CoherenceTracking.getOrCreate(userId);
-
-      // Usar addCoherenceUnit para otorgar U.C. (weekNumber = videoIndex + 1 para que coincida con el orden)
-      const weekNumber = videoIndex + 1;
-      
-      // Guardar el nivel y evolución antes de agregar la unidad de coherencia
-      const levelBefore = tracking.level || 1;
-      const evolutionBefore = tracking.characterEvolution || 0;
-      const levelProgressBefore = tracking.levelProgress !== undefined && tracking.levelProgress !== null ? tracking.levelProgress : 0;
-      
-      ucResult = await tracking.addCoherenceUnit(logbookId, 'visual', weekNumber, null, 0);
-      
-      let levelUp = false;
-      let evolution = false;
-      
-      if (ucResult.success) {
-        newAchievements = ucResult.newAchievements || [];
-        await tracking.save();
-        
-        // Para camino base, si addCoherenceUnit no otorgó U.C. (porque detectó que ya estaba completado),
-        // pero el video NO estaba completado en el User, entonces otorgar 1 U.C. manualmente
-        if ((ucResult.ucsOtorgadas || 0) === 0) {
-          // El video no estaba completado en el User, pero addCoherenceUnit detectó que ya estaba completado
-          // en weeklyCompletions. Para camino base, siempre otorgar 1 U.C. la primera vez según el User
-          tracking.totalUnits = (tracking.totalUnits || 0) + 1;
-          await tracking.save();
-          // Actualizar ucResult para reflejar que se otorgó 1 U.C.
-          ucResult.ucsOtorgadas = 1;
-        }
-        
-        // En camino base, cada video otorga 2 unidades de levelProgress (2/8 = 25%)
-        // addCoherenceUnit ya otorgó 1, así que incrementamos 1 más
-        if (tracking.levelProgress === undefined || tracking.levelProgress === null) {
-          tracking.levelProgress = 0;
-        }
-        tracking.levelProgress += 1;
-        
-        // Verificar si al incrementar llega a 8, subir de nivel
-        if (tracking.levelProgress >= 8) {
-          tracking.level += 1;
-          tracking.levelProgress = 0; // Reiniciar a 0
-          levelUp = true;
-          // Incrementar meses completados cuando subes de nivel
-          if (tracking.monthsCompleted === undefined || tracking.monthsCompleted === null) {
-            tracking.monthsCompleted = 0;
-          }
-          tracking.monthsCompleted += 1;
-          
-          // Verificar si hay evolución (cada 10 niveles)
-          const newEvolution = Math.floor((tracking.level - 1) / 10);
-          if (newEvolution > evolutionBefore) {
-            tracking.characterEvolution = newEvolution;
-            evolution = true;
-          }
-        }
-        
-        await tracking.save();
-        
-        // Verificar y desbloquear logros
-        const unlockedAchievements = tracking.checkAndUnlockAchievements();
-        if (unlockedAchievements.length > 0) {
-          newAchievements = [...newAchievements, ...unlockedAchievements];
-          await tracking.save();
-        }
-      }
-      
-      // Obtener el tracking actualizado para incluir todos los campos
       const trackingUpdated = await CoherenceTracking.findOne({ userId: userId });
-      
-      // Preparar respuesta con todos los campos necesarios
       const level = trackingUpdated?.level || 1;
-      const levelProgress = trackingUpdated?.levelProgress !== undefined && trackingUpdated?.levelProgress !== null 
-        ? trackingUpdated?.levelProgress 
+      const levelProgress = trackingUpdated?.levelProgress !== undefined && trackingUpdated?.levelProgress !== null
+        ? trackingUpdated?.levelProgress
         : 0;
       const gorillaIcon = getGorillaIcon(level);
       const evolutionName = getEvolutionName(level);
       const progressToNextLevel = getProgressToNextLevel(levelProgress);
-      const newLevel = level;
       const monthsCompleted = trackingUpdated?.monthsCompleted || 0;
 
       return NextResponse.json({
         success: true,
         videoCompletado: videoId,
         bitacoraCompletada: todosCompletados,
-        siguienteVideo: videoIndex < VIDEOS_ORDER.length - 1 
-          ? VIDEOS_ORDER[videoIndex + 1] 
+        siguienteVideo: videoIndex < VIDEOS_ORDER.length - 1
+          ? VIDEOS_ORDER[videoIndex + 1]
           : null,
-        // Datos de U.C. para el modal
-        ucsOtorgadas: ucResult?.ucsOtorgadas || 0,
+        ucsOtorgadas: 0, // U.C. deshabilitado
         tracking: {
           totalUnits: trackingUpdated?.totalUnits || 0,
           currentStreak: trackingUpdated?.currentStreak || 0,
@@ -235,51 +150,25 @@ export async function POST(req) {
           evolutionName: evolutionName,
           progressToNextLevel: progressToNextLevel
         },
-        esSemanaAdicional: ucResult?.esSemanaAdicional || false,
-        newAchievements: newAchievements.map(ach => ({
-          name: ach.name,
-          description: ach.description,
-          icon: ach.icon
-        })),
-        levelUp: levelUp || ucResult?.levelUp || false,
-        newLevel: newLevel,
-        evolution: evolution || ucResult?.evolution || false,
+        esSemanaAdicional: false,
+        newAchievements: [],
+        levelUp: false,
+        newLevel: level,
+        evolution: false,
         gorillaIcon: gorillaIcon,
         evolutionName: evolutionName,
         levelProgress: levelProgress,
         progressToNextLevel: progressToNextLevel
       }, { status: 200 });
-      
-    } catch (ucError) {
-      console.error('Error otorgando U.C. en camino base:', ucError);
-      
-      // Si hay error, intentar obtener el tracking actual para devolver datos básicos
-      try {
-        tracking = await CoherenceTracking.findOne({ userId: userId });
-      } catch (e) {
-        // Ignorar error
-      }
-      
+    } catch (err) {
+      console.error('Error obteniendo tracking (U.C. deshabilitado):', err);
       return NextResponse.json({
         success: true,
         videoCompletado: videoId,
         bitacoraCompletada: todosCompletados,
-        siguienteVideo: videoIndex < VIDEOS_ORDER.length - 1 
-          ? VIDEOS_ORDER[videoIndex + 1] 
-          : null,
+        siguienteVideo: videoIndex < VIDEOS_ORDER.length - 1 ? VIDEOS_ORDER[videoIndex + 1] : null,
         ucsOtorgadas: 0,
-        tracking: tracking ? {
-          totalUnits: tracking.totalUnits || 0,
-          currentStreak: tracking.currentStreak || 0,
-          longestStreak: tracking.longestStreak || 0,
-          level: tracking.level || 1,
-          levelProgress: tracking.levelProgress !== undefined && tracking.levelProgress !== null ? tracking.levelProgress : 0,
-          monthsCompleted: tracking.monthsCompleted || 0,
-          characterEvolution: tracking.characterEvolution || 0,
-          gorillaIcon: getGorillaIcon(tracking.level || 1),
-          evolutionName: getEvolutionName(tracking.level || 1),
-          progressToNextLevel: getProgressToNextLevel(tracking.levelProgress !== undefined && tracking.levelProgress !== null ? tracking.levelProgress : 0)
-        } : null,
+        tracking: null,
         esSemanaAdicional: false,
         newAchievements: []
       }, { status: 200 });

@@ -200,6 +200,11 @@ const weeklyContentSchema = new mongoose.Schema({
     type: Number,
     default: -1,
     min: -1
+  },
+  /** Indica si esta semana muestra o no el Warm Up del camino mensual. */
+  hasWarmUp: {
+    type: Boolean,
+    default: false
   }
 }, { _id: false });
 
@@ -233,6 +238,15 @@ const weeklyLogbookSchema = new mongoose.Schema({
   modules: {
     type: [pathModuleSchema],
     default: []
+  },
+  /** Contenido recomendado como "Warm Up" para este camino mensual.
+   *  Es un ítem de contenido (clase de módulo, clase individual, audio, etc.)
+   *  que se sugiere hacer primero cuando el alumno empieza a ver clases de este camino.
+   *  Las semanas que tengan hasWarmUp=true lo mostrarán como recomendado.
+   */
+  warmUpContent: {
+    type: weekContentItemSchema,
+    default: null
   },
   weeklyContents: [weeklyContentSchema],
   // Evita generar clases individuales duplicadas al publicar la última semana

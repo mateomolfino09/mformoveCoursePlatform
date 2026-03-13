@@ -169,7 +169,7 @@ const MoveCrewHero = () => {
           {tagline}
         </p>
       </div>
-      <div className="w-[85%] max-w-7xl mx-auto pt-24 mt-20 pb-10 md:py-14 flex flex-col md:flex-row md:items-start md:gap-10 lg:gap-14">
+      <div className="w-[85%] max-w-6xl mx-auto pt-24 mt-20 pb-10 md:py-14 flex flex-col md:flex-row md:items-start md:gap-10 lg:gap-14">
 
         <div className="w-full min-w-0 order-2 md:order-1 md:flex-1 text-center">
         <motion.div
@@ -234,27 +234,25 @@ const MoveCrewHero = () => {
                 <div className="absolute left-1/2 top-0 z-0 h-full w-[106.67vh] -translate-x-1/2 pointer-events-none md:left-0 md:w-full md:translate-x-0">
                   <div ref={videoRef} className="absolute inset-0 w-full h-full min-h-[300px]" />
                 </div>
-                {/* Controles siempre visibles, por encima del iframe */}
-                <div className="absolute bottom-3 md:bottom-24  left-3 z-[100] flex items-center justify-center pointer-events-auto">
+                {/* Controles siempre visibles, por encima del iframe — en web misma fila y altura para alineación */}
+                <div className="absolute bottom-3 md:bottom-6 left-3 right-3 z-[100] flex items-center justify-between md:justify-start md:gap-3 pointer-events-auto">
                   <button
                     onClick={handlePlayPause}
                     onMouseDown={(e) => e.stopPropagation()}
                     aria-label={isVideoPlaying ? 'Pausar' : 'Reproducir'}
-                    className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-black/80 hover:bg-black flex items-center justify-center text-white transition-colors shadow-xl border-2 border-white/40"
+                    className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-black/80 hover:bg-black flex items-center justify-center text-white transition-colors shadow-xl border-2 border-white/40 shrink-0"
                   >
                     {isVideoPlaying ? (
-                      <PauseIcon className="w-7 h-7 md:w-8 md:h-8" />
+                      <PauseIcon className="w-6 h-6 md:w-7 md:h-7" />
                     ) : (
-                      <PlayIcon className="w-7 h-7 md:w-8 md:h-8 ml-1" />
+                      <PlayIcon className="w-6 h-6 md:w-7 md:h-7 ml-0.5" />
                     )}
                   </button>
-                </div>
-                <div className="absolute bottom-3 md:bottom-24 right-3 z-[100] flex items-center justify-center pointer-events-auto">
                   <button
                     onClick={handleMuteToggle}
                     onMouseDown={(e) => e.stopPropagation()}
                     aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}
-                    className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-black/80 hover:bg-black flex items-center justify-center text-white transition-colors shadow-xl border-2 border-white/40"
+                    className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-black/80 hover:bg-black flex items-center justify-center text-white transition-colors shadow-xl border-2 border-white/40 shrink-0"
                   >
                     {isMuted ? (
                       <SpeakerXMarkIcon className="w-5 h-5 md:w-6 md:h-6" />
@@ -277,7 +275,7 @@ const MoveCrewHero = () => {
       </div>
 
       {/* Indicador de scroll: icono de mouse centrado abajo */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5">
+      <div className="absolute bottom-3 md:bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5">
         <div className="w-6 h-9 rounded-full border-2 border-palette-ink/70 flex justify-center pt-1.5">
           <div className="w-0.5 h-2 rounded-full bg-palette-ink/70 animate-pulse" />
         </div>

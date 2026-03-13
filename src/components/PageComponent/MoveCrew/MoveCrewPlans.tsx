@@ -407,7 +407,7 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
 
   return (
     <section className="py-16 md:py-20 bg-palette-cream font-montserrat" id="move-crew-plans">
-      <div className="w-[85%] max-w-6xl mx-auto px-4">
+      <div className="w-[85%] max-w-6xl mx-auto px-4 text-left">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

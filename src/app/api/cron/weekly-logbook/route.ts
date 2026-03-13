@@ -247,7 +247,7 @@ export async function GET(req: NextRequest) {
     let totalEmailsEnviados = 0;
     let clasesIndividualesCreadas = 0;
     const resultados = [];
-    
+
     // Buscar todas las caminos
     const logbooks = await WeeklyLogbook.find().lean();
     
@@ -432,6 +432,11 @@ export async function GET(req: NextRequest) {
             if (c.individualClassId) individualClassIds.push(String(c.individualClassId));
           }
         }
+      }
+      // Incluir también la práctica de Warm Up mensual si es una clase individual
+      const warmUp = (logbook as any)?.warmUpContent;
+      if (warmUp?.individualClassId) {
+        individualClassIds.push(String(warmUp.individualClassId));
       }
 
       const caminoCompletoPublicado = currentWeekNum != null && currentWeekNum >= maxWeekNumber;

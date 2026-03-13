@@ -184,6 +184,10 @@ export async function GET(req, { params }) {
       }
       await hydrateWeeklyContents(logbook.weeklyContents);
     }
+    if (logbook.warmUpContent && typeof logbook.warmUpContent === 'object') {
+      const fakeWeek = { contents: [logbook.warmUpContent] };
+      await hydrateWeeklyContents([fakeWeek]);
+    }
 
     return NextResponse.json(
       { logbook },

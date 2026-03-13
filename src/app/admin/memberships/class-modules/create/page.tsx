@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AdmimDashboardLayout from '../../../../../components/AdmimDashboardLayout';
@@ -34,6 +34,9 @@ export default function CreateClassModulePage() {
   const [submoduleName, setSubmoduleName] = useState('');
   const [submodules, setSubmodules] = useState<{ name: string; slug: string; initialClasses: { name: string; videoUrl: string; level: number; materials: string[] }[] }[]>([]);
   const [noSubmoduleInitialClasses, setNoSubmoduleInitialClasses] = useState<{ name: string; videoUrl: string; level: number; materials: string[] }[]>([]);
+  const [hasWarmUpModule, setHasWarmUpModule] = useState(false);
+  const [warmUpClassId, setWarmUpClassId] = useState<string>('');
+  const [individualClasses, setIndividualClasses] = useState<{ _id: string; name: string }[]>([]);
 
   const addImageByUrl = () => {
     const url = galleryUrlInput.trim();
@@ -50,6 +53,24 @@ export default function CreateClassModulePage() {
 
   const removeGalleryFile = (idx: number) => setGalleryFiles(prev => prev.filter((_, i) => i !== idx));
   const removeGalleryImage = (idx: number) => setGalleryImages(prev => prev.filter((_, i) => i !== idx));
+
+  // Cargar clases individuales para poder elegir una como Warm Up del módulo
+  useEffect(() => {
+    fetch('/api/individualClass/getClasses?includeUnpublished=1', { credentials: 'include', cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => {
+        const arr = Array.isArray(data) ? [...data] : [];
+        arr.sort((a: any, b: any) => {
+          const aTime = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const bTime = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return bTime - aTime;
+        });
+        setIndividualClasses(
+          arr.map((x: any) => ({ _id: String(x._id), name: x.name || x.title || 'Clase sin nombre' }))
+        );
+      })
+      .catch(() => setIndividualClasses([]));
+  }, []);
 
   const addSubmodule = () => {
     const trimmed = submoduleName.trim();
@@ -89,8 +110,8 @@ export default function CreateClassModulePage() {
     setSubmodules(prev => prev.map((s, i) => i === subIdx ? { ...s, initialClasses: s.initialClasses.filter((_, j) => j !== classIdx) } : s));
   };
 
-  const addNoSubmoduleClass = () => setNoSubmoduleInitialClasses(prev => [...prev, { name: '', videoUrl: '', level: 1, materials: [] }]);
-  const updateNoSubmoduleClass = (classIdx: number, field: 'name' | 'videoUrl' | 'level' | 'materials', value: string | number | string[]) => {
+  const addNoSubmoduleClass = () => setNoSubmoduleInitialClasses(prev => [...prev, { name: '', videoUrl: '', level: 1, materials: [], isWarmUp: false }]);
+  const updateNoSubmoduleClass = (classIdx: number, field: 'name' | 'videoUrl' | 'level' | 'materials' | 'isWarmUp', value: string | number | string[] | boolean) => {
     setNoSubmoduleInitialClasses(prev => prev.map((c, i) => i === classIdx ? { ...c, [field]: value } : c));
   };
   const toggleNoSubmoduleMaterial = (classIdx: number, mat: string) => {
@@ -152,6 +173,7 @@ export default function CreateClassModulePage() {
           videoId: videoId || undefined,
           videoThumbnail: videoThumbnail || undefined,
           isActive,
+          warmUpClassId: hasWarmUpModule && warmUpClassId ? warmUpClassId : null,
         }),
       });
       const data = await res.json();
@@ -420,7 +442,7 @@ export default function CreateClassModulePage() {
                             <span className="block text-xs font-medium text-gray-900 mb-1">Materiales a usar en clase</span>
                             <div className="flex flex-wrap gap-2">
                               {MODULE_CLASS_MATERIALS.map((mat) => (
-                                <label key={mat} className="inline-flex items-center gap-1.5 cursor-pointer text-sm text-gray-900">
+                            <label key={mat} className="inline-flex items-center gap-1.5 cursor-pointer text-sm text-gray-900">
                                   <input type="checkbox" checked={(c.materials || []).includes(mat)} onChange={() => toggleInitialClassMaterial(idx, cIdx, mat)} className="rounded border-gray-400 text-[#4F7CCF]" />
                                   <span className="capitalize">{mat}</span>
                                 </label>

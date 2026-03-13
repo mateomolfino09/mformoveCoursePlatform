@@ -62,6 +62,7 @@ export default function LibraryModulePage({ params }: { params: { slug: string }
           submodules: moduleData.submodules ?? [],
           practicesCount: moduleData.practicesCount ?? 0,
           moduleClasses: Array.isArray(moduleData.moduleClasses) ? moduleData.moduleClasses : [],
+          warmUpClass: moduleData.warmUpClass ?? null,
         });
         setClasses(Array.isArray(classesData) ? classesData : []);
         setVideoReady(false);

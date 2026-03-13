@@ -111,11 +111,20 @@ const VideoContentDisplay = ({
     setCountdown(INTRO_COUNTDOWN_SEC);
   }, [vimeoId || videoUrl]);
 
+  // Cuando el overlay de intro pasa a visible (ej. tras cerrar el modal de calentamiento), iniciar countdown
+  const prevShowIntroOverlay = useRef(showIntroOverlay);
   useEffect(() => {
-    if (introDismissed || countdown <= 0) return;
+    if (showIntroOverlay && !prevShowIntroOverlay.current) {
+      setCountdown(INTRO_COUNTDOWN_SEC);
+    }
+    prevShowIntroOverlay.current = showIntroOverlay;
+  }, [showIntroOverlay]);
+
+  useEffect(() => {
+    if (!showIntroOverlay || introDismissed || countdown <= 0) return;
     const t = setInterval(() => setCountdown((c) => (c <= 0 ? 0 : c - 1)), 1000);
     return () => clearInterval(t);
-  }, [introDismissed, countdown]);
+  }, [showIntroOverlay, introDismissed, countdown]);
 
   const startVideo = useCallback(() => {
     setIntroDismissed(true);

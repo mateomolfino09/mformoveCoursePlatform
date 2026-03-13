@@ -61,11 +61,11 @@ const CoherenceCelebrationModal = ({
               className="pointer-events-auto w-full max-w-sm"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="rounded-2xl border border-palette-stone/20 bg-palette-cream shadow-2xl overflow-hidden">
+              <div className="rounded-2xl border border-palette-stone/20 bg-palette-cream shadow-2xl overflow-hidden min-h-[240px] md:min-h-[300px] flex items-stretch">
                 {/* Barra superior sage — marca Move Crew */}
                 <div className="h-1.5 w-full bg-palette-sage" />
 
-                <div className="p-6 md:p-8 text-center font-montserrat">
+                <div className="p-6 md:p-8 text-center font-montserrat flex flex-col justify-between w-full">
                   {/* Icono minimalista */}
                   <motion.div
                     initial={{ scale: 0 }}

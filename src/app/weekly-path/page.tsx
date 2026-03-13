@@ -6,7 +6,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   CheckCircleIcon, 
-  LockClosedIcon
+  LockClosedIcon,
+  PlayIcon
 } from '@heroicons/react/24/solid';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { CldImage } from 'next-cloudinary';
@@ -93,6 +94,8 @@ interface WeeklyContent {
   publishDate: string;
   isPublished: boolean;
   isUnlocked: boolean;
+  /** Indica si esta semana muestra o no el Warm Up del camino mensual. */
+  hasWarmUp?: boolean;
   // Legacy fields para compatibilidad
   videoUrl?: string;
   videoId?: string;
@@ -109,6 +112,8 @@ interface Logbook {
   year: number;
   title: string;
   description: string;
+  /** Contenido recomendado como Warm Up global del mes. */
+  warmUpContent?: WeekContentItem | null;
   weeklyContents: WeeklyContent[];
 }
 
@@ -184,6 +189,11 @@ function WeeklyPathPageContent() {
     nextTitle?: string;
   } | null>(null);
   const skipNextSelectionEffectRef = useRef(false);
+  /** Control del pop up de Warm Up previo a la clase. */
+  const [showWarmUpModal, setShowWarmUpModal] = useState(false);
+  const [warmUpDismissedWeeks, setWarmUpDismissedWeeks] = useState<number[]>([]);
+  /** Contador del popup de calentamiento: 12 segundos, al llegar a 0 se cierra. */
+  const [warmUpCountdown, setWarmUpCountdown] = useState(12);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -832,6 +842,24 @@ function WeeklyPathPageContent() {
       };
     };
 
+    // Vista de calentamiento (contentIndex -1 desde el sidebar)
+    if (selectedContentIndex === -1 && week.hasWarmUp && logbook.warmUpContent) {
+      const w = logbook.warmUpContent;
+      if (w.contentType === 'audio') return pickAudioFromContent(w);
+      if (w.contentType === 'zoomEvent') {
+        return {
+          type: 'zoomEvent' as const,
+          title: w.title || w.videoName || 'Calentamiento',
+          description: (w as any).description,
+          zoomLink: (w as any).zoomLink,
+          eventDate: (w as any).eventDate,
+          startTime: (w as any).startTime,
+          moveCrewEventId: w.moveCrewEventId
+        };
+      }
+      return pickVideoFromContent(w);
+    }
+
     if (useContents && c) {
       if (c.contentType === 'audio') return pickAudioFromContent(c);
       if (c.contentType === 'zoomEvent') {
@@ -875,6 +903,53 @@ function WeeklyPathPageContent() {
     return pickVideo() || pickAudio() || null;
   };
 
+  const selectedContent = getSelectedContent();
+  const selectedWeekData = logbook?.weeklyContents.find(w => w.weekNumber === selectedWeek) || null;
+
+  // Solo consideramos que hay una clase de módulo seleccionada cuando el ítem fuente es contentType === 'moduleClass'
+  const isModuleClassSelected = React.useMemo(() => {
+    if (!logbook || selectedWeek == null) return false;
+    if (selectedContentIndex == null || selectedContentIndex < 0) return false;
+    const week = logbook.weeklyContents.find((w) => w.weekNumber === selectedWeek);
+    if (!week || !Array.isArray(week.contents)) return false;
+    const src = week.contents[selectedContentIndex];
+    return src?.contentType === 'moduleClass';
+  }, [logbook, selectedWeek, selectedContentIndex]);
+
+  // Mostrar pop up de Warm Up solo si la semana tiene calentamiento activo, existe contenido global
+  // y la clase seleccionada es de módulo (no para individuales ni Zoom)
+  useEffect(() => {
+    if (!logbook || selectedWeek == null) return;
+    if (selectedContentIndex === -1) return;
+    const weekData = logbook.weeklyContents.find(w => w.weekNumber === selectedWeek);
+    if (!weekData || weekData.hasWarmUp !== true || !logbook.warmUpContent) return;
+    if (!isModuleClassSelected) return;
+    if (warmUpDismissedWeeks.includes(weekData.weekNumber)) return;
+    // Solo abrir y resetear countdown cuando el modal está cerrado, para no reiniciar el contador en cada render
+    if (!showWarmUpModal) {
+      setWarmUpCountdown(12);
+      setShowWarmUpModal(true);
+    }
+  }, [logbook, selectedWeek, selectedContentIndex, isModuleClassSelected, warmUpDismissedWeeks, showWarmUpModal]);
+
+  // Contador de 12 segundos en el popup de calentamiento; al llegar a 0 se cierra
+  useEffect(() => {
+    if (!showWarmUpModal || warmUpCountdown <= 0) return;
+    const t = setInterval(() => {
+      setWarmUpCountdown((c) => (c <= 0 ? 0 : c - 1));
+    }, 1000);
+    return () => clearInterval(t);
+  }, [showWarmUpModal, warmUpCountdown]);
+
+  // Cuando el contador llega a 0, marcar la semana como avisada y cerrar el modal
+  useEffect(() => {
+    if (!showWarmUpModal || warmUpCountdown > 0) return;
+    if (selectedWeek != null && !warmUpDismissedWeeks.includes(selectedWeek)) {
+      setWarmUpDismissedWeeks((prev) => [...prev, selectedWeek]);
+    }
+    setShowWarmUpModal(false);
+  }, [showWarmUpModal, warmUpCountdown, selectedWeek, warmUpDismissedWeeks]);
+
   if (initialLoading || loading) {
     return <WeeklyPathSkeleton />;
   }
@@ -899,9 +974,6 @@ function WeeklyPathPageContent() {
       </div>
     );
   }
-
-  const selectedContent = getSelectedContent();
-  const selectedWeekData = logbook?.weeklyContents.find(w => w.weekNumber === selectedWeek) || null;
 
   return (
     <>
@@ -1017,7 +1089,11 @@ function WeeklyPathPageContent() {
               ) ? (
                 <div className="relative w-full md:min-h-screen">
                   {selectedContent.type === 'visual' ? (
-                    <div key={`visual-${selectedWeek}-${selectedDay}-${selectedContentIndex ?? 0}`} className="w-full md:min-h-[80vh]">
+                    <div
+                      key={`visual-${selectedWeek}-${selectedDay}-${selectedContentIndex ?? 0}`}
+                      className="relative w-full"
+                    >
+   
                       <VideoContentDisplay
                         videoUrl={selectedContent.videoUrl}
                         videoId={selectedContent.videoId}
@@ -1036,6 +1112,7 @@ function WeeklyPathPageContent() {
                         logbookId={logbook?._id}
                         weekNumber={selectedWeek || undefined}
                         dayNumber={selectedDay || undefined}
+                        showIntroOverlay={!showWarmUpModal}
                       />
                     </div>
                   ) : selectedContent.type === 'zoomEvent' ? (
@@ -1225,6 +1302,85 @@ function WeeklyPathPageContent() {
         </section>
       </div>
       </MainSideBar>
+
+      {/* Pop up Warm Up del mes: previo a la clase, similar a modales existentes */}
+      <AnimatePresence>
+        {showWarmUpModal && selectedWeekData?.hasWarmUp === true && logbook?.warmUpContent && selectedContent && (
+          <motion.div
+            className="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/50 md:bg-black/70"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => {
+              const weekNumber = selectedWeekData.weekNumber;
+              if (!warmUpDismissedWeeks.includes(weekNumber)) {
+                setWarmUpDismissedWeeks(prev => [...prev, weekNumber]);
+              }
+              setShowWarmUpModal(false);
+            }}
+            >
+            <motion.div
+              className="relative z-10 w-full min-h-[280px] md:min-h-[340px] md:max-w-md flex flex-col justify-center rounded-none md:rounded-3xl border-0 md:border md:border-palette-stone/20 bg-palette-ink md:shadow-2xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              >
+              <div className="flex flex-col items-center gap-6 md:gap-7 p-7 md:p-9 max-w-md mx-auto w-full text-center">
+                <div className="space-y-1.5 md:space-y-2">
+                  <h2 className="text-palette-cream/90 text-lg md:text-xl font-light font-montserrat">
+                    ¿Ya calentaste?
+                  </h2>
+                  {logbook.warmUpContent?.videoName && (
+                    <p className="text-palette-cream/80 text-xs md:text-sm font-light font-montserrat">
+                      {logbook.warmUpContent.videoName}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-col items-center justify-center py-3 md:py-5 border-y border-palette-stone/20 w-full space-y-1.5">
+                  <span className="text-palette-stone/80 text-xs md:text-sm font-light uppercase tracking-wider">Empieza en</span>
+                  <span className="font-montserrat text-2xl md:text-3xl font-light tabular-nums text-palette-sage">
+                    {warmUpCountdown > 0 ? warmUpCountdown : '¡Listo!'}
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-1 w-full justify-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const weekNumber = selectedWeekData.weekNumber;
+                      if (!warmUpDismissedWeeks.includes(weekNumber)) {
+                        setWarmUpDismissedWeeks(prev => [...prev, weekNumber]);
+                      }
+                      setShowWarmUpModal(false);
+                      if (selectedWeek != null) {
+                        handleSelect(selectedWeek, null, 'visual', -1);
+                      }
+                    }}
+                    className="flex-1 rounded-xl bg-palette-sage text-palette-ink text-sm font-light py-3 px-4 transition-all duration-200 hover:bg-palette-sage/90 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-palette-sage focus:ring-offset-2 focus:ring-offset-palette-ink"
+                  >
+                    Hacer Calentamiento
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const weekNumber = selectedWeekData.weekNumber;
+                      if (!warmUpDismissedWeeks.includes(weekNumber)) {
+                        setWarmUpDismissedWeeks(prev => [...prev, weekNumber]);
+                      }
+                      setShowWarmUpModal(false);
+                    }}
+                    className="flex-1 rounded-xl border border-palette-stone/40 bg-palette-stone/10 text-palette-cream text-sm font-light py-3 px-4 transition-all duration-200 hover:bg-palette-stone/20 hover:border-palette-stone/50 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-palette-stone focus:ring-offset-2 focus:ring-offset-palette-ink"
+                  >
+                    Ya entré en calor
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Modal de celebración U.C. — comentado hasta tener la tienda (obtención unidades de coherencia se incorporará más adelante)
       {celebrationData && (

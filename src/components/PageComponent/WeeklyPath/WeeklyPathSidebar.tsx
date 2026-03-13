@@ -61,6 +61,8 @@ interface WeeklyContent {
   publishDate: string;
   isPublished: boolean;
   isUnlocked: boolean;
+  /** Si la semana muestra el calentamiento del mes */
+  hasWarmUp?: boolean;
   // Legacy fields para compatibilidad
   videoUrl?: string;
   videoName?: string;
@@ -75,6 +77,8 @@ interface Logbook {
   year: number;
   title: string;
   description: string;
+  /** Contenido global de calentamiento del mes */
+  warmUpContent?: WeekContentItem | null;
   weeklyContents: WeeklyContent[];
 }
 
@@ -85,6 +89,7 @@ interface Props {
   selectedContentType: 'visual' | 'audioText' | 'zoomEvent' | null;
   selectedContentIndex?: number | null;
   onSelect: (weekNumber: number, dayNumber: number | null, contentType: 'visual' | 'audioText' | 'zoomEvent' | null, contentIndex?: number) => void;
+  /** contentIndex === -1 indica que está seleccionado el calentamiento */
   completedWeeks: Set<string>;
   completedDays: Set<string>;
   /** Completados por contenido (key: logbookId-weekNumber-content-index) */
@@ -199,6 +204,7 @@ const WeeklyPathSidebar = ({
       }
 
       return {
+        moduleKey,
         moduleName: displayName,
         weeks: sortedWeeks,
         moduleIndex: moduleNumber ?? moduleCounter - 1,
@@ -223,7 +229,7 @@ const WeeklyPathSidebar = ({
         module.weeks.some(w => w.weekNumber === selectedWeek)
       );
       if (moduleForWeek) {
-        setExpandedModules(prev => new Set(prev).add(moduleForWeek.moduleName));
+        setExpandedModules(prev => new Set(prev).add(moduleForWeek.moduleKey));
       }
     }
   }, [selectedWeek, modulesWithWeeks]);
@@ -331,15 +337,15 @@ const WeeklyPathSidebar = ({
 
       {/* Navegación por módulos/semanas */}
       <div className='flex-1 overflow-y-auto overflow-x-hidden min-h-0 min-w-0 scrollbar-thin scrollbar-thumb-palette-stone/50 scrollbar-track-transparent py-2'>
-        {modulesWithWeeks.map(({ moduleName, weeks }) => {
-          const isModuleExpanded = expandedModules.has(moduleName);
+        {modulesWithWeeks.map(({ moduleKey, moduleName, weeks }) => {
+          const isModuleExpanded = expandedModules.has(moduleKey);
           const displayModuleName = moduleName;
 
           return (
-            <div key={moduleName} className='border-b border-palette-stone/20 last:border-b-0'>
+            <div key={moduleKey} className='border-b border-palette-stone/20 last:border-b-0'>
               {/* Cabecera de módulo */}
               <button
-                onClick={() => toggleModule(moduleName)}
+                onClick={() => toggleModule(moduleKey)}
                 className='w-full py-3.5 px-3 text-left transition-colors flex items-center justify-between hover:bg-palette-stone/20 rounded-lg mx-1'
               >
                 <div className='flex items-center gap-2 min-w-0'>
@@ -427,6 +433,28 @@ const WeeklyPathSidebar = ({
                           </div>
 
                           <div className='flex flex-col gap-1.5'>
+                            {/* Calentamiento: un poco más atrás (primero, con margen) */}
+                            {week.hasWarmUp && logbook.warmUpContent && (
+                              <motion.button
+                                onClick={() => {
+                                  if (!isWeekUnlocked && !isAdmin) return;
+                                  onSelect(week.weekNumber, null, 'visual', -1);
+                                }}
+                                disabled={!isWeekUnlocked && !isAdmin}
+                                whileHover={isWeekUnlocked || isAdmin ? { scale: 1.01 } : {}}
+                                whileTap={isWeekUnlocked || isAdmin ? { scale: 0.99 } : {}}
+                                className={`w-full p-2 pl-5 rounded-lg text-left transition-colors text-sm font-montserrat flex items-center gap-2 opacity-90 ${
+                                  !isWeekUnlocked && !isAdmin
+                                    ? 'opacity-50 cursor-not-allowed text-palette-stone'
+                                    : isWeekSelected && selectedContentIndex === -1
+                                    ? 'bg-palette-sage/25 text-palette-cream font-medium'
+                                    : 'text-palette-cream/80 hover:bg-palette-stone/20'
+                                }`}
+                              >
+                                <span className='w-3 h-px bg-palette-sage shrink-0' aria-hidden />
+                                <span className='truncate'>Calentamiento</span>
+                              </motion.button>
+                            )}
                             {hasContents ? (
                               week.contents!.map((c, contentIndex) => {
                                 const tipo = (c.contentType || 'moduleClass') as 'moduleClass' | 'individualClass' | 'audio' | 'zoomEvent';

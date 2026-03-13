@@ -45,7 +45,7 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json();
-    const { month, year, title, description, weeklyContents, modules: pathModules, isBaseBitacora, userEmail, unlockPerContent: bodyUnlockPerContent } = body;
+    const { month, year, title, description, weeklyContents, modules: pathModules, isBaseBitacora, userEmail, unlockPerContent: bodyUnlockPerContent, warmUpContent: bodyWarmUpContent } = body;
 
     // Validar campos requeridos
     if (!weeklyContents || !Array.isArray(weeklyContents)) {
@@ -295,6 +295,9 @@ export async function PUT(req, { params }) {
         : '';
       const existingWeek = existingLogbook.weeklyContents?.find((w) => Number(w.weekNumber) === weekNum);
       const maxContentIndexUnlocked = wc.maxContentIndexUnlocked ?? existingWeek?.maxContentIndexUnlocked ?? -1;
+      const hasWarmUp = typeof wc.hasWarmUp === 'boolean'
+        ? wc.hasWarmUp
+        : !!existingWeek?.hasWarmUp;
       const base = {
         weekNumber: wc.weekNumber,
         moduleName: moduleNameFromPath || (wc.moduleName?.trim() || '').trim() || '',
@@ -305,7 +308,8 @@ export async function PUT(req, { params }) {
         publishDate,
         isPublished: wc.isPublished || false,
         isUnlocked: isUnlockedByDate || wc.isUnlocked || false,
-        maxContentIndexUnlocked: maxContentIndexUnlocked >= -1 ? maxContentIndexUnlocked : -1
+        maxContentIndexUnlocked: maxContentIndexUnlocked >= -1 ? maxContentIndexUnlocked : -1,
+        hasWarmUp
       };
 
       if (wc.contents && Array.isArray(wc.contents) && wc.contents.length > 0) {
@@ -349,11 +353,24 @@ export async function PUT(req, { params }) {
       ? !!bodyUnlockPerContent
       : (existingLogbook.unlockPerContent !== undefined && existingLogbook.unlockPerContent !== null ? !!existingLogbook.unlockPerContent : true);
 
+    const hasWarmUpPayload = bodyWarmUpContent && typeof bodyWarmUpContent === 'object' && (
+      bodyWarmUpContent.contentType ||
+      bodyWarmUpContent.videoUrl ||
+      bodyWarmUpContent.individualClassId ||
+      bodyWarmUpContent.moduleClassId ||
+      bodyWarmUpContent.moveCrewEventId ||
+      bodyWarmUpContent.audioUrl
+    );
+    const mappedWarmUpContent = hasWarmUpPayload
+      ? await mapContentItem(bodyWarmUpContent, 0)
+      : null;
+
     // Preparar datos de actualización
     const updateData = {
       title: title || (isBaseBitacora ? 'Camino Base - Primer Círculo' : 'Camino'),
       description: description || '',
       modules: modulesToSave,
+      warmUpContent: mappedWarmUpContent,
       weeklyContents: mappedWeeklyContents,
       updatedAt: new Date(),
       isBaseBitacora: isBaseBitacora || false,

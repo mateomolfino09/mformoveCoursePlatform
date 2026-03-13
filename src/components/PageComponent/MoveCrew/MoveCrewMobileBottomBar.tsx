@@ -19,7 +19,11 @@ export const MoveCrewBottomBarButtons = () => {
       <button
         type="button"
         onClick={toggleNav}
-        className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1 ${showNav ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : 'text-black/90 border border-white/40 hover:bg-white/20'}`}
+        className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1 ${
+          showNav
+            ? 'bg-white text-palette-ink border border-white hover:bg-palette-sage hover:border-palette-sage'
+            : 'bg-white text-palette-ink border border-white/80 hover:bg-palette-cream hover:border-white'
+        }`}
       >
         {showNav ? <IoCloseOutline className="h-5 w-5" /> : <span>Menú</span>}
       </button>
