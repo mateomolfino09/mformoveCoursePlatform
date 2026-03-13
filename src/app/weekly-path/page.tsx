@@ -1093,23 +1093,7 @@ function WeeklyPathPageContent() {
                       key={`visual-${selectedWeek}-${selectedDay}-${selectedContentIndex ?? 0}`}
                       className="relative w-full"
                     >
-                      {/* Botón Ir al calentamiento: solo para clases de módulo con warm up activo */}
-                      {isModuleClassSelected &&
-                        selectedWeekData?.hasWarmUp &&
-                        logbook?.warmUpContent &&
-                        selectedContentIndex !== -1 &&
-                        (auth.user?.rol === 'Admin' || selectedWeekData.isUnlocked) && (
-                          <div className="absolute left-4 bottom-4 z-20">
-                            <button
-                              type="button"
-                              onClick={() => handleSelect(selectedWeek ?? 0, null, 'visual', -1)}
-                              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-palette-stone/40 text-palette-cream/90 hover:bg-palette-stone/20 text-sm font-montserrat transition-colors bg-black/40 backdrop-blur-sm"
-                            >
-                              Ir al calentamiento
-                            </button>
-                          </div>
-                        )}
-    
+   
                       <VideoContentDisplay
                         videoUrl={selectedContent.videoUrl}
                         videoId={selectedContent.videoId}
@@ -1334,27 +1318,29 @@ function WeeklyPathPageContent() {
               }
               setShowWarmUpModal(false);
             }}
-          >
+            >
             <motion.div
-              className="relative z-10 w-full min-h-0 md:max-w-sm flex flex-col justify-center rounded-none md:rounded-3xl border-0 md:border md:border-palette-stone/20 bg-palette-ink md:shadow-2xl"
+              className="relative z-10 w-full min-h-[280px] md:min-h-[340px] md:max-w-md flex flex-col justify-center rounded-none md:rounded-3xl border-0 md:border md:border-palette-stone/20 bg-palette-ink md:shadow-2xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex flex-col items-center gap-6 md:gap-5 p-6 md:p-8 max-w-md mx-auto w-full text-center">
-                <h2 className="text-palette-cream/90 text-lg font-light font-montserrat">
-                  ¿Ya calentaste?
-                </h2>
-                {logbook.warmUpContent?.videoName && (
-                  <p className="text-palette-cream/80 text-xs font-light font-montserrat">
-                    {logbook.warmUpContent.videoName}
-                  </p>
-                )}
+              >
+              <div className="flex flex-col items-center gap-6 md:gap-7 p-7 md:p-9 max-w-md mx-auto w-full text-center">
+                <div className="space-y-1.5 md:space-y-2">
+                  <h2 className="text-palette-cream/90 text-lg md:text-xl font-light font-montserrat">
+                    ¿Ya calentaste?
+                  </h2>
+                  {logbook.warmUpContent?.videoName && (
+                    <p className="text-palette-cream/80 text-xs md:text-sm font-light font-montserrat">
+                      {logbook.warmUpContent.videoName}
+                    </p>
+                  )}
+                </div>
 
-                <div className="flex flex-col items-center justify-center py-2 md:py-4 border-y border-palette-stone/20 w-full">
-                  <span className="text-palette-stone/80 text-xs font-light uppercase tracking-wider">Empieza en</span>
-                  <span className="font-montserrat text-2xl md:text-3xl font-light tabular-nums text-palette-sage mt-1">
+                <div className="flex flex-col items-center justify-center py-3 md:py-5 border-y border-palette-stone/20 w-full space-y-1.5">
+                  <span className="text-palette-stone/80 text-xs md:text-sm font-light uppercase tracking-wider">Empieza en</span>
+                  <span className="font-montserrat text-2xl md:text-3xl font-light tabular-nums text-palette-sage">
                     {warmUpCountdown > 0 ? warmUpCountdown : '¡Listo!'}
                   </span>
                 </div>

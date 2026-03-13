@@ -54,6 +54,8 @@ export interface ModuleForLibrary {
   practicesCount?: number;
   /** Clases en video creadas en submódulos (ModuleClass). */
   moduleClasses?: ModuleClass[];
+  /** Clase individual usada como calentamiento general del módulo (opcional). */
+  warmUpClass?: IndividualClass | null;
 }
 
 interface Props {
@@ -137,6 +139,40 @@ export default function LibraryModuleView({ module: mod, classes, onVideoReady }
   const contentPadding = 'px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32';
   const contentMax = 'max-w-7xl';
   const moduleClassesList = mod.moduleClasses ?? [];
+  const warmUp = mod.warmUpClass ?? null;
+
+  function WarmUpPracticeCard({ c }: { c: IndividualClass }) {
+    const thumb = c.image_base_link || c.image_url || '';
+    return (
+      <Link
+        href={`/library/individual-classes/${c.id}`}
+        className="group block relative w-full aspect-video rounded-xl overflow-hidden bg-palette-ink ring-1 ring-palette-stone/20 hover:ring-palette-sage/50 transition-all duration-300"
+      >
+        <div className="absolute inset-0 overflow-hidden">
+          {thumb ? (
+            <img
+              src={thumb}
+              alt={c.description}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-palette-ink" />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="w-10 h-10 rounded-full bg-palette-cream/90 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+            <PlayIcon className="w-5 h-5 text-palette-ink ml-0.5" />
+          </div>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 p-3 pl-4 pb-4 text-left">
+          <p className="text-palette-cream text-xs font-medium line-clamp-2 drop-shadow-sm transition-all duration-300 group-hover:text-sm group-hover:text-palette-sage">
+            {c.name}
+          </p>
+        </div>
+      </Link>
+    );
+  }
 
   function ModulePracticeCard({ c }: { c: ModuleClass }) {
     const thumb = c.videoThumbnail || '';
@@ -345,6 +381,23 @@ export default function LibraryModuleView({ module: mod, classes, onVideoReady }
                             <h3 className="text-palette-stone text-base md:text-lg uppercase tracking-[0.2em] font-light">
                               Módulos
                             </h3>
+                            {warmUp && (
+                              <section className="space-y-3">
+                                <h4 className="text-palette-cream text-sm md:text-base font-light">
+                                  Calentamiento
+                                </h4>
+                                <motion.div
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ duration: 0.4 }}
+                                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
+                                >
+                                  <div className="flex flex-col w-full">
+                                    <WarmUpPracticeCard c={warmUp as any} />
+                                  </div>
+                                </motion.div>
+                              </section>
+                            )}
                             {subs.map((sub) => {
                               const subSlug = sub.slug ?? sub.name?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') ?? '';
                               const subModuleClasses = moduleClassesList.filter((c) => (c.submoduleSlug ?? '').toLowerCase() === subSlug.toLowerCase());
@@ -419,6 +472,23 @@ export default function LibraryModuleView({ module: mod, classes, onVideoReady }
                             <h3 className="text-palette-cream text-base md:text-lg font-light">
                               {sub.name}
                             </h3>
+                            {warmUp && (
+                              <section className="space-y-3">
+                                <h4 className="text-palette-cream text-sm md:text-base font-light">
+                                  Calentamiento
+                                </h4>
+                                <motion.div
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ duration: 0.4 }}
+                                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
+                                >
+                                  <div className="flex flex-col w-full">
+                                    <WarmUpPracticeCard c={warmUp as any} />
+                                  </div>
+                                </motion.div>
+                              </section>
+                            )}
                             <ModulePracticesGrid items={subModuleClasses} />
                             {classes.length > 0 ? (
                               <motion.div
@@ -450,6 +520,23 @@ export default function LibraryModuleView({ module: mod, classes, onVideoReady }
                       const hasAny = mainModuleClasses.length > 0 || classes.length > 0;
                       return (
                         <>
+                          {warmUp && (
+                            <section className="space-y-3 mb-8">
+                              <h3 className="text-palette-cream text-base md:text-lg font-light">
+                                Calentamiento
+                              </h3>
+                              <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.4 }}
+                                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
+                              >
+                                <div className="flex flex-col w-full">
+                                  <WarmUpPracticeCard c={warmUp as any} />
+                                </div>
+                              </motion.div>
+                            </section>
+                          )}
                           <ModulePracticesGrid items={mainModuleClasses} />
                           {classes.length > 0 ? (
                             <motion.div

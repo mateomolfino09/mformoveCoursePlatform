@@ -86,15 +86,15 @@ const CoherenceInfoModal = ({
                 stiffness: 300,
                 damping: 25
               }}
-              className="pointer-events-auto relative w-full max-w-lg rounded-2xl shadow-2xl border overflow-hidden"
+              className="pointer-events-auto relative w-full max-w-lg rounded-2xl shadow-2xl border overflow-hidden min-h-[260px] md:min-h-[300px] flex items-stretch"
               style={{
                 background: `linear-gradient(135deg, ${CREAM} 0%, ${CREAM_LIGHT} 50%, ${CREAM_DARK} 100%)`,
                 borderColor: `${SALMON}30`,
                 borderWidth: '1px'
               }}
-            >
+              >
               {/* Contenido */}
-              <div className="p-6">
+              <div className="p-6 md:p-7 flex flex-col justify-between w-full">
                 {/* Icono natural y minimalista */}
                 <motion.div
                   initial={{ scale: 0 }}

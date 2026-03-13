@@ -109,7 +109,7 @@ function getThursdayOfWeek(publishDate) {
   return d;
 }
 
-/** Desbloqueo: la semana está desbloqueada si es anterior o igual a la semana actual (por fecha, no por publishDate). Contenidos según maxContentIndexUnlocked (martes 0 y 1, jueves +2). */
+/** Desbloqueo: la semana está desbloqueada si es anterior o igual a la semana actual (por fecha) o si ya fue publicada por el cron (isPublished). Contenidos según maxContentIndexUnlocked (martes 0 y 1, jueves +2). */
 function applyPerContentUnlock(weeklyContents, logbookYear, logbookMonth, unlockPerContent) {
   if (!Array.isArray(weeklyContents)) return;
   const today = new Date();
@@ -124,7 +124,8 @@ function applyPerContentUnlock(weeklyContents, logbookYear, logbookMonth, unlock
     const contents = week.contents;
     const publishDate = new Date(week.publishDate);
     publishDate.setHours(0, 0, 0, 0);
-    week.isUnlocked = currentWeekNum != null && weekNum <= currentWeekNum;
+    // Respetar isPublished del cron: si el cron marcó la semana como publicada, mostrarla desbloqueada aunque "today" sea anterior al path
+    week.isUnlocked = (currentWeekNum != null && weekNum <= currentWeekNum) || week.isPublished === true;
     const maxIdx = week.maxContentIndexUnlocked != null && Number.isInteger(week.maxContentIndexUnlocked) ? Number(week.maxContentIndexUnlocked) : -1;
     const useCronSchedule = maxIdx >= 0;
     const isPastWeek = currentWeekNum != null && weekNum < currentWeekNum;

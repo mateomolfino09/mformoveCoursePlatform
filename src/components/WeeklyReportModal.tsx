@@ -73,7 +73,7 @@ export default function WeeklyReportModal({ isOpen, onClose, onComplete }: Weekl
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-gray-900 rounded-2xl p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-800"
+              className="bg-gray-900 rounded-2xl p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-800 min-h-[260px] md:min-h-[320px]"
             >
               {/* Header */}
               <div className="flex justify-between items-center mb-6">
