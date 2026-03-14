@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next13-progressbar';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useSnapshot } from 'valtio';
 import { CiCircleChevLeft, CiCircleChevRight } from 'react-icons/ci';
 import { AiOutlineBook } from 'react-icons/ai';
@@ -298,8 +299,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
                                     : (transparentUntilScroll && !scrolled
                                         ? true
                                         : false)))))))));
-    // En weekly path y práctica (video): texto blanco. En página de módulo: sin scroll blanco, con scroll negro. Resto de library: texto negro
-    const isLightText = isWeeklyPath ? true : (isLibraryPracticePage ? true : (isLibraryModulePage ? !scrolled : (isLibraryArea ? false : (forceLight ? true : isLightTextBase))));
+    // En weekly path y práctica (video): texto blanco. En página de módulo: sin scroll blanco, con scroll negro. Resto de library: texto negro. Con navegación abierta: texto claro.
+    const isLightText = isWeeklyPath ? true : (isLibraryPracticePage ? true : (isLibraryModulePage ? !scrolled : (isLibraryArea ? (forceLight ? true : false) : (forceLight ? true : isLightTextBase))));
 
     // Si el texto es claro y hay scroll, aplicar fondo difuminado para contraste (no en etapa 1 index). Move Crew no cambia.
     if (!isMoveCrew && !isLibraryArea && scrolled && isLightText && !isIndexStage1) {
@@ -321,8 +322,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	const textColorMuted = isIndexStage1 ? 'text-gray-600 hover:text-black' : (isLightText ? 'text-white/60 hover:text-white' : (isAuth || isIndex ? 'text-gray-300 hover:text-gray-100' : 'text-gray-600 hover:text-gray-800'));
 	const underlineFill = isWeeklyPath ? 'white' : (isLightText ? 'white' : 'black');
 
-	// Color del título MMOVE ACADEMY: en weekly path y práctica (video) siempre blanco; en página de módulo blanco sin scroll, negro con scroll; resto de library negro
-	const headerTitleLight = isWeeklyPath
+	// Color del título MMOVE ACADEMY: en weekly path y práctica (video) siempre blanco; en página de módulo blanco sin scroll, negro con scroll; resto de library negro. Con navegación abierta: siempre claro.
+	const headerTitleLight = (isWeeklyPath
 		? true
 		: (isLibraryPracticePage
 		? true
@@ -338,7 +339,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 						? false
 							: (isAccount
 							? forceLight
-							: ((isAuth || isIndex) ? true : isLightText))))))));
+							: ((isAuth || isIndex) ? true : isLightText))))))))) || forceLightByNav;
 
 	// En página de práctica (video) los botones del header con fondo opaco para que se vean
 	const headerButtonsOpaque = isLibraryPracticePage;
@@ -350,13 +351,13 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	const linkMuted = `${textColorMuted}`;
 	const linkActive = isLightText ? 'text-white' : 'text-[#234C8C]';
 
-	return (
-		<>
-			{domLoaded && (
+	const menuOpenOnMobile = (snap.weeklyPathNavOpen || snap.bitacoraNavOpen) && isMobile;
+
+	const headerContent = domLoaded ? (
 				<m.div
 					initial={{ y: 0, opacity: 1 }}
 					animate={{ y: 0, opacity: 1 }}
-					className={`fixed w-full h-16 min-h-14 px-4 py-3 md:py-12 md:px-8 transition-all duration-500 ease-in-out z-[250] ${headerBgClass}`} 
+					className={`fixed w-full h-16 min-h-14 px-4 py-3 md:py-12 md:px-8 transition-all duration-500 ease-in-out ${(snap.weeklyPathNavOpen || snap.bitacoraNavOpen) ? 'z-[300]' : 'z-[250]'} ${headerBgClass}`} 
 				>
 					{isWeeklyPath ? (
 						// Distribución especial para camino: flex en 3 zonas; más espacio a la derecha del logo solo aquí
@@ -405,8 +406,30 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							</div>
 							{/* Derecha: en móvil = dropdown + usuario + menú; en desktop = Menú + Admin + usuario */}
 							<div className='flex items-center gap-2 shrink-0'>
-								{/* Solo móvil: icono Eventos/Mentoría + usuario + menú */}
+								{/* Solo móvil: con acceso = menú navegación (como bitácora); sin acceso = popover Eventos/Mentoría + Iniciar sesión */}
 								<div className="flex md:hidden items-center gap-2">
+								{(() => {
+									const hasNavAccess = auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin');
+									if (hasNavAccess) {
+										return (
+											<button
+												type="button"
+												data-tutorial-move-crew-target
+												onClick={(e) => {
+													e.stopPropagation();
+													const tutorialActive = document.body.classList.contains('tutorial-active');
+													if (tutorialActive) return;
+													state.weeklyPathNavOpen = !snap.weeklyPathNavOpen;
+												}}
+												className={`rounded-full p-2 border transition-colors ${isLightText ? 'text-white border-white/40 hover:bg-white/20' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-stone/10'}`}
+												aria-expanded={snap.weeklyPathNavOpen}
+												aria-label="Menú"
+											>
+												<ChevronDownIcon className={`h-5 w-5 transition-transform ${snap.weeklyPathNavOpen ? 'rotate-180' : ''}`} />
+											</button>
+										);
+									}
+									return (
 								<div className="relative shrink-0" ref={eventsMentorshipRef}>
 									<button
 										type="button"
@@ -422,9 +445,14 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 										<div className="absolute right-0 top-full mt-2 w-40 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
 											<Link href={routes.navegation.eventos} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isEvents ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
 											<Link href={routes.navegation.mentorship} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMentorship ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
+											{!auth?.user && (
+												<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.loginForm = true; }}>Iniciar sesión</button>
+											)}
 										</div>
 									)}
 								</div>
+									);
+								})()}
 								{auth && auth.user && (() => {
 									const hasSub = auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin';
 									const size = 40;
@@ -463,12 +491,6 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									</div>
 									);
 								})()}
-								{/* En mobile el sidebar del camino va debajo del video; no mostrar icono de menú */}
-								{(!isWeeklyPath || !isMobile) && (
-									<button type="button" className="rounded-full p-2 text-white border border-white/40 hover:bg-white/20 transition-colors" onClick={() => { if (onMenuClick && isMobile) onMenuClick(); else state.weeklyPathNavOpen = !snap.weeklyPathNavOpen; }} aria-label="Menú">
-										{sidebarOpen ? <XMarkIcon className="h-5 w-5" /> : <BsMenuButton className="h-6 w-6" />}
-									</button>
-								)}
 								</div>
 								{/* Solo desktop: Menú + Admin + usuario */}
 								<div className='hidden md:flex items-center gap-3'>
@@ -607,8 +629,36 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							</Link>
 						</div>
 					</div>
-					{/* Móvil (layout normal): icono flecha Eventos/Mentoría + avatar usuario */}
+					{/* Móvil (layout normal): con acceso = menú navegación (bitácora en index, weekly en resto); sin acceso = popover */}
 					<div className="flex md:hidden items-center gap-2 shrink-0">
+						{(() => {
+							const hasNavAccess = auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin');
+							if (hasNavAccess) {
+								const navOpen = isIndex ? snap.bitacoraNavOpen : snap.weeklyPathNavOpen;
+								return (
+									<button
+										type="button"
+										data-tutorial-move-crew-target
+										onClick={(e) => {
+											e.stopPropagation();
+											const tutorialActive = document.body.classList.contains('tutorial-active');
+											if (tutorialActive) return;
+											if (isIndex) {
+												state.bitacoraNavOpen = !snap.bitacoraNavOpen;
+												state.weeklyPathNavOpen = !snap.weeklyPathNavOpen; // mismo overlay en layout
+											} else {
+												state.weeklyPathNavOpen = !snap.weeklyPathNavOpen;
+											}
+										}}
+										className={`rounded-full p-2 border transition-colors ${headerTitleLight ? 'text-white border-white/40 hover:bg-white/20' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-stone/10'}`}
+										aria-expanded={navOpen}
+										aria-label="Menú"
+									>
+										<ChevronDownIcon className={`h-5 w-5 transition-transform ${navOpen ? 'rotate-180' : ''}`} />
+									</button>
+								);
+							}
+							return (
 						<div className="relative shrink-0" ref={eventsMentorshipRef}>
 							<button
 								type="button"
@@ -622,14 +672,18 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							</button>
 							{eventsMentorshipOpen && (
 								<div className="absolute right-0 top-full mt-2 w-40 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
-														<Link href={routes.navegation.moveCrew} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMoveCrew ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Move Crew</Link>
+									<Link href={routes.navegation.moveCrew} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMoveCrew ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Move Crew</Link>
 									<Link href={routes.navegation.mentorship} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMentorship ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
-				
 									<Link href={routes.navegation.eventos} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isEvents ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
+									{!auth?.user && (
+										<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.loginForm = true; }}>Iniciar sesión</button>
+									)}
 								</div>
 							)}
 						</div>
-						{auth?.user && (
+							);
+						})()}
+						{auth?.user ? (
 							<div className="relative shrink-0" ref={profileMenuRefDesktop}>
 								<button type="button" onClick={(e) => { e.stopPropagation(); setProfileMenuOpen((v) => !v); }} className="flex items-center shrink-0 rounded-full hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-palette-stone/50" aria-expanded={profileMenuOpen} aria-haspopup="true" title="Abrir menú de perfil">
 									<div className="relative flex items-center justify-center w-9 h-9">
@@ -649,7 +703,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									</div>
 								)}
 							</div>
-						)}
+						) : null}
 					</div>
 					{/* Desktop: Menú (navegador Move Crew), Admin, avatar */}
 					<div className='hidden md:flex items-center gap-3 shrink-0'>
@@ -695,8 +749,8 @@ className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase round
 									</button>
 								)}
 							</div>
-							{/* Avatar de usuario para cualquier logueado (library, etc.) */}
-							{auth?.user && (
+							{/* Avatar o Iniciar Sesión (desktop: arriba a la derecha) */}
+							{auth?.user ? (
 								<div className="relative shrink-0" ref={profileMenuRefDesktop}>
 									<button type="button" onClick={(e) => { e.stopPropagation(); setProfileMenuOpen((v) => !v); }} className="flex items-center shrink-0 rounded-full hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-palette-stone/50" aria-expanded={profileMenuOpen} aria-haspopup="true" title="Abrir menú de perfil">
 										<div className="relative flex items-center justify-center w-10 h-10">
@@ -716,11 +770,35 @@ className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase round
 										</div>
 									)}
 								</div>
+							) : (
+								<button
+									type="button"
+									onClick={() => { state.loginForm = true; }}
+									className={`rounded-full px-4 py-2 border transition-colors font-montserrat text-sm ${headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream' : isLightText ? 'text-white border border-white/40 hover:bg-white/20' : 'text-palette-ink border border-palette-stone/40 hover:bg-palette-stone/10'}`}
+								>
+									Iniciar Sesión
+								</button>
 							)}
 					</div>
 						</div>
 					)}
 				</m.div>
+	) : null;
+
+	return (
+		<>
+			{menuOpenOnMobile ? (
+				<div className="fixed w-full h-16 min-h-14 invisible" aria-hidden />
+			) : (
+				headerContent
+			)}
+			{menuOpenOnMobile && typeof document !== 'undefined' && createPortal(
+				<div className="fixed inset-0 z-[301] pointer-events-none">
+					<div className="pointer-events-auto w-full h-16 min-h-14">
+						{headerContent}
+					</div>
+				</div>,
+				document.body
 			)}
 		</>
 	);

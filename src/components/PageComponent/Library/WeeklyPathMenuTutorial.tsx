@@ -1059,17 +1059,17 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
             className="absolute pointer-events-none"
             style={{
               zIndex: 200,
-              left: isMobile ? '80%' : 'auto',
+              left: isMobile ? '50%' : 'auto',
               right: isMobile ? 'auto' : '10%',
-              top: isMobile ? '75%' : '25%',
+              top: isMobile ? '25%' : '25%',
               width: isMobile ? 300 : 400,
               height: isMobile ? 300 : 400,
               transform: isMobile
-                ? 'translate(-50%, -50%) rotate(150deg)'
+                ? 'translate(-50%, -50%) rotate(0deg)'
                 : 'translate(0, -50%) rotate(20deg)',
               transformOrigin: 'center center',
               opacity: 0.95,
-              filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.6))',
+              filter: 'drop-shadow(rgba(255, 255, 255, 0.6) 0px 0px 4px)',
             }}
           >
             <g className="tutorial-arrow-inner">

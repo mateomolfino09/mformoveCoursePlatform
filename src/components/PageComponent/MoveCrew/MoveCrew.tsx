@@ -17,7 +17,6 @@ import MoveCrewStructure from './MoveCrewStructure';
 import MoveCrewFAQ from './MoveCrewFAQ';
 import MoveCrewCTA from './MoveCrewCTA';
 import PromocionFooter from '../Membership/PromocionFooter';
-import MoveCrewMobileBottomBar, { MoveCrewBottomBarButtons } from './MoveCrewMobileBottomBar';
 import MoveCrewWhatWeTeach from './MoveCrewWhatWeTeach';
 
 interface Promocion {
@@ -171,12 +170,9 @@ const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
               onCtaClick={handlePromocionClick}
               variant="movecrew"
               plans={plans}
-              rightActions={<MoveCrewBottomBarButtons />}
             />
           </div>
         )}
-        {/* En móvil sin descuento: barra fija con Empezar Camino + Menú centrada a la derecha */}
-        {(!promocionActiva || auth.user?.subscription?.active) && <MoveCrewMobileBottomBar />}
       </MainSideBar>
     </div>
   );
