@@ -69,6 +69,7 @@ const WeeklyPathNavigator = () => {
     if (tutorialActive) return;
     setIsOpen(false);
     state.weeklyPathNavOpen = false;
+    state.bitacoraNavOpen = false; // sincronizar con onboarding (home)
   };
 
   // Cerrar dropdown al hacer click fuera
@@ -179,7 +180,7 @@ const WeeklyPathNavigator = () => {
   const hasWhiteBackground = whiteBackgroundPages.some(page => pathname?.startsWith(page)) && !snap.systemNavOpen;
 
 
-  // No mostrar si no tiene acceso
+  // No mostrar overlay si no tiene acceso (en móvil Iniciar sesión está en el popover del header)
   if (!hasAccess) {
     return null;
   }
@@ -250,7 +251,7 @@ const WeeklyPathNavigator = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black z-[200] font-montserrat"
+              className="fixed inset-0 bg-black z-[200] font-montserrat pointer-events-auto"
               ref={menuRef}
             >
               <div className="w-full h-full relative top-40 md:top-28 right-12 flex flex-col space-y-4 md:space-y-4 justify-start items-end mr-12 lg:mr-24 pt-4">
@@ -297,7 +298,6 @@ const WeeklyPathNavigator = () => {
                   <h2 className="font-light lg:text-xl">WhatsApp</h2>
                   <h1 className="text-4xl font-thin lg:text-6xl md:text-4xl">Comunidad</h1>
                 </a>
-
               </div>
             </motion.div>
           )}

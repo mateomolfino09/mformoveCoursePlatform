@@ -72,10 +72,18 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
       if (!card || !btn) return;
       const cardRect = card.getBoundingClientRect();
       const btnRect = btn.getBoundingClientRect();
-      setArrowPoints({
-        start: { x: cardRect.left + cardRect.width / 2, y: cardRect.bottom - 8 },
-        end: { x: btnRect.left + btnRect.width / 2, y: btnRect.top + btnRect.height / 2 },
-      });
+      // En mobile: flecha apunta hacia arriba al botón (desde abajo del botón hacia el botón)
+      if (window.innerWidth < 768) {
+        setArrowPoints({
+          start: { x: btnRect.left + btnRect.width / 2, y: btnRect.bottom + 50 },
+          end: { x: btnRect.left + btnRect.width / 2, y: btnRect.top + btnRect.height / 2 },
+        });
+      } else {
+        setArrowPoints({
+          start: { x: cardRect.left + cardRect.width / 2, y: cardRect.bottom - 8 },
+          end: { x: btnRect.left + btnRect.width / 2, y: btnRect.top + btnRect.height / 2 },
+        });
+      }
     };
     const t = setTimeout(measure, 350);
     const onResize = () => measure();
@@ -745,13 +753,15 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
                 isMobile
                   ? {
                       zIndex: 200,
-                      left: `${tipX}px`,
-                      top: `${tipY}px`,
-                      width: 280,
-                      height: 280,
-                      transform: `translate(-50%, -50%) rotate(${angle}deg) scale(1)`,
+                      left: '50%',
+                      right: 'auto',
+                      top: '25%',
+                      width: 300,
+                      height: 300,
+                      transform: 'translate(-50%, -50%) rotate(0deg)',
                       transformOrigin: 'center center',
-                      opacity: 0.92,
+                      opacity: 0.95,
+                      filter: 'drop-shadow(rgba(255, 255, 255, 0.6) 0px 0px 4px)',
                     }
                   : {
                       zIndex: 200,
@@ -768,14 +778,22 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
               }
             />
           )}
-          {/* Resaltado del botón Menú (solo en paso 0): borde para que no se recorte + glow visible */}
+          {/* Resaltado del botón Menú (solo en paso 0): borde + glow + vibración */}
           <style jsx global>{`
+            @keyframes tutorial-button-vibrate {
+              0%, 100% { transform: translateX(0); }
+              20% { transform: translateX(-3px); }
+              40% { transform: translateX(3px); }
+              60% { transform: translateX(-2px); }
+              80% { transform: translateX(2px); }
+            }
             body.bitacora-tutorial-step0 [data-tutorial-move-crew-target] {
               border-radius: 9999px !important;
               outline: none !important;
               border: 2px solid rgba(255, 255, 255, 0.95) !important;
               box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4), 0 0 12px 2px rgba(255, 255, 255, 0.35) !important;
               transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+              animation: tutorial-button-vibrate 0.5s ease-in-out infinite !important;
             }
           `}</style>
           <div className="absolute inset-0 flex flex-col items-center justify-center md:justify-start md:pt-32 px-4" style={{ zIndex: 2 }}>
