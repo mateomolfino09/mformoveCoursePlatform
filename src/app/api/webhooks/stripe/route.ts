@@ -4,9 +4,30 @@ import connectDB from '../../../../config/connectDB';
 import Product from '../../../../models/productModel';
 import { EmailService, EmailType } from '../../../../services/email/emailService';
 
-connectDB();
+export const runtime = 'nodejs';
+
+export async function GET() {
+  // Endpoint de salud/diagnóstico: Stripe webhooks reales llegan por POST.
+  return NextResponse.json({ ok: true }, { status: 200 });
+}
+
+export async function OPTIONS() {
+  // Respuesta rápida para preflights/proxies.
+  return new NextResponse(null, { status: 204 });
+}
 
 export async function POST(req: NextRequest) {
+  // Endpoint: /api/webhooks/stripe (productos/eventos)
+  // Usa un signing secret dedicado para evitar choques con otros endpoints de Stripe.
+  const webhookSecret =
+    process.env.STRIPE_WEBHOOK_SECRET_WEBHOOKS_STRIPE ?? process.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error(
+      '❌ Falta STRIPE_WEBHOOK_SECRET_WEBHOOKS_STRIPE (o fallback STRIPE_WEBHOOK_SECRET)'
+    );
+    return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 });
+  }
+
   const body = await req.text();
   const signature = req.headers.get('stripe-signature');
 
@@ -14,16 +35,38 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No signature found' }, { status: 400 });
   }
 
-  let event;
+  let event: any;
 
   try {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      webhookSecret
     );
   } catch (err: any) {
+    console.error('❌ Firma de webhook inválida:', err?.message);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+  }
+
+  try {
+    // Stripe necesita un 2xx rápido (<10s). Procesamos en segundo plano.
+    processStripeEvent(event).catch((err) => {
+      console.error('❌ Error procesando evento Stripe en background:', err);
+    });
+    return NextResponse.json({ received: true }, { status: 200 });
+  } catch (error) {
+    console.error('❌ Error procesando webhook:', error);
+    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
+  }
+}
+
+async function processStripeEvent(event: any) {
+  try {
+    await connectDB();
+  } catch (dbErr) {
+    // Evita tumbar el webhook; el procesamiento quedará incompleto, pero Stripe recibirá 2xx.
+    console.error('❌ Error conectando a DB en webhook:', dbErr);
+    return;
   }
 
   try {
@@ -31,19 +74,16 @@ export async function POST(req: NextRequest) {
       case 'checkout.session.completed':
         await handleCheckoutSessionCompleted(event.data.object);
         break;
-      
+
       case 'payment_intent.succeeded':
         await handlePaymentIntentSucceeded(event.data.object);
         break;
-      
+
       default:
-
+        break;
     }
-
-    return NextResponse.json({ received: true });
-  } catch (error) {
-    console.error('❌ Error procesando webhook:', error);
-    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
+  } catch (err) {
+    console.error('❌ Error en processStripeEvent:', err);
   }
 }
 
@@ -56,6 +96,7 @@ async function handleCheckoutSessionCompleted(session: any) {
       const paymentLink = await stripe.paymentLinks.retrieve(session.payment_link);
       productId = paymentLink.metadata?.productId;
     } catch (error) {
+      console.error('❌ Error recuperando payment link:', error);
     }
   } else if (!productId) {
     // Si no hay payment_link, intentar obtenerlo del payment intent
@@ -63,12 +104,10 @@ async function handleCheckoutSessionCompleted(session: any) {
       const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent);
       if (paymentIntent.metadata?.productId) {
         productId = paymentIntent.metadata.productId;
-      } else {
       }
     } catch (error) {
+      console.error('❌ Error recuperando payment intent:', error);
     }
-  } else {
-
   }
   
   try {
@@ -163,9 +202,7 @@ async function sendEventConfirmationEmail(evento: any, customerEmail: string, cu
       data: emailData
     });
 
-    if (result.success) {
-  
-    } else {
+    if (!result.success) {
       console.error('❌ Error enviando email');
     }
 
@@ -196,9 +233,7 @@ async function sendProductConfirmationEmail(product: any, customerEmail: string,
       data: emailData
     });
 
-    if (result.success) {
-  
-    } else {
+    if (!result.success) {
       console.error('❌ Error enviando email');
     }
 
@@ -247,9 +282,7 @@ async function sendAdminNotification(product: any, customerEmail: string, custom
       data: emailData
     });
 
-    if (result.success) {
-  
-    } else {
+    if (!result.success) {
       console.error('❌ Error enviando notificación al admin');
     }
 
