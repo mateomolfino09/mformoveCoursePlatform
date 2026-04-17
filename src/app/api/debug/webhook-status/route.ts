@@ -6,7 +6,9 @@ export async function GET(req: NextRequest) {
     
     // Verificar variables de entorno
     const envVars = {
-      STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET ? '✅ Configurado' : '❌ No configurado',
+      STRIPE_WEBHOOK_SECRET_WEBHOOKS_STRIPE: process.env.STRIPE_WEBHOOK_SECRET_WEBHOOKS_STRIPE ? '✅ Configurado' : '❌ No configurado',
+      STRIPE_WEBHOOK_SECRET_PAYMENTS_STRIPE_WEBHOOK: process.env.STRIPE_WEBHOOK_SECRET_PAYMENTS_STRIPE_WEBHOOK ? '✅ Configurado' : '❌ No configurado',
+      STRIPE_WEBHOOK_SECRET_FALLBACK: process.env.STRIPE_WEBHOOK_SECRET ? '✅ Configurado' : '❌ No configurado',
       MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY ? '✅ Configurado' : '❌ No configurado',
       NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL || '❌ No configurado',
       STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? '✅ Configurado' : '❌ No configurado'

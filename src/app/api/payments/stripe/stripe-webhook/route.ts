@@ -52,10 +52,19 @@ export const POST = async (req: NextRequest) => {
     const body = await req.text();
     let event;
     const origin = getCurrentURL();
+    const webhookSecret =
+      process.env.STRIPE_WEBHOOK_SECRET_PAYMENTS_STRIPE_WEBHOOK ?? process.env.STRIPE_WEBHOOK_SECRET;
+
+    if (!webhookSecret) {
+      console.error(
+        '❌ Falta STRIPE_WEBHOOK_SECRET_PAYMENTS_STRIPE_WEBHOOK (o fallback STRIPE_WEBHOOK_SECRET)'
+      );
+      return new NextResponse("Webhook no configurado", { status: 500 });
+    }
 
     try {
       // Verifica que el webhook proviene de Stripe
-      event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
+      event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     } catch (err: any) {
       console.error(`Error al verificar la firma del webhook: ${err?.message}`);
       return new NextResponse("Invalido", {status:400})
