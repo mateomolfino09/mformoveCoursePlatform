@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 /**
- * Evento Move Crew: clase en vivo (Zoom).
+ * Evento Cuerpo autónomo: clase en vivo (Zoom).
  * Incluye link a Zoom, título, descripción, fecha y hora.
  * Se puede usar como contenido de una semana en el camino.
  * Soporta eventos únicos (eventDate) o recurrentes semanales (repeatsWeekly + weekday).

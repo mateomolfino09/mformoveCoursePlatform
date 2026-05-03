@@ -33,7 +33,7 @@ export async function GET() {
       headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
     });
   } catch (error) {
-    console.error('Error listando eventos Move Crew:', error);
+    console.error('Error listando eventos Cuerpo autónomo:', error);
     return NextResponse.json(
       { error: error.message || 'Error al listar eventos' },
       { status: 500 }
@@ -90,10 +90,11 @@ export async function POST(req) {
 
     return NextResponse.json(event.toObject ? event.toObject() : event, { status: 201 });
   } catch (error) {
-    console.error('Error creando evento Move Crew:', error);
+    console.error('Error creando evento Cuerpo autónomo:', error);
     return NextResponse.json(
       { error: error.message || 'Error al crear evento' },
       { status: 500 }
     );
   }
 }
+

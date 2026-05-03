@@ -5,8 +5,8 @@ import { CheckCircleIcon, ArrowTrendingUpIcon, UserGroupIcon, ShieldCheckIcon, E
 
 const MentorshipPhilosophy = () => {
   return (
-    <section className="pt-20 pb-6 bg-[#F2F3F6] font-montserrat">
-      <div className="max-w-6xl mx-auto px-6 pb-6">
+    <section className="pt-20 pb-6 bg-palette-cream font-montserrat">
+      <div className="w-[85%] max-w-6xl mx-auto px-4 pb-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -14,11 +14,14 @@ const MentorshipPhilosophy = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 font-montserrat " style={{ color: 'black' }}>
-            Metodología de Trabajo
+          <p className="font-montserrat uppercase tracking-[0.2em] text-xs md:text-sm text-palette-stone/80 mb-3">
+            Metodología
+          </p>
+          <h2 className="text-3xl md:text-5xl font-semibold mb-6 font-montserrat text-palette-ink tracking-tight">
+            Metodología de trabajo
           </h2>
-          <p className="text-xl text-black max-w-3xl mx-auto font-montserrat">
-            No es solo entrenamiento. Es una <b>transformación completa </b>  de tu relación con el movimiento.
+          <p className="text-xl text-palette-stone max-w-3xl mx-auto font-montserrat font-light leading-relaxed">
+            No es solo entrenamiento: es una <b className="font-semibold text-palette-ink">transformación completa</b> de tu relación con el movimiento.
           </p>
         </motion.div>
 
@@ -31,34 +34,34 @@ const MentorshipPhilosophy = () => {
             viewport={{ once: true }}
           >
             <div className="space-y-8">
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-[#687CA8]/20 font-montserrat">
-                <div className="h-1 w-full rounded-t-xl mb-4 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5]" />
-                <h3 className="text-2xl font-semibold mb-4 font-montserrat" style={{ color: '#234C8C' }}>
+              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-palette-stone/20 shadow-[0_10px_32px_rgba(20,20,17,0.06)] font-montserrat">
+                <div className="h-1 w-full rounded-t-xl mb-4 bg-gradient-to-r from-transparent via-palette-sage/45 to-transparent" />
+                <h3 className="text-2xl font-semibold mb-4 font-montserrat text-palette-ink tracking-tight">
                   Acompañamiento Personalizado
                 </h3>
-                <p className="text-[#373436] leading-relaxed font-montserrat">
+                <p className="text-palette-stone leading-relaxed font-montserrat font-light">
                   Te acompaño de forma individual y adapto el proceso a tus necesidades y objetivos.
                   Recibís feedback y ajustes constantes para avanzar de verdad.
                 </p>
               </div>
 
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-[#687CA8]/20 font-montserrat">
-                <div className="h-1 w-full rounded-t-xl mb-4 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5]" />
-                <h3 className="text-2xl font-semibold mb-4 font-montserrat" style={{ color: '#234C8C' }}>
+              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-palette-stone/20 shadow-[0_10px_32px_rgba(20,20,17,0.06)] font-montserrat">
+                <div className="h-1 w-full rounded-t-xl mb-4 bg-gradient-to-r from-transparent via-palette-sage/45 to-transparent" />
+                <h3 className="text-2xl font-semibold mb-4 font-montserrat text-palette-ink tracking-tight">
                   Pedagogía de la práctica
                 </h3>
-                <p className="text-[#373436] leading-relaxed font-montserrat">
+                <p className="text-palette-stone leading-relaxed font-montserrat font-light">
                   No solo te enseño ejercicios, te acompaño a entender tu cuerpo y su funcionamiento. 
                   Entendés el "por qué" detrás de cada práctica y cómo aplicarlo a tu vida diaria.
                 </p>
               </div>
 
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-[#687CA8]/20 font-montserrat">
-                <div className="h-1 w-full rounded-t-xl mb-4 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5]" />
-                <h3 className="text-2xl font-semibold mb-4 font-montserrat" style={{ color: '#234C8C' }}>
+              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-palette-stone/20 shadow-[0_10px_32px_rgba(20,20,17,0.06)] font-montserrat">
+                <div className="h-1 w-full rounded-t-xl mb-4 bg-gradient-to-r from-transparent via-palette-sage/45 to-transparent" />
+                <h3 className="text-2xl font-semibold mb-4 font-montserrat text-palette-ink tracking-tight">
                   Progreso Sostenido
                 </h3>
-                <p className="text-[#373436] leading-relaxed font-montserrat">
+                <p className="text-palette-stone leading-relaxed font-montserrat font-light">
                   El proceso está pensado para que avances paso a paso, con objetivos claros y revisiones periódicas que aseguran tu evolución real.
                 </p>
               </div>
@@ -74,49 +77,49 @@ const MentorshipPhilosophy = () => {
             className="space-y-6"
           >
             <div className="text-center">
-              <h3 className="text-3xl font-bold mb-8 font-montserrat" style={{ color: 'black' }}>
+              <h3 className="text-3xl font-semibold mb-8 font-montserrat text-palette-ink tracking-tight">
                 Nuestros Valores
               </h3>
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center space-x-4 bg-white/80 rounded-lg p-4 border border-[#687CA8]/10 font-montserrat">
-                <CheckCircleIcon className="h-8 w-8" style={{ color: '#234C8C' }} />
+              <div className="flex items-center space-x-4 bg-white/60 rounded-xl p-4 border border-palette-stone/15 font-montserrat shadow-[0_10px_32px_rgba(20,20,17,0.05)]">
+                <CheckCircleIcon className="h-8 w-8 text-palette-sage" />
                 <div>
-                  <h4 className="text-lg font-semibold text-[#373436] font-montserrat">Intencionalidad</h4>
-                  <p className="text-[#687CA8] text-sm font-montserrat">Cada accionar tiene un propósito</p>
+                  <h4 className="text-lg font-semibold text-palette-ink font-montserrat">Intencionalidad</h4>
+                  <p className="text-palette-stone text-sm font-montserrat font-light">Cada accionar tiene un propósito</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 bg-white/80 rounded-lg p-4 border border-[#687CA8]/10 font-montserrat">
-                <ArrowTrendingUpIcon className="h-8 w-8" style={{ color: '#234C8C' }} />
+              <div className="flex items-center space-x-4 bg-white/60 rounded-xl p-4 border border-palette-stone/15 font-montserrat shadow-[0_10px_32px_rgba(20,20,17,0.05)]">
+                <ArrowTrendingUpIcon className="h-8 w-8 text-palette-sage" />
                 <div>
-                  <h4 className="text-lg font-semibold text-[#373436] font-montserrat">Crecimiento Continuo</h4>
-                  <p className="text-[#687CA8] text-sm font-montserrat">La transformación es un camino, no un destino</p>
+                  <h4 className="text-lg font-semibold text-palette-ink font-montserrat">Crecimiento Continuo</h4>
+                  <p className="text-palette-stone text-sm font-montserrat font-light">La transformación es un camino, no un destino</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 bg-white/80 rounded-lg p-4 border border-[#687CA8]/10 font-montserrat">
-                <UserGroupIcon className="h-8 w-8" style={{ color: '#234C8C' }} />
+              <div className="flex items-center space-x-4 bg-white/60 rounded-xl p-4 border border-palette-stone/15 font-montserrat shadow-[0_10px_32px_rgba(20,20,17,0.05)]">
+                <UserGroupIcon className="h-8 w-8 text-palette-sage" />
                 <div>
-                  <h4 className="text-lg font-semibold text-[#373436] font-montserrat">Acompañamiento</h4>
-                  <p className="text-[#687CA8] text-sm font-montserrat">No estás solo en este viaje</p>
+                  <h4 className="text-lg font-semibold text-palette-ink font-montserrat">Acompañamiento</h4>
+                  <p className="text-palette-stone text-sm font-montserrat font-light">No estás solo en este viaje</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 bg-white/80 rounded-lg p-4 border border-[#687CA8]/10 font-montserrat">
-                <ShieldCheckIcon className="h-8 w-8" style={{ color: '#234C8C' }} />
+              <div className="flex items-center space-x-4 bg-white/60 rounded-xl p-4 border border-palette-stone/15 font-montserrat shadow-[0_10px_32px_rgba(20,20,17,0.05)]">
+                <ShieldCheckIcon className="h-8 w-8 text-palette-sage" />
                 <div>
-                  <h4 className="text-lg font-semibold text-[#373436] font-montserrat">Compromiso</h4>
-                  <p className="text-[#687CA8] text-sm font-montserrat">La constancia es la clave del cambio real</p>
+                  <h4 className="text-lg font-semibold text-palette-ink font-montserrat">Compromiso</h4>
+                  <p className="text-palette-stone text-sm font-montserrat font-light">La constancia es la clave del cambio real</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 bg-white/80 rounded-lg p-4 border border-[#687CA8]/10 font-montserrat">
-                <EyeIcon className="h-8 w-8" style={{ color: '#234C8C' }} />
+              <div className="flex items-center space-x-4 bg-white/60 rounded-xl p-4 border border-palette-stone/15 font-montserrat shadow-[0_10px_32px_rgba(20,20,17,0.05)]">
+                <EyeIcon className="h-8 w-8 text-palette-sage" />
                 <div>
-                  <h4 className="text-lg font-semibold text-[#373436] font-montserrat">Conciencia</h4>
-                  <p className="text-[#687CA8] text-sm font-montserrat">Movimiento con presencia y atención</p>
+                  <h4 className="text-lg font-semibold text-palette-ink font-montserrat">Conciencia</h4>
+                  <p className="text-palette-stone text-sm font-montserrat font-light">Movimiento con presencia y atención</p>
                 </div>
               </div>
             </div>
@@ -131,13 +134,13 @@ const MentorshipPhilosophy = () => {
           viewport={{ once: true }}
           className="mt-16 text-center"
         >
-          <div className="bg-[#F2F3F6] rounded-2xl p-8 border border-[#687CA8]/20">
-            <p className="text-xl md:text-2xl text-[#373436] italic mb-4 font-montserrat">
+          <div className="bg-white/55 rounded-2xl p-8 border border-palette-stone/20 shadow-[0_10px_32px_rgba(20,20,17,0.06)]">
+            <p className="text-xl md:text-2xl text-palette-stone italic mb-4 font-montserrat font-light">
               "La mentoría es el camino hacia 
-              <b className="font-semibold"> conocer y crear tu propio movimiento</b> 
+              <b className="font-semibold text-palette-ink"> conocer y crear tu propio movimiento</b> 
               , el que tu cuerpo necesita."
             </p>
-            <p className="text-[#234C8C] font-montserrat">— Mateo Molfino</p>
+            <p className="text-palette-ink font-montserrat">— Mateo Molfino</p>
           </div>
         </motion.div>
       </div>

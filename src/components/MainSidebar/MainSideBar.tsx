@@ -55,7 +55,7 @@ const MainSideBar = ({ children, where, forceStandardHeader = false, onMenuClick
         <MainSideBarDash showNav={showNav} where={where} toggleNav={toggleNav}/>
       ) : null}
       {snap.loginForm ? <LoginModal /> : null}
-      {where === 'move-crew' ? (
+      {where === 'membership' ? (
         <MoveCrewNavProvider value={{ toggleNav, showNav }}>
           {children}
         </MoveCrewNavProvider>

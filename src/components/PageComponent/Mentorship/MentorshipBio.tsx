@@ -1,97 +1,87 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+'use client';
 
-const MentorshipBio = () => {
+import React from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import imageLoader from '../../../../imageLoader';
+
+const PORTRAIT =
+  'https://res.cloudinary.com/dbeem2avp/image/upload/v1751917144/my_uploads/plaza/IMG_0333_mheawa.jpg';
+
+export default function MentorshipBio() {
   return (
-    <section className="py-10 bg-black font-montserrat">
-      <div className="max-w-6xl mx-auto px-6">
-        
-        {/* Intro personal breve */}
+    <section className="border-t border-white/10 bg-palette-ink py-14 font-montserrat text-left md:py-16">
+      <div className="mx-auto w-[92%] max-w-6xl px-3 sm:px-4">
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          viewport={{ once: true }}
-          className="mb-8"
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, margin: '-40px' }}
+          className="flex flex-col gap-8 md:flex-row md:items-start md:gap-12"
         >
-          <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-400 mb-3">Sobre mí</p>
-          <div className="flex flex-col md:flex-row items-start gap-8 md:gap-12">
-            {/* Foto */}
-            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border border-[#AF50E5]/30 flex-shrink-0">
-              <img 
-                src="https://res.cloudinary.com/dbeem2avp/image/upload/v1751917144/my_uploads/plaza/IMG_0333_mheawa.jpg" 
-                alt="Mateo Molfino" 
-                className="w-full h-full object-cover grayscale-[30%]" 
-                style={{ objectPosition: 'center 10%' }} 
-              />
-            </div>
-            
-            {/* Texto */}
-            <div className="flex-1">
-              <h2 className="text-3xl md:text-3xl font-semibold mb-4 text-white">
-                El origen de mi metodología
-              </h2>
-              <p className="text-base md:text-lg text-white/80 font-light leading-relaxed mb-4">
-Mi nombre es Mateo, siempre fui apasionado por el movimiento y la ciencia. Estudié ingeniería, soy profesor de yoga y me apasiona el funcionamiento del cuerpo y el mundo. Creo fuertemente que hay una relación entre el movimiento y la vida, asi como entre el cuerpo y el mundo. <br/> <br/>
-              
-                Mi misión es entender el funcionamiento de tu cuerpo en profundidad y construir estrategias sólidas para enriquecer su movimiento, entendiendolo como expresión única del diálogo con el entorno, desde el día en que naciste hasta el día de hoy.
+          <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-full border border-palette-sage/30 ring-1 ring-white/10 md:h-36 md:w-36">
+            <Image
+              src={PORTRAIT}
+              alt="Mateo Molfino"
+              width={144}
+              height={144}
+              className="h-full w-full object-cover grayscale-[25%]"
+              style={{ objectPosition: 'center 10%' }}
+              loader={imageLoader}
+            />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-normal uppercase tracking-[0.28em] text-palette-cream/55">Sobre mí</p>
+            <h2 className="mt-3 text-[1.65rem] font-semibold leading-[1.12] tracking-tight text-palette-cream sm:text-[2rem] md:text-[2.2rem]">
+              El origen de la metodología
+            </h2>
+            <div className="mt-4 space-y-4 text-[14px] font-light leading-[1.72] text-palette-cream/88 md:text-[15px] md:leading-[1.7]">
+              <p>
+                Me llamo Mateo: el movimiento y la ciencia siempre me movilizaron. Estudié ingeniería, soy profesor de yoga y me
+                interesa el funcionamiento del cuerpo en diálogo con el entorno. Creo en la relación entre movimiento y vida, entre
+                cuerpo y mundo.
               </p>
             </div>
           </div>
         </motion.div>
 
-        {/* Filosofía y ciencia */}
-        <div className="grid md:grid-cols-2 gap-8">
-          
-          {/* Filosofía */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            viewport={{ once: true }}
-            className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10 hover:border-[#AF50E5]/30 transition-all duration-300"
-          >
-            <h3 className="text-xl md:text-2xl font-semibold mb-4 text-white">
-              Filosofía
-            </h3>
-            <div className="space-y-4 text-white/70 font-light leading-relaxed text-sm md:text-base">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
+          viewport={{ once: true, margin: '-32px' }}
+          className="mt-12 grid gap-10 border-t border-white/10 pt-12 md:mt-14 md:grid-cols-2 md:gap-14 md:pt-14"
+        >
+          <div className="border-l border-palette-sage/35 pl-6">
+            <h3 className="text-lg font-semibold tracking-tight text-palette-cream md:text-xl">Filosofía</h3>
+            <div className="mt-4 space-y-4 text-[13px] font-light leading-[1.72] text-palette-cream/78 md:text-[14px]">
               <p>
-                El movimiento no es solo ejercicio. Es una forma de conocerte, de conocer tus limitaciones y expandirlas. No se trata de ser el mejor en un objetivo puntual, sino de exponerte a tus debilidades constantemente para crecer.
+                El movimiento no es solo ejercicio: es forma de conocerte, de ver tus límites y ampliarlos. No se trata de un solo
+                objetivo puntual, sino de exponerte a tus puntos débiles para crecer con criterio.
               </p>
               <p>
-                Trabajo desde la cocreación. Si algo no funciona, lo ajustamos. Si necesitás más tiempo, te lo doy. Si estás listo para más, avanzamos. La mentoría es tu proceso, no el mío.
+                Trabajo en cocreación. Si algo no funciona, lo ajustamos; si necesitás tiempo, está bien; si querés más profundidad,
+                avanzamos. La mentoría es tu proceso.
               </p>
             </div>
-            
-   
-          </motion.div>
+          </div>
 
-          {/* Ciencia detrás */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            viewport={{ once: true }}
-            className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10 hover:border-[#AF50E5]/30 transition-all duration-300"
-          >
-            <h3 className="text-xl md:text-2xl font-semibold mb-4 text-white">
-              El método (y su ciencia)
-            </h3>
-            <div className="space-y-4 text-white/70 font-light leading-relaxed text-sm md:text-base">
+          <div className="border-l border-palette-sage/35 pl-6">
+            <h3 className="text-lg font-semibold tracking-tight text-palette-cream md:text-xl">Método y ciencia</h3>
+            <div className="mt-4 space-y-4 text-[13px] font-light leading-[1.72] text-palette-cream/78 md:text-[14px]">
               <p>
-              Trabajo con la integralidad del cuerpo, desde el tejido conectivo hasta la biomoción. No somos músculos aislados, sino una unidad viva donde tensiones y compresiones convergen y se equilibran.
+                Pienso la integralidad del cuerpo — del tejido conectivo a la forma en que te organizás en el espacio. No somos
+                músculos aislados: somos una unidad donde tensiones y compresiones se equilibran.
               </p>
               <p>
-                El aprendizaje motor requiere repetición, feedback constante y tiempo para procesar. Por eso la mentoría es trimestral mínimamente: cambiar patrones de movimiento lleva semanas de estudio, observación y práctica.
+                El aprendizaje motor pide repetición, feedback y tiempo para integrar. Por eso la mentoría se piensa en ciclos:
+                cambiar patrones lleva semanas de observación y práctica guiada.
               </p>
             </div>
-          </motion.div>
-
-        </div>
-
+          </div>
+        </motion.div>
       </div>
     </section>
   );
-};
-
-export default MentorshipBio; 
+}

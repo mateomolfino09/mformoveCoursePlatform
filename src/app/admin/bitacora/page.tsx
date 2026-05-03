@@ -115,7 +115,7 @@ const BitacoraAdminPage = () => {
               <strong>Publicación Automática:</strong> El contenido se publica cada lunes según las fechas configuradas.
             </p>
             <p>
-              <strong>Camino:</strong> Esta es la característica principal de retención para miembros de Move Crew.
+              <strong>Camino:</strong> Esta es la característica principal de retención para miembros de Cuerpo autónomo.
             </p>
           </div>
         </div>

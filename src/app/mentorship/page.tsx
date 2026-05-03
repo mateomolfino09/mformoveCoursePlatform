@@ -67,12 +67,15 @@ export default function MentorshipPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-red-400 text-xl">Error: {error}</div>
-        <div className="text-white text-sm mt-4">
-          <button 
-            onClick={() => window.location.reload()} 
-            className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700"
+      <div className="min-h-screen bg-palette-cream flex flex-col items-center justify-center px-6 py-16 font-montserrat">
+        <div className="w-full max-w-md rounded-2xl border border-palette-stone/25 bg-white/60 backdrop-blur-sm p-8 text-center shadow-[0_4px_24px_rgba(20,20,17,0.06)]">
+          <p className="text-sm uppercase tracking-[0.2em] text-palette-stone/80 mb-2">Mentoría</p>
+          <p className="text-palette-ink text-lg font-medium leading-snug">No pudimos cargar los planes.</p>
+          <p className="mt-3 text-sm text-palette-stone font-light leading-relaxed">{error}</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="mt-6 w-full font-montserrat font-semibold text-sm uppercase tracking-[0.2em] rounded-full px-6 py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage transition-all duration-200"
           >
             Reintentar
           </button>
@@ -84,8 +87,18 @@ export default function MentorshipPage() {
   // Verificar si hay planes
   if (!plans || plans.length === 0) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-xl">No se encontraron planes de mentoría disponibles.</div>
+      <div className="min-h-screen bg-palette-cream flex items-center justify-center px-6 py-16 font-montserrat">
+        <div className="w-full max-w-md rounded-2xl border border-palette-stone/25 bg-white/60 backdrop-blur-sm p-8 text-center text-palette-ink shadow-[0_4px_24px_rgba(20,20,17,0.06)]">
+          <p className="text-sm uppercase tracking-[0.2em] text-palette-stone/80 mb-2">Mentoría</p>
+          <p className="text-lg font-medium">No hay planes disponibles en este momento.</p>
+          <p className="mt-3 text-sm text-palette-stone font-light">
+            Volvé a intentar más tarde o escribinos a{' '}
+            <a href="mailto:hola@mformove.com" className="text-palette-sage underline hover:text-palette-ink">
+              hola@mformove.com
+            </a>
+            .
+          </p>
+        </div>
       </div>
     );
   }

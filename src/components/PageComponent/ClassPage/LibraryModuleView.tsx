@@ -233,7 +233,7 @@ export default function LibraryModuleView({ module: mod, classes, onVideoReady }
         >
           <MainSideBar where="library">
             <Head>
-              <title>{title} - Biblioteca Move Crew</title>
+              <title>{title} - Biblioteca Cuerpo autónomo</title>
               <meta name="description" content={mod.description || `Clases del módulo ${title}`} />
               <link rel="icon" href="/favicon.ico" />
             </Head>

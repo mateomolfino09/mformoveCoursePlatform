@@ -9,22 +9,22 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 const resultsImages = [
   {
     src: 'my_uploads/casosDeExito/sofimejora_tkk4ev',
-    alt: 'Resultado Move Crew',
+    alt: 'Resultado Cuerpo autónomo',
     caption: 'Movilidad recuperada'
   },
   {
     src: 'my_uploads/plaza/DSC03366_ctiejt',
-    alt: 'Resultado Move Crew',
+    alt: 'Resultado Cuerpo autónomo',
     caption: 'Fuerza desarrollada'
   },
   {
     src: 'my_uploads/plaza/DSC03370_l1kh3e',
-    alt: 'Resultado Move Crew',
+    alt: 'Resultado Cuerpo autónomo',
     caption: 'Confianza en el movimiento'
   },
   {
     src: 'my_uploads/casosDeExito/telegram_gm6pti',
-    alt: 'Resultado Move Crew',
+    alt: 'Resultado Cuerpo autónomo',
     caption: 'Comunidad activa'
   }
 ];
@@ -87,7 +87,7 @@ const MoveCrewResultsSlider = () => {
           classesAvailable: data.classesAvailable || 0
         });
       } catch (error) {
-        console.error('Error cargando estadísticas de Move Crew:', error);
+        console.error('Error cargando estadísticas de Cuerpo autónomo:', error);
         setStatsTarget({ activeMembers: 0, classesAvailable: 0 });
       } finally {
         setStatsLoaded(true);

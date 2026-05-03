@@ -9,19 +9,19 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 const communityImages = [
   {
     src: 'my_uploads/alumnos/IMG_3278_ey2qow',
-    alt: 'Miembro Move Crew en movimiento'
+    alt: 'Miembro Cuerpo autónomo en movimiento'
   },
   {
     src: 'my_uploads/alumnos/IMG_3271_ziom6b',
-    alt: 'Comunidad Move Crew'
+    alt: 'Comunidad Cuerpo autónomo'
   },
   {
     src: 'my_uploads/alumnos/IMG_3279_nfrtmg',
-    alt: 'Sesión Move Crew'
+    alt: 'Sesión Cuerpo autónomo'
   },
   {
     src: 'my_uploads/plaza/DSC03366_ctiejt',
-    alt: 'Entrenamiento Move Crew'
+    alt: 'Entrenamiento Cuerpo autónomo'
   }
 ];
 

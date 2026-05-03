@@ -66,9 +66,9 @@ const ContactPage = () => {
       setSubmitted(true);
       toast.success('¡Mensaje enviado exitosamente!');
       
-      // Redirigir a Move Crew después de 2 segundos
+      // Redirigir a Cuerpo autónomo después de 2 segundos
       setTimeout(() => {
-        router.push('/move-crew');
+        router.push('/membership');
       }, 2000);
     } catch (error: any) {
       toast.error(error.message || 'Error al enviar el mensaje');
@@ -91,7 +91,7 @@ const ContactPage = () => {
         <div className="absolute inset-0">
           <CldImage
             src="my_uploads/fondos/DSC01526_hcas98"
-            alt="Move Crew Contact"
+            alt="Cuerpo autónomo Contact"
             fill
             priority
             className="hidden md:block object-cover opacity-60"
@@ -101,7 +101,7 @@ const ContactPage = () => {
           />
           <CldImage
             src="my_uploads/fondos/fondo3_jwv9x4"
-            alt="Move Crew Contact"
+            alt="Cuerpo autónomo Contact"
             fill
             priority
             className="md:hidden object-cover opacity-60"

@@ -4,19 +4,19 @@ import { motion } from 'framer-motion';
 const testimonials = [
   {
     name: 'Ignacio Luz',
-    plan: 'Mentoría',
+    plan: 'Cuerpo autónomo',
     photo: '/images/testimonials/testimonio_nacho.jpg',
     text: 'La mentoría con Mateo es una experiencia transformadora. Gracias a su mirada precisa y su acompañamiento constante, hoy me siento mucho más conectado con mi cuerpo y más cerca de los resultados que deseo.'
   },
   {
     name: 'Sofía Velozo',
-    plan: 'Mentoría',
+    plan: 'Cuerpo autónomo',
     photo: '/images/testimonials/sofia.jpeg',
     text: 'Nunca había sentido un progreso tan real y sostenido. Mateo te motiva, te corrige y te acompaña en cada paso. Recomiendo la mentoría a cualquiera que busque un cambio profundo.'
   },
   {
     name: 'Gonzalo Amado',
-    plan: 'Mentoría',
+    plan: 'Cuerpo autónomo',
     photo: '/images/testimonials/gonza.jpg',
     text: 'Mateo como profe es excelente. Siempre te pone a prueba, te motiva y celebra tus intentos, sin importar el resultado. Lo recomiendo al 100% si querés sentirte más libre, con confianza en cada movimiento, y rodeado de un ambiente de amistad.'
   }
@@ -24,7 +24,7 @@ const testimonials = [
 
 const MoveCrewTestimonials = () => {
   const scrollToPlans = () => {
-    const element = document.getElementById('move-crew-plans');
+    const element = document.getElementById('membership-plans');
     element?.scrollIntoView({ behavior: 'smooth' });
   };
 

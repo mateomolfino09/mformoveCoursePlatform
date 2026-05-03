@@ -139,7 +139,7 @@ export default function IndividualClassesPage() {
         >
           <MainSideBar where="library">
             <Head>
-              <title>Clases individuales - Move Crew</title>
+              <title>Clases individuales - Cuerpo autónomo</title>
               <meta name="description" content="Clases guiadas sin módulo" />
               <link rel="icon" href="/favicon.ico" />
             </Head>

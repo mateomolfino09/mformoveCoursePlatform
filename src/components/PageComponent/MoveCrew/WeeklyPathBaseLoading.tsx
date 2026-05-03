@@ -34,7 +34,7 @@ const WeeklyPathBaseLoading = ({ show }: { show: boolean }) => {
           <div className="absolute inset-0">
             <CldImage
               src="my_uploads/fondos/DSC01526_hcas98"
-              alt="Move Crew"
+              alt="Cuerpo autónomo"
               fill
               priority
               className="hidden md:block object-cover opacity-60"
@@ -43,7 +43,7 @@ const WeeklyPathBaseLoading = ({ show }: { show: boolean }) => {
             />
             <CldImage
               src="my_uploads/fondos/fondo3_jwv9x4"
-              alt="Move Crew"
+              alt="Cuerpo autónomo"
               fill
               priority
               className="md:hidden object-cover opacity-60"
@@ -67,7 +67,7 @@ const WeeklyPathBaseLoading = ({ show }: { show: boolean }) => {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-4xl md:text-6xl font-bold mb-2"
             >
-              Move Crew
+              Cuerpo autónomo
             </motion.h1>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}

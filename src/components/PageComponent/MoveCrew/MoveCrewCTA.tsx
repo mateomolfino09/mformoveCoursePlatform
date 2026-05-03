@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 const MoveCrewCTA = () => {
   const scrollToPlans = () => {
-    const element = document.getElementById('move-crew-plans');
+    const element = document.getElementById('membership-plans');
     element?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -26,7 +26,7 @@ const MoveCrewCTA = () => {
           viewport={{ once: true }}
           className="text-2xl md:text-4xl font-montserrat font-semibold text-palette-cream leading-tight mb-6 tracking-tight"
         >
-          Move Crew es la estructura que necesitás para empezar (y no parar).
+          Cuerpo autónomo es la estructura que necesitás para empezar (y no parar).
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 30 }}

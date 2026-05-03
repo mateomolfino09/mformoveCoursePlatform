@@ -64,7 +64,7 @@ const CoherenceCelebrationModal = ({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Overlay — estilo Move Crew (deep-teal/ink) */}
+          {/* Overlay — estilo Cuerpo autónomo (deep-teal/ink) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -87,7 +87,7 @@ const CoherenceCelebrationModal = ({
               }}
               className="pointer-events-auto relative w-full max-w-md mx-auto my-auto max-h-[85vh] md:max-h-[calc(100vh-8rem)] overflow-y-auto"
             >
-              {/* Contenedor — cream + bordes paleta como Move Crew */}
+              {/* Contenedor — cream + bordes paleta como Cuerpo autónomo */}
               <div className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-palette-stone/20 bg-palette-cream shadow-[0_12px_40px_rgba(20,20,17,0.12)]">
                 {/* Efectos de fondo sutiles — sage paleta */}
                 <div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none">
@@ -169,7 +169,7 @@ const CoherenceCelebrationModal = ({
                     </div>
                   </motion.div>
 
-                  {/* Label superior — estilo Move Crew (uppercase tracking) */}
+                  {/* Label superior — estilo Cuerpo autónomo (uppercase tracking) */}
                   <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -312,7 +312,7 @@ const CoherenceCelebrationModal = ({
                     )}
                   </AnimatePresence>
 
-                  {/* Botón CTA — mismo estilo Move Crew (ink + cream, rounded-full, uppercase) */}
+                  {/* Botón CTA — mismo estilo Cuerpo autónomo (ink + cream, rounded-full, uppercase) */}
                   <motion.button
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

@@ -5,9 +5,9 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 const faqs = [
   {
-    question: '¿Qué diferencia a Move Crew de la mentoría?',
+    question: '¿Qué diferencia a Cuerpo autónomo de la mentoría?',
     answer:
-      'En la mentoría trabajo con vos solo y armo todo a tu medida. Move Crew es grupal: seguís el Camino semanal con contenido nuevo cada semana y te respondo por WhatsApp cuando necesites. Los contenidos por módulo pueden ayudarte a armar tu ruta según tu nivel y necesidades.'
+      'En la mentoría trabajo con vos solo y armo todo a tu medida. Cuerpo autónomo es grupal: seguís el Camino semanal con contenido nuevo cada semana y te respondo por WhatsApp cuando necesites. Los contenidos por módulo pueden ayudarte a armar tu ruta según tu nivel y necesidades.'
   },
   {
     question: '¿Necesito experiencia previa?',
@@ -32,7 +32,7 @@ const faqs = [
   {
     question: '¿Hay garantía?',
     answer:
-      'No. La Move Crew es un programa de entrenamiento continuo y sostenible. Si no te sientes cómodo/a con el contenido, podés cambiar de plan o cancelar tu membresía en cualquier momento.'
+      'No. Cuerpo autónomo es un programa de entrenamiento continuo y sostenible. Si no te sientes cómodo/a con el contenido, podés cambiar de plan o cancelar tu membresía en cualquier momento.'
   }
 ];
 
@@ -44,7 +44,7 @@ const MoveCrewFAQ = () => {
   };
 
   return (
-    <section className="py-16 md:py-20 bg-palette-cream font-montserrat" id="move-crew-faq">
+    <section className="py-16 md:py-20 bg-palette-cream font-montserrat" id="membership-faq">
       <div className="w-[85%] max-w-6xl mx-auto px-4 text-left">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

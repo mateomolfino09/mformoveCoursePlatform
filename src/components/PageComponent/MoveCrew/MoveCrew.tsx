@@ -115,7 +115,7 @@ const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
 
   const handlePromocionClick = () => {
     // Scroll a la sección de planes
-    const plansSection = document.getElementById('move-crew-plans');
+    const plansSection = document.getElementById('membership-plans');
     if (plansSection) {
       plansSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -128,7 +128,7 @@ const MoveCrew = ({ plans, promociones = [] }: MoveCrewProps) => {
       ref={scrollContainerRef}
       className="relative lg:h-full min-h-screen overflow-scroll overflow-x-hidden bg-black"
     >
-      <MainSideBar where={'move-crew'}>
+      <MainSideBar where={'membership'}>
         {/* 1. Hero - Hook emocional inicial */}
         <MoveCrewHero />
         

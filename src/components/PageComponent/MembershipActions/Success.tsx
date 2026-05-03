@@ -66,7 +66,7 @@ const Success = () => {
         <div className="absolute inset-0">
           <CldImage
             src="my_uploads/fondos/DSC01753_qdv9o0"
-            alt="Move Crew Success"
+            alt="Cuerpo autónomo Success"
             fill
             priority
             className="object-cover opacity-40"
@@ -74,13 +74,13 @@ const Success = () => {
             preserveTransformations
             loader={imageLoader}
           />
-          {/* Overlay paleta para coherencia Move Crew */}
+          {/* Overlay paleta para coherencia Cuerpo autónomo */}
           <div className="absolute inset-0 bg-palette-ink/50" />
         </div>
 
-        {/* Contenido principal — tipografía y jerarquía como Move Crew */}
+        {/* Contenido principal — tipografía y jerarquía como Cuerpo autónomo */}
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center font-montserrat text-palette-cream">
-          {/* Label superior (estilo Move Crew) */}
+          {/* Label superior (estilo Cuerpo autónomo) */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -122,14 +122,14 @@ const Success = () => {
             </div>
           </motion.div>
 
-          {/* Título principal (estilo Move Crew: font-semibold tracking-tight) */}
+          {/* Título principal (estilo Cuerpo autónomo: font-semibold tracking-tight) */}
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-4xl md:text-6xl lg:text-7xl font-semibold font-montserrat mb-6 tracking-tight text-palette-cream"
           >
-            ¡Bienvenido a la Move Crew!
+            ¡Bienvenido a la Cuerpo autónomo!
           </motion.h1>
 
           {/* Mensaje principal */}
@@ -144,7 +144,7 @@ const Success = () => {
             </p>
           </motion.div>
 
-          {/* Mensaje secundario — font-raleway italic como Move Crew */}
+          {/* Mensaje secundario — font-raleway italic como Cuerpo autónomo */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -188,7 +188,7 @@ const Success = () => {
             </motion.button>
           </motion.div>
 
-          {/* Indicador sutil (texto secundario como Move Crew) */}
+          {/* Indicador sutil (texto secundario como Cuerpo autónomo) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

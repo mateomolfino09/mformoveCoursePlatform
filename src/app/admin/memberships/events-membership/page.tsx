@@ -32,7 +32,7 @@ export interface MoveCrewEventItem {
 
 const WEEKDAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-export default function EventsMoveCrewPage() {
+export default function EventsMembershipPage() {
   const router = useRouter();
   const auth = useAuth();
   const [loading, setLoading] = useState(true);
@@ -60,7 +60,7 @@ export default function EventsMoveCrewPage() {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/move-crew-events', { credentials: 'include', cache: 'no-store' });
+      const res = await fetch('/api/membership-events', { credentials: 'include', cache: 'no-store' });
       if (!res.ok) throw new Error('Error al cargar eventos');
       const data = await res.json();
       setEvents(Array.isArray(data) ? data : []);
@@ -76,7 +76,7 @@ export default function EventsMoveCrewPage() {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
-      const res = await fetch(`/api/move-crew-events/${deleteTarget._id}`, {
+      const res = await fetch(`/api/membership-events/${deleteTarget._id}`, {
         method: 'DELETE',
         credentials: 'include',
       });
@@ -111,12 +111,12 @@ export default function EventsMoveCrewPage() {
               <ArrowLeftIcon className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 font-montserrat">Eventos Move Crew</h1>
+              <h1 className="text-2xl font-bold text-gray-900 font-montserrat">Eventos Cuerpo autónomo</h1>
               <p className="text-sm text-gray-500 font-montserrat">Clases en vivo (Zoom) para el camino semanal</p>
             </div>
           </div>
           <Link
-            href="/admin/memberships/events-move-crew/create"
+            href="/admin/memberships/events-membership/create"
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#4F7CCF] text-white rounded-xl font-medium hover:bg-[#234C8C] transition-colors font-montserrat"
           >
             <PlusIcon className="w-5 h-5" />
@@ -131,7 +131,7 @@ export default function EventsMoveCrewPage() {
             <ComputerDesktopIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-600 font-montserrat mb-4">No hay eventos creados aún.</p>
             <Link
-              href="/admin/memberships/events-move-crew/create"
+              href="/admin/memberships/events-membership/create"
               className="inline-flex items-center gap-2 px-4 py-2 bg-[#4F7CCF] text-white rounded-xl font-medium hover:bg-[#234C8C] font-montserrat"
             >
               <PlusIcon className="w-5 h-5" />
@@ -171,7 +171,7 @@ export default function EventsMoveCrewPage() {
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <Link
-                    href={`/admin/memberships/events-move-crew/edit/${ev._id}`}
+                    href={`/admin/memberships/events-membership/edit/${ev._id}`}
                     className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-700"
                     title="Editar"
                   >
@@ -223,3 +223,4 @@ export default function EventsMoveCrewPage() {
     </AdmimDashboardLayout>
   );
 }
+

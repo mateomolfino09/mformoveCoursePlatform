@@ -79,7 +79,7 @@ export const sendSubscriptionEmail = async (
     buttonLink: `${origin}/dashboard`,
   };
 
-  // Plantilla minimalista Move Crew (fino, paleta ink/cream/stone)
+  // Plantilla minimalista Cuerpo autónomo (fino, paleta ink/cream/stone)
   const font = "'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif";
   const emailHtml = `
   <div style="font-family:${font};font-weight:300;background-color:#FAF8F4;padding:32px 16px;">
@@ -95,7 +95,7 @@ export const sendSubscriptionEmail = async (
         </div>
       </div>
       <div style="padding:24px;text-align:center;border-top:1px solid rgba(120,120,103,0.12);">
-        <p style="font-size:12px;color:#787867;margin:0 0 6px 0;font-weight:300;letter-spacing:0.02em;">El equipo de Move Crew</p>
+        <p style="font-size:12px;color:#787867;margin:0 0 6px 0;font-weight:300;letter-spacing:0.02em;">El equipo de Cuerpo autónomo</p>
         <p style="font-size:11px;color:#787867;margin:0;font-weight:300;opacity:0.7;">© 2025 MMOVE. Todos los derechos reservados.</p>
       </div>
     </div>

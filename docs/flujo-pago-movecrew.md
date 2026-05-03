@@ -1,8 +1,8 @@
-# Análisis del Flujo de Pago y Permisos de Move Crew
+# Análisis del Flujo de Pago y Permisos de Cuerpo autónomo
 
 ## Resumen Ejecutivo
 
-Este documento describe el flujo completo desde que un usuario hace clic en "Quiero unirme" en Move Crew hasta que obtiene permisos de membresía, incluyendo el manejo de usuarios no autenticados.
+Este documento describe el flujo completo desde que un usuario hace clic en "Quiero unirme" en Cuerpo autónomo hasta que obtiene permisos de membresía, incluyendo el manejo de usuarios no autenticados.
 
 **IMPORTANTE:** El flujo de pago ahora se procesa completamente mediante webhooks de Stripe. La página de success solo muestra un mensaje de confirmación y NO procesa ningún pago.
 
@@ -287,7 +287,7 @@ login             ↓
    - Agregado metadata `type: 'membership'` y `planId`
    - Agregado metadata en `subscription_data` para propagar a la suscripción
    - Removido `external_id` de la URL de success
-   - Cambiado `cancel_url` a `/move-crew`
+   - Cambiado `cancel_url` a `/membership`
 
 3. `src/app/api/payments/stripe/createPaymentURL/route.js`
    - Actualizado para pasar `planId` a `createCheckoutSession`

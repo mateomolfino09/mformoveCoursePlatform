@@ -107,7 +107,7 @@ function LoginForm() {
             // Si el usuario no tiene suscripción, no necesita onboarding
             if (onboardingData.sinSuscripcion) {
               setTimeout(() => {
-                router.push('/move-crew');
+                router.push('/membership');
               }, 1000);
               return;
             }
@@ -153,7 +153,7 @@ function LoginForm() {
           // Si el onboarding está completo o no es necesario, redirigir normalmente
           const hasActiveSub = res?.user?.subscription?.active || auth.user?.subscription?.active;
           setTimeout(() => {
-            router.push(hasActiveSub ? '/library' : '/move-crew');
+            router.push(hasActiveSub ? '/library' : '/membership');
           }, 1000);
         }
       } else {

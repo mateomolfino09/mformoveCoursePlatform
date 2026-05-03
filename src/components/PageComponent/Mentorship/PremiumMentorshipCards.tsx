@@ -1,7 +1,6 @@
 'use client'
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { CheckIcon } from '@heroicons/react/24/solid';
 import { MentorshipProps } from '../../../types/mentorship';
 
 type PlanPrice = {
@@ -36,42 +35,12 @@ const PremiumMentorshipCards = ({ plans, interval, onPlanSelect, loadingPlanId, 
   if (!plan) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">No hay planes disponibles en este momento.</p>
+        <p className="text-palette-stone">No hay planes disponibles en este momento.</p>
       </div>
     );
   }
 
-  const getLevelConfig = (level: string) => {
-    switch (level) {
-      case 'explorer':
-        return { 
-          animal: '/images/svg/owl.svg',
-          title: 'Explorador',
-          subtitle: 'Ideal para comenzar'
-        };
-      case 'practitioner':
-        return { 
-          animal: '/images/svg/hawk.svg',
-          title: 'Practicante',
-          subtitle: 'Más profundo'
-        };
-      case 'student':
-        return { 
-          animal: '/images/svg/elephant.svg',
-          title: 'Estudiante',
-          subtitle: 'Máximo compromiso'
-        };
-      default:
-        return { 
-          animal: '/images/svg/spider.svg',
-          title: 'Plan',
-          subtitle: 'Básico'
-        };
-    }
-  };
-
   const priceObj = plan.prices?.find((p: PlanPrice) => p.interval === interval);
-  const config = getLevelConfig(plan.level);
 
   return (
     <div className="w-full">
@@ -86,12 +55,12 @@ const PremiumMentorshipCards = ({ plans, interval, onPlanSelect, loadingPlanId, 
             viewport={{ once: true }}
             className="flex justify-center mb-12"
           >
-            <div className="flex bg-white/60 backdrop-blur rounded-xl p-1 border border-[#AF50E5]/20 shadow-sm">
+            <div className="flex bg-white/60 backdrop-blur rounded-full p-1 border border-palette-stone/25 shadow-sm">
               <button
                 className={`px-8 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                   interval === 'trimestral' 
-                    ? 'bg-[#AF50E5] text-white shadow-md' 
-                    : 'text-gray-700 hover:text-[#AF50E5] hover:bg-white/80'
+                    ? 'bg-palette-ink text-palette-cream shadow-md' 
+                    : 'text-palette-stone hover:text-palette-ink hover:bg-white/80'
                 }`}
                 onClick={() => setIntervalProp?.('trimestral')}
               >
@@ -100,8 +69,8 @@ const PremiumMentorshipCards = ({ plans, interval, onPlanSelect, loadingPlanId, 
               <button
                 className={`px-8 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                   interval === 'anual' 
-                    ? 'bg-[#AF50E5] text-white shadow-md' 
-                    : 'text-gray-700 hover:text-[#AF50E5] hover:bg-white/80'
+                    ? 'bg-palette-ink text-palette-cream shadow-md' 
+                    : 'text-palette-stone hover:text-palette-ink hover:bg-white/80'
                 }`}
                 onClick={() => setIntervalProp?.('anual')}
               >
@@ -120,41 +89,36 @@ const PremiumMentorshipCards = ({ plans, interval, onPlanSelect, loadingPlanId, 
             viewport={{ once: true }}
             className="flex flex-col max-w-2xl mx-auto"
           >
-            {/* Price Section - Minimalista */}
-            <div className="text-center mb-12">
-              <div className="text-6xl md:text-7xl font-light text-black mb-2 tracking-tight">
-                U$S {priceObj.price}
+            <div className="text-center mb-10 md:mb-11">
+              <p className="font-montserrat uppercase tracking-[0.2em] text-[11px] text-palette-stone/85 mb-3 md:text-xs">
+                Inversión
+              </p>
+              <div className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1 text-palette-ink">
+                <span className="text-[1.4rem] font-semibold uppercase tracking-[0.04em] sm:text-xl md:text-2xl">
+                  {priceObj.currency === 'USD' ? 'U$S' : priceObj.currency}
+                </span>
+                <span className="text-[2.875rem] font-semibold tabular-nums tracking-tighter sm:text-6xl md:text-[4.25rem] md:leading-none lg:text-8xl">
+                  {priceObj.price}
+                </span>
               </div>
-              <div className="text-gray-600 text-sm font-light tracking-wide uppercase">
+              <div className="mt-3 text-palette-stone text-[11px] font-medium uppercase tracking-[0.26em] md:text-xs">
                 /{interval === 'trimestral' ? 'trimestre' : 'año'}
               </div>
             </div>
 
-            {/* Description - Clean */}
-            <p className="text-lg md:text-xl text-gray-700 font-light leading-relaxed mb-12 text-center max-w-xl mx-auto">
-              {plan.description}
-            </p>
+            <div className="mx-auto mb-11 max-w-lg space-y-5 text-left md:mb-12">
+      
+              <p className="border-l-2 border-palette-sage/50 pl-4 text-[15px] font-medium leading-snug text-palette-ink md:text-[16px]">
+                Seguimiento y feedback semanal, con una llamada al mes.
+              </p>
 
-            {/* Features List - Minimalista */}
-            <div className="mb-12 bg-gradient-to-br from-white via-[#FAF8F3]/50 to-[#F5F1E8]/30 rounded-3xl p-6 border border-[#AF50E5]/20 shadow-[0_4px_20px_rgba(175,80,229,0.08)]">
-              {plan.features.map((feature, featureIndex) => (
-                <div 
-                  key={featureIndex}
-                  className="flex items-start space-x-4 py-4 border-b border-[#AF50E5]/10 last:border-b-0"
-                >
-                  <CheckIcon className="w-5 h-5 text-[#AF50E5] mt-0.5 flex-shrink-0" />
-                  <span className="text-base leading-relaxed text-gray-800 font-light">
-                    {feature}
-                  </span>
-                </div>
-              ))}
             </div>
 
             {/* CTA Button - Clean and minimal */}
             <button
               onClick={() => onPlanSelect(plan)}
               disabled={loadingPlanId === plan._id || !plan.active}
-              className="w-full bg-[#AF50E5] text-white px-8 py-4 font-medium text-base hover:bg-[#9A3FD4] transition-all duration-200 font-montserrat rounded-xl disabled:opacity-50 disabled:cursor-not-allowed mb-4 shadow-lg hover:shadow-xl hover:shadow-[#AF50E5]/30"
+              className="group w-full bg-palette-ink text-palette-cream px-8 py-4 font-semibold text-sm uppercase tracking-[0.2em] hover:bg-palette-sage hover:text-palette-ink transition-all duration-200 font-montserrat rounded-full border-2 border-palette-ink hover:border-palette-sage disabled:opacity-50 disabled:cursor-not-allowed mb-4 shadow-[0_10px_32px_rgba(20,20,17,0.10)]"
             >
               {loadingPlanId === plan._id ? (
                 <div className="flex items-center justify-center">
@@ -162,14 +126,17 @@ const PremiumMentorshipCards = ({ plans, interval, onPlanSelect, loadingPlanId, 
                   Procesando...
                 </div>
               ) : (
-                'Comenzar Mentoría'
+                <span className="inline-flex items-center justify-center gap-4">
+                  <span>Elegir este plan</span>
+                  <span className="opacity-80 group-hover:translate-x-0.5 transition-transform">→</span>
+                </span>
               )}
             </button>
 
             {/* Value Proposition - Subtle */}
             <div className="text-center">
-              <p className="text-xs text-gray-500 font-light tracking-wide">
-                Cancela cuando quieras
+              <p className="text-xs text-palette-stone/80 font-light tracking-[0.12em]">
+                Cancelás cuando quieras.
               </p>
             </div>
           </motion.div>
@@ -183,12 +150,12 @@ const PremiumMentorshipCards = ({ plans, interval, onPlanSelect, loadingPlanId, 
           viewport={{ once: true }}
           className="mt-16"
         >
-          <div className="bg-gradient-to-br from-white via-[#FAF8F3]/50 to-[#F5F1E8]/30 border border-[#AF50E5]/20 rounded-3xl p-8 md:p-12 shadow-[0_4px_20px_rgba(175,80,229,0.08)]">
-            <h3 className="text-2xl md:text-3xl font-semibold text-black mb-4">
-              Te explico el compromiso trimestral...
-            </h3>
-            <p className="text-base md:text-lg text-gray-700 font-light mb-8 max-w-3xl leading-relaxed">
-            El aprendizaje motor requiere repetición, feedback constante y tiempo para procesar. Por eso la mentoría es trimestral mínimamente: cambiar patrones de movimiento lleva semanas de estudio, observación y práctica.
+          <div className="border-y border-palette-stone/20 py-10">
+            <p className="font-montserrat uppercase tracking-[0.2em] text-xs text-palette-stone/80 mb-3">
+              Nota
+            </p>
+            <p className="text-sm md:text-base text-palette-stone font-light leading-relaxed max-w-3xl">
+              La mentoría tiene ciclos para que el feedback se transforme en práctica real.
             </p>
           </div>
         </motion.div>

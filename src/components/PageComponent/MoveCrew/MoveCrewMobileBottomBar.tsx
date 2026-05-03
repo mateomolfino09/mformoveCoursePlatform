@@ -11,7 +11,7 @@ export const MoveCrewBottomBarButtons = () => {
   return (
     <>
       <Link
-        href="/move-crew#move-crew-plans"
+        href="/membership#membership-plans"
         className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 py-2 transition-all duration-200 shrink-0 ${showNav ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : 'bg-black text-white border border-black hover:bg-palette-sage hover:border-palette-sage'}`}
       >
         Empezar Camino
@@ -32,7 +32,7 @@ export const MoveCrewBottomBarButtons = () => {
 };
 
 /**
- * Barra fija inferior en móvil para Move Crew: Empezar Camino + Menú.
+ * Barra fija inferior en móvil para Cuerpo autónomo: Empezar Camino + Menú.
  * Se muestra solo en móvil cuando no hay barra de descuento (PromocionFooter).
  */
 const MoveCrewMobileBottomBar = () => {

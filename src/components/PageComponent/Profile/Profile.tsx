@@ -286,7 +286,7 @@ function Profile() {
             {/* Membresía */}
             <Membership user={auth.user} handleVisibility={open} plan={plan} loading={loading}/>
 
-            {/* Comunidad Move Crew */}
+            {/* Comunidad Cuerpo autónomo */}
             {(auth?.user?.subscription?.active || auth?.user?.isVip) && (
               <motion.div
                 variants={itemVariants}
@@ -297,7 +297,7 @@ function Profile() {
                     <TbMessageCircleCode className='text-xl text-palette-sage w-6 h-6'/>
                   </div>
                   <h2 className='text-xl md:text-2xl font-montserrat font-semibold text-palette-ink tracking-tight'>
-                    Comunidad Move Crew
+                    Comunidad Cuerpo autónomo
                   </h2>
                 </div>
                 <p className='text-base text-palette-stone font-light mb-4 leading-relaxed'>

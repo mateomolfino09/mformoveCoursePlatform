@@ -44,8 +44,8 @@ export default function ZoomEventContentDisplay({
     if (!moveCrewEventId) return;
     const dateParam = eventDate ? (typeof eventDate === 'string' && eventDate.length >= 10 ? eventDate.slice(0, 10) : null) : null;
     const url = dateParam
-      ? `/api/move-crew-events/${moveCrewEventId}/calendar?date=${encodeURIComponent(dateParam)}`
-      : `/api/move-crew-events/${moveCrewEventId}/calendar`;
+      ? `/api/membership-events/${moveCrewEventId}/calendar?date=${encodeURIComponent(dateParam)}`
+      : `/api/membership-events/${moveCrewEventId}/calendar`;
     fetch(url, { credentials: 'include' })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => data && setCalendarUrls({ googleCalendarUrl: data.googleCalendarUrl, icsUrl: data.icsUrl }))

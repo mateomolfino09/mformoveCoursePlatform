@@ -59,13 +59,13 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
     }
   }, [isOpen, showTutorial]);
 
-  // Paso 1: detectar clic en el botón Move Crew y pasar al paso 2
+  // Paso 1: detectar clic en el botón Cuerpo autónomo y pasar al paso 2
   useEffect(() => {
     if (!isOpen || !showTutorial || currentStep !== 1) return;
     
     const handleMoveCrewClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const moveCrewButton = target.closest('[data-tutorial-move-crew-target]');
+      const moveCrewButton = target.closest('[data-tutorial-membership-target]');
       if (!moveCrewButton) return;
       
       e.preventDefault();
@@ -91,11 +91,11 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
     };
   }, [isOpen, showTutorial, currentStep]);
 
-  // Paso 1: subrayar el botón Move Crew del header
+  // Paso 1: subrayar el botón Cuerpo autónomo del header
   useEffect(() => {
     if (!isOpen || !showTutorial || currentStep !== 1) {
       // Limpiar resaltado del botón cuando no estamos en paso 1
-      const moveCrewButtons = document.querySelectorAll('[data-tutorial-move-crew-target]');
+      const moveCrewButtons = document.querySelectorAll('[data-tutorial-membership-target]');
       moveCrewButtons.forEach((btn) => {
         const button = btn as HTMLElement;
         button.style.removeProperty('border');
@@ -110,9 +110,9 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
       return;
     }
 
-    // Aplicar borde completo al botón Menú / Move Crew (resaltado total)
+    // Aplicar borde completo al botón Menú / Cuerpo autónomo (resaltado total)
     const applyButtonHighlight = () => {
-      const moveCrewButtons = document.querySelectorAll('[data-tutorial-move-crew-target]');
+      const moveCrewButtons = document.querySelectorAll('[data-tutorial-membership-target]');
       moveCrewButtons.forEach((btn) => {
         const button = btn as HTMLElement;
         button.style.setProperty('border', '2px solid rgba(255, 255, 255, 0.95)', 'important');
@@ -122,7 +122,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
     };
 
     const removeButtonHighlight = () => {
-      document.querySelectorAll('[data-tutorial-move-crew-target]').forEach((btn) => {
+      document.querySelectorAll('[data-tutorial-membership-target]').forEach((btn) => {
         const button = btn as HTMLElement;
         button.style.removeProperty('border');
         button.style.removeProperty('border-radius');
@@ -199,9 +199,9 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
         return; // No bloquear, permitir que el botón funcione
       }
       
-      // Permitir que el botón Move Crew (navigator o header/barra) abra el menú SOLO si está cerrado
+      // Permitir que el botón Cuerpo autónomo (navigator o header/barra) abra el menú SOLO si está cerrado
       const isMoveCrewButton = (navigator && target.closest('button[aria-label="Navegador de Camino"]')) ||
-        (target.closest('button') && (target.closest('button')?.textContent?.trim() === 'Move Crew' || target.closest('button')?.textContent?.includes('Cerrar')));
+        (target.closest('button') && (target.closest('button')?.textContent?.trim() === 'Cuerpo autónomo' || target.closest('button')?.textContent?.includes('Cerrar')));
       if (isMoveCrewButton) {
         // Si el menú está visible, NO permitir que se cierre (bloquear el toggle)
         if (isDropdownVisible) {
@@ -395,7 +395,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
       });
       
 
-      // Menú Move Crew: panel full-screen (fixed inset-0 bg-black) o legacy dropdown
+      // Menú Cuerpo autónomo: panel full-screen (fixed inset-0 bg-black) o legacy dropdown
       const getMenuRoot = (): HTMLElement | null => {
         const panel = document.querySelector('[class*="fixed inset-0"][class*="bg-black"]');
         if (panel && panel.getBoundingClientRect().width > 0) return panel as HTMLElement;
@@ -913,8 +913,8 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
         }
       });
       
-      // Limpiar resaltado del botón Move Crew (borde completo + subrayados antiguos)
-      const moveCrewButtons = document.querySelectorAll('[data-tutorial-move-crew-target]');
+      // Limpiar resaltado del botón Cuerpo autónomo (borde completo + subrayados antiguos)
+      const moveCrewButtons = document.querySelectorAll('[data-tutorial-membership-target]');
       moveCrewButtons.forEach((btn) => {
         const button = btn as HTMLElement;
         button.style.removeProperty('border');
@@ -1018,17 +1018,17 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
             className="absolute inset-0 bg-palette-ink/60 backdrop-blur-sm"
             style={{ pointerEvents: 'auto', zIndex: 199 }}
             onClick={(e) => {
-              // Bloquear todos los clics en el overlay excepto en el botón Move Crew
+              // Bloquear todos los clics en el overlay excepto en el botón Cuerpo autónomo
               e.preventDefault();
               e.stopPropagation();
             }}
           />
         )}
         
-        {/* Asegurar que el botón Move Crew esté por encima del overlay en paso 1 y agregar animación de pulso */}
+        {/* Asegurar que el botón Cuerpo autónomo esté por encima del overlay en paso 1 y agregar animación de pulso */}
         {currentStep === 1 && (
           <style jsx global>{`
-            [data-tutorial-move-crew-target] {
+            [data-tutorial-membership-target] {
               position: relative !important;
               z-index: 10 !important;
               pointer-events: auto !important;
@@ -1114,7 +1114,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
               pointer-events: auto !important;
             }
             
-            /* El panel full-screen del menú Move Crew debe estar por debajo del tutorial */
+            /* El panel full-screen del menú Cuerpo autónomo debe estar por debajo del tutorial */
             [class*="fixed inset-0"][class*="bg-black"] {
               z-index: 200 !important;
             }
@@ -1283,7 +1283,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                     Menú Principal
                   </h3>
                   <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                    Toca el botón <span className="text-palette-ink font-normal">Move Crew</span> en el header para abrir tu navegador central y acceder a todas las secciones.
+                    Toca el botón <span className="text-palette-ink font-normal">Cuerpo autónomo</span> en el header para abrir tu navegador central y acceder a todas las secciones.
                   </p>
                 </motion.div>
               )}
@@ -1462,7 +1462,7 @@ const WeeklyPathMenuTutorial = ({ isOpen, onComplete }: WeeklyPathMenuTutorialPr
                         Menú Principal
                       </h3>
                       <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                        Toca el botón <span className="text-palette-ink font-normal">Move Crew</span> en el header para abrir tu navegador central y acceder a todas las secciones.
+                        Toca el botón <span className="text-palette-ink font-normal">Cuerpo autónomo</span> en el header para abrir tu navegador central y acceder a todas las secciones.
                       </p>
                     </motion.div>
                   )}
