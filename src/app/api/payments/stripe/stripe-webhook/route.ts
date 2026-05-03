@@ -106,7 +106,7 @@ export const POST = async (req: NextRequest) => {
               
               if (user) {
 
-                // Inicializar tracking de coherencia para Move Crew
+                // Inicializar tracking de coherencia para Cuerpo autónomo
                 try {
                   await ensureCoherenceTracking(user._id);
                 } catch (trackingErr) {
@@ -134,7 +134,7 @@ export const POST = async (req: NextRequest) => {
                     userName: user.name || 'Sin nombre',
                     userEmail: user.email,
                     userId: user._id?.toString() || 'N/A',
-                    planName: subscription.metadata?.planName || 'Move Crew',
+                    planName: subscription.metadata?.planName || 'Cuerpo autónomo',
                     subscriptionId: subscription.id,
                     activationDate: new Date().toLocaleDateString('es-ES', {
                       year: 'numeric',
@@ -212,7 +212,7 @@ export const POST = async (req: NextRequest) => {
                       await emailService.sendSubscriptionCancelled({
                         email: user.email,
                         name: user.name || 'Miembro',
-                        planName: subscription.metadata?.planName || 'Move Crew',
+                        planName: subscription.metadata?.planName || 'Cuerpo autónomo',
                         cancellationDate: new Date().toLocaleDateString('es-ES', {
                           year: 'numeric',
                           month: 'long',
@@ -220,7 +220,7 @@ export const POST = async (req: NextRequest) => {
                         }),
                         accessUntil: periodEnd,
                         feedbackUrl: `${origin}/contact?reason=cancellation&email=${encodeURIComponent(user.email)}`,
-                        reactivateUrl: `${origin}/move-crew`
+                        reactivateUrl: `${origin}/membership`
                       });
                       
                       // Enviar email de notificación al administrador
@@ -230,7 +230,7 @@ export const POST = async (req: NextRequest) => {
                           userName: user.name || 'Sin nombre',
                           userEmail: user.email,
                           userId: user._id?.toString() || 'N/A',
-                          planName: subscription.metadata?.planName || 'Move Crew',
+                          planName: subscription.metadata?.planName || 'Cuerpo autónomo',
                           subscriptionId: subscription.id,
                           cancellationDate: new Date().toLocaleDateString('es-ES', {
                             year: 'numeric',
@@ -281,7 +281,7 @@ export const POST = async (req: NextRequest) => {
                 await emailService.sendSubscriptionCancelled({
                   email: user.email,
                   name: user.name || 'Miembro',
-                  planName: subscription.metadata?.planName || 'Move Crew',
+                  planName: subscription.metadata?.planName || 'Cuerpo autónomo',
                   cancellationDate: new Date().toLocaleDateString('es-ES', {
                     year: 'numeric',
                     month: 'long',
@@ -289,7 +289,7 @@ export const POST = async (req: NextRequest) => {
                   }),
                   accessUntil: null, // Ya no tiene acceso
                   feedbackUrl: `${origin}/contact?reason=cancellation&email=${encodeURIComponent(user.email)}`,
-                  reactivateUrl: `${origin}/move-crew`
+                  reactivateUrl: `${origin}/membership`
                 });
                 
                 // Enviar email de notificación al administrador
@@ -299,7 +299,7 @@ export const POST = async (req: NextRequest) => {
                     userName: user.name || 'Sin nombre',
                     userEmail: user.email,
                     userId: user._id?.toString() || 'N/A',
-                    planName: subscription.metadata?.planName || 'Move Crew',
+                    planName: subscription.metadata?.planName || 'Cuerpo autónomo',
                     subscriptionId: subscription.id,
                     cancellationDate: new Date().toLocaleDateString('es-ES', {
                       year: 'numeric',
@@ -343,7 +343,7 @@ export const POST = async (req: NextRequest) => {
                 if (user) {
                   const emailService = EmailService.getInstance();
                   const amount = invoice.amount_due ? (invoice.amount_due / 100).toFixed(2) : null;
-                  const planName = subscription.metadata?.planName || 'Move Crew';
+                  const planName = subscription.metadata?.planName || 'Cuerpo autónomo';
                   
                   await emailService.sendPaymentFailed({
                     email: user.email,
@@ -358,7 +358,7 @@ export const POST = async (req: NextRequest) => {
                       minute: '2-digit'
                     }),
                     errorMessage: (invoice as any).last_payment_error?.message || 'No se pudo procesar el pago. Por favor, verifica tu método de pago.',
-                    retryUrl: `${origin}/move-crew`,
+                    retryUrl: `${origin}/membership`,
                     feedbackUrl: `${origin}/contact?reason=payment&email=${encodeURIComponent(user.email)}`
                   });
                   

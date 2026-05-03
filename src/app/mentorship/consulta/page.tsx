@@ -2,8 +2,44 @@
 import React, { useState, useEffect } from "react";
 import { CldImage } from 'next-cloudinary';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import MainSideBar from '../../../components/MainSidebar/MainSideBar';
 import Footer from '../../../components/Footer';
+import imageLoader from '../../../../imageLoader';
+
+const CONSULTA_BG = 'my_uploads/plaza/DSC03350_vgjrrh';
+
+const fieldClass = (hasError: boolean, touchedField: boolean) =>
+  [
+    'w-full rounded-xl border bg-white px-4 py-3.5 text-[15px] text-palette-ink font-montserrat transition-all duration-200',
+    'focus:border-palette-ink focus:outline-none focus:ring-2 focus:ring-palette-sage/25',
+    hasError && touchedField
+      ? 'border-red-400/90'
+      : 'border-palette-stone/22 hover:border-palette-stone/40',
+  ].join(' ');
+
+function ConsultaBackdrop() {
+  return (
+    <div className="pointer-events-none fixed inset-0 z-0">
+      <CldImage
+        src={CONSULTA_BG}
+        alt=""
+        fill
+        sizes="100vw"
+        priority
+        className="object-cover object-[center_42%]"
+        loader={imageLoader}
+        preserveTransformations
+      />
+      <div className="absolute inset-0 opacity-[0.22] md:opacity-[0.26] mix-blend-overlay bg-palette-ink" aria-hidden />
+      <div
+        className="absolute inset-0 bg-gradient-to-br from-palette-ink/[0.78] via-palette-ink/[0.58] to-palette-ink/[0.42]"
+        aria-hidden
+      />
+      <div className="absolute inset-0 bg-palette-cream/[0.06]" aria-hidden />
+    </div>
+  );
+}
 
 interface FormState {
   nombre: string;
@@ -16,6 +52,9 @@ interface FormState {
   principalFrenoJustificacion: string;
   principalFreno: string;
   porQueElegirme: string;
+  /** Prefijo país (ej. +598); se concatena con whatsappNationalNumber al guardar whatsapp completo */
+  whatsappDialCode: string;
+  whatsappNationalNumber: string;
   whatsapp: string;
   presupuesto: string;
   comentarios: string;
@@ -34,12 +73,18 @@ interface RadioOption {
   discountPercent?: number;
 }
 
+interface SelectOptionKV {
+  value: string;
+  label: string;
+}
+
 interface Pregunta {
   name: string;
   label: string;
   type: "text" | "email" | "textarea" | "select" | "checkbox" | "radio";
   required: boolean;
-  options?: any[];
+  /** Strings (value === label) o pares valor/label (p. ej. interesadoEn). */
+  options?: (string | SelectOptionKV)[];
 }
 
 interface PlanPrice {
@@ -58,6 +103,46 @@ interface MentorshipPlan {
   active: boolean;
   prices: PlanPrice[];
 }
+
+/** Valor que se envía en `interesadoEn` (array); coincide con opción histórica del backend. */
+const INTERES_MENTORIA = 'Mentoria';
+const INTERES_CUERPO_AUTONOMO = 'Cuerpo Autónomo';
+const ROUTE_MEMBERSHIP_SELECT_PLAN = '/select-plan';
+
+/** Prefijos típicos; el número local se concatena al envío: dialCode + solo dígitos. */
+const WHATSAPP_DIAL_CODES = [
+  { code: '+598', label: 'Uruguay +598' },
+  { code: '+54', label: 'Argentina +54' },
+  { code: '+56', label: 'Chile +56' },
+  { code: '+57', label: 'Colombia +57' },
+  { code: '+52', label: 'México +52' },
+  { code: '+51', label: 'Perú +51' },
+  { code: '+34', label: 'España +34' },
+  { code: '+351', label: 'Portugal +351' },
+  { code: '+1', label: 'EE.UU./Can +1' },
+  { code: '+55', label: 'Brasil +55' },
+  { code: '+593', label: 'Ecuador +593' },
+] as const;
+
+function buildWhatsappFull(dial: string, national: string): string {
+  const digits = national.replace(/\D/g, '');
+  const d = dial.trim().startsWith('+') ? dial.trim() : `+${dial.replace(/\D/g, '')}`;
+  return digits ? `${d}${digits}` : '';
+}
+
+function currencyDisplay(code: string | undefined): string {
+  const c = String(code ?? 'USD').toUpperCase();
+  return c === 'USD' ? 'U$S' : c;
+}
+
+const MENTORSHIP_PLAN_WHAT_YOU_GET = [
+  'Programa de entrenamiento',
+  'Ajustes progresivos cada dos semanas',
+  'Llamada mensual para tratar conocimientos teóricos en el campo del movimiento.',
+] as const;
+
+const MENTORSHIP_PLAN_METHOD_BASIS =
+  'Artes marciales, el baile, el yoga, la calistenia, la gimnasia, el entrenamiento y los deportes.';
 
 const preguntas = [
   {
@@ -81,9 +166,10 @@ const preguntas = [
   {
     name: "interesadoEn",
     label: "¿En qué estás interesad@?",
-    type: "checkbox",
+    type: "select",
     options: [
-      "Mentoria"
+      { value: INTERES_MENTORIA, label: 'Mentoría' },
+      { value: INTERES_CUERPO_AUTONOMO, label: 'Cuerpo Autónomo' },
     ],
     required: true,
   },
@@ -145,15 +231,15 @@ const preguntas = [
   },
   {
     name: "whatsapp",
-    label: "Facilítame tu WhatsApp para ponerme en contacto contigo (recuerda poner el prefijo)",
-    type: "text",
+    label: 'Tu WhatsApp para contactarte',
+    type: 'text',
     required: true,
   },
   {
     name: "presupuesto",
-    label: "¿Qué servicios te interesan más según tu situación financiera actual?",
+    label: "¿Preferís pagar la mentoría en ciclo trimestral o en ciclo anual?",
     type: "radio",
-    options: [], // Se llenará dinámicamente con los planes de la base de datos
+    options: [],
     required: true,
   },
   {
@@ -168,15 +254,17 @@ const initialState: FormState = {
   nombre: "",
   email: "",
   paisCiudad: "",
-  interesadoEn: [],
+  interesadoEn: [INTERES_MENTORIA],
   dondeEntrena: "",
   nivelActual: "",
   nivelBuscado: "",
   principalFrenoJustificacion: "",
   principalFreno: "",
   porQueElegirme: "",
-  whatsapp: "",
-  presupuesto: "",
+  whatsappDialCode: '+598',
+  whatsappNationalNumber: '',
+  whatsapp: '',
+  presupuesto: '',
   comentarios: ""
 };
 
@@ -280,7 +368,7 @@ const validators = {
   },
 
   presupuesto: (value: string): string => {
-    if (!value.trim()) return 'Debes seleccionar un plan de mentoría';
+    if (!value.trim()) return 'Elegí si preferís ciclo trimestral o anual';
     return '';
   },
 
@@ -298,7 +386,6 @@ export default function MentorshipConsultaPage() {
   const [enviado, setEnviado] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [mentorshipPlans, setMentorshipPlans] = useState<MentorshipPlan[]>([]);
   const [budgetOptions, setBudgetOptions] = useState<RadioOption[]>([]);
   const [plansLoaded, setPlansLoaded] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -307,58 +394,76 @@ export default function MentorshipConsultaPage() {
   const preguntaActual = preguntas[step];
   const isPresupuestoStep = preguntaActual.name === 'presupuesto';
 
-  // Función para cargar los planes de mentoría
   const loadMentorshipPlans = async () => {
     try {
       const response = await fetch('/api/payments/getPlans?type=mentorship');
-      if (response.ok) {
-        const plans = await response.json();
-        
-        const activePlans = plans.filter((plan: MentorshipPlan) => plan.active);
-        
-        setMentorshipPlans(activePlans);
-        
-        // Actualizar las opciones de presupuesto con los planes reales
-        const presupuestoPregunta = preguntas.find(p => p.name === 'presupuesto');
-        if (presupuestoPregunta) {
-          const options = activePlans.map((plan: MentorshipPlan) => {
-            const trimestralPrice = plan.prices?.find((p: PlanPrice) => p.interval === 'trimestral');
-            const anualPrice = plan.prices?.find((p: PlanPrice) => p.interval === 'anual');
-
-            const monthlyFromTrimestral = trimestralPrice ? Math.round(trimestralPrice.price / 3) : null;
-            const monthlyFromAnual = anualPrice ? Math.round(anualPrice.price / 12) : null;
-            let discountPercent = 0;
-            if (monthlyFromTrimestral !== null && monthlyFromAnual !== null && monthlyFromAnual < monthlyFromTrimestral) {
-              discountPercent = Math.max(0, Math.round((1 - (monthlyFromAnual / monthlyFromTrimestral)) * 100));
-            }
-
-            let label = `MENTORÍA ${plan.level.toUpperCase()}`;
-            if (monthlyFromTrimestral !== null) {
-              label += ` (U$${monthlyFromTrimestral}/mes)`;
-            } else if (monthlyFromAnual !== null) {
-              label += ` (U$${monthlyFromAnual}/mes)`;
-            }
-
-            return {
-              value: plan.level,
-              label: label,
-              description: plan.description,
-              monthlyFromTrimestral,
-              monthlyFromAnual,
-              discountPercent
-            };
-          });
-          
-          setBudgetOptions(options);
-          presupuestoPregunta.options = options;
-        }
-        
-        setPlansLoaded(true);
-      } else {
+      if (!response.ok) {
         console.error('Error en la respuesta:', response.status, response.statusText);
+        setBudgetOptions([]);
+        return;
       }
+
+      const plans = (await response.json()) as MentorshipPlan[];
+      const activePlans = plans.filter((plan) => plan.active);
+      const plan = activePlans[0];
+
+      const options: RadioOption[] = [];
+      if (plan) {
+        const trimestralPrice = plan.prices?.find((p: PlanPrice) => p.interval === 'trimestral');
+        const anualPrice = plan.prices?.find((p: PlanPrice) => p.interval === 'anual');
+
+        const monthlyFromTrimestral = trimestralPrice ? Math.round(trimestralPrice.price / 3) : null;
+        const monthlyFromAnual = anualPrice ? Math.round(anualPrice.price / 12) : null;
+        let discountPercent = 0;
+        if (
+          monthlyFromTrimestral != null &&
+          monthlyFromAnual != null &&
+          monthlyFromAnual < monthlyFromTrimestral
+        ) {
+          discountPercent = Math.max(
+            0,
+            Math.round((1 - monthlyFromAnual / monthlyFromTrimestral) * 100),
+          );
+        }
+
+        const cur = trimestralPrice?.currency ?? anualPrice?.currency ?? 'USD';
+        const sym = currencyDisplay(cur);
+
+        if (trimestralPrice) {
+          options.push({
+            value: `Mentoría — ciclo trimestral — ${sym} ${trimestralPrice.price}`,
+            label: `Mentoría · ciclo trimestral (${sym} ${trimestralPrice.price})`,
+            description: `Facturás cada tres meses${
+              monthlyFromTrimestral != null
+                ? ` · equivale a ~${sym} ${monthlyFromTrimestral}/mes`
+                : ''
+            }.`,
+            monthlyFromTrimestral,
+            monthlyFromAnual,
+            discountPercent: 0,
+          });
+        }
+
+        if (anualPrice) {
+          options.push({
+            value: `Mentoría — ciclo anual — ${sym} ${anualPrice.price}`,
+            label: `Mentoría · ciclo anual (${sym} ${anualPrice.price})`,
+            description: `Mismo programa${
+              monthlyFromAnual != null ? ` · ~${sym} ${monthlyFromAnual}/mes` : ''
+            }.`,
+            monthlyFromTrimestral,
+            monthlyFromAnual,
+            discountPercent,
+          });
+        }
+      }
+
+      setBudgetOptions(options);
     } catch (error) {
       console.error('Error cargando planes de mentoría:', error);
+      setBudgetOptions([]);
+    } finally {
+      setPlansLoaded(true);
     }
   };
 
@@ -379,11 +484,15 @@ export default function MentorshipConsultaPage() {
   // Función para validar todos los campos
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    
-    Object.keys(form).forEach(key => {
-      const error = validateField(key, form[key as keyof FormState]);
+    const snapshot: FormState = {
+      ...form,
+      whatsapp: buildWhatsappFull(form.whatsappDialCode, form.whatsappNationalNumber),
+    };
+
+    (Object.keys(snapshot) as (keyof FormState)[]).forEach((key) => {
+      const error = validateField(key as string, snapshot[key]);
       if (error) {
-        newErrors[key] = error;
+        newErrors[key as string] = error;
       }
     });
 
@@ -394,7 +503,10 @@ export default function MentorshipConsultaPage() {
   // Función para validar el paso actual
   const validateCurrentStep = (): boolean => {
     const currentField = preguntaActual.name;
-    const currentValue = form[currentField as keyof FormState];
+    let currentValue: unknown = form[currentField as keyof FormState];
+    if (currentField === 'whatsapp') {
+      currentValue = buildWhatsappFull(form.whatsappDialCode, form.whatsappNationalNumber);
+    }
     const error = validateField(currentField, currentValue);
     
     if (error) {
@@ -423,32 +535,38 @@ export default function MentorshipConsultaPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
+
     if (type === 'checkbox') {
       const checkbox = e.target as HTMLInputElement;
-      const currentValues = form[name as keyof FormState] as string[] || [];
-      
+      const currentValues = (form[name as keyof FormState] as string[]) || [];
+
       if (checkbox.checked) {
         setForm({ ...form, [name]: [...currentValues, value] } as FormState);
       } else {
-        setForm({ ...form, [name]: currentValues.filter(v => v !== value) } as FormState);
+        setForm({ ...form, [name]: currentValues.filter((v) => v !== value) } as FormState);
       }
+    } else if (name === 'interesadoEn') {
+      setForm({ ...form, interesadoEn: value ? [value] : [] } as FormState);
     } else {
       setForm({ ...form, [name]: value } as FormState);
     }
 
-    // Validación en tiempo real
     if (touched[name]) {
-      const newValue = type === 'checkbox' ? 
-        (e.target as HTMLInputElement).checked ? 
-          [...(form[name as keyof FormState] as string[] || []), value] : 
-          (form[name as keyof FormState] as string[] || []).filter(v => v !== value)
-        : value;
-      
+      let newValue: string | string[];
+      if (type === 'checkbox') {
+        newValue = (e.target as HTMLInputElement).checked
+          ? [...((form[name as keyof FormState] as string[]) || []), value]
+          : ((form[name as keyof FormState] as string[]) || []).filter((v) => v !== value);
+      } else if (name === 'interesadoEn') {
+        newValue = value ? [value] : [];
+      } else {
+        newValue = value;
+      }
+
       const error = validateField(name, newValue);
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: error
+        [name]: error,
       }));
     }
   };
@@ -467,23 +585,54 @@ export default function MentorshipConsultaPage() {
   };
 
   const handleBlur = (name: string) => {
-    setTouched(prev => ({ ...prev, [name]: true }));
-    const value = form[name as keyof FormState];
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    let value = form[name as keyof FormState];
+    if (name === 'whatsapp') {
+      const full = buildWhatsappFull(form.whatsappDialCode, form.whatsappNationalNumber);
+      setForm((prev) => ({ ...prev, whatsapp: full }));
+      value = full;
+    }
     const error = validateField(name, value);
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      [name]: error
+      [name]: error,
     }));
   };
 
+  const muestraPuenteMembresia =
+    preguntaActual.name === 'interesadoEn' && form.interesadoEn?.[0] === INTERES_CUERPO_AUTONOMO;
+
+  const syncWhatsappField = (
+    patch: Partial<Pick<FormState, 'whatsappDialCode' | 'whatsappNationalNumber'>>,
+  ) => {
+    setForm((prev) => {
+      const dial = patch.whatsappDialCode ?? prev.whatsappDialCode;
+      const national = patch.whatsappNationalNumber ?? prev.whatsappNationalNumber;
+      return {
+        ...prev,
+        ...patch,
+        whatsapp: buildWhatsappFull(dial, national),
+      };
+    });
+  };
+
   const handleNext = () => {
-    setError("");
-    // Marcar el campo actual como tocado
-    setTouched(prev => ({ ...prev, [preguntaActual.name]: true }));
-    
+    setError('');
+    setTouched((prev) => ({ ...prev, [preguntaActual.name]: true }));
+
+    if (preguntaActual.name === 'interesadoEn' && form.interesadoEn?.[0] === INTERES_CUERPO_AUTONOMO) {
+      return;
+    }
+
     if (!validateCurrentStep()) {
       return;
     }
+
+    if (preguntaActual.name === 'whatsapp') {
+      const full = buildWhatsappFull(form.whatsappDialCode, form.whatsappNationalNumber);
+      setForm((prev) => ({ ...prev, whatsapp: full }));
+    }
+
     setStep((prev) => prev + 1);
   };
 
@@ -509,12 +658,17 @@ export default function MentorshipConsultaPage() {
     }
     
     setLoading(true);
-    
+
+    const payload = {
+      ...form,
+      whatsapp: buildWhatsappFull(form.whatsappDialCode, form.whatsappNationalNumber),
+    };
+
     try {
-      const res = await fetch("/api/mentorship/request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
+      const res = await fetch('/api/mentorship/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
       
       if (!res.ok) {
@@ -534,41 +688,32 @@ export default function MentorshipConsultaPage() {
   if (enviado) {
     return (
       <MainSideBar where={'mentorship'}>
-      <div className="relative min-h-screen flex items-center justify-center font-montserrat pt-28">
-        {/* Fondo Cloudinary con overlay */}
-        <div className="fixed inset-0 z-0">
-          <CldImage
-            src="my_uploads/plaza/DSC03350_vgjrrh"
-            width={1600}
-            height={900}
-            alt="Fondo mentoría"
-            className="w-full h-full object-cover object-center grayscale"
-            style={{ filter: 'brightness(0.4)' }}
-            priority
-          />
-          <div className="absolute inset-0 bg-black/50" />
-        </div>
-        
+      <div className="relative min-h-screen bg-palette-cream font-montserrat flex items-center justify-center pb-24 pt-[7rem] md:pt-28 md:pb-28">
+        <ConsultaBackdrop />
+
         <motion.div
-          className="relative z-10 w-full max-w-xl mx-auto flex items-center justify-center font-montserrat min-h-[60vh] px-4 pb-4 md:px-0"
+          className="relative z-10 mx-auto flex w-full max-w-lg min-h-[52vh] items-center justify-center px-4 pb-8 md:px-6 md:pb-12"
           variants={boxVariants}
           initial="hidden"
           animate="visible"
         >
-          <div className="w-full bg-white/95 backdrop-blur-sm rounded-2xl border border-black/10 p-8 md:p-12 text-center">
+          <div className="w-full rounded-3xl border border-palette-stone/20 bg-white/95 px-8 py-10 text-center shadow-[0_14px_48px_rgba(20,20,17,0.1)] backdrop-blur-md md:px-12 md:py-12">
+            <p className="mb-6 font-montserrat text-[10px] font-semibold uppercase tracking-[0.28em] text-palette-stone/75 md:text-[11px]">
+              Mentoría
+            </p>
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-6"
+              className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-palette-sage ring-[3px] ring-palette-sage/30"
             >
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 text-palette-cream" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </motion.div>
             
             <motion.h2
-              className="text-2xl md:text-3xl font-semibold mb-4 text-black"
+              className="mb-4 text-[1.55rem] font-semibold tracking-tight text-palette-ink md:text-[1.95rem]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -577,7 +722,7 @@ export default function MentorshipConsultaPage() {
             </motion.h2>
             
             <motion.p
-              className="text-gray-700 mb-6 text-base font-light leading-relaxed"
+              className="mb-6 text-[15px] font-light leading-relaxed text-palette-stone md:text-[16px]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
@@ -586,7 +731,7 @@ export default function MentorshipConsultaPage() {
             </motion.p>
             
             <motion.p
-              className="text-gray-600 mb-8 text-sm font-light"
+              className="text-palette-stone/85 mb-8 text-sm font-light"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
@@ -595,15 +740,25 @@ export default function MentorshipConsultaPage() {
               <span className="font-medium">Mateo</span>
             </motion.p>
             
-            <motion.button
-              onClick={() => { window.location.href = '/'; }}
-              className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors font-montserrat text-sm"
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
+              className="flex flex-col gap-3 sm:flex-row sm:justify-center"
             >
-              Volver al inicio
-            </motion.button>
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-colors duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink"
+              >
+                Volver al inicio
+              </Link>
+              <Link
+                href="/mentorship"
+                className="inline-flex items-center justify-center rounded-full border-2 border-palette-stone/35 bg-white px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-ink transition-colors duration-200 hover:border-palette-ink hover:bg-palette-cream/80"
+              >
+                Mentoría
+              </Link>
+            </motion.div>
           </div>
         </motion.div>
       </div>
@@ -615,62 +770,44 @@ export default function MentorshipConsultaPage() {
   // Render pregunta actual
   return (
     <MainSideBar where={'mentorship'}>
-    <div className={`relative min-h-screen flex ${isPresupuestoStep ? 'items-start' : 'items-center'} justify-center font-montserrat pt-28`}>
-      {/* Fondo Cloudinary con overlay */}
-      <div className="fixed inset-0 z-0">
-        {/* Fondo desktop */}
-        <div className="hidden md:block absolute inset-0">
-          <CldImage
-            src="my_uploads/plaza/DSC03350_vgjrrh"
-            width={1600}
-            height={900}
-            alt="Fondo mentoría"
-            className="w-full h-full object-cover object-center grayscale"
-            style={{ filter: 'brightness(0.4)' }}
-            priority
-          />
-        </div>
-        {/* Fondo mobile */}
-        <div className="block md:hidden absolute inset-0">
-          <CldImage
-            src="my_uploads/f6iqsxi2c1ewelopg9ak"
-            width={800}
-            height={1200}
-            alt="Fondo mentoría móvil"
-            className="w-full h-full object-cover object-center grayscale"
-            style={{ filter: 'brightness(0.5)' }}
-            priority
-          />
-        </div>
-        <div className="absolute inset-0 bg-black/50" />
-      </div>
-      
-      {/* Formulario con animación */}
-      <div className={`relative z-10 w-full max-w-2xl mx-auto mb-8 flex items-center justify-center font-montserrat min-h-[60vh] px-4 md:px-6 ${isPresupuestoStep ? 'mt-2 md:mt-4' : ''}`}>
+    <div
+      className={`relative min-h-screen bg-palette-cream font-montserrat flex ${isPresupuestoStep ? 'items-start' : 'items-center'} justify-center pb-28 pt-[7rem] md:pt-28 md:pb-32`}
+    >
+      <ConsultaBackdrop />
+
+      <div
+        className={`relative z-10 mx-auto mb-8 flex min-h-[58vh] w-full max-w-2xl items-center justify-center px-4 md:px-6 ${isPresupuestoStep ? 'mt-0 md:mt-2' : ''}`}
+      >
         <motion.form
           onSubmit={handleSubmit}
-          className="space-y-6 w-full bg-white/95 backdrop-blur-sm rounded-2xl border border-black/10 p-6 md:p-12"
+          className="w-full space-y-8 rounded-3xl border border-palette-stone/20 bg-white/95 p-7 shadow-[0_14px_48px_rgba(20,20,17,0.08)] backdrop-blur-md md:space-y-9 md:p-12"
           variants={boxVariants}
           initial="hidden"
           animate="visible"
           exit="hidden"
         >
-          <motion.h1
-            className="text-3xl md:text-4xl font-semibold text-center tracking-tight leading-tight font-montserrat text-black"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
-            Solicitud de mentoría
-          </motion.h1>
-          {step === 0 && (
-            <motion.p
-              className="text-sm md:text-base mb-4 text-center font-montserrat font-light text-gray-600 leading-relaxed max-w-xl mx-auto" 
+          <div className="text-center">
+            <p className="mb-2 font-montserrat text-[10px] font-semibold uppercase tracking-[0.28em] text-palette-stone/75 md:text-[11px]">
+              Mentoría
+            </p>
+            <motion.h1
+              className="font-montserrat text-[1.65rem] font-semibold leading-[1.12] tracking-tight text-palette-ink sm:text-[1.85rem] md:text-[2.05rem]"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
             >
-              Completá este formulario para que pueda conocer tu situación. Me pondré en contacto para ver si la mentoría es lo que necesitás.
+              Solicitud de mentoría
+            </motion.h1>
+          </div>
+          {step === 0 && (
+            <motion.p
+              className="mx-auto mb-2 max-w-md text-center font-montserrat text-[14px] font-light leading-relaxed text-palette-stone md:text-[15px]"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+            >
+              Completá este formulario para que pueda conocer tu situación. Me pondré en contacto para ver si la mentoría es lo
+              que necesitás.
             </motion.p>
           )}
           
@@ -683,9 +820,91 @@ export default function MentorshipConsultaPage() {
               exit="exit"
               className={`w-full ${preguntaActual.name === 'presupuesto' ? 'my-6 md:my-8' : ''}`}
             >
-              <label className="block font-medium mb-3 text-black text-base md:text-lg">{preguntaActual.label}</label>
+              <label className="mb-3 block font-montserrat text-[15px] font-medium leading-snug text-palette-ink md:text-[16px]">
+                {preguntaActual.label}
+              </label>
               
-              {preguntaActual.type === "text" && (
+              {preguntaActual.name === 'whatsapp' && (
+                <div>
+                  <p className="mb-3 font-montserrat text-[13px] font-light leading-relaxed text-palette-stone md:text-[14px]">
+                    Elegí el prefijo de tu país y escribí el número sin el prefijo. Al enviar lo unimos como un solo contacto internacional.
+                  </p>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                    <div className="relative shrink-0 sm:w-[11.5rem]">
+                      <select
+                        name="whatsappDialCode-sel"
+                        value={form.whatsappDialCode}
+                        onChange={(e) => {
+                          syncWhatsappField({ whatsappDialCode: e.target.value });
+                          if (touched.whatsapp) {
+                            const full = buildWhatsappFull(e.target.value, form.whatsappNationalNumber);
+                            setErrors((prev) => ({
+                              ...prev,
+                              whatsapp: validators.whatsapp(full),
+                            }));
+                          }
+                        }}
+                        onBlur={() => handleBlur('whatsapp')}
+                        aria-label="Prefijo país WhatsApp"
+                        className={`${fieldClass(false, false)} cursor-pointer appearance-none pr-10 text-[14px]`}
+                        autoFocus
+                      >
+                        {WHATSAPP_DIAL_CODES.map((p) => (
+                          <option key={p.code} value={p.code}>
+                            {p.label}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                        <svg className="h-5 w-5 text-palette-stone/55" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                    <input
+                      type="tel"
+                      name="whatsappNationalNumber-input"
+                      inputMode="numeric"
+                      autoComplete="tel-national"
+                      placeholder="Ej. 9 1234 5678"
+                      value={form.whatsappNationalNumber}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/[^\d\s]/g, '');
+                        syncWhatsappField({ whatsappNationalNumber: v });
+                        if (touched.whatsapp) {
+                          const full = buildWhatsappFull(form.whatsappDialCode, v);
+                          setErrors((prev) => ({
+                            ...prev,
+                            whatsapp: validators.whatsapp(full),
+                          }));
+                        }
+                      }}
+                      onBlur={() => handleBlur('whatsapp')}
+                      aria-label="Número de WhatsApp sin prefijo país"
+                      className={`flex-1 ${fieldClass(!!errors.whatsapp && !!touched.whatsapp, !!touched.whatsapp)}`}
+                    />
+                  </div>
+                  {form.whatsapp ? (
+                    <p className="mt-3 font-montserrat text-[12px] text-palette-stone/85 md:text-[13px]" aria-live="polite">
+                      Se enviará como: <span className="font-semibold tabular-nums text-palette-ink">{form.whatsapp}</span>
+                    </p>
+                  ) : null}
+                  {errors.whatsapp && touched.whatsapp ? (
+                    <p className="mt-2 flex items-center font-montserrat text-sm text-red-600">
+                      <svg className="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {errors.whatsapp}
+                    </p>
+                  ) : null}
+                </div>
+              )}
+
+              {preguntaActual.type === 'text' && preguntaActual.name !== 'whatsapp' && (
                 <div>
                   <input
                     type="text"
@@ -694,11 +913,7 @@ export default function MentorshipConsultaPage() {
                     onChange={handleChange}
                     onBlur={() => handleBlur(preguntaActual.name)}
                     required={preguntaActual.required}
-                    className={`w-full border rounded-lg px-4 py-3 text-black bg-white focus:outline-none focus:border-black transition-all duration-200 font-montserrat ${
-                      errors[preguntaActual.name] && touched[preguntaActual.name]
-                        ? 'border-red-500'
-                        : 'border-black/20 hover:border-black/40'
-                    }`}
+                    className={fieldClass(!!errors[preguntaActual.name], !!touched[preguntaActual.name])}
                     autoFocus
                   />
                   {errors[preguntaActual.name] && touched[preguntaActual.name] && (
@@ -721,11 +936,7 @@ export default function MentorshipConsultaPage() {
                     onChange={handleChange}
                     onBlur={() => handleBlur(preguntaActual.name)}
                     required={preguntaActual.required}
-                    className={`w-full border rounded-lg px-4 py-3 text-black bg-white focus:outline-none focus:border-black transition-all duration-200 font-montserrat ${
-                      errors[preguntaActual.name] && touched[preguntaActual.name]
-                        ? 'border-red-500'
-                        : 'border-black/20 hover:border-black/40'
-                    }`}
+                    className={fieldClass(!!errors[preguntaActual.name], !!touched[preguntaActual.name])}
                     autoFocus
                   />
                   {errors[preguntaActual.name] && touched[preguntaActual.name] && (
@@ -748,11 +959,7 @@ export default function MentorshipConsultaPage() {
                     onBlur={() => handleBlur(preguntaActual.name)}
                     required={preguntaActual.required}
                     rows={4}
-                    className={`w-full border rounded-lg px-4 py-3 text-black bg-white focus:outline-none focus:border-black transition-all duration-200 font-montserrat resize-none ${
-                      errors[preguntaActual.name] && touched[preguntaActual.name]
-                        ? 'border-red-500'
-                        : 'border-black/20 hover:border-black/40'
-                    }`}
+                    className={`${fieldClass(!!errors[preguntaActual.name], !!touched[preguntaActual.name])} min-h-[7.5rem] resize-none`}
                     autoFocus
                   />
                   {errors[preguntaActual.name] && touched[preguntaActual.name] && (
@@ -761,40 +968,83 @@ export default function MentorshipConsultaPage() {
                 </div>
               )}
               
-              {preguntaActual.type === "select" && Array.isArray(preguntaActual.options) && (
-                <div className="relative">
-                  <select
-                    name={preguntaActual.name}
-                    value={form[preguntaActual.name as keyof FormState] as string}
-                    onChange={handleChange}
-                    onBlur={() => handleBlur(preguntaActual.name)}
-                    required={preguntaActual.required}
-                    className={`w-full border rounded-lg px-4 py-3 pr-12 text-black bg-white focus:outline-none focus:border-black transition-all duration-200 font-montserrat appearance-none cursor-pointer ${
-                      errors[preguntaActual.name] && touched[preguntaActual.name]
-                        ? 'border-red-500'
-                        : 'border-black/20 hover:border-black/40'
-                    }`}
-                    autoFocus
-                  >
-                    <option value="" className="text-gray-500">Selecciona una opción</option>
-                    {preguntaActual.options.map((opt: any) => (
-                      <option key={opt} value={opt} className="text-black">{opt}</option>
-                    ))}
-                  </select>
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none transition-transform duration-200">
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
+              {preguntaActual.type === 'select' && Array.isArray(preguntaActual.options) && (
+                <>
+                  <div className="relative">
+                    <select
+                      name={preguntaActual.name}
+                      value={
+                        preguntaActual.name === 'interesadoEn'
+                          ? ((form.interesadoEn && form.interesadoEn[0]) || '')
+                          : ((form[preguntaActual.name as keyof FormState] as string) ?? '')
+                      }
+                      onChange={handleChange}
+                      onBlur={() => handleBlur(preguntaActual.name)}
+                      required={preguntaActual.required}
+                      className={`${fieldClass(!!errors[preguntaActual.name], !!touched[preguntaActual.name])} cursor-pointer appearance-none pr-12`}
+                      autoFocus
+                    >
+                      {preguntaActual.name !== 'interesadoEn' ? (
+                        <option value="" className="text-palette-stone/70">
+                          Selecciona una opción
+                        </option>
+                      ) : null}
+                      {preguntaActual.options.map((opt: string | SelectOptionKV) => {
+                        const v = typeof opt === 'string' ? opt : opt.value;
+                        const lab = typeof opt === 'string' ? opt : opt.label;
+                        return (
+                          <option key={v} value={v} className="text-palette-ink">
+                            {lab}
+                          </option>
+                        );
+                      })}
+                    </select>
+                    <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 transition-transform duration-200">
+                      <svg className="h-5 w-5 text-palette-stone/55" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
                   </div>
-                  {errors[preguntaActual.name] && touched[preguntaActual.name] && (
-                    <p className="text-red-600 text-sm mt-2 font-montserrat flex items-center">
-                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  {preguntaActual.name === 'interesadoEn' && muestraPuenteMembresia ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      className="mt-6 rounded-2xl border border-palette-stone/22 bg-gradient-to-br from-palette-cream/95 to-white p-5 shadow-[0_10px_32px_rgba(20,20,17,0.07)] md:p-6"
+                    >
+                      <p className="font-montserrat text-[10px] font-semibold uppercase tracking-[0.24em] text-palette-stone/75 md:text-[11px]">
+                        Membresía
+                      </p>
+                      <p className="mt-3 font-montserrat text-[15px] leading-relaxed text-palette-ink md:text-[16px]">
+                        <strong className="font-semibold">Cuerpo Autónomo</strong> forma parte del recorrido de membresía. Ahí elegís tu plan según tus tiempos y objetivos.
+                      </p>
+                      <Link
+                        href={ROUTE_MEMBERSHIP_SELECT_PLAN}
+                        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-palette-ink bg-palette-ink px-6 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink sm:w-auto"
+                      >
+                        Ir a seleccionar plan
+                        <span aria-hidden className="text-palette-cream/90">
+                          →
+                        </span>
+                      </Link>
+                      <p className="mt-4 font-montserrat text-[12px] font-light text-palette-stone md:text-[13px]">
+                        Si después preferís aplicar solo a mentoría, cambiá arriba a <span className="font-medium text-palette-ink">Mentoría</span>.
+                      </p>
+                    </motion.div>
+                  ) : null}
+                  {errors[preguntaActual.name] && touched[preguntaActual.name] ? (
+                    <p className="mt-2 flex items-center font-montserrat text-sm text-red-600">
+                      <svg className="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       {errors[preguntaActual.name]}
                     </p>
-                  )}
-                </div>
+                  ) : null}
+                </>
               )}
               
               {preguntaActual.type === "checkbox" && Array.isArray(preguntaActual.options) && preguntaActual.options.length > 0 && (
@@ -809,9 +1059,9 @@ export default function MentorshipConsultaPage() {
                           checked={(form[preguntaActual.name as keyof FormState] as string[] || []).includes(opt)}
                           onChange={handleChange}
                           onBlur={() => handleBlur(preguntaActual.name)}
-                          className="w-5 h-5 text-black border border-black/20 rounded-md bg-white focus:ring-2 focus:ring-black/20 transition-all duration-200"
+                          className="h-5 w-5 rounded-md border border-palette-stone/30 bg-white text-palette-ink transition-all duration-200 focus:ring-2 focus:ring-palette-sage/30"
                         />
-                        <span className="text-gray-800 font-montserrat">{opt}</span>
+                        <span className="text-palette-ink/90 font-montserrat">{opt}</span>
                       </label>
                     ))}
                   </div>
@@ -829,14 +1079,14 @@ export default function MentorshipConsultaPage() {
               {preguntaActual.type === "radio" && preguntaActual.name === "presupuesto" && !plansLoaded && (
                 <div className="flex items-center justify-center py-12">
                   <div className="flex flex-col items-center space-y-4">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-black/20 border-t-black" />
-                    <span className="text-gray-600 font-montserrat text-base">Cargando planes...</span>
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-palette-stone/25 border-t-palette-ink" />
+                    <span className="text-palette-stone font-montserrat text-base">Cargando planes...</span>
                   </div>
                 </div>
               )}
               
               {preguntaActual.type === "radio" && preguntaActual.name === "presupuesto" && plansLoaded && budgetOptions.length === 0 && (
-                <div className="text-center text-gray-600 py-4">No hay planes activos disponibles en este momento.</div>
+                <div className="text-center text-palette-stone py-4">No hay planes activos disponibles en este momento.</div>
               )}
 
               {preguntaActual.type === "radio" && preguntaActual.name === "presupuesto" && budgetOptions.length > 0 && (
@@ -844,7 +1094,7 @@ export default function MentorshipConsultaPage() {
                   <div className="space-y-4">
                     {budgetOptions.map((opt: any) => (
                     <label key={opt.value} className="block cursor-pointer">
-                      <div className="border rounded-lg border-black/10 p-4 hover:bg-gray-900/5 hover:border-black/20 transition-all duration-200">
+                      <div className="rounded-2xl border border-palette-stone/18 bg-white/85 p-4 shadow-[0_6px_22px_rgba(20,20,17,0.05)] transition-all duration-200 hover:border-palette-stone/32 hover:bg-palette-cream/65">
                         <div className="flex items-start space-x-3">
                           <input
                             type="radio"
@@ -852,20 +1102,20 @@ export default function MentorshipConsultaPage() {
                             value={opt.value}
                             checked={form[preguntaActual.name as keyof FormState] === opt.value}
                             onChange={() => handleRadioChange(preguntaActual.name, opt.value)}
-                            className="w-5 h-5 text-black border border-black/20 bg-white focus:ring-2 focus:ring-black/20 transition-all duration-200 mt-1"
+                            className="mt-1 h-5 w-5 border border-palette-stone/30 bg-white text-palette-ink transition-all duration-200 focus:ring-2 focus:ring-palette-sage/30"
                           />
                           <div className="flex-1">
-                            <div className="font-medium mb-2 text-black text-base">
+                            <div className="font-medium mb-2 text-palette-ink text-base">
                               {opt.label}
                             </div>
                             {opt.discountPercent > 0 && (
                               <div className="mt-1">
-                                <span className="inline-block bg-black/5 text-black text-xs font-light px-3 py-1 rounded-full">
+                                <span className="inline-block rounded-full border border-palette-stone/20 bg-palette-cream/90 px-3 py-1 text-xs font-medium text-palette-ink">
                                   Ahorra {opt.discountPercent}% pagando anual
                                 </span>
                               </div>
                             )}
-                            <div className="text-xs mt-2 font-montserrat text-gray-600 font-light">
+                            <div className="text-xs mt-2 font-montserrat text-palette-stone font-light">
                               {opt.description}
                             </div>
                           </div>
@@ -882,14 +1132,31 @@ export default function MentorshipConsultaPage() {
                       {errors[preguntaActual.name]}
                     </p>
                   )}
+                  <div className="mt-6 rounded-2xl border border-palette-stone/22 bg-white/80 p-5 shadow-[0_6px_22px_rgba(20,20,17,0.04)] md:p-6">
+                    <p className="mb-3 font-montserrat text-xs font-semibold uppercase tracking-[0.2em] text-palette-ink/75">
+                      Qué obtenés con el plan
+                    </p>
+                    <ol className="mb-4 list-decimal list-outside space-y-2.5 pl-5 font-montserrat text-[15px] leading-relaxed text-palette-ink marker:font-semibold md:text-base">
+                      {MENTORSHIP_PLAN_WHAT_YOU_GET.map((item) => (
+                        <li key={item} className="pl-1">
+                          {item}
+                        </li>
+                      ))}
+                    </ol>
+                    <p className="border-l-2 border-palette-sage/35 pl-4 font-montserrat text-sm leading-relaxed text-palette-stone md:text-[15px]">
+                      <span className="font-semibold text-palette-ink/90">Basado en:</span>{' '}
+                      <span className="italic text-palette-stone">{MENTORSHIP_PLAN_METHOD_BASIS}</span>{' '}
+                      Todo integrado en un mismo lenguaje.
+                    </p>
+                  </div>
                 </div>
               )}
             </motion.div>
           </AnimatePresence>
           
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-4 mt-4">
-              <p className="text-red-700 font-medium font-montserrat flex items-center">
+            <div className="mt-4 rounded-2xl border border-red-200/80 bg-red-50/90 p-4">
+              <p className="flex items-center font-montserrat text-sm font-medium text-red-800">
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
@@ -899,28 +1166,30 @@ export default function MentorshipConsultaPage() {
           )}
           
           {/* Botones de navegación */}
-          <div className="flex justify-between mt-8 gap-3 flex-col sm:flex-row">
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-between sm:gap-4">
             {step > 0 && (
               <button
                 type="button"
                 onClick={handlePrev}
-                className="bg-white text-black px-6 py-3 rounded-lg font-medium disabled:opacity-50 border border-black/20 hover:bg-gray-900/5 transition-all duration-200 font-montserrat w-full sm:w-auto text-sm"
+                className="w-full rounded-full border-2 border-palette-stone/35 bg-white px-7 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-ink transition-all duration-200 hover:border-palette-ink hover:bg-palette-cream/85 disabled:opacity-50 sm:w-auto sm:min-w-[9rem]"
               >
                 Anterior
               </button>
             )}
-            
+
             {step < preguntas.length - 1 ? (
               <button
                 type="button"
                 onClick={handleNext}
-                className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-all duration-200 font-montserrat w-full sm:w-auto text-sm flex items-center justify-center gap-2 group"
+                disabled={muestraPuenteMembresia}
+                title={muestraPuenteMembresia ? 'Elegí mentoría para continuar esta solicitud, o entrá por el enlace de membresía' : undefined}
+                className="group inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink disabled:cursor-not-allowed disabled:opacity-40 sm:ml-auto sm:w-auto"
               >
                 Siguiente
-                <svg 
-                  className="w-4 h-4 transition-transform group-hover:translate-x-1" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
+                <svg
+                  className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -930,14 +1199,14 @@ export default function MentorshipConsultaPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-all duration-200 font-montserrat w-full sm:w-auto text-sm flex items-center justify-center gap-2 group"
+                className="group inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink disabled:opacity-50 sm:ml-auto sm:w-auto"
               >
-                {loading ? "Enviando..." : "Enviar solicitud"}
+                {loading ? 'Enviando…' : 'Enviar solicitud'}
                 {!loading && (
-                  <svg 
-                    className="w-4 h-4 transition-transform group-hover:translate-x-1" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
+                  <svg
+                    className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -948,14 +1217,16 @@ export default function MentorshipConsultaPage() {
           </div>
           
           {/* Indicador de progreso */}
-          <div className="mt-6">
-            <div className="flex items-center justify-between text-xs sm:text-sm text-gray-600 mb-2 font-light">
-              <span>Paso {step + 1} de {preguntas.length}</span>
-              <span className="font-medium text-black">{Math.round(((step + 1) / preguntas.length) * 100)}%</span>
+          <div className="mt-8 border-t border-palette-stone/15 pt-6">
+            <div className="mb-2 flex items-center justify-between font-montserrat text-[11px] font-medium uppercase tracking-[0.18em] text-palette-stone/80 sm:text-xs">
+              <span>
+                Paso {step + 1} / {preguntas.length}
+              </span>
+              <span className="tabular-nums text-palette-ink">{Math.round(((step + 1) / preguntas.length) * 100)}%</span>
             </div>
-            <div className="relative w-full h-2 rounded-full bg-gray-200 overflow-hidden">
+            <div className="relative h-[3px] w-full overflow-hidden rounded-full bg-palette-stone/15">
               <div
-                className="h-full rounded-full bg-black transition-all duration-500"
+                className="h-full rounded-full bg-gradient-to-r from-palette-ink via-palette-ink to-palette-sage transition-all duration-500 ease-out"
                 style={{ width: `${((step + 1) / preguntas.length) * 100}%` }}
               />
             </div>

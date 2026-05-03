@@ -86,7 +86,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
 
   const createQuestion = useCallback(async () => {
     if (!auth.user) {
-      router.push('/move-crew');
+      router.push('/membership');
       return;
     }
 
@@ -134,7 +134,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
 
   const createAnswer = useCallback(async (questionId: number) => {
     if (!auth.user) {
-      router.push('/move-crew');
+      router.push('/membership');
       return;
     }
 

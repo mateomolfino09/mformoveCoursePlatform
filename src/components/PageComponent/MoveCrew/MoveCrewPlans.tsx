@@ -194,6 +194,154 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
     }
   };
 
+  const PlanCard = ({
+    plan,
+    index,
+    featured,
+  }: {
+    plan: Plan;
+    index: number;
+    featured?: boolean;
+  }) => {
+    const promocionPlan = getPromocionAplicable(plan);
+    const hasPromo = Boolean(promocionPlan && promocionPlan.porcentajeDescuento > 0);
+    const precioConDescuento = hasPromo
+      ? plan.amount * (1 - (promocionPlan?.porcentajeDescuento ?? 0) / 100)
+      : null;
+    const ahorroPromo = hasPromo && precioConDescuento !== null
+      ? Math.max(0, Math.round(plan.amount - precioConDescuento))
+      : null;
+
+    const precioPrincipal = precioConDescuento !== null ? Math.round(precioConDescuento) : plan.amount;
+    const frecuencia = (plan.frequency_label || '').toLowerCase();
+
+    return (
+      <motion.div
+        id={`plan-card-${plan._id}`}
+        key={plan._id}
+        initial={{ opacity: 0, y: 26 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.42, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+        viewport={{ once: true }}
+        className={`group relative overflow-hidden border rounded-2xl md:rounded-3xl p-7 md:p-9 transition-all duration-300 ${
+          featured
+            ? 'border-palette-stone/45 bg-white/60 shadow-[0_16px_48px_rgba(20,20,17,0.10)]'
+            : 'border-palette-stone/25 bg-white/40 shadow-[0_10px_32px_rgba(20,20,17,0.06)]'
+        } hover:-translate-y-0.5 hover:border-palette-stone/40 flex flex-col h-full`}
+      >
+        {/* Acentos sutiles, vibra editorial */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-sage/35 to-transparent opacity-70" />
+          <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-palette-sage/10 blur-3xl opacity-70" />
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-palette-stone/10 blur-3xl opacity-60" />
+        </div>
+        {featured && (
+          <div className="absolute right-6 top-6 z-10">
+            <p className="text-[11px] font-montserrat uppercase tracking-[0.22em] text-palette-ink bg-palette-cream/80 border border-palette-stone/25 px-3 py-1 rounded-full">
+              Recomendado
+            </p>
+          </div>
+        )}
+
+        <div className="relative z-10 flex flex-col h-full">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="font-montserrat text-xs uppercase tracking-[0.2em] text-palette-stone">
+                {plan.frequency_label}
+              </p>
+              <h3 className="text-2xl md:text-3xl font-montserrat font-semibold mt-2 text-palette-ink tracking-tight">
+                {plan.name}
+              </h3>
+            </div>
+
+            {hasPromo && (
+              <div className="shrink-0">
+                <div className="bg-palette-sage/90 text-palette-cream px-3 py-1.5 rounded-full border border-palette-sage/50 shadow-sm">
+                  <p className="text-[11px] font-montserrat font-semibold tracking-[0.22em] uppercase">
+                    {promocionPlan?.porcentajeDescuento}% OFF
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-7 flex items-end justify-between gap-4">
+            <div>
+              {hasPromo && (
+                <p className="text-sm text-palette-stone/70 line-through">
+                  {formatPrice(plan.currency, plan.amount)}
+                </p>
+              )}
+              <div className="flex items-end gap-3">
+                <p className={`text-4xl md:text-5xl font-semibold tracking-tight ${featured ? 'text-palette-sage' : 'text-palette-ink'}`}>
+                  {formatPrice(plan.currency, precioPrincipal)}
+                </p>
+                <p className="text-xs md:text-sm text-palette-stone font-light mb-1">
+                  / {frecuencia || 'ciclo'}
+                </p>
+              </div>
+
+              {(ahorroPromo !== null && ahorroPromo > 0) && (
+                <p className="mt-2 text-sm text-palette-stone font-light">
+                  Ahorrás <span className="font-semibold text-palette-ink">{formatPrice(plan.currency, ahorroPromo)}</span>
+                </p>
+              )}
+
+              {!hasPromo && featured && ahorroAnual !== null && ahorroAnual > 0 && (
+                <p className="mt-2 text-sm text-palette-stone font-light">
+                  Ahorrás <span className="font-semibold text-palette-ink">{formatPrice(plan.currency, ahorroAnual)}</span> vs mensual
+                </p>
+              )}
+
+              {featured && anualMensualizado !== null && (
+                <p className="mt-2 text-xs text-palette-stone/80 font-light">
+                  Equivale a {formatPrice(plan.currency, anualMensualizado)}/mes
+                </p>
+              )}
+            </div>
+
+            {featured && (
+              <div className="hidden md:block shrink-0 text-right">
+                <p className="text-xs uppercase tracking-[0.22em] text-palette-stone/70 font-montserrat">
+                  Mejor valor
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-auto pt-7">
+            <button
+              onClick={() => handleSelect(plan)}
+              disabled={loadingPlanId === plan._id}
+              className={`w-full font-montserrat font-semibold text-sm uppercase tracking-[0.2em] rounded-full py-3 border-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 ${
+                featured
+                  ? 'bg-palette-ink text-palette-cream border-palette-ink hover:bg-palette-sage hover:border-palette-sage'
+                  : 'bg-palette-ink text-palette-cream border-palette-ink hover:bg-palette-sage hover:border-palette-sage'
+              }`}
+            >
+              {loadingPlanId === plan._id ? (
+                <>
+                  <MiniLoadingSpinner />
+                  <span>Procesando...</span>
+                </>
+              ) : (
+                <>
+                  <span>Elegir este plan</span>
+                  <span className="opacity-80 translate-y-[0.5px] group-hover:translate-x-0.5 transition-transform duration-200">
+                    →
+                  </span>
+                </>
+              )}
+            </button>
+            <p className="mt-3 text-xs text-palette-stone/80 font-light">
+              Facturación {frecuencia || plan.frequency_label?.toLowerCase()}.
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
+
   const renderPlans = () => {
     if (activePlans.length === 0) {
       return (
@@ -201,7 +349,7 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
           <div className="absolute top-0 right-0 w-32 h-32 bg-palette-stone/10 rounded-full blur-3xl" />
           <div className="relative z-10">
             <p>
-              Estoy actualizando los planes de Move Crew en este momento. Si querés reservar tu lugar, escribime a <a href="mailto:hola@mformove.com" className="underline text-palette-sage hover:text-palette-ink">hola@mformove.com</a> o tocá el botón para recibir novedades.
+              Estoy actualizando los planes de Cuerpo autónomo en este momento. Si querés reservar tu lugar, escribime a <a href="mailto:hola@mformove.com" className="underline text-palette-sage hover:text-palette-ink">hola@mformove.com</a> o tocá el botón para recibir novedades.
             </p>
             <button
               onClick={() => {
@@ -222,107 +370,8 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
       return (
         <div className="space-y-6">
           <div className="grid md:grid-cols-2 gap-8">
-            {[monthlyPlan, annualPlan].map((plan, index) => {
-              const promocionPlan = getPromocionAplicable(plan);
-              const precioConDescuento = promocionPlan
-                ? plan.amount * (1 - promocionPlan.porcentajeDescuento / 100)
-                : null;
-
-              return (
-                <motion.div
-                  id={`plan-card-${plan._id}`}
-                  key={plan._id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className={`relative border rounded-2xl md:rounded-3xl p-8 overflow-hidden flex flex-col h-full min-h-[600px] transition-all duration-300 ${
-                    plan._id === annualPlan._id
-                      ? 'border-palette-stone/50 bg-palette-stone/10 shadow-[0_8px_32px_rgba(20,20,17,0.08)] scale-[1.02]'
-                      : 'border-palette-stone/25 bg-palette-cream shadow-[0_4px_24px_rgba(20,20,17,0.06)]'
-                  }`}
-                >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-palette-stone/10 rounded-full blur-3xl" />
-
-                  <div className="relative z-10 flex flex-col flex-grow">
-                    {promocionPlan && (
-                      <div className="mb-3 bg-palette-sage text-palette-cream px-4 py-2 rounded-lg inline-block">
-                        <p className="text-sm font-montserrat font-semibold">{promocionPlan.porcentajeDescuento}% OFF - {promocionPlan.nombre}</p>
-                      </div>
-                    )}
-                    <p className="font-montserrat text-xs uppercase tracking-[0.2em] text-palette-stone">
-                      {plan.frequency_label}
-                      {plan._id === annualPlan._id && anualMensualizado !== null && (
-                        <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full bg-palette-stone/20 text-palette-ink text-[11px] font-semibold">
-                          Equivale a {formatPrice(plan.currency, anualMensualizado)}/mes
-                        </span>
-                      )}
-                    </p>
-                    <h3 className="text-2xl md:text-3xl font-montserrat font-semibold mt-2 mb-3 text-palette-ink tracking-tight">{plan.name}</h3>
-                    <p className="text-sm md:text-base text-palette-stone mb-6 font-light">{plan.description}</p>
-                    <div className="mb-6">
-                      {promocionPlan && precioConDescuento ? (
-                        <>
-                          <p className="text-2xl line-through text-palette-stone/70">{formatPrice(plan.currency, plan.amount)}</p>
-                          <p className="text-4xl font-bold text-palette-sage mt-1">{formatPrice(plan.currency, Math.round(precioConDescuento))}</p>
-                          <p className="text-palette-stone text-sm font-light mt-1">
-                            Facturación {plan.frequency_label?.toLowerCase()}
-                          </p>
-                          <p className="text-palette-stone text-sm font-semibold mt-1">
-                            Ahorras {formatPrice(plan.currency, Math.round(plan.amount - precioConDescuento))}
-                          </p>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex items-end gap-2">
-                            <p className={`text-4xl font-bold ${plan._id === annualPlan._id ? 'text-palette-sage' : 'text-palette-ink'}`}>
-                              {formatPrice(plan.currency, plan.amount)}
-                            </p>
-                            {plan._id === annualPlan._id && ahorroAnual !== null && ahorroAnual > 0 && (
-                              <span className="text-sm font-semibold text-palette-ink bg-palette-stone/20 px-2 py-1 rounded-full">
-                                Ahorras {formatPrice(plan.currency, ahorroAnual)}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-palette-stone text-sm font-light mt-1">
-                            Facturación {plan.frequency_label?.toLowerCase()}
-                          </p>
-                          {plan._id === monthlyPlan._id && (
-                            <p className="text-xs text-palette-stone mt-1">
-                              Paga mes a mes, cancela cuando quieras.
-                            </p>
-                          )}
-                          {plan._id === annualPlan._id && (
-                            <p className="text-xs text-palette-stone font-semibold mt-1">
-                              Mejor precio: bloquea 12 meses y asegura tu lugar.
-                            </p>
-                          )}
-                        </>
-                      )}
-                    </div>
-                    <div className="space-y-3 text-sm md:text-base text-palette-stone font-light mb-8 flex-grow">
-                      <p>• Acceso completo a prácticas y biblioteca de recursos.</p>
-                      <p>• Comunidad privada y desafíos trimestrales.</p>
-                      <p>• Material educativo y recordatorios para sostener tu proceso.</p>
-                    </div>
-                    <button
-                      onClick={() => handleSelect(plan)}
-                      disabled={loadingPlanId === plan._id}
-                      className="w-full font-montserrat font-semibold text-sm uppercase tracking-[0.2em] rounded-full py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-auto"
-                    >
-                      {loadingPlanId === plan._id ? (
-                        <>
-                          <MiniLoadingSpinner />
-                          <span>Procesando...</span>
-                        </>
-                      ) : (
-                        'Quiero unirme'
-                      )}
-                    </button>
-                  </div>
-                </motion.div>
-              );
-            })}
+            <PlanCard plan={monthlyPlan} index={0} featured={false} />
+            <PlanCard plan={annualPlan} index={1} featured />
           </div>
         </div>
       );
@@ -331,82 +380,14 @@ const MoveCrewPlans = ({ plans, promociones = [] }: MoveCrewPlansProps) => {
     return (
       <div className="grid md:grid-cols-2 gap-8">
         {activePlans.map((plan, index) => {
-          const promocionPlan = getPromocionAplicable(plan);
-          const precioConDescuento = promocionPlan
-            ? plan.amount * (1 - promocionPlan.porcentajeDescuento / 100)
-            : null;
-
-          return (
-            <motion.div
-              id={`plan-card-${plan._id}`}
-              key={plan._id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="relative border border-palette-stone/25 rounded-2xl md:rounded-3xl p-8 bg-palette-cream overflow-hidden flex flex-col h-full min-h-[600px] transition-all duration-300 shadow-[0_4px_24px_rgba(20,20,17,0.06)]"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-palette-stone/10 rounded-full blur-3xl" />
-
-              <div className="relative z-10 flex flex-col flex-grow">
-                {promocionPlan && (
-                  <div className="mb-3 bg-palette-sage text-palette-cream px-4 py-2 rounded-lg inline-block">
-                    <p className="text-sm font-montserrat font-semibold">{promocionPlan.porcentajeDescuento}% OFF - {promocionPlan.nombre}</p>
-                  </div>
-                )}
-                <p className="font-montserrat text-xs uppercase tracking-[0.2em] text-palette-stone">{plan.frequency_label}</p>
-                <h3 className="text-2xl md:text-3xl font-montserrat font-semibold mt-2 mb-3 text-palette-ink tracking-tight">{plan.name}</h3>
-                <p className="text-sm md:text-base text-palette-stone mb-6 font-light">{plan.description}</p>
-                <div className="mb-6">
-                  {promocionPlan && precioConDescuento ? (
-                    <>
-                      <p className="text-2xl line-through text-palette-stone/70">{formatPrice(plan.currency, plan.amount)}</p>
-                      <p className="text-4xl font-bold text-palette-sage mt-1">{formatPrice(plan.currency, Math.round(precioConDescuento))}</p>
-                      <p className="text-palette-stone text-sm font-light mt-1">
-                        Facturación {plan.frequency_label?.toLowerCase()}
-                      </p>
-                      <p className="text-palette-stone text-sm font-semibold mt-1">
-                        Ahorras {formatPrice(plan.currency, Math.round(plan.amount - precioConDescuento))}
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-4xl font-bold text-palette-ink">{formatPrice(plan.currency, plan.amount)}</p>
-                      <p className="text-palette-stone text-sm font-light mt-1">
-                        Facturación {plan.frequency_label?.toLowerCase()}
-                      </p>
-                    </>
-                  )}
-                </div>
-                <div className="space-y-3 text-sm md:text-base text-palette-stone font-light mb-8 flex-grow">
-                  <p>• Acceso completo a prácticas y biblioteca de recursos.</p>
-                  <p>• Comunidad privada y desafíos trimestrales.</p>
-                  <p>• Material educativo y recordatorios para sostener tu proceso.</p>
-                </div>
-                <button
-                  onClick={() => handleSelect(plan)}
-                  disabled={loadingPlanId === plan._id}
-                  className="w-full font-montserrat font-semibold text-sm uppercase tracking-[0.2em] rounded-full py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-auto"
-                >
-                  {loadingPlanId === plan._id ? (
-                    <>
-                      <MiniLoadingSpinner />
-                      <span>Procesando...</span>
-                    </>
-                  ) : (
-                    'Quiero unirme'
-                  )}
-                </button>
-              </div>
-            </motion.div>
-          );
+          return <PlanCard key={plan._id} plan={plan} index={index} featured={false} />;
         })}
       </div>
     );
   };
 
   return (
-    <section className="py-16 md:py-20 bg-palette-cream font-montserrat" id="move-crew-plans">
+    <section className="py-16 md:py-20 bg-palette-cream font-montserrat" id="membership-plans">
       <div className="w-[85%] max-w-6xl mx-auto px-4 text-left">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

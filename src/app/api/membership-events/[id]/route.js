@@ -38,7 +38,7 @@ export async function GET(req, { params }) {
       headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
     });
   } catch (error) {
-    console.error('Error obteniendo evento Move Crew:', error);
+    console.error('Error obteniendo evento Cuerpo autónomo:', error);
     return NextResponse.json(
       { error: error.message || 'Error al obtener evento' },
       { status: 500 }
@@ -89,7 +89,7 @@ export async function PATCH(req, { params }) {
     }
     return NextResponse.json(event, { status: 200 });
   } catch (error) {
-    console.error('Error actualizando evento Move Crew:', error);
+    console.error('Error actualizando evento Cuerpo autónomo:', error);
     return NextResponse.json(
       { error: error.message || 'Error al actualizar evento' },
       { status: 500 }
@@ -121,10 +121,11 @@ export async function DELETE(req, { params }) {
     }
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error('Error eliminando evento Move Crew:', error);
+    console.error('Error eliminando evento Cuerpo autónomo:', error);
     return NextResponse.json(
       { error: error.message || 'Error al eliminar evento' },
       { status: 500 }
     );
   }
 }
+

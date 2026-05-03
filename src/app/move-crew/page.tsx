@@ -47,7 +47,7 @@ export default function MoveCrewPage() {
           setPromociones(data.promociones || []);
         }
       } catch (err) {
-        console.error('Error obteniendo planes de Move Crew', err);
+        console.error('Error obteniendo planes de Cuerpo autónomo', err);
         setError(err instanceof Error ? err.message : 'Error desconocido');
       }
     };

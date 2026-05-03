@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from '../../../hooks/useToast';
 import { MentorshipProps } from '../../../types/mentorship';
 import PremiumMentorshipCards from './PremiumMentorshipCards';
+import { saveRedirectUrl } from '../../../utils/redirectQueue';
 
 type PlanPrice = {
   interval: 'trimestral' | 'anual';
@@ -86,11 +87,26 @@ const MentorshipPlans = ({ plans, origin }: MentorshipProps) => {
   };
 
   return (
-    <div id="mentorship-plans" className="py-10 bg-[#FAF8F3] font-montserrat">
-      <div className="max-w-6xl mx-auto px-6">
-        {/* Header Section */}
+    <section id="mentorship-plans" className="py-16 md:py-20 bg-palette-cream font-montserrat">
+      <div className="w-[85%] max-w-6xl mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          viewport={{ once: true }}
+          className="mb-10 md:mb-12"
+        >
+          <p className="font-montserrat uppercase tracking-[0.2em] text-xs md:text-sm text-palette-stone/80 mb-2">
+            Inversión
+          </p>
+          <h2 className="text-2xl md:text-4xl font-montserrat font-semibold text-palette-ink tracking-tight">
+            Elegí el ciclo que mejor te sostenga
+          </h2>
+          <p className="font-raleway italic text-palette-stone text-base md:text-lg max-w-2xl leading-relaxed mt-4">
+            Menos opciones, más claridad.
+          </p>
+        </motion.div>
 
-        {/* Cards Component */}
         <PremiumMentorshipCards 
           plans={plans}
           interval={interval}
@@ -100,7 +116,7 @@ const MentorshipPlans = ({ plans, origin }: MentorshipProps) => {
           setInterval={setInterval}
         />
       </div>
-    </div>
+    </section>
   );
 };
 

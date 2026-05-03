@@ -20,7 +20,7 @@ export async function GET() {
       classesAvailable
     });
   } catch (error) {
-    console.error('Error al obtener stats de Move Crew:', error);
+    console.error('Error al obtener stats de Cuerpo autónomo:', error);
     return NextResponse.json(
       { message: 'Error al obtener estadísticas' },
       { status: 500 }

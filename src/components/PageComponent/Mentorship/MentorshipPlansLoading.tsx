@@ -24,7 +24,7 @@ const MentorshipPlansLoading = ({ show }: { show: boolean }) => {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="fixed inset-0 bg-black z-[9999]"
+          className="fixed inset-0 bg-palette-ink z-[9999]"
         >
           <div className="absolute inset-0">
             <CldImage
@@ -47,15 +47,15 @@ const MentorshipPlansLoading = ({ show }: { show: boolean }) => {
               preserveTransformations
               loader={imageLoader}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80" />
+            <div className="absolute inset-0 bg-gradient-to-r from-palette-ink/90 via-palette-ink/70 to-palette-ink/35" />
           </div>
 
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-white font-montserrat">
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-palette-cream font-montserrat">
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="text-sm uppercase tracking-[0.4em] text-white/70 mb-4"
+              className="text-sm uppercase tracking-[0.4em] text-palette-cream/70 mb-4"
             >
               cargando
             </motion.p>
@@ -71,7 +71,7 @@ const MentorshipPlansLoading = ({ show }: { show: boolean }) => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.2 }}
-              className="h-10 w-10 border-2 border-white/30 border-t-white rounded-full animate-spin"
+              className="h-10 w-10 border-2 border-palette-cream/30 border-t-palette-cream rounded-full animate-spin"
             />
           </div>
         </motion.div>

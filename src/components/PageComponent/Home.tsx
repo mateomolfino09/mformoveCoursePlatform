@@ -301,7 +301,7 @@ const Home = ({ classesDB, filters }: Props) => {
       <MainSideBar where={'index'}>
         <FilterNavWrapper>
           <Head>
-            <title>Move Crew - Clases</title>
+            <title>Cuerpo autónomo - Clases</title>
             <meta name='description' content='Clases de movimiento y entrenamiento' />
             <link rel='icon' href='/favicon.ico' />
           </Head>
@@ -327,7 +327,7 @@ const Home = ({ classesDB, filters }: Props) => {
                   transition={{ duration: 0.6, delay: 0.1 }}
                   className='text-xs md:text-sm font-light tracking-[0.3em] uppercase text-palette-stone mb-6 md:mb-8'
                 >
-                  Biblioteca Move Crew
+                  Biblioteca Cuerpo autónomo
                 </motion.p>
 
                 {/* Título principal - Tipografía elegante */}

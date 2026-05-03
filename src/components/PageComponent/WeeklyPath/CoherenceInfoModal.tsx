@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Colores naturales Move Crew - Crema y Salmón
+// Colores naturales Cuerpo autónomo - Crema y Salmón
 const CREAM = '#FFFDFD';
 const CREAM_LIGHT = '#FEFCF8';
 const CREAM_DARK = '#F5F1E8';

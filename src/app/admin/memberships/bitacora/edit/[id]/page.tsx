@@ -424,7 +424,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
       .catch(() => setIndividualClasses([]));
   }, []);
   useEffect(() => {
-    fetch('/api/move-crew-events', { credentials: 'include', cache: 'no-store' })
+    fetch('/api/membership-events', { credentials: 'include', cache: 'no-store' })
       .then((r) => r.ok ? r.json() : [])
       .then((data) => setMoveCrewEvents(Array.isArray(data) ? data : []))
       .catch(() => setMoveCrewEvents([]));
@@ -1264,7 +1264,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
                   )}
                   {(warmUpContent.contentType || '') === 'zoomEvent' && (
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Evento Move Crew *</label>
+                      <label className="block text-xs font-medium text-gray-600 mb-1 font-montserrat">Evento Cuerpo autónomo *</label>
                       <select
                         value={warmUpContent.moveCrewEventId || ''}
                         onChange={(e) => setWarmUpContent((prev) => prev ? { ...prev, moveCrewEventId: e.target.value || undefined } : null)}
@@ -1788,7 +1788,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
                           </div>
                           {(zoomEventSourceMode[`${weekIndex}-${contentIndex}`] || (content.moveCrewEventId ? 'existing' : 'existing')) === 'existing' && (
                             <div>
-                              <label className="block text-xs font-medium text-gray-600 mb-1">Evento Move Crew *</label>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Evento Cuerpo autónomo *</label>
                               <select
                                 value={content.moveCrewEventId || ''}
                                 onChange={(e) => updateContent(weekIndex, contentIndex, 'moveCrewEventId', e.target.value || undefined)}
@@ -1867,7 +1867,7 @@ export default function EditBitacoraPage({ params }: PageProps) {
       {newEventModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6">
-            <h3 className="text-lg font-semibold text-gray-900 font-montserrat mb-4">Nuevo evento Move Crew</h3>
+            <h3 className="text-lg font-semibold text-gray-900 font-montserrat mb-4">Nuevo evento Cuerpo autónomo</h3>
             <div className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Título *</label>
@@ -1919,10 +1919,10 @@ export default function EditBitacoraPage({ params }: PageProps) {
                 onClick={async () => {
                   setCreatingEvent(true);
                   try {
-                    const res = await fetch('/api/move-crew-events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ title: newEventForm.title.trim(), description: newEventForm.description.trim(), zoomLink: newEventForm.zoomLink.trim(), eventDate: newEventForm.repeatsWeekly ? null : newEventForm.eventDate || null, startTime: newEventForm.startTime.trim(), durationMinutes: newEventForm.durationMinutes, repeatsWeekly: newEventForm.repeatsWeekly, weekday: newEventForm.repeatsWeekly ? newEventForm.weekday : undefined, timezone: 'America/Montevideo' }) });
+                    const res = await fetch('/api/membership-events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ title: newEventForm.title.trim(), description: newEventForm.description.trim(), zoomLink: newEventForm.zoomLink.trim(), eventDate: newEventForm.repeatsWeekly ? null : newEventForm.eventDate || null, startTime: newEventForm.startTime.trim(), durationMinutes: newEventForm.durationMinutes, repeatsWeekly: newEventForm.repeatsWeekly, weekday: newEventForm.repeatsWeekly ? newEventForm.weekday : undefined, timezone: 'America/Montevideo' }) });
                     const data = await res.json();
                     if (!res.ok) throw new Error(data.error || 'Error al crear');
-                    const listRes = await fetch('/api/move-crew-events', { credentials: 'include', cache: 'no-store' });
+                    const listRes = await fetch('/api/membership-events', { credentials: 'include', cache: 'no-store' });
                     const list = await listRes.json();
                     setMoveCrewEvents(Array.isArray(list) ? list : []);
                     if (newEventForContent && data._id) {

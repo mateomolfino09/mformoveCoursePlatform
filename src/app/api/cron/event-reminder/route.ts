@@ -129,7 +129,7 @@ function formatEventInUserTz(
 
 /**
  * Cron que corre una vez al día: programa en Mandrill el recordatorio "1 hora antes"
- * para cada evento Move Crew que tenga sesión hoy (Uruguay).
+ * para cada evento Cuerpo autónomo que tenga sesión hoy (Uruguay).
  * Mandrill envía a la hora exacta (send_at); no hace falta un cron cada hora.
  */
 export async function GET(req: NextRequest) {
@@ -193,7 +193,7 @@ export async function GET(req: NextRequest) {
           await emailService.sendEmail({
             type: EmailType.MOVE_CREW_EVENT_REMINDER,
             to: usuario.email,
-            subject: `En 1 hora: ${ev.title || 'Clase en vivo Move Crew'}`,
+            subject: `En 1 hora: ${ev.title || 'Clase en vivo Cuerpo autónomo'}`,
             data: {
               name: usuario.name || 'Miembro',
               eventTitle: ev.title,

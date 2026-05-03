@@ -295,7 +295,7 @@ function Banner({ onVideoLoaded }) {
           href={(auth.user?.subscription?.active || auth.user?.isVip || auth.user?.rol === 'Admin') ? routes.navegation.membership.library : routes.navegation.membership.moveCrew}
           className='px-8 py-3 bg-white text-black rounded-full font-medium text-sm md:text-base hover:bg-gray-100 transition-all duration-300 transform hover:scale-105'
         >
-          {(auth.user?.subscription?.active || auth.user?.isVip || auth.user?.rol === 'Admin') ? 'Biblioteca' : 'Move Crew'}
+          {(auth.user?.subscription?.active || auth.user?.isVip || auth.user?.rol === 'Admin') ? 'Biblioteca' : 'Cuerpo autónomo'}
         </Link>
         <Link 
           href={auth.user ? routes.user.perfil : routes.user.login}

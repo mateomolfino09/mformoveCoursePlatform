@@ -22,7 +22,7 @@ const Whoarewhe = () => {
 
     <div className=' font-montserrat font-normal  w-full  text-left text-black'>
 
-      <h2 className='!text-3xl md:!text-4xl mb-1'>¿Qué es el <strong>MOVE CREW</strong>?
+      <h2 className='!text-3xl md:!text-4xl mb-1'>¿Qué es el <strong>CUERPO AUTÓNOMO</strong>?
       </h2>
       <p className='text-start text-gray-600'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aut, inventore aliquam? Tempora accusantium alias asperiores magnam, veritatis corrupti animi laudantium delectus perferendis corporis, iste ipsum nihil adipisci nostrum sint modi?
           <br/><br/>

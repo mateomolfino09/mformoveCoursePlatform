@@ -28,7 +28,7 @@ export default function OnboardingGuard({ children }: OnboardingGuardProps) {
     '/email',
     '/',
     '/about',
-    '/move-crew',
+    '/membership',
     '/products',
     '/mentorship'
   ];

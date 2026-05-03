@@ -2,7 +2,7 @@
 const COMMUNITY_WHATSAPP_LINK = 'https://chat.whatsapp.com/LgVResfArGjIn9qByXXUSo';
 
 /**
- * Link al grupo de WhatsApp de la comunidad Move Crew.
+ * Link al grupo de WhatsApp de la comunidad Cuerpo autónomo.
  * Se usa este link en toda la app (perfil, navegadores, emails, etc.).
  */
 export const WHATSAPP_GROUP_LINK =

@@ -237,7 +237,7 @@ const Library = ({ classesDB, filters, classModules = [] }: Props) => {
       <MainSideBar where={'library'}>
         <FilterNavWrapper>
           <Head>
-            <title>Move Crew - Clases</title>
+            <title>Cuerpo autónomo - Clases</title>
             <meta name='description' content='Clases de movimiento y entrenamiento' />
             <link rel='icon' href='/favicon.ico' />
           </Head>
@@ -258,7 +258,7 @@ const Library = ({ classesDB, filters, classModules = [] }: Props) => {
                   transition={{ duration: 0.6, delay: 0.1 }}
                   className='order-1 text-base md:text-base lg:text-base font-light tracking-[0.3em] uppercase text-palette-stone mb-3 md:mb-2 lg:mb-10 text-center lg:text-left shrink-0'
                 >
-                  Biblioteca Move Crew
+                  Biblioteca Cuerpo autónomo
                 </motion.p>
 
                 {/* 2) Título - móvil order 2 */}
@@ -315,7 +315,7 @@ const Library = ({ classesDB, filters, classModules = [] }: Props) => {
                 <iframe
                   ref={videoIframeRef}
                   src={libraryVideoUrl}
-                  title='Biblioteca Move Crew'
+                  title='Biblioteca Cuerpo autónomo'
                   className='absolute border-0 inset-0 w-full h-full pointer-events-none'
                   style={{
                     transform: 'scale(1.35)',

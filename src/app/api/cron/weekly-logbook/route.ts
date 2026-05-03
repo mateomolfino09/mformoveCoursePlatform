@@ -313,7 +313,7 @@ export async function GET(req: NextRequest) {
         
         publicacionesEnEstaBitacora++;
         
-        // Obtener todos los miembros activos de Move Crew
+        // Obtener todos los miembros activos de Cuerpo autónomo
           const miembrosActivos = await Users.find({
             $or: [
               { 'subscription.active': true },

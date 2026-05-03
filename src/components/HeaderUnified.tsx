@@ -61,6 +61,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 
     const isMentorship = path === routes.navegation.mentorship;
     const isMoveCrew = path === routes.navegation.membership.moveCrew;
+	/** Landing tipo membership: mismo header que Cuerpo autónomo */
+	const isMembershipLanding = isMoveCrew || isMentorship;
     const isPaymentSuccess = path === routes.navegation.paymentSuccess;
     const isAccount = path === routes.user.perfil || path.startsWith(routes.navegation.account);
 
@@ -88,13 +90,15 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 
 	// Usar useRef para evitar que el efecto se ejecute constantemente
 	const isMoveCrewRef = useRef(isMoveCrew);
+	const isMembershipLandingRef = useRef(isMembershipLanding);
 	const pathRef = useRef(path);
-	
+
 	// Actualizar refs cuando cambian
 	useEffect(() => {
 		isMoveCrewRef.current = isMoveCrew;
+		isMembershipLandingRef.current = isMembershipLanding;
 		pathRef.current = path;
-	}, [isMoveCrew, path]);
+	}, [isMoveCrew, isMembershipLanding, path]);
 
 	// Si suscrito: obtener tracking de coherencia (level, levelProgress para Camino; totalUnits para menú perfil)
 	useEffect(() => {
@@ -131,8 +135,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 			if (typeof d.level === 'number') setUserLevel(d.level);
 			if (typeof d.levelProgress === 'number') setLevelProgress(d.levelProgress);
 		};
-		window.addEventListener('coherence-tracking-updated', handler as EventListener);
-		return () => window.removeEventListener('coherence-tracking-updated', handler as EventListener);
+		window.addEventListener('coherence-tracking-updated', handler as any);
+		return () => window.removeEventListener('coherence-tracking-updated', handler as any);
 	}, []);
 
 	// Cerrar menú de perfil y dropdown Eventos/Mentoría al hacer clic fuera
@@ -151,15 +155,14 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 
 	useEffect(() => {
 		// Inicializar el estado de scroll al montar
-		// Para Move Crew, esperar a que se emita el evento del contenedor
-		if (!isMoveCrew) {
+		// Cuerpo autónomo y Mentoría landing: mismo criterio (scroll por contenedor / Redux / movecrew-scroll)
+		if (!isMembershipLandingRef.current) {
 			const scroll = window.scrollY;
 			setIsScrolled(scroll > 0);
 			if (path === routes.navegation.index) {
 				setIndexScrollY(scroll);
 			}
 		} else {
-			// Para Move Crew, inicializar en false y esperar el evento del contenedor
 			setIsScrolled(false);
 		}
 		setIsMobile(window.innerWidth < 1024);
@@ -167,10 +170,10 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 		const handleResize = () => setIsMobile(window.innerWidth < 1024);
 
 		// Throttle para el scroll de window
-		let scrollTimeout: NodeJS.Timeout | null = null;
+		let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
 		const handleWindowScroll = () => {
-			// Solo manejar scroll de window si no estamos en Move Crew
-			if (!isMoveCrewRef.current) {
+			// No usar scroll de ventana en landings tipo membership (mismo comportamiento que Cuerpo autónomo)
+			if (!isMembershipLandingRef.current) {
 				const scroll = window.scrollY;
 				setIsScrolled(scroll > 0);
 				if (pathRef.current === routes.navegation.index) {
@@ -183,9 +186,10 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 			}
 		};
 
-		// Throttle para el evento de Move Crew, pero sin delay cuando scrollTop es 0
-		let moveCrewScrollTimeout: NodeJS.Timeout | null = null;
+		// Throttle para el evento de Cuerpo autónomo, pero sin delay cuando scrollTop es 0
+		let moveCrewScrollTimeout: ReturnType<typeof setTimeout> | null = null;
 		const handleMoveCrewScroll = (event: Event) => {
+			if (!isMoveCrewRef.current) return;
 			const detail = (event as CustomEvent).detail;
 			const scrollTop = detail?.scrollTop ?? 0;
 			const isAtTop = scrollTop === 0;
@@ -256,14 +260,14 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	};
 
     const isIndexStage1 = isIndex && indexScrollY > 0 && !showNav; // Header blanco con scroll; al abrir hamburger vuelve al color original
-    // En Move Crew: al abrir el menú (showNav), header transparente en web y celular; solo logo y botones
-    const isMoveCrewNavOpen = isMoveCrew && showNav;
+    // Cuerpo autónomo y Mentoría: al abrir el menú (showNav), header transparente; mismo criterio que membership
+    const isMembershipLandingNavOpen = isMembershipLanding && showNav;
     let headerBgClass = (isAuth)
         ? 'bg-transparent'
         : (isBienvenida
             ? (scrolled ? 'bg-white/90 backdrop-blur-sm' : 'bg-transparent')
-            : (isMoveCrew
-                ? (isMoveCrewNavOpen ? 'bg-transparent' : (scrolled ? 'bg-white/90 backdrop-blur-sm' : 'bg-transparent'))
+            : (isMembershipLanding
+                ? (isMembershipLandingNavOpen ? 'bg-transparent' : (scrolled ? 'bg-white/90 backdrop-blur-sm' : 'bg-transparent'))
                 : (isIndex
                     ? (isIndexStage1 ? 'bg-[#FAF8F5]' : (scrolled ? 'bg-[#141414]' : 'bg-transparent'))
                     : (isLibraryArea
@@ -273,10 +277,10 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
                             : (isAccount || isWeeklyPath
                                 ? (scrolled ? 'bg-white/50 backdrop-blur-sm' : 'bg-transparent')
                                 : (transparentUntilScroll
-                                    ? (scrolled ? (isMentorship ? 'bg-black/50 backdrop-blur-sm' : 'bg-[#141414]/50 backdrop-blur-sm') : 'bg-transparent')
+                                    ? (scrolled ? 'bg-[#141414]/50 backdrop-blur-sm' : 'bg-transparent')
                                     : 'bg-white/90 backdrop-blur-sm')))))));
 
-    // Cuando el menú principal o el menú Move Crew están abiertos, todos los botones del header en blanco/claro
+    // Cuando el menú principal o el menú Cuerpo autónomo están abiertos, todos los botones del header en blanco/claro
     const isAnyMenuOpen = showNav || snap.weeklyPathNavOpen;
     const forceLightByNav = !!isAnyMenuOpen;
     const forceLight = forceLightTheme || forceLightByNav;
@@ -292,18 +296,16 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
                         ? true
                         : ((isAccount || isWeeklyPath
                             ? false
-                            : (isMoveCrew
+                            : (isMembershipLanding
                                 ? true
-                                : (isMentorship
+                                : (transparentUntilScroll && !scrolled
                                     ? true
-                                    : (transparentUntilScroll && !scrolled
-                                        ? true
-                                        : false)))))))));
+                                    : false))))))));
     // En weekly path y práctica (video): texto blanco. En página de módulo: sin scroll blanco, con scroll negro. Resto de library: texto negro. Con navegación abierta: texto claro.
     const isLightText = isWeeklyPath ? true : (isLibraryPracticePage ? true : (isLibraryModulePage ? !scrolled : (isLibraryArea ? (forceLight ? true : false) : (forceLight ? true : isLightTextBase))));
 
-    // Si el texto es claro y hay scroll, aplicar fondo difuminado para contraste (no en etapa 1 index). Move Crew no cambia.
-    if (!isMoveCrew && !isLibraryArea && scrolled && isLightText && !isIndexStage1) {
+    // Si el texto es claro y hay scroll, aplicar fondo difuminado para contraste (no en etapa 1 index). Cuerpo autónomo no cambia.
+    if (!isMembershipLanding && !isLibraryArea && scrolled && isLightText && !isIndexStage1) {
         headerBgClass = 'bg-black/40 backdrop-blur-md';
     }
     // Solo en página de módulo (/library/module/xxx), cuando hay scroll: fondo blanco y texto negro. En práctica (video) el header siempre transparente.
@@ -314,7 +316,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
     if (isLibraryArea && !isLibraryModulePage && scrolled) {
         headerBgClass = 'bg-palette-cream/70 backdrop-blur-sm';
     }
-    // Con el menú normal o Move Crew abierto, el header siempre transparente (blanco/negro queda transparente)
+    // Con el menú normal o Cuerpo autónomo abierto, el header siempre transparente (blanco/negro queda transparente)
     if (showNav || snap.weeklyPathNavOpen) {
         headerBgClass = 'bg-transparent';
     }
@@ -331,9 +333,9 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 		? !scrolled
 		: (isLibraryArea
 			? false
-			: (forceLightByNav
+				: (forceLightByNav
 				? true
-				: (isMoveCrew
+				: (isMembershipLanding
 					? false
 					: (isIndexStage1
 						? false
@@ -344,7 +346,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	// En página de práctica (video) los botones del header con fondo opaco para que se vean
 	const headerButtonsOpaque = isLibraryPracticePage;
 
-	// Logo MMOVE ACADEMY en blanco en weekly path y cuando el menú o el navegador Move Crew están abiertos
+	// Logo MMOVE ACADEMY en blanco en weekly path y cuando el menú o el navegador Cuerpo autónomo están abiertos
 	const logoLight = headerTitleLight || showNav || snap.weeklyPathNavOpen || isWeeklyPath;
 
 	const linkBase = `block text-base/6 cursor-pointer focus:outline-none transition-colors duration-200`;
@@ -367,7 +369,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								<Link href={(auth?.user?.subscription?.active || auth?.user?.isVip) ? (isLibrary ? routes.navegation.index : routes.navegation.membership.library) : routes.navegation.index} className={`font-montserrat font-semibold uppercase tracking-[0.15em] md:tracking-[0.2em] text-sm md:text-xl cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap mr-4 md:mr-24 ${sidebarOpen && isMobile ? 'opacity-0' : 'opacity-100'} ${logoLight ? 'text-white' : 'text-palette-ink'}`} style={{ transition: 'opacity 200ms ease' }}>
 									MMOVE ACADEMY
 								</Link>
-								{(auth?.user?.subscription?.active || auth?.user?.isVip || auth?.user?.rol === 'Admin') && !isMoveCrew && (
+								{(auth?.user?.subscription?.active || auth?.user?.isVip || auth?.user?.rol === 'Admin') && !isMembershipLanding && (
 									<div className={`${auth?.user?.subscription?.active || auth?.user?.isVip ? 'ml-2' : ''}`}>
 										<span className={` shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'} ${isWeeklyPath ? 'hidden' : 'hidden md:block'}`}>|</span>
 										<div className="hidden md:flex items-center gap-6 shrink-0">
@@ -414,7 +416,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 										return (
 											<button
 												type="button"
-												data-tutorial-move-crew-target
+												data-tutorial-membership-target
 												onClick={(e) => {
 													e.stopPropagation();
 													const tutorialActive = document.body.classList.contains('tutorial-active');
@@ -494,10 +496,10 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								</div>
 								{/* Solo desktop: Menú + Admin + usuario */}
 								<div className='hidden md:flex items-center gap-3'>
-								{/* Sin acceso → Empezar Camino; con acceso → botón Menú (abre navegador Move Crew) */}
+								{/* Sin acceso → Empezar Camino; con acceso → botón Menú (abre navegador Cuerpo autónomo) */}
 								{isMoveCrew && !(auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin')) && (
 									<Link
-										href={`${routes.navegation.membership.moveCrew}#move-crew-plans`}
+										href={`${routes.navegation.membership.moveCrew}#membership-plans`}
 										className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-5 py-2 shrink-0 transition-all duration-200 ${(isAnyMenuOpen || isWeeklyPath) ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : 'bg-black text-white border border-black hover:bg-palette-sage hover:border-palette-sage'}`}
 									>
 										Empezar Camino
@@ -507,7 +509,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									{auth?.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin') && (
 										<button
 											type='button'
-											data-tutorial-move-crew-target
+											data-tutorial-membership-target
 											onClick={(e) => { 
 												const tutorialActive = document.body.classList.contains('tutorial-active');
 												if (tutorialActive) return;
@@ -580,13 +582,13 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							</div>
 						</div>
 					) : (
-						// Distribución normal (incluye Move Crew)
+						// Distribución normal (incluye Cuerpo autónomo)
 						<div className="flex justify-between items-center pl-3 pr-4 md:pl-8 md:pr-8 lg:gap-x-8 h-full">
 					<div className='flex items-center justify-start shrink-0 gap-4'>
 										<Link href={(auth?.user?.subscription?.active || auth?.user?.isVip) ? (isLibrary ? routes.navegation.index : routes.navegation.membership.library) : routes.navegation.index} className={`font-montserrat font-semibold tracking-[0.15em] md:tracking-[0.2em] text-sm md:text-2xl cursor-pointer hover:opacity-80 transition-opacity ${sidebarOpen && !isMobile ? 'opacity-0' : 'opacity-100'} ${logoLight ? 'text-white' : 'text-palette-ink'}`} style={{ transition: 'opacity 200ms ease' }}>
 											MMOVE ACADEMY
 										</Link>
-						{(auth?.user?.subscription?.active || auth?.user?.isVip) && !isMoveCrew && (
+						{(auth?.user?.subscription?.active || auth?.user?.isVip) && !isMembershipLanding && (
 							<>
 								<span className={` ${headerTitleLight ? 'text-white/60' : 'text-palette-stone/60'} ${isWeeklyPath ? 'hidden' : 'hidden md:block'}`}>|</span>
 								<div className="hidden md:flex items-center gap-6">
@@ -615,10 +617,10 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 					</div>
 					{/* Centro: Eventos y Mentoría; centrado sin login, más a la izquierda con login */}
 					<div className="flex flex-1 w-full justify-start items-center min-h-[2rem]">
-						<div className={`hidden  items-center gap-6  ${auth?.user ? '-translate-x-[15%]' : ''} ${isMoveCrew || isBienvenida ? 'md:hidden' : 'md:flex'} ${auth?.user?.subscription?.active || auth?.user?.isVip ? 'ml-4' : auth?.user?.rol === 'Admin' ? 'ml-12' : 'ml-0'}`}>
+						<div className={`hidden  items-center gap-6  ${auth?.user ? '-translate-x-[15%]' : ''} ${isMembershipLanding || isBienvenida ? 'md:hidden' : 'md:flex'} ${auth?.user?.subscription?.active || auth?.user?.isVip ? 'ml-4' : auth?.user?.rol === 'Admin' ? 'ml-12' : 'ml-0'}`}>
 						<span className={`hidden md:block shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'}`}>|</span>
 						<Link href={routes.navegation.moveCrew} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? (isMoveCrew ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isMoveCrew ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}`}>
-								Move Crew
+								Cuerpo autónomo
 							</Link>
 							<Link href={routes.navegation.mentorship} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? (isMentorship ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isMentorship ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}` }>
 								Mentoría
@@ -638,7 +640,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								return (
 									<button
 										type="button"
-										data-tutorial-move-crew-target
+										data-tutorial-membership-target
 										onClick={(e) => {
 											e.stopPropagation();
 											const tutorialActive = document.body.classList.contains('tutorial-active');
@@ -672,7 +674,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							</button>
 							{eventsMentorshipOpen && (
 								<div className="absolute right-0 top-full mt-2 w-40 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
-									<Link href={routes.navegation.moveCrew} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMoveCrew ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Move Crew</Link>
+									<Link href={routes.navegation.moveCrew} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMoveCrew ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Cuerpo autónomo</Link>
 									<Link href={routes.navegation.mentorship} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMentorship ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
 									<Link href={routes.navegation.eventos} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isEvents ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
 									{!auth?.user && (
@@ -705,11 +707,11 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							</div>
 						) : null}
 					</div>
-					{/* Desktop: Menú (navegador Move Crew), Admin, avatar */}
+					{/* Desktop: Menú (navegador Cuerpo autónomo), Admin, avatar */}
 					<div className='hidden md:flex items-center gap-3 shrink-0'>
 						{isMoveCrew && !(auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin')) && (
 							<Link
-								href={`${routes.navegation.membership.moveCrew}#move-crew-plans`}
+								href={`${routes.navegation.membership.moveCrew}#membership-plans`}
 								className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-5 py-2 transition-all duration-200 ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : 'bg-black text-white border border-black hover:bg-palette-sage hover:border-palette-sage'}`}
 							>
 								Empezar Camino
@@ -719,7 +721,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								{auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin') && (!isBienvenida) && (
 									<button
 										type='button'
-										data-tutorial-move-crew-target
+										data-tutorial-membership-target
 										onClick={(e) => { 
 											const tutorialActive = document.body.classList.contains('tutorial-active');
 											if (tutorialActive) return;
@@ -742,7 +744,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									<button
 										type='button'
 										onClick={() => router.push('/admin')}
-className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream' : (isMoveCrew ? 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5' : isLightText ? 'text-white border border-white/40 hover:bg-white/20' : 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5')}`}
+className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream' : (isMembershipLanding ? 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5' : isLightText ? 'text-white border border-white/40 hover:bg-white/20' : 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5')}`}
 												aria-label='Ir al panel de administración'
 									>
 										<span>Admin</span>
@@ -774,7 +776,15 @@ className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase round
 								<button
 									type="button"
 									onClick={() => { state.loginForm = true; }}
-									className={`rounded-full px-4 py-2 border transition-colors font-montserrat text-sm ${headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream' : isLightText ? 'text-white border border-white/40 hover:bg-white/20' : 'text-palette-ink border border-palette-stone/40 hover:bg-palette-stone/10'}`}
+									className={`rounded-full px-4 py-2 border transition-colors font-montserrat text-sm ${
+										headerButtonsOpaque
+											? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream'
+											: isMembershipLanding
+												? 'text-palette-ink border border-palette-ink/60 hover:bg-palette-stone/10 hover:border-palette-ink'
+												: isLightText
+													? 'text-white border border-white/40 hover:bg-white/20'
+													: 'text-palette-ink border border-palette-stone/40 hover:bg-palette-stone/10'
+									}`}
 								>
 									Iniciar Sesión
 								</button>

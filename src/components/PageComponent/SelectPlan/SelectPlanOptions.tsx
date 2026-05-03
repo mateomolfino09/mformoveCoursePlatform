@@ -7,7 +7,7 @@ const SelectPlanOptions = () => {
     <div className='w-full md:pt-0 pt-2 flex flex-col md:space-y-12 md:space-x-18 justify-center items-center px-4  pb-16 md:pb-20'> 
     <div className='flex space-y-3 flex-col !mt-10 md:!mt-28 items-start justify-start md:max-w-[900px]' >
     <div className='!text-3xl md:!text-4xl font-montserrat font-normal align-middle w-full  text-center text-white'>
-      <h2 className=''>¿Qué incluye <strong>MOVE CREW</strong>?
+      <h2 className=''>¿Qué incluye <strong>CUERPO AUTÓNOMO</strong>?
       </h2>
     </div>
   </div>

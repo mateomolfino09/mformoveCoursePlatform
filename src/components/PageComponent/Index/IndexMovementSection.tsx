@@ -62,7 +62,7 @@ export default function IndexMovementSection() {
           style={{ opacity }}
           className="text-lg md:text-xl text-gray-600 font-light max-w-2xl mb-16 md:mb-20 mx-auto text-center"
         >
-          Conoce, encarna y vive. Biblioteca activa para practicantes de la Move Crew.
+          Conoce, encarna y vive. Biblioteca activa para practicantes de la Cuerpo autónomo.
         </motion.p>
 
         {/* Bloques cuadrados con bordes redondeados y video */}

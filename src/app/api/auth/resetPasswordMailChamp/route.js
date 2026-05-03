@@ -64,7 +64,7 @@ export async function POST(req) {
           </table>
         </div>
 
-        <!-- Header con acento Move Crew -->
+        <!-- Header con acento Cuerpo autónomo -->
         <div style="padding:28px 24px; text-align:center; background:linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(249, 115, 22, 0.06) 50%, rgba(251, 113, 133, 0.06) 100%);">
           <div style="color:#000000; font-size:26px; font-weight:800; margin:0 0 6px 0; letter-spacing:-0.3px;">Restablecer contraseña</div>
         </div>

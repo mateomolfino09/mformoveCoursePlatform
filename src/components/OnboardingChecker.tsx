@@ -28,7 +28,7 @@ export default function OnboardingChecker() {
       '/email',
       '/',
       '/about',
-      '/move-crew',
+      '/membership',
       '/products',
       '/mentorship'
     ];
