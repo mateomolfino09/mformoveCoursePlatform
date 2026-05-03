@@ -1,121 +1,143 @@
-import React from 'react';
+'use client';
+
+import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import { CldImage } from 'next-cloudinary';
+import imageLoader from '../../../../imageLoader';
 
-const positives = [
-  'Buscas potenciar, sanar y entender el movimiento.',
-  'Estás dispuesto/a a comprometerte al 100% con tu proceso.',
-  'Valorás el acompañamiento 1 a 1 y el feedback personalizado.',
-  'Te motiva aprender y cocrear más que seguir una rutina vacía.',
-];
+const IMG_AFTER_STEP_1 = 'my_uploads/fondos/DSC01642_rioxq5';
 
-const negatives = [
-  'Buscas resultados mágicos.',
-  'No estás dispuesto/a a comprometerte al menos un trimestre.',
-  'Preferís pagar poco a sumergirte en un proceso profundo.',
-  'No te interesa aprender ni profundizar.'
-];
+const PRACTICE_FOCUS = ['Movilidad y Fuerza', 'Parada de manos', 'Flows de movimiento', 'Acondicionamiento físico'] as const;
 
-const cardVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      duration: 0.3,
-    },
-  },
-};
-
-const MentorshipIsForYou = () => {
-  // Ícono para lista: gorila para positivos, línea de negación para negativos
-  const ListIcon = ({ isPositive }: { isPositive: boolean }) => {
-    if (isPositive) {
-      return (
-        <svg 
-          viewBox="0 0 262.309 262.309" 
-          className="w-6 h-6 flex-shrink-0 opacity-80 text-black"
-        >
-          <path fill="currentColor" d="M259.483,96.3c0.312-6.277-0.907-6.465-4.359-11.17c0.596-6.163-2.919-7.843-4.802-8.157
-            c-1.881-0.307-3.495-6.423-1.613-7.519c1.885-1.094,8.465-5.424-1.6-14.871c-3.289-3.144-6.916-9.1-6.916-14.9
-            c0-5.802-1.727-7.061-5.183-8.472c-3.448-1.405-20.7-10.191-29.48-1.094c-8.79,9.088-21.15,27.987-23.173,28.869
-            c-8.258,3.579-22.32,3.652-30.738,8.778c-8.417,5.119-15.739,25.987-30.377,29.271c-14.636,3.299-26.35-12.805-47.575-2.917
-            c-21.227,9.881-43.188,49.767-43.919,63.31c-0.728,13.541-3.293,18.66-10.608,21.958c-7.326,3.299-10.981,6.583-13.911,19.031
-            c-2.925,12.442-8.044,23.011-3.29,30.375c4.755,7.365,6.219,7.365,11.342,7.365c5.123,0,31.469,0,31.469,0
-            c4.246,0,6.287-4.975,4.089-8.434c-2.196-3.448-12.707-6.431-5.646-13.794c7.058-7.374,23.608-19.26,27.445-25.254
-            c3.883-6.066,4.708-5.176,8.159,1.257c3.452,6.428,12.232,21.947,13.644,40.459c0.158,3.926-1.094,5.766,5.49,5.766
-            c6.587,0,31.368,0,31.368,0s6.431-6.078,2.668-10.471c-3.768-4.394-8.785-6.432-8.626-14.9c0.153-8.473-3.14-15.056,2.353-15.216
-            c5.491-0.149,14.271-1.726,17.094-4.078c2.819-2.353,5.017-2.98,5.805,4.868c0.786,7.84,3.138,16.149-0.629,18.656
-            c-3.764,2.515-9.406,7.715-6.275,14.435c3.141,6.706,3.768,6.706,8.785,6.706c5.022,0,20.864,0,20.864,0s2.823,1.6,6.27-7.651
-            c3.451-9.251,11.761-35.755,10.195-53.008c-0.47-6.278,3.764-3.608,4.081-0.782c0.312,2.823,1.412,16.462,1.412,16.462
-            s0.315,8.473,4.232,13.959c3.923,5.486,9.41,14.118,4.551,17.407c-4.867,3.292-5.645,5.02-5.645,7.839
-            c0,2.827-0.94,5.774,4.858,5.774c5.804,0,34.976,0,34.976,0s3.296-0.432,6.586-6.706c3.297-6.27,6.12-8.158,3.452-27.125
-            c-2.664-18.988-2.352-33.88-11.603-49.256c-2.512-4.076-2.824-24.301-2.824-28.543c0-4.238,4.547-3.448,7.052-2.981
-            c2.512,0.475,6.122,0.163,12.708-6.898C258.225,107.592,266.853,100.848,259.483,96.3z"/>
-        </svg>
-      );
-    }
-    
-    return (
-      <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 relative">
-        <svg viewBox="0 0 24 24" className="w-5 h-5 text-gray-400">
-          <path 
-            d="M 6,18 Q 12,10 18,6" 
-            stroke="currentColor" 
-            strokeWidth="1.5" 
-            strokeLinecap="round"
-            fill="none"
-          />
-        </svg>
-      </div>
-    );
-  };
-
+function Pill({ children }: { children: ReactNode }) {
   return (
-    <section className="pb-20 pt-2 bg-[#FAF8F3] font-montserrat">
-      <div className="max-w-6xl mx-auto pt-4 px-6">
-        {/* Título principal */}
+    <span className="inline-flex items-center rounded-full border border-palette-stone/20 bg-white px-2.5 py-1 font-montserrat text-[11px] font-medium text-palette-ink md:text-[12px]">
+      {children}
+    </span>
+  );
+}
+
+/** Raíz del árbol + tronco visual; sin numeración de pasos. */
+function MethodTreeRoot({ title, id }: { title: string; id?: string }) {
+  return (
+    <div className="pb-5">
+      <h3 id={id} className="text-[1.2rem] font-semibold leading-snug tracking-tight text-palette-ink md:text-[1.35rem]">
+        {title}
+      </h3>
+      <div className="mt-3 h-px w-full bg-palette-stone/18" />
+    </div>
+  );
+}
+
+function TreeStemAxisLine({ className }: { className: string }) {
+  return (
+    <span aria-hidden className={`pointer-events-none absolute w-[1px] bg-black -translate-x-1/2  left-1/2 ${className}`} />
+  );
+}
+
+function TreeStemMarker({ align }: { align: 'body' | 'title' }) {
+  const nodeTop = align === 'title' ? 'top-[0.42rem] md:top-[0.48rem]' : 'top-[1.05rem]';
+  const barTop =
+    align === 'title'
+      ? 'top-[calc(0.42rem+5px)] md:top-[calc(0.48rem+5px)]'
+      : 'top-[calc(1.05rem+5px)]';
+  return (
+    <>
+      <span
+        aria-hidden
+        className={`pointer-events-none absolute left-1/2 z-[1] size-[11px] -translate-x-1/2 rounded-full border-2 border-palette-ink bg-palette-cream ring-[3px] ring-palette-cream ${nodeTop}`}
+      />
+      <span
+        aria-hidden
+        className={`pointer-events-none absolute left-[calc(50%+6px)] z-0 h-0.5 w-5 bg-palette-stone/34 sm:w-6 md:w-[1.625rem] ${barTop}`}
+      />
+    </>
+  );
+}
+
+function StepImage({ src, alt, objectClassName }: { src: string; alt: string; objectClassName: string }) {
+  return (
+    <div className="relative mt-8 aspect-[16/10] w-full max-w-2xl overflow-hidden rounded-xl border border-palette-stone/18 bg-palette-stone/5 shadow-[0_8px_28px_rgba(20,20,17,0.06)] md:mt-9">
+      <CldImage
+        src={src}
+        alt={alt}
+        fill
+        sizes="(max-width: 768px) 92vw, 42rem"
+        className={`object-cover transition-transform duration-700 ease-out hover:scale-[1.02] ${objectClassName}`}
+        loader={imageLoader}
+        preserveTransformations
+      />
+    </div>
+  );
+}
+
+export default function MentorshipIsForYou() {
+  return (
+    <section className="relative bg-palette-cream py-14 font-montserrat text-left md:py-16">
+      <div className="mx-auto w-[92%] max-w-6xl px-3 sm:px-4">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          viewport={{ once: true }}
-          className="mb-12"
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, margin: '-36px' }}
+          className="mb-11 max-w-2xl md:mb-12"
         >
-          <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-500 mb-3">Para quién es</p>
-          <h2 className="text-3xl md:text-5xl font-bold text-black">¿Es para vos esta mentoría?</h2>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-ink">Para quién es</p>
+          <h2 className="mt-3 text-[1.85rem] font-semibold leading-[1.1] tracking-tight text-palette-ink md:text-[2.25rem] md:leading-[1.08] lg:text-[2.5rem]">
+            ¿Es para vos esta mentoría?
+          </h2>
+
         </motion.div>
 
-        <p className="text-lg md:text-xl text-gray-600 font-light mb-16 max-w-5xl leading-relaxed">
-          Esta mentoría está pensada para personas <strong className="text-black font-medium"> comprometidas con su desarrollo</strong>. No es un servicio para cualquiera, ni para quienes buscan <strong className="text-black font-medium">soluciones rápidas</strong>. Priorizo la <strong className="text-black font-medium">calidad</strong>, la <strong className="text-black font-medium">dedicación</strong> y el <strong className="text-black font-medium">acompañamiento cercano</strong>. No te quiero hacer perder el <strong className="text-black font-medium">tiempo</strong>, si querés invertirlo en un proceso <strong className="text-black font-medium">profundo</strong>, seguí leyendo. Si no, mejor que lo sepas desde el principio.
-        </p>
-
-        <div className="grid md:grid-cols-2 gap-8">
-          {[0, 1].map((i) => (
-            <motion.div
-              key={i}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={cardVariants}
-            >
-              <div className="bg-gradient-to-br from-white via-[#FAF8F3]/50 to-[#F5F1E8]/30 backdrop-blur-sm rounded-3xl p-8 md:p-10 flex flex-col h-full hover:bg-gradient-to-br hover:from-white hover:via-[#FAF8F3] hover:to-[#F5F1E8] transition-all duration-300 border border-[#AF50E5]/20 shadow-[0_4px_20px_rgba(175,80,229,0.08)] hover:shadow-[0_8px_30px_rgba(175,80,229,0.15)]">
-                <h3 className="text-2xl md:text-3xl font-medium mb-10 text-black">
-                  {i === 0 ? 'Entrenar conmigo es para ti si…' : 'No es para ti si…'}
-                </h3>
-                <ul className="space-y-6 flex-grow">
-                  {(i === 0 ? positives : negatives).map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-4 text-gray-700 text-base md:text-lg font-light leading-relaxed">
-                      <ListIcon isPositive={i === 0} />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.36, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, margin: '-20px' }}
+          className="mx-auto min-w-0 max-w-3xl md:max-w-none"
+          aria-labelledby="mentorship-method-roots-heading"
+        >
+          <MethodTreeRoot id="mentorship-method-roots-heading" title="Raíces del método" />
+          {/* gap-12/14 = mismo offset que prolonga la línea; eje siempre centrado en w-[26px] (sin depender del pl responsive). */}
+          <div className="mt-4 flex flex-col gap-12 md:mt-5 md:gap-14">
+            <div className="flex items-stretch gap-8 sm:gap-10 md:gap-11 lg:gap-12">
+              <div className="relative w-[26px] shrink-0 overflow-visible">
+                <TreeStemAxisLine className="top-[calc(1.05rem+5.5px)] bottom-[-3rem] rounded-full md:bottom-[-3.5rem]" />
+                <TreeStemMarker align="body" />
               </div>
-            </motion.div>
-          ))}
-        </div>
+              <div className="min-w-0 flex-1 pb-12 md:pb-14">
+                <p className="text-[15px] font-normal leading-[1.72] text-palette-ink md:text-[16px]">
+                  Movilidad, parada de manos, flows de movimiento y fuerza dentro de{' '}
+                  <span className="font-semibold">un mapa</span>. La mezcla trae información de artes marciales, yoga,
+                  gimnasia, danza, fuerza y deporte — integrado.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {PRACTICE_FOCUS.map((tag) => (
+                    <Pill key={tag}>{tag}</Pill>
+                  ))}
+                </div>
+                <StepImage src={IMG_AFTER_STEP_1} alt="Práctica de movimiento y cuerpo" objectClassName="object-[center_60%]" />
+              </div>
+            </div>
+
+            <div className="flex items-stretch gap-8 sm:gap-10 md:gap-11 lg:gap-12">
+              <div className="relative w-[26px] shrink-0 overflow-visible">
+                <TreeStemAxisLine className="top-[-3rem] bottom-0 rounded-full md:top-[-3.5rem]" />
+                <TreeStemMarker align="title" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="font-semibold text-palette-ink text-[1.2rem] leading-snug tracking-tight md:text-[1.35rem]">
+                  El movimiento no es solo físico
+                </h4>
+                <p className="mt-5 text-[15px] font-normal leading-[1.72] text-palette-ink md:text-[16px]">
+                  El foco está no solo en moverte mejor, sino en{' '}
+                  <span className="font-semibold">como se interpreta la práctica, como sana el cuerpo a partir de la misma y cómo se relaciona con la vida</span>. Aprender a desarrollar una mirada crítica y consciente de tu propio movimiento. Entendiendo que las capacidades son solo expresiones de un todo más grande. <span className="font-semibold">Danza, entrenamiento y lucha coexisten en un mismo cuerpo</span>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.section>
       </div>
     </section>
   );
-};
-
-export default MentorshipIsForYou; 
+}

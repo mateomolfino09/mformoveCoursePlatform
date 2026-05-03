@@ -44,7 +44,7 @@ const WeeklyPathFooter = () => (
           />
         </Link>
         <p className="text-sm text-white/70 font-light font-montserrat">
-          Move Crew - Camino
+          Cuerpo autónomo - Camino
         </p>
       </div>
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm text-white/80 font-light font-montserrat">
@@ -241,7 +241,7 @@ function WeeklyPathPageContent() {
 
       // Verificar membresía (excepto para administradores)
       if (auth.user && auth.user.rol !== 'Admin' && !auth.user.subscription?.active && !auth.user.isVip) {
-        router.push('/move-crew');
+        router.push('/membership');
         return;
       }
 
@@ -1422,7 +1422,7 @@ function WeeklyPathPageContent() {
 
       {renderMobileTooltip()}
 
-      {/* Efecto visual de Level Up — estilo Move Crew: épico y fino */}
+      {/* Efecto visual de Level Up — estilo Cuerpo autónomo: épico y fino */}
       <AnimatePresence>
         {showLevelUpEffect && levelUpData && (
           <motion.div

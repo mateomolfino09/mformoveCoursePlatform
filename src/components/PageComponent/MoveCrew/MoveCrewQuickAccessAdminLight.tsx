@@ -187,7 +187,7 @@ const MoveCrewQuickAccessAdminLight = () => {
           <div className="flex items-center gap-2 mb-3">
             <ChartBarIcon className="w-5 h-5 text-amber-600" />
             <h3 className="text-sm font-light text-gray-900 font-montserrat uppercase tracking-wider">
-              Move Crew - Acceso Rápido
+              Cuerpo autónomo - Acceso Rápido
             </h3>
           </div>
           

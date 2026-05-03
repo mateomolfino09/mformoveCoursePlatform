@@ -4,47 +4,47 @@ import { motion } from 'framer-motion';
 const MoveCrewStructure = () => {
   const pillars = [
     {
-      title: 'Camino',
+      title: 'Un ritmo que acompaña',
       description:
-        'Contenido nuevo todas las semanas para que avances a tu ritmo.',
+        'Una práctica con dirección, sin apurarte y sin perderte en “qué toca hacer”.',
       bullets: [
-        'Contenido nuevo todas las semanas.',
-        'Clases en vivo y grabadas.',
+        'Una guía clara para que tengas continuidad sin rigidez.',
+        'Espacio para ajustar según tu día, tu energía y tu momento.',
       ]
     },
     {
-      title: 'Filosofía',
+      title: 'Movimiento como práctica viva',
       description:
-        'Aceptación, autoconocimiento y exploración. Practicar el practicar.',
+        'No se trata de acumular “movimientos”, sino de habitar el movimiento y observar lo que ocurre.',
       bullets: [
-        'La constancia es la clave para crecer en la práctica.',
-        'Necesitamos jugar más y exigir menos.',
-        'Variabilidad como forma única de reconocernos en lo inevitable.'
+        'El foco está en el individuo: tu estructura, tu historia, tu presencia.',
+        'Más que adaptarnos, nos deslizamos conservando el equilibrio; nos regeneramos, autoemergemos.',
+        'La variabilidad aparece como una forma de escucharnos y volver disponibles.'
       ]
     },
     {
-      title: 'Dedicación semanal',
+      title: 'Encuentro y expresión',
       description:
-        'Quiero crear una buena agenda de movimiento para mis alumnos.',
+        'La práctica se vuelve más profunda cuando se comparte: importa el movimiento, pero más todavía las relaciones vivas.',
       bullets: [
-        'Planificación pensada para agenda real.',
-        'Bloques breves y acumulativos.',
-        'Clases en vivo.',
+        'Encuentros para refinar y darle intención a lo que entrenás.',
+        'Después aparecen las expresiones: baile, lucha, locomociones.',
+        'Formas distintas para una misma disponibilidad que crece en colectivo.'
       ]
     },
     {
-      title: 'Comunidad y Soporte',
+      title: 'Acompañamiento',
       description:
-        'Te respondo por WhatsApp.',
+        'Un sostén real para no practicar solo y para sostener la continuidad.',
       bullets: [
-        'WhatsApp para dudas.',
-        'Enfoque asíncrono para no bloquear tu agenda.'
+        'Un espacio de intercambio para dudas, ajustes y mirada externa.',
+        'Practicamos en red: compartir también es parte del proceso.'
       ]
     }
   ];
 
   return (
-    <section className="py-16 md:py-20 bg-palette-ink text-palette-cream font-montserrat" id="move-crew-structure">
+    <section className="py-16 md:py-20 bg-palette-ink text-palette-cream font-montserrat" id="membership-structure">
       <div className="w-[85%] max-w-6xl mx-auto px-4 text-left">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -58,7 +58,7 @@ const MoveCrewStructure = () => {
             Un ritmo pensado para servir a tu vida
           </h2>
           <p className="font-raleway italic text-palette-cream/80 text-base md:text-lg max-w-3xl leading-relaxed">
-            Quiero que mis alumnos tengan una agenda clara y completa de movimiento.
+            Una práctica viva no se impone: se organiza para sostenerte. Con dirección, con espacio, y con un colectivo que amplifica lo posible.
           </p>
         </motion.div>
 

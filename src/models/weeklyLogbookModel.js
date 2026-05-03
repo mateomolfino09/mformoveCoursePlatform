@@ -93,7 +93,7 @@ const weekContentItemSchema = new mongoose.Schema({
   individualClassId: { type: mongoose.Schema.Types.ObjectId, ref: 'IndividualClass' },
   // Referencia opcional a clase de módulo (cuando contentType === 'moduleClass')
   moduleClassId: { type: mongoose.Schema.Types.ObjectId, ref: 'ModuleClass' },
-  // Referencia a evento Move Crew / clase en vivo Zoom (cuando contentType === 'zoomEvent')
+  // Referencia a evento Cuerpo autónomo / clase en vivo Zoom (cuando contentType === 'zoomEvent')
   moveCrewEventId: { type: mongoose.Schema.Types.ObjectId, ref: 'MoveCrewEvent' },
   // True si el evento se creó desde el formulario del camino (solo se puede quitar del camino, no editar)
   moveCrewEventCreatedInPath: { type: Boolean, default: false },

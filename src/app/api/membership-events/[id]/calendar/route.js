@@ -42,7 +42,7 @@ function buildGoogleCalendarUrl(event, referenceDate = null) {
   const { start, end } = getEventStartEnd(event, referenceDate);
   const params = new URLSearchParams({
     action: 'TEMPLATE',
-    text: (event.title || 'Evento Move Crew').replace(/&/g, ' and '),
+    text: (event.title || 'Evento Cuerpo autónomo').replace(/&/g, ' and '),
     dates: `${formatGoogleDate(start)}/${formatGoogleDate(end)}`,
     details: (event.description || '').replace(/\n/g, '\n').substring(0, 1000),
     location: (event.zoomLink || '').substring(0, 500)
@@ -62,18 +62,18 @@ function buildIcsContent(event, baseUrl, referenceDate = null) {
     return `${y}${m}${d}T${h}${min}${s}Z`;
   };
   const escapeIcs = (str) => (str || '').replace(/\r/g, '').replace(/\n/g, '\\n').replace(/[,;\\]/g, '\\$&');
-  const uid = `movecrew-${event._id}@${baseUrl || 'mformove.com'}`;
+  const uid = `membership-${event._id}@${baseUrl || 'mformove.com'}`;
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Move Crew//Evento//ES',
+    'PRODID:-//Cuerpo autónomo//Evento//ES',
     'CALSCALE:GREGORIAN',
     'BEGIN:VEVENT',
     `UID:${uid}`,
     `DTSTAMP:${formatIcsDate(new Date())}`,
     `DTSTART:${formatIcsDate(start)}`,
     `DTEND:${formatIcsDate(end)}`,
-    `SUMMARY:${escapeIcs(event.title || 'Evento Move Crew')}`,
+    `SUMMARY:${escapeIcs(event.title || 'Evento Cuerpo autónomo')}`,
     `DESCRIPTION:${escapeIcs(event.description || '')} ${escapeIcs(event.zoomLink || '')}`,
     `LOCATION:${escapeIcs(event.zoomLink || '')}`,
     'END:VEVENT',
@@ -105,8 +105,10 @@ export async function GET(req, { params }) {
     const icsQuery = referenceDate ? `?date=${encodeURIComponent(referenceDate)}` : '';
     return NextResponse.json({
       googleCalendarUrl,
-      /** Para Apple: el front puede hacer GET a /api/move-crew-events/[id]/calendar/ics y usar el blob como .ics. Incluye ?date=YYYY-MM-DD si es recurrente. */
-      icsUrl: `${process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || ''}/api/move-crew-events/${id}/calendar/ics${icsQuery}`
+      /** Para Apple: el front puede hacer GET a /api/membership-events/[id]/calendar/ics y usar el blob como .ics. Incluye ?date=YYYY-MM-DD si es recurrente. */
+      icsUrl: `${process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || ''}/api/membership-events/${id}/calendar/ics${icsQuery}`,
+      // Mantener por compatibilidad si algún front usa el contenido directo
+      icsContent
     });
   } catch (error) {
     console.error('Error generando URLs de calendario:', error);
@@ -116,3 +118,4 @@ export async function GET(req, { params }) {
     );
   }
 }
+

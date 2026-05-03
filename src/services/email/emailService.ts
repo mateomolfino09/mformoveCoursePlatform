@@ -10,9 +10,9 @@ const LOGO_URLS = {
   LIGHT: 'https://res.cloudinary.com/dbeem2avp/image/upload/logo/MMOVE_fino_blanco.png'
 } as const;
 
-// Estilo minimalista Move Crew: tipografía fina, botones pill
+// Estilo minimalista Cuerpo autónomo: tipografía fina, botones pill
 const EMAIL_BRAND = {
-  teamName: 'Move Crew',
+  teamName: 'Cuerpo autónomo',
   copyright: 'MMOVE',
   font: "'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif",
   fontWeightLight: 300,
@@ -73,14 +73,14 @@ export interface EmailConfig {
   sendAt?: string;
 }
 
-// Fuente fina Move Crew (minimalista, alineada al sitio)
+// Fuente fina Cuerpo autónomo (minimalista, alineada al sitio)
 const EMAIL_FONT = EMAIL_BRAND.font;
 
 // Logo MMOVE en texto fino (sin depender de imagen; estética minimalista)
 const LOGO_HTML_DARK = `<span style="font-family:${EMAIL_FONT};font-weight:300;letter-spacing:0.2em;font-size:16px;color:${p.ink};text-transform:uppercase;">MMOVE</span>`;
 const LOGO_HTML_LIGHT = `<span style="font-family:${EMAIL_FONT};font-weight:300;letter-spacing:0.2em;font-size:16px;color:${p.white};text-transform:uppercase;">MMOVE</span>`;
 
-// Base template HTML para usuarios (minimalista, fino, Move Crew)
+// Base template HTML para usuarios (minimalista, fino, Cuerpo autónomo)
 const getBaseTemplateUser = (content: string) => `
   <!DOCTYPE html>
   <html>
@@ -115,7 +115,7 @@ const getBaseTemplateUser = (content: string) => `
   </html>
 `;
 
-// Base template HTML para admin (fondo ink, minimalista, Move Crew)
+// Base template HTML para admin (fondo ink, minimalista, Cuerpo autónomo)
 const getBaseTemplateAdmin = (content: string) => `
   <!DOCTYPE html>
   <html>
@@ -305,7 +305,7 @@ const emailTemplates = {
         <!-- Footer informativo -->
         <div style="background: rgba(255, 255, 255, 0.02); padding: 16px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05);">
           <p style="font-size: 11px; color: rgba(255, 255, 255, 0.4); margin: 0; font-weight: 300; text-align: center; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-            Este es un email automático del sistema de contacto de Move Crew.
+            Este es un email automático del sistema de contacto de Cuerpo autónomo.
           </p>
         </div>
       </div>
@@ -423,7 +423,7 @@ const emailTemplates = {
           <tr>
             <td style="text-align: center; padding: 0;">
               <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764363987/my_uploads/mails/fondoMoveCrew_1_k98l1d.png" 
-                   alt="Bienvenida Move Crew" 
+                   alt="Bienvenida Cuerpo autónomo" 
                    width="420"
                    height="260"
                    style="width: 100%; max-width: 420px; height: auto; border-radius: 14px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
@@ -466,7 +466,7 @@ const emailTemplates = {
 
   [EmailType.SUBSCRIPTION_CANCELLED]: (data: EmailData) => {
     const feedbackUrl = data.feedbackUrl || `https://mateomove.com/contact?reason=cancellation&email=${encodeURIComponent(data.email || '')}`;
-    const reactivateUrl = data.reactivateUrl || 'https://mateomove.com/move-crew';
+    const reactivateUrl = data.reactivateUrl || 'https://mateomove.com/membership';
     const content = `
       <!-- Header minimalista -->
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
@@ -476,7 +476,7 @@ const emailTemplates = {
           <tr>
             <td style="text-align: center; padding: 0;">
               <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png" 
-                   alt="Move Crew" 
+                   alt="Cuerpo autónomo" 
                    width="400"
                    height="267"
                    style="width: 100%; max-width: 400px; height: auto; border-radius: 10px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
@@ -522,7 +522,7 @@ const emailTemplates = {
 
         <!-- Mensaje de reactivación -->
         <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-          Si en algún momento querés retomar tu proceso con nosotros, estaremos acá. Las puertas de Move Crew siempre están abiertas.
+          Si en algún momento querés retomar tu proceso con nosotros, estaremos acá. Las puertas de Cuerpo autónomo siempre están abiertas.
       </p>
 
         <!-- Botón CTA para reactivar -->
@@ -575,7 +575,7 @@ const emailTemplates = {
   },
 
   [EmailType.PAYMENT_FAILED]: (data: EmailData) => {
-    const retryUrl = data.retryUrl || 'https://mateomove.com/move-crew';
+    const retryUrl = data.retryUrl || 'https://mateomove.com/membership';
     const feedbackUrl = data.feedbackUrl || `https://mateomove.com/contact?reason=payment&email=${encodeURIComponent(data.email || '')}`;
     const content = `
       <!-- Header minimalista -->
@@ -586,7 +586,7 @@ const emailTemplates = {
           <tr>
             <td style="text-align: center; padding: 0;">
               <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png" 
-                   alt="Move Crew" 
+                   alt="Cuerpo autónomo" 
                    width="400"
                    height="267"
                    style="width: 100%; max-width: 400px; height: auto; border-radius: 10px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
@@ -707,13 +707,13 @@ const emailTemplates = {
     const content = `
       <!-- Header minimalista -->
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
-        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; text-align: center;">¡Bienvenido a la Move Crew!</div>
+        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; text-align: center;">¡Bienvenido a la Cuerpo autónomo!</div>
         <!-- Imagen debajo del título -->
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 16px auto 0; max-width: 400px; width: 100%;">
           <tr>
             <td style="text-align: center; padding: 0;">
               <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764363987/my_uploads/mails/fondoMoveCrew_1_k98l1d.png" 
-                   alt="Move Crew" 
+                   alt="Cuerpo autónomo" 
                    width="400"
                    height="267"
                    style="width: 100%; max-width: 400px; height: auto; border-radius: 10px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
@@ -795,7 +795,7 @@ el bienestar fisico y emocional.
             Comunidad WhatsApp
           </a>
           <p style="font-size: 13px; color: rgba(0, 0, 0, 0.6); line-height: 1.5; margin: 10px 0 0; text-align: center; font-weight: 400; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-            Allí compartimos avisos, soporte y las novedades de la Move Crew.
+            Allí compartimos avisos, soporte y las novedades de la Cuerpo autónomo.
           </p>
         </div>
       </div>
@@ -1103,7 +1103,7 @@ el bienestar fisico y emocional.
           <div style="text-align: left;">
             <div style="margin: 10px 0; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
               <p style="margin: 0 0 3px 0; color: rgba(255, 255, 255, 0.5); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px;">Plan</p>
-              <p style="margin: 0; color: ${p.white}; font-size: 14px; font-weight: 500;">${data.planName || 'Move Crew'}</p>
+              <p style="margin: 0; color: ${p.white}; font-size: 14px; font-weight: 500;">${data.planName || 'Cuerpo autónomo'}</p>
             </div>
             <div style="margin: 10px 0; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
               <p style="margin: 0 0 3px 0; color: rgba(255, 255, 255, 0.5); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px;">Estado</p>
@@ -1167,7 +1167,7 @@ el bienestar fisico y emocional.
         <!-- Footer de notificación -->
         <div style="text-align: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
           <p style="font-size: 11px; color: rgba(255, 255, 255, 0.4); margin: 3px 0; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-            Este es un email automático del sistema de notificaciones de Move Crew.
+            Este es un email automático del sistema de notificaciones de Cuerpo autónomo.
           </p>
           <p style="font-size: 11px; color: rgba(255, 255, 255, 0.4); margin: 3px 0; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
             Si recibiste este email por error, por favor ignorálo.
@@ -1221,7 +1221,7 @@ el bienestar fisico y emocional.
           <div style="text-align: left;">
             <div style="margin: 10px 0; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
               <p style="margin: 0 0 3px 0; color: rgba(255, 255, 255, 0.5); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px;">Plan</p>
-              <p style="margin: 0; color: ${p.white}; font-size: 14px; font-weight: 500;">${data.planName || 'Move Crew'}</p>
+              <p style="margin: 0; color: ${p.white}; font-size: 14px; font-weight: 500;">${data.planName || 'Cuerpo autónomo'}</p>
             </div>
             <div style="margin: 10px 0; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
               <p style="margin: 0 0 3px 0; color: rgba(255, 255, 255, 0.5); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px;">Fecha de Cancelación</p>
@@ -1283,7 +1283,7 @@ el bienestar fisico y emocional.
         <!-- Footer de notificación -->
         <div style="text-align: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
           <p style="font-size: 11px; color: rgba(255, 255, 255, 0.4); margin: 3px 0; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-            Este es un email automático del sistema de notificaciones de Move Crew.
+            Este es un email automático del sistema de notificaciones de Cuerpo autónomo.
           </p>
         </div>
       </div>
@@ -1334,7 +1334,7 @@ el bienestar fisico y emocional.
           <div style="text-align: left;">
             <div style="margin: 10px 0; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
               <p style="margin: 0 0 3px 0; color: rgba(255, 255, 255, 0.5); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px;">Plan</p>
-              <p style="margin: 0; color: ${p.white}; font-size: 14px; font-weight: 500;">${data.planName || data.productName || 'Move Crew'}</p>
+              <p style="margin: 0; color: ${p.white}; font-size: 14px; font-weight: 500;">${data.planName || data.productName || 'Cuerpo autónomo'}</p>
             </div>
             ${data.amount ? `
             <div style="margin: 10px 0; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
@@ -1404,7 +1404,7 @@ el bienestar fisico y emocional.
         <!-- Footer de notificación -->
         <div style="text-align: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
           <p style="font-size: 11px; color: rgba(255, 255, 255, 0.4); margin: 3px 0; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-            Este es un email automático del sistema de notificaciones de Move Crew.
+            Este es un email automático del sistema de notificaciones de Cuerpo autónomo.
           </p>
         </div>
       </div>
@@ -1600,13 +1600,13 @@ el bienestar fisico y emocional.
     const content = `
       <!-- Header minimalista -->
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
-        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; text-align: center;">¡Bienvenido a la Move Crew!</div>
+        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; text-align: center;">¡Bienvenido a la Cuerpo autónomo!</div>
         <div style="color: rgba(0, 0, 0, 0.6); font-size: 18px; font-weight: 500; margin: 0; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;">
           Primer Círculo
         </div>
         <div style="margin: 18px auto 0; text-align: center;">
           <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764363987/my_uploads/mails/moveCrewBienvenida_bipiwj.png"
-               alt="Move Crew"
+               alt="Cuerpo autónomo"
                width="520"
                height="320"
                style="display: block; width: 100%; max-width: 520px; height: auto; border-radius: 16px; border: 1px solid rgba(0,0,0,0.06); margin: 0 auto;" />
@@ -1616,7 +1616,7 @@ el bienestar fisico y emocional.
       <!-- Contenido principal -->
       <div style="padding: 28px 20px;">
         <p style="font-size: 16px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-          ¡Hola ${data.name}! Tu viaje en Move Crew comienza ahora.
+          ¡Hola ${data.name}! Tu viaje en Cuerpo autónomo comienza ahora.
         </p>
 
         <!-- Mensaje motivacional -->
@@ -1834,7 +1834,7 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.ACCOUNT_CREATED,
       to: data.email,
-      subject: 'Tu acceso a Move Crew',
+      subject: 'Tu acceso a Cuerpo autónomo',
       data
     });
   }
@@ -1852,7 +1852,7 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.WELCOME_EMAIL,
       to: data.email,
-      subject: '¡Bienvenido a Move Crew!',
+      subject: '¡Bienvenido a Cuerpo autónomo!',
       data
     });
   }
@@ -1861,7 +1861,7 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.SUBSCRIPTION_CANCELLED,
       to: data.email,
-      subject: 'Tu viaje continúa - Move Crew',
+      subject: 'Tu viaje continúa - Cuerpo autónomo',
       data
     });
   }
@@ -1879,7 +1879,7 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.PAYMENT_FAILED,
       to: data.email,
-      subject: 'Tu proceso es importante - Move Crew',
+      subject: 'Tu proceso es importante - Cuerpo autónomo',
       data
     });
   }
@@ -1897,7 +1897,7 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.WELCOME_MEMBERSHIP,
       to: data.email,
-      subject: '¡Bienvenido a la Move Crew!',
+      subject: '¡Bienvenido a la Cuerpo autónomo!',
       data
     });
   }
@@ -1906,7 +1906,7 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.ONBOARDING_WELCOME,
       to: data.email,
-      subject: '¡Bienvenido a Move Crew! - El Primer Círculo',
+      subject: '¡Bienvenido a Cuerpo autónomo! - El Primer Círculo',
       data
     });
   }

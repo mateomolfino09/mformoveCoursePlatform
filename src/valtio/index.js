@@ -16,7 +16,7 @@ const state = proxy({
   loginForm: false,
   activeVideoId: null, // ID del video activo actualmente (string | null)
   systemNavOpen: false,
-  weeklyPathNavOpen: false, // dropdown del navegador de camino (Move Crew), controlado desde header en móvil
+  weeklyPathNavOpen: false, // dropdown del navegador de camino (Cuerpo autónomo), controlado desde header en móvil
   bitacoraNavOpen: false, // menú Bitacora/Navegador en home (controlado desde header o barra)
   weeklyPathTutorialHighlightButton: false,
   bitacoraTutorialHighlightButton: false, // paso 0 onboarding Bitacora: resaltar botón Menú

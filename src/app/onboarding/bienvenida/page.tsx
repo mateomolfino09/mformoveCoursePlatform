@@ -774,7 +774,7 @@ export default function BienvenidaPage() {
                   >
                     Bienvenido.
                   </h1>
-                  <h2 className="text-[3rem] relative bottom-2 left-1 md:left-2 md:bottom-4 md:!text-[4rem] font-light tracking-tight text-left md:tracking-wide leading-[0.95]">La Move Crew te espera.</h2> 
+                  <h2 className="text-[3rem] relative bottom-2 left-1 md:left-2 md:bottom-4 md:!text-[4rem] font-light tracking-tight text-left md:tracking-wide leading-[0.95]">La Cuerpo autónomo te espera.</h2> 
                 </div>
                 <div className={`vimeo-player-container  pt-4 md:pt-0 ${isPlaying ? 'playing' : ''}`} style={wrapperStyles}>
                   {/* Skeleton loading dentro del contenedor del video para respetar bordes */}
@@ -1148,7 +1148,7 @@ export default function BienvenidaPage() {
                               Redirigiendo...
                             </h3>
                             <p className="text-palette-stone font-light font-montserrat text-sm">
-                              Preparando tu experiencia en Move Crew
+                              Preparando tu experiencia en Cuerpo autónomo
                             </p>
                           </motion.div>
                         </div>

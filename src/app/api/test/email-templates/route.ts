@@ -11,7 +11,7 @@ function formatFirstName(s: string): string {
   return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
 }
 
-// Datos de prueba para publicación Weekly Path (estética Move Crew, listos para vista previa)
+// Datos de prueba para publicación Weekly Path (estética Cuerpo autónomo, listos para vista previa)
 function buildWeeklyPathTestData(to: string, data?: any, simulatedWeek?: any) {
   const weekNumber = simulatedWeek?.weekNumber ?? data?.weekNumber ?? 3;
   const month = simulatedWeek?.month ?? data?.month ?? 1;
@@ -33,7 +33,7 @@ function buildWeeklyPathTestData(to: string, data?: any, simulatedWeek?: any) {
     // Un solo evento en vivo: Movimiento Online (id 69aa06ebec4d762ea8659f68). Sin duplicar clases en vivo.
     weekContentsDetail: data?.weekContentsDetail ?? (simulatedWeek?.weekContentsDetail as any) ?? [
       { type: 'video', title: 'Movilidad de cadera', description: 'Calentamiento y rango de movimiento.', moduleName: 'Movimiento consciente', dayLabel: 'Martes' },
-      { type: 'Clase en vivo', title: 'Movimiento Online', description: 'Clase en vivo por Zoom.', moduleName: 'Move Crew', dayLabel: 'Miércoles' },
+      { type: 'Clase en vivo', title: 'Movimiento Online', description: 'Clase en vivo por Zoom.', moduleName: 'Cuerpo autónomo', dayLabel: 'Miércoles' },
       { type: 'audio', title: 'Reflexión semanal', description: 'Cierre y consigna para los próximos días.', moduleName: 'Práctica', dayLabel: 'Jueves' },
     ],
   };
@@ -284,7 +284,7 @@ export async function POST(req: NextRequest) {
         userName: 'Usuario de Prueba',
         userEmail: testEmail,
         userId: 'test123',
-        planName: 'Move Crew Trimestral',
+        planName: 'Cuerpo autónomo Trimestral',
         subscriptionId: 'sub_test123',
         activationDate: new Date().toLocaleDateString('es-ES', {
           year: 'numeric',
@@ -315,7 +315,7 @@ export async function POST(req: NextRequest) {
       const result = await emailService.sendSubscriptionCancelled({
         email: testEmail,
         name: 'Usuario de Prueba',
-        planName: 'Move Crew Trimestral',
+        planName: 'Cuerpo autónomo Trimestral',
         cancellationDate: new Date().toLocaleDateString('es-ES', {
           year: 'numeric',
           month: 'long',
@@ -327,7 +327,7 @@ export async function POST(req: NextRequest) {
           day: 'numeric'
         }),
         feedbackUrl: `https://mateomove.com/contact?reason=cancellation&email=${encodeURIComponent(testEmail)}`,
-        reactivateUrl: 'https://mateomove.com/move-crew'
+        reactivateUrl: 'https://mateomove.com/membership'
       });
       results.push({
         emailType: 'SUBSCRIPTION_CANCELLED',
@@ -349,7 +349,7 @@ export async function POST(req: NextRequest) {
       const result = await emailService.sendPaymentFailed({
         email: testEmail,
         name: 'Usuario de Prueba',
-        productName: 'Move Crew Trimestral',
+        productName: 'Cuerpo autónomo Trimestral',
         amount: '29.99',
         paymentDate: new Date().toLocaleDateString('es-ES', {
           year: 'numeric',
@@ -359,7 +359,7 @@ export async function POST(req: NextRequest) {
           minute: '2-digit'
         }),
         errorMessage: 'Tarjeta rechazada. Por favor, verifica tu método de pago.',
-        retryUrl: 'https://mateomove.com/move-crew',
+        retryUrl: 'https://mateomove.com/membership',
         feedbackUrl: `https://mateomove.com/contact?reason=payment&email=${encodeURIComponent(testEmail)}`
       });
       results.push({
@@ -383,7 +383,7 @@ export async function POST(req: NextRequest) {
         userName: 'Usuario de Prueba',
         userEmail: testEmail,
         userId: 'test-user-123',
-        planName: 'Move Crew Trimestral',
+        planName: 'Cuerpo autónomo Trimestral',
         subscriptionId: 'sub_test_cancelled_123',
         cancellationDate: new Date().toLocaleDateString('es-ES', {
           year: 'numeric',
@@ -420,8 +420,8 @@ export async function POST(req: NextRequest) {
         userName: 'Usuario de Prueba',
         userEmail: testEmail,
         userId: 'test-user-123',
-        planName: 'Move Crew Trimestral',
-        productName: 'Move Crew Trimestral',
+        planName: 'Cuerpo autónomo Trimestral',
+        productName: 'Cuerpo autónomo Trimestral',
         amount: '29.99',
         paymentDate: new Date().toLocaleDateString('es-ES', {
           year: 'numeric',

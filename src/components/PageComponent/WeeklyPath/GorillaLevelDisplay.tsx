@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useMemo, useEffect } from 'react';
 
-// Colores naturales Move Crew
+// Colores naturales Cuerpo autónomo
 const SALMON = '#F97316';
 const SALMON_SOFT = '#FED7AA';
 const SALMON_DARK = '#EA580C';

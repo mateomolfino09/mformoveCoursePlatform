@@ -171,7 +171,7 @@ const MoveCrewMethodVideo = () => {
                 <div className="absolute inset-0">
                   <img
                     src={`https://vumbnail.com/${videoId}.jpg`}
-                    alt="Preview de sesión Move Crew"
+                    alt="Preview de sesión Cuerpo autónomo"
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       // Fallback si no hay thumbnail disponible
@@ -265,7 +265,7 @@ const MoveCrewMethodVideo = () => {
             Nunca estuvo tan de moda entrenar como máquinas aisladas: La mayoría de las rutinas ignoran cómo funciona nuestra estructura, sin considerar que el cuerpo responde, se adapta y esa es la base para una vida plena.
           </p>
           <p className="text-base md:text-lg text-gray-800 font-medium leading-relaxed">
-            Por eso creé la Move Crew. Volver al origen para recuperar esa fuerza y movilidad que perdimos por el camino.
+            Por eso creé la Cuerpo autónomo. Volver al origen para recuperar esa fuerza y movilidad que perdimos por el camino.
           </p>
         </motion.div>
       </div>

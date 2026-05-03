@@ -97,7 +97,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             </m.div>
           </Link>
         )}
-        <Link href="/move-crew">
+        <Link href="/membership">
           <m.div
             initial={{ color: '#fff', x: 700 }}
             animate={+windowWidth < 768 ? animationPhones : animation}
@@ -109,7 +109,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
           >
             <h2 className='font-light lg:text-xl'>Movimiento Online</h2>
             <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
-            Move Crew
+            Cuerpo autónomo
             </h1>
           </m.div>
         </Link>

@@ -38,7 +38,7 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // Paso 0: activar/desactivar resaltado del botón Move Crew
+  // Paso 0: activar/desactivar resaltado del botón Cuerpo autónomo
   useEffect(() => {
     const inStep0 = isOpen && !showTutorial;
     state.bitacoraTutorialHighlightButton = inStep0;
@@ -53,12 +53,12 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
     };
   }, [isOpen, showTutorial]);
 
-  // Paso 0: medir posiciones del cartel y del botón Move Crew para dibujar la flecha curvada
+  // Paso 0: medir posiciones del cartel y del botón Cuerpo autónomo para dibujar la flecha curvada
   useEffect(() => {
     if (!isOpen || showTutorial) return;
     const measure = () => {
       const card = step0CardRef.current;
-      const candidates = document.querySelectorAll('[data-tutorial-move-crew-target]');
+      const candidates = document.querySelectorAll('[data-tutorial-membership-target]');
       let btn: HTMLElement | null = null;
       for (const el of Array.from(candidates)) {
         const r = (el as HTMLElement).getBoundingClientRect();
@@ -68,7 +68,7 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
           break;
         }
       }
-      if (!btn) btn = document.querySelector('[data-tutorial-move-crew-target]') as HTMLElement;
+      if (!btn) btn = document.querySelector('[data-tutorial-membership-target]') as HTMLElement;
       if (!card || !btn) return;
       const cardRect = card.getBoundingClientRect();
       const btnRect = btn.getBoundingClientRect();
@@ -94,7 +94,7 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
     };
   }, [isOpen, showTutorial]);
 
-  // Paso 0: cuando el usuario abre el menú Move Crew (botón en header o barra inferior), disparar el popup
+  // Paso 0: cuando el usuario abre el menú Cuerpo autónomo (botón en header o barra inferior), disparar el popup
   useEffect(() => {
     if (!isOpen || showTutorial) return;
     if (snap.bitacoraNavOpen) {
@@ -164,9 +164,9 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
         return; // No bloquear, permitir que el botón funcione
       }
       
-      // Permitir que el botón Move Crew (navigator o header/barra) abra el menú SOLO si está cerrado
+      // Permitir que el botón Cuerpo autónomo (navigator o header/barra) abra el menú SOLO si está cerrado
       const isMoveCrewButton = (navigator && target.closest('button[aria-label="Navegador de Camino"]')) ||
-        (target.closest('button') && (target.closest('button')?.textContent?.trim() === 'Move Crew' || target.closest('button')?.textContent?.includes('Cerrar')));
+        (target.closest('button') && (target.closest('button')?.textContent?.trim() === 'Cuerpo autónomo' || target.closest('button')?.textContent?.includes('Cerrar')));
       if (isMoveCrewButton) {
         // Si el menú está visible, NO permitir que se cierre (bloquear el toggle)
         if (isDropdownVisible) {
@@ -336,7 +336,7 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
       });
       
 
-      // Menú Move Crew: panel full-screen (fixed inset-0 bg-black) o legacy dropdown
+      // Menú Cuerpo autónomo: panel full-screen (fixed inset-0 bg-black) o legacy dropdown
       const getMenuRoot = (): HTMLElement | null => {
         const panel = document.querySelector('[class*="fixed inset-0"][class*="bg-black"]');
         if (panel && panel.getBoundingClientRect().width > 0) return panel as HTMLElement;
@@ -663,7 +663,7 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
     setIsExiting(true);
     document.body.classList.remove('tutorial-active');
     
-    // Cerrar el menú de navegación (tanto el dropdown local como el menú de Move Crew)
+    // Cerrar el menú de navegación (tanto el dropdown local como el menú de Cuerpo autónomo)
     const navigatorButton = document.querySelector('[aria-label="Navegador de Camino"]') as HTMLElement;
     if (navigatorButton) {
       const dropdown = document.querySelector('[class*="absolute bottom-full"]');
@@ -676,7 +676,7 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
       }
     }
     
-    // Cerrar el menú de Move Crew y el dropdown del navegador (header móvil)
+    // Cerrar el menú de Cuerpo autónomo y el dropdown del navegador (header móvil)
     state.systemNavOpen = false;
     state.bitacoraNavOpen = false;
     
@@ -721,7 +721,7 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
 
   if (!isOpen) return null;
 
-  // Paso 0: obligar al usuario a tocar el botón Move Crew antes de mostrar el popup
+  // Paso 0: obligar al usuario a tocar el botón Cuerpo autónomo antes de mostrar el popup
   if (isOpen && !showTutorial) {
     const sx = arrowPoints?.start.x ?? 0;
     const sy = arrowPoints?.start.y ?? 0;
@@ -787,7 +787,7 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
               60% { transform: translateX(-2px); }
               80% { transform: translateX(2px); }
             }
-            body.bitacora-tutorial-step0 [data-tutorial-move-crew-target] {
+            body.bitacora-tutorial-step0 [data-tutorial-membership-target] {
               border-radius: 9999px !important;
               outline: none !important;
               border: 2px solid rgba(255, 255, 255, 0.95) !important;
@@ -1026,7 +1026,7 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
                     Menú Principal
                   </h3>
                   <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                    Tu navegador central para acceder a todas las secciones de Move Crew.
+                    Tu navegador central para acceder a todas las secciones de Cuerpo autónomo.
                   </p>
                 </motion.div>
               )}
@@ -1203,7 +1203,7 @@ const BitacoraMenuTutorial = ({ isOpen, onComplete }: BitacoraMenuTutorialProps)
                         Menú Principal
                       </h3>
                       <p className="text-sm md:text-base text-palette-stone leading-relaxed font-montserrat font-light">
-                        Tu navegador central para acceder a todas las secciones de Move Crew.
+                        Tu navegador central para acceder a todas las secciones de Cuerpo autónomo.
                       </p>
                     </motion.div>
                   )}

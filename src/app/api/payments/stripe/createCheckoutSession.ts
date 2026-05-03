@@ -44,7 +44,7 @@ export async function createCheckoutSession(priceId: string, customerEmail?: str
         ],
         mode: 'subscription',
         success_url: successUrl.toString(),
-        cancel_url: `${origin}/move-crew`,
+        cancel_url: `${origin}/membership`,
         customer_email: customerEmail,
         metadata: {
             email: user.email,

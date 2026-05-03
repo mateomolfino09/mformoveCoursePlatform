@@ -48,7 +48,7 @@ export default function LibraryClassView({ clase, questions }: Props) {
     const cookies = typeof document !== 'undefined' ? document.cookie : '';
     const hasCookie = !!cookies.split(';').some((c) => c.trim().startsWith('userToken='));
     if (!hasCookie) {
-      router.push('/move-crew');
+      router.push('/membership');
       return;
     }
     if (!auth.user || typeof auth.user.subscription === 'undefined') {
@@ -58,7 +58,7 @@ export default function LibraryClassView({ clase, questions }: Props) {
     const hasAccess =
       auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin';
     if (!hasAccess) {
-      router.push('/move-crew');
+      router.push('/membership');
       return;
     }
     if (typeof window !== 'undefined') setHasWindow(true);

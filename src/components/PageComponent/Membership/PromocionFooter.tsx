@@ -23,7 +23,7 @@ interface PromocionFooterProps {
   onCtaClick: () => void;
   variant?: 'default' | 'movecrew';
   plans?: Plan[];
-  /** En móvil Move Crew: botones (Empezar Camino, Menú) para incluir en la barra */
+  /** En móvil Cuerpo autónomo: botones (Empezar Camino, Menú) para incluir en la barra */
   rightActions?: React.ReactNode;
 }
 
@@ -96,7 +96,7 @@ const PromocionFooter: React.FC<PromocionFooterProps> = ({ promocion, onCtaClick
     const plan = findPlanForPromocion();
     
     if (plan && isMoveCrew) {
-      // En Move Crew, hacer scroll a la tarjeta específica del plan
+      // En Cuerpo autónomo, hacer scroll a la tarjeta específica del plan
       const planCard = document.getElementById(`plan-card-${plan._id}`);
       if (planCard) {
         // Usar scrollIntoView con opciones para mejor posicionamiento
@@ -345,7 +345,7 @@ const PromocionFooter: React.FC<PromocionFooterProps> = ({ promocion, onCtaClick
       setScrollOpacity(opacity);
     };
 
-    // Escuchar evento personalizado de Move Crew
+    // Escuchar evento personalizado de Cuerpo autónomo
     window.addEventListener('movecrew-scroll', handleMoveCrewScroll as EventListener);
     
     // También escuchar scroll de window como fallback
@@ -422,7 +422,7 @@ const PromocionFooter: React.FC<PromocionFooterProps> = ({ promocion, onCtaClick
             )}
           </div>
           
-          {/* Móvil: nombre + contador (izq/centro); con rightActions en Move Crew van en bloque flex-1 */}
+          {/* Móvil: nombre + contador (izq/centro); con rightActions en Cuerpo autónomo van en bloque flex-1 */}
           <div className={`flex flex-col md:hidden items-center gap-0.5 flex-1 min-w-0 ${isMoveCrew && rightActions ? 'items-start' : ''}`}>
             <h3 className="text-xs text-black/90 font-bold truncate max-w-full">
               {promocion.porcentajeDescuento}% OFF - {promocion.nombre}
@@ -465,7 +465,7 @@ const PromocionFooter: React.FC<PromocionFooterProps> = ({ promocion, onCtaClick
             {arrowDirection === 'up' && <ArrowUpIcon className="w-4 h-4 md:w-5 md:h-5" />}
           </button>
           
-          {/* En Move Crew móvil: botones Empezar Camino + Menú integrados en la barra */}
+          {/* En Cuerpo autónomo móvil: botones Empezar Camino + Menú integrados en la barra */}
           {isMoveCrew && rightActions && (
             <div className="md:hidden flex items-center gap-2 shrink-0">
               {rightActions}

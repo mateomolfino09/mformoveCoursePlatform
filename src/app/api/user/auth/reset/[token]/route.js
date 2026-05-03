@@ -55,7 +55,7 @@ export async function PUT(req, { params }) {
         await user.save();
 
         const hasActiveSub = user?.subscription?.active;
-        const redirectUrl = hasActiveSub ? '/library' : '/move-crew';
+        const redirectUrl = hasActiveSub ? '/library' : '/membership';
 
         return NextResponse.json(
           {

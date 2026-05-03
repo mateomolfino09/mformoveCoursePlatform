@@ -243,7 +243,7 @@ function WeeklyPathPageContent() {
 
       // Verificar membresía (excepto para administradores)
       if (auth.user && auth.user.rol !== 'Admin' && !auth.user.subscription?.active && !auth.user.isVip) {
-        router.push('/move-crew');
+        router.push('/membership');
         return;
       }
 

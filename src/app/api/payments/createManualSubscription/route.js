@@ -6,7 +6,7 @@ import { EmailService } from '../../../../services/email/emailService';
 import { getCurrentURL } from '../../assets/getCurrentURL';
 
 /**
- * Endpoint para crear una suscripción manual para usuarios de prueba de Move Crew Fase Beta
+ * Endpoint para crear una suscripción manual para usuarios de prueba de Cuerpo autónomo Fase Beta
  * POST /api/payments/createManualSubscription
  * Body: { email, planId? (opcional), name? (opcional) }
  * 

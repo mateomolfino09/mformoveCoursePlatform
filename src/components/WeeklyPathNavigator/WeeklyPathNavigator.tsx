@@ -48,7 +48,7 @@ const WeeklyPathNavigator = () => {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // El botón Move Crew solo está en header/barra (siempre al lado de MENÚ); el panel se controla siempre con state.weeklyPathNavOpen
+  // El botón Cuerpo autónomo solo está en header/barra (siempre al lado de MENÚ); el panel se controla siempre con state.weeklyPathNavOpen
   const isOpenEffective = snap.weeklyPathNavOpen;
 
   // Sincronizar estado local con el global para closeMenu y tutorial
@@ -174,7 +174,7 @@ const WeeklyPathNavigator = () => {
     '/account',
     routes.navegation.membership.weeklyPath,
     '/mentorship',
-    '/move-crew',
+    '/membership',
     '/events'
   ];
   const hasWhiteBackground = whiteBackgroundPages.some(page => pathname?.startsWith(page)) && !snap.systemNavOpen;
@@ -224,7 +224,7 @@ const WeeklyPathNavigator = () => {
     return null;
   }
 
-  // Función para abrir/cerrar el menú de Move Crew
+  // Función para abrir/cerrar el menú de Cuerpo autónomo
   const handleMoveCrewMenu = () => {
     // NO permitir cerrar el menú si el tutorial está activo
     const tutorialActive = document.body.classList.contains('tutorial-active');
@@ -244,7 +244,7 @@ const WeeklyPathNavigator = () => {
       className={`fixed z-[200] ${isMobile ? 'inset-0 pointer-events-none' : `bottom-6 ${isLibrary ? 'right-6' : 'right-6'}`}`}
     >
       <div className={`relative ${isMobile ? 'pointer-events-none' : ''}`}>
-        {/* Menú Move Crew: panel controlado solo por el botón del header/barra (siempre al lado de MENÚ) */}
+        {/* Menú Cuerpo autónomo: panel controlado solo por el botón del header/barra (siempre al lado de MENÚ) */}
         <AnimatePresence>
           {isOpenEffective && (
             <motion.div

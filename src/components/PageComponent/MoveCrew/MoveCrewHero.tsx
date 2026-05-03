@@ -54,7 +54,7 @@ const MoveCrewHero = () => {
   }, []);
 
   const scrollToPlans = () => {
-    const target = document.getElementById('move-crew-plans');
+    const target = document.getElementById('membership-plans');
     target?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -191,7 +191,7 @@ const MoveCrewHero = () => {
                   <div className="absolute left-1/2 top-0 h-full w-[106.67vh] -translate-x-1/2 md:left-0 md:w-full md:translate-x-0">
                     <img
                       src={thumbnailUrl || `https://vumbnail.com/${VIDEO_ID}.jpg`}
-                      alt="Preview de sesión Move Crew"
+                      alt="Preview de sesión Cuerpo autónomo"
                       className="w-full h-full object-cover"
                       onLoad={() => setThumbnailLoaded(true)}
                       onError={(e) => {

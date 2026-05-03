@@ -34,18 +34,18 @@ function buildIcsContent(event, baseUrl, referenceDate = null) {
     return `${y}${m}${d}T${h}${min}${s}Z`;
   };
   const escapeIcs = (str) => (str || '').replace(/\r/g, '').replace(/\n/g, '\\n').replace(/[,;\\]/g, '\\$&');
-  const uid = `movecrew-${event._id}@${baseUrl || 'mformove.com'}`;
+  const uid = `membership-${event._id}@${baseUrl || 'mformove.com'}`;
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Move Crew//Evento//ES',
+    'PRODID:-//Cuerpo autónomo//Evento//ES',
     'CALSCALE:GREGORIAN',
     'BEGIN:VEVENT',
     `UID:${uid}`,
     `DTSTAMP:${formatIcsDate(new Date())}`,
     `DTSTART:${formatIcsDate(start)}`,
     `DTEND:${formatIcsDate(end)}`,
-    `SUMMARY:${escapeIcs(event.title || 'Evento Move Crew')}`,
+    `SUMMARY:${escapeIcs(event.title || 'Evento Cuerpo autónomo')}`,
     `DESCRIPTION:${escapeIcs(event.description || '')} ${escapeIcs(event.zoomLink || '')}`,
     `LOCATION:${escapeIcs(event.zoomLink || '')}`,
     'END:VEVENT',
@@ -72,7 +72,7 @@ export async function GET(req, { params }) {
 
     const baseUrl = (process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || '').replace(/^https?:\/\//, '');
     const icsContent = buildIcsContent(event, baseUrl, referenceDate);
-    const filename = `evento-move-crew-${event._id}.ics`;
+    const filename = `evento-membership-${event._id}.ics`;
 
     return new NextResponse(icsContent, {
       status: 200,
@@ -86,3 +86,4 @@ export async function GET(req, { params }) {
     return new NextResponse('Error al generar calendario', { status: 500 });
   }
 }
+

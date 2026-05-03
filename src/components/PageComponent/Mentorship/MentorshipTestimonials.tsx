@@ -1,103 +1,86 @@
-'use client'
+'use client';
+
 import React from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
+import imageLoader from '../../../../imageLoader';
 
 const testimonials = [
   {
     name: 'Ignacio Luz',
     plan: 'Mentoría',
     photo: '/images/testimonials/testimonio_nacho.jpg',
-    text: 'La mentoría con Mateo es una experiencia transformadora. Gracias a su mirada precisa y su acompañamiento constante, hoy me siento mucho más conectado con mi cuerpo y más cerca de los resultados que deseo.'
+    text: 'La mentoría con Mateo es una experiencia transformadora. Gracias a su mirada precisa y su acompañamiento constante, hoy me siento mucho más conectado con mi cuerpo y más cerca de los resultados que deseo.',
   },
   {
     name: 'Sofía Velozo',
     plan: 'Mentoría',
     photo: '/images/testimonials/sofia.jpeg',
-    text: 'Nunca había sentido un progreso tan real y sostenido. Mateo te motiva, te corrige y te acompaña en cada paso. Recomiendo la mentoría a cualquiera que busque un cambio profundo.'
+    text: 'Nunca había sentido un progreso tan real y sostenido. Mateo te motiva, te corrige y te acompaña en cada paso. Recomiendo la mentoría a cualquiera que busque un cambio profundo.',
   },
   {
     name: 'Gonzalo Amado',
     plan: 'Mentoría',
     photo: '/images/testimonials/gonza.jpg',
-    text: 'Mateo como profe es excelente. Siempre te pone a prueba, te motiva y celebra tus intentos, sin importar el resultado. Lo recomiendo al 100% si querés sentirte más libre, con confianza en cada movimiento, y rodeado de un ambiente de amistad.'
-  }
+    text: 'Mateo como profe es excelente. Siempre te pone a prueba, te motiva y celebra tus intentos, sin importar el resultado. Lo recomiendo al 100% si querés sentirte más libre, con confianza en cada movimiento, y rodeado de un ambiente de amistad.',
+  },
 ];
 
-const MentorshipTestimonials = () => {
+export default function MentorshipTestimonials() {
   return (
-    <section className="pt-6 pb-10 bg-[#FAF8F3] font-montserrat">
-      <div className="max-w-6xl mx-auto px-6">
-        {/* Section Header */}
+    <section className="border-t border-palette-stone/18 bg-palette-cream pb-14 pt-12 font-montserrat md:pb-16 md:pt-16">
+      <div className="mx-auto w-[92%] max-w-6xl px-3 sm:px-4">
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          viewport={{ once: true }}
-          className="mb-12"
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, margin: '-40px' }}
+          className="mb-10 max-w-xl md:mb-12"
         >
-          <p className="uppercase tracking-[0.3em] text-xs md:text-sm text-gray-500 mb-3">Testimonios</p>
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-black">
-            Testimonios de alumnos
+          <p className="text-[10px] font-normal uppercase tracking-[0.28em] text-palette-ink">Voces del proceso</p>
+          <h2 className="mt-3 text-[1.65rem] font-semibold leading-[1.1] tracking-tight text-palette-ink sm:text-[2rem] md:text-[2.35rem]">
+            Quienes ya están adentro
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 font-light max-w-3xl leading-relaxed">
-          Lo que dicen quienes entrenan conmigo
+          <p className="mt-3 max-w-xl text-[14px] font-light leading-[1.65] text-palette-ink opacity-90 md:text-[15px]">
+            Nada vende mejor que la experiencia cotidiana. Estas palabras ordenan algo de lo que pasa cuando el trabajo es serio,
+            cercano y a tu ritmo.
           </p>
         </motion.div>
 
-        {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {testimonials.map((testimonial, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              viewport={{ once: true }}
-              className="bg-gradient-to-br from-white via-[#FAF8F3]/50 to-[#F5F1E8]/30 backdrop-blur-sm rounded-3xl p-6 md:p-8 border border-[#AF50E5]/20 hover:bg-gradient-to-br hover:from-white hover:via-[#FAF8F3] hover:to-[#F5F1E8] transition-all duration-300 flex flex-col shadow-[0_4px_20px_rgba(175,80,229,0.08)] hover:shadow-[0_24px_48px_-12px_rgba(175,80,229,0.2)]"
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
+          {testimonials.map((t, index) => (
+            <motion.article
+              key={t.name}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.38, delay: Math.min(index * 0.05, 0.12), ease: [0.16, 1, 0.3, 1] }}
+              viewport={{ once: true, margin: '-24px' }}
+              className="flex min-h-[100%] flex-col rounded-2xl border border-palette-stone/18 bg-white/45 px-5 py-6 shadow-[0_4px_24px_rgba(20,20,17,0.04)] sm:px-6 sm:py-7"
             >
-              {/* Quote mark - minimal */}
-              <div className="mb-6">
-                <svg viewBox="0 0 24 24" className="w-8 h-8 text-[#AF50E5]/30">
-                  <path 
-                    fill="currentColor" 
-                    d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"
-                  />
-                </svg>
-              </div>
+              <p className="text-[13px] font-light leading-[1.7] text-palette-ink opacity-[0.93] md:text-[14px]">
+                &ldquo;{t.text}&rdquo;
+              </p>
 
-              {/* Testimonial Text */}
-              <div className="mb-8 flex-1">
-                <p className="text-sm md:text-base text-gray-700 font-light leading-relaxed">
-                  {testimonial.text}
-                </p>
-              </div>
-
-              {/* Separator */}
-              <div className="w-full h-px bg-[#AF50E5]/20 mb-6"/>
-
-              {/* Profile Section */}
-              <div className="flex items-center space-x-4">
-                {/* Profile Image */}
-                <div className="w-12 h-12 rounded-full overflow-hidden border border-[#AF50E5]/20 flex-shrink-0">
-                  <img
-                    src={testimonial.photo}
-                    alt={testimonial.name}
-                    className="w-full h-full object-cover grayscale-[30%]"
+              <div className="mt-auto flex items-center gap-3.5 border-t border-palette-stone/14 pt-5">
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full ring-1 ring-palette-stone/20">
+                  <Image
+                    src={t.photo}
+                    alt={`Retrato de ${t.name}`}
+                    width={48}
+                    height={48}
+                    loader={imageLoader}
+                    className="h-full w-full object-cover grayscale-[25%]"
                   />
                 </div>
-                
-                {/* Profile Info */}
-                <div>
-                  <h4 className="font-semibold text-black text-sm md:text-base">{testimonial.name}</h4>
-                  <p className="text-gray-500 text-xs md:text-sm font-light">{testimonial.plan}</p>
+                <div className="min-w-0">
+                  <p className="truncate text-[14px] font-semibold tracking-tight text-palette-ink">{t.name}</p>
+                  <p className="text-[11px] font-normal uppercase tracking-[0.22em] text-palette-ink/55">{t.plan}</p>
                 </div>
               </div>
-            </motion.div>
+            </motion.article>
           ))}
         </div>
       </div>
     </section>
   );
-};
-
-export default MentorshipTestimonials; 
+}

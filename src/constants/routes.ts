@@ -7,8 +7,8 @@ const membershipRoutes = {
     individualClasses: '/library/individual-classes',
     /** Camino semanal (antes "Bitácora") */
     weeklyPath: '/weekly-path',
-    moveCrew: '/move-crew',
-    entry: (isMember: boolean) => isMember ? '/library' : '/move-crew',
+    moveCrew: '/membership',
+    entry: (isMember: boolean) => isMember ? '/library' : '/membership',
 };
 
 export const routes = {

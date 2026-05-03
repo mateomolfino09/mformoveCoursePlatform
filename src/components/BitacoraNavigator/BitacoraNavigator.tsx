@@ -174,7 +174,7 @@ const BitacoraNavigator = () => {
     '/account',
     '/bitacora',
     '/mentorship',
-    '/move-crew',
+    '/membership',
     '/events',
     '/onboarding/bitacora-base'
   ];
@@ -226,7 +226,7 @@ const BitacoraNavigator = () => {
     return null;
   }
 
-  // Función para abrir/cerrar el menú de Move Crew
+  // Función para abrir/cerrar el menú de Cuerpo autónomo
   const handleMoveCrewMenu = () => {
     // NO permitir cerrar el menú si el tutorial está activo
     const tutorialActive = document.body.classList.contains('tutorial-active');
@@ -284,13 +284,13 @@ const BitacoraNavigator = () => {
               <span>Cerrar</span>
             </span>
           ) : (
-            <span>Move Crew</span>
+            <span>Cuerpo autónomo</span>
           )}
         </motion.button>
         </div>
         )}
 
-        {/* Menú Move Crew: mismo panel full-screen que el menú general (mobile y desktop) */}
+        {/* Menú Cuerpo autónomo: mismo panel full-screen que el menú general (mobile y desktop) */}
         <AnimatePresence>
           {isOpenEffective && (
             <motion.div
