@@ -41,13 +41,13 @@ const CreateMentorshipPlan = () => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies ) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
     
     if(!auth.user) {
       auth.fetchUser()
     }
-    else if(auth.user.rol != 'Admin') router.push('/login');
+    else if(auth.user.rol != 'Admin') router.push('/iniciar-sesion');
   }, [auth.user]);
 
   // Verificar si estamos en modo edición
@@ -160,7 +160,7 @@ const CreateMentorshipPlan = () => {
       
       if (!response.ok) throw new Error(isEditing ? 'Error al actualizar el plan' : 'Error al crear el plan');
       toast.success(isEditing ? 'Plan de mentoría actualizado exitosamente' : 'Plan de mentoría creado exitosamente');
-      router.push('/admin/mentorship/plans');
+      router.push('/admin/mentorias/planes');
     } catch (error) {
       console.error('Error:', error);
       toast.error(isEditing ? 'Error al actualizar el plan' : 'Error al crear el plan');

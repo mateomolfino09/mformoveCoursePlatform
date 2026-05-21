@@ -11,6 +11,7 @@ import axios from 'axios';
 import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
 import cookie from 'js-cookie';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useRouter } from 'next13-progressbar';
 import { parseCookies } from 'nookies';
 import React, {
@@ -57,6 +58,8 @@ const Header = ({
   const inputRef = useRef<any>(null);
   const auth = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
+  const logoHref = routes.navegation.index
 
   // Función para manejar clicks en links con feedback visual
   const handleLinkClick = async (route: string, linkName: string) => {
@@ -78,7 +81,7 @@ const Header = ({
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies ) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
     if(!auth.user) {
       auth.fetchUser()
@@ -211,7 +214,7 @@ const Header = ({
   return (
     <header className={`${isScrolled && 'bg-[#141414]'}`}>
       <div className='flex items-center space-x-2 md:space-x-10'>
-        <Link href={auth?.user?.subscription?.active || auth?.user?.isVip ? routes.navegation.membership.library : routes.navegation.index}>
+        <Link href={logoHref}>
           <img
             alt='icon image'
             src='/images/MFORMOVE_v2.negro03.png'
@@ -222,13 +225,6 @@ const Header = ({
         </Link>
 
         <ul className='hidden space-x-4 md:flex'>
-          <li 
-            className={`headerLink transition-all duration-200 ${loadingLink === 'library' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
-            onClick={() => handleLinkClick(routes.navegation.membership.library, 'library')}
-          >
-            {loadingLink === 'library' ? 'Cargando...' : 'Library'}
-          </li>
-
           <li 
             className={`headerLink transition-all duration-200 ${loadingLink === 'cursos' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
             onClick={() => handleLinkClick('/courses', 'cursos')}
@@ -245,7 +241,7 @@ const Header = ({
 
           <li 
             className={`headerLink transition-all duration-200 ${loadingLink === 'mentoria' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
-            onClick={() => handleLinkClick('/mentorship', 'mentoria')}
+            onClick={() => handleLinkClick('/mentoria', 'mentoria')}
           >
             {loadingLink === 'mentoria' ? 'Cargando...' : 'Mentoría'}
           </li>
@@ -257,7 +253,7 @@ const Header = ({
           ) : (
             <li 
               className={`headerLink transition-all duration-200 ${loadingLink === 'nuevo' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
-              onClick={() => handleLinkClick(routes.navegation.membership.library, 'nuevo')}
+              onClick={() => handleLinkClick(routes.navegation.index, 'nuevo')}
             >
               {loadingLink === 'nuevo' ? 'Cargando...' : 'Nuevo'}
             </li>
@@ -269,14 +265,14 @@ const Header = ({
           ) : (
             <li 
               className={`headerLink transition-all duration-200 ${loadingLink === 'miLista' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
-              onClick={() => handleLinkClick(routes.navegation.membership.library, 'miLista')}
+              onClick={() => handleLinkClick(routes.navegation.index, 'miLista')}
             >
               {loadingLink === 'miLista' ? 'Cargando...' : 'Mi Lista'}
             </li>
           )}
           <li 
             className={`headerLink transition-all duration-200 ${loadingLink === 'misCursos' ? 'opacity-60 cursor-wait bg-white/10 rounded px-2 py-1' : 'cursor-pointer hover:bg-white/5 rounded px-2 py-1'}`} 
-            onClick={() => handleLinkClick('/account/myCourses', 'misCursos')}
+            onClick={() => handleLinkClick('/cuenta/myCourses', 'misCursos')}
           >
             {loadingLink === 'misCursos' ? 'Cargando...' : 'Mis Cursos'}
           </li>
@@ -331,7 +327,7 @@ const Header = ({
             </Link>
           </>
         ) : null}
-        <Link href={'/account/myCourses'}>
+        <Link href={'/cuenta/myCourses'}>
           <li className='headerLink cursor-pointer list-none'>Mis Cursos</li>
         </Link>
         <Popover>
@@ -413,7 +409,7 @@ const Header = ({
             </Popover.Panel>
           </Transition>
         </Popover>
-        <Link href={'/account'}>
+        <Link href={'/cuenta'}>
           <AiOutlineUser className='h-6 w-6 cursor-pointer' />
         </Link>
       </div>

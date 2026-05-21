@@ -101,7 +101,7 @@ const CreateProductStep2 = ({ productCreado }: Props) => {
         },
         config
       );
-      router.push('/admin/products/allProducts')
+      router.push('/admin/productos/todos-productos')
       } catch (error: any) {
       toast.error(error.response.data.error);
     }

@@ -24,7 +24,7 @@ const CreateFAQ = () => {
     e.preventDefault();
 
     const { data } = await axios.post(
-      '/api/faq/createFAQ',
+      '/api/preguntas-frecuentes/createFAQ',
       {
         question,
         answer
@@ -83,7 +83,7 @@ const CreateFAQ = () => {
           <div className='flex justify-end space-x-4 pt-6 border-t border-gray-200'>
             <button
               type='button'
-              onClick={() => router.push('/admin/faq')}
+              onClick={() => router.push('/admin/preguntas-frecuentes')}
               className='px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-300 font-montserrat border border-gray-200'
             >
               Cancelar

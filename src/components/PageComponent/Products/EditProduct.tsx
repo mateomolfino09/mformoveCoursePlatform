@@ -27,12 +27,12 @@ const EditProduct = ({ product }: Props) => {
     const cookies: any = Cookies.get('userToken');
 
     if (!cookies) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
 
     if (!auth.user) {
       auth.fetchUser();
-    } else if (auth.user.rol != 'Admin') router.push('/login');
+    } else if (auth.user.rol != 'Admin') router.push('/iniciar-sesion');
   }, [auth.user]);
 
   async function handleSubmit(
@@ -66,7 +66,10 @@ const EditProduct = ({ product }: Props) => {
     descuentoObj?: any,
     pdfPresentacion?: any,
     esProgramaTransformacional?: boolean,
-    programaTransformacionalData?: any
+    programaTransformacionalData?: any,
+    cursoConfig?: import('../../../types/cursoLanding').CursoLandingConfig,
+    invitacionGrupoWhatsapp?: string,
+    bioImageFile?: File | null
   ) {
     setLoading(true);
 
@@ -80,6 +83,7 @@ const EditProduct = ({ product }: Props) => {
       // Subir nuevas imágenes si se proporcionaron
       let portada = product.portada; // Mantener la imagen actual por defecto
       let portadaMobile = product.portadaMobile; // Mantener la imagen móvil actual por defecto
+      let imagenBio = product.imagenBio;
       let imagenes = product.imagenes || []; // Mantener las imágenes actuales por defecto
   
       let diplomaUrl = (product as any).diplomaUrl || ''; // Mantener el diploma actual por defecto
@@ -112,11 +116,30 @@ const EditProduct = ({ product }: Props) => {
         portadaMobile = mobilePortraitData.public_id;
       }
 
-      // Subir nueva galería si se proporcionó
-      if (Array.isArray(galleryImageArray) && galleryImageArray.length > 0 && galleryImageArray) {
-        const newImagenes = [];
-        for (const file of galleryImageArray) {
-          if(!imagenes.includes(file)) {
+      if (bioImageFile) {
+        const bioFormData = new FormData();
+        bioFormData.append('file', bioImageFile);
+        bioFormData.append('upload_preset', 'my_uploads');
+        const bioData = await fetch(requests.fetchCloudinary, {
+          method: 'POST',
+          body: bioFormData,
+        }).then((r) => r.json());
+        imagenBio = bioData.public_id;
+      }
+
+      // Galería: strings = public_id ya en Cloudinary (edición); File/Blob = subir nuevo
+      if (Array.isArray(galleryImageArray) && galleryImageArray.length > 0) {
+        const existingIds = galleryImageArray.filter((item): item is string => typeof item === 'string');
+        const newFiles = galleryImageArray.filter(
+          (item) => item != null && typeof item !== 'string'
+        );
+
+        if (existingIds.length === galleryImageArray.length && newFiles.length === 0) {
+          imagenes = existingIds;
+        } else {
+          const newImagenes: string[] = [];
+          for (const file of newFiles) {
+            if (imagenes.includes(file)) continue;
             const galeriaFormData = new FormData();
             galeriaFormData.append('file', file);
             galeriaFormData.append('upload_preset', 'my_uploads');
@@ -124,10 +147,10 @@ const EditProduct = ({ product }: Props) => {
               method: 'POST',
               body: galeriaFormData
             }).then((r) => r.json());
-            newImagenes.push(galeriaData.public_id);
+            if (galeriaData.public_id) newImagenes.push(galeriaData.public_id);
           }
+          imagenes = [...(existingIds.length ? existingIds : imagenes), ...newImagenes];
         }
-        imagenes = [...imagenes, ...newImagenes];
       }
 
       // Subir nuevo diploma si se proporcionó
@@ -166,6 +189,11 @@ const EditProduct = ({ product }: Props) => {
         };
       }
 
+      if (!auth.user?.email) {
+        toast.error('No se pudo verificar tu sesión. Volvé a iniciar sesión.');
+        setLoading(false);
+        return;
+      }
       const userEmail = auth.user.email;
 
       // Preparar datos para el envío
@@ -184,7 +212,7 @@ const EditProduct = ({ product }: Props) => {
         productVimeoId,
         diplomaUrl,
         // Campos de evento
-        ...(productType === 'evento' && {
+        ...((productType === 'evento' || productType === 'programa_transformacional') && {
           fecha,
           ubicacion: ubicacionObj,
           online,
@@ -194,10 +222,20 @@ const EditProduct = ({ product }: Props) => {
           aprendizajes: aprendizajes || [],
           paraQuien: paraQuien || [],
         }),
+        ...(imagenBio ? { imagenBio } : {}),
         // Programa Transformacional
-        ...(esProgramaTransformacional && {
-          esProgramaTransformacional: true,
-          programaTransformacional: programaTransformacionalData
+        ...((esProgramaTransformacional || productType === 'programa_transformacional') &&
+          programaTransformacionalData && {
+            esProgramaTransformacional: true,
+            programaTransformacional: programaTransformacionalData,
+          }),
+        ...(productType === 'curso' && cursoConfig ? { cursoConfig } : {}),
+        ...(productType === 'curso' && {
+          invitacionGrupoWhatsapp:
+            (typeof invitacionGrupoWhatsapp === 'string' ? invitacionGrupoWhatsapp.trim() : '') ||
+            cursoConfig?.whatsapp?.invitacionGrupoWhatsapp?.trim() ||
+            cursoConfig?.whatsapp?.grupoWhatsapp?.trim() ||
+            '',
         }),
         // Descuento
         ...(descuentoObj && { descuento: descuentoObj })
@@ -229,12 +267,15 @@ const EditProduct = ({ product }: Props) => {
 
       auth.fetchUser();
       toast.success(data.message);
-      router.push('/admin/products/allProducts');
+      router.push('/admin/productos/todos-productos');
     } catch (error: any) {
-      if (error.response && error.response.data && error.response.data.error) {
+      if (error.response?.data?.error) {
         toast.error(error.response.data.error);
       } else {
-        toast.error('Ocurrió un error inesperado al actualizar el producto.');
+        const detail =
+          error instanceof Error ? error.message : 'Error desconocido';
+        console.error('Error al actualizar producto:', error);
+        toast.error(`No se pudo actualizar el producto: ${detail}`);
       }
     }
     setLoading(false);

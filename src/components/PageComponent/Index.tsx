@@ -32,7 +32,7 @@ const Index = () => {
     const cookies: any = Cookies.get('userToken')
     
     // if (!cookies) {
-    //   router.push('/login');
+    //   router.push('/iniciar-sesion');
     // }
     
     if(!auth.user) {

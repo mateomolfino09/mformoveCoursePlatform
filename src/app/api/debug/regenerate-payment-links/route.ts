@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       .replace(/-+/g, '-')
       .replace(/^-+|-+$/g, '');
     
-    const successUrl = `${baseUrl}/events/${cleanEventName}/success`;
+    const successUrl = `${baseUrl}/eventos/${cleanEventName}/success`;
 
     // Regenerar payment links con metadata
     const stripeResult = await createEventProductWithPrices({

@@ -37,7 +37,7 @@ const BitacoraNavigator = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const snap = useSnapshot(state);
-  const isHome = pathname === '/home';
+  const isHome = pathname === '/inicio';
 
   // En móvil el dropdown se controla desde el header (state.bitacoraNavOpen)
   useEffect(() => {
@@ -47,22 +47,18 @@ const BitacoraNavigator = () => {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // En móvil y en /home (desktop) la visibilidad la controla el header/barra (bitacoraNavOpen); en el resto de desktop, estado local (isOpen)
+  // En móvil y en /inicio (desktop) la visibilidad la controla el header/barra (bitacoraNavOpen); en el resto de desktop, estado local (isOpen)
   const isOpenEffective = (isMobile || isHome) ? snap.bitacoraNavOpen : isOpen;
 
-  // Sincronizar estado local cuando el header/barra cierra/abre (móvil o /home) para closeMenu y tutorial
+  // Sincronizar estado local cuando el header/barra cierra/abre (móvil o /inicio) para closeMenu y tutorial
   useEffect(() => {
     if (isMobile || isHome) {
       setIsOpen(snap.bitacoraNavOpen);
     }
   }, [isMobile, isHome, snap.bitacoraNavOpen]);
 
-  // Verificar si el usuario tiene acceso
-  const hasAccess = auth.user && (
-    auth.user.subscription?.active || 
-    auth.user.isVip || 
-    auth.user.rol === 'Admin'
-  );
+  // Cualquier usuario autenticado puede usar el menú desde el header.
+  const hasAccess = Boolean(auth?.user);
 
   // Función helper para cerrar el menú (respetando el estado del tutorial)
   const closeMenu = () => {
@@ -171,17 +167,17 @@ const BitacoraNavigator = () => {
 
   // Detectar páginas con fondo blanco
   const whiteBackgroundPages = [
-    '/account',
+    '/cuenta',
     '/bitacora',
-    '/mentorship',
-    '/membership',
-    '/events',
-    '/onboarding/bitacora-base'
+    '/mentoria',
+    '/cuerpo-autonomo',
+    '/eventos',
+    '/incorporacion/bitacora-base'
   ];
   const hasWhiteBackground = whiteBackgroundPages.some(page => pathname?.startsWith(page)) && !snap.systemNavOpen;
 
 
-  // No mostrar si no tiene acceso
+  // Sin sesión no montamos el navigator
   if (!hasAccess) {
     return null;
   }
@@ -214,13 +210,13 @@ const BitacoraNavigator = () => {
   };
 
   // No mostrar en páginas de autenticación
-  const isAuthPage = pathname?.startsWith('/login') || 
-                     pathname?.startsWith('/register') || 
-                     pathname?.startsWith('/forget');
+  const isAuthPage = pathname?.startsWith('/iniciar-sesion') || 
+                     pathname?.startsWith('/registro') || 
+                     pathname?.startsWith('/olvide-contrasena');
   
   // No mostrar en páginas de onboarding (excepto bitacora-base)
-  const isOnboardingPage = pathname?.startsWith('/onboarding') && 
-                           !pathname?.startsWith('/onboarding/bitacora-base');
+  const isOnboardingPage = pathname?.startsWith('/incorporacion') && 
+                           !pathname?.startsWith('/incorporacion/bitacora-base');
   
   if (isAuthPage || isOnboardingPage) {
     return null;
@@ -240,7 +236,7 @@ const BitacoraNavigator = () => {
     state.systemNavOpen = !snap.systemNavOpen;
   };
 
-  // En móvil el control está en la barra inferior; en desktop en /home está en el header
+  // En móvil el control está en la barra inferior; en desktop en /inicio está en el header
   const showFloatingButton = !isMobile && !isHome;
 
   return (
@@ -307,9 +303,9 @@ const BitacoraNavigator = () => {
                     const tutorialActive = document.body.classList.contains('tutorial-active');
                     if (tutorialActive) return;
                     closeMenu();
-                    setNavigationTarget('/home');
+                    setNavigationTarget('/inicio');
                     setIsNavigating(true);
-                    router.push('/home');
+                    router.push('/inicio');
                   }}
                   className="flex flex-col justify-end items-end -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] hover:text-[#fff] cursor-pointer text-left transition-colors"
                 >

@@ -130,7 +130,7 @@ export async function POST(req) {
       ? Number(weeklyContents[weekIndex].weekNumber)
       : weekIndex + 1;
     const baseUrl = (process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://mateomove.com').replace(/\/$/, '');
-    const pathUrl = `${baseUrl}/weekly-path?id=${logbookId}&week=${weekNumber}&content=${contentIndex}`;
+    const pathUrl = `${baseUrl}/ruta-semanal?id=${logbookId}&week=${weekNumber}&content=${contentIndex}`;
 
     const miembrosActivos = await Users.find({
       $or: [{ 'subscription.active': true }, { isVip: true }],

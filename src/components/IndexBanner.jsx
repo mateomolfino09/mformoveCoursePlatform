@@ -33,6 +33,8 @@ function Banner({ onVideoLoaded }) {
   const [currentScrollY, setCurrentScrollY] = useState(0); // Píxeles scrolleados actuales
   const [currentWord, setCurrentWord] = useState(0); // Índice de la palabra actual (0: Movete, 1: Respira, 2: Sentite)
   const [previousWord, setPreviousWord] = useState(0); // Palabra anterior para detectar salida
+  const [latestCurso, setLatestCurso] = useState(null);
+  const [cursoLoading, setCursoLoading] = useState(true);
 
   const mobileVideoId = '1023611525';
   const desktopVideoId = '1023607510';
@@ -69,6 +71,43 @@ function Banner({ onVideoLoaded }) {
 
     fetchTokens();
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/product/index-latest-curso', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : { curso: null }))
+      .then((data) => {
+        if (!cancelled) setLatestCurso(data?.curso ?? null);
+      })
+      .catch(() => {
+        if (!cancelled) setLatestCurso(null);
+      })
+      .finally(() => {
+        if (!cancelled) setCursoLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const hasMemberAccess =
+    auth.user?.subscription?.active || auth.user?.isVip || auth.user?.rol === 'Admin';
+
+  const primaryCta = (() => {
+    if (!cursoLoading && !latestCurso) {
+      return { href: routes.navegation.mentorship, label: 'Mentoría' };
+    }
+    if (hasMemberAccess) {
+      return { href: routes.navegation.membership.library, label: 'Biblioteca' };
+    }
+    if (latestCurso?.slug) {
+      return {
+        href: routes.navegation.membership.curso(latestCurso.slug),
+        label: 'Cuerpo autónomo',
+      };
+    }
+    return { href: routes.navegation.membership.moveCrew, label: 'Cuerpo autónomo' };
+  })();
 
   useEffect(() => {
     // Asegúrate de que la biblioteca de Vimeo se cargue solo en el lado del cliente
@@ -292,10 +331,10 @@ function Banner({ onVideoLoaded }) {
       {/* Botones */}
       <div className='flex flex-row sm:flex-row gap-4 !pt-32 pointer-events-auto'>
         <Link 
-          href={(auth.user?.subscription?.active || auth.user?.isVip || auth.user?.rol === 'Admin') ? routes.navegation.membership.library : routes.navegation.membership.moveCrew}
+          href={primaryCta.href}
           className='px-8 py-3 bg-white text-black rounded-full font-medium text-sm md:text-base hover:bg-gray-100 transition-all duration-300 transform hover:scale-105'
         >
-          {(auth.user?.subscription?.active || auth.user?.isVip || auth.user?.rol === 'Admin') ? 'Biblioteca' : 'Cuerpo autónomo'}
+          {cursoLoading ? '…' : primaryCta.label}
         </Link>
         <Link 
           href={auth.user ? routes.user.perfil : routes.user.login}

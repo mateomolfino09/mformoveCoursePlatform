@@ -1,14 +1,12 @@
 'use client'
 import { useAuth } from '../../hooks/useAuth'
-import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import MainSideBarDash from './MainSideBarDash';
 import { useSnapshot } from 'valtio';
 import state from '../../valtio';
 import LoginModal from '../PageComponent/Login/LoginModal';
-import { routes } from '../../constants/routes';
 import HeaderUnified from '../HeaderUnified';
-import { MoveCrewNavProvider } from './MoveCrewNavContext';
+import { MembershipNavProvider } from './MembershipNavContext';
 
 interface Props {
   children: any;
@@ -22,14 +20,12 @@ interface Props {
 const MainSideBar = ({ children, where, forceStandardHeader = false, onMenuClick, sidebarOpen, forceLightTheme = false }: Props) => {  
   const auth = useAuth()
   const [showNav, setShowNav] = useState(false);
-  const path = usePathname();
   const snap = useSnapshot(state);
 
   const toggleNav = () => {
     setShowNav(!showNav)
   }
 
-  const hasAccess = auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin');
   const isAnyMenuOpen = showNav || snap.weeklyPathNavOpen;
 
   useEffect(() => {
@@ -56,9 +52,9 @@ const MainSideBar = ({ children, where, forceStandardHeader = false, onMenuClick
       ) : null}
       {snap.loginForm ? <LoginModal /> : null}
       {where === 'membership' ? (
-        <MoveCrewNavProvider value={{ toggleNav, showNav }}>
+        <MembershipNavProvider value={{ toggleNav, showNav }}>
           {children}
-        </MoveCrewNavProvider>
+        </MembershipNavProvider>
       ) : (
         children
       )}

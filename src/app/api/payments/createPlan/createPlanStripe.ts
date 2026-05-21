@@ -57,9 +57,9 @@ export async function createPlanStripe({name,
         frequency_label: 'Mensual',
         active: true,
         plan_token: price.id, // ID del precio de Stripe
-        success_url: `${origin}/payment/success`,
-        error_url: `${origin}/payment/error`,
-        back_url: `${origin}/payment/back`,
+        success_url: `${origin}/pago/exito`,
+        error_url: `${origin}/pago/error`,
+        back_url: `${origin}/pago/atras`,
         provider: "stripe"
     }).save();
 
@@ -74,9 +74,9 @@ export async function createPlanStripe({name,
       frequency_label: 'Anual',
       active: true,
       plan_token: priceAnual.id, // ID del precio de Stripe
-      success_url: `${origin}/payment/success`,
-      error_url: `${origin}/payment/error`,
-      back_url: `${origin}/payment/back`,
+      success_url: `${origin}/pago/exito`,
+      error_url: `${origin}/pago/error`,
+      back_url: `${origin}/pago/atras`,
       provider: "stripe"
 
   }).save();

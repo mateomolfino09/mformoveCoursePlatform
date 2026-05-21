@@ -101,7 +101,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
           className={`bg-transparent fixed w-full h-16 flex justify-between items-center px-8 md:gap-x-16 transition-all duration-[400ms] z-[250] ${(isScrolled || headerScroll) && 'bg-white/80'} ${where === "library" ? "mt-28" : ""}`}
         >
           <div className=''>
-            <Link href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/library' : '/'}>
+            <Link href={routes.navegation.index}>
             <>
               {showNav ? (
                 <>
@@ -147,7 +147,7 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
               </PopoverPanel>
             </Popover>
             <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${path == routes.navegation.mentorship && '!text-black'}`} onClick={() => {
-                router.push('/mentorship');
+                router.push('/mentoria');
               }}>
                 Mentoría
                 {path == routes.navegation.mentorship && (
@@ -179,17 +179,17 @@ const IndexHeader = ({ user, toggleNav, where, showNav }: Props) => {
                 )}
             </div>
             {/* Membresía eliminada */}
-            <a href="/account" ref={linkRef} style={{ display: 'none' }}>
+            <a href="/cuenta" ref={linkRef} style={{ display: 'none' }}>
               Ir a Cuenta
             </a>
-            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.perfil || path == '/account') && '!text-black'}`} onClick={() => {
+            <div className={`block text-sm/6 text-black/50 focus:outline-none data-[active]:text-black data-[hover]:text-black data-[focus]:outline-1 data-[focus]:outline-black cursor-pointer hover:text-black focus:text-black active:text-black font-normal ${(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.perfil || path == '/cuenta') && '!text-black'}`} onClick={() => {
                     if(!auth.user) {
-                      router.push('/login')
+                      router.push('/iniciar-sesion')
                     }
                     else handleClick();
                   }}>
                 Cuenta
-                {(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.perfil || path == '/account') && (
+                {(path == routes.user.login || path == routes.user.forget || path == routes.user.forgetEmail || path == routes.user.perfil || path == '/cuenta') && (
                   <svg
                     width="100%"
                     height="3"

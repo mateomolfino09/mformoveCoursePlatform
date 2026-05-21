@@ -284,7 +284,7 @@ const CreatePlanStepOne = ({ handleSubmit }: Props) => {
 
           </div>
           <div className='flex justify-end space-x-4 pt-6 border-t border-gray-200'>
-            <Link href={'/admin/memberships'}>
+            <Link href={'/admin/membresias'}>
               <button
                 type='button'
                 className='px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-300 font-montserrat border border-gray-200'

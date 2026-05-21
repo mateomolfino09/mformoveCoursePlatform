@@ -131,7 +131,7 @@ const VirtualClassesInfo: React.FC<Props> = ({ classes }) => {
               {typeClasses.map((clase) => (
                 <Link
                   key={clase._id}
-                  href={`/library/individual-classes/${clase.id}`}
+                  href={`/biblioteca/clases-individuales/${clase.id}`}
                   className="bg-dark rounded-lg overflow-hidden hover:bg-gray-800 transition-all duration-200 cursor-pointer group"
                 >
                   {/* Imagen */}
@@ -206,7 +206,7 @@ const VirtualClassesInfo: React.FC<Props> = ({ classes }) => {
       {/* CTA para ver más clases */}
       <div className="mt-8 text-center">
         <Link
-          href="/classes"
+          href="/clases"
           className="inline-block px-6 py-3 bg-white text-gray-900 rounded-lg font-bold font-boldFont hover:bg-gray-200 transition-all duration-200"
         >
           Ver todas las clases virtuales

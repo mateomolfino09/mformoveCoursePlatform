@@ -133,13 +133,13 @@ const CreateInPersonClass = ({
     const cookies: any = Cookies.get('userToken');
     
     if (!cookies) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
     
     if (!auth.user) {
       auth.fetchUser();
     } else if (auth.user?.rol !== 'Admin') {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
   }, [auth, auth.user, router]);
 
@@ -494,7 +494,7 @@ const CreateInPersonClass = ({
       });
 
       toast.success(data.message || (isEditMode ? 'Clase actualizada con éxito' : 'Clase creada con éxito'));
-      router.push('/admin/in-person-classes/all');
+      router.push('/admin/clases-presenciales/todas');
     } catch (error: any) {
       console.error(error);
       toast.error(error.response?.data?.error || `Error al crear la clase ${classType}`);
@@ -1171,7 +1171,7 @@ const CreateInPersonClass = ({
             <div className='flex justify-end space-x-4'>
               <button
                 type='button'
-                onClick={() => router.push('/admin/in-person-classes')}
+                onClick={() => router.push('/admin/clases-presenciales')}
                 className='px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-300 font-montserrat border border-gray-200'
               >
                 Cancelar

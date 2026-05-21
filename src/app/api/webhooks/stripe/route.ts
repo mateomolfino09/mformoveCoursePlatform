@@ -3,6 +3,7 @@ import { stripe } from '../../payments/stripe/stripeConfig';
 import connectDB from '../../../../config/connectDB';
 import Product from '../../../../models/productModel';
 import { EmailService, EmailType } from '../../../../services/email/emailService';
+import { fulfillCoursePurchase } from '../../payments/course/fulfillCoursePurchase';
 
 export const runtime = 'nodejs';
 
@@ -130,6 +131,17 @@ async function handleCheckoutSessionCompleted(session: any) {
       return;
     }
 
+    if (product.tipo === 'curso') {
+      await fulfillCoursePurchase({
+        productId: product._id.toString(),
+        provider: 'stripe',
+        transactionId: String(session.payment_intent || session.id),
+        email: customerEmail,
+        amount,
+        moneda: session.currency?.toUpperCase(),
+      });
+    }
+
     if (product.tipo === 'evento') {
       await sendEventConfirmationEmail(product, customerEmail, customerPhone, amount, session);
     } else {
@@ -153,7 +165,11 @@ async function sendEventConfirmationEmail(evento: any, customerEmail: string, cu
   
   try {
     const isOnline = evento.online;
-    
+    const { resolveInvitacionGrupoWhatsappFromProduct } = await import(
+      '../../../../lib/resolveInvitacionGrupoWhatsapp'
+    );
+    const invitacionGrupo = resolveInvitacionGrupoWhatsappFromProduct(evento);
+
     const emailData = {
       customerName: session.customer_details?.name || 'Participante',
       customerPhone: customerPhone || 'No proporcionado',
@@ -172,7 +188,7 @@ async function sendEventConfirmationEmail(evento: any, customerEmail: string, cu
       benefits: evento.beneficios || [],
       cupo: evento.cupo,
       sessionId: session.id,
-      eventPageUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/events/${evento.nombre
+      eventPageUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/eventos/${evento.nombre
         .toLowerCase()
         .replace(/[áäâà]/g, 'a')
         .replace(/[éëêè]/g, 'e')
@@ -185,6 +201,9 @@ async function sendEventConfirmationEmail(evento: any, customerEmail: string, cu
         .replace(/-+/g, '-')
         .replace(/^-+|-+$/g, '')}`,
       supportEmail: 'soporte@mateomove.com',
+      ...(invitacionGrupo
+        ? { invitacionGrupoWhatsapp: invitacionGrupo, whatsappInviteUrl: invitacionGrupo }
+        : {}),
       ...(isOnline && {
         accessInstructions: 'El link de acceso estará disponible 15 minutos antes del evento',
         recordingInfo: 'La grabación estará disponible por 30 días después del evento'
@@ -222,7 +241,7 @@ async function sendProductConfirmationEmail(product: any, customerEmail: string,
       productDescription: product.descripcion,
       amount: `$${amount}`,
       sessionId: session.id,
-      productPageUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/products/${product.nombre}`,
+      productPageUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/productos/${product.nombre}`,
       supportEmail: 'soporte@mateomove.com'
     };
 

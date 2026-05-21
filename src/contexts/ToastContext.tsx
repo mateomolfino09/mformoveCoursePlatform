@@ -59,7 +59,12 @@ const typeIcon: Record<ToastType, string> = {
   warning: '!',
 };
 
-function ToastItemComponent({ id, type, message, onRemove }: ToastItem & { onRemove: (id: string) => void }) {
+function ToastItemComponent({
+  id,
+  type,
+  message,
+  onRemove,
+}: ToastItem & { onRemove: (id: string) => void }) {
   useEffect(() => {
     const t = setTimeout(() => onRemove(id), DURATION_MS);
     return () => clearTimeout(t);
@@ -71,7 +76,7 @@ function ToastItemComponent({ id, type, message, onRemove }: ToastItem & { onRem
         role="alert"
         className={[
           'relative overflow-visible',
-          'rounded-2xl border bg-palette-ink/95 backdrop-blur-md',
+          'rounded-2xl border bg-palette-ink backdrop-blur-md',
           'px-4 py-3.5 font-montserrat',
           'shadow-[0_22px_70px_rgba(20,20,17,0.35)]',
           'text-palette-cream',
@@ -81,7 +86,7 @@ function ToastItemComponent({ id, type, message, onRemove }: ToastItem & { onRem
       >
         <span
           className={[
-            'pointer-events-none absolute left-4 top-0 z-[60]',
+            'pointer-events-none absolute left-2 top-1/2 z-[60]',
             '-translate-y-1/2',
             'flex h-9 w-9 items-center justify-center rounded-full',
             'text-[12px] font-semibold',
@@ -99,7 +104,7 @@ function ToastItemComponent({ id, type, message, onRemove }: ToastItem & { onRem
           <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-palette-sage/10 blur-3xl" />
         </div>
 
-        <div className="relative z-10 flex items-start gap-3 pt-5">
+        <div className="relative z-10 flex items-start gap-3 pt-2 ml-12">
           <div className="min-w-0 flex-1">
             <p className="text-[11px] uppercase tracking-[0.22em] text-palette-cream/60">{typeLabel[type]}</p>
             <p className="mt-1 min-w-0 text-palette-cream/95 text-sm leading-snug">{message}</p>
@@ -159,7 +164,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   const addToast = useCallback((type: ToastType, message: string) => {
-    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `toast-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const id =
+      typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `toast-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     setToasts((prev) => [...prev, { id, type, message }]);
   }, []);
 

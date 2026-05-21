@@ -147,7 +147,7 @@ const AllInPersonClasses: React.FC<Props> = ({ classes, setClasses, virtualClass
         <div className='bg-white border border-gray-200 rounded-2xl p-8 text-center shadow-lg'>
           <p className='text-gray-900 text-lg font-montserrat mb-4'>No hay horarios ni grupos de clases registrados.</p>
           <button
-            onClick={() => router.push('/admin/in-person-classes/create')}
+            onClick={() => router.push('/admin/clases-presenciales/crear')}
             className='mt-4 px-6 py-3 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#4F7CCF] text-white rounded-xl hover:shadow-xl transition-all duration-300 font-semibold font-montserrat'
           >
             Crear Primera Clase
@@ -174,7 +174,7 @@ const AllInPersonClasses: React.FC<Props> = ({ classes, setClasses, virtualClass
           </p>
         </div>
         <button
-          onClick={() => router.push('/admin/in-person-classes/create')}
+          onClick={() => router.push('/admin/clases-presenciales/crear')}
           className='px-6 py-3 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#4F7CCF] text-white rounded-xl hover:shadow-xl transition-all duration-300 font-semibold font-montserrat'
         >
           Crear Nueva Clase
@@ -313,14 +313,14 @@ const AllInPersonClasses: React.FC<Props> = ({ classes, setClasses, virtualClass
                     </div>
                     <div className='flex items-center gap-3'>
                       <button
-                        onClick={() => router.push(`/classes-schedule`)}
+                        onClick={() => router.push(`/horario-clases`)}
                         className='text-[#4F7CCF] hover:text-[#234C8C]'
                         title='Ver en horarios públicos'
                       >
                         <EyeIcon className='w-5 h-5' />
                       </button>
                       <button
-                        onClick={() => router.push(`/admin/in-person-classes/edit/${clase.id}`)}
+                        onClick={() => router.push(`/admin/clases-presenciales/editar/${clase.id}`)}
                         className='text-yellow-600 hover:text-yellow-700'
                         title='Editar'
                       >
@@ -454,14 +454,14 @@ const AllInPersonClasses: React.FC<Props> = ({ classes, setClasses, virtualClass
                     </div>
                     <div className='flex items-center gap-3'>
                       <button
-                        onClick={() => router.push(`/classes-schedule`)}
+                        onClick={() => router.push(`/horario-clases`)}
                         className='text-[#4F7CCF] hover:text-[#234C8C]'
                         title='Ver en horarios públicos'
                       >
                         <EyeIcon className='w-5 h-5' />
                       </button>
                       <button
-                        onClick={() => router.push(`/admin/in-person-classes/edit/${clase.id}?type=virtual`)}
+                        onClick={() => router.push(`/admin/clases-presenciales/editar/${clase.id}?type=virtual`)}
                         className='text-yellow-600 hover:text-yellow-700'
                         title='Editar'
                       >

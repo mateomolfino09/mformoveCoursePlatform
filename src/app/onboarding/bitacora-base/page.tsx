@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircleIcon, LockClosedIcon, PlayIcon, ExclamationTriangleIcon, ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/24/solid';
 import MainSideBar from '../../../components/MainSidebar/MainSideBar';
 import FooterProfile from '../../../components/PageComponent/Profile/FooterProfile';
-import BitacoraBaseLoading from '../../../components/PageComponent/MoveCrew/BitacoraBaseLoading';
+import BitacoraBaseLoading from '../../../components/PageComponent/Course/BitacoraBaseLoading';
 import VideoContentDisplay from '../../../components/PageComponent/Bitacora/VideoContentDisplay';
 import BitacoraBaseSkeleton from '../../../components/BitacoraBaseSkeleton';
 import CoherenceCelebrationModal from '../../../components/PageComponent/Bitacora/CoherenceCelebrationModal';

@@ -48,7 +48,7 @@ function ForgetForm() {
     const cookies: any = Cookies.get('userToken');
 
     if (!cookies) {
-      router.push('/mentorship');
+      router.push('/mentoria');
     }
   }, [router]);
 

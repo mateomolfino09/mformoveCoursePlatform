@@ -7,11 +7,11 @@ import CarouselClassesThumbnail from '../../CarouselClassesThumbnail';
 interface Props {
   currentClassId: string | number;
   currentClassType?: string;
-  /** Base path for class links (e.g. '/library/individual-classes'). Default '/classes'. */
+  /** Base path for class links (e.g. '/biblioteca/clases-individuales'). Default '/clases'. */
   classLinkBase?: string;
 }
 
-const RecommendedClasses = ({ currentClassId, currentClassType, classLinkBase = '/classes' }: Props) => {
+const RecommendedClasses = ({ currentClassId, currentClassType, classLinkBase = '/clases' }: Props) => {
   const base = classLinkBase.replace(/\/$/, '');
   const [recommendedClasses, setRecommendedClasses] = useState<IndividualClass[]>([]);
   const [isLoading, setIsLoading] = useState(true);

@@ -3,7 +3,15 @@ import Users from '../../../../models/userModel';
 import Product from '../../../../models/productModel';
 import { NextResponse } from 'next/server';
 import { createEventProductWithPrices } from '../../payments/stripe/createEventProductWithPrices';
+import {
+  createCourseOneTimePayments,
+  buildCursoOpcionesPago,
+  generateCursoPreciosPreventaLinks,
+} from '../../payments/stripe/createCourseOneTimePayments';
 import { stripe } from '../../payments/stripe/stripeConfig';
+import { getApiErrorMessage, getApiErrorStatus } from '../../../../utils/apiError';
+import { normalizeCursoLandingConfig } from '../../../../types/cursoLanding';
+import { resolveInvitacionGrupoWhatsappFromPayload } from '../../../../lib/resolveInvitacionGrupoWhatsapp';
 
 connectDB();
 
@@ -79,7 +87,48 @@ export async function POST(req) {
 
 
 
-    const { nombre, descripcion, tipo, precio, moneda, cursosIncluidos, fecha, ubicacion, online, linkEvento, cupo, tipoArchivo, userEmail, beneficios, aprendizajes, paraQuien } = data;
+    const {
+      nombre,
+      descripcion,
+      tipo,
+      precio,
+      moneda,
+      cursosIncluidos,
+      fecha,
+      ubicacion,
+      online,
+      linkEvento,
+      cupo,
+      tipoArchivo,
+      userEmail,
+      beneficios,
+      aprendizajes,
+      paraQuien,
+      cursoConfig,
+      invitacionGrupoWhatsapp,
+      grupoWhatsapp,
+      esProgramaTransformacional,
+      programaTransformacional,
+    } = data;
+
+    const invitacionGrupoResolved = resolveInvitacionGrupoWhatsappFromPayload({
+      invitacionGrupoWhatsapp,
+      grupoWhatsapp,
+      cursoConfig,
+      programaTransformacional,
+    });
+
+    const programaTransformacionalParaGuardar = programaTransformacional
+      ? {
+          ...programaTransformacional,
+          comunidad: {
+            ...(programaTransformacional.comunidad || {}),
+            ...(invitacionGrupoResolved
+              ? { invitacionGrupoWhatsapp: invitacionGrupoResolved }
+              : {}),
+          },
+        }
+      : undefined;
 
     // Validar usuario admin
     let user = await Users.findOne({ email: userEmail });
@@ -89,6 +138,35 @@ export async function POST(req) {
         { status: 422 }
       );
     }
+
+    if (tipo === 'curso' && !data.portada) {
+      return NextResponse.json(
+        { error: 'Debes subir la imagen del curso para los links de pago' },
+        { status: 422 }
+      );
+    }
+
+    const cursoConfigParaGuardar =
+      tipo === 'curso' && cursoConfig
+        ? normalizeCursoLandingConfig(
+            {
+              ...cursoConfig,
+              whatsapp: {
+                ...(cursoConfig.whatsapp || {}),
+                invitacionGrupoWhatsapp:
+                  invitacionGrupoResolved ||
+                  cursoConfig.whatsapp?.invitacionGrupoWhatsapp ||
+                  cursoConfig.whatsapp?.grupoWhatsapp ||
+                  '',
+              },
+              imagenCheckoutPublicId: data.portada || cursoConfig.imagenCheckoutPublicId || '',
+            },
+            nombre
+          )
+        : cursoConfig;
+
+    const cursoPortadaCheckout =
+      data.portada || cursoConfig?.imagenCheckoutPublicId || imagenesUrls[0];
 
     // Procesar imágenes - optimizar para reducir el tamaño del payload
     if (imagenes && imagenes.length > 0) {
@@ -184,7 +262,7 @@ export async function POST(req) {
         .replace(/-+/g, '-') // Remover guiones múltiples
         .replace(/^-+|-+$/g, ''); // Remover guiones al inicio y final
       
-      const successUrl = `${baseUrl}/events/${cleanEventName}/success`;
+      const successUrl = `${baseUrl}/eventos/${cleanEventName}/success`;
 
 
       
@@ -198,6 +276,7 @@ export async function POST(req) {
         imagenes: imagenesUrls,
         portada: data.portada,
         portadaMobile: data.portadaMobile,
+        imagenBio: data.imagenBio || undefined,
         pdfPresentacionUrl: tipo === 'evento' ? (pdfPresentacionUrl || data.pdfPresentacionUrl) : undefined,
         cursosIncluidos: tipo === 'bundle' ? cursosIncluidos : undefined,
         fecha: tipo === 'evento' ? fecha : undefined,
@@ -216,6 +295,10 @@ export async function POST(req) {
           stripeCouponId,
           stripePromotionCodeId
         } : undefined,
+        cursoConfig: tipo === 'curso' ? cursoConfigParaGuardar : undefined,
+        invitacionGrupoWhatsapp: invitacionGrupoResolved || undefined,
+        esProgramaTransformacional: esProgramaTransformacional || undefined,
+        programaTransformacional: programaTransformacionalParaGuardar,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -275,6 +358,7 @@ export async function POST(req) {
         imagenes: imagenesUrls,
         portada: data.portada,
         portadaMobile: data.portadaMobile,
+        imagenBio: data.imagenBio || undefined,
         pdfPresentacionUrl: tipo === 'evento' ? (pdfPresentacionUrl || data.pdfPresentacionUrl) : undefined,
         cursosIncluidos: tipo === 'bundle' ? cursosIncluidos : undefined,
         fecha: tipo === 'evento' ? fecha : undefined,
@@ -293,6 +377,10 @@ export async function POST(req) {
           stripeCouponId,
           stripePromotionCodeId
         } : undefined,
+        cursoConfig: tipo === 'curso' ? cursoConfigParaGuardar : undefined,
+        invitacionGrupoWhatsapp: invitacionGrupoResolved || undefined,
+        esProgramaTransformacional: esProgramaTransformacional || undefined,
+        programaTransformacional: programaTransformacionalParaGuardar,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -305,6 +393,82 @@ export async function POST(req) {
       });
 
       product = await Product.create(productoData);
+
+      if (tipo === 'curso') {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+        const successUrl = `${baseUrl}/pago/exito?productId=${product._id.toString()}&tipo=curso&session_id={CHECKOUT_SESSION_ID}`;
+
+        const pagosUnicos = await createCourseOneTimePayments({
+          productId: product._id.toString(),
+          nombre,
+          descripcion,
+          precio,
+          moneda,
+          portadaUrl: cursoPortadaCheckout,
+          successUrl,
+          origin: baseUrl,
+        });
+
+        product.stripeProductId = pagosUnicos.stripe.productId;
+
+        const opcionesPago = buildCursoOpcionesPago({
+          precio,
+          moneda,
+          pagos: pagosUnicos,
+        });
+        const existingCfg =
+          product.cursoConfig?.toObject?.() ?? product.cursoConfig ?? {};
+        const baseCfg = cursoConfigParaGuardar || {};
+
+        product.set('cursoConfig', {
+          ...baseCfg,
+          ...existingCfg,
+          contenidoModulos: baseCfg.contenidoModulos?.length
+            ? baseCfg.contenidoModulos
+            : existingCfg.contenidoModulos,
+          whatsapp: {
+            ...(baseCfg.whatsapp || {}),
+            ...(existingCfg.whatsapp || {}),
+          },
+          planes: {
+            ...(baseCfg.planes || {}),
+            ...(existingCfg.planes || {}),
+            opcionesPago,
+          },
+        });
+
+        if (product.cursoConfig?.preciosPreventa?.length) {
+          product.cursoConfig.preciosPreventa = await generateCursoPreciosPreventaLinks({
+            productId: product._id.toString(),
+            nombre,
+            descripcion,
+            portadaUrl: cursoPortadaCheckout,
+            successUrl,
+            origin: baseUrl,
+            preciosPreventa: product.cursoConfig.preciosPreventa,
+          });
+        }
+
+        if (invitacionGrupoResolved) {
+          product.invitacionGrupoWhatsapp = invitacionGrupoResolved;
+        }
+
+        product.markModified('cursoConfig');
+        await product.save();
+
+        const modulosParaSync = product.cursoConfig?.contenidoModulos;
+        if (modulosParaSync?.length) {
+          const { syncCourseClassesFromContenidoModulos } = await import(
+            '../../../../lib/syncCourseClasses'
+          );
+          product.cursoConfig.contenidoModulos = await syncCourseClassesFromContenidoModulos(
+            product._id.toString(),
+            modulosParaSync
+          );
+          product.markModified('cursoConfig');
+          await product.save();
+        }
+      }
     }
 
     // Revalidar caché si es un evento
@@ -324,6 +488,11 @@ export async function POST(req) {
       { status: 200 }
     );
   } catch (error) {
-    return NextResponse.json({ error: error.message || error }, { status: 401 });
+    console.error('[createProduct]', error);
+
+    return NextResponse.json(
+      { error: getApiErrorMessage(error, 'No se pudo crear el producto') },
+      { status: getApiErrorStatus(error, 500) }
+    );
   }
 }

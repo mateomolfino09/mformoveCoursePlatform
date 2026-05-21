@@ -45,12 +45,12 @@ const CreateClassType = () => {
     const cookies: any = Cookies.get('userToken');
 
     if (!cookies) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
 
     if (!auth.user) {
       auth.fetchUser();
-    } else if (auth.user.rol != 'Admin') router.push('/login');
+    } else if (auth.user.rol != 'Admin') router.push('/iniciar-sesion');
   }, [auth.user]);
 
   async function onSubmit(data: any) {
@@ -98,7 +98,7 @@ const CreateClassType = () => {
       auth.fetchUser();
 
       toast.success(data.message);
-      router.push('/admin/memberships/classes')
+      router.push('/admin/membresias/clases')
     } catch (error: any) {
       toast.error(error.response.data.error);
     }
@@ -243,7 +243,7 @@ const CreateClassType = () => {
               </button>
               <div className='text-[gray]'>
                 Volver al Inicio
-                <Link href={'/mentorship'}>
+                <Link href={'/mentoria'}>
                   <button
                     type='button'
                     className='text-white hover:underline ml-2'

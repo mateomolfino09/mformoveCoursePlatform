@@ -11,6 +11,9 @@ import { RxCrossCircled } from 'react-icons/rx';
 import { StylesConfig } from 'react-select';
 import { toast } from '../../../hooks/useToast';
 import { countries } from 'countries-list';
+import CursoLandingConfigForm, { createInitialCursoLandingConfig } from './CursoLandingConfigForm';
+import ProductImageFields from './ProductImageFields';
+import type { CursoLandingConfig } from '../../../types/cursoLanding';
 
 interface Props {
   handleSubmit: any;
@@ -25,12 +28,13 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   const [descriptionLength, setDescriptionLength] = useState<number>(0);
   const [price, setPrice] = useState<number>(10);
   const [productVimeoId, setProductVimeoId] = useState<string>('');
-  const [currency, setCurrency] = useState<string>('$');
+  const [currency, setCurrency] = useState<string>('USD');
   const [paymentLink, setPaymentLink] = useState<string>('');
   const [imageUrl, setImageUrl] = useState<string>('');
   const [courseType, setCourseType] = useState<string>('');
   const [diplomaUrl, setDiplomaUrl] = useState<string>('');
   const [tipo, setTipo] = useState<string>('curso');
+  const [cursoConfig, setCursoConfig] = useState<CursoLandingConfig>(() => createInitialCursoLandingConfig());
   const [galleryImageArray, setGalleryImageArray] = useState<any[]>([]);
   
   // Log del estado inicial
@@ -40,6 +44,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   const [ubicacion, setUbicacion] = useState<string>('');
   const [online, setOnline] = useState<boolean>(false);
   const [linkEvento, setLinkEvento] = useState<string>('');
+  const [invitacionGrupoWhatsapp, setInvitacionGrupoWhatsapp] = useState<string>('');
   const [cupo, setCupo] = useState<number | undefined>(undefined);
   const [beneficios, setBeneficios] = useState<string[]>(['Acceso completo al evento', 'Material de apoyo']);
   const [nuevoBeneficio, setNuevoBeneficio] = useState<string>('');
@@ -75,6 +80,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   const [files, setFiles] = useState<any>([]);
   const [portraitImageArray, setPortraitImage] = useState<any>([]);
   const [portraitMobileImageArray, setPortraitMobileImage] = useState<any>([]);
+  const [bioImageFile, setBioImageFile] = useState<File | null>(null);
   const [diplomaImageArray, setDiplomaImage] = useState<any>([]);
 
 
@@ -139,6 +145,22 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   // Estados para edición de semanas
   const [semanaEditando, setSemanaEditando] = useState<any>(null);
   const [modalEditarSemana, setModalEditarSemana] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (tipo !== 'curso' || !name.trim()) return;
+    setCursoConfig((prev) => ({
+      ...prev,
+      introHighlights: {
+        ...prev.introHighlights,
+        titulo: prev.introHighlights.titulo || name,
+        imagenAlt: prev.introHighlights.imagenAlt || name,
+      },
+      betweenHero: {
+        ...prev.betweenHero,
+        eyebrow: prev.betweenHero.eyebrow || name,
+      },
+    }));
+  }, [name, tipo]);
 
   // useEffect para actualizar lastTicketsEnd si cambia la fecha del evento
   useEffect(() => {
@@ -224,8 +246,16 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     }
     // Validaciones por tipo
     if (tipo === 'curso') {
-      if (!vimeoGallery || vimeoVideos.length === 0) {
-        toast.error('Debes ingresar una galería de Vimeo válida con al menos un video');
+      if (!cursoConfig.slug.trim()) {
+        toast.error('Debes definir el slug de la landing del curso');
+        return;
+      }
+      if (!cursoConfig.hero.videoPresentacionVimeoId.trim()) {
+        toast.error('Debes ingresar el Vimeo ID del video de presentación');
+        return;
+      }
+      if (!portraitImageArray?.[0]) {
+        toast.error('Debes subir la imagen del curso para checkout y links de pago');
         return;
       }
     }
@@ -286,6 +316,12 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     };
 
     // Datos del programa transformacional
+    const invitacionGrupoResuelta =
+      invitacionGrupoWhatsapp.trim() ||
+      comunidad.invitacionGrupoWhatsapp?.trim() ||
+      comunidad.grupoWhatsapp?.trim() ||
+      '';
+
     const programaTransformacionalData = esProgramaTransformacional ? {
       duracionSemanas,
       fechaFin: fechaFin || (fecha ? new Date(new Date(fecha).getTime() + duracionSemanas * 7 * 24 * 60 * 60 * 1000).toISOString() : undefined),
@@ -293,7 +329,15 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       estadoCohorte,
       semanas: semanas.length > 0 ? semanas : undefined,
       sesionesEnVivo: sesionesEnVivo.length > 0 ? sesionesEnVivo : undefined,
-      comunidad: Object.keys(comunidad).length > 0 ? comunidad : undefined,
+      comunidad:
+        invitacionGrupoResuelta || Object.keys(comunidad).length > 0
+          ? {
+              ...comunidad,
+              ...(invitacionGrupoResuelta
+                ? { invitacionGrupoWhatsapp: invitacionGrupoResuelta }
+                : {}),
+            }
+          : undefined,
       resultadosEsperados: resultadosEsperados.length > 0 ? resultadosEsperados : undefined,
       requisitosPrevios: requisitosPrevios.length > 0 ? requisitosPrevios : undefined,
       materialesNecesarios: materialesNecesarios.length > 0 ? materialesNecesarios : undefined
@@ -335,7 +379,10 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       (tipo === 'evento' || tipo === 'programa_transformacional') ? pdfPresentacion : undefined,
       // Programa Transformacional
       esProgramaTransformacional,
-      programaTransformacionalData
+      programaTransformacionalData,
+      tipo === 'curso' ? cursoConfig : undefined,
+      invitacionGrupoResuelta || undefined,
+      bioImageFile ?? undefined
     );
   };
 
@@ -372,7 +419,15 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   });
 
   const { getRootProps: getRootPropsPortrait, getInputProps: getInputPropsPortrait, isDragActive: isDragActivePortrait } = useDropzone({
-    onDrop: (acceptedFiles) => setPortraitImage(acceptedFiles),
+    onDrop: (acceptedFiles) => {
+      setPortraitImage(
+        acceptedFiles.map((file) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        )
+      );
+    },
     accept: { 'image/*': ['.jpeg', '.jpg', '.png'] },
     multiple: false
   });
@@ -394,6 +449,17 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     multiple: false,
     accept: { 'image/*': [] }
   });
+
+  const {
+    getRootProps: getRootPropsBioImage,
+    getInputProps: getInputPropsBioImage,
+    isDragActive: isDragActiveBioImage,
+  } = useDropzone({
+    onDrop: (acceptedFiles) => setBioImageFile(acceptedFiles[0] ?? null),
+    accept: { 'image/*': ['.jpeg', '.jpg', '.png'] },
+    multiple: false,
+  });
+
   const {
     getRootProps: diplomaRootProps,
     getInputProps: diplomaInputprops
@@ -752,6 +818,29 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
              </div>
            </div>
 
+          <ProductImageFields
+            portraitImageArray={portraitImageArray}
+            portraitMobileImageArray={portraitMobileImageArray}
+            bioImageFile={bioImageFile}
+            onBioFileChange={setBioImageFile}
+            portadaRequired={tipo !== 'recurso'}
+            portrait={{
+              getRootProps: getRootPropsPortrait,
+              getInputProps: getInputPropsPortrait,
+              isDragActive: isDragActivePortrait,
+            }}
+            portraitMobile={{
+              getRootProps: getRootPropsPortraitMobile,
+              getInputProps: getInputPropsPortraitMobile,
+              isDragActive: isDragActivePortraitMobile,
+            }}
+            bio={{
+              getRootProps: getRootPropsBioImage,
+              getInputProps: getInputPropsBioImage,
+              isDragActive: isDragActiveBioImage,
+            }}
+          />
+
                      {/* Sección: Configuración Específica por Tipo */}
            {tipo === 'bundle' && (
              <div className='border-b border-gray-200 pb-6'>
@@ -827,55 +916,21 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
            )}
 
            {tipo === 'curso' && (
-             <div className='border-b border-gray-200 pb-6'>
-               <h2 className='text-xl font-semibold text-gray-900 mb-6 flex items-center'>
+             <div className='border-b border-gray-200 pb-6 space-y-6'>
+               <h2 className='text-xl font-semibold text-gray-900 mb-2 flex items-center'>
                  <div className='w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3'>
                    <span className='text-blue-600 font-bold text-sm'>2</span>
                  </div>
-                 Configuración de Curso
+                 Landing del curso
                </h2>
-               
-               <div className='space-y-6'>
-                 <label className='flex flex-col space-y-2'>
-                   <p className='text-sm font-medium text-gray-700'>Galería de Vimeo (ID o link)</p>
-                   <input
-                     type='text'
-                     className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
-                     value={vimeoGallery}
-                     onChange={e => {
-                       setVimeoGallery(e.target.value);
-                       if (e.target.value.length > 3) fetchVimeoVideos(e.target.value);
-                     }}
-                     placeholder='Ej: 1234567 o https://vimeo.com/showcase/1234567'
-                   />
-                   <p className='text-xs text-gray-500'>Ingresa el ID o link de la galería de Vimeo que contiene los videos del curso</p>
-                 </label>
-                 
-                 {vimeoError && (
-                   <div className='flex items-center space-x-2 p-3 bg-red-50 rounded-lg border border-red-200'>
-                     <RxCrossCircled className='text-red-500' />
-                     <span className='text-red-700 text-sm'>{vimeoError}</span>
-                   </div>
-                 )}
-                 
-                 {vimeoVideos && vimeoVideos.length > 0 && (
-                   <div className='space-y-3'>
-                     <p className='text-sm font-medium text-gray-700'>Videos encontrados ({vimeoVideos.length})</p>
-                     <div className='grid grid-cols-2 md:grid-cols-3 gap-3'>
-                       {vimeoVideos.map((video, idx) => (
-                         <div key={idx} className='flex flex-col items-center border border-gray-200 rounded-lg p-3 bg-gray-50 hover:bg-gray-100 transition-colors'>
-                           <img 
-                             src={video.pictures.sizes[2]?.link} 
-                             alt={video.name} 
-                             className='w-full h-20 object-cover rounded mb-2' 
-                           />
-                           <span className='text-xs text-gray-700 text-center line-clamp-2'>{video.name}</span>
-                         </div>
-                       ))}
-                     </div>
-                   </div>
-                 )}
-               </div>
+               <p className='text-sm text-gray-600 mb-4'>
+                 Configurá textos, videos, testimonios, FAQ y CTAs de la página comercial. Los links de pago se generan al crear el producto.
+               </p>
+               <p className='mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900'>
+                 La portada (checkout / Stripe) y la imagen de bio están en la sección{' '}
+                 <strong>Imágenes del producto</strong>, más arriba en el formulario.
+               </p>
+               <CursoLandingConfigForm value={cursoConfig} onChange={setCursoConfig} productName={name} />
              </div>
            )}
 
@@ -889,76 +944,26 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
               </h2>
               
               <div className='space-y-6'>
-                {/* Imágenes */}
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                  <label className='flex flex-col space-y-2'>
-                    <p className='text-sm font-medium text-gray-700'>Imagen de portada <span className='text-red-500'>*</span></p>
-                    <div
-                      {...getRootPropsPortrait()}
-                      className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 ${
-                        isDragActivePortrait 
-                          ? 'border-purple-500 bg-purple-50' 
-                          : 'border-gray-300 bg-gray-50 hover:border-purple-400 hover:bg-purple-50'
-                      }`}
-                    >
-                      <input {...getInputPropsPortrait()} />
-                      <ArrowUpTrayIcon className='w-8 h-8 text-gray-400 mb-2' />
-                      <span className='text-gray-600 text-sm text-center mb-1'>Arrastra la imagen aquí o haz click</span>
-                      <span className='text-xs text-gray-500 text-center'>Formatos: JPG, PNG. Solo una imagen.</span>
-                      {portraitImageArray[0] && (
-                        <img
-                          src={portraitImageArray[0].preview || URL.createObjectURL(portraitImageArray[0])}
-                          alt='Portada'
-                          className='w-24 h-24 object-cover mt-3 rounded-lg shadow-sm'
-                        />
-                      )}
-                    </div>
-                  </label>
-                  
-                  <label className='flex flex-col space-y-2'>
-                    <p className='text-sm font-medium text-gray-700'>Imagen de portada móvil</p>
-                    <div
-                      {...getRootPropsPortraitMobile()}
-                      className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 ${
-                        isDragActivePortraitMobile 
-                          ? 'border-purple-500 bg-purple-50' 
-                          : 'border-gray-300 bg-gray-50 hover:border-purple-400 hover:bg-purple-50'
-                      }`}
-                    >
-                      <input {...getInputPropsPortraitMobile()} />
-                      <ArrowUpTrayIcon className='w-8 h-8 text-gray-400 mb-2' />
-                      <span className='text-gray-600 text-sm text-center mb-1'>Arrastra la imagen aquí o haz click</span>
-                      <span className='text-xs text-gray-500 text-center'>Recomendado: 9:16 ratio</span>
-                      {portraitMobileImageArray[0] && (
-                        <img
-                          src={portraitMobileImageArray[0].preview || URL.createObjectURL(portraitMobileImageArray[0])}
-                          alt='Portada Móvil'
-                          className='w-24 h-24 object-cover mt-3 rounded-lg shadow-sm'
-                        />
-                      )}
-                    </div>
-                  </label>
-                </div>
-
-                {/* PDF de presentación */}
                 <label className='flex flex-col space-y-2'>
                   <p className='text-sm font-medium text-gray-700'>PDF de presentación</p>
                   <div
                     {...getRootPropsPdfPresentacion()}
-                    className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 ${
-                      isDragActivePdfPresentacion 
-                        ? 'border-purple-500 bg-purple-50' 
+                    className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-all duration-200 ${
+                      isDragActivePdfPresentacion
+                        ? 'border-purple-500 bg-purple-50'
                         : 'border-gray-300 bg-gray-50 hover:border-purple-400 hover:bg-purple-50'
                     }`}
                   >
                     <input {...getInputPropsPdfPresentacion()} />
-                    <DocumentIcon className='w-8 h-8 text-gray-400 mb-2' />
-                    <span className='text-gray-600 text-sm text-center mb-1'>Arrastra el PDF aquí o haz click</span>
-                    <span className='text-xs text-gray-500 text-center'>Solo formato PDF</span>
+                    <DocumentIcon className='mb-2 h-8 w-8 text-gray-400' />
+                    <span className='mb-1 text-center text-sm text-gray-600'>
+                      Arrastra el PDF aquí o haz click
+                    </span>
+                    <span className='text-center text-xs text-gray-500'>Solo formato PDF</span>
                     {pdfPresentacion && (
-                      <div className='mt-3 flex items-center space-x-2 bg-green-50 p-2 rounded-lg'>
+                      <div className='mt-3 flex items-center space-x-2 rounded-lg bg-green-50 p-2'>
                         <AiOutlineCheckCircle className='text-green-500' />
-                        <span className='text-sm text-green-700 font-medium'>{pdfPresentacion.name}</span>
+                        <span className='text-sm font-medium text-green-700'>{pdfPresentacion.name}</span>
                         <span className='text-xs text-gray-500'>
                           ({(pdfPresentacion.size / (1024 * 1024)).toFixed(1)}MB)
                         </span>
@@ -1261,6 +1266,20 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                       />
                     </label>
                   )}
+
+                  <label className='flex flex-col space-y-2'>
+                    <p className='text-sm font-medium text-gray-700'>Invitación al grupo de WhatsApp</p>
+                    <input
+                      type='url'
+                      className='input border-gray-300 focus:border-purple-500 focus:ring-purple-500 transition-colors'
+                      value={invitacionGrupoWhatsapp}
+                      onChange={(e) => setInvitacionGrupoWhatsapp(e.target.value)}
+                      placeholder='https://chat.whatsapp.com/...'
+                    />
+                    <span className='text-xs text-gray-500'>
+                      Link de invitación de este evento (no es el link fijo de la comunidad general).
+                    </span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -1692,25 +1711,18 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                 {/* Comunidad */}
                 <div className='mb-6'>
                   <h4 className='font-semibold mb-3 text-gray-900'>Información de comunidad</h4>
+                  <p className='text-xs text-gray-500 mb-3'>
+                    La invitación al grupo de WhatsApp se configura en los datos del evento (arriba).
+                  </p>
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                     <label className='flex flex-col space-y-2'>
-                      <p className='text-sm font-medium text-gray-700'>Grupo de WhatsApp (opcional)</p>
-                      <input
-                        type='url'
-                        className='input border-gray-300 focus:border-purple-500 focus:ring-purple-500 transition-colors text-sm'
-                        value={comunidad.grupoWhatsapp || ''}
-                        onChange={e => setComunidad({...comunidad, grupoWhatsapp: e.target.value})}
-                        placeholder='https://chat.whatsapp.com/...'
-                      />
-                    </label>
-                    <label className='flex flex-col space-y-2'>
-                      <p className='text-sm font-medium text-gray-700'>Grupo de WhatsApp (opcional)</p>
+                      <p className='text-sm font-medium text-gray-700'>Grupo de Telegram (opcional)</p>
                       <input
                         type='url'
                         className='input border-gray-300 focus:border-purple-500 focus:ring-purple-500 transition-colors text-sm'
                         value={comunidad.grupoTelegram || ''}
                         onChange={e => setComunidad({...comunidad, grupoTelegram: e.target.value})}
-                        placeholder='https://chat.whatsapp.com/...'
+                        placeholder='https://t.me/...'
                       />
                     </label>
                     <label className='md:col-span-2'>

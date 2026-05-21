@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ProductDB } from '../../../../typings';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Cookies from 'js-cookie';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '../../../hooks/useAuth';
 import DeleteProduct from './DeleteProduct';
 import { toast } from '../../../hooks/useToast';
@@ -18,6 +18,7 @@ import { CldImage } from 'next-cloudinary';
 import InfoModal from '../../InfoModal';
 import InfoModalSection from '../../InfoModalSection';
 import InfoModalField from '../../InfoModalField';
+import CursoProductDetails from './CursoProductDetails';
 
 // Función para formatear fechas
 const formatDate = (dateInput: string | Date) => {
@@ -47,14 +48,17 @@ const AllProducts = ({ products }: Props) => {
 
     let [isOpenDelete, setIsOpenDelete] = useState(false);
     const [elementos, setElementos] = useState<ProductDB[]>([]);
-    const ref = useRef(null);
     const [productSelected, setProductSelected] = useState<ProductDB | null>(null);
     const router = useRouter();
+    const searchParams = useSearchParams();
     const auth = useAuth();
     let [isOpen, setIsOpen] = useState(false);
     const [showInfoModal, setShowInfoModal] = useState(false);
     const [infoProduct, setInfoProduct] = useState<ProductDB | null>(null);
     const [isOpenInfo, setIsOpenInfo] = useState(false);
+    const [highlightedProductId, setHighlightedProductId] = useState<string | null>(null);
+    const rowRefs = useRef<Record<string, HTMLTableRowElement | null>>({});
+    const hasFocusedCreatedProduct = useRef(false);
 
   function openInfo(product: ProductDB) {
     setInfoProduct(product);
@@ -64,16 +68,45 @@ const AllProducts = ({ products }: Props) => {
   useEffect(() => {
         const cookies: any = Cookies.get('userToken');
         if (!cookies) {
-          router.push('/login');
+          router.push('/iniciar-sesion');
         }
         if (!auth.user) {
           auth.fetchUser();
-        } else if (auth.user.rol != 'Admin') router.push('/login');
+        } else if (auth.user.rol != 'Admin') router.push('/iniciar-sesion');
       }, [auth.user]);
 
       useEffect(() => {
         setElementos(products);
       }, [products]);
+
+      useEffect(() => {
+        const createdProductId = searchParams.get('created');
+        if (!createdProductId || elementos.length === 0 || hasFocusedCreatedProduct.current) {
+          return;
+        }
+
+        const createdProduct = elementos.find(
+          (product) => product._id?.toString() === createdProductId
+        );
+
+        if (!createdProduct) {
+          return;
+        }
+
+        hasFocusedCreatedProduct.current = true;
+        setHighlightedProductId(createdProductId);
+        setInfoProduct(createdProduct);
+        setIsOpenInfo(true);
+
+        requestAnimationFrame(() => {
+          rowRefs.current[createdProductId]?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        });
+
+        router.replace('/admin/productos/todos-productos', { scroll: false });
+      }, [elementos, router, searchParams]);
 
       function openModal() {
         setIsOpen(true);
@@ -84,7 +117,7 @@ const AllProducts = ({ products }: Props) => {
       }
     
       function openEdit(product: ProductDB) {
-        router.push(`/admin/products/editProduct/${product._id}`);
+        router.push(`/admin/productos/editar-producto/${product._id}`);
       }
 
     // Función para abrir el modal informativo
@@ -137,7 +170,7 @@ const AllProducts = ({ products }: Props) => {
                     </h1>
                     <p className='text-gray-600 text-lg font-montserrat'>Gestiona todos tus productos</p>
                   </div>
-                  <Link href="/admin/products/createProduct">
+                  <Link href="/admin/productos/crear-producto">
                     <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md hover:bg-[#234C8C] hover:text-white flex items-center space-x-2 font-montserrat transition-colors duration-300">
                       <PlusCircleIcon className="w-5 h-5" />
                       <span>Crear Producto</span>
@@ -157,8 +190,22 @@ const AllProducts = ({ products }: Props) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {elementos.map((product) => (
-                      <tr key={product._id} ref={ref} className="border-b border-[#E5E7EB] text-[#222] font-montserrat bg-[#F7F7F7]">
+                    {elementos.map((product) => {
+                      const productId = product._id?.toString();
+                      const isHighlighted = highlightedProductId === productId;
+
+                      return (
+                      <tr
+                        key={product._id}
+                        ref={(node) => {
+                          if (productId) {
+                            rowRefs.current[productId] = node;
+                          }
+                        }}
+                        className={`border-b border-[#E5E7EB] text-[#222] font-montserrat ${
+                          isHighlighted ? 'bg-blue-50 ring-2 ring-inset ring-blue-300' : 'bg-[#F7F7F7]'
+                        }`}
+                      >
                         <td className="whitespace-nowrap px-6 py-4 font-semibold text-[#1A1A1A]">
                           <button 
                             onClick={() => openInfo(product)}
@@ -183,7 +230,8 @@ const AllProducts = ({ products }: Props) => {
                           </div>
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
                 {/* Modal informativo del producto usando InfoModal */}
@@ -242,7 +290,7 @@ const AllProducts = ({ products }: Props) => {
                         )}
                       </div>
                     </InfoModalSection>
-                  ) : (
+                  ) : infoProduct?.tipo !== 'curso' ? (
                     <InfoModalSection title="Precio">
                       <InfoModalField
                         label="Precio"
@@ -254,10 +302,10 @@ const AllProducts = ({ products }: Props) => {
                         showBorder={false}
                       />
                     </InfoModalSection>
-                  )}
+                  ) : null}
 
                   {/* Imagen de portada */}
-                  {infoProduct?.portada && (
+                  {infoProduct?.portada && infoProduct?.tipo !== 'curso' && (
                     <InfoModalSection title="Imagen de Portada">
                       <div className="flex justify-center">
                         <div className="w-full max-w-md aspect-video bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
@@ -284,6 +332,16 @@ const AllProducts = ({ products }: Props) => {
                       showBorder={false}
                     />
                   </InfoModalSection>
+
+                  {infoProduct?.tipo === 'curso' && (
+                    <CursoProductDetails
+                      cursoConfig={(infoProduct as any).cursoConfig}
+                      portada={infoProduct.portada}
+                      stripeProductId={(infoProduct as any).stripeProductId}
+                      precio={infoProduct.precio}
+                      moneda={infoProduct.moneda}
+                    />
+                  )}
 
                   {/* Links de pagos */}
                   {(() => {

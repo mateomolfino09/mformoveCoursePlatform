@@ -34,13 +34,13 @@ const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies ) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
     
     if(!auth.user) {
       auth.fetchUser()
     }
-    else if(auth.user.rol != 'Admin') router.push('/login');
+    else if(auth.user.rol != 'Admin') router.push('/iniciar-sesion');
     else {
       setNotificationList(auth.user.notifications.filter((x: Notification) => !x.read).slice(-5).reverse())
     }
@@ -191,7 +191,7 @@ const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
                 </Menu.Item>
                 <Menu.Item>
                   <Link
-                    href='/admin/billing'
+                    href='/admin/facturacion'
                     className='flex hover:bg-gray-50 hover:text-gray-900 text-gray-700 rounded-lg p-3 text-sm group transition-all duration-300 items-center font-montserrat'
                   >
                     <CreditCardIcon className='h-4 w-4 mr-3 text-gray-500 group-hover:text-[#4F7CCF] transition-colors duration-300' />

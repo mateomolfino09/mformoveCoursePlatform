@@ -53,57 +53,57 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
               </div>
             </div>
           </Link>
-          <Link href={'/admin/users'}>
+          <Link href={'/admin/usuarios'}>
             <div
               className={`pl-4 py-3 mx-2 rounded-xl cursor-pointer mb-2 flex items-center transition-all duration-300 ${
-                pathname == '/admin/users'
+                pathname == '/admin/usuarios'
                   ? 'bg-white/10 text-white border-l-2 border-[#4F7CCF] shadow-lg'
                   : 'text-gray-400 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
               }`}
             >
               <div className='mr-3 flex-shrink-0'>
-                <UserIcon className={`h-5 w-5 ${pathname == '/admin/users' ? 'text-[#4F7CCF]' : ''}`} />
+                <UserIcon className={`h-5 w-5 ${pathname == '/admin/usuarios' ? 'text-[#4F7CCF]' : ''}`} />
               </div>
               <div className='flex-1 min-w-0'>
                 <p className='truncate font-medium'>Usuarios</p>
               </div>
             </div>
           </Link>
-          <Link href={'/admin/memberships'}>
+          <Link href={'/admin/membresias'}>
             <div
               className={`pl-4 py-3 mx-2 rounded-xl cursor-pointer mb-2 flex items-center transition-all duration-300 ${
-                pathname == '/admin/memberships' ||
-                pathname == '/admin/memberships/plans' ||
-                pathname == '/admin/memberships/createPlan' ||
-                pathname == '/admin/memberships/classes' ||
-                pathname == '/admin/memberships/classes/createClass' ||
-                pathname == '/admin/memberships/classes/allClasses' ||
-                pathname == '/admin/memberships/classes/createClassType' ||
-                pathname == '/admin/memberships/class-modules' ||
-                pathname?.startsWith('/admin/memberships/class-modules/') ||
-                pathname == '/admin/memberships/submodules' ||
-                pathname?.startsWith('/admin/memberships/submodules/') ||
-                pathname == '/admin/memberships/bitacora' ||
-                pathname?.startsWith('/admin/memberships/bitacora/')
+                pathname == '/admin/membresias' ||
+                pathname == '/admin/membresias/planes' ||
+                pathname == '/admin/membresias/crear-plan' ||
+                pathname == '/admin/membresias/clases' ||
+                pathname == '/admin/membresias/clases/crear-clase' ||
+                pathname == '/admin/membresias/clases/todas-las-clases' ||
+                pathname == '/admin/membresias/clases/crear-tipo-clase' ||
+                pathname == '/admin/membresias/modulos-clase' ||
+                pathname?.startsWith('/admin/membresias/modulos-clase/') ||
+                pathname == '/admin/membresias/submodulos' ||
+                pathname?.startsWith('/admin/membresias/submodulos/') ||
+                pathname == '/admin/membresias/bitacora' ||
+                pathname?.startsWith('/admin/membresias/bitacora/')
                   ? 'bg-white/10 text-white border-l-2 border-[#4F7CCF] shadow-lg'
                   : 'text-gray-400 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
               }`}
             >
               <div className='mr-3 flex-shrink-0'>
                 <BuildingStorefrontIcon className={`h-5 w-5 ${
-                  pathname == '/admin/memberships' ||
-                  pathname == '/admin/memberships/plans' ||
-                  pathname == '/admin/memberships/createPlan' ||
-                  pathname == '/admin/memberships/classes' ||
-                    pathname == '/admin/memberships/classes/createClass' ||
-                  pathname == '/admin/memberships/classes/allClasses' ||
-                  pathname == '/admin/memberships/classes/createClassType' ||
-                  pathname == '/admin/memberships/class-modules' ||
-                  pathname?.startsWith('/admin/memberships/class-modules/') ||
-                  pathname == '/admin/memberships/submodules' ||
-                  pathname?.startsWith('/admin/memberships/submodules/') ||
-                  pathname == '/admin/memberships/bitacora' ||
-                  pathname?.startsWith('/admin/memberships/bitacora/')
+                  pathname == '/admin/membresias' ||
+                  pathname == '/admin/membresias/planes' ||
+                  pathname == '/admin/membresias/crear-plan' ||
+                  pathname == '/admin/membresias/clases' ||
+                    pathname == '/admin/membresias/clases/crear-clase' ||
+                  pathname == '/admin/membresias/clases/todas-las-clases' ||
+                  pathname == '/admin/membresias/clases/crear-tipo-clase' ||
+                  pathname == '/admin/membresias/modulos-clase' ||
+                  pathname?.startsWith('/admin/membresias/modulos-clase/') ||
+                  pathname == '/admin/membresias/submodulos' ||
+                  pathname?.startsWith('/admin/membresias/submodulos/') ||
+                  pathname == '/admin/membresias/bitacora' ||
+                  pathname?.startsWith('/admin/membresias/bitacora/')
                     ? 'text-[#4F7CCF]' : ''
                 }`} />
               </div>
@@ -112,25 +112,25 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
               </div>
             </div>
           </Link>
-          <Link href={'/admin/mentorship'}>
+          <Link href={'/admin/mentorias'}>
             <div
               className={`pl-4 py-3 mx-2 rounded-xl cursor-pointer mb-2 flex items-center transition-all duration-300 ${
-                pathname == '/admin/mentorship' ||
-                pathname == '/admin/mentorship/plans' ||
-                pathname == '/admin/mentorship/createPlan' ||
-                pathname == '/admin/mentorship/analytics' ||
-                pathname == '/admin/mentorship/solicitudes'
+                pathname == '/admin/mentorias' ||
+                pathname == '/admin/mentorias/planes' ||
+                pathname == '/admin/mentorias/crear-plan' ||
+                pathname == '/admin/mentorias/analitica' ||
+                pathname == '/admin/mentorias/solicitudes'
                   ? 'bg-white/10 text-white border-l-2 border-[#4F7CCF] shadow-lg'
                   : 'text-gray-400 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
               }`}
             >
               <div className='mr-3 flex-shrink-0'>
                 <AcademicCapIcon className={`h-5 w-5 ${
-                  pathname == '/admin/mentorship' ||
-                  pathname == '/admin/mentorship/plans' ||
-                  pathname == '/admin/mentorship/createPlan' ||
-                  pathname == '/admin/mentorship/analytics' ||
-                  pathname == '/admin/mentorship/solicitudes'
+                  pathname == '/admin/mentorias' ||
+                  pathname == '/admin/mentorias/planes' ||
+                  pathname == '/admin/mentorias/crear-plan' ||
+                  pathname == '/admin/mentorias/analitica' ||
+                  pathname == '/admin/mentorias/solicitudes'
                     ? 'text-[#4F7CCF]' : ''
                 }`} />
               </div>
@@ -139,23 +139,23 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
               </div>
             </div>
           </Link>
-          <Link href={'/admin/products'}>
+          <Link href={'/admin/productos'}>
             <div
               className={`pl-4 py-3 mx-2 rounded-xl cursor-pointer mb-2 flex items-center transition-all duration-300 ${
-                pathname == '/admin/products' ||
-                pathname == '/admin/products/createProduct' ||
-                pathname == '/admin/products/allProducts' ||
-                pathname == '/admin/products/createFilters'
+                pathname == '/admin/productos' ||
+                pathname == '/admin/productos/crear-producto' ||
+                pathname == '/admin/productos/todos-productos' ||
+                pathname == '/admin/productos/crear-filtros'
                   ? 'bg-white/10 text-white border-l-2 border-[#4F7CCF] shadow-lg'
                   : 'text-gray-400 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
               }`}
             >
               <div className='mr-3 flex-shrink-0'>
                 <ShoppingBagIcon className={`h-5 w-5 ${
-                  pathname == '/admin/products' ||
-                  pathname == '/admin/products/createProduct' ||
-                  pathname == '/admin/products/allProducts' ||
-                  pathname == '/admin/products/createFilters'
+                  pathname == '/admin/productos' ||
+                  pathname == '/admin/productos/crear-producto' ||
+                  pathname == '/admin/productos/todos-productos' ||
+                  pathname == '/admin/productos/crear-filtros'
                     ? 'text-[#4F7CCF]' : ''
                 }`} />
               </div>
@@ -164,39 +164,39 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
               </div>
             </div>
           </Link>
-          <Link href={'/admin/faq'}>
+          <Link href={'/admin/preguntas-frecuentes'}>
             <div
               className={`pl-4 py-3 mx-2 rounded-xl cursor-pointer mb-2 flex items-center transition-all duration-300 ${
-                pathname == '/admin/faq'
+                pathname == '/admin/preguntas-frecuentes'
                   ? 'bg-white/10 text-white border-l-2 border-[#4F7CCF] shadow-lg'
                   : 'text-gray-400 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
               }`}
             >
               <div className='mr-3 flex-shrink-0'>
-                <QuestionMarkCircleIcon className={`h-5 w-5 ${pathname == '/admin/faq' ? 'text-[#4F7CCF]' : ''}`} />
+                <QuestionMarkCircleIcon className={`h-5 w-5 ${pathname == '/admin/preguntas-frecuentes' ? 'text-[#4F7CCF]' : ''}`} />
               </div>
               <div className='flex-1 min-w-0'>
                 <p className='truncate font-medium'>Preguntas Frecuentes</p>
               </div>
             </div>
           </Link>
-          <Link href={'/admin/in-person-classes'}>
+          <Link href={'/admin/clases-presenciales'}>
             <div
               className={`pl-4 py-3 mx-2 rounded-xl cursor-pointer mb-2 flex items-center transition-all duration-300 ${
-                pathname == '/admin/in-person-classes' ||
-                pathname == '/admin/in-person-classes/create' ||
-                pathname == '/admin/in-person-classes/all' ||
-                pathname?.startsWith('/admin/in-person-classes/edit')
+                pathname == '/admin/clases-presenciales' ||
+                pathname == '/admin/clases-presenciales/crear' ||
+                pathname == '/admin/clases-presenciales/todas' ||
+                pathname?.startsWith('/admin/clases-presenciales/editar')
                   ? 'bg-white/10 text-white border-l-2 border-[#4F7CCF] shadow-lg'
                   : 'text-gray-400 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
               }`}
             >
               <div className='mr-3 flex-shrink-0'>
                 <CalendarDaysIcon className={`h-5 w-5 ${
-                  pathname == '/admin/in-person-classes' ||
-                  pathname == '/admin/in-person-classes/create' ||
-                  pathname == '/admin/in-person-classes/all' ||
-                  pathname?.startsWith('/admin/in-person-classes/edit')
+                  pathname == '/admin/clases-presenciales' ||
+                  pathname == '/admin/clases-presenciales/crear' ||
+                  pathname == '/admin/clases-presenciales/todas' ||
+                  pathname?.startsWith('/admin/clases-presenciales/editar')
                     ? 'text-[#4F7CCF]' : ''
                 }`} />
               </div>

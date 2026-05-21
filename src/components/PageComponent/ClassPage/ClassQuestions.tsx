@@ -20,6 +20,7 @@ import {
 import axios from 'axios';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { routes } from '../../../constants/routes';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
@@ -86,7 +87,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
 
   const createQuestion = useCallback(async () => {
     if (!auth.user) {
-      router.push('/membership');
+      router.push(routes.navegation.moveCrew);
       return;
     }
 
@@ -134,7 +135,7 @@ const ClassQuestions = ({ user, clase, questionsDB }: Props) => {
 
   const createAnswer = useCallback(async (questionId: number) => {
     if (!auth.user) {
-      router.push('/membership');
+      router.push(routes.navegation.moveCrew);
       return;
     }
 

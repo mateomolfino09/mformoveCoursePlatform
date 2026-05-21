@@ -41,7 +41,7 @@ const MentorshipPlans = ({ plans, origin }: MentorshipProps) => {
         saveRedirectUrl(window.location.pathname + window.location.search);
       }
       toast.error('Debes iniciar sesión para continuar');
-      router.push('/login');
+      router.push('/iniciar-sesion');
       return;
     }
 

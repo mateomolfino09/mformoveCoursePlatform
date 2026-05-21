@@ -24,7 +24,7 @@ function EmailVerification({ token }: Props) {
     const cookies: any = Cookies.get('userToken')
   
     if (cookies) {
-      router.push('/library');
+      router.push('/biblioteca');
     }
   }, [router]);
 
@@ -176,7 +176,7 @@ function EmailVerification({ token }: Props) {
                         
                         <div className="flex flex-col sm:flex-row gap-3">
                           <Link
-                            href="/login"
+                            href="/iniciar-sesion"
                             className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-white text-black py-3 px-6 text-base font-semibold shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all"
                           >
                             Ingresar

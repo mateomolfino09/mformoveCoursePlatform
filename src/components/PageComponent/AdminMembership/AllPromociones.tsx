@@ -38,13 +38,13 @@ const AllPromociones = () => {
     const cookies: any = Cookies.get('userToken');
     
     if (!cookies) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
     
     if (!auth.user) {
       auth.fetchUser();
     } else if (auth.user.rol != 'Admin') {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
   }, [auth.user]);
 
@@ -139,7 +139,7 @@ const AllPromociones = () => {
                       Gestiona tus promociones de membresía
                     </p>
                   </div>
-                  <Link href={'/admin/memberships/promociones/create'}>
+                  <Link href={'/admin/membresias/promociones/crear'}>
                     <button className='bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#4F7CCF] text-white px-6 py-3 rounded-xl hover:shadow-xl transition-all duration-300 flex items-center space-x-2 font-montserrat font-semibold shadow-lg'>
                       <span>+</span>
                       <span>Crear Promoción</span>
@@ -153,7 +153,7 @@ const AllPromociones = () => {
                 ) : promociones.length === 0 ? (
                   <div className='bg-white border border-gray-200 rounded-2xl shadow-lg p-12 text-center'>
                     <p className='text-gray-500 text-lg mb-4'>No hay promociones creadas</p>
-                    <Link href={'/admin/memberships/promociones/create'}>
+                    <Link href={'/admin/membresias/promociones/crear'}>
                       <button className='bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#4F7CCF] text-white px-6 py-3 rounded-xl hover:shadow-xl transition-all duration-300 font-montserrat font-semibold'>
                         Crear Primera Promoción
                       </button>
@@ -221,7 +221,7 @@ const AllPromociones = () => {
                             </td>
                             <td className='whitespace-nowrap px-6 py-4'>
                               <div className='flex items-center justify-center gap-3'>
-                                <Link href={`/admin/memberships/promociones/edit/${promocion._id}`}>
+                                <Link href={`/admin/membresias/promociones/editar/${promocion._id}`}>
                                   <button
                                     className='text-[#4F7CCF] hover:text-[#234C8C] hover:scale-110 cursor-pointer transition-all duration-200'
                                     title='Editar'

@@ -6,6 +6,8 @@ export const palette = {
   ink: '#141411',       // Negro / tinta
   sage: '#acae89',      // Verde salvia
   stone: '#787867',     // Gris piedra
+  steel: '#8f9db3',     // Azul grisáceo marca
+  cloud: '#f5f7fa',     // Gris muy claro (fondos)
   deepTeal: '#001b1c',  // Teal oscuro
   teal: '#074647',      // Teal
   white: '#FAF8F4',     // Blanco minimalista

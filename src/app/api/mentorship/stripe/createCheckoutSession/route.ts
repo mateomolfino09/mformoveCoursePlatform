@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     const origin = getCurrentURL();
-    const successUrl = new URL(`${origin}/mentorship/success`);
+    const successUrl = new URL(`${origin}/mentoria/exito`);
     successUrl.searchParams.append("external_id", user._id);
     successUrl.searchParams.append("plan_id", planId);
 
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       ],
       mode: 'subscription',
       success_url: successUrl.toString(),
-      cancel_url: `${origin}/mentorship`,
+      cancel_url: `${origin}/mentoria`,
       customer_email: userEmail,
       metadata: {
         email: userEmail,

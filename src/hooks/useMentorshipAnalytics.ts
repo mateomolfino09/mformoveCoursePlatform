@@ -15,7 +15,7 @@ export const useMentorshipAnalytics = () => {
 
   // Track page view
   useEffect(() => {
-    if (pathname === '/mentorship') {
+    if (pathname === '/mentoria') {
       trackEvent('mentorship_page_view');
     }
   }, [pathname]);

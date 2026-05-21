@@ -3,6 +3,7 @@ import { stripe } from './stripeConfig';
 import User from '../../../../models/userModel';
 import Promocion from '../../../../models/promocionModel';
 import connectDB from '../../../../config/connectDB';
+import { routes } from '../../../../constants/routes';
 
 export async function createCheckoutSession(priceId: string, customerEmail?: string, planId?: string, promocionId?: string) {
     const origin = getCurrentURL();
@@ -13,7 +14,7 @@ export async function createCheckoutSession(priceId: string, customerEmail?: str
       throw new Error('Usuario no encontrado');
     }
 
-    const successUrl = new URL(`${origin}/payment/success`);
+    const successUrl = new URL(`${origin}/pago/exito`);
     const trialPeriodDays = parseInt(process.env.STRIPE_MEMBERSHIP_FREE_DAYS ?? '0', 10) || 0;
 
     // Buscar promoción activa si se proporciona promocionId
@@ -44,7 +45,7 @@ export async function createCheckoutSession(priceId: string, customerEmail?: str
         ],
         mode: 'subscription',
         success_url: successUrl.toString(),
-        cancel_url: `${origin}/membership`,
+        cancel_url: `${origin}${routes.navegation.moveCrew}`,
         customer_email: customerEmail,
         metadata: {
             email: user.email,

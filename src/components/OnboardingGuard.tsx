@@ -19,18 +19,19 @@ export default function OnboardingGuard({ children }: OnboardingGuardProps) {
 
   // Rutas que no requieren verificación de onboarding
   const excludedPaths = [
-    '/onboarding',
-    '/login',
-    '/register',
-    '/forget',
-    '/reset',
-    '/resetEmail',
-    '/email',
+    '/incorporacion',
+    '/iniciar-sesion',
+    '/registro',
+    '/olvide-contrasena',
+    '/restablecer',
+    '/restablecer-correo',
+    '/verificar-correo',
     '/',
-    '/about',
-    '/membership',
-    '/products',
-    '/mentorship'
+    '/nosotros',
+    '/cuerpo-autonomo',
+    '/curso',
+    '/productos',
+    '/mentoria'
   ];
 
   const checkOnboardingStatus = useCallback(async () => {
@@ -84,7 +85,7 @@ export default function OnboardingGuard({ children }: OnboardingGuardProps) {
           // Solo redirigir si no aceptó el contrato (Bienvenida)
           if (!data.contratoAceptado) {
             setNeedsOnboarding(true);
-            router.push('/onboarding/bienvenida');
+            router.push('/incorporacion/bienvenida');
             return;
           }
           setNeedsOnboarding(false);
@@ -125,7 +126,7 @@ export default function OnboardingGuard({ children }: OnboardingGuardProps) {
           </p>
           <button
             onClick={() => {
-              router.push('/onboarding/bienvenida');
+              router.push('/incorporacion/bienvenida');
             }}
             className="px-6 py-3 bg-white text-black rounded-xl font-semibold hover:bg-gray-200 transition-colors"
           >

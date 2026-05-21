@@ -232,7 +232,7 @@ async function sendEmailNotification(data: any) {
         ${data.email.html}
       </div>
       <hr>
-      <p><a href="${process.env.NEXT_PUBLIC_BASE_URL}/admin/auto-emails/${data.savedEmailId}">Revisar y Aprobar Email</a></p>
+      <p><a href="${process.env.NEXT_PUBLIC_BASE_URL}/admin/correos-automaticos/${data.savedEmailId}">Revisar y Aprobar Email</a></p>
     `;
 
     // Aquí implementarías el envío real del email
@@ -252,7 +252,7 @@ Asunto: ${data.email.subject}
 
 Revisá tu dashboard para aprobar y enviar.
 
-${process.env.NEXT_PUBLIC_BASE_URL}/admin/auto-emails/${data.savedEmailId}`;
+${process.env.NEXT_PUBLIC_BASE_URL}/admin/correos-automaticos/${data.savedEmailId}`;
 
     // Aquí implementarías el envío real por WhatsApp
 

@@ -51,7 +51,7 @@ const SuccessProductPayment = ({ product }: Props) => {
 
     if (!paymentToken) {
       toast.error(`No podes acceder a esta página, te redireccionaremos al inicio...`);
-      router.push('/mentorship');
+      router.push('/mentoria');
       return;
     }
 

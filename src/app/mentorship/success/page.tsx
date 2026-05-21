@@ -147,7 +147,7 @@ export default function MentorshipSuccessPage() {
           >
             <Link
               href="/account"
-              className="inline-flex items-center justify-center rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage"
+              className="inline-flex items-center justify-center rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-skysteel hover:bg-palette-skysteel hover:text-palette-ink"
             >
               Ir a mi cuenta
             </Link>

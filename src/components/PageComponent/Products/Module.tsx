@@ -22,7 +22,7 @@ const Module = ({ classes, product, index }: Props) => {
         </div>
         <div className='bg-gray-200/50 rounded-b-xl w-full'>
             {classes.map(clase => (
-                <div key={clase.id} onClick={() => router.push(`/products/${product.url}/${clase.video_url}`)} className=' flex h-24 pt-4 flex-col items-center justify-start cursor-pointer'>
+                <div key={clase.id} onClick={() => router.push(`/productos/${product.url}/${clase.video_url}`)} className=' flex h-24 pt-4 flex-col items-center justify-start cursor-pointer'>
                     <div className='w-full justify-center space-x-4 px-4 items-center flex h-16'>
                         <div className='image relative w-16 h-16'>
                             <Image src={clase.image_url} fill={true} alt={clase.name} loader={imageLoader} className='rounded-lg object-cover'/>

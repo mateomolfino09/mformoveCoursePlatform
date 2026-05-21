@@ -118,7 +118,7 @@ export async function POST(request) {
 
       // Enviar email con credenciales y link para cambiar contraseña
       const origin = getCurrentURL();
-      const resetLink = `${origin}/reset/${token}`;
+      const resetLink = `${origin}/restablecer/${token}`;
       try {
         await emailService.sendAccountCreated({
           email,

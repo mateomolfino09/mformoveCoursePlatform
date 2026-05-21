@@ -27,7 +27,7 @@ function buildWeeklyPathTestData(to: string, data?: any, simulatedWeek?: any) {
     audioTitle: simulatedWeek?.audioTitle ?? data?.audioTitle ?? 'Introducción Semana 3',
     coverImage: simulatedWeek?.coverImage ?? data?.coverImage ?? 'https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png',
     videoDurationSeconds: simulatedWeek?.videoDurationSeconds ?? data?.videoDurationSeconds ?? 324,
-    bitacoraLink: data?.bitacoraLink ?? 'https://mateomove.com/weekly-path',
+    bitacoraLink: data?.bitacoraLink ?? 'https://mateomove.com/ruta-semanal',
     logbookTitle: simulatedWeek?.logbookTitle ?? data?.logbookTitle ?? 'Camino',
     isFirstWeek: data?.isFirstWeek ?? weekNumber === 1,
     // Un solo evento en vivo: Movimiento Online (id 69aa06ebec4d762ea8659f68). Sin duplicar clases en vivo.
@@ -259,7 +259,7 @@ export async function POST(req: NextRequest) {
       const result = await emailService.sendWelcomeMembership({
         email: testEmail,
         name: 'Usuario de Prueba',
-        dashboardUrl: 'https://mateomove.com/library',
+        dashboardUrl: 'https://mateomove.com/biblioteca',
         telegramInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/LgVResfArGjIn9qByXXUSo',
         whatsappInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/LgVResfArGjIn9qByXXUSo'
       });
@@ -326,8 +326,8 @@ export async function POST(req: NextRequest) {
           month: 'long',
           day: 'numeric'
         }),
-        feedbackUrl: `https://mateomove.com/contact?reason=cancellation&email=${encodeURIComponent(testEmail)}`,
-        reactivateUrl: 'https://mateomove.com/membership'
+        feedbackUrl: `https://mateomove.com/contacto?reason=cancellation&email=${encodeURIComponent(testEmail)}`,
+        reactivateUrl: 'https://mateomove.com/cuerpo-autonomo'
       });
       results.push({
         emailType: 'SUBSCRIPTION_CANCELLED',
@@ -359,8 +359,8 @@ export async function POST(req: NextRequest) {
           minute: '2-digit'
         }),
         errorMessage: 'Tarjeta rechazada. Por favor, verifica tu método de pago.',
-        retryUrl: 'https://mateomove.com/membership',
-        feedbackUrl: `https://mateomove.com/contact?reason=payment&email=${encodeURIComponent(testEmail)}`
+        retryUrl: 'https://mateomove.com/cuerpo-autonomo',
+        feedbackUrl: `https://mateomove.com/contacto?reason=payment&email=${encodeURIComponent(testEmail)}`
       });
       results.push({
         emailType: 'PAYMENT_FAILED',

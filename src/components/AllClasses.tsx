@@ -37,7 +37,7 @@ const AllClasses: React.FC<AllClassesProps> = ({ classes }) => {
         </div>
         <div className='bg-white border border-gray-200 rounded-2xl p-12 text-center shadow-lg'>
           <p className='text-gray-900 text-lg font-montserrat mb-4'>No hay clases disponibles.</p>
-          <Link href={'/admin/memberships/classes/createClass'}>
+          <Link href={'/admin/membresias/clases/crear-clase'}>
             <button className='mt-4 px-6 py-3 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#4F7CCF] text-white rounded-xl hover:shadow-xl transition-all duration-300 font-semibold font-montserrat'>
               Crear Primera Clase
             </button>
@@ -59,7 +59,7 @@ const AllClasses: React.FC<AllClassesProps> = ({ classes }) => {
               Gestiona las clases exclusivas para miembros ({classes.length} {classes.length === 1 ? 'clase' : 'clases'})
             </p>
           </div>
-          <Link href={'/admin/memberships/classes/createClass'}>
+          <Link href={'/admin/membresias/clases/crear-clase'}>
             <button className='px-6 py-3 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#4F7CCF] text-white rounded-xl hover:shadow-xl transition-all duration-300 flex items-center space-x-2 font-montserrat font-semibold shadow-lg'>
               <span>+ Crear Clase</span>
             </button>
@@ -123,7 +123,7 @@ const AllClasses: React.FC<AllClassesProps> = ({ classes }) => {
                     Creada: {new Date(clase.createdAt).toLocaleDateString('es-ES')}
                   </span>
                   <Link 
-                    href={`/admin/memberships/classes/edit/${clase.id}`}
+                    href={`/admin/membresias/clases-modulo/editar/${clase.id}`}
                     className='text-[#4F7CCF] hover:text-[#234C8C] text-sm font-semibold font-montserrat transition-colors duration-200'
                   >
                     Ver detalles →

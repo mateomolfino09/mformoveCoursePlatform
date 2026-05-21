@@ -21,13 +21,13 @@ const AdminMembershipIndex = () => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies ) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
     
     if(!auth.user) {
       auth.fetchUser()
     }
-    else if(auth.user.rol != 'Admin') router.push('/login');
+    else if(auth.user.rol != 'Admin') router.push('/iniciar-sesion');
 
 
   }, [auth.user]);
@@ -51,7 +51,7 @@ const AdminMembershipIndex = () => {
           </div>
 
           <div className='grid lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-8'>
-            <Link href={'/admin/memberships/createPlan'}>
+            <Link href={'/admin/membresias/crear-plan'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                 <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
@@ -60,7 +60,7 @@ const AdminMembershipIndex = () => {
                 <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Crear Plan</p>
               </div>
             </Link>
-            <Link href={'/admin/memberships/plans'}>
+            <Link href={'/admin/membresias/planes'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                 <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
@@ -69,7 +69,7 @@ const AdminMembershipIndex = () => {
                 <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Planes</p>
               </div>
             </Link>
-            <Link href={'/admin/memberships/promociones'}>
+            <Link href={'/admin/membresias/promociones'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#ae9359]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#ae9359] via-[#c9a86a] to-[#ae9359] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                 <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#ae9359] transition-all duration-300 mb-4'>
@@ -80,7 +80,7 @@ const AdminMembershipIndex = () => {
                 <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#ae9359] transition-colors duration-300'>Promociones</p>
               </div>
             </Link>
-            <Link href={'/admin/memberships/classes'}>
+            <Link href={'/admin/membresias/clases'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                 <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
@@ -89,7 +89,7 @@ const AdminMembershipIndex = () => {
                 <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Clases</p>
               </div>
             </Link>
-            <Link href={'/admin/memberships/class-modules'}>
+            <Link href={'/admin/membresias/modulos-clase'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                 <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
@@ -99,7 +99,7 @@ const AdminMembershipIndex = () => {
                 <p className='text-gray-500 text-sm font-montserrat mt-1'>módulos, submódulos y clases</p>
               </div>
             </Link>
-            <Link href={'/admin/memberships/bitacora'}>
+            <Link href={'/admin/membresias/bitacora'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                 <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
@@ -109,7 +109,7 @@ const AdminMembershipIndex = () => {
                 <p className='text-gray-500 text-sm font-montserrat mt-1'>Weekly Path / bitácora mensual</p>
               </div>
             </Link>
-            <Link href={'/admin/memberships/events-membership'}>
+            <Link href={'/admin/membresias/eventos-membresia'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                 <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>

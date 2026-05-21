@@ -46,7 +46,7 @@ const MentorshipCTA = () => {
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <Link
-                  href="/mentorship/consulta"
+                  href="/mentoria/consulta"
                   className="group inline-flex w-full items-center justify-between gap-4 rounded-full border-2 border-palette-cream/80 bg-palette-cream px-7 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.2em] text-palette-ink transition-all duration-200 hover:border-white hover:bg-white sm:w-auto"
                 >
                   <span>Aplicar a mentoría</span>

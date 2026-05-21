@@ -9,7 +9,7 @@ import state from '../valtio';
  * Componente global que verifica continuamente el estado del onboarding
  * y redirige automáticamente si el usuario necesita completarlo.
  * 
- * Se ejecuta en todas las páginas excepto las de onboarding y login/register.
+ * Se ejecuta en todas las páginas excepto las de onboarding y login/registro.
  */
 export default function OnboardingChecker() {
   const router = useRouter();
@@ -19,18 +19,19 @@ export default function OnboardingChecker() {
   useEffect(() => {
     // Rutas que no requieren verificación de onboarding
     const excludedPaths = [
-      '/onboarding',
-      '/login',
-      '/register',
-      '/forget',
-      '/reset',
-      '/resetEmail',
-      '/email',
+      '/incorporacion',
+      '/iniciar-sesion',
+      '/registro',
+      '/olvide-contrasena',
+      '/restablecer',
+      '/restablecer-correo',
+      '/verificar-correo',
       '/',
-      '/about',
-      '/membership',
-      '/products',
-      '/mentorship'
+      '/nosotros',
+      '/cuerpo-autonomo',
+      '/curso',
+      '/productos',
+      '/mentoria'
     ];
 
     // Verificar si la ruta actual está excluida
@@ -41,9 +42,9 @@ export default function OnboardingChecker() {
       return pathname === path || pathname.startsWith(path + '/');
     });
 
-    // CRÍTICO: Si estamos en /onboarding/bienvenida, NO hacer NADA
+    // CRÍTICO: Si estamos en /incorporacion/bienvenida, NO hacer NADA
     // El usuario puede estar aceptando el contrato o viendo el modal
-    if (pathname === '/onboarding/bienvenida' || pathname.startsWith('/onboarding/bienvenida')) {
+    if (pathname === '/incorporacion/bienvenida' || pathname.startsWith('/incorporacion/bienvenida')) {
       return; // Salir completamente, no ejecutar ninguna verificación
     }
 
@@ -97,9 +98,9 @@ export default function OnboardingChecker() {
           if (data.necesitaOnboarding) {
             console.log('[OnboardingChecker] Necesita onboarding, contratoAceptado:', data.contratoAceptado);
             if (!data.contratoAceptado) {
-              console.log('[OnboardingChecker] Redirigiendo a /onboarding/bienvenida');
+              console.log('[OnboardingChecker] Redirigiendo a /incorporacion/bienvenida');
               // Solo redirigir a bienvenida si no estamos ya ahí
-              router.push('/onboarding/bienvenida');
+              router.push('/incorporacion/bienvenida');
             }
             // Si el contrato está aceptado, NO hacer nada (dejar que el usuario complete el flujo)
           } else {

@@ -11,6 +11,7 @@ import connectDB from '../../../../../config/connectDB';
 import User from '../../../../../models/userModel.js';
 import { EmailService } from '../../../../../services/email/emailService';
 import CoherenceTracking from '../../../../../models/coherenceTrackingModel';
+import { routes } from '../../../../../constants/routes';
 
 // Helper robusto para inicializar tracking incluso si el método estático no está disponible
 const ensureCoherenceTracking = async (userId: any) => {
@@ -120,7 +121,7 @@ export const POST = async (req: NextRequest) => {
                   await emailService.sendOnboardingWelcome({
                     email: user.email,
                     name: user.name || 'Miembro',
-                    onboardingLink: `${origin}/onboarding/bienvenida`,
+                    onboardingLink: `${origin}/incorporacion/bienvenida`,
                     whatsappInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/LgVResfArGjIn9qByXXUSo'
                   });
                 } catch (emailErr) {
@@ -219,8 +220,8 @@ export const POST = async (req: NextRequest) => {
                           day: 'numeric'
                         }),
                         accessUntil: periodEnd,
-                        feedbackUrl: `${origin}/contact?reason=cancellation&email=${encodeURIComponent(user.email)}`,
-                        reactivateUrl: `${origin}/membership`
+                        feedbackUrl: `${origin}/contacto?reason=cancellation&email=${encodeURIComponent(user.email)}`,
+                        reactivateUrl: `${origin}${routes.navegation.moveCrew}`
                       });
                       
                       // Enviar email de notificación al administrador
@@ -288,8 +289,8 @@ export const POST = async (req: NextRequest) => {
                     day: 'numeric'
                   }),
                   accessUntil: null, // Ya no tiene acceso
-                  feedbackUrl: `${origin}/contact?reason=cancellation&email=${encodeURIComponent(user.email)}`,
-                  reactivateUrl: `${origin}/membership`
+                  feedbackUrl: `${origin}/contacto?reason=cancellation&email=${encodeURIComponent(user.email)}`,
+                  reactivateUrl: `${origin}${routes.navegation.moveCrew}`
                 });
                 
                 // Enviar email de notificación al administrador
@@ -358,8 +359,8 @@ export const POST = async (req: NextRequest) => {
                       minute: '2-digit'
                     }),
                     errorMessage: (invoice as any).last_payment_error?.message || 'No se pudo procesar el pago. Por favor, verifica tu método de pago.',
-                    retryUrl: `${origin}/membership`,
-                    feedbackUrl: `${origin}/contact?reason=payment&email=${encodeURIComponent(user.email)}`
+                    retryUrl: `${origin}${routes.navegation.moveCrew}`,
+                    feedbackUrl: `${origin}/contacto?reason=payment&email=${encodeURIComponent(user.email)}`
                   });
                   
                   // Enviar email de notificación al administrador

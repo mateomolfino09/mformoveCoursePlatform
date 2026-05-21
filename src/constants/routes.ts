@@ -1,23 +1,24 @@
-import { payments } from "./payments";
-
 const membershipRoutes = {
     /** Página principal de membresía (Library) */
-    library: '/library',
+    library: '/biblioteca',
     /** Clases individuales (sin módulo) */
-    individualClasses: '/library/individual-classes',
+    individualClasses: '/biblioteca/clases-individuales',
     /** Camino semanal (antes "Bitácora") */
-    weeklyPath: '/weekly-path',
-    moveCrew: '/membership',
-    entry: (isMember: boolean) => isMember ? '/library' : '/membership',
+    weeklyPath: '/ruta-semanal',
+    /** Redirige server-side al último curso publicado (compatibilidad de enlaces viejos). */
+    moveCrew: '/cuerpo-autonomo',
+    curso: (slug: string) => `/curso/${slug}`,
+    cursoContenido: (slug: string) => `/curso/${slug}/contenido`,
+    entry: (isMember: boolean) => (isMember ? '/biblioteca' : '/cuerpo-autonomo'),
 };
 
 export const routes = {
     user: {
-        login: '/login',
-        register: '/register',
-        forget: '/forget',
-        forgetEmail: '/resetEmail',
-        perfil: '/account'
+        login: '/iniciar-sesion',
+        register: '/registro',
+        forget: '/olvide-contrasena',
+        forgetEmail: '/restablecer-correo',
+        perfil: '/cuenta'
 
     },
     navegation: {
@@ -28,22 +29,26 @@ export const routes = {
         moveCrew: membershipRoutes.moveCrew,
         membresia: membershipRoutes.entry,
         membresiaHome: membershipRoutes.library,
-        mentorship: '/mentorship',
-        mentoria: '/mentorship', // Mantener para compatibilidad
-        mentorshipConsulta: '/mentorship/consulta',
-        eventos: '/events',
-        preguntasFrecuentes: '/faq',
+        mentorship: '/mentoria',
+        mentoria: '/mentoria',
+        mentorshipConsulta: '/mentoria/consulta',
+        eventos: '/eventos',
+        preguntasFrecuentes: '/preguntas-frecuentes',
         index: '/',
-        products: '/products',
-        payments: `/payment`,
-        paymentSuccess: '/payment/success',
+        products: '/productos',
+        selectPlan: '/elegir-plan',
+        payments: `/pago`,
+        paymentSuccess: '/pago/exito',
         onboarding: {
-            bienvenida: '/onboarding/bienvenida',
+            bienvenida: '/incorporacion/bienvenida',
         },
-        about: '/about',
-        privacy: '/privacy',
-        classes: '/classes',
-        email: '/email',
-        account: '/account',
+        about: '/nosotros',
+        contact: '/contacto',
+        terminos: '/terminos',
+        privacy: '/privacidad',
+        linkInBio: '/bio',
+        classes: '/clases',
+        email: '/verificar-correo',
+        account: '/cuenta',
     }
 }

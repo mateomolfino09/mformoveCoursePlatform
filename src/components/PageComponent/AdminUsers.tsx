@@ -38,13 +38,13 @@ const AdminUsers = ({ initialData }: Props) => {
   useEffect(() => {
     const userToken = Cookies.get('userToken');
     if (!userToken) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
 
     if (!auth.user) {
       auth.fetchUser();
     } else if (auth.user.rol !== 'Admin') {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
   }, [auth.user, router]);
 
@@ -178,7 +178,7 @@ const AdminUsers = ({ initialData }: Props) => {
             actions: (_, user) => (
               <div className='flex items-center justify-center space-x-2'>
                 <Link
-                  href={`/admin/updateUser/${user._id}`}
+                  href={`/admin/actualizar-usuario/${user._id}`}
                   className='text-[#234C8C]'
                 >
                   <PencilIcon className='h-5 w-5' />

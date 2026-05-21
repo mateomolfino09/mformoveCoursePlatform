@@ -111,7 +111,7 @@ const FreeProductMainSideBarDash = ({ showNav }: Props) => {
             </m.div>
         //   </Link>
         )}
-        {/* <Link href={'/products'}> */}
+        {/* <Link href={'/productos'}> */}
           <m.div
             initial={{ color: '#fff', x: 700 }}
             animate={+windowWidth < 768 ? animationPhones : animation}
@@ -131,7 +131,7 @@ const FreeProductMainSideBarDash = ({ showNav }: Props) => {
             </h1>
           </m.div>
         {/* </Link> */}
-        {/* <Link href={'/about'}> */}
+        {/* <Link href={'/nosotros'}> */}
           <m.div
             initial={{ color: '#fff', x: 700 }}
             animate={+windowWidth < 768 ? animationPhones : animation}
@@ -141,7 +141,7 @@ const FreeProductMainSideBarDash = ({ showNav }: Props) => {
             onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
             onClick={(e) => {
               e.currentTarget.style.color = '#fff';
-            //   router.push('/about');
+            //   router.push('/nosotros');
             }}
             className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
           >
@@ -152,7 +152,7 @@ const FreeProductMainSideBarDash = ({ showNav }: Props) => {
           </m.div>
         {/* </Link> */}
         {/* {!auth.user ? (
-          <Link href={'/login'}>
+          <Link href={'/iniciar-sesion'}>
             <m.div
               initial={{ color: '#fff', x: 700 }}
               animate={+windowWidth < 768 ? animationPhones : animation}
@@ -174,7 +174,7 @@ const FreeProductMainSideBarDash = ({ showNav }: Props) => {
           </Link>
         ) : (
           <>
-            <Link href={'/account'}>
+            <Link href={'/cuenta'}>
               <m.div
                 initial={{ color: '#fff', x: 700 }}
                 animate={+windowWidth < 768 ? animationPhones : animation}
