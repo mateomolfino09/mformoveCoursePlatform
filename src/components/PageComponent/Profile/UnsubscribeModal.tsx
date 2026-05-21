@@ -52,7 +52,7 @@ const UnsubscribeModal
         // Si hay un mensaje de feedback adicional, enviarlo al endpoint de contacto
         if (feedbackMessage.trim()) {
           try {
-            await fetch('/api/contact', {
+            await fetch('/api/contacto', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

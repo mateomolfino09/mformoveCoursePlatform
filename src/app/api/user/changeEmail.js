@@ -26,7 +26,7 @@ const changeEmail = async (req, res) => {
 
       let origin = getCurrentURL();
 
-      const link = `${origin}/resetEmail/${token}`;
+      const link = `${origin}/restablecer-correo/${token}`;
       const title = `<h1 style="color:black">Restablece tu email</h1>`;
       const message = `
       <div>     

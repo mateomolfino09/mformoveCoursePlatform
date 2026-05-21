@@ -76,7 +76,7 @@ const LibrarySearch = ({ classesDB, search }: Props) => {
           <section className='!mt-0'>
           </section>
           <section>
-            <a href={'/library'}>
+            <a href={'/biblioteca'}>
             <h5 className='ml-12 md:text-base w-fit mb-12 py-2 text-white relative font-light text-sm hover:scale-105 transition duration-200 before:content-[""]  before:h-[1px] before:absolute before:w-full before:bottom-[-3px] before:left-0 before:bg-yellow-500/80 cursor-pointer'>Ver todas las clases</h5>
             
             </a>

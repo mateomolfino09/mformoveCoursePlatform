@@ -58,8 +58,8 @@ Si el usuario **SÍ está logueado:**
 ### 3. Pago Exitoso y Webhook
 
 **Redirección después del pago:**
-- **Stripe:** `/payment/success` (sin parámetros)
-- **dLocal:** Redirección externa, luego callback a `/payment/success`
+- **Stripe:** `/pago/exito` (sin parámetros)
+- **dLocal:** Redirección externa, luego callback a `/pago/exito`
 
 **IMPORTANTE:** El procesamiento del pago NO se hace en la página de success. Todo se procesa mediante webhooks de Stripe.
 
@@ -241,7 +241,7 @@ login             ↓
          ↓
    Actualizar user.subscription.active = true
          ↓
-   Usuario redirigido a /payment/success
+   Usuario redirigido a /pago/exito
          ↓
    Página muestra mensaje de éxito
    (NO procesa nada, solo muestra)

@@ -205,7 +205,7 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
               <div className="text-center pt-8">
                 <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-gray-100 to-gray-50 px-6 py-3 rounded-full border border-gray-200">
                   <span className="text-gray-700 font-montserrat">¿No encuentras lo que buscas?</span>
-                  <a href="/mentorship/consulta" className="text-[#234C8C] font-semibold font-montserrat hover:text-[#1a3d73] transition-colors">
+                  <a href="/mentoria/consulta" className="text-[#234C8C] font-semibold font-montserrat hover:text-[#1a3d73] transition-colors">
                     Consulta personalizada →
                   </a>
                 </div>
@@ -232,7 +232,7 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
               {/* CTA */}
               <div className="flex justify-center">
                 <a 
-                  href="/mentorship"
+                  href="/mentoria"
                   className="px-6 py-3 bg-gradient-to-r from-[#234C8C] to-[#1a3d73] text-white rounded-xl font-semibold font-montserrat hover:shadow-lg transition-all duration-300"
                 >
                   Explorar mentoría
@@ -324,14 +324,14 @@ const EventsList: React.FC<Props> = ({ eventos }) => {
               {/* CTA */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <a 
-                  href="/mentorship"
+                  href="/mentoria"
                   className="group inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-[#234C8C] to-[#1a3d73] text-white px-8 py-4 rounded-xl font-semibold hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:-translate-y-1 font-montserrat"
                 >
                   <span>Explorar Mentoría</span>
                   <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </a>
                 <a 
-                  href="/mentorship/consulta"
+                  href="/mentoria/consulta"
                   className="inline-flex items-center justify-center space-x-2 border border-gray-600 text-gray-300 px-8 py-4 rounded-xl font-semibold hover:border-[#234C8C] hover:text-[#234C8C] transition-colors duration-300 font-montserrat"
                 >
                   <span>Consulta Gratuita</span>

@@ -36,7 +36,7 @@ const RegisterStepOne = ({ user, signUp }: Props) => {
       : '';
 
   const handleClick = () => {
-    router.push('/login');
+    router.push('/iniciar-sesion');
   };
 
   return (

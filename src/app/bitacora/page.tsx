@@ -15,7 +15,7 @@ import Cookies from 'js-cookie';
 import WeeklyPathSidebar from '../../components/PageComponent/WeeklyPath/WeeklyPathSidebar';
 import VideoContentDisplay from '../../components/PageComponent/WeeklyPath/VideoContentDisplay';
 import AudioTextContentDisplay from '../../components/PageComponent/WeeklyPath/AudioTextContentDisplay';
-import MoveCrewLoading from '../../components/PageComponent/MoveCrew/MoveCrewLoading';
+import MembershipLoading from '../../components/PageComponent/Course/MembershipLoading';
 import MainSideBar from '../../components/MainSidebar/MainSideBar';
 import WeeklyPathSkeleton from '../../components/WeeklyPathSkeleton';
 import { CoherenceProvider, useCoherence } from '../../contexts/CoherenceContext';
@@ -23,38 +23,10 @@ import CoherenceCelebrationModal from '../../components/PageComponent/WeeklyPath
 import CoherenceInfoModal from '../../components/PageComponent/WeeklyPath/CoherenceInfoModal';
 import GorillaLevelDisplay from '../../components/PageComponent/WeeklyPath/GorillaLevelDisplay';
 import VideoHeaderGorilla from '../../components/PageComponent/WeeklyPath/VideoHeaderGorilla';
-import WeeklyPathLoading from '../../components/PageComponent/MoveCrew/WeeklyPathLoading';
+import WeeklyPathLoading from '../../components/PageComponent/Course/WeeklyPathLoading';
+import { routes } from '../../constants/routes';
 import FooterProfile from '../../components/PageComponent/Profile/FooterProfile';
 import WeeklyReportModal from '../../components/WeeklyReportModal';
-
-import Footer from '../../components/Footer';
-import Link from 'next/link';
-
-const WeeklyPathFooter = () => (
-  <footer className="bg-black text-white mt-12">
-    <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row md:items-start md:justify-between gap-8">
-      <div className="flex items-center gap-4">
-        <Link href="/">
-          <img
-            alt="MforMove logo blanco"
-            src="/images/MFORMOVE_blanco03.png"
-            width={180}
-            height={60}
-            className="h-12 w-auto object-contain"
-          />
-        </Link>
-        <p className="text-sm text-white/70 font-light font-montserrat">
-          Cuerpo autónomo - Camino
-        </p>
-      </div>
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm text-white/80 font-light font-montserrat">
-        <Link href="/faq" className="hover:text-white transition-colors">Preguntas Frecuentes</Link>
-        <a href="/documents/terms-and-conditions.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Términos y Condiciones</a>
-        <a href="/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Políticas de Privacidad</a>
-      </div>
-    </div>
-  </footer>
-);
 
 const shapeIcon = (seed: string | number) => {
   const shapes = ['▲', '■', '●', '◆', '▴', '▢'];
@@ -231,7 +203,7 @@ function WeeklyPathPageContent() {
       const userToken = Cookies.get('userToken');
       
       if (!userToken) {
-        router.push('/login');
+        router.push('/iniciar-sesion');
         return;
       }
 
@@ -241,7 +213,7 @@ function WeeklyPathPageContent() {
 
       // Verificar membresía (excepto para administradores)
       if (auth.user && auth.user.rol !== 'Admin' && !auth.user.subscription?.active && !auth.user.isVip) {
-        router.push('/membership');
+        router.push(routes.navegation.moveCrew);
         return;
       }
 
@@ -251,7 +223,7 @@ function WeeklyPathPageContent() {
         const contratoAceptado = auth.user.subscription?.onboarding?.contratoAceptado || false;
 
         if (!contratoAceptado) {
-          router.push('/onboarding/bienvenida');
+          router.push('/incorporacion/bienvenida');
           return;
         }
       }
@@ -831,7 +803,7 @@ function WeeklyPathPageContent() {
             {error || 'No hay contenido disponible. Pronto estará disponible.'}
           </p>
           <button
-            onClick={() => router.push('/library')}
+            onClick={() => router.push('/biblioteca')}
             className="px-6 py-3 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-md border border-amber-300/40 text-gray-900 rounded-full font-medium hover:border-amber-300/60 hover:shadow-lg transition-all duration-300 font-montserrat"
           >
             Volver al inicio

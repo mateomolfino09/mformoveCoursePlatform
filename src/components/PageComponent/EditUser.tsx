@@ -56,13 +56,13 @@ const EditUser = ({ user }: Props) => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies ) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
     
     if(!auth.user) {
       auth.fetchUser()
     }
-    else if(auth.user.rol != 'Admin') router.push('/login');
+    else if(auth.user.rol != 'Admin') router.push('/iniciar-sesion');
 
 
   }, [auth.user]);
@@ -90,7 +90,7 @@ const EditUser = ({ user }: Props) => {
         const data = await res.json()
         await auth.fetchUser()
         if (data) {
-          router.push('/admin/users');
+          router.push('/admin/usuarios');
           toast.success(
             `${firstname + ' ' + lastname} fue editado correctamente`
           );
@@ -214,7 +214,7 @@ const EditUser = ({ user }: Props) => {
                   </div>
                   <div className='text-[gray]'>
                     Volver al Inicio
-                    <Link href={'/admin/users'}>
+                    <Link href={'/admin/usuarios'}>
                       <button
                         type='button'
                         className='text-white hover:underline ml-2'

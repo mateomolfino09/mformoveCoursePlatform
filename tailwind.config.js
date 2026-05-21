@@ -47,8 +47,13 @@ module.exports = {
         /* Paleta del sistema */
         palette: {
           ink: '#141411',
-          sage: '#acae89',
+          sage: '#dfe0c3',
           stone: '#787867',
+          steel: '#8f9db3',
+          skysteel: '#e0ecff',
+          deepmoka: '#5F464B',
+          granite: '#424B54',
+          cloud: '#f5f7fa',
           'deep-teal': '#001b1c',
           teal: '#074647',
           olive: '#6b8e23',

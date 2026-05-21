@@ -161,7 +161,7 @@ function Register() {
       return;
     }
     if (auth.user.subscription?.active || auth.user.isVip) {
-      router.replace('/library');
+      router.replace('/biblioteca');
       return;
     }
     router.replace('/');
@@ -329,7 +329,7 @@ function Register() {
     const cookies: any = Cookies.get('userToken')
   
     if (cookies) {
-      router.push('/mentorship');
+      router.push('/mentoria');
     }
   }, [router]);
   //using React Hook Form library
@@ -463,7 +463,7 @@ function Register() {
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <a
-                  href="/login"
+                  href="/iniciar-sesion"
                   className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-white via-[#f7f7f7] to-[#eaeaea] text-black py-3 px-6 text-base font-semibold shadow-lg shadow-black/25 border border-white/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-black/40 hover:scale-[1.01]"
                 >
                   Volver al inicio

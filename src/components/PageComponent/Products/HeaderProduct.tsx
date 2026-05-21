@@ -12,7 +12,6 @@ import {
 import { AnimatePresence, motion as m, useAnimation, useScroll } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next13-progressbar';
-import { usePathname } from 'next/navigation';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
 import endpoints from '../../../services/api';
@@ -34,7 +33,6 @@ const ProductHeader = ({ user, toggleNav }: Props) => {
   const headerScroll = useAppSelector(
     (state: any) => state.headerLibraryReducer.value.scrollHeader
     );
-  const pathname = usePathname()
   useEffect(() => {
     setDomLoaded(true);
       headerAnimation.start({
@@ -60,7 +58,7 @@ const ProductHeader = ({ user, toggleNav }: Props) => {
             className={` w-full h-full flex justify-between items-center`}
             >
             <div className='pl-4 md:pl-16'>
-                <a href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/library' : (pathname != routes.navegation.membership.library ? routes.navegation.membership.library : `/`)}>
+                <a href={routes.navegation.index}>
                 <img
                     alt='icon image'
                     src='/images/MFORMOVE_v2.negro03.png'

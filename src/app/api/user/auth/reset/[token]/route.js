@@ -3,6 +3,7 @@ import User from '../../../../../../models/userModel';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
+import { routes } from '../../../../../../constants/routes';
 
 connectDB();
 
@@ -55,7 +56,7 @@ export async function PUT(req, { params }) {
         await user.save();
 
         const hasActiveSub = user?.subscription?.active;
-        const redirectUrl = hasActiveSub ? '/library' : '/membership';
+        const redirectUrl = hasActiveSub ? routes.navegation.membership.library : routes.navegation.moveCrew;
 
         return NextResponse.json(
           {

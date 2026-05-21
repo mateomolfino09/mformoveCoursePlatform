@@ -379,7 +379,7 @@ async function createTransformationalProgram() {
     console.log('✅ Programa transformacional creado exitosamente!');
     console.log('ID:', newProgram._id);
     console.log('Nombre:', newProgram.nombre);
-    console.log('URL:', `/events/${newProgram.nombre.toLowerCase().replace(/\s+/g, '-')}`);
+    console.log('URL:', `/eventos/${newProgram.nombre.toLowerCase().replace(/\s+/g, '-')}`);
     
   } catch (error) {
     console.error('❌ Error al crear el programa transformacional:', error);

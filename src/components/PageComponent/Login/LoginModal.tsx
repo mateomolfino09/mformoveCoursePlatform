@@ -12,7 +12,7 @@ import { IoClose } from 'react-icons/io5';
 import { toast } from '../../../hooks/useToast';
 import { useSnapshot } from 'valtio';
 import { MiniLoadingSpinner } from '../Products/MiniSpinner';
-import { getAndClearRedirectUrl } from '../../../utils/redirectQueue';
+import { getAndClearRedirectUrl, getCourseCheckoutIntent } from '../../../utils/redirectQueue';
 import { executePlanIntent } from '../../../utils/executePlanIntent';
 import endpoints from '../../../services/api';
 
@@ -85,11 +85,11 @@ const LoginModal = () => {
           const userId = newUser?._id || res?.user?._id || auth.user?._id;
           if (userEmail && userId) {
             const planIntentExecuted = await executePlanIntent(userEmail, userId, router);
-            if (!planIntentExecuted) {
+            if (!planIntentExecuted && !getCourseCheckoutIntent()) {
               const redirectUrl = getAndClearRedirectUrl();
               if (redirectUrl) setTimeout(() => router.push(redirectUrl), 500);
             }
-          } else {
+          } else if (!getCourseCheckoutIntent()) {
             const redirectUrl = getAndClearRedirectUrl();
             if (redirectUrl) setTimeout(() => router.push(redirectUrl), 500);
           }
@@ -121,11 +121,11 @@ const LoginModal = () => {
       const userId = res?.user?._id ?? auth.user?._id;
       if (userEmail && userId) {
         const planIntentExecuted = await executePlanIntent(userEmail, userId, router);
-        if (!planIntentExecuted) {
+        if (!planIntentExecuted && !getCourseCheckoutIntent()) {
           const redirectUrl = getAndClearRedirectUrl();
           if (redirectUrl) setTimeout(() => router.push(redirectUrl), 500);
         }
-      } else {
+      } else if (!getCourseCheckoutIntent()) {
         const redirectUrl = getAndClearRedirectUrl();
         if (redirectUrl) setTimeout(() => router.push(redirectUrl), 500);
       }
@@ -300,9 +300,9 @@ const LoginModal = () => {
             {!loginForm && !forgetForm && (
               <p className="text-xs text-palette-stone text-center leading-relaxed">
                 Al registrarte aceptás{' '}
-                <Link href="/privacy" target="_blank" className="text-palette-ink hover:underline">Privacidad</Link>
+                <Link href="/privacidad" target="_blank" className="text-palette-ink hover:underline">Privacidad</Link>
                 {' y '}
-                <a href="/documents/terms-and-conditions.pdf" download target="_blank" rel="noopener noreferrer" className="text-palette-ink hover:underline">Términos</a>.
+                <Link href="/terminos" target="_blank" className="text-palette-ink hover:underline">Términos</Link>.
               </p>
         )}
       </form>

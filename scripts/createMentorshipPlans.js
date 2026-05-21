@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 // Configuración
-const API_BASE_URL = 'http://localhost:3000/api/payments';
+const API_BASE_URL = 'http://localhost:3000/api/pagos';
 
 // Planes de mentoría de ejemplo
 const mentorshipPlans = [
@@ -169,7 +169,7 @@ async function createAllPlans() {
   }
 
   console.log('🎉 Proceso completado!');
-  console.log('📋 Verificar planes en: http://localhost:3000/admin/mentorship/plans');
+  console.log('📋 Verificar planes en: http://localhost:3000/admin/mentorias/planes');
 }
 
 // Función para verificar planes existentes

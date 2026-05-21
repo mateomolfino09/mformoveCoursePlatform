@@ -291,7 +291,7 @@ const Library = ({ classesDB, filters, classModules = [] }: Props) => {
                 >
                   <Link
                     href={routes.navegation.membership.weeklyPath}
-                    className='inline-flex items-center justify-center gap-2 px-5 py-3 md:px-6 md:py-3.5 lg:px-6 lg:py-3 xl:px-7 xl:py-3.5 rounded-full bg-palette-sage text-palette-ink text-sm md:text-base lg:text-base xl:text-base font-medium tracking-wide hover:bg-palette-sage/90 transition-all duration-200 shrink-0'
+                    className='inline-flex items-center justify-center gap-2 px-5 py-3 md:px-6 md:py-3.5 lg:px-6 lg:py-3 xl:px-7 xl:py-3.5 rounded-full bg-palette-sage text-palette-ink text-sm md:text-base lg:text-base xl:text-base font-medium tracking-wide hover:brightness-[0.94] hover:ring-2 hover:ring-palette-sage hover:ring-offset-2 hover:ring-offset-palette-cream transition-all duration-200 shrink-0'
                   >
                     Mi Camino 
                     <svg className='w-4 h-4 md:w-5 md:h-5 shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 7l5 5m0 0l-5 5m5-5H6' /></svg>
@@ -373,7 +373,7 @@ const Library = ({ classesDB, filters, classModules = [] }: Props) => {
                 {classModules.map((m, idx) => {
                   const imgUrl = m.imageGallery?.[0]?.url ?? m.videoThumbnail ?? 'https://res.cloudinary.com/dbeem2avp/image/upload/v1769777236/DSC01884_grva4a.jpg';
                   return (
-                    <Link key={m._id} href={`/library/module/${m.slug}`} className='w-full flex flex-col items-center'>
+                    <Link key={m._id} href={`/biblioteca/modulo/${m.slug}`} className='w-full flex flex-col items-center'>
                       <motion.div
                         initial={{ opacity: 0, y: 24 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -410,7 +410,7 @@ const Library = ({ classesDB, filters, classModules = [] }: Props) => {
                     return (
                       <Link
                         key={c._id}
-                        href={`/library/individual-classes/${c.id}`}
+                        href={`/biblioteca/clases-individuales/${c.id}`}
                         className='group flex flex-col rounded-2xl overflow-hidden bg-palette-cream ring-1 ring-palette-stone/10 hover:ring-palette-stone/20 hover:shadow-lg transition-all duration-200'
                       >
                         <div className='relative w-full aspect-video overflow-hidden bg-palette-stone/10'>
@@ -446,7 +446,7 @@ const Library = ({ classesDB, filters, classModules = [] }: Props) => {
                 <div className='flex justify-center lg:justify-start mt-10 md:mt-12'>
                   <Link
                     href={routes.navegation.membership.individualClasses}
-                    className='inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full border-2 border-palette-sage bg-palette-cream text-palette-ink font-medium text-base hover:bg-palette-sage/15 transition-all duration-200'
+                    className='inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full border-2 border-palette-sage bg-palette-cream text-palette-ink font-medium text-base hover:bg-palette-sage/35 hover:border-palette-sage/70 transition-all duration-200'
                   >
                     Ver más clases
                     <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 7l5 5m0 0l-5 5m5-5H6' /></svg>

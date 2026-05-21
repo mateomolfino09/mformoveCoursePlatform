@@ -221,7 +221,15 @@ const userSchema = new mongoose.Schema(
     subscription: subscriptionSchema,
     freeSubscription: freeSubscriptionSchema,
     memberShip: { token: String, productId: String },
-    productToken: { token: String, productId: String }
+    productToken: { token: String, productId: String },
+    cursosAdquiridos: [{
+      productoId: { type: mongoose.Types.ObjectId, ref: 'Product', required: true },
+      fechaCompra: { type: Date, default: Date.now },
+      metodoPago: { type: String, enum: ['stripe', 'dlocalgo', 'transferencia', 'gratis'] },
+      transaccionId: { type: String },
+      monto: { type: Number },
+      moneda: { type: String, default: 'USD' },
+    }],
   },
   { timestamps: true }
 );

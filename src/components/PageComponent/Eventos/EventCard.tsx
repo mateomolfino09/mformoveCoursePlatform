@@ -336,7 +336,7 @@ const EventCard: React.FC<Props> = ({ evento }) => {
 
           {/* Botón de acción premium */}
           <Link 
-            href={`/events/${evento.nombre ? evento.nombre.replace(/\s+/g, '-').toLowerCase() : 'evento'}`}
+            href={`/eventos/${evento.nombre ? evento.nombre.replace(/\s+/g, '-').toLowerCase() : 'evento'}`}
             className="block w-full"
           >
             <button 

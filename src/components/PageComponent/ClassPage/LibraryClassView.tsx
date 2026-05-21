@@ -48,7 +48,7 @@ export default function LibraryClassView({ clase, questions }: Props) {
     const cookies = typeof document !== 'undefined' ? document.cookie : '';
     const hasCookie = !!cookies.split(';').some((c) => c.trim().startsWith('userToken='));
     if (!hasCookie) {
-      router.push('/membership');
+      router.push(routes.navegation.moveCrew);
       return;
     }
     if (!auth.user || typeof auth.user.subscription === 'undefined') {
@@ -58,7 +58,7 @@ export default function LibraryClassView({ clase, questions }: Props) {
     const hasAccess =
       auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin';
     if (!hasAccess) {
-      router.push('/membership');
+      router.push(routes.navegation.moveCrew);
       return;
     }
     if (typeof window !== 'undefined') setHasWindow(true);
@@ -246,7 +246,7 @@ export default function LibraryClassView({ clase, questions }: Props) {
             <RecommendedClasses
               currentClassId={clase._id || clase.id}
               currentClassType={clase.type}
-              classLinkBase="/library/individual-classes"
+              classLinkBase="/biblioteca/clases-individuales"
             />
 
             <section className="mt-24 md:mt-32 w-full">

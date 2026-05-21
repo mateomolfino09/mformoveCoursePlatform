@@ -5,7 +5,7 @@
 - El documento sirve como tablero vivo para organizar avances; iremos marcando hitos y ajustando prioridades conforme progresemos.
 
 ### Estado Actual (Noviembre 2025)
-- **Stack**: Next.js (App Router), React, TypeScript mixto con JavaScript, Tailwind CSS, Redux Toolkit (`src/redux`), MongoDB vía Mongoose (`src/models`), autenticación propia (`useAuth`, cookies), integración Stripe para pagos de eventos (`src/app/api/payments`), Cloudinary para medios.
+- **Stack**: Next.js (App Router), React, TypeScript mixto con JavaScript, Tailwind CSS, Redux Toolkit (`src/redux`), MongoDB vía Mongoose (`src/models`), autenticación propia (`useAuth`, cookies), integración Stripe para pagos de eventos (`src/app/api/pagos`), Cloudinary para medios.
 - **Entidad `Product`** (`src/models/productModel.js`): centraliza bundles, eventos, recursos. **Nota: aunque el modelo soporta `tipo: 'curso'`, no hay cursos creados actualmente.** Campos clave: VOD en Vimeo (`vimeoGallery` desde formularios), `modules` y `classes` legacy, descuentos, precios múltiples para eventos.
 - **Gestión de Cursos**:
   - Formularios admin extensos (`CreateProductStep1.tsx`, `EditProductStep1.tsx`) con soporte a galería Vimeo, imágenes, descuentos, precios escalonados, programas transformacionales.
@@ -52,11 +52,11 @@
    - `GET /api/product/getProducts`: lista todos los productos sin filtros; deshabilita caché (`fetchCache: 'force-no-store'`, `revalidateTag('products')`).
 
    **Autenticación y Autorización (avance)**
-   - **Login** (`POST /api/user/auth/login`): valida credenciales con bcrypt, firma JWT con `NEXTAUTH_SECRET` (30 días) y lo guarda en `user.token`. La respuesta expone `token`; el frontend lo almacena en cookie (`userToken`).
+   - **Login** (`POST /api/user/auth/iniciar-sesion`): valida credenciales con bcrypt, firma JWT con `NEXTAUTH_SECRET` (30 días) y lo guarda en `user.token`. La respuesta expone `token`; el frontend lo almacena en cookie (`userToken`).
    - **Inicio de sesión en frontend** (`useAuth.signIn`): guarda cookie `userToken`, consulta perfil y setea contexto `AuthContext`.
    - **Perfil** (`GET /api/user/auth/profile`): toma `userToken` de cookies (requiere que la request incluya cookie), verifica JWT y devuelve documento `User` sin password.
    - **Roles**: definidos en `userModel` (`rol` string, default `'User'`). Los endpoints críticos (`createProduct`, `updateProduct`) validan que `user.rol === 'Admin'`. No hay lógica diferenciada para instructores todavía.
-   - **Middleware** (`src/middleware.ts`): protege rutas `/account`, `/admin`, `/products`, `/payment`; verifica cookie `userToken` usando `jose.jwtVerify`. Redirige a `/login` si falta o es inválido.
+   - **Middleware** (`src/middleware.ts`): protege rutas `/cuenta`, `/admin`, `/productos`, `/pago`; verifica cookie `userToken` usando `jose.jwtVerify`. Redirige a `/iniciar-sesion` si falta o es inválido.
    - **Persistencia de sesión**: cookies gestionadas en el cliente con `js-cookie` (caducidad 5 días en `useAuth`). JWT almacena `userId`.
    - **Recursos desprotegidos**: la mayoría de rutas API no verifican encabezado `Authorization`; dependen de llamadas desde el frontend autenticado (cookie). No existe helper centralizado para roles a excepción de checks manuales.
 

@@ -199,7 +199,7 @@ export async function POST(req) {
       await emailService.sendWelcomeMembership({
         email: user.email,
         name: name || user.name || 'Mover',
-        dashboardUrl: `${origin}/home`,
+        dashboardUrl: `${origin}/inicio`,
         telegramInviteUrl: 'https://t.me/+_9hJulwT690yNWFh'
       });
     } catch (emailError) {

@@ -26,7 +26,7 @@ const QuestionPage = ({ question }: Props) => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
     
     if(!auth.user) {
@@ -43,7 +43,7 @@ const QuestionPage = ({ question }: Props) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <header className={`bg-dark`}>
-        <div onClick={() => handleRouteChange('/mentorship')}>
+        <div onClick={() => handleRouteChange('/mentoria')}>
           <img
             alt='Logo Video Stream'
             src='/images/logoWhite.png'

@@ -232,7 +232,7 @@ export default function MentorshipProcess() {
               </div>
               <button
                 type="button"
-                onClick={() => router.push('/mentorship/consulta')}
+                onClick={() => router.push('/mentoria/consulta')}
                 className="group inline-flex shrink-0 items-center justify-center gap-2.5 self-start rounded-full border-2 border-palette-ink bg-palette-ink px-6 py-2.5 font-montserrat text-[10px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink md:self-center"
               >
                 Aplicar a mentoría

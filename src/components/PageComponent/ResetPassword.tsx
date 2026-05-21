@@ -35,7 +35,7 @@ function Token({ token }: Props) {
     } catch (error: any) {
       toast.error(error?.response?.data?.error);
     }
-    router.push('/login');
+    router.push('/iniciar-sesion');
   };
 
   return (
@@ -92,7 +92,7 @@ function Token({ token }: Props) {
             </button>
           </form>
           <div className='space-y-4'>
-            <Link href={'/login'}>
+            <Link href={'/iniciar-sesion'}>
               <button
                 type='button'
                 className='text-white underline cursor-pointer'

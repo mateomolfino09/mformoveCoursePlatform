@@ -17,7 +17,7 @@ import MainSideBar from '../../MainSidebar/MainSideBar';
 import LoginModalForm from './AccountForm';
 import NewsletterF from '../Index/NewsletterForm';
 import { CldImage } from 'next-cloudinary';
-import { getAndClearRedirectUrl } from '../../../utils/redirectQueue';
+import { getAndClearRedirectUrl, getCourseCheckoutIntent } from '../../../utils/redirectQueue';
 import { executePlanIntent } from '../../../utils/executePlanIntent';
 import AuthSkeleton from '../../AuthSkeleton';
 
@@ -58,7 +58,7 @@ function LoginForm() {
       return;
     }
     if (auth.user.subscription?.active || auth.user.isVip) {
-      router.replace('/library');
+      router.replace('/biblioteca');
       return;
     }
     router.replace('/');
@@ -107,7 +107,7 @@ function LoginForm() {
             // Si el usuario no tiene suscripción, no necesita onboarding
             if (onboardingData.sinSuscripcion) {
               setTimeout(() => {
-                router.push('/membership');
+                router.push(routes.navegation.moveCrew);
               }, 1000);
               return;
             }
@@ -117,7 +117,7 @@ function LoginForm() {
               // Si no aceptó el contrato, ir a la pantalla de bienvenida
               if (!onboardingData.contratoAceptado) {
                 setTimeout(() => {
-                  router.push('/onboarding/bienvenida');
+                  router.push('/incorporacion/bienvenida');
                 }, 1000);
                 return;
               }
@@ -140,6 +140,16 @@ function LoginForm() {
             return;
           }
         }
+
+        if (getCourseCheckoutIntent()) {
+          const checkoutRedirect = getAndClearRedirectUrl();
+          if (checkoutRedirect) {
+            setTimeout(() => {
+              router.push(checkoutRedirect);
+            }, 1000);
+          }
+          return;
+        }
         
         // Si no hay intención de plan, verificar si hay una URL guardada para redirigir
         const redirectUrl = getAndClearRedirectUrl();
@@ -153,7 +163,7 @@ function LoginForm() {
           // Si el onboarding está completo o no es necesario, redirigir normalmente
           const hasActiveSub = res?.user?.subscription?.active || auth.user?.subscription?.active;
           setTimeout(() => {
-            router.push(hasActiveSub ? '/library' : '/membership');
+            router.push(hasActiveSub ? routes.navegation.membership.library : routes.navegation.moveCrew);
           }, 1000);
         }
       } else {

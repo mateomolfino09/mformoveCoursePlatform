@@ -33,7 +33,7 @@ export async function POST(req) {
     await user.save();
 
     const origin = getCurrentURL();
-    const link = `${origin}/reset/${token}`;
+    const link = `${origin}/restablecer/${token}`;
 
     const message = `
 <!doctype html>

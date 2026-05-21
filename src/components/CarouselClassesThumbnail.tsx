@@ -50,7 +50,7 @@ interface Props {
   isNew: boolean;
   /** Estilo library: paleta cream/ink/sage/stone. Por defecto estilo oscuro. */
   variant?: 'default' | 'library';
-  /** Base URL para el enlace (ej. /library/individual-classes). Si no se pasa, se usa /library/individual-classes. */
+  /** Base URL para el enlace (ej. /biblioteca/clases-individuales). Si no se pasa, se usa /biblioteca/clases-individuales. */
   linkBase?: string;
 }
 
@@ -115,7 +115,7 @@ function CarouselClassesThumbnail({
   linkBase,
 }: Props) {
   const isLibraryStyle = variant === 'library';
-  const classHref = linkBase ? `${linkBase.replace(/\/$/, '')}/${c.id ?? c._id}` : `/library/individual-classes/${c.id}`;
+  const classHref = linkBase ? `${linkBase.replace(/\/$/, '')}/${c.id ?? c._id}` : `/biblioteca/clases-individuales/${c.id}`;
   const auth = useAuth()
   const dispatch = useAppDispatch()
   const router = useRouter()

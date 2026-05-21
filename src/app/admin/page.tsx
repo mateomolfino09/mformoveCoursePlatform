@@ -16,7 +16,7 @@ import { useAuth } from '../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
 import { BookOpenIcon, SparklesIcon, CalendarDaysIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
-import MoveCrewQuickAccessAdminLight from '../../components/PageComponent/MoveCrew/MoveCrewQuickAccessAdminLight';
+import QuickAccessAdminLight from '../../components/PageComponent/Admin/QuickAccessAdminLight';
 
 interface Props {
   user: User;
@@ -31,13 +31,13 @@ const Index = () => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies ) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
     
     if(!auth.user) {
       auth.fetchUser()
     }
-    else if(auth.user.rol != 'Admin') router.push('/login');
+    else if(auth.user.rol != 'Admin') router.push('/iniciar-sesion');
 
 
   }, [auth, router]);
@@ -60,11 +60,11 @@ const Index = () => {
             </p>
             
             {/* Quick Access para Admins */}
-            <MoveCrewQuickAccessAdminLight />
+            <QuickAccessAdminLight />
           </div>
 
           <div className='grid lg:grid-cols-3 gap-6 mb-8'>
-            <Link href={'/admin/users'}>
+            <Link href={'/admin/usuarios'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                 <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
@@ -73,7 +73,7 @@ const Index = () => {
                 <p className='text-gray-900 font-light text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Usuarios</p>
               </div>
             </Link>
-            <Link href={'/admin/mentorship'}>
+            <Link href={'/admin/mentorias'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                 <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
@@ -82,7 +82,7 @@ const Index = () => {
                 <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Mentoría</p>
               </div>
             </Link>
-            <Link href={'/admin/in-person-classes'}>
+            <Link href={'/admin/clases-presenciales'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                 <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
@@ -93,7 +93,7 @@ const Index = () => {
             </Link>
           </div>
           <div className='grid lg:grid-cols-3 gap-6 mb-8'>
-            <Link href={'/admin/memberships'}>
+            <Link href={'/admin/membresias'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                 <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
@@ -102,7 +102,7 @@ const Index = () => {
                 <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Membresías</p>
               </div>
             </Link>
-            <Link href={'/admin/products'}>
+            <Link href={'/admin/productos'}>
               <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
                 <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                 <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>

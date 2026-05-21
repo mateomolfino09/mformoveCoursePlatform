@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     const origin = getCurrentURL();
-    const successUrl = new URL(`${origin}/mentorship/success`);
+    const successUrl = new URL(`${origin}/mentoria/exito`);
     successUrl.searchParams.append("plan_id", planId);
 
     const paymentLinks: { [key: string]: string } = {};
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
           ],
           mode: 'subscription',
           success_url: successUrl.toString(),
-          cancel_url: `${origin}/mentorship`,
+          cancel_url: `${origin}/mentoria`,
           metadata: {
             planId: planId,
             planName: plan.name,
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
         ],
         mode: 'subscription',
         success_url: successUrl.toString(),
-        cancel_url: `${origin}/mentorship`,
+        cancel_url: `${origin}/mentoria`,
         metadata: {
           planId: planId,
           planName: plan.name,

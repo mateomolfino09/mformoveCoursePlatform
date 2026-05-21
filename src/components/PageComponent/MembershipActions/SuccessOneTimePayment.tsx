@@ -43,7 +43,7 @@ const SuccessOneTimePayment = () => {
 
     if (!paymentToken) {
       toast.error(`No tienes token de membresia, te redireccionaremos al inicio...`);
-      router.push('/mentorship');
+      router.push('/mentoria');
       return;
     }
 
@@ -57,7 +57,7 @@ const SuccessOneTimePayment = () => {
         const data = await auth.newMembership(user._id, paymentToken);
         if (data.error) {
           toast.error(`${data.error}`);
-          router.push('/mentorship');
+          router.push('/mentoria');
         } else {
           setUser(data.user);
           toast.success(`Membership creada con éxito`);
@@ -125,7 +125,7 @@ const SuccessOneTimePayment = () => {
              </>
            ) : (
              <div className='flex px-24 py-3 mt-6 border-white border rounded-full justify-center items-center w-full group cursor-pointer hover:bg-white hover:text-black'>
-               <button className='w-full' onClick={() => router.push('/library')}>
+               <button className='w-full' onClick={() => router.push('/biblioteca')}>
                  Empezar{' '}
                </button>
                <ArrowRightIcon className='w-4 h-4 relative left-4' />

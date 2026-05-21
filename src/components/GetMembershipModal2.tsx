@@ -80,7 +80,7 @@ const GetMembershipModal2 = ({ visible, handleVisiblity }: Props) => {
       const data = await res.json()
       const { token } = data;
 
-      //login
+      //iniciar-sesion
 
       if (res.ok) {
         await auth.signInPostRegister(token).then((res: any) => {
@@ -244,9 +244,9 @@ const GetMembershipModal2 = ({ visible, handleVisiblity }: Props) => {
                     </div>
                     <div className="flex items-center mb-1 mt-3">
                           <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">Al subscribirte estas de acuerdo con nuestras
-                          <a target='_blank' href="/privacy" rel='noopener noreferrer' className="text-[#234C8C] hover:underline"> Políticas de Privacidad </a>
+                          <a target='_blank' href="/privacidad" rel='noopener noreferrer' className="text-[#234C8C] hover:underline"> Políticas de Privacidad </a>
                           y 
-                                                      <a target='_blank' href="/documents/terms-and-conditions.pdf" download="documents/terms-and-conditions.pdf" rel='noopener noreferrer' className="text-[#234C8C] hover:underline"> Términos y Condiciones</a></label>
+                                                      <Link href="/terminos" target='_blank' rel='noopener noreferrer' className="text-[#234C8C] hover:underline"> Términos y Condiciones</Link></label>
                         </div>
                         <div className="flex items-center mb-1 mt-3">
                           <label htmlFor="checkbox-1" className="text-sm ml-3  font-medium text-gray-900">¿Ya tenés una cuenta?

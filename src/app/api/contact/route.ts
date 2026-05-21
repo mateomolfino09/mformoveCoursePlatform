@@ -4,12 +4,13 @@ import { EmailService } from '../../../services/email/emailService';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, reason, message } = body;
+    const { name, email, message } = body;
+    const reasonRaw = typeof body.reason === 'string' && body.reason.trim() ? body.reason.trim() : 'general';
 
-    // Validar campos requeridos
-    if (!name || !email || !reason || !message) {
+    // Mínimo exigido para verificación de comercio: nombre, correo y mensaje (motivo opcional)
+    if (!name || !email || !message) {
       return NextResponse.json(
-        { success: false, message: 'Todos los campos son requeridos' },
+        { success: false, message: 'Nombre, correo y mensaje son obligatorios' },
         { status: 400 }
       );
     }
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
       other: 'Otro'
     };
 
-    const reasonLabel = reasonLabels[reason] || reason;
+    const reasonLabel = reasonLabels[reasonRaw] || reasonRaw;
 
     // Enviar email usando el servicio de emails
     try {

@@ -106,7 +106,7 @@ export async function POST(req) {
         await emailService.sendBitacoraBaseCompleted({
           email: user.email,
           name: user.name || 'Miembro',
-          dashboardLink: `${origin}/home`,
+          dashboardLink: `${origin}/inicio`,
           buttonText: 'Ir al Dashboard'
         });
       } catch (emailErr) {

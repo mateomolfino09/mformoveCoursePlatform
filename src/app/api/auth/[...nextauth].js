@@ -13,7 +13,7 @@ const authOptions = {
     })
   ],
   pages: {
-    signIn: '/login'
+    signIn: '/iniciar-sesion'
   }
 };
 

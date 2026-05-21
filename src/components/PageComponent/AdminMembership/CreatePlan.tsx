@@ -39,13 +39,13 @@ const CreatePlan = () => {
       const cookies: any = Cookies.get('userToken')
       
       if (!cookies ) {
-        router.push('/login');
+        router.push('/iniciar-sesion');
       }
     
     if(!auth.user) {
       auth.fetchUser()
     }
-    else if(auth.user.rol != 'Admin') router.push('/login');
+    else if(auth.user.rol != 'Admin') router.push('/iniciar-sesion');
 
 
   }, [auth.user]);
@@ -81,7 +81,7 @@ const CreatePlan = () => {
       );
       auth.fetchUser();
       toast.success('Plan de membresía creado exitosamente');
-      router.push('/admin/memberships');
+      router.push('/admin/membresias');
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Error al crear el plan');
     } finally {

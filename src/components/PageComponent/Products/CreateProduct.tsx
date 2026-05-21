@@ -14,6 +14,7 @@ import { useRouter } from 'next13-progressbar';
 import { parseCookies } from 'nookies';
 import React, { useEffect, useState } from 'react';
 import { toast } from '../../../hooks/useToast';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 const CreateProduct = () => {
   const [state, setState] = useState({
@@ -90,12 +91,12 @@ const CreateProduct = () => {
     const cookies: any = Cookies.get('userToken');
 
     if (!cookies) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
 
     if (!auth.user) {
       auth.fetchUser();
-    } else if (auth.user.rol != 'Admin') router.push('/login');
+    } else if (auth.user.rol != 'Admin') router.push('/iniciar-sesion');
   }, [auth.user]);
 
   async function handleSubmit(
@@ -129,54 +130,69 @@ const CreateProduct = () => {
     descuentoObj?: any,
     pdfPresentacion?: any,
     esProgramaTransformacional?: boolean,
-    programaTransformacionalData?: any
+    programaTransformacionalData?: any,
+    cursoConfig?: import('../../../types/cursoLanding').CursoLandingConfig,
+    invitacionGrupoWhatsapp?: string,
+    bioImageFile?: File | null
   ) {
     setLoading(true);
 
 
 
     // Validaciones robustas de imágenes
-    if (!portraitImageArray || !portraitImageArray[0]) {
-      toast.error('Debes subir una imagen de portada');
+    if (productType !== 'recurso' && (!portraitImageArray || !portraitImageArray[0])) {
+      toast.error(
+        productType === 'curso'
+          ? 'Debes subir la imagen del curso para checkout y links de pago'
+          : 'Debes subir una imagen de portada'
+      );
       setLoading(false);
       return;
     }
-    if (productType !== 'evento' && (!diplomaImageArray || !diplomaImageArray[0])) {
+    if (productType !== 'evento' && productType !== 'curso' && (!diplomaImageArray || !diplomaImageArray[0])) {
       toast.error('Debes subir una imagen de diploma');
       setLoading(false);
       return;
     }
     // Validar tipo de archivo (solo imágenes jpg/png/jpeg)
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-    if (!allowedTypes.includes(portraitImageArray[0].type)) {
+    if (portraitImageArray?.[0] && !allowedTypes.includes(portraitImageArray[0].type)) {
       toast.error('La imagen de portada debe ser JPG o PNG');
       setLoading(false);
       return;
     }
-    if (productType !== 'evento' && !allowedTypes.includes(diplomaImageArray[0].type)) {
+    if (productType !== 'evento' && productType !== 'curso' && diplomaImageArray?.[0] && !allowedTypes.includes(diplomaImageArray[0].type)) {
       toast.error('La imagen de diploma debe ser JPG o PNG');
       setLoading(false);
       return;
     }
     // Validar tamaño (máx 5MB por imagen)
-    if (portraitImageArray[0].size / 1000000 > 5) {
+    if (portraitImageArray?.[0] && portraitImageArray[0].size / 1000000 > 5) {
       toast.error('La imagen de portada es demasiado grande (máx 5MB). Por favor, comprime la imagen.');
       setLoading(false);
       return;
     }
-    if (productType !== 'evento' && diplomaImageArray[0].size / 1000000 > 5) {
+    if (bioImageFile && bioImageFile.size / 1000000 > 5) {
+      toast.error('La imagen de bio es demasiado grande (máx 5MB).');
+      setLoading(false);
+      return;
+    }
+    if (productType !== 'evento' && productType !== 'curso' && diplomaImageArray?.[0] && diplomaImageArray[0].size / 1000000 > 5) {
       toast.error('La imagen de diploma es demasiado grande (máx 5MB). Por favor, comprime la imagen.');
       setLoading(false);
       return;
     }
     
     // Validar tamaño total del payload
-    let totalSize = portraitImageArray[0].size;
-    if (productType !== 'evento' && diplomaImageArray[0]) {
+    let totalSize = portraitImageArray?.[0]?.size || 0;
+    if (productType !== 'evento' && productType !== 'curso' && diplomaImageArray?.[0]) {
       totalSize += diplomaImageArray[0].size;
     }
     if (portraitMobileImageArray && portraitMobileImageArray[0]) {
       totalSize += portraitMobileImageArray[0].size;
+    }
+    if (bioImageFile) {
+      totalSize += bioImageFile.size;
     }
     if (galleryImageArray && galleryImageArray.length > 0) {
       galleryImageArray.forEach((img: any) => totalSize += img.size);
@@ -209,16 +225,18 @@ const CreateProduct = () => {
         }
       };
 
-      // Comprimir y subir portada
-      const compressedPortraitFile = await compressImage(portraitImageArray[0], 1, 0.8);
-      const formData = new FormData();
-      formData.append('file', compressedPortraitFile);
-      formData.append('upload_preset', 'my_uploads');
-      const portraitData = await fetch(requests.fetchCloudinary, {
-        method: 'POST',
-        body: formData
-      }).then((r) => r.json());
-      const portada = portraitData.public_id;
+      let portada: string | null = null;
+      if (portraitImageArray?.[0]) {
+        const compressedPortraitFile = await compressImage(portraitImageArray[0], 1, 0.8);
+        const formData = new FormData();
+        formData.append('file', compressedPortraitFile);
+        formData.append('upload_preset', 'my_uploads');
+        const portraitData = await fetch(requests.fetchCloudinary, {
+          method: 'POST',
+          body: formData
+        }).then((r) => r.json());
+        portada = portraitData.public_id;
+      }
 
       // Comprimir y subir portada móvil (opcional)
       let portadaMobile = null;
@@ -232,6 +250,19 @@ const CreateProduct = () => {
           body: mobileFormData
         }).then((r) => r.json());
         portadaMobile = mobilePortraitData.public_id;
+      }
+
+      let imagenBio: string | null = null;
+      if (bioImageFile) {
+        const compressedBioFile = await compressImage(bioImageFile, 1, 0.8);
+        const bioFormData = new FormData();
+        bioFormData.append('file', compressedBioFile);
+        bioFormData.append('upload_preset', 'my_uploads');
+        const bioData = await fetch(requests.fetchCloudinary, {
+          method: 'POST',
+          body: bioFormData,
+        }).then((r) => r.json());
+        imagenBio = bioData.public_id;
       }
 
       // Subir galería de imágenes (imagenes)
@@ -251,7 +282,7 @@ const CreateProduct = () => {
 
       // Subir diploma si corresponde
       let diplomaUrl = '';
-      if (productType !== 'evento') {
+      if (productType !== 'evento' && productType !== 'curso' && diplomaImageArray?.[0]) {
         const formData2 = new FormData();
         for (const file of diplomaImageArray) {
           formData2.append('file', file);
@@ -313,10 +344,19 @@ const CreateProduct = () => {
           aprendizajes: aprendizajes || [],
           paraQuien: paraQuien || [],
         }),
-        // Programa Transformacional
-        ...(productType === 'programa_transformacional' && {
-          esProgramaTransformacional: true,
-          programaTransformacional: programaTransformacionalData
+        ...(imagenBio ? { imagenBio } : {}),
+        ...((esProgramaTransformacional || productType === 'programa_transformacional') &&
+          programaTransformacionalData && {
+            esProgramaTransformacional: true,
+            programaTransformacional: programaTransformacionalData,
+          }),
+        ...(productType === 'curso' && cursoConfig ? { cursoConfig } : {}),
+        ...(productType === 'curso' && {
+          invitacionGrupoWhatsapp:
+            invitacionGrupoWhatsapp?.trim() ||
+            cursoConfig?.whatsapp?.invitacionGrupoWhatsapp?.trim() ||
+            cursoConfig?.whatsapp?.grupoWhatsapp?.trim() ||
+            '',
         }),
         // Descuento
         ...(descuentoObj && { descuento: descuentoObj })
@@ -359,6 +399,8 @@ const CreateProduct = () => {
       auth.fetchUser();
 
       toast.success(data.message);
+
+      const createdProductId = data.product?._id?.toString?.() || data.product?._id;
       
       // Revalidar caché de eventos si es un evento
       if (productType === 'evento') {
@@ -370,29 +412,15 @@ const CreateProduct = () => {
         } catch (cacheError) {
         }
       }
-      
-      // Si el producto no es de tipo curso, redirigir directamente a la tabla de productos
-      if (productType !== 'curso') {
-        router.push('/admin/products/allProducts');
+
+      if (createdProductId) {
+        router.push(`/admin/productos/todos-productos?created=${createdProductId}`);
+        return;
       }
-      
-      // Limpiar arrays de imágenes y estado tras éxito
-      setProductCreado({});
-      // Aquí podrías agregar lógica para limpiar el formulario en CreateProductStep1 usando un callback o estado global si lo deseas
+
+      router.push('/admin/productos/todos-productos');
     } catch (error: any) {
-      if (error.response && error.response.data) {
-        if (error.response.status === 413) {
-          toast.error('El tamaño de las imágenes es demasiado grande. Por favor, reduce el tamaño de las imágenes a menos de 5MB cada una.');
-        } else if (error.response.data.error) {
-          toast.error(error.response.data.error);
-        } else {
-          toast.error('Ocurrió un error inesperado al crear el producto.');
-        }
-      } else if (error.message && error.message.includes('413')) {
-        toast.error('El tamaño de las imágenes es demasiado grande. Por favor, reduce el tamaño de las imágenes.');
-      } else {
-        toast.error('Ocurrió un error inesperado al crear el producto.');
-      }
+      toast.error(getApiErrorMessage(error, 'Ocurrió un error inesperado al crear el producto.'));
     }
     setLoading(false);
   }

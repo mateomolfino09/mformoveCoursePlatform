@@ -1,19 +1,9 @@
 import { useAuth } from '../../hooks/useAuth';
 import state from '../../valtio';
-import { Transition } from '@headlessui/react';
-import {
-  CreditCardIcon,
-  HomeIcon,
-  PlusCircleIcon,
-  TableCellsIcon,
-  UserIcon,
-  XMarkIcon
-} from '@heroicons/react/24/solid';
-import { AnimatePresence, motion as m, useAnimation } from 'framer-motion';
+import { motion as m, useAnimation } from 'framer-motion';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import React, { Fragment, forwardRef, useEffect, useState } from 'react';
-import { useSnapshot } from 'valtio';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import './MainSidebarDashboard.css';
 import { routes } from '../../constants/routes';
 
@@ -25,7 +15,6 @@ interface Props {
 
 const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
   const router = useRouter();
-  const pathname = usePathname();
   const animation = useAnimation();
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const animationPhones = useAnimation();
@@ -44,8 +33,6 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
       window.removeEventListener('resize', handleResize);
     };
   }, []); //
-
-  const snap = useSnapshot(state);
 
   useEffect(() => {
     animation.start({
@@ -74,94 +61,95 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
   // Variable para pausar la membresía (debe estar sincronizada con la de la página)
   const IS_MEMBERSHIP_PAUSED = true;
 
+  const navMotionProps = {
+    initial: { color: '#fff', x: 700 },
+    animate: +windowWidth < 768 ? animationPhones : animation,
+  };
+
+  const itemShell =
+    'flex w-full flex-col items-stretch text-right gap-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer';
+
   return (
-    <div className='fixed   w-full h-full bg-black z-[200] font-montserrat'>
-      <div className='w-full h-full relative top-40 md:top-28 right-12 flex flex-col space-y-4 md:space-y-4 justify-start lg:items-end mr-12 lg:mr-24'>
+    <div className='fixed inset-0 z-[200] flex flex-col bg-black font-montserrat overflow-hidden'>
+      <div className='flex flex-1 flex-col min-h-0 justify-center gap-7 md:gap-9 px-6 pb-10 pt-[4.5rem] md:px-12 md:pt-24 md:pb-14 lg:px-16 lg:pr-24 overflow-y-auto scrollbar-hide overscroll-contain'>
         {!IS_MEMBERSHIP_PAUSED && (
-          <Link
-            href={`${routes.navegation.membership.entry(auth?.user?.subscription?.active || auth?.user?.isVip)}`}
-          >
+          <Link href={routes.navegation.membership.library} className='block w-full shrink-0'>
             <m.div
-              initial={{ color: '#fff', x: 700 }}
-              animate={+windowWidth < 768 ? animationPhones : animation}
+              {...navMotionProps}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = '#fff';
               }}
               onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
-              className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+              className={itemShell}
             >
               <h2 className='font-light lg:text-xl'>Membresía</h2>
-              <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
+              <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl leading-[1.08] w-full'>
                 Movete conmigo
               </h1>
             </m.div>
           </Link>
         )}
-        <Link href="/membership">
+        <Link href={routes.navegation.moveCrew} className='group block w-full shrink-0'>
           <m.div
-            initial={{ color: '#fff', x: 700 }}
-            animate={+windowWidth < 768 ? animationPhones : animation}
+            {...navMotionProps}
             onMouseEnter={(e) => {
               e.currentTarget.style.color = '#fff';
             }}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
-            className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+            className={itemShell}
           >
-            <h2 className='font-light lg:text-xl'>Movimiento Online</h2>
-            <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
-            Cuerpo autónomo
+            <h2 className='font-light lg:text-xl'>Programas</h2>
+            <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl leading-[1.08] w-full'>
+              Ver programas
             </h1>
           </m.div>
         </Link>
-        <Link href="/mentorship">
+        <Link href='/mentoria' className='block w-full shrink-0'>
           <m.div
-            initial={{ color: '#fff', x: 700 }}
-            animate={+windowWidth < 768 ? animationPhones : animation}
+            {...navMotionProps}
             onMouseEnter={(e) => {
               e.currentTarget.style.color = '#fff';
             }}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
-            className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+            className={itemShell}
           >
             <h2 className='font-light lg:text-xl'>Mentoría</h2>
-            <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
+            <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl leading-[1.08] w-full'>
               Entrena 1 a 1
             </h1>
           </m.div>
         </Link>
-        <Link href={routes.navegation.eventos}>
+        <Link href={routes.navegation.eventos} className='block w-full shrink-0'>
           <m.div
-            initial={{ color: '#fff', x: 700 }}
-            animate={+windowWidth < 768 ? animationPhones : animation}
+            {...navMotionProps}
             onMouseEnter={(e) => {
               e.currentTarget.style.color = '#fff';
             }}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
-            className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+            className={itemShell}
           >
             <h2 className='font-light lg:text-xl'>Talleres y Eventos</h2>
-            <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
+            <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl leading-[1.08] w-full'>
               Experiencias
             </h1>
           </m.div>
         </Link>
         {!auth.user && (where != 'products' || where != 'productsLibrary') ? (
-          <Link href={'/login'}>
+          <Link href={'/iniciar-sesion'} className='block w-full shrink-0'>
             <m.div
-              initial={{ color: '#fff', x: 700 }}
-              animate={+windowWidth < 768 ? animationPhones : animation}
+              {...navMotionProps}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = '#fff';
               }}
               onMouseLeave={(e) => (e.currentTarget.style.color = '#d1cfcf6e')}
               onClick={(e) => {
                 e.currentTarget.style.color = '#fff';
-                router.push(' ');
+                toggleNav();
               }}
-              className='flex flex-col justify-end items-end  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+              className={itemShell}
             >
               <h2 className='font-light lg:text-xl'>Cuenta</h2>
-              <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
+              <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl leading-[1.08] w-full'>
                 Ingresar al sitio
               </h1>
             </m.div>
@@ -171,8 +159,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             {!auth.user && (where == 'products' || where == 'productsLibrary') ? (
               <>
                 <m.div
-                  initial={{ color: '#fff', x: 700 }}
-                  animate={+windowWidth < 768 ? animationPhones : animation}
+                  {...navMotionProps}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = '#fff';
                   }}
@@ -184,19 +171,18 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
                     toggleNav();
                     state.loginForm = true;
                   }}
-                  className='flex flex-col justify-end items-end  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+                  className={`${itemShell} shrink-0`}
                 >
                   <h2 className='font-light lg:text-xl'>Cuenta</h2>
-                  <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
+                  <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl leading-[1.08] w-full'>
                     Ingresar al sitio
                   </h1>
                 </m.div>
               </>
             ) : (
-              <a href={'/account'}>
+              <a href={'/cuenta'} className='block w-full shrink-0'>
                 <m.div
-                  initial={{ color: '#fff', x: 700 }}
-                  animate={+windowWidth < 768 ? animationPhones : animation}
+                  {...navMotionProps}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = '#fff';
                   }}
@@ -206,10 +192,10 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
                   onClick={(e) => {
                     e.currentTarget.style.color = '#fff';
                   }}
-                  className='flex flex-col justify-end items-end !mb-4  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+                  className={itemShell}
                 >
                   <h2 className='font-light lg:text-xl'>Cuenta</h2>
-                  <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
+                  <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl leading-[1.08] w-full'>
                     Perfil
                   </h1>
                 </m.div>
@@ -218,7 +204,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
           </>
         )}
 
-        {/* <Link href="/faq">
+        {/* <Link href="/preguntas-frecuentes">
           <m.div
             initial={{ color: '#fff', x: 700 }}
             animate={+windowWidth < 768 ? animationPhones : animation}
@@ -238,8 +224,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
         {auth.user && auth.user.rol === 'Admin' && (
           <>
             <m.div
-              initial={{ color: '#fff', x: 700 }}
-              animate={+windowWidth < 768 ? animationPhones : animation}
+              {...navMotionProps}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = '#fff';
               }}
@@ -248,10 +233,10 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
                 e.currentTarget.style.color = '#fff';
                 router.push('/admin');
               }}
-              className='flex flex-col justify-end items-end  -space-y-1 text-[#fff] lg:text-[#d1cfcf6e] lg:toggleLightening cursor-pointer'
+              className={`${itemShell} shrink-0`}
             >
               <h2 className='font-light lg:text-xl'>Admin</h2>
-              <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl'>
+              <h1 className='text-4xl font-thin lg:text-6xl md:text-4xl leading-[1.08] w-full'>
                 Dashboard
               </h1>
             </m.div>

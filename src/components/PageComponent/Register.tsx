@@ -137,7 +137,7 @@ function Register() {
     const cookies: any = Cookies.get('userToken')
   
     if (cookies) {
-      router.push('/mentorship');
+      router.push('/mentoria');
     }
   }, [router]);
   //using React Hook Form library
@@ -256,7 +256,7 @@ function Register() {
                   Tu cuenta ha sido creada con éxito
                 </p>
               </label>
-              <Link href={'/login'}>
+              <Link href={'/iniciar-sesion'}>
                 <button
                   type='button'
                   className='text-white underline cursor-pointer'

@@ -83,7 +83,7 @@ function CarouselSearchClassesThumbnail({
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
     
     if(!auth.user) {
@@ -94,7 +94,7 @@ function CarouselSearchClassesThumbnail({
 
   return (
     <AnimatePresence>
-        <div className='flex flex-col max-w-[19rem] md:mr-3 lg:mr-4 md:max-w-[19rem] lg:max-w-[21rem] h-[15rem] md:h-[16rem] lg:h-[17rem] justify-center items-center space-y-0 mb-8' style={{flex: '1 0 21%'}} onClick={() => router.push(`/classes/${c.id}`)}>
+        <div className='flex flex-col max-w-[19rem] md:mr-3 lg:mr-4 md:max-w-[19rem] lg:max-w-[21rem] h-[15rem] md:h-[16rem] lg:h-[17rem] justify-center items-center space-y-0 mb-8' style={{flex: '1 0 21%'}} onClick={() => router.push(`/clases/${c.id}`)}>
             <m.div
                 className={`max-w-[19rem] md:max-w-[19rem] lg:max-w-[21rem] mx-4 rounded-xl flex justify-center md:justify-start items-center flex-col relative 
                 h-[15rem] md:h-[16rem] lg:h-[17rem] transition-all duration-500
