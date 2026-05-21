@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Recupera el acceso a tu cuenta de MForMove de forma segura. Recibe instrucciones por email para restablecer tu contraseña y continuar tu viaje de movimiento consciente.',
   keywords: [
     'recuperar contraseña',
-    'reset password',
+    'restablecer contraseña',
     'MForMove',
     'cuenta segura',
     'movimiento consciente'

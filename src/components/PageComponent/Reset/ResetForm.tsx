@@ -112,7 +112,7 @@ function ResetForm({ token }: Props) {
       <div className="absolute inset-0">
         <CldImage
           src="my_uploads/fondos/DSC01436_sy7os9"
-          alt="Reset password"
+          alt="Restablecer contraseña"
           fill
           priority
           className="hidden md:block object-cover opacity-65"
@@ -121,7 +121,7 @@ function ResetForm({ token }: Props) {
         />
         <CldImage
           src="my_uploads/fondos/DSC01429_kbgawc"
-          alt="Reset password mobile"
+          alt="Restablecer contraseña en móvil"
           fill
           priority
           className="md:hidden object-cover opacity-65"
