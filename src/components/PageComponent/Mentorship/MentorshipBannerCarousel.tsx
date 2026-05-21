@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 const HERO_IMAGE = 'my_uploads/fondos/DSC01559_elui2h';
 
 const ctaButtonClass =
-  'group inline-flex items-center justify-center gap-4 font-montserrat font-semibold text-[0.775rem] md:text-[0.9rem] uppercase tracking-[0.2em] rounded-full px-7 py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage transition-all duration-200';
+  'group inline-flex items-center justify-center gap-4 font-montserrat font-semibold text-[0.775rem] md:text-[0.9rem] uppercase tracking-[0.2em] rounded-full px-7 py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink transition-all duration-200';
 
 const MentorshipBannerCarousel = ({ hideText = false }: { hideText?: boolean }) => {
   const router = useRouter();
@@ -15,7 +15,7 @@ const MentorshipBannerCarousel = ({ hideText = false }: { hideText?: boolean }) 
   const ConsultaButton = ({ className = '' }: { className?: string }) => (
     <motion.button
       type="button"
-      onClick={() => router.push('/mentorship/consulta')}
+      onClick={() => router.push('/mentoria/consulta')}
       className={`${ctaButtonClass} ${className}`}
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}

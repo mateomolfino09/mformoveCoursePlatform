@@ -130,7 +130,7 @@ const [searchClasses, setSearchClasses] = useState<null | IndividualClass[]>(nul
             {filtersDB[0]?.values.map((f: ValuesFilters) => (
               <>
 
-                  <span key={f.id} onClick={() => router.push(`/classes-category/${f.value.toLowerCase()}`)} className={`${classType === f.value ? "bg-white rounded-full text-black " : ""} cursor-pointer p-3 md:mr-0 mr-1 font-thin text-sm md:text-base h-7 text-center flex justify-center items-center hover:bg-white hover:rounded-full hover:text-black`}>
+                  <span key={f.id} onClick={() => router.push(`/categoria-clases/${f.value.toLowerCase()}`)} className={`${classType === f.value ? "bg-white rounded-full text-black " : ""} cursor-pointer p-3 md:mr-0 mr-1 font-thin text-sm md:text-base h-7 text-center flex justify-center items-center hover:bg-white hover:rounded-full hover:text-black`}>
                   <p className=''>{f.label}</p>
                   </span>
               </>

@@ -16,13 +16,13 @@
 
 ### 1. **Poblar Preguntas Frecuentes**
 
-**Endpoint**: `POST /api/faq/populate`
+**Endpoint**: `POST /api/preguntas-frecuentes/populate`
 
 **Descripción**: Crea las 20 preguntas frecuentes categorizadas
 
 **Comando cURL**:
 ```bash
-curl -X POST https://tu-dominio.vercel.app/api/faq/populate
+curl -X POST https://tu-dominio.vercel.app/api/preguntas-frecuentes/populate
 ```
 
 **Resultado esperado**:
@@ -55,18 +55,18 @@ NEXT_PUBLIC_BASE_URL=https://tu-dominio.vercel.app
 ### 3. **Verificar Funcionalidades**
 
 #### A. **Sistema de FAQ**
-- ✅ URL: `https://tu-dominio.vercel.app/faq`
+- ✅ URL: `https://tu-dominio.vercel.app/preguntas-frecuentes`
 - ✅ Categorías: Membresía, Mentoría, Pagos, Técnico, General
 - ✅ Filtrado por categorías
 - ✅ Contadores dinámicos
 
 #### B. **Sistema de Emails**
-- ✅ Endpoint de prueba: `POST /api/test/mentorship-approval`
+- ✅ Endpoint de prueba: `POST /api/test/mentoria-approval`
 - ✅ Email de aprobación de mentoría
 - ✅ Sistema centralizado en `/services/email/emailService.ts`
 
 #### C. **Dashboard de Mentoría**
-- ✅ URL: `https://tu-dominio.vercel.app/admin/mentorship/solicitudes`
+- ✅ URL: `https://tu-dominio.vercel.app/admin/mentorias/solicitudes`
 - ✅ Indicadores de solicitudes nuevas
 - ✅ Marcado como vista
 - ✅ Aprobación/rechazo con emails automáticos
@@ -78,19 +78,19 @@ NEXT_PUBLIC_BASE_URL=https://tu-dominio.vercel.app
 ### 1. **Verificar FAQ**
 ```bash
 # Verificar que las preguntas se cargan
-curl https://tu-dominio.vercel.app/api/faq/getFAQ
+curl https://tu-dominio.vercel.app/api/preguntas-frecuentes/getFAQ
 ```
 
 ### 2. **Probar Sistema de Emails**
 ```bash
 # Enviar email de prueba
-curl -X POST https://tu-dominio.vercel.app/api/test/mentorship-approval \
+curl -X POST https://tu-dominio.vercel.app/api/test/mentoria-approval \
   -H "Content-Type: application/json" \
   -d '{"testEmail": "tu-email@ejemplo.com"}'
 ```
 
 ### 3. **Verificar Dashboard**
-- Ir a `/admin/mentorship/solicitudes`
+- Ir a `/admin/mentorias/solicitudes`
 - Verificar que se muestran los indicadores rojos
 - Probar marcar como vista
 

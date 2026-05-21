@@ -39,13 +39,13 @@ const CreatePromocion = () => {
     const cookies: any = Cookies.get('userToken');
     
     if (!cookies) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
     
     if (!auth.user) {
       auth.fetchUser();
     } else if (auth.user.rol != 'Admin') {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
   }, [auth.user]);
 
@@ -116,7 +116,7 @@ const CreatePromocion = () => {
       }
 
       toast.success('Promoción creada exitosamente');
-      router.push('/admin/memberships/promociones');
+      router.push('/admin/membresias/promociones');
     } catch (error: any) {
       toast.error(error.message || 'Error al crear la promoción');
     } finally {
@@ -282,7 +282,7 @@ const CreatePromocion = () => {
               </div>
 
               <div className='flex justify-end space-x-4 pt-6 border-t border-gray-200'>
-                <Link href={'/admin/memberships/promociones'}>
+                <Link href={'/admin/membresias/promociones'}>
                   <button
                     type='button'
                     className='px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-300 font-montserrat border border-gray-200'

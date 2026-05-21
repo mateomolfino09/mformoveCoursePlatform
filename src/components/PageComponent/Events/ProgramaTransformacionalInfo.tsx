@@ -27,6 +27,11 @@ const ProgramaTransformacionalInfo: React.FC<Props> = ({ evento }) => {
   const semanas = programa.semanas || [];
   const sesionesEnVivo = programa.sesionesEnVivo || [];
   const comunidad = programa.comunidad || {};
+  const invitacionGrupo =
+    evento.invitacionGrupoWhatsapp ||
+    evento.grupoWhatsapp ||
+    comunidad.invitacionGrupoWhatsapp ||
+    comunidad.grupoWhatsapp;
 
   return (
     <section className="py-20 px-4 bg-white">
@@ -217,7 +222,7 @@ const ProgramaTransformacionalInfo: React.FC<Props> = ({ evento }) => {
                 </p>
                 
                 <div className="space-y-4">
-                  {comunidad.grupoWhatsapp && (
+                  {invitacionGrupo && (
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center mr-3">
                         <ChatBubbleLeftRightIcon className="w-5 h-5 text-white" />

@@ -23,7 +23,7 @@ function Forget() {
     const cookies: any = Cookies.get('userToken')
   
     if (!cookies) {
-      router.push('/mentorship');
+      router.push('/mentoria');
     }
   }, [router]);
 
@@ -32,7 +32,7 @@ function Forget() {
     try {
       const data = auth.resetMailSend(email)
       toast.success(data.message);
-      router.push('/login');
+      router.push('/iniciar-sesion');
     } catch (error: any) {
       toast.error(error?.response?.data?.error);
     }
@@ -96,7 +96,7 @@ function Forget() {
           </form>
           <div className='flex items-start justify-between flex-row'>
             <div className='text-xl md:text-sm'>
-              <Link href={'/mentorship'}>
+              <Link href={'/mentoria'}>
                 <button
                   type='button'
                   className='text-white hover:underline cursor-pointer'
@@ -108,7 +108,7 @@ function Forget() {
             <div className='text-[gray] text-xl md:text-sm'>
               Eres nuevo en Video Stream?
               <br />
-              <Link href={'/register'}>
+              <Link href={'/registro'}>
                 <button type='button' className='text-white hover:underline'>
                   Crea tu cuenta ahora!
                 </button>

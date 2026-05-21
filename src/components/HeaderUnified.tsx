@@ -13,6 +13,7 @@ import { AiOutlineBook } from 'react-icons/ai';
 import { LuSettings } from 'react-icons/lu';
 import { useAppSelector } from '../redux/hooks';
 import { useAuth } from '../hooks/useAuth';
+import { useLogout } from '../hooks/useLogout';
 import { routes } from '../constants/routes';
 import { PiHouseLineThin } from 'react-icons/pi';
 import { SiEditorconfig } from 'react-icons/si';
@@ -41,14 +42,15 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	const [indexScrollY, setIndexScrollY] = useState(0); // Para cambio a blanco en index (desde 1px de scroll)
 	const [loadingLink, setLoadingLink] = useState<string | null>(null);
 	const auth = useAuth();
+	const { performLogout } = useLogout('/');
 	const linkRef = useRef<HTMLAnchorElement | null>(null);
 	const linkMembRef = useRef<HTMLAnchorElement | null>(null);
 	const [domLoaded, setDomLoaded] = useState(true);
 	const [isMobile, setIsMobile] = useState(false);
 	const [showMenuTooltip, setShowMenuTooltip] = useState(false);
-	const [userLevel, setUserLevel] = useState<number | null>(null); // nivel si suscrito; null si no suscrito
-	const [levelProgress, setLevelProgress] = useState<number>(0); // 0-8 para progressbar circular (solo con suscripción)
-	const [totalCoherenceUnits, setTotalCoherenceUnits] = useState<number | null>(null); // U.C. acumuladas (solo con suscripción)
+	const [userLevel, setUserLevel] = useState<number | null>(null);
+	const [levelProgress, setLevelProgress] = useState<number>(0);
+	const [totalCoherenceUnits, setTotalCoherenceUnits] = useState<number | null>(null);
 	const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 	const [eventsMentorshipOpen, setEventsMentorshipOpen] = useState(false);
 	const profileMenuRefMobile = useRef<HTMLDivElement>(null);
@@ -60,24 +62,29 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	);
 
     const isMentorship = path === routes.navegation.mentorship;
-    const isMoveCrew = path === routes.navegation.membership.moveCrew;
-	/** Landing tipo membership: mismo header que Cuerpo autónomo */
-	const isMembershipLanding = isMoveCrew || isMentorship;
+    const isCursoLanding = path.startsWith('/curso/');
+	/** Landing comercial: mentoría y páginas de curso */
+	const isMembershipLanding = isMentorship || isCursoLanding;
     const isPaymentSuccess = path === routes.navegation.paymentSuccess;
     const isAccount = path === routes.user.perfil || path.startsWith(routes.navegation.account);
 
 	const isWeeklyPath = (path === routes.navegation.membership.weeklyPath || path.startsWith(routes.navegation.membership.weeklyPath));
 	const isBienvenida = path === routes.navegation.onboarding.bienvenida || path.startsWith(routes.navegation.onboarding.bienvenida);
-	const isMembershipHome = path === routes.navegation.membership.library;
-	const isInfoLight = path === routes.navegation.preguntasFrecuentes || path === routes.navegation.about || path === routes.navegation.privacy;
+	const isInfoLight =
+		path === routes.navegation.preguntasFrecuentes ||
+		path === routes.navegation.about ||
+		path === routes.navegation.privacy ||
+		path === routes.navegation.contact ||
+		path === routes.navegation.terminos;
 	const isEvents = path === routes.navegation.eventos || path.includes(routes.navegation.eventos);
 	const isAuth = path === routes.user.login || path === routes.user.forget || path === routes.user.forgetEmail || path === routes.user.register;
 	const isIndex = path === routes.navegation.index;
 	const isClasses = path.startsWith(routes.navegation.classes);
 	const isEmailVerify = path.startsWith(routes.navegation.email);
-	const isLibrary = path === routes.navegation.membership.library;
 	const isLibraryArea = path.startsWith(routes.navegation.membership.library);
-	// Solo en página de módulo (/library/module/xxx): texto blanco arriba, al scroll fondo blanco y texto negro
+	/** Logo siempre al inicio (sin enlace a biblioteca desde el header por ahora). */
+	const logoHref = routes.navegation.index;
+	// Solo en página de módulo (/biblioteca/modulo/xxx): texto blanco arriba, al scroll fondo blanco y texto negro
 	const isLibraryModulePage = path.startsWith(routes.navegation.membership.library + '/module');
 	// Página de práctica (video): header opaco para que se vean logo y botones
 	const isLibraryPracticePage = path.includes('/practice/');
@@ -89,20 +96,20 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	const scrolled = isPaymentSuccess ? isScrolled : (isScrolled || headerScroll);
 
 	// Usar useRef para evitar que el efecto se ejecute constantemente
-	const isMoveCrewRef = useRef(isMoveCrew);
+	const isCursoLandingRef = useRef(isCursoLanding);
 	const isMembershipLandingRef = useRef(isMembershipLanding);
 	const pathRef = useRef(path);
 
 	// Actualizar refs cuando cambian
 	useEffect(() => {
-		isMoveCrewRef.current = isMoveCrew;
+		isCursoLandingRef.current = isCursoLanding;
 		isMembershipLandingRef.current = isMembershipLanding;
 		pathRef.current = path;
-	}, [isMoveCrew, isMembershipLanding, path]);
+	}, [isCursoLanding, isMembershipLanding, path]);
 
-	// Si suscrito: obtener tracking de coherencia (level, levelProgress para Camino; totalUnits para menú perfil)
+	// Tracking de coherencia (Camino) para el avatar cuando hay sesión
 	useEffect(() => {
-		const hasAccess = auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin');
+		const hasAccess = auth && auth.user;
 		if (!hasAccess || !auth?.user) {
 			setUserLevel(null);
 			setLevelProgress(0);
@@ -186,41 +193,39 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 			}
 		};
 
-		// Throttle para el evento de Cuerpo autónomo, pero sin delay cuando scrollTop es 0
-		let moveCrewScrollTimeout: ReturnType<typeof setTimeout> | null = null;
-		const handleMoveCrewScroll = (event: Event) => {
-			if (!isMoveCrewRef.current) return;
+		let landingScrollTimeout: ReturnType<typeof setTimeout> | null = null;
+
+		const handleCourseScroll = (event: Event) => {
+			if (!isCursoLandingRef.current) return;
 			const detail = (event as CustomEvent).detail;
 			const scrollTop = detail?.scrollTop ?? 0;
 			const isAtTop = scrollTop === 0;
-			
-			// Si está en el top, actualizar inmediatamente sin throttle
+
 			if (isAtTop) {
-				if (moveCrewScrollTimeout) {
-					clearTimeout(moveCrewScrollTimeout);
-					moveCrewScrollTimeout = null;
+				if (landingScrollTimeout) {
+					clearTimeout(landingScrollTimeout);
+					landingScrollTimeout = null;
 				}
 				setIsScrolled(false);
 				return;
 			}
-			
-			// Para otros valores, usar throttle
-			if (moveCrewScrollTimeout) return;
-			moveCrewScrollTimeout = setTimeout(() => {
+
+			if (landingScrollTimeout) return;
+			landingScrollTimeout = setTimeout(() => {
 				setIsScrolled(scrollTop > 0);
-				moveCrewScrollTimeout = null;
+				landingScrollTimeout = null;
 			}, 10);
 		};
 
 		window.addEventListener('scroll', handleWindowScroll, { passive: true });
-		window.addEventListener('movecrew-scroll', handleMoveCrewScroll);
+		window.addEventListener('course-scroll', handleCourseScroll);
 		window.addEventListener('resize', handleResize);
 		
 		return () => {
 			if (scrollTimeout) clearTimeout(scrollTimeout);
-			if (moveCrewScrollTimeout) clearTimeout(moveCrewScrollTimeout);
+			if (landingScrollTimeout) clearTimeout(landingScrollTimeout);
 			window.removeEventListener('scroll', handleWindowScroll);
-			window.removeEventListener('movecrew-scroll', handleMoveCrewScroll);
+			window.removeEventListener('course-scroll', handleCourseScroll);
 			window.removeEventListener('resize', handleResize);
 		};
 	}, []); // Solo ejecutar una vez al montar
@@ -294,13 +299,15 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
                     ? false
                     : (isEmailVerify || isPaymentSuccess
                         ? true
-                        : ((isAccount || isWeeklyPath
+                        : ((isAccount || isWeeklyPath)
                             ? false
-                            : (isMembershipLanding
+                            : (isMentorship
                                 ? true
-                                : (transparentUntilScroll && !scrolled
-                                    ? true
-                                    : false))))))));
+                                : (isCursoLanding
+                                    ? false
+                                    : (transparentUntilScroll && !scrolled
+                                        ? true
+                                        : false))))))));
     // En weekly path y práctica (video): texto blanco. En página de módulo: sin scroll blanco, con scroll negro. Resto de library: texto negro. Con navegación abierta: texto claro.
     const isLightText = isWeeklyPath ? true : (isLibraryPracticePage ? true : (isLibraryModulePage ? !scrolled : (isLibraryArea ? (forceLight ? true : false) : (forceLight ? true : isLightTextBase))));
 
@@ -308,11 +315,11 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
     if (!isMembershipLanding && !isLibraryArea && scrolled && isLightText && !isIndexStage1) {
         headerBgClass = 'bg-black/40 backdrop-blur-md';
     }
-    // Solo en página de módulo (/library/module/xxx), cuando hay scroll: fondo blanco y texto negro. En práctica (video) el header siempre transparente.
+    // Solo en página de módulo (/biblioteca/modulo/xxx), cuando hay scroll: fondo blanco y texto negro. En práctica (video) el header siempre transparente.
     if (isLibraryModulePage && !isLibraryPracticePage && scrolled) {
         headerBgClass = 'bg-white backdrop-blur-sm';
     }
-    // Resto de library (/library, /library/individual-classes...) al hacer scroll: fondo crema
+    // Resto de library (/biblioteca, /biblioteca/clases-individuales...) al hacer scroll: fondo crema
     if (isLibraryArea && !isLibraryModulePage && scrolled) {
         headerBgClass = 'bg-palette-cream/70 backdrop-blur-sm';
     }
@@ -346,6 +353,9 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	// En página de práctica (video) los botones del header con fondo opaco para que se vean
 	const headerButtonsOpaque = isLibraryPracticePage;
 
+	const membershipLandingButtonClass =
+		'text-palette-ink border border-palette-stone/50 hover:border-palette-sage hover:bg-palette-sage/30';
+
 	// Logo MMOVE ACADEMY en blanco en weekly path y cuando el menú o el navegador Cuerpo autónomo están abiertos
 	const logoLight = headerTitleLight || showNav || snap.weeklyPathNavOpen || isWeeklyPath;
 
@@ -364,39 +374,12 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 					{isWeeklyPath ? (
 						// Distribución especial para camino: flex en 3 zonas; más espacio a la derecha del logo solo aquí
 						<div className="flex items-center justify-between h-full w-full gap-4">
-							{/* Un solo bloque: logo (espacio a la derecha solo aquí) + Biblioteca | Camino + Eventos + Mentoría */}
+							{/* Logo | Eventos + Mentoría */}
 							<div className='flex items-center gap-4 md:gap-6 min-w-0 shrink-0'>
-								<Link href={(auth?.user?.subscription?.active || auth?.user?.isVip) ? (isLibrary ? routes.navegation.index : routes.navegation.membership.library) : routes.navegation.index} className={`font-montserrat font-semibold uppercase tracking-[0.15em] md:tracking-[0.2em] text-sm md:text-xl cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap mr-4 md:mr-24 ${sidebarOpen && isMobile ? 'opacity-0' : 'opacity-100'} ${logoLight ? 'text-white' : 'text-palette-ink'}`} style={{ transition: 'opacity 200ms ease' }}>
+								<Link href={logoHref} className={`font-montserrat font-semibold uppercase tracking-[0.15em] md:tracking-[0.2em] text-sm md:text-xl cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap mr-4 md:mr-24 ${sidebarOpen && isMobile ? 'opacity-0' : 'opacity-100'} ${logoLight ? 'text-white' : 'text-palette-ink'}`} style={{ transition: 'opacity 200ms ease' }}>
 									MMOVE ACADEMY
 								</Link>
-								{(auth?.user?.subscription?.active || auth?.user?.isVip || auth?.user?.rol === 'Admin') && !isMembershipLanding && (
-									<div className={`${auth?.user?.subscription?.active || auth?.user?.isVip ? 'ml-2' : ''}`}>
-										<span className={` shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'} ${isWeeklyPath ? 'hidden' : 'hidden md:block'}`}>|</span>
-										<div className="hidden md:flex items-center gap-6 shrink-0">
-											<Link
-												href={routes.navegation.membership.library}
-												className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${
-													isLightText 
-															? (isLibraryArea ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') 
-															: (isLibraryArea ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')
-												}`}
-											>
-												Biblioteca
-											</Link>
-											<Link
-												href={routes.navegation.membership.weeklyPath}
-												className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${isLightText 
-															? (isWeeklyPath ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') 
-															: (isWeeklyPath ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')
-												}`}
-											>
-												Camino
-											</Link>
-										</div>
-									
-									</div>
-								)}
-								<div className="hidden md:flex items-center gap-6 shrink-0">
+								<div className="hidden md:flex items-center gap-6 shrink-0 flex-wrap">
 								<span className={`hidden md:block shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'}`}>|</span>
 									<Link href={routes.navegation.eventos} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${isLightText ? (isEvents ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isEvents ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}`}>
 										Eventos
@@ -411,7 +394,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								{/* Solo móvil: con acceso = menú navegación (como bitácora); sin acceso = popover Eventos/Mentoría + Iniciar sesión */}
 								<div className="flex md:hidden items-center gap-2">
 								{(() => {
-									const hasNavAccess = auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin');
+									const hasNavAccess = auth && auth.user;
 									if (hasNavAccess) {
 										return (
 											<button
@@ -423,7 +406,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 													if (tutorialActive) return;
 													state.weeklyPathNavOpen = !snap.weeklyPathNavOpen;
 												}}
-												className={`rounded-full p-2 border transition-colors ${isLightText ? 'text-white border-white/40 hover:bg-white/20' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-stone/10'}`}
+												className={`rounded-full p-2 border transition-colors ${isLightText ? 'text-white border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage'}`}
 												aria-expanded={snap.weeklyPathNavOpen}
 												aria-label="Menú"
 											>
@@ -436,19 +419,19 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									<button
 										type="button"
 										onClick={(e) => { e.stopPropagation(); setEventsMentorshipOpen((v) => !v); }}
-										className={`rounded-full p-2 border transition-colors ${isLightText ? 'text-white border-white/40 hover:bg-white/20' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-stone/10'}`}
+										className={`rounded-full p-2 border transition-colors ${isLightText ? 'text-white border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage'}`}
 										aria-expanded={eventsMentorshipOpen}
 										aria-haspopup="true"
-										aria-label="Eventos y Mentoría"
+										aria-label="Mentoría y eventos"
 									>
 										<ChevronDownIcon className={`h-5 w-5 transition-transform ${eventsMentorshipOpen ? 'rotate-180' : ''}`} />
 									</button>
 									{eventsMentorshipOpen && (
-										<div className="absolute right-0 top-full mt-2 w-40 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
-											<Link href={routes.navegation.eventos} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isEvents ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
-											<Link href={routes.navegation.mentorship} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMentorship ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
+										<div className="absolute right-0 top-full mt-2 min-w-[10rem] w-max max-w-[min(20rem,calc(100vw-2rem))] rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
+											<Link href={routes.navegation.eventos} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isEvents ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-sage/25'}`} onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
+											<Link href={routes.navegation.mentorship} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMentorship ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-white/10'}`} onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
 											{!auth?.user && (
-												<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.loginForm = true; }}>Iniciar sesión</button>
+												<button type="button" className="block w-full text-left px-4 py-2.5 font-montserrat font-light text-xs tracking-[0.12em] uppercase text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.loginForm = true; }}>Iniciar sesión</button>
 											)}
 										</div>
 									)}
@@ -456,7 +439,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									);
 								})()}
 								{auth && auth.user && (() => {
-									const hasSub = auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin';
+									const hasSub = true;
 									const size = 40;
 									const r = 17;
 									const circumference = 2 * Math.PI * r;
@@ -486,8 +469,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 										</button>
 										{profileMenuOpen && (
 											<div className="absolute right-0 top-full mt-2 w-44 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
-												<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
-												<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-stone/20 transition-colors" onClick={() => { auth.signOut(); setProfileMenuOpen(false); router.push('/'); }}>Cerrar sesión</button>
+												<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
+												<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-sage/25 transition-colors" onClick={() => { setProfileMenuOpen(false); performLogout('/'); }}>Cerrar sesión</button>
 											</div>
 										)}
 									</div>
@@ -496,17 +479,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								</div>
 								{/* Solo desktop: Menú + Admin + usuario */}
 								<div className='hidden md:flex items-center gap-3'>
-								{/* Sin acceso → Empezar Camino; con acceso → botón Menú (abre navegador Cuerpo autónomo) */}
-								{isMoveCrew && !(auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin')) && (
-									<Link
-										href={`${routes.navegation.membership.moveCrew}#membership-plans`}
-										className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-5 py-2 shrink-0 transition-all duration-200 ${(isAnyMenuOpen || isWeeklyPath) ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : 'bg-black text-white border border-black hover:bg-palette-sage hover:border-palette-sage'}`}
-									>
-										Empezar Camino
-									</Link>
-								)}
-								<div className='flex items-center gap-3'>
-									{auth?.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin') && (
+									{auth?.user && (
 										<button
 											type='button'
 											data-tutorial-membership-target
@@ -515,7 +488,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 												if (tutorialActive) return;
 												state.weeklyPathNavOpen = !snap.weeklyPathNavOpen; 
 											}}
-											className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${(snap.weeklyPathNavOpen || isWeeklyPath) ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : 'bg-black text-white border border-black hover:bg-palette-sage hover:border-palette-sage'}`}
+											className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${(snap.weeklyPathNavOpen || isWeeklyPath) ? 'text-white border border-white/80 hover:bg-palette-sage hover:text-palette-ink hover:border-palette-sage' : 'bg-black text-white border border-black hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink'}`}
 											aria-label="Abrir menú"
 										>
 											{snap.weeklyPathNavOpen ? (
@@ -532,16 +505,15 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 										<button
 											type='button'
 											onClick={() => router.push('/admin')}
-											className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${(isAnyMenuOpen || isWeeklyPath) ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream' : 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5'}`}
+											className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${(isAnyMenuOpen || isWeeklyPath) ? 'text-white border border-white/80 hover:bg-palette-sage hover:text-palette-ink hover:border-palette-sage' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-sage hover:border-palette-sage' : 'text-palette-ink border border-palette-stone/50 hover:border-palette-sage hover:bg-palette-sage/30'}`}
 											aria-label='Ir al panel de administración'
 										>
 											<span>Admin</span>
 										</button>
 									)}
-								</div>
-								{/* Camino: avatar circular + menú (Mi perfil, Cerrar sesión) */}
+								{/* Ruta semanal: avatar + menú perfil */}
 								{isWeeklyPath && auth?.user && (() => {
-									const hasSub = auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin';
+									const hasSub = true;
 									const size = 40;
 									const r = 18;
 									const circumference = 2 * Math.PI * r;
@@ -571,8 +543,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 										</button>
 										{profileMenuOpen && (
 											<div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
-												<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
-												<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-stone/20 transition-colors" onClick={() => { auth.signOut(); setProfileMenuOpen(false); router.push('/'); }}>Cerrar sesión</button>
+												<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
+												<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-sage/25 transition-colors" onClick={() => { setProfileMenuOpen(false); performLogout('/'); }}>Cerrar sesión</button>
 											</div>
 										)}
 									</div>
@@ -582,47 +554,18 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							</div>
 						</div>
 					) : (
-						// Distribución normal (incluye Cuerpo autónomo)
+						// Distribución normal
 						<div className="flex justify-between items-center pl-3 pr-4 md:pl-8 md:pr-8 lg:gap-x-8 h-full">
 					<div className='flex items-center justify-start shrink-0 gap-4'>
-										<Link href={(auth?.user?.subscription?.active || auth?.user?.isVip) ? (isLibrary ? routes.navegation.index : routes.navegation.membership.library) : routes.navegation.index} className={`font-montserrat font-semibold tracking-[0.15em] md:tracking-[0.2em] text-sm md:text-2xl cursor-pointer hover:opacity-80 transition-opacity ${sidebarOpen && !isMobile ? 'opacity-0' : 'opacity-100'} ${logoLight ? 'text-white' : 'text-palette-ink'}`} style={{ transition: 'opacity 200ms ease' }}>
+										<Link href={logoHref} className={`font-montserrat font-semibold tracking-[0.15em] md:tracking-[0.2em] text-sm md:text-2xl cursor-pointer hover:opacity-80 transition-opacity ${sidebarOpen && !isMobile ? 'opacity-0' : 'opacity-100'} ${logoLight ? 'text-white' : 'text-palette-ink'}`} style={{ transition: 'opacity 200ms ease' }}>
 											MMOVE ACADEMY
 										</Link>
-						{(auth?.user?.subscription?.active || auth?.user?.isVip) && !isMembershipLanding && (
-							<>
-								<span className={` ${headerTitleLight ? 'text-white/60' : 'text-palette-stone/60'} ${isWeeklyPath ? 'hidden' : 'hidden md:block'}`}>|</span>
-								<div className="hidden md:flex items-center gap-6">
-									<Link
-										href={routes.navegation.membership.library}
-										className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight 
-													? (isLibraryArea ? 'text-white font-semibold' : 'text-white/80 hover:text-white/100 font-light') 
-													: (isLibraryArea ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')
-										}`}
-									>
-										Biblioteca
-									</Link>
-									<Link
-										href={routes.navegation.membership.weeklyPath}
-										className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight 
-													? (isWeeklyPath ? 'text-white font-semibold' : 'text-white/80 hover:text-white/100 font-light') 
-													: (isWeeklyPath ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')
-										}`}
-									>
-										Camino
-									</Link>
-								</div>
-								<span className={`hidden md:block ${headerTitleLight ? 'text-white/60' : 'text-palette-stone/60'}`}>|</span>
-							</>
-						)}
 					</div>
-					{/* Centro: Eventos y Mentoría; centrado sin login, más a la izquierda con login */}
+					{/* Centro: Mentoría y Eventos */}
 					<div className="flex flex-1 w-full justify-start items-center min-h-[2rem]">
-						<div className={`hidden  items-center gap-6  ${auth?.user ? '-translate-x-[15%]' : ''} ${isMembershipLanding || isBienvenida ? 'md:hidden' : 'md:flex'} ${auth?.user?.subscription?.active || auth?.user?.isVip ? 'ml-4' : auth?.user?.rol === 'Admin' ? 'ml-12' : 'ml-0'}`}>
+						<div className={`hidden items-center gap-6 flex-wrap -translate-x-[15%] ${isMembershipLanding || isBienvenida ? 'md:hidden' : 'md:flex'} ml-4`}>
 						<span className={`hidden md:block shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'}`}>|</span>
-						<Link href={routes.navegation.moveCrew} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? (isMoveCrew ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isMoveCrew ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}`}>
-								Cuerpo autónomo
-							</Link>
-							<Link href={routes.navegation.mentorship} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? (isMentorship ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isMentorship ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}` }>
+							<Link href={routes.navegation.mentorship} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? (isMentorship ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isMentorship ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}`}>
 								Mentoría
 							</Link>
 			
@@ -634,7 +577,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 					{/* Móvil (layout normal): con acceso = menú navegación (bitácora en index, weekly en resto); sin acceso = popover */}
 					<div className="flex md:hidden items-center gap-2 shrink-0">
 						{(() => {
-							const hasNavAccess = auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin');
+							const hasNavAccess = auth && auth.user;
 							if (hasNavAccess) {
 								const navOpen = isIndex ? snap.bitacoraNavOpen : snap.weeklyPathNavOpen;
 								return (
@@ -652,7 +595,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 												state.weeklyPathNavOpen = !snap.weeklyPathNavOpen;
 											}
 										}}
-										className={`rounded-full p-2 border transition-colors ${headerTitleLight ? 'text-white border-white/40 hover:bg-white/20' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-stone/10'}`}
+										className={`rounded-full p-2 border transition-colors ${headerTitleLight ? 'text-white border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage'}`}
 										aria-expanded={navOpen}
 										aria-label="Menú"
 									>
@@ -665,20 +608,19 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							<button
 								type="button"
 								onClick={(e) => { e.stopPropagation(); setEventsMentorshipOpen((v) => !v); }}
-								className={`rounded-full p-2 border transition-colors ${headerTitleLight ? 'text-white border-white/40 hover:bg-white/20' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-stone/10'}`}
+								className={`rounded-full p-2 border transition-colors ${headerTitleLight ? 'text-white border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage'}`}
 								aria-expanded={eventsMentorshipOpen}
 								aria-haspopup="true"
-								aria-label="Eventos y Mentoría"
+								aria-label="Mentoría y eventos"
 							>
 								<ChevronDownIcon className={`h-5 w-5 transition-transform ${eventsMentorshipOpen ? 'rotate-180' : ''}`} />
 							</button>
 							{eventsMentorshipOpen && (
-								<div className="absolute right-0 top-full mt-2 w-40 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
-									<Link href={routes.navegation.moveCrew} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMoveCrew ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Cuerpo autónomo</Link>
-									<Link href={routes.navegation.mentorship} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMentorship ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
-									<Link href={routes.navegation.eventos} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isEvents ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-stone/20'}`} onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
+								<div className="absolute right-0 top-full mt-2 min-w-[10rem] w-max max-w-[min(20rem,calc(100vw-2rem))] rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
+									<Link href={routes.navegation.mentorship} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMentorship ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-white/10'}`} onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
+									<Link href={routes.navegation.eventos} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isEvents ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-sage/25'}`} onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
 									{!auth?.user && (
-										<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.loginForm = true; }}>Iniciar sesión</button>
+										<button type="button" className="block w-full text-left px-4 py-2.5 font-montserrat font-light text-xs tracking-[0.12em] uppercase text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.loginForm = true; }}>Iniciar sesión</button>
 									)}
 								</div>
 							)}
@@ -700,8 +642,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								</button>
 								{profileMenuOpen && (
 									<div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
-										<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
-										<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-stone/20 transition-colors" onClick={() => { auth.signOut(); setProfileMenuOpen(false); router.push('/'); }}>Cerrar sesión</button>
+										<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
+										<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-sage/25 transition-colors" onClick={() => { setProfileMenuOpen(false); performLogout('/'); }}>Cerrar sesión</button>
 									</div>
 								)}
 							</div>
@@ -709,16 +651,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 					</div>
 					{/* Desktop: Menú (navegador Cuerpo autónomo), Admin, avatar */}
 					<div className='hidden md:flex items-center gap-3 shrink-0'>
-						{isMoveCrew && !(auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin')) && (
-							<Link
-								href={`${routes.navegation.membership.moveCrew}#membership-plans`}
-								className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-5 py-2 transition-all duration-200 ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : 'bg-black text-white border border-black hover:bg-palette-sage hover:border-palette-sage'}`}
-							>
-								Empezar Camino
-							</Link>
-						)}
 						<div className='flex items-center gap-3'>
-								{auth && auth.user && (auth.user.subscription?.active || auth.user.isVip || auth.user.rol === 'Admin') && (!isBienvenida) && (
+								{auth && auth.user && (!isBienvenida) && (
 									<button
 										type='button'
 										data-tutorial-membership-target
@@ -727,7 +661,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 											if (tutorialActive) return;
 											state.weeklyPathNavOpen = !snap.weeklyPathNavOpen; 
 										}}
-										className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${snap.weeklyPathNavOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream' : 'bg-black text-white border border-black hover:bg-palette-sage hover:border-palette-sage'}`}
+										className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${snap.weeklyPathNavOpen ? 'text-white border border-white/80 hover:bg-palette-sage hover:text-palette-ink hover:border-palette-sage' : isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-palette-sage hover:text-palette-ink hover:border-palette-sage' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-sage hover:border-palette-sage' : isMembershipLanding ? membershipLandingButtonClass : isLightText ? 'text-white border border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage hover:text-palette-ink' : membershipLandingButtonClass}`}
 										aria-label="Abrir menú"
 									>
 										{snap.weeklyPathNavOpen ? (
@@ -744,7 +678,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									<button
 										type='button'
 										onClick={() => router.push('/admin')}
-className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream' : (isMembershipLanding ? 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5' : isLightText ? 'text-white border border-white/40 hover:bg-white/20' : 'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-stone/5')}`}
+										className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-palette-sage hover:text-palette-ink hover:border-palette-sage' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-sage hover:border-palette-sage' : isMembershipLanding ? membershipLandingButtonClass : isLightText ? 'text-white border border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage hover:text-palette-ink' : membershipLandingButtonClass}`}
 												aria-label='Ir al panel de administración'
 									>
 										<span>Admin</span>
@@ -767,8 +701,8 @@ className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase round
 									</button>
 									{profileMenuOpen && (
 										<div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
-											<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-stone/20 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
-											<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-stone/20 transition-colors" onClick={() => { auth.signOut(); setProfileMenuOpen(false); router.push('/'); }}>Cerrar sesión</button>
+											<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
+											<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-sage/25 transition-colors" onClick={() => { setProfileMenuOpen(false); performLogout('/'); }}>Cerrar sesión</button>
 										</div>
 									)}
 								</div>
@@ -776,17 +710,17 @@ className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase round
 								<button
 									type="button"
 									onClick={() => { state.loginForm = true; }}
-									className={`rounded-full px-4 py-2 border transition-colors font-montserrat text-sm ${
+									className={`rounded-full px-4 py-2 border transition-colors duration-200 font-montserrat font-light text-xs tracking-[0.12em] uppercase shrink-0 ${
 										headerButtonsOpaque
-											? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream'
+											? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-sage hover:border-palette-sage'
 											: isMembershipLanding
-												? 'text-palette-ink border border-palette-ink/60 hover:bg-palette-stone/10 hover:border-palette-ink'
+												? 'text-palette-ink border border-palette-ink/60 hover:bg-palette-sage/30 hover:border-palette-sage'
 												: isLightText
-													? 'text-white border border-white/40 hover:bg-white/20'
-													: 'text-palette-ink border border-palette-stone/40 hover:bg-palette-stone/10'
+													? 'text-white border border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage hover:text-palette-ink'
+													: 'text-palette-ink border border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage'
 									}`}
 								>
-									Iniciar Sesión
+									Iniciar sesión
 								</button>
 							)}
 					</div>

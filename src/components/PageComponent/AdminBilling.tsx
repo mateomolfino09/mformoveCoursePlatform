@@ -24,13 +24,13 @@ const Billing = ({ bills }: Props) => {
     const cookies: any = Cookies.get('userToken')
     
     if (!cookies ) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
     
     if(!auth.user) {
       auth.fetchUser()
     }
-    else if(auth.user.rol != 'Admin') router.push('/login');
+    else if(auth.user.rol != 'Admin') router.push('/iniciar-sesion');
 
 
   }, [auth.user]);

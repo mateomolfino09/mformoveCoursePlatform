@@ -102,7 +102,7 @@ function CarouselClasses({
         </div>
 
         </div>
-        <div className={`flex ml-2 md:ml-4 md:ml-0 mb-5 relative font-light text-xs md:text-sm group cursor-pointer ${title == "Publicadas Recientemente" ? 'hidden' : ""}`} onClick={() => router.push(`/classes-category/${title?.toLowerCase()}`)}>
+        <div className={`flex ml-2 md:ml-4 md:ml-0 mb-5 relative font-light text-xs md:text-sm group cursor-pointer ${title == "Publicadas Recientemente" ? 'hidden' : ""}`} onClick={() => router.push(`/categoria-clases/${title?.toLowerCase()}`)}>
           <p className='relative text-palette-stone hover:text-palette-ink transition-colors before:content-[""] before:h-[1px] before:absolute before:w-full before:bottom-[-3px] before:left-0 before:bg-palette-stone/40 group-hover:before:bg-palette-ink before:transition-colors'>Todas las clases de {title} </p>
           <ArrowRightIcon className='w-4 ml-2 text-palette-stone group-hover:text-palette-ink group-hover:translate-x-1 transition-all duration-300'/>
         </div>

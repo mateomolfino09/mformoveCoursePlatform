@@ -18,14 +18,12 @@ import WeeklyPathSidebar from '../../components/PageComponent/WeeklyPath/WeeklyP
 import VideoContentDisplay from '../../components/PageComponent/WeeklyPath/VideoContentDisplay';
 import AudioTextContentDisplay from '../../components/PageComponent/WeeklyPath/AudioTextContentDisplay';
 import ZoomEventContentDisplay from '../../components/PageComponent/WeeklyPath/ZoomEventContentDisplay';
-import MoveCrewLoading from '../../components/PageComponent/MoveCrew/MoveCrewLoading';
 import MainSideBar from '../../components/MainSidebar/MainSideBar';
 import WeeklyPathSkeleton from '../../components/WeeklyPathSkeleton';
 import { CoherenceProvider, useCoherence } from '../../contexts/CoherenceContext';
 import CoherenceCelebrationModal from '../../components/PageComponent/WeeklyPath/CoherenceCelebrationModal';
 import CoherenceInfoModal from '../../components/PageComponent/WeeklyPath/CoherenceInfoModal';
 import NextContentModal from '../../components/PageComponent/WeeklyPath/NextContentModal';
-import WeeklyPathLoading from '../../components/PageComponent/MoveCrew/WeeklyPathLoading';
 import FooterProfile from '../../components/PageComponent/Profile/FooterProfile';
 import WeeklyReportModal from '../../components/WeeklyReportModal';
 

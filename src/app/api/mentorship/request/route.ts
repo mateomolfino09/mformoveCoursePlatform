@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
             ` : ''}
             
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://mateomove.com'}/admin/mentorship/requests" style="background-color: #234C8C; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+              <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://mateomove.com'}/admin/mentorias/solicitudes" style="background-color: #234C8C; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
                 Ver Solicitud en el Panel
               </a>
             </div>

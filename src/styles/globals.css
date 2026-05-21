@@ -7,6 +7,8 @@
   --palette-ink: #141411;
   --palette-sage: #acae89;
   --palette-stone: #787867;
+  --palette-steel: #8f9db3;
+  --palette-cloud: #f5f7fa;
   --palette-deep-teal: #001b1c;
   --palette-teal: #074647;
   --palette-white: #FAF8F4;
@@ -646,4 +648,48 @@
 
 .practice-popup-card {
   animation: practice-popup-in 0.4s ease-out forwards;
+}
+
+/* MoveCrew / membership: relieve tipográfico suave según fondo */
+@layer utilities {
+  .mc-text-depth-light {
+    text-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.55),
+      0 1px 12px rgba(20, 20, 17, 0.05);
+  }
+  .mc-text-depth-light-title {
+    text-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.68),
+      0 2px 18px rgba(20, 20, 17, 0.06);
+  }
+  /* ink / piedra sobre celeste o steel */
+  .mc-text-depth-steel {
+    text-shadow:
+      0 1px 0 rgba(250, 248, 244, 0.45),
+      0 0 22px rgba(250, 248, 244, 0.32),
+      0 2px 16px rgba(20, 20, 17, 0.05);
+  }
+  .mc-text-depth-steel-title {
+    text-shadow:
+      0 1px 0 rgba(250, 248, 244, 0.55),
+      0 2px 32px rgba(250, 248, 244, 0.42),
+      0 0 48px rgba(250, 248, 244, 0.18);
+  }
+  .mc-text-depth-steel-eyebrow {
+    text-shadow:
+      0 0 24px rgba(250, 248, 244, 0.5),
+      0 1px 2px rgba(250, 248, 244, 0.82);
+  }
+  /* crema / cloud sobre ink */
+  .mc-text-glow-ink {
+    text-shadow:
+      0 1px 0 rgba(0, 0, 0, 0.22),
+      0 0 20px rgba(250, 248, 244, 0.1);
+  }
+  .mc-text-glow-ink-title {
+    text-shadow:
+      0 1px 0 rgba(0, 0, 0, 0.2),
+      0 2px 26px rgba(250, 248, 244, 0.16),
+      0 0 42px rgba(250, 248, 244, 0.07);
+  }
 }

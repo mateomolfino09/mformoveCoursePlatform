@@ -8,6 +8,9 @@ import { toast } from '../../../hooks/useToast';
 import { ProductDB } from '../../../../typings';
 import { CldImage } from 'next-cloudinary';
 import { Dialog } from '@headlessui/react';
+import CursoLandingConfigForm from './CursoLandingConfigForm';
+import ProductImageFields from './ProductImageFields';
+import { normalizeCursoLandingConfig } from '../../../types/cursoLanding';
 
 interface Props {
   handleSubmit: any;
@@ -38,12 +41,29 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
   const [productVimeoId, setProductVimeoId] = useState<string>(product.intro_video_url || '');
   const [currency, setCurrency] = useState<string>(product.moneda || 'USD');
   const [tipo, setTipo] = useState<string>(product.tipo || 'curso');
+  const [cursoConfig, setCursoConfig] = useState(() =>
+    product.tipo === 'curso'
+      ? normalizeCursoLandingConfig(
+          (product as { cursoConfig?: unknown }).cursoConfig as Parameters<
+            typeof normalizeCursoLandingConfig
+          >[0],
+          product.nombre || 'Curso'
+        )
+      : normalizeCursoLandingConfig(undefined, product.nombre || 'Curso')
+  );
   const [imagenes, setImagenes] = useState<any[]>([]);
   const [cursosIncluidos, setCursosIncluidos] = useState<string>('');
   const [fecha, setFecha] = useState<string>(formatDateForInput(product.fecha));
   const [ubicacion, setUbicacion] = useState<string>(product.ubicacion?.display_name || '');
   const [online, setOnline] = useState<boolean>(product.online || false);
   const [linkEvento, setLinkEvento] = useState<string>(product.linkEvento || '');
+  const [invitacionGrupoWhatsapp, setInvitacionGrupoWhatsapp] = useState<string>(
+    product.invitacionGrupoWhatsapp ||
+      product.grupoWhatsapp ||
+      product.programaTransformacional?.comunidad?.invitacionGrupoWhatsapp ||
+      product.programaTransformacional?.comunidad?.grupoWhatsapp ||
+      ''
+  );
   const [cupo, setCupo] = useState<number | undefined>(product.cupo);
   const [beneficios, setBeneficios] = useState<string[]>(product.beneficios || ['Acceso completo al evento', 'Material de apoyo']);
   const [nuevoBeneficio, setNuevoBeneficio] = useState<string>('');
@@ -82,6 +102,8 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
   // Estados para imágenes
   const [portraitImageArray, setPortraitImageArray] = useState<any[]>([]);
   const [portraitMobileImageArray, setPortraitMobileImageArray] = useState<any[]>([]);
+  const [bioImageFile, setBioImageFile] = useState<File | null>(null);
+  const existingImagenBio = product.imagenBio;
   const [diplomaImageArray, setDiplomaImageArray] = useState<any[]>([]);
   const [galleryImageArray, setGalleryImageArray] = useState<any[]>([]);
   // Estado para imágenes ya guardadas en la galería
@@ -171,6 +193,16 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
     onDrop: (acceptedFiles) => setPortraitMobileImageArray(acceptedFiles),
     accept: { 'image/*': ['.jpeg', '.jpg', '.png'] },
     multiple: false
+  });
+
+  const {
+    getRootProps: getRootPropsBioImage,
+    getInputProps: getInputPropsBioImage,
+    isDragActive: isDragActiveBioImage,
+  } = useDropzone({
+    onDrop: (acceptedFiles) => setBioImageFile(acceptedFiles[0] ?? null),
+    accept: { 'image/*': ['.jpeg', '.jpg', '.png'] },
+    multiple: false,
   });
 
   const { getRootProps: getRootPropsImagenes, getInputProps: getInputPropsImagenes, isDragActive: isDragActiveImagenes } = useDropzone({
@@ -453,8 +485,8 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
     
     // Validaciones por tipo
     if (tipo === 'curso') {
-      if (!vimeoGallery || vimeoVideos.length === 0) {
-        toast.error('Debes ingresar una galería de Vimeo válida con al menos un video');
+      if (!cursoConfig.slug.trim()) {
+        toast.error('Debes definir el slug de la landing del curso');
         return;
       }
     }
@@ -475,6 +507,16 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
       }
       if (!earlyBirdPrice && !generalPrice && !lastTicketsPrice) {
         toast.error('Debes ingresar al menos un precio para el evento');
+        return;
+      }
+      if (!product.portada && !portraitImageArray[0]) {
+        toast.error('Debes subir una imagen de portada');
+        return;
+      }
+    }
+    if (tipo === 'programa_transformacional') {
+      if (!product.portada && !portraitImageArray[0]) {
+        toast.error('Debes subir una imagen de portada');
         return;
       }
     }
@@ -517,6 +559,12 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
     }
 
     // Datos del programa transformacional
+    const invitacionGrupoResuelta =
+      invitacionGrupoWhatsapp.trim() ||
+      comunidad.invitacionGrupoWhatsapp?.trim() ||
+      comunidad.grupoWhatsapp?.trim() ||
+      '';
+
     const programaTransformacionalData = esProgramaTransformacional ? {
       duracionSemanas,
       fechaFin: fechaFin || (fecha ? new Date(new Date(fecha).getTime() + duracionSemanas * 7 * 24 * 60 * 60 * 1000).toISOString() : undefined),
@@ -524,7 +572,15 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
       estadoCohorte,
       semanas: semanas.length > 0 ? semanas : undefined,
       sesionesEnVivo: sesionesEnVivo.length > 0 ? sesionesEnVivo : undefined,
-      comunidad: Object.keys(comunidad).length > 0 ? comunidad : undefined,
+      comunidad:
+        invitacionGrupoResuelta || Object.keys(comunidad).length > 0
+          ? {
+              ...comunidad,
+              ...(invitacionGrupoResuelta
+                ? { invitacionGrupoWhatsapp: invitacionGrupoResuelta }
+                : {}),
+            }
+          : undefined,
       resultadosEsperados: resultadosEsperados.length > 0 ? resultadosEsperados : undefined,
       requisitosPrevios: requisitosPrevios.length > 0 ? requisitosPrevios : undefined,
       materialesNecesarios: materialesNecesarios.length > 0 ? materialesNecesarios : undefined
@@ -562,7 +618,10 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
       pdfPresentacion,
       // Programa Transformacional
       esProgramaTransformacional,
-      programaTransformacionalData
+      programaTransformacionalData,
+      tipo === 'curso' ? cursoConfig : undefined,
+      invitacionGrupoResuelta || undefined,
+      bioImageFile ?? undefined
     );
   };
 
@@ -647,6 +706,22 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
                 </select>
               </label>
 
+              {tipo === 'curso' && (
+                <div className='border-t border-gray-200 pt-6 mt-2'>
+                  <h2 className='text-lg font-semibold text-gray-900 mb-2'>
+                    Landing, módulos y clases del curso
+                  </h2>
+                  <p className='text-sm text-gray-600 mb-4'>
+                    Incluye invitación al grupo de WhatsApp, módulos de contenido y clases (CourseClass).
+                  </p>
+                  <CursoLandingConfigForm
+                    value={cursoConfig}
+                    onChange={setCursoConfig}
+                    productName={name}
+                  />
+                </div>
+              )}
+
               {/* Checkbox para marcar como programa transformacional */}
               {tipo === 'evento' && (
                 <label className='flex items-center space-x-3 w-full'>
@@ -687,6 +762,32 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
               </div>
             </div>
           </div>
+
+          <ProductImageFields
+            existingPortada={product.portada}
+            existingPortadaMobile={product.portadaMobile}
+            existingImagenBio={existingImagenBio}
+            portraitImageArray={portraitImageArray}
+            portraitMobileImageArray={portraitMobileImageArray}
+            bioImageFile={bioImageFile}
+            onBioFileChange={setBioImageFile}
+            portadaRequired={tipo === 'evento' || tipo === 'programa_transformacional'}
+            portrait={{
+              getRootProps: getRootPropsPortrait,
+              getInputProps: getInputPropsPortrait,
+              isDragActive: isDragActivePortrait,
+            }}
+            portraitMobile={{
+              getRootProps: getRootPropsPortraitMobile,
+              getInputProps: getInputPropsPortraitMobile,
+              isDragActive: isDragActivePortraitMobile,
+            }}
+            bio={{
+              getRootProps: getRootPropsBioImage,
+              getInputProps: getInputPropsBioImage,
+              isDragActive: isDragActiveBioImage,
+            }}
+          />
 
           {/* Sección: Configuración de Precios (para eventos y programas) */}
           {(tipo === 'evento' || tipo === 'programa_transformacional') && (
@@ -824,6 +925,7 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
               </h2>
               
               <div className='space-y-6'>
+
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                   <label className='flex flex-col space-y-2'>
                     <p className='text-sm font-medium text-gray-700'>Fecha del evento</p>
@@ -870,6 +972,20 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
                       />
                     </label>
                   )}
+
+                  <label className='flex flex-col space-y-2'>
+                    <p className='text-sm font-medium text-gray-700'>Invitación al grupo de WhatsApp</p>
+                    <input
+                      type='url'
+                      placeholder='https://chat.whatsapp.com/...'
+                      value={invitacionGrupoWhatsapp}
+                      className='input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors'
+                      onChange={(e) => setInvitacionGrupoWhatsapp(e.target.value)}
+                    />
+                    <span className='text-xs text-gray-500'>
+                      Invitación de este evento (el link general de la comunidad es fijo en la plataforma).
+                    </span>
+                  </label>
                   
                   {!online && (
                     <div className='space-y-4'>

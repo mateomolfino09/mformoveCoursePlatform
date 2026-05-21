@@ -19,7 +19,7 @@ const BitacoraAdminPage = () => {
     const cookies: any = Cookies.get('userToken');
     
     if (!cookies) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
       return;
     }
     
@@ -29,7 +29,7 @@ const BitacoraAdminPage = () => {
     }
     
     if (auth.user.rol !== 'Admin') {
-      router.push('/login');
+      router.push('/iniciar-sesion');
       return;
     }
     
@@ -64,7 +64,7 @@ const BitacoraAdminPage = () => {
         </div>
 
         <div className='grid lg:grid-cols-3 gap-6 mb-8'>
-          <Link href={'/admin/memberships/bitacora/create'}>
+          <Link href={'/admin/membresias/bitacora/crear'}>
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -83,7 +83,7 @@ const BitacoraAdminPage = () => {
             </motion.div>
           </Link>
           
-          <Link href={'/admin/memberships/bitacora/list'}>
+          <Link href={'/admin/membresias/bitacora/lista'}>
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

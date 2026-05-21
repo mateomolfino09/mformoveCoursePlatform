@@ -26,7 +26,7 @@ export function createCleanEventUrl(eventName: string): string {
  */
 export function createEventSuccessUrl(eventName: string, baseUrl: string): string {
   const cleanEventName = createCleanEventUrl(eventName);
-  return `${baseUrl}/events/${cleanEventName}/success`;
+  return `${baseUrl}/eventos/${cleanEventName}/success`;
 }
 
 /**

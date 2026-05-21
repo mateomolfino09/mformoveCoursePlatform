@@ -2,12 +2,36 @@ import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
 // Rutas que no requieren autenticación
-const freeCheckSources = ['/login', '/register', '/email', '/reset', '/resetEmail', '/forget', '/about', '/'];
+const freeCheckSources = ['/iniciar-sesion', '/registro', '/verificar-correo', '/restablecer', '/restablecer-correo', '/olvide-contrasena', '/nosotros', '/'];
 // Rutas de onboarding que requieren autenticación pero no deben ser bloqueadas por el middleware
-const onboardingPaths = ['/onboarding'];
+const onboardingPaths = ['/incorporacion'];
+
+const CURSO_CUERPO_AUTONOMO_PATH = '/curso/cuerpo-autonomo';
+
+function isLibraryPath(pathname: string): boolean {
+    return (
+        pathname === '/library' ||
+        pathname.startsWith('/library/') ||
+        pathname === '/biblioteca' ||
+        pathname.startsWith('/biblioteca/')
+    );
+}
 
 export async function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
+
+    if (pathname === '/move-crew' || pathname.startsWith('/move-crew/')) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/cuerpo-autonomo';
+        return NextResponse.redirect(url);
+    }
+
+    if (isLibraryPath(pathname)) {
+        const url = request.nextUrl.clone();
+        url.pathname = CURSO_CUERPO_AUTONOMO_PATH;
+        return NextResponse.redirect(url);
+    }
+
     const jwt = request.cookies.get('userToken')?.value;
     const response = NextResponse.next();
     
@@ -26,10 +50,10 @@ export async function middleware(request: NextRequest) {
         if (jwt === undefined) {
             // Guardar la URL de destino en una cookie para redirigir después del login
             const redirectUrl = request.nextUrl.pathname + request.nextUrl.search;
-            const response = NextResponse.redirect(new URL('/login', request.url));
+            const response = NextResponse.redirect(new URL('/iniciar-sesion', request.url));
             
             // Solo guardar si no es una ruta de auth
-            const authRoutes = ['/login', '/register', '/email', '/reset', '/forget'];
+            const authRoutes = ['/iniciar-sesion', '/registro', '/verificar-correo', '/restablecer', '/restablecer-correo', '/olvide-contrasena'];
             if (!authRoutes.some(route => redirectUrl.startsWith(route))) {
                 response.cookies.set('redirectQueue', redirectUrl, {
                     maxAge: 60 * 60 * 24, // 1 día
@@ -42,8 +66,8 @@ export async function middleware(request: NextRequest) {
         }
 
         // Redirecciones específicas según las rutas
-        if (pathname === '/payment/back') {
-            return NextResponse.redirect(new URL('/mentorship', request.url));
+        if (pathname === '/pago/atras') {
+            return NextResponse.redirect(new URL('/mentoria', request.url));
         }
 
         // Verificar el JWT
@@ -52,19 +76,24 @@ export async function middleware(request: NextRequest) {
         return response;
     } catch (error) {
         // Si hay un error en la verificación, redirige a login
-        return NextResponse.redirect(new URL('/login', request.url));
+        return NextResponse.redirect(new URL('/iniciar-sesion', request.url));
     }
 }
 
 // Aplicar el middleware a rutas protegidas (excluyendo onboarding que se maneja arriba)
 export const config = {
     matcher: [
-        '/account/:path*', 
-        '/admin/:path*', 
-        '/products/:path*', 
-        '/payment/:path*',
+        '/move-crew',
+        '/move-crew/:path*',
+        '/library',
         '/library/:path*',
-        '/weekly-path/:path*',
-        '/onboarding/:path*' // Incluido para permitir acceso pero sin bloquear
+        '/biblioteca',
+        '/biblioteca/:path*',
+        '/cuenta/:path*', 
+        '/admin/:path*', 
+        '/productos/:path*', 
+        '/pago/:path*',
+        '/ruta-semanal/:path*',
+        '/incorporacion/:path*' // Incluido para permitir acceso pero sin bloquear
     ]
 };

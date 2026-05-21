@@ -212,6 +212,15 @@ interface ISubscription {
 }
 
 
+export interface CursoAdquirido {
+  productoId: string;
+  fechaCompra: string;
+  metodoPago?: 'stripe' | 'dlocalgo' | 'transferencia' | 'gratis';
+  transaccionId?: string;
+  monto?: number;
+  moneda?: string;
+}
+
 export interface User {
   id: number;
   _id: number;
@@ -230,6 +239,7 @@ export interface User {
   subscription: ISubscription
   freeSubscription: FreeSubscription;
   isVip: boolean;
+  cursosAdquiridos?: CursoAdquirido[];
 }
 
 export interface ClassesDB {
@@ -522,6 +532,7 @@ export interface ProductDB {
   imagenes?: string[];
   portada?: string;
   portadaMobile?: string; // URL de la imagen de portada para móviles
+  imagenBio?: string; // Imagen 3:4 para carrusel /bio (eventos)
   precios?: {
     earlyBird?: {
       price: number;
@@ -561,6 +572,9 @@ export interface ProductDB {
   online?: boolean;
   linkEvento?: string;
   cupo?: number;
+  invitacionGrupoWhatsapp?: string;
+  /** @deprecated usar invitacionGrupoWhatsapp */
+  grupoWhatsapp?: string;
   pdfPresentacionUrl?: string;
   beneficios?: string[];
 
@@ -617,7 +631,9 @@ export interface ProductDB {
       tipo: 'q&a' | 'practica' | 'reflexion' | 'comunidad';
     }>;
     comunidad?: {
-      grupoWhatsapp?: string;
+      invitacionGrupoWhatsapp?: string;
+  /** @deprecated usar invitacionGrupoWhatsapp */
+  grupoWhatsapp?: string;
       grupoTelegram?: string;
       foroUrl?: string;
       descripcion?: string;

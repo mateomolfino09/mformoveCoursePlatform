@@ -3,16 +3,18 @@ import Link from 'next/link'
 import React from 'react'
 import { AiOutlineLogout } from 'react-icons/ai'
 import { motion } from 'framer-motion'
-import { useAuth } from '../hooks/useAuth'
-import { useRouter } from 'next13-progressbar'
+import { useLogout } from '../hooks/useLogout'
+import { usePathname } from 'next/navigation'
+import { routes } from '../constants/routes'
 
 const ProfileHeader = () => {
-  const auth = useAuth();
-  const router = useRouter();
+  const { performLogout } = useLogout('/iniciar-sesion');
+  const path = usePathname()
+  const logoHref = routes.navegation.index
 
   return (
     <motion.header className={`bg-black w-full h-16 py-1 `} initial={{ opacity: 0 }} transition={{ duration: 0.8, ease: 'linear' }} animate={{ opacity: 1 }}>
-    <Link href={`${auth?.user?.subscription?.active ? '/library' : '/mentorship' }`}>
+    <Link href={logoHref}>
       <img
         src='/images/MFORMOVE_blanco03.png'
         width={180}
@@ -20,7 +22,9 @@ const ProfileHeader = () => {
         className='cursor-pointer object-contain transition py-2 duration-500 hover:scale-105 lg:opacity-80 hover:opacity-100'
       />
     </Link>
-    <a href="/login"> <AiOutlineLogout onClick={(e) => auth.signOut()} className='md:h-6 md:w-6 h-5 w-5 cursor-pointer text-white transition duration-500 hover:scale-105 lg:opacity-80 hover:opacity-100' /> </a>
+    <button type="button" onClick={() => performLogout()} aria-label="Cerrar sesión">
+      <AiOutlineLogout className='md:h-6 md:w-6 h-5 w-5 cursor-pointer text-white transition duration-500 hover:scale-105 lg:opacity-80 hover:opacity-100' />
+    </button>
   </motion.header>
   )
 }

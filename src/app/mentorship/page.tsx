@@ -75,7 +75,7 @@ export default function MentorshipPage() {
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="mt-6 w-full font-montserrat font-semibold text-sm uppercase tracking-[0.2em] rounded-full px-6 py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage transition-all duration-200"
+            className="mt-6 w-full font-montserrat font-semibold text-sm uppercase tracking-[0.2em] rounded-full px-6 py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-skysteel hover:border-palette-skysteel hover:text-palette-ink transition-all duration-200"
           >
             Reintentar
           </button>

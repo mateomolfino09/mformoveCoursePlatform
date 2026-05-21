@@ -145,7 +145,7 @@ export default function LibraryModuleView({ module: mod, classes, onVideoReady }
     const thumb = c.image_base_link || c.image_url || '';
     return (
       <Link
-        href={`/library/individual-classes/${c.id}`}
+        href={`/biblioteca/clases-individuales/${c.id}`}
         className="group block relative w-full aspect-video rounded-xl overflow-hidden bg-palette-ink ring-1 ring-palette-stone/20 hover:ring-palette-sage/50 transition-all duration-300"
       >
         <div className="absolute inset-0 overflow-hidden">
@@ -178,7 +178,7 @@ export default function LibraryModuleView({ module: mod, classes, onVideoReady }
     const thumb = c.videoThumbnail || '';
     return (
       <Link
-        href={`/library/module/${mod.slug}/practice/${c._id}`}
+        href={`/biblioteca/modulo/${mod.slug}/practice/${c._id}`}
         className="group block relative w-full aspect-video rounded-xl overflow-hidden bg-palette-ink ring-1 ring-palette-stone/20 hover:ring-palette-sage/50 transition-all duration-300"
       >
         <div className="absolute inset-0 overflow-hidden">
@@ -422,7 +422,7 @@ export default function LibraryModuleView({ module: mod, classes, onVideoReady }
                                             c={c}
                                             isNew={!!c.new}
                                             variant="library"
-                                            linkBase="/library/individual-classes"
+                                            linkBase="/biblioteca/clases-individuales"
                                           />
                                         </div>
                                       ))}
@@ -451,7 +451,7 @@ export default function LibraryModuleView({ module: mod, classes, onVideoReady }
                                         c={c}
                                         isNew={!!c.new}
                                         variant="library"
-                                        linkBase="/library/individual-classes"
+                                        linkBase="/biblioteca/clases-individuales"
                                       />
                                     </div>
                                   ))}
@@ -503,7 +503,7 @@ export default function LibraryModuleView({ module: mod, classes, onVideoReady }
                                       c={c}
                                       isNew={!!c.new}
                                       variant="library"
-                                      linkBase="/library/individual-classes"
+                                      linkBase="/biblioteca/clases-individuales"
                                     />
                                   </div>
                                 ))}
@@ -551,7 +551,7 @@ export default function LibraryModuleView({ module: mod, classes, onVideoReady }
                                     c={c}
                                     isNew={!!c.new}
                                     variant="library"
-                                    linkBase="/library/individual-classes"
+                                    linkBase="/biblioteca/clases-individuales"
                                   />
                                 </div>
                               ))}

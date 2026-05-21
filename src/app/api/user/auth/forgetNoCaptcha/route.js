@@ -43,7 +43,7 @@ export async function POST(req) {
 
       let origin = getCurrentURL();
       
-      const link = `${origin}/reset/${token}`;
+      const link = `${origin}/restablecer/${token}`;
       const title = `<h1>Restablece tu contraseña</h1>`;
 
       const message = `

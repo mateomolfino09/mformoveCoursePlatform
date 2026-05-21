@@ -748,7 +748,7 @@ export default function MentorshipConsultaPage() {
             >
               <Link
                 href="/"
-                className="inline-flex items-center justify-center rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-colors duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink"
+                className="inline-flex items-center justify-center rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-colors duration-200 hover:border-palette-skysteel hover:bg-palette-skysteel hover:text-palette-ink"
               >
                 Volver al inicio
               </Link>
@@ -1020,7 +1020,7 @@ export default function MentorshipConsultaPage() {
                       </p>
                       <Link
                         href={ROUTE_MEMBERSHIP_SELECT_PLAN}
-                        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-palette-ink bg-palette-ink px-6 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink sm:w-auto"
+                        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-palette-ink bg-palette-ink px-6 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-skysteel hover:bg-palette-skysteel hover:text-palette-ink sm:w-auto"
                       >
                         Ir a seleccionar plan
                         <span aria-hidden className="text-palette-cream/90">
@@ -1183,7 +1183,7 @@ export default function MentorshipConsultaPage() {
                 onClick={handleNext}
                 disabled={muestraPuenteMembresia}
                 title={muestraPuenteMembresia ? 'Elegí mentoría para continuar esta solicitud, o entrá por el enlace de membresía' : undefined}
-                className="group inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink disabled:cursor-not-allowed disabled:opacity-40 sm:ml-auto sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-skysteel hover:bg-palette-skysteel hover:text-palette-ink disabled:cursor-not-allowed disabled:opacity-40 sm:ml-auto sm:w-auto"
               >
                 Siguiente
                 <svg
@@ -1199,7 +1199,7 @@ export default function MentorshipConsultaPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink disabled:opacity-50 sm:ml-auto sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-skysteel hover:bg-palette-skysteel hover:text-palette-ink disabled:opacity-50 sm:ml-auto sm:w-auto"
               >
                 {loading ? 'Enviando…' : 'Enviar solicitud'}
                 {!loading && (

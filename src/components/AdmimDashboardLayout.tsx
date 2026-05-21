@@ -63,7 +63,7 @@ const AdmimDashboardLayout = ({ children }: Props) => {
           showNav && !isMobile ? 'pl-56' : ''
         }`}
       >
-        <div className='flex flex-col justify-start items-start px-4 md:px-16 rounded-sm h-full w-full overflow-hidden pb-8'>
+        <div className='flex flex-col justify-start items-start px-4 md:px-16 rounded-sm min-h-0 w-full flex-1 overflow-x-hidden overflow-y-auto pb-8'>
           {children}
         </div>
       </main>

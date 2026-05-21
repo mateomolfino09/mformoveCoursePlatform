@@ -209,7 +209,7 @@ const BitacoraSidebar = ({
       {/* Header con botón de volver */}
       <div className='p-6 md:pt-20 border-b border-amber-200/40 bg-gradient-to-r from-amber-100/30 via-orange-50/20 to-rose-100/30 flex-shrink-0'>
         <button
-          onClick={() => router.push('/home')}
+          onClick={() => router.push('/inicio')}
           className="flex items-center gap-2 text-gray-700 hover:text-gray-900 mb-4 transition-colors group"
         >
           <ArrowLeftIcon className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />

@@ -3,6 +3,9 @@ import Product from '../../../../models/productModel';
 import Users from '../../../../models/userModel';
 import { NextResponse } from 'next/server';
 import { stripe } from '../../payments/stripe/stripeConfig';
+import { resolveInvitacionGrupoWhatsappFromPayload } from '../../../../lib/resolveInvitacionGrupoWhatsapp';
+import { normalizeCursoLandingConfig } from '../../../../types/cursoLanding';
+import { ensureCursoPreventaPaymentLinks } from '../../../../lib/ensureCursoPreventaPaymentLinks';
 
 connectDB();
 
@@ -48,6 +51,7 @@ export async function PUT(req) {
         moneda,
         portada,
         portadaMobile,
+        imagenBio,
         imagenes,
         precios,
         fecha,
@@ -61,8 +65,33 @@ export async function PUT(req) {
         archivoUrl,
         tipoArchivo,
         descuento,
-        userEmail
+        userEmail,
+        invitacionGrupoWhatsapp,
+        grupoWhatsapp,
+        cursoConfig,
+        esProgramaTransformacional,
+        programaTransformacional,
       } = data;
+
+      const invitacionGrupoResolved = resolveInvitacionGrupoWhatsappFromPayload({
+        invitacionGrupoWhatsapp,
+        grupoWhatsapp,
+        cursoConfig,
+        programaTransformacional,
+      });
+
+      const programaTransformacionalParaGuardar = programaTransformacional
+        ? {
+            ...programaTransformacional,
+            comunidad: {
+              ...(programaTransformacional.comunidad || {}),
+              ...(invitacionGrupoResolved
+                ? { invitacionGrupoWhatsapp: invitacionGrupoResolved }
+                : {}),
+            },
+          }
+        : undefined;
+
       // Validar usuario admin
       let user = await Users.findOne({ email: userEmail });
       if (!user || user.rol !== 'Admin') {
@@ -79,6 +108,47 @@ export async function PUT(req) {
           { error: 'Producto no encontrado' },
           { status: 404 }
         );
+      }
+
+      let cursoConfigParaGuardar =
+        tipo === 'curso' && cursoConfig && typeof cursoConfig === 'object'
+          ? normalizeCursoLandingConfig(
+              {
+                ...cursoConfig,
+                whatsapp: {
+                  ...(cursoConfig.whatsapp || {}),
+                  invitacionGrupoWhatsapp:
+                    invitacionGrupoResolved ||
+                    cursoConfig.whatsapp?.invitacionGrupoWhatsapp ||
+                    cursoConfig.whatsapp?.grupoWhatsapp ||
+                    '',
+                },
+              },
+              nombre || existingProduct.nombre
+            )
+          : undefined;
+
+      if (tipo === 'curso' && cursoConfigParaGuardar?.preciosPreventa?.length) {
+        const origin =
+          req.headers.get('origin') ||
+          process.env.NEXT_PUBLIC_APP_URL ||
+          'http://localhost:3000';
+        const withPreventaLinks = await ensureCursoPreventaPaymentLinks(
+          {
+            _id: productId,
+            nombre: nombre || existingProduct.nombre,
+            descripcion: descripcion || existingProduct.descripcion,
+            portada: portada || existingProduct.portada,
+            cursoConfig: cursoConfigParaGuardar,
+          },
+          origin
+        );
+        if (withPreventaLinks) {
+          cursoConfigParaGuardar = normalizeCursoLandingConfig(
+            withPreventaLinks,
+            nombre || existingProduct.nombre
+          );
+        }
       }
 
       // Debug: mostrar objeto completo del producto
@@ -228,7 +298,7 @@ export async function PUT(req) {
                 .replace(/-+/g, '-') // Remover guiones múltiples
                 .replace(/^-+|-+$/g, ''); // Remover guiones al inicio y final
               
-              const successUrl = `${baseUrl}/events/${cleanEventName}/success`;
+              const successUrl = `${baseUrl}/eventos/${cleanEventName}/success`;
               
               const paymentLink = await stripe.paymentLinks.create({
                 line_items: [
@@ -269,6 +339,8 @@ export async function PUT(req) {
         imagenes,
         portada,
         portadaMobile,
+        imagenBio:
+          imagenBio !== undefined ? imagenBio : existingProduct.imagenBio,
         pdfPresentacionUrl: tipo === 'evento' ? (pdfPresentacionUrl || existingProduct.pdfPresentacionUrl) : undefined,
         precios: tipo === 'evento' ? preciosConLinks : undefined,
         fecha: tipo === 'evento' ? fecha : undefined,
@@ -286,6 +358,10 @@ export async function PUT(req) {
           stripeCouponId,
           stripePromotionCodeId
         } : undefined,
+        invitacionGrupoWhatsapp: invitacionGrupoResolved || undefined,
+        cursoConfig: cursoConfigParaGuardar,
+        esProgramaTransformacional: esProgramaTransformacional ?? undefined,
+        programaTransformacional: programaTransformacionalParaGuardar,
         updatedAt: new Date(),
       };
 
@@ -300,12 +376,29 @@ export async function PUT(req) {
         }
       });
 
-      // Actualizar el producto
-      const updatedProduct = await Product.findByIdAndUpdate(
+      let updatedProduct = await Product.findByIdAndUpdate(
         productId,
         updateData,
         { new: true }
       );
+
+      if (tipo === 'curso' && cursoConfigParaGuardar && updatedProduct) {
+        const { syncCourseClassesFromContenidoModulos } = await import(
+          '../../../../lib/syncCourseClasses'
+        );
+        if (cursoConfigParaGuardar.contenidoModulos?.length) {
+          updatedProduct.cursoConfig.contenidoModulos =
+            await syncCourseClassesFromContenidoModulos(
+              productId,
+              cursoConfigParaGuardar.contenidoModulos
+            );
+        }
+        if (invitacionGrupoResolved) {
+          updatedProduct.invitacionGrupoWhatsapp = invitacionGrupoResolved;
+        }
+        updatedProduct.markModified('cursoConfig');
+        await updatedProduct.save();
+      }
 
       return NextResponse.json(
         { message: 'Producto actualizado con éxito', product: updatedProduct },

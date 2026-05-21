@@ -44,12 +44,12 @@ const ProductsFilters = () => {
     const cookies: any = Cookies.get('userToken');
 
     if (!cookies) {
-      router.push('/login');
+      router.push('/iniciar-sesion');
     }
 
     if (!auth.user) {
       auth.fetchUser();
-    } else if (auth.user.rol != 'Admin') router.push('/login');
+    } else if (auth.user.rol != 'Admin') router.push('/iniciar-sesion');
   }, [auth.user]);
 
   async function onSubmit(data: any) {
@@ -97,7 +97,7 @@ const ProductsFilters = () => {
       auth.fetchUser();
 
       toast.success(data.message);
-      router.push('/admin/products')
+      router.push('/admin/productos')
     } catch (error: any) {
       toast.error(error.response.data.error);
     }
@@ -242,7 +242,7 @@ const ProductsFilters = () => {
                 </div>
               )}
               <div className='flex justify-end space-x-4 pt-6 border-t border-gray-200'>
-                <Link href={'/admin/products'}>
+                <Link href={'/admin/productos'}>
                   <button
                     type='button'
                     className='px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-300 font-montserrat border border-gray-200'

@@ -25,49 +25,49 @@ export const sendSubscriptionEmail = async (
       title: "Tu prueba gratuita ha comenzado 🎉",
       message: "¡Disfruta de todos los beneficios de tu membresía! Te avisaremos cuando termine el período de prueba.",
       buttonText: "Ver mi cuenta",
-      buttonLink: `${origin}/library`,
+      buttonLink: `${origin}/biblioteca`,
     },
     active: {
       title: "¡Se activó tu subscripción!",
       message: "Gracias por elegirnos. Accede a tus clases y avanza en tu entrenamiento.",
       buttonText: "Empezar a moverme",
-      buttonLink: `${origin}/library`,
+      buttonLink: `${origin}/biblioteca`,
     },
     past_due: {
       title: "Pago pendiente ⏳",
       message: "No pudimos procesar tu pago. Verifica tu método de pago para evitar interrupciones.",
       buttonText: "Actualizar pago",
-      buttonLink: `${origin}/account`,
+      buttonLink: `${origin}/cuenta`,
     },
     unpaid: {
       title: "subscripción suspendida ❌",
       message: "Tu pago ha fallado varias veces y tu subscripción ha sido suspendida. Puedes reactivarla actualizando tu información de pago.",
       buttonText: "Reactivar subscripción",
-      buttonLink: `${origin}/account`,
+      buttonLink: `${origin}/cuenta`,
     },
     canceled: {
       title: "Tu subscripción ha sido cancelada 😢",
       message: "Lamentamos verte partir. Puedes seguir disfrutando de los beneficios hasta el final del período actual.",
       buttonText: "Explorar planes",
-      buttonLink: `${origin}/select-plan`,
+      buttonLink: `${origin}/elegir-plan`,
     },
     incomplete: {
       title: "Falta completar tu subscripción ⚠️",
       message: "Parece que no terminaste de configurar tu subscripción. Completa el proceso para acceder a todos los beneficios.",
       buttonText: "Finalizar subscripción",
-      buttonLink: `${origin}/account`,
+      buttonLink: `${origin}/cuenta`,
     },
     incomplete_expired: {
       title: "Tu intento de subscripción ha expirado ⏳",
       message: "No pudimos completar tu subscripción y el intento ha expirado. Inténtalo nuevamente.",
       buttonText: "Suscribirme otra vez",
-      buttonLink: `${origin}/select-plan`,
+      buttonLink: `${origin}/elegir-plan`,
     },
     paused: {
         title: "Tu subscripción se ha pausado",
         message: "No pudimos completar tu subscripción y el intento ha expirado. Inténtalo nuevamente.",
         buttonText: "Suscribirme otra vez",
-        buttonLink: `${origin}/select-plan`,
+        buttonLink: `${origin}/elegir-plan`,
       }
   };
 
@@ -96,7 +96,7 @@ export const sendSubscriptionEmail = async (
       </div>
       <div style="padding:24px;text-align:center;border-top:1px solid rgba(120,120,103,0.12);">
         <p style="font-size:12px;color:#787867;margin:0 0 6px 0;font-weight:300;letter-spacing:0.02em;">El equipo de Cuerpo autónomo</p>
-        <p style="font-size:11px;color:#787867;margin:0;font-weight:300;opacity:0.7;">© 2025 MMOVE. Todos los derechos reservados.</p>
+        <p style="font-size:11px;color:#787867;margin:0;font-weight:300;opacity:0.7;">© 2026 MMOVE. Todos los derechos reservados.</p>
       </div>
     </div>
   </div>

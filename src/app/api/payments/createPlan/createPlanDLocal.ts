@@ -28,9 +28,9 @@ export async function createPlanDlocal({name,
         amount,
         frequency_type,
         frequency_value: 1,
-        success_url: `${origin}/payment/success`,
-        error_url: `${origin}/payment/error`,
-        back_url: `${origin}/payment/back`
+        success_url: `${origin}/pago/exito`,
+        error_url: `${origin}/pago/error`,
+        back_url: `${origin}/pago/atras`
       });
 
       const data = response.data;

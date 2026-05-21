@@ -47,6 +47,8 @@ const endpoints = {
     createSub: `/api/payments/createSubscription`,
     createMembership: `/api/payments/oneTimePayment/createMembership`,
     createProductUser: `/api/payments/oneTimePayment/createProductUser`,
+    completeCoursePurchase: `/api/payments/course/complete`,
+    courseDlocalWebhook: `/api/payments/course/dlocalWebhook`,
     createFreeSubscription: `/api/payments/createFreeSubscription`,
     createPaymentToken: `/api/payments/createPaymentToken`,
     cancelSubscription: (id:string) => `/api/payments/cancelSubscription/${id}`,

@@ -55,7 +55,7 @@ function ResetForm({ token }: Props) {
     setTimeout(() => {
       setLoading(false);
       message.some((mes: any) => mes.type === alertTypes.success.type) &&
-        router.push('/mentorship');
+        router.push('/mentoria');
     }, 3000);
     setTimeout(() => {
       const copy = [...message];

@@ -97,7 +97,7 @@ class ErrorBoundary extends Component<Props, State> {
                   </button>
                   
                   <button
-                    onClick={() => window.location.href = '/events'}
+                    onClick={() => window.location.href = '/eventos'}
                     className="inline-flex items-center px-8 py-4 bg-gray-600 text-white font-bold text-lg rounded-2xl hover:bg-gray-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 ml-4"
                   >
                     Volver a eventos

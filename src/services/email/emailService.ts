@@ -1,5 +1,9 @@
 import mailchimp from '@mailchimp/mailchimp_transactional';
 import { palette } from '../../constants/colors';
+import { routes } from '../../constants/routes';
+
+const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL || 'https://mateomove.com';
+const DEFAULT_PROGRAM_URL = `${APP_ORIGIN}${routes.navegation.moveCrew}`;
 
 const p = palette;
 const mailchimpClient = mailchimp(process.env.MAILCHIMP_TRANSACTIONAL_API_KEY || "");
@@ -9,6 +13,10 @@ const LOGO_URLS = {
   DARK: 'https://res.cloudinary.com/dbeem2avp/image/upload/logo/MMOVE_fino_negro.png',
   LIGHT: 'https://res.cloudinary.com/dbeem2avp/image/upload/logo/MMOVE_fino_blanco.png'
 } as const;
+
+/** Cover MoveCrew (Cloudinary `fondoMoveCrew_mu0l8z`) — mail datos de transferencia curso */
+const EMAIL_COURSE_TRANSFER_COVER_IMAGE =
+  'https://res.cloudinary.com/dbeem2avp/image/upload/my_uploads/mails/fondoMoveCrew_mu0l8z.jpg';
 
 // Estilo minimalista Cuerpo autónomo: tipografía fina, botones pill
 const EMAIL_BRAND = {
@@ -54,6 +62,7 @@ export enum EmailType {
   MOVE_CREW_EVENT_REMINDER_15M = 'move_crew_event_reminder_15m',
   /** Grabación de sesión en vivo disponible en el camino (tras reemplazar evento por clase individual). */
   LIVE_SESSION_RECORDING_AVAILABLE = 'live_session_recording_available',
+  COURSE_TRANSFER_BANK_DETAILS = 'course_transfer_bank_details',
 }
 
 // Interfaz para datos de email
@@ -207,7 +216,7 @@ const emailTemplates = {
       ` : ''}
       
       <div style="text-align: center; margin: 28px 0;">
-        ${EMAIL_BRAND.btnStyleFilled(data.adminUrl || 'https://mateomove.com/admin/mentorship/requests', 'Ver solicitud en el panel')}
+        ${EMAIL_BRAND.btnStyleFilled(data.adminUrl || 'https://mateomove.com/admin/mentorias/solicitudes', 'Ver solicitud en el panel')}
       </div>
     `;
     return getBaseTemplateAdmin(content);
@@ -411,7 +420,7 @@ const emailTemplates = {
   },
 
   [EmailType.WELCOME_EMAIL]: (data: EmailData) => {
-    const primaryActionLink = data.confirmLink || data.dashboardUrl || 'https://mateomove.com/account';
+    const primaryActionLink = data.confirmLink || data.dashboardUrl || 'https://mateomove.com/cuenta';
     const primaryActionText = data.buttonText || (data.confirmLink ? 'Confirmar email' : 'Ir a mi cuenta');
     const message = data.message || 'Gracias por completar tu registro. Activá tu acceso y seguí el flujo sin perder tiempo.';
 
@@ -465,8 +474,8 @@ const emailTemplates = {
   },
 
   [EmailType.SUBSCRIPTION_CANCELLED]: (data: EmailData) => {
-    const feedbackUrl = data.feedbackUrl || `https://mateomove.com/contact?reason=cancellation&email=${encodeURIComponent(data.email || '')}`;
-    const reactivateUrl = data.reactivateUrl || 'https://mateomove.com/membership';
+    const feedbackUrl = data.feedbackUrl || `https://mateomove.com/contacto?reason=cancellation&email=${encodeURIComponent(data.email || '')}`;
+    const reactivateUrl = data.reactivateUrl || DEFAULT_PROGRAM_URL;
     const content = `
       <!-- Header minimalista -->
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
@@ -552,6 +561,59 @@ const emailTemplates = {
     return getBaseTemplateUser(content);
   },
 
+  [EmailType.COURSE_TRANSFER_BANK_DETAILS]: (data: EmailData) => {
+    const amountLine =
+      data.amountFormatted != null && String(data.amountFormatted).trim() !== ''
+        ? `<p style="margin: 5px 0; color: ${p.stone};"><strong>Monto:</strong> ${data.amountFormatted}</p>`
+        : '';
+    const content = `
+      <div style="padding: 24px 20px 0; text-align: center;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto 8px; max-width: 420px; width: 100%;">
+          <tr>
+            <td style="text-align: center; padding: 0;">
+              <img src="${EMAIL_COURSE_TRANSFER_COVER_IMAGE}"
+                   alt="Cuerpo autónomo"
+                   width="420"
+                   height="260"
+                   style="width: 100%; max-width: 420px; height: auto; border-radius: 14px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
+                   border="0" />
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h2 style="color: ${p.ink}; text-align: center; font-size: 22px; font-weight: 400; margin-bottom: 20px;">Datos para transferencia</h2>
+      <p style="font-size: 16px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
+        Hola${data.name ? ` ${data.name}` : ''}, acá están los datos para pagar <strong>${data.courseName}</strong> por transferencia bancaria.
+      </p>
+      <div style="background-color: ${p.cream}; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(20,20,17,0.08);">
+        <p style="margin: 8px 0; color: ${p.stone};"><strong>Banco:</strong> ${data.banco}</p>
+        <p style="margin: 8px 0; color: ${p.stone};"><strong>Cuenta pesos:</strong> <span style="font-family: monospace;">${data.cuentaPesos}</span></p>
+        <p style="margin: 8px 0; color: ${p.stone};"><strong>Cuenta dólares:</strong> <span style="font-family: monospace;">${data.cuentaDolares}</span></p>
+        <p style="margin: 8px 0; color: ${p.stone};"><strong>Titular:</strong> ${data.titular}</p>
+        ${amountLine}
+      </div>
+      <p style="font-size: 15px; color: ${p.stone}; line-height: 1.6; margin-bottom: 20px; text-align: center;">
+        Una vez realizada la transferencia, enviá el comprobante
+        <a href="${data.whatsappProofUrl}" style="color: ${p.sage}; font-weight: 500; text-decoration: underline;">a este número de WhatsApp</a>
+        para activar tu acceso.
+      </p>
+      ${
+        data.whatsappProofUrl
+          ? `<div style="text-align: center; margin-bottom: 20px;">
+        <a href="${data.whatsappProofUrl}" style="background-color: #25D366; color: ${p.white}; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 500; display: inline-block;">
+          Enviar comprobante por WhatsApp
+        </a>
+      </div>`
+          : ''
+      }
+      <p style="font-size: 14px; color: ${p.stone}; line-height: 1.6; text-align: center;">
+        También podés responder este correo o escribirnos a
+        <a href="mailto:${data.supportEmail || 'hola@mformove.com'}" style="color: ${p.sage}; text-decoration: underline;">${data.supportEmail || 'hola@mformove.com'}</a>.
+      </p>
+    `;
+    return getBaseTemplateUser(content);
+  },
+
   [EmailType.PAYMENT_SUCCESS]: (data: EmailData) => {
     const content = `
       <h2 style="color: ${p.sage}; text-align: center; font-size: 24px; margin-bottom: 20px;">¡Pago Exitoso!</h2>
@@ -566,7 +628,7 @@ const emailTemplates = {
         <p style="margin: 5px 0; color: ${p.stone};"><strong>ID de transacción:</strong> ${data.transactionId}</p>
       </div>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.accessUrl || 'https://mateomove.com/account'}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+        <a href="${data.accessUrl || 'https://mateomove.com/cuenta'}" style="background-color: ${p.sage}; color: ${p.white}; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
           Acceder al Contenido
         </a>
       </div>
@@ -575,8 +637,8 @@ const emailTemplates = {
   },
 
   [EmailType.PAYMENT_FAILED]: (data: EmailData) => {
-    const retryUrl = data.retryUrl || 'https://mateomove.com/membership';
-    const feedbackUrl = data.feedbackUrl || `https://mateomove.com/contact?reason=payment&email=${encodeURIComponent(data.email || '')}`;
+    const retryUrl = data.retryUrl || DEFAULT_PROGRAM_URL;
+    const feedbackUrl = data.feedbackUrl || `https://mateomove.com/contacto?reason=payment&email=${encodeURIComponent(data.email || '')}`;
     const content = `
       <!-- Header minimalista -->
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
@@ -762,7 +824,7 @@ el bienestar fisico y emocional.
 
         <!-- Botón CTA estilo MoveCrew con gradiente sutil -->
         <div style="text-align: center; margin: 28px 0 0;">
-          <a href="${data.dashboardUrl || 'https://mateomove.com/library'}" 
+          <a href="${data.dashboardUrl || 'https://mateomove.com/biblioteca'}" 
              style="display: inline-block; 
                     background: linear-gradient(135deg, rgba(7, 70, 71, 0.08) 0%, rgba(172, 174, 137, 0.12) 100%); 
                     color: ${p.ink}; 
@@ -905,6 +967,15 @@ el bienestar fisico y emocional.
           Ver Detalles del Evento
         </a>
       </div>
+
+      ${data.invitacionGrupoWhatsapp || data.grupoWhatsapp || data.whatsappInviteUrl ? `
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="${data.invitacionGrupoWhatsapp || data.grupoWhatsapp || data.whatsappInviteUrl}" style="background-color: #25D366; color: ${p.white}; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+          Unirme al grupo de WhatsApp del evento
+        </a>
+        <p style="margin: 12px 0 0; color: ${p.stone}; font-size: 14px;">Invitación al grupo de este evento (distinta del link general de la comunidad).</p>
+      </div>
+      ` : ''}
 
       <div style="background-color: ${p.cream}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
         <h3 style="color: ${p.ink}; margin: 0 0 10px 0; font-size: 16px; text-align: center;">¿Necesitas ayuda?</h3>
@@ -1448,7 +1519,7 @@ el bienestar fisico y emocional.
     const fullName = (data.name || 'Miembro').toString().trim();
     const firstName = fullName ? fullName.split(/\s+/)[0]?.trim() || fullName : '';
     const name = escapeHtml(firstName ? firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase() : 'Miembro');
-    const pathUrl = (data.pathUrl || '').trim() || 'https://mateomove.com/weekly-path';
+    const pathUrl = (data.pathUrl || '').trim() || 'https://mateomove.com/ruta-semanal';
     const content = `
       <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;">Hola ${name},</p>
       <p style="font-size:16px;color:#1a1a1a;line-height:1.6;margin:0 0 16px 0;">Acabamos de terminar la sesión en vivo, y estuvo genial. Si estuviste presente, gracias. Si no pudiste venir, no te preocupes, habrá más.</p>
@@ -1523,7 +1594,7 @@ el bienestar fisico y emocional.
 
         ${data.coverImage ? `
           <div style="margin: 8px 0 24px 0;">
-            <a href="${data.bitacoraLink || 'https://mateomove.com/weekly-path'}" style="text-decoration: none; display: block; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; overflow: hidden; max-width: 560px; margin: 0 auto;">
+            <a href="${data.bitacoraLink || 'https://mateomove.com/ruta-semanal'}" style="text-decoration: none; display: block; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; overflow: hidden; max-width: 560px; margin: 0 auto;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse;">
                 <tr>
                   <td style="background-image: url(${data.coverImage}); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 100px 0; position: relative; text-align: center;">
@@ -1576,7 +1647,7 @@ el bienestar fisico y emocional.
 
         <!-- Botón CTA para ir al camino -->
         <div style="text-align: center; margin: 28px 0 0;">
-          <a href="${data.bitacoraLink || 'https://mateomove.com/weekly-path'}" 
+          <a href="${data.bitacoraLink || 'https://mateomove.com/ruta-semanal'}" 
              style="display: inline-block; 
                     background: linear-gradient(135deg, rgba(7, 70, 71, 0.08) 0%, rgba(172, 174, 137, 0.12) 100%); 
                     color: ${p.ink}; 
@@ -1626,7 +1697,7 @@ el bienestar fisico y emocional.
 
         <!-- Botón CTA para comenzar onboarding -->
         <div style="text-align: center; margin: 28px 0 0;">
-          <a href="${data.onboardingLink || 'https://mateomove.com/onboarding/bienvenida'}" 
+          <a href="${data.onboardingLink || 'https://mateomove.com/incorporacion/bienvenida'}" 
              style="display: inline-block; 
                     background: linear-gradient(135deg, rgba(7, 70, 71, 0.08) 0%, rgba(172, 174, 137, 0.12) 100%); 
                     color: ${p.ink}; 
@@ -1729,6 +1800,7 @@ export class EmailService {
         EmailType.EVENT_CONFIRMATION,
         EmailType.PRODUCT_CONFIRMATION,
         EmailType.MENTORSHIP_APPROVAL,
+        EmailType.COURSE_TRANSFER_BANK_DETAILS,
       ];
 
       const sender =
@@ -1953,6 +2025,15 @@ export class EmailService {
       to: adminEmail,
       subject: `Pago Fallido - ${data.userName || data.userEmail}`,
       data
+    });
+  }
+
+  public async sendCourseTransferBankDetails(data: EmailData) {
+    return this.sendEmail({
+      type: EmailType.COURSE_TRANSFER_BANK_DETAILS,
+      to: data.email,
+      subject: `Datos de transferencia — ${data.courseName}`,
+      data,
     });
   }
 }

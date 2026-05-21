@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     const origin = getCurrentURL();
     const password = 'temporal123';
     const resetToken = 'dummy-token';
-    const resetLink = `${origin}/reset/${resetToken}`;
+    const resetLink = `${origin}/restablecer/${resetToken}`;
 
     await emailService.sendAccountCreated({
       email,

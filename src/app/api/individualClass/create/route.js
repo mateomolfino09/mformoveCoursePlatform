@@ -110,7 +110,7 @@ export async function POST(req) {
               Una nueva clase ha sido subida y está disponible para ti. ¡Revisa los detalles a continuación y continúa tu aprendizaje!
             </p>
             <div style="margin: 20px 0; text-align: center;">
-              <a href="https://www.mateomove.com//classes/${newClass.id}" style="color: #007BFF; text-decoration: none; font-size: 18px; font-weight: bold;">
+              <a href="https://www.mateomove.com//clases/${newClass.id}" style="color: #007BFF; text-decoration: none; font-size: 18px; font-weight: bold;">
                 ${name}
               </a>
               <p style="font-size: 14px; color: #333333;">${description}</p>

@@ -366,7 +366,7 @@ export async function GET(req: NextRequest) {
 
           // 3. Enviar email a cada miembro
           const baseUrl = process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://mateomove.com';
-          const bitacoraLink = `${baseUrl}/weekly-path`;
+          const bitacoraLink = `${baseUrl}/ruta-semanal`;
           
           for (const usuario of miembrosActivos) {
             try {

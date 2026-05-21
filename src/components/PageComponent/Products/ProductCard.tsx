@@ -13,7 +13,7 @@ const ProductCard = ({ product }: Props) => {
   const router = useRouter();
 
   return (
-  <div onClick={() => router.push(`/products/${product.url}`)} className="max-w-4xl h-96 md:h-[28rem] font-montserrat flex flex-col bg-white border border-gray-200 rounded-xl shadow dark:bg-light-cream dark:border-gray-700 cursor-pointer hover:scale-105 transition-all">
+  <div onClick={() => router.push(`/productos/${product.url}`)} className="max-w-4xl h-96 md:h-[28rem] font-montserrat flex flex-col bg-white border border-gray-200 rounded-xl shadow dark:bg-light-cream dark:border-gray-700 cursor-pointer hover:scale-105 transition-all">
       <div className='pt-3 px-3 flex justify-between space-x-1'>
         <h5 className="text-xs md:text-sm font-bold tracking-tight text-[#141414]">{product.phraseName.toUpperCase()}</h5>
         <div>

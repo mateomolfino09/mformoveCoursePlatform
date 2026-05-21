@@ -67,7 +67,7 @@ const ResendEmail = ({ resendEmail, recaptchaRef, step3ToStep2 }: Props) => {
         </h1>
       </div>
       <div className='w-full flex justify-center items-center space-x-4 mt-3 pb-12'>
-      <div onClick={() =>  router.push('/login')} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
+      <div onClick={() =>  router.push('/iniciar-sesion')} className='bg-transparent border group hover:bg-light-cream flex justify-center space-x-2 items-center py-2 px-6 w-48 rounded-full cursor-pointer'>
                 <p className='text-white group-hover:text-black'>Volver</p>
 
         </div>
