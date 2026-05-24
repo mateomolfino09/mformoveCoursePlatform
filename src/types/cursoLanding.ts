@@ -785,79 +785,11 @@ export const normalizeCursoLandingConfig = (
     defaults.highlights.items
   );
 
-  const mergeParrafos = (fromDb: string[] | undefined, fromDefaults: string[]) =>
-    fromDb?.length ? fromDb : fromDefaults;
-
-  const mergeOutcomes = (
-    fromDb: CursoLandingConfig['outcomes'] | undefined,
-    fromDefaults: CursoLandingConfig['outcomes']
-  ): CursoLandingConfig['outcomes'] => ({
-    ...fromDefaults,
-    ...fromDb,
-    imagenPublicId: normalizeCloudinaryAssetId(
-      fromDb?.imagenPublicId || fromDefaults.imagenPublicId
-    ),
-    imagenAlt: fromDb?.imagenAlt?.trim() || fromDefaults.imagenAlt,
-    titulo: fromDb?.titulo?.trim() || fromDefaults.titulo,
-    items: fromDb?.items?.length ? fromDb.items : fromDefaults.items,
-  });
-
-  const mergeIntroHighlights = (
-    fromDb: CursoLandingConfig['introHighlights'] | undefined,
-    fromDefaults: CursoLandingConfig['introHighlights']
-  ): CursoLandingConfig['introHighlights'] => ({
-    ...fromDefaults,
-    ...fromDb,
-    titulo: fromDb?.titulo?.trim() || fromDefaults.titulo,
-    subtitulo: fromDb?.subtitulo?.trim() || fromDefaults.subtitulo,
-    cuerpo: fromDb?.cuerpo?.trim() || fromDefaults.cuerpo,
-    imagenMobilePublicId: normalizeCloudinaryAssetId(
-      fromDb?.imagenMobilePublicId || fromDefaults.imagenMobilePublicId
-    ),
-    imagenDesktopPublicId: normalizeCloudinaryAssetId(
-      fromDb?.imagenDesktopPublicId || fromDefaults.imagenDesktopPublicId
-    ),
-    imagenAlt: fromDb?.imagenAlt?.trim() || fromDefaults.imagenAlt,
-  });
-
-  const mergePlanes = (
-    fromDb: CursoLandingConfig['planes'] | undefined,
-    fromDefaults: CursoLandingConfig['planes']
-  ): CursoLandingConfig['planes'] => ({
-    ...fromDefaults,
-    ...fromDb,
-    parrafosValor: mergeParrafos(fromDb?.parrafosValor, fromDefaults.parrafosValor),
-    opcionesPago: fromDb?.opcionesPago?.length
-      ? fromDb.opcionesPago
-      : fromDefaults.opcionesPago,
-    titulo: fromDb?.titulo?.trim() || fromDefaults.titulo,
-    emailSinPlanes: fromDb?.emailSinPlanes?.trim() || fromDefaults.emailSinPlanes,
-    imagenPagosUrl: fromDb?.imagenPagosUrl?.trim() || fromDefaults.imagenPagosUrl,
-  });
-
-  const mergeTestimoniosEscritos = (
-    fromDb: CursoTestimonioEscrito[] | undefined,
-    fromDefaults: CursoTestimonioEscrito[]
-  ): CursoTestimonioEscrito[] => {
-    if (!fromDb?.length) return fromDefaults;
-    return fromDb.map((item, index) => ({
-      ...fromDefaults[index],
-      ...item,
-      orden: typeof item.orden === 'number' ? item.orden : index,
-    }));
-  };
-
   return {
-    slug: partial.slug?.trim() || defaults.slug,
-    publicado: partial.publicado === true,
-    fechaPublicacion: partial.fechaPublicacion ?? defaults.fechaPublicacion,
+    ...defaults,
+    ...partial,
     preciosPreventa: mergePreciosPreventa(partial.preciosPreventa),
     contenidoModulos: mergeContenidoModulos(partial.contenidoModulos, mergedHighlights),
-    imagenCheckoutPublicId:
-      normalizeCloudinaryAssetId(
-        partial.imagenCheckoutPublicId || defaults.imagenCheckoutPublicId
-      ) || defaults.imagenCheckoutPublicId,
-    vimeoGaleriaId: partial.vimeoGaleriaId?.trim() || defaults.vimeoGaleriaId,
     hero: {
       ...defaults.hero,
       ...partial.hero,
@@ -869,44 +801,6 @@ export const normalizeCursoLandingConfig = (
     presentacionTestimonios: {
       ...defaults.presentacionTestimonios,
       ...partial.presentacionTestimonios,
-    },
-    betweenHero: {
-      ...defaults.betweenHero,
-      ...partial.betweenHero,
-      parrafos: mergeParrafos(partial.betweenHero?.parrafos, defaults.betweenHero.parrafos),
-    },
-    bannerAncho: {
-      ...defaults.bannerAncho,
-      ...partial.bannerAncho,
-      cuerpo: partial.bannerAncho?.cuerpo?.trim() || defaults.bannerAncho.cuerpo,
-    },
-    introHighlights: mergeIntroHighlights(partial.introHighlights, defaults.introHighlights),
-    outcomes: mergeOutcomes(partial.outcomes, defaults.outcomes),
-    highlights: {
-      ...defaults.highlights,
-      ...(partial.highlights || {}),
-      titulos: partial.highlights?.titulos?.length
-        ? partial.highlights.titulos
-        : defaults.highlights.titulos,
-      items: mergedHighlights,
-    },
-    queIncluye: {
-      ...defaults.queIncluye,
-      ...partial.queIncluye,
-      offerBlocks: mergeOfferBlocks(partial.queIncluye?.offerBlocks, defaults.queIncluye.offerBlocks),
-      modulos: mergeModulos(partial.queIncluye?.modulos, defaults.queIncluye.modulos),
-    },
-    planes: mergePlanes(partial.planes, defaults.planes),
-    testimoniosEscritos: mergeTestimoniosEscritos(
-      partial.testimoniosEscritos,
-      defaults.testimoniosEscritos
-    ),
-    testimoniosGrabados: partial.testimoniosGrabados?.length
-      ? partial.testimoniosGrabados
-      : defaults.testimoniosGrabados,
-    ctaFinal: {
-      ...defaults.ctaFinal,
-      ...partial.ctaFinal,
     },
     whatsapp: (() => {
       const merged = {
@@ -927,6 +821,17 @@ export const normalizeCursoLandingConfig = (
       ...defaults.faq,
       ...partial.faq,
       items: mergeFaqItems(partial.faq?.items, defaults.faq.items),
+    },
+    highlights: {
+      ...defaults.highlights,
+      ...(partial.highlights || {}),
+      items: mergedHighlights,
+    },
+    queIncluye: {
+      ...defaults.queIncluye,
+      ...partial.queIncluye,
+      offerBlocks: mergeOfferBlocks(partial.queIncluye?.offerBlocks, defaults.queIncluye.offerBlocks),
+      modulos: mergeModulos(partial.queIncluye?.modulos, defaults.queIncluye.modulos),
     },
   };
 };

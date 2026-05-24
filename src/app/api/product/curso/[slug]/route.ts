@@ -5,16 +5,12 @@ import { isCursoLandingPublished } from '../../../../../lib/cursoLandingPublicat
 import { resolveCursoCheckoutPlans } from '../../../../../lib/cursoPricing';
 import { ensureCursoPreventaPaymentLinks } from '../../../../../lib/ensureCursoPreventaPaymentLinks';
 import { normalizeCursoLandingConfig } from '../../../../../types/cursoLanding';
-import { resolveInvitacionGrupoWhatsappFromProduct } from '../../../../../lib/resolveInvitacionGrupoWhatsapp';
 
 connectDB();
 
-export async function GET(req: Request, { params }: { params: { slug: string } }) {
+export async function GET(_req: Request, { params }: { params: { slug: string } }) {
   try {
     const slug = params.slug?.trim().toLowerCase();
-    const preview =
-      new URL(req.url).searchParams.get('preview') === '1' &&
-      process.env.NODE_ENV !== 'production';
     if (!slug) {
       return NextResponse.json({ error: 'Slug requerido' }, { status: 400 });
     }
@@ -28,27 +24,16 @@ export async function GET(req: Request, { params }: { params: { slug: string } }
       return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
     }
 
-    if (!preview && !isCursoLandingPublished(product.cursoConfig)) {
+    if (!isCursoLandingPublished(product.cursoConfig)) {
       return NextResponse.json({ error: 'Este curso aún no está publicado' }, { status: 404 });
     }
 
-    const invitacionGrupo = resolveInvitacionGrupoWhatsappFromProduct(product);
-    const cursoConfigRaw = {
-      ...(product.cursoConfig || {}),
-      whatsapp: {
-        ...(product.cursoConfig?.whatsapp || {}),
-        ...(invitacionGrupo
-          ? { invitacionGrupoWhatsapp: invitacionGrupo }
-          : {}),
-      },
-    };
-
     let cursoConfig = normalizeCursoLandingConfig(
-      cursoConfigRaw,
+      product.cursoConfig,
       product.nombre || product.name || 'Curso'
     );
 
-    const origin = new URL(req.url).origin;
+    const origin = new URL(_req.url).origin;
     const cursoConfigWithLinks = await ensureCursoPreventaPaymentLinks(
       { ...product, cursoConfig },
       origin

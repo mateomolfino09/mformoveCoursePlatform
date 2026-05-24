@@ -90,15 +90,21 @@ function Banner({ onVideoLoaded }) {
     };
   }, []);
 
+  const hasMemberAccess =
+    auth.user?.subscription?.active || auth.user?.isVip || auth.user?.rol === 'Admin';
+
   const primaryCta = (() => {
+    if (!cursoLoading && !latestCurso) {
+      return { href: routes.navegation.mentorship, label: 'Mentoría' };
+    }
+    if (hasMemberAccess) {
+      return { href: routes.navegation.membership.library, label: 'Biblioteca' };
+    }
     if (latestCurso?.slug) {
       return {
         href: routes.navegation.membership.curso(latestCurso.slug),
-        label: latestCurso.titulo?.trim() || 'Cuerpo autónomo',
+        label: 'Cuerpo autónomo',
       };
-    }
-    if (!cursoLoading && !latestCurso) {
-      return { href: routes.navegation.mentorship, label: 'Mentoría' };
     }
     return { href: routes.navegation.membership.moveCrew, label: 'Cuerpo autónomo' };
   })();
