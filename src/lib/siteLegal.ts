@@ -2,9 +2,8 @@
  * Datos para publicación legal (deben coincidir con tu registro en dLocal Go).
  *
  * Persona física en dLocal Go:
- *   NEXT_PUBLIC_LEGAL_ADMIN_NAME   — nombre completo del titular
- *   NEXT_PUBLIC_LEGAL_ADMIN_DOC    — documento de identificación, o
- *   NEXT_PUBLIC_LEGAL_ADMIN_EMAIL  — email con el que te registraste en dLocal Go (alternativa al doc)
+ *   NEXT_PUBLIC_LEGAL_ADMIN_NAME  — nombre de quien administra el sitio
+ *   NEXT_PUBLIC_LEGAL_ADMIN_DOC   — documento de identificación
  *
  * Persona jurídica en dLocal Go:
  *   NEXT_PUBLIC_LEGAL_COMPANY_NAME — razón social
@@ -13,12 +12,7 @@
  * Solo completá uno de los dos bloques según cómo registraste la cuenta.
  */
 export type LegalRegistry =
-  | {
-      kind: 'pf'
-      administratorName: string
-      identification: string
-      identificationKind: 'document' | 'email'
-    }
+  | { kind: 'pf'; administratorName: string; idDocument: string }
   | { kind: 'pj'; legalName: string; taxId: string }
 
 export function getLegalRegistry(): LegalRegistry | null {
@@ -28,13 +22,7 @@ export function getLegalRegistry(): LegalRegistry | null {
 
   const pfName = process.env.NEXT_PUBLIC_LEGAL_ADMIN_NAME?.trim()
   const pfDoc = process.env.NEXT_PUBLIC_LEGAL_ADMIN_DOC?.trim()
-  const pfEmail = process.env.NEXT_PUBLIC_LEGAL_ADMIN_EMAIL?.trim()
-  const identification = pfDoc || pfEmail
-  if (pfName && identification) {
-    const identificationKind =
-      identification.includes('@') || (!pfDoc && Boolean(pfEmail)) ? 'email' : 'document'
-    return { kind: 'pf', administratorName: pfName, identification, identificationKind }
-  }
+  if (pfName && pfDoc) return { kind: 'pf', administratorName: pfName, idDocument: pfDoc }
 
   return null
 }
