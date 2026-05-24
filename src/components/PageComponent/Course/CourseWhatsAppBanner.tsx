@@ -70,7 +70,7 @@ export default function CourseWhatsAppBanner() {
           </div>
         ) : null}
         <div
-          className="absolute inset-0 md:bg-gradient-to-b md:from-black/20 md:via-transparent md:to-black/30"
+          className="absolute inset-0"
           aria-hidden
         />
       </div>
