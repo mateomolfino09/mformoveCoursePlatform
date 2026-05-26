@@ -19,7 +19,6 @@ import Footer from '../Footer';
 import MainSideBar from '../MainSidebar/MainSideBar';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Cookies from 'js-cookie';
-import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import React, {
   useEffect,
@@ -33,7 +32,6 @@ import Image from 'next/image';
 import imageLoader from '../../../imageLoader';
 import { routes } from '../../constants/routes';
 import WeeklyPathMenuTutorial from './Library/WeeklyPathMenuTutorial';
-
 interface Props {
   classesDB: IndividualClass[];
   filters: ClassTypes[];
@@ -236,12 +234,6 @@ const Library = ({ classesDB, filters, classModules = [] }: Props) => {
     >
       <MainSideBar where={'library'}>
         <FilterNavWrapper>
-          <Head>
-            <title>Cuerpo autónomo - Clases</title>
-            <meta name='description' content='Clases de movimiento y entrenamiento' />
-            <link rel='icon' href='/favicon.ico' />
-          </Head>
-
           {/* Hero Section - En móvil: 100vh con orden título → video → descripción. En desktop: 2 columnas */}
           <motion.section
             ref={heroRef}

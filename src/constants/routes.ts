@@ -1,3 +1,5 @@
+import { cursoContenidoPath, cursoLandingPath } from '../lib/cursoPaths';
+
 const membershipRoutes = {
     /** Página principal de membresía (Library) */
     library: '/biblioteca',
@@ -7,8 +9,8 @@ const membershipRoutes = {
     weeklyPath: '/ruta-semanal',
     /** Redirige server-side al último curso publicado (compatibilidad de enlaces viejos). */
     moveCrew: '/cuerpo-autonomo',
-    curso: (slug: string) => `/curso/${slug}`,
-    cursoContenido: (slug: string) => `/curso/${slug}/contenido`,
+    curso: cursoLandingPath,
+    cursoContenido: cursoContenidoPath,
     entry: (isMember: boolean) => (isMember ? '/biblioteca' : '/cuerpo-autonomo'),
 };
 

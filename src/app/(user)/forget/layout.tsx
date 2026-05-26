@@ -1,31 +1,20 @@
 import React from 'react';
-import type { Metadata } from 'next'
-
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Recuperar Contraseña - MForMove',
-  description: 'Recupera el acceso a tu cuenta de MForMove de forma segura. Recibe instrucciones por email para restablecer tu contraseña y continuar tu viaje de movimiento consciente.',
-  keywords: [
-    'recuperar contraseña',
-    'restablecer contraseña',
-    'MForMove',
-    'cuenta segura',
-    'movimiento consciente'
-  ],
+  title: 'Recuperar contraseña',
+  description: 'Recuperá el acceso a tu cuenta de MMOVE. Te enviamos instrucciones por correo.',
+  keywords: ['recuperar contraseña', 'MMOVE', 'cuenta'],
   robots: {
     index: false,
     follow: false,
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  return (
-    <section>
-          {children}
-    </section>
-  )
+  return <section>{children}</section>;
 }

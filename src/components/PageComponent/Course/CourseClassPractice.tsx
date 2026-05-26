@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowLeftIcon, PlayIcon } from '@heroicons/react/24/outline';
 import MainSideBar from '../../MainSidebar/MainSideBar';
+import { cursoClasePath, cursoContenidoPath } from '../../../lib/cursoPaths';
 import MoveCrewVideoPlayer, {
   type MoveCrewVideoPlayerHandle,
 } from '../ClassPage/MoveCrewVideoPlayer';
@@ -58,11 +59,13 @@ export default function CourseClassPractice({ slug, classId }: Props) {
   const [introDismissed, setIntroDismissed] = useState(false);
   const playerRef = useRef<MoveCrewVideoPlayerHandle>(null);
 
-  const hubPath = `/curso/${slug}/contenido`;
+  const hubPath = cursoContenidoPath(slug);
   const practicePath = (id: string) =>
-    `/curso/${slug}/contenido/clase/${id}${
-      timelineIndex != null && !Number.isNaN(timelineIndex) ? `?modulo=${timelineIndex}` : ''
-    }`;
+    cursoClasePath(
+      slug,
+      id,
+      timelineIndex != null && !Number.isNaN(timelineIndex) ? timelineIndex : undefined
+    );
 
   useEffect(() => {
     let cancelled = false;

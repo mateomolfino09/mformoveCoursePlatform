@@ -20,6 +20,8 @@ const state = proxy({
   bitacoraNavOpen: false, // menú Bitacora/Navegador en home (controlado desde header o barra)
   weeklyPathTutorialHighlightButton: false,
   bitacoraTutorialHighlightButton: false, // paso 0 onboarding Bitacora: resaltar botón Menú
+  /** Nombre del curso activo (landing / checkout); lo setea CursoLandingProvider */
+  cursoHeaderTitle: null,
 });
 
 export default state;

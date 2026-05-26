@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const clase: IndividualClass | null | undefined = await getClassById(id);
   if (!clase) return { title: 'Clase no encontrada' };
   return {
-    title: `${clase.name} - Clases individuales`,
+    title: clase.name,
     description: (clase.description ?? '').slice(0, 160) || 'Clase de la biblioteca',
   };
 }

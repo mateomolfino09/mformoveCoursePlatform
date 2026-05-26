@@ -3,7 +3,8 @@
  *
  * Persona física en dLocal Go:
  *   NEXT_PUBLIC_LEGAL_ADMIN_NAME  — nombre de quien administra el sitio
- *   NEXT_PUBLIC_LEGAL_ADMIN_DOC   — documento de identificación
+ *   NEXT_PUBLIC_LEGAL_ADMIN_DOC   — documento de identificación (opcional si usás email)
+ *   NEXT_PUBLIC_LEGAL_ADMIN_EMAIL — correo registrado (alternativa al documento)
  *
  * Persona jurídica en dLocal Go:
  *   NEXT_PUBLIC_LEGAL_COMPANY_NAME — razón social
@@ -21,7 +22,9 @@ export function getLegalRegistry(): LegalRegistry | null {
   if (pjName && pjTax) return { kind: 'pj', legalName: pjName, taxId: pjTax }
 
   const pfName = process.env.NEXT_PUBLIC_LEGAL_ADMIN_NAME?.trim()
-  const pfDoc = process.env.NEXT_PUBLIC_LEGAL_ADMIN_DOC?.trim()
+  const pfDoc =
+    process.env.NEXT_PUBLIC_LEGAL_ADMIN_DOC?.trim() ||
+    process.env.NEXT_PUBLIC_LEGAL_ADMIN_EMAIL?.trim()
   if (pfName && pfDoc) return { kind: 'pf', administratorName: pfName, idDocument: pfDoc }
 
   return null

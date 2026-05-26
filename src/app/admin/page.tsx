@@ -17,6 +17,7 @@ import Cookies from 'js-cookie';
 import Head from 'next/head';
 import { BookOpenIcon, SparklesIcon, CalendarDaysIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
 import QuickAccessAdminLight from '../../components/PageComponent/Admin/QuickAccessAdminLight';
+import { GLOBAL_SITE_DESCRIPTION } from '../../lib/siteMetadata';
 
 interface Props {
   user: User;
@@ -46,8 +47,8 @@ const Index = () => {
     
       <AdmimDashboardLayout>
       <Head>
-        <title>MForMove Platform</title>
-        <meta name='description' content='Stream Video App' />
+        <title>Admin</title>
+        <meta name='description' content={GLOBAL_SITE_DESCRIPTION} />
         <link rel='icon' href='/favicon.ico' />
       </Head>
         <div className='w-full md:h-[100vh]'>

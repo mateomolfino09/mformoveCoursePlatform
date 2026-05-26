@@ -1,7 +1,6 @@
 import React from 'react'
 import { ClassTypes, ProductDB} from '../../../typings'
 import MainSideBar from '../MainSidebar/MainSideBar'
-import Head from 'next/head'
 import Footer from '../Footer'
 import FilterNavProductWrapper from '../FilterNavProductWrapper'
 
@@ -15,11 +14,6 @@ const Privacy = () => {
     >    
     <MainSideBar where={'product '} >
       <FilterNavProductWrapper>
-        <Head>
-        <title>Video Streaming</title>
-        <meta name='description' content='Stream Video App' />
-        <link rel='icon' href='/favicon.ico' />
-        </Head>
         <main className='relative lg:space-y-12 space-y-5 mt-32'>
             <section className='!mt-0 lg:pr-64 pl-4 md:pl-20 lg:pl-28'>
                 {/* <PrivacyFilters filtersDB={filters}/> */}

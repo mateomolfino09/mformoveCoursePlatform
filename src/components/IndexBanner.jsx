@@ -97,9 +97,6 @@ function Banner({ onVideoLoaded }) {
     if (!cursoLoading && !latestCurso) {
       return { href: routes.navegation.mentorship, label: 'Mentoría' };
     }
-    if (hasMemberAccess) {
-      return { href: routes.navegation.membership.library, label: 'Biblioteca' };
-    }
     if (latestCurso?.slug) {
       return {
         href: routes.navegation.membership.curso(latestCurso.slug),

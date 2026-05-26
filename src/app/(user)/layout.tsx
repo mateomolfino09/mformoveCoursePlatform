@@ -1,23 +1,20 @@
-import React from "react"
-import UserHeader from "../../components/UserHeader"
+import React from 'react';
+import type { Metadata } from 'next';
+import { GLOBAL_SITE_KEYWORDS } from '../../lib/siteMetadata';
 
-export const metadata = {
-  title: 'Ingresa a tu cuenta',
-  description: 'Accede a tu cuenta personal de MForMove. Gestiona tu perfil, suscripciones y accede a todo el contenido exclusivo de movimiento consciente.',
-  keywords: "movimiento, fitness, yoga, meditacion, calistenia, workout, training, bienestar, transformacion personal"
-}
+// Título por ruta: cada sub-layout (iniciar-sesión, registro, cuenta…) define el suyo.
+export const metadata: Metadata = {
+  description:
+    'Accede a tu cuenta en MMOVE para gestionar perfil, programas contratados y mentoría.',
+  keywords: GLOBAL_SITE_KEYWORDS,
+};
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-
-  return (
-    <section className="font-montserrat">
-        {children}
-    </section>
-  )
+  return <section className="font-montserrat">{children}</section>;
 }

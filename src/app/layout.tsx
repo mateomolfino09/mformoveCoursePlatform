@@ -1,32 +1,29 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import '../styles/globals.css';
 import { ProviderAuth } from '../hooks/useAuth';
 import ToasterProvider from '../hooks/toastProvider';
 import ProgressBarProvider from '../hooks/progressBar';
 import Providers from '../redux/providers';
-import { BoldFont, MontserratFont, LoraFont, RalewayFont } from "../utils/customFonts";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/react";
+import { BoldFont, MontserratFont, LoraFont, RalewayFont } from '../utils/customFonts';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/react';
 import OnboardingChecker from '../components/OnboardingChecker';
 import WeeklyPathNavigator from '../components/WeeklyPathNavigator/WeeklyPathNavigator';
+import { globalSiteMetadata } from '../lib/siteMetadata';
 
-export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.mateomove.com'),
-  title: 'MForMove',
-  description: 'Descubre la practica de movimiento. Aprende a moverte sin dolor, desarrolla fuerza real y domina la movilidad de tu cuerpo. Crea hábitos reales y sostenibles para tu bienestar. Esto es MForMove.',
-  keywords: "movimiento, calistenia, yoga, meditacion, calistenia, workout, training, bienestar, transformacion personal"
-}
-
+export const metadata: Metadata = globalSiteMetadata;
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-
   return (
-    <html lang="en">
-      <body className={`${BoldFont.variable} ${MontserratFont.variable} ${LoraFont.variable} ${RalewayFont.variable}`}>
+    <html lang="es">
+      <body
+        className={`${BoldFont.variable} ${MontserratFont.variable} ${LoraFont.variable} ${RalewayFont.variable}`}
+      >
         <ProviderAuth>
           <Providers>
             <ToasterProvider>
@@ -42,5 +39,5 @@ export default function RootLayout({
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

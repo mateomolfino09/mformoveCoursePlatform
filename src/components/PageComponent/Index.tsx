@@ -5,7 +5,6 @@ import { User } from '../../../typings';
 import state from '../../valtio';
 import { AnimatePresence } from 'framer-motion';
 import { getSession } from 'next-auth/react';
-import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import React, { useEffect, useState } from 'react';
 import { BiVolumeFull, BiVolumeMute } from 'react-icons/bi';
@@ -56,11 +55,6 @@ const Index = () => {
     <AnimatePresence>
         <div className='min-h-screen bg-gradient-to-bl font-montserrat'>
         <MainSideBar where={"index"}>
-          <Head>
-            <title>MforMove Platform</title>
-            <meta name='description' content='Stream Video App' />
-            <link rel='icon' href='/favicon.ico' />
-          </Head>
           <main className='relative'>
             <Banner onVideoLoaded={handleVideoLoaded} />
             <IndexMovementSection />

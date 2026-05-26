@@ -7,6 +7,7 @@ import InfoModalSection from '../../InfoModalSection';
 import { toast } from '../../../hooks/useToast';
 import { toDatetimeLocalValue } from '../../../lib/cursoLandingPublication';
 import type { CursoLandingConfig } from '../../../types/cursoLanding';
+import { routes } from '../../../constants/routes';
 
 type Props = {
   cursoConfig?: CursoLandingConfig | null;
@@ -82,7 +83,7 @@ export default function CursoProductDetails({
     );
   }
 
-  const landingPath = cursoConfig.slug ? `/curso/${cursoConfig.slug}` : null;
+  const landingPath = cursoConfig.slug ? routes.navegation.membership.curso(cursoConfig.slug) : null;
   const checkoutImage = cursoConfig.imagenCheckoutPublicId || portada;
   const opcionesPago = cursoConfig.planes?.opcionesPago || [];
 

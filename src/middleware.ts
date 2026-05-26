@@ -6,7 +6,7 @@ const freeCheckSources = ['/iniciar-sesion', '/registro', '/verificar-correo', '
 // Rutas de onboarding que requieren autenticación pero no deben ser bloqueadas por el middleware
 const onboardingPaths = ['/incorporacion'];
 
-const CURSO_CUERPO_AUTONOMO_PATH = '/curso/cuerpo-autonomo';
+const CURSO_CUERPO_AUTONOMO_PATH = '/cuerpo-autonomo';
 
 function isLibraryPath(pathname: string): boolean {
     return (

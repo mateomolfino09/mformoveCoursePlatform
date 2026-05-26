@@ -10,6 +10,7 @@ import { AiOutlineCheckCircle } from 'react-icons/ai';
 import { RxCrossCircled } from 'react-icons/rx';
 import { Radio, RadioGroup } from '@headlessui/react';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import { GLOBAL_SITE_DESCRIPTION } from '../../../lib/siteMetadata';
 
 const mentorshipLevels = [
   { value: 'explorer', label: 'Explorador' },
@@ -172,8 +173,8 @@ const CreateMentorshipPlan = () => {
   return (
     <AdmimDashboardLayout>
       <Head>
-        <title>Crear Plan de Mentoría - MForMove</title>
-        <meta name='description' content='Crear nuevo plan de mentoría' />
+        <title>Crear plan de mentoría</title>
+        <meta name='description' content={GLOBAL_SITE_DESCRIPTION} />
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <div className='relative flex w-full min-h-screen flex-col md:items-center md:justify-center'>

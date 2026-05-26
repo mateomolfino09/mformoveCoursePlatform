@@ -276,7 +276,7 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
     <motion.div className="space-y-6">
       <Section
         title="Publicación y ruta"
-        description="Definí cuándo se publica la landing y cómo se accede desde /curso/slug."
+        description="Definí cuándo se publica la landing y cómo se accede desde /slug (ej. /cuerpo-autonomo)."
         defaultOpen
       >
         <motion.div className="grid gap-4 md:grid-cols-2">
@@ -321,7 +321,7 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
             </span>
             <span className="text-xs text-gray-500">
               Publicación inmediata. Si está desmarcada y hay fecha programada, la landing queda en preventa hasta ese momento.
-              Ruta pública: <code>/curso/{value.slug || 'slug'}</code>.
+              Ruta pública: <code>/{value.slug || 'slug'}</code>.
             </span>
           </label>
         </motion.div>
