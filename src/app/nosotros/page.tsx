@@ -22,7 +22,7 @@ const About = () => {
             {/* Hero Section */}
             <div className="mb-12">
               <h1 className="text-[#234C8C] text-4xl md:text-5xl mb-4 font-bold font-montserrat">
-                Sobre MforMove
+                Sobre MMOVE
               </h1>
               <p className="text-gray-600 text-lg leading-relaxed max-w-3xl">
                 Somos una plataforma dedicada a transformar vidas a través del movimiento, 

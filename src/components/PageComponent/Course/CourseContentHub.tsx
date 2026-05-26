@@ -7,6 +7,7 @@ import { ArrowLeftIcon, PlayIcon } from '@heroicons/react/24/solid';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import Footer from '../../Footer';
 import { routes } from '../../../constants/routes';
+import { cursoClasePath } from '../../../lib/cursoPaths';
 
 type CourseClassItem = {
   _id: string;
@@ -137,7 +138,7 @@ export default function CourseContentHub({ slug }: Props) {
                         {modulo.clases.map((clase) => (
                           <li key={clase._id}>
                             <Link
-                              href={`/curso/${slug}/contenido/clase/${clase._id}?modulo=${modulo.timelineIndex}`}
+                              href={cursoClasePath(slug, clase._id, modulo.timelineIndex)}
                               className="flex items-center justify-between gap-3 rounded-xl border border-palette-stone/15 px-4 py-3 hover:border-palette-sage hover:bg-palette-sage/5 transition-colors"
                             >
                               <div>

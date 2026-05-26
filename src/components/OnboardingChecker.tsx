@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../hooks/useAuth';
+import { isCursoPublicPath } from '../lib/cursoPaths';
 import state from '../valtio';
 
 /**
@@ -28,19 +29,19 @@ export default function OnboardingChecker() {
       '/verificar-correo',
       '/',
       '/nosotros',
-      '/cuerpo-autonomo',
-      '/curso',
       '/productos',
       '/mentoria'
     ];
 
     // Verificar si la ruta actual está excluida
-    const isExcluded = excludedPaths.some(path => {
-      if (path === '/') {
-        return pathname === '/';
-      }
-      return pathname === path || pathname.startsWith(path + '/');
-    });
+    const isExcluded =
+      isCursoPublicPath(pathname) ||
+      excludedPaths.some((path) => {
+        if (path === '/') {
+          return pathname === '/';
+        }
+        return pathname === path || pathname.startsWith(path + '/');
+      });
 
     // CRÍTICO: Si estamos en /incorporacion/bienvenida, NO hacer NADA
     // El usuario puede estar aceptando el contrato o viendo el modal

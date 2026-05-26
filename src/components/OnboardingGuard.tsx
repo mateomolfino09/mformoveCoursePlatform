@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { LockClosedIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../hooks/useAuth';
+import { isCursoPublicPath } from '../lib/cursoPaths';
 
 interface OnboardingGuardProps {
   children: React.ReactNode;
@@ -28,8 +29,6 @@ export default function OnboardingGuard({ children }: OnboardingGuardProps) {
     '/verificar-correo',
     '/',
     '/nosotros',
-    '/cuerpo-autonomo',
-    '/curso',
     '/productos',
     '/mentoria'
   ];
@@ -37,9 +36,9 @@ export default function OnboardingGuard({ children }: OnboardingGuardProps) {
   const checkOnboardingStatus = useCallback(async () => {
     try {
       // Si estamos en una ruta excluida, no verificar
-      const isExcluded = excludedPaths.some(path => 
-        pathname === path || pathname.startsWith(path + '/')
-      );
+      const isExcluded =
+        isCursoPublicPath(pathname) ||
+        excludedPaths.some((path) => pathname === path || pathname.startsWith(path + '/'));
 
       if (isExcluded) {
         return;

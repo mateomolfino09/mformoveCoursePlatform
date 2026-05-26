@@ -13,6 +13,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
 import LinkInBioMentoriaSettings from './LinkInBioMentoriaSettings';
+import { GLOBAL_SITE_DESCRIPTION } from '../../../lib/siteMetadata';
 
 const AdminMentorshipIndex = () => {
   const router = useRouter();
@@ -34,8 +35,8 @@ const AdminMentorshipIndex = () => {
   return (
     <AdmimDashboardLayout>
       <Head>
-        <title>MForMove Platform - Mentoría</title>
-        <meta name='description' content='Administración de Mentoría' />
+        <title>Admin Mentoría</title>
+        <meta name='description' content={GLOBAL_SITE_DESCRIPTION} />
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <div className='w-full pb-12'>

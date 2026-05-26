@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import MainSideBar from '../../../../../components/MainSidebar/MainSideBar';
-import FooterProfile from '../../../../../components/PageComponent/Profile/FooterProfile';
-import CourseCheckoutStart from '../../../../../components/PageComponent/Course/CourseCheckoutStart';
-import CourseCheckoutSkeleton from '../../../../../components/PageComponent/Course/CourseCheckoutSkeleton';
-import { CursoLandingProvider } from '../../../../../components/PageComponent/Course/CursoLandingContext';
-import { CursoLandingConfig, CursoPlanPago } from '../../../../../types/cursoLanding';
+import MainSideBar from '../../../../components/MainSidebar/MainSideBar';
+import FooterProfile from '../../../../components/PageComponent/Profile/FooterProfile';
+import CourseCheckoutStart from '../../../../components/PageComponent/Course/CourseCheckoutStart';
+import CourseCheckoutSkeleton from '../../../../components/PageComponent/Course/CourseCheckoutSkeleton';
+import { CursoLandingProvider } from '../../../../components/PageComponent/Course/CursoLandingContext';
+import { CursoLandingConfig, CursoPlanPago } from '../../../../types/cursoLanding';
+import state from '../../../../valtio';
+import { formatTitleCaseWords } from '../../../../lib/formatDisplayTitle';
 
 interface CursoEmpezarPageProps {
   params: {
@@ -69,13 +71,26 @@ export default function CursoEmpezarPage({ params }: CursoEmpezarPageProps) {
           preventaTierIndex: data.preventaTierIndex ?? null,
         });
       } catch (err) {
-        console.error(`Error obteniendo checkout /curso/${params.cursoNombre}/empezar`, err);
+        console.error(`Error obteniendo checkout /${params.cursoNombre}/empezar`, err);
         setError(err instanceof Error ? err.message : 'Error desconocido');
       }
     };
 
     fetchCurso();
   }, [params.cursoNombre]);
+
+  useEffect(() => {
+    if (!landing) return;
+    const raw =
+      landing.product?.nombre?.trim() || landing.cursoConfig.introHighlights.titulo?.trim() || '';
+    state.cursoHeaderTitle = raw ? formatTitleCaseWords(raw) : null;
+  }, [landing]);
+
+  useEffect(() => {
+    return () => {
+      state.cursoHeaderTitle = null;
+    };
+  }, []);
 
   if (error) {
     return (

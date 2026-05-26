@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense } from 'react';
-import CourseClassPractice from '../../../../../../../components/PageComponent/Course/CourseClassPractice';
+import CourseClassPractice from '../../../../../../components/PageComponent/Course/CourseClassPractice';
 
 function PracticeContent({
   params,

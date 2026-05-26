@@ -1,6 +1,6 @@
 'use client';
 
-import CourseContentHub from '../../../../../components/PageComponent/Course/CourseContentHub';
+import CourseContentHub from '../../../../components/PageComponent/Course/CourseContentHub';
 
 export default function CursoContenidoPage({
   params,
