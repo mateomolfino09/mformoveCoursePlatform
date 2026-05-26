@@ -1,6 +1,10 @@
+import type { Metadata } from 'next';
 import connectDB from '../../config/connectDB';
 import Product from '../../models/productModel';
 import EventsList from '../../components/PageComponent/Eventos/EventsList';
+import { pageMetadata } from '../../lib/pageMetadata';
+
+export const metadata: Metadata = pageMetadata('Eventos');
 
 let isConnected = false;
 async function ensureConnection() {

@@ -43,8 +43,11 @@ const nextConfig = {
       { source: '/membership', destination: '/cuerpo-autonomo', permanent: true },
       { source: '/membership/:path*', destination: '/cuerpo-autonomo/:path*', permanent: true },
 
-      { source: '/library', destination: '/curso/cuerpo-autonomo', permanent: false },
-      { source: '/library/:path*', destination: '/curso/cuerpo-autonomo', permanent: false },
+      { source: '/library', destination: '/cuerpo-autonomo', permanent: false },
+      { source: '/library/:path*', destination: '/cuerpo-autonomo', permanent: false },
+
+      { source: '/curso/:slug', destination: '/:slug', permanent: true },
+      { source: '/curso/:slug/:path*', destination: '/:slug/:path*', permanent: true },
       { source: '/weekly-path', destination: '/ruta-semanal', permanent: true },
       { source: '/weekly-path/:path*', destination: '/ruta-semanal/:path*', permanent: true },
       { source: '/select-plan', destination: '/elegir-plan', permanent: true },

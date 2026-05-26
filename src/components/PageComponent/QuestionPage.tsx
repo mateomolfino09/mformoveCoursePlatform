@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect } from 'react'
 import { Question } from '../../../typings';
-import Head from 'next/head';
 import OneQuestion from '../../components/Question';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../hooks/useAuth';
@@ -36,12 +35,7 @@ const QuestionPage = ({ question }: Props) => {
   }, [auth.user]);
 
   return (
-    <div>      
-      <Head>
-        <title>Video Streaming</title>
-        <meta name='description' content='Stream Video App' />
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
+    <div>
       <header className={`bg-dark`}>
         <div onClick={() => handleRouteChange('/mentoria')}>
           <img

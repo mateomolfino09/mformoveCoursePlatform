@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import Course from '../../../../components/PageComponent/Course/Course';
-import CourseLandingSkeleton from '../../../../components/PageComponent/Course/CourseLandingSkeleton';
-import { CursoLandingProvider } from '../../../../components/PageComponent/Course/CursoLandingContext';
-import { CursoLandingConfig, CursoPlanPago } from '../../../../types/cursoLanding';
+import Course from '../../../components/PageComponent/Course/Course';
+import CourseLandingSkeleton from '../../../components/PageComponent/Course/CourseLandingSkeleton';
+import { CursoLandingProvider } from '../../../components/PageComponent/Course/CursoLandingContext';
+import { CursoLandingConfig, CursoPlanPago } from '../../../types/cursoLanding';
+import state from '../../../valtio';
+import { formatTitleCaseWords } from '../../../lib/formatDisplayTitle';
 
 interface CursoNombrePageProps {
   params: {
@@ -61,13 +63,26 @@ export default function CursoNombrePage({ params }: CursoNombrePageProps) {
           opcionesPago: Array.isArray(data.opcionesPago) ? data.opcionesPago : [],
         });
       } catch (err) {
-        console.error(`Error obteniendo curso /curso/${params.cursoNombre}`, err);
+        console.error(`Error obteniendo curso /${params.cursoNombre}`, err);
         setError(err instanceof Error ? err.message : 'Error desconocido');
       }
     };
 
     fetchCurso();
   }, [params.cursoNombre]);
+
+  useEffect(() => {
+    if (!landing) return;
+    const raw =
+      landing.product?.nombre?.trim() || landing.cursoConfig.introHighlights.titulo?.trim() || '';
+    state.cursoHeaderTitle = raw ? formatTitleCaseWords(raw) : null;
+  }, [landing]);
+
+  useEffect(() => {
+    return () => {
+      state.cursoHeaderTitle = null;
+    };
+  }, []);
 
   if (error) {
     return (

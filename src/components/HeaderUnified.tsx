@@ -15,6 +15,7 @@ import { useAppSelector } from '../redux/hooks';
 import { useAuth } from '../hooks/useAuth';
 import { useLogout } from '../hooks/useLogout';
 import { routes } from '../constants/routes';
+import { isCursoPublicPath } from '../lib/cursoPaths';
 import { PiHouseLineThin } from 'react-icons/pi';
 import { SiEditorconfig } from 'react-icons/si';
 import { ArrowLeftEndOnRectangleIcon, ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -62,7 +63,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	);
 
     const isMentorship = path === routes.navegation.mentorship;
-    const isCursoLanding = path.startsWith('/curso/');
+    const isCursoLanding = isCursoPublicPath(path);
 	/** Landing comercial: mentoría y páginas de curso */
 	const isMembershipLanding = isMentorship || isCursoLanding;
     const isPaymentSuccess = path === routes.navegation.paymentSuccess;
@@ -365,6 +366,32 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 
 	const menuOpenOnMobile = (snap.weeklyPathNavOpen || snap.bitacoraNavOpen) && isMobile;
 
+	const cursoTitleInHeader = isCursoLanding && snap.cursoHeaderTitle;
+	const logoTitleClass = `font-montserrat font-semibold uppercase tracking-[0.15em] md:tracking-[0.2em] cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap shrink-0 ${logoLight ? 'text-white' : 'text-palette-ink'}`;
+	const cursoTitleClass = `font-montserrat font-medium tracking-tight truncate max-w-[42vw] sm:max-w-[280px] md:max-w-[360px] ${logoLight ? 'text-white' : 'text-palette-ink'}`;
+
+	const brandBlock = (logoSizeClass: string, hideLogoOnMobileSidebar?: boolean) => (
+		<div className="flex items-center gap-2 md:gap-3 min-w-0">
+			<Link
+				href={logoHref}
+				className={`${logoTitleClass} ${logoSizeClass} ${hideLogoOnMobileSidebar && sidebarOpen && isMobile ? 'opacity-0' : 'opacity-100'}`}
+				style={{ transition: 'opacity 200ms ease' }}
+			>
+				MMOVE
+			</Link>
+			{cursoTitleInHeader ? (
+				<>
+					<span className={`hidden sm:inline shrink-0 ${logoLight ? 'text-white/50' : 'text-palette-stone/50'}`} aria-hidden>
+						|
+					</span>
+					<span className={`${cursoTitleClass} text-sm md:text-lg`} title={snap.cursoHeaderTitle}>
+						{snap.cursoHeaderTitle}
+					</span>
+				</>
+			) : null}
+		</div>
+	);
+
 	const headerContent = domLoaded ? (
 				<m.div
 					initial={{ y: 0, opacity: 1 }}
@@ -376,9 +403,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 						<div className="flex items-center justify-between h-full w-full gap-4">
 							{/* Logo | Eventos + Mentoría */}
 							<div className='flex items-center gap-4 md:gap-6 min-w-0 shrink-0'>
-								<Link href={logoHref} className={`font-montserrat font-semibold uppercase tracking-[0.15em] md:tracking-[0.2em] text-sm md:text-xl cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap mr-4 md:mr-24 ${sidebarOpen && isMobile ? 'opacity-0' : 'opacity-100'} ${logoLight ? 'text-white' : 'text-palette-ink'}`} style={{ transition: 'opacity 200ms ease' }}>
-									MMOVE ACADEMY
-								</Link>
+								<div className="mr-4 md:mr-24">{brandBlock('text-sm md:text-xl', true)}</div>
 								<div className="hidden md:flex items-center gap-6 shrink-0 flex-wrap">
 								<span className={`hidden md:block shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'}`}>|</span>
 									<Link href={routes.navegation.eventos} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${isLightText ? (isEvents ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isEvents ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}`}>
@@ -557,9 +582,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 						// Distribución normal
 						<div className="flex justify-between items-center pl-3 pr-4 md:pl-8 md:pr-8 lg:gap-x-8 h-full">
 					<div className='flex items-center justify-start shrink-0 gap-4'>
-										<Link href={logoHref} className={`font-montserrat font-semibold tracking-[0.15em] md:tracking-[0.2em] text-sm md:text-2xl cursor-pointer hover:opacity-80 transition-opacity ${sidebarOpen && !isMobile ? 'opacity-0' : 'opacity-100'} ${logoLight ? 'text-white' : 'text-palette-ink'}`} style={{ transition: 'opacity 200ms ease' }}>
-											MMOVE ACADEMY
-										</Link>
+										{brandBlock('text-sm md:text-2xl', false)}
 					</div>
 					{/* Centro: Mentoría y Eventos */}
 					<div className="flex flex-1 w-full justify-start items-center min-h-[2rem]">

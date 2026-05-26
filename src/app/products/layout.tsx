@@ -1,25 +1,27 @@
-import React from "react"
-import { BoldFont, MontserratFont } from "../../utils/customFonts"
-import type { Metadata } from 'next'
+import React from 'react';
+import { BoldFont, MontserratFont } from '../../utils/customFonts';
+import type { Metadata } from 'next';
+import { SITE_URL } from '../../lib/siteMetadata';
 
 export const metadata: Metadata = {
-  title: 'Productos MForMove - Clases, Eventos y Recursos de Movimiento Consciente',
-  description: 'Explora nuestra colección de productos de movimiento consciente: clases online, eventos presenciales, recursos descargables y programas transformacionales para tu desarrollo personal.',
+  title: 'Productos | Programas, eventos y recursos',
+  description:
+    'Programas de movimiento, eventos y recursos de MMOVE. Formación corporal con criterio técnico y estructura clara.',
   keywords: [
-    'clases online movimiento',
-    'eventos presenciales',
-    'recursos fitness',
-    'programas transformacionales',
-    'MForMove',
-    'movimiento consciente',
-    'bienestar integral',
-    'desarrollo personal'
+    'programas de movimiento',
+    'eventos MMOVE',
+    'educación corporal',
+    'Mateo Molfino',
+    'MMOVE',
+    'movilidad',
+    'autonomía corporal',
   ],
   openGraph: {
-    title: 'Productos MForMove - Movimiento Consciente',
-    description: 'Explora nuestra colección de productos de movimiento consciente: clases, eventos y recursos.',
-    url: 'https://mformove.com/products',
-    siteName: 'MForMove',
+    title: 'Productos',
+    description:
+      'Programas, eventos y recursos de educación de movimiento con criterio técnico.',
+    url: `${SITE_URL}/products`,
+    siteName: 'MMOVE',
     locale: 'es_UY',
     type: 'website',
   },
@@ -27,19 +29,16 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-}
+};
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-
   return (
-    <section className={`${BoldFont.variable} ${MontserratFont.variable}`}>
-        {children}
-    </section>
-  )
+    <section className={`${BoldFont.variable} ${MontserratFont.variable}`}>{children}</section>
+  );
 }

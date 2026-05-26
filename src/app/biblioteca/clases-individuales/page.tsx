@@ -15,7 +15,6 @@ import imageLoader from '../../../../imageLoader';
 import { motion } from 'framer-motion';
 import { VscTools } from 'react-icons/vsc';
 import { routes } from '../../../constants/routes';
-import Head from 'next/head';
 import Footer from '../../../components/Footer';
 import IndividualClassesSkeleton from '../../../components/IndividualClassesSkeleton';
 
@@ -138,12 +137,6 @@ export default function IndividualClassesPage() {
           }}
         >
           <MainSideBar where="library">
-            <Head>
-              <title>Clases individuales - Cuerpo autónomo</title>
-              <meta name="description" content="Clases guiadas sin módulo" />
-              <link rel="icon" href="/favicon.ico" />
-            </Head>
-
             <main className="relative px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32 pt-28 md:pt-32 lg:pt-36 pb-20">
               <div className="max-w-7xl mx-auto">
                 {/* Breadcrumb / back */}

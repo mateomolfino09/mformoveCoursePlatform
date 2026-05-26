@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from '../../hooks/useToast';
+import { GLOBAL_SITE_DESCRIPTION } from '../../lib/siteMetadata';
 
 interface Props {
   token: string;
@@ -41,8 +42,8 @@ function Token({ token }: Props) {
   return (
     <div className='relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent'>
       <Head>
-        <title>Video Streaming</title>
-        <meta name='description' content='Stream Video App' />
+        <title>Recuperar contraseña</title>
+        <meta name='description' content={GLOBAL_SITE_DESCRIPTION} />
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <div className='h-full w-full relative flex flex-col md:items-center md:justify-center'>

@@ -1,13 +1,20 @@
-import Index from '../../../components/PageComponent/FreeProducts/Mobility-Articular/Index';
+import type { Metadata } from 'next';
 import connectDB from '../../../config/connectDB';
-import endpoints from '../../../services/api';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { getProductByName } from "../../api/product/getProductByName";
-import { FreeProduct, ProductDB } from '../../../../typings';
+import { getProductByName } from '../../api/product/getProductByName';
+import { ProductDB } from '../../../../typings';
 import IndividaulProduct from '../../../components/PageComponent/Products/IndividaulProduct';
-import getVimeoVideo from '../../api/individualClass/getVimeoVideo';
+import { pageMetadata } from '../../../lib/pageMetadata';
 
+export async function generateMetadata({
+  params,
+}: {
+  params: { name: string };
+}): Promise<Metadata> {
+  await connectDB();
+  const product: ProductDB | null = await getProductByName(params.name);
+  if (!product?.name) return pageMetadata('Producto');
+  return pageMetadata(product.name);
+}
 
 export default async function Page({ params }: { params: { name: string }}) {
     connectDB();

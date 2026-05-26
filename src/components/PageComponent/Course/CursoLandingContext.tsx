@@ -1,12 +1,14 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
+import state from '../../../valtio';
 import {
   CursoLandingConfig,
   createDefaultCursoLandingConfig,
   normalizeCursoLandingConfig,
 } from '../../../types/cursoLanding';
 import { formatTitleCaseWords } from '../../../lib/formatDisplayTitle';
+import { cursoEmpezarPath, cursoLandingPath } from '../../../lib/cursoPaths';
 
 type CursoLandingContextValue = {
   cursoConfig: CursoLandingConfig;
@@ -51,8 +53,8 @@ export function CursoLandingProvider({
   }, [cursoConfig, productName]);
   const plansSectionId = resolvedConfig.planes?.anclaId || 'membership-plans';
   const faqSectionId = resolvedConfig.faq?.anclaId || 'membership-faq';
-  const landingPath = `/curso/${slug}`;
-  const checkoutStartPath = `${landingPath}/empezar`;
+  const landingPath = cursoLandingPath(slug);
+  const checkoutStartPath = cursoEmpezarPath(slug);
 
   const scrollToSection = useCallback((sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -61,6 +63,13 @@ export function CursoLandingProvider({
   const scrollToPlans = useCallback(() => {
     scrollToSection(plansSectionId);
   }, [plansSectionId, scrollToSection]);
+
+  useEffect(() => {
+    state.cursoHeaderTitle = displayProductName;
+    return () => {
+      state.cursoHeaderTitle = null;
+    };
+  }, [displayProductName]);
 
   const value = useMemo(
     () => ({
@@ -92,8 +101,8 @@ export function useCursoLanding() {
     return {
       cursoConfig: fallback,
       productName: fallback.introHighlights.titulo,
-      landingPath: `/curso/${fallback.slug}`,
-      checkoutStartPath: `/curso/${fallback.slug}/empezar`,
+      landingPath: cursoLandingPath(fallback.slug),
+      checkoutStartPath: cursoEmpezarPath(fallback.slug),
       plansSectionId,
       faqSectionId,
       scrollToPlans: () => {
