@@ -91,8 +91,9 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	const isLibraryPracticePage = path.includes('/practice/');
 	const menuTooltipText = 'Una semana completada = 1 U.C. Completá semanas del Camino y canjeá por programas o merch.';
 
-	// Evita que el header del login y home cambien al hacer scroll
-	const transparentUntilScroll = !isInfoLight && !isWeeklyPath && !isAuth && !isIndex;
+	// Header transparente al inicio y sólido al scrollear (también en páginas informativas como /terminos).
+	// Evita el comportamiento en login y home.
+	const transparentUntilScroll = !isWeeklyPath && !isAuth && !isIndex;
 	// Para la página de success, solo usar isScrolled local, no headerScroll del Redux
 	const scrolled = isPaymentSuccess ? isScrolled : (isScrolled || headerScroll);
 
@@ -309,12 +310,19 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
                                     : (transparentUntilScroll && !scrolled
                                         ? true
                                         : false))))))));
+    // Páginas informativas con fondo claro (ej. /terminos): aunque el header sea transparente,
+    // el texto debe ser oscuro para mantener contraste.
+    const isLightTextBaseEffective = isInfoLight ? false : isLightTextBase;
     // En weekly path y práctica (video): texto blanco. En página de módulo: sin scroll blanco, con scroll negro. Resto de library: texto negro. Con navegación abierta: texto claro.
-    const isLightText = isWeeklyPath ? true : (isLibraryPracticePage ? true : (isLibraryModulePage ? !scrolled : (isLibraryArea ? (forceLight ? true : false) : (forceLight ? true : isLightTextBase))));
+    const isLightText = isWeeklyPath ? true : (isLibraryPracticePage ? true : (isLibraryModulePage ? !scrolled : (isLibraryArea ? (forceLight ? true : false) : (forceLight ? true : isLightTextBaseEffective))));
 
     // Si el texto es claro y hay scroll, aplicar fondo difuminado para contraste (no en etapa 1 index). Cuerpo autónomo no cambia.
     if (!isMembershipLanding && !isLibraryArea && scrolled && isLightText && !isIndexStage1) {
         headerBgClass = 'bg-black/40 backdrop-blur-md';
+    }
+    // Páginas informativas con fondo claro: al scrollear, fondo blanco (como cursos / Cuerpo autónomo).
+    if (isInfoLight && scrolled) {
+        headerBgClass = 'bg-white/90 backdrop-blur-sm';
     }
     // Solo en página de módulo (/biblioteca/modulo/xxx), cuando hay scroll: fondo blanco y texto negro. En práctica (video) el header siempre transparente.
     if (isLibraryModulePage && !isLibraryPracticePage && scrolled) {
