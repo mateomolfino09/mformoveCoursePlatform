@@ -36,17 +36,11 @@ export default function TerminosPage() {
         />
 
         <div className="relative z-10 mx-auto max-w-3xl px-4 md:px-6">
-          <header className="mb-10 text-center md:mb-12">
-            <p className="mb-2 font-montserrat text-[10px] font-semibold uppercase tracking-[0.28em] text-palette-stone/75 md:text-[11px]">
-              Legal
-            </p>
+          <div className="mb-10 text-center md:mb-12">
             <h1 className="font-montserrat text-[1.65rem] font-semibold leading-[1.12] tracking-tight text-palette-ink sm:text-[1.85rem] md:text-[2.05rem]">
               Términos y Condiciones
             </h1>
-            <p className="mx-auto mt-3 max-w-xl text-sm font-light leading-relaxed text-palette-stone md:text-[15px]">
-              MMOVE — servicios digitales de educación de movimiento
-            </p>
-          </header>
+          </div>
 
           <article className="space-y-10 text-[15px] leading-relaxed text-palette-ink/90">
             <section>
