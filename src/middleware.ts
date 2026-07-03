@@ -2,7 +2,27 @@ import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
 // Rutas que no requieren autenticación
-const freeCheckSources = ['/iniciar-sesion', '/registro', '/verificar-correo', '/restablecer', '/restablecer-correo', '/olvide-contrasena', '/nosotros', '/'];
+const freeCheckSources = [
+    '/iniciar-sesion',
+    '/registro',
+    '/verificar-correo',
+    '/restablecer',
+    '/restablecer-correo',
+    '/olvide-contrasena',
+    '/nosotros',
+    '/pago/exito',
+    '/pago/error',
+    '/',
+];
+
+function isPostPaymentPath(pathname: string): boolean {
+    return (
+        pathname === '/pago/exito' ||
+        pathname.startsWith('/pago/exito/') ||
+        pathname === '/pago/error' ||
+        pathname.startsWith('/pago/error/')
+    );
+}
 // Rutas de onboarding que requieren autenticación pero no deben ser bloqueadas por el middleware
 const onboardingPaths = ['/incorporacion'];
 
@@ -44,6 +64,11 @@ export async function middleware(request: NextRequest) {
     if (freeCheckSources.some(path => pathname === path || pathname.startsWith(path + '/'))) {
         return response;
     }
+
+    // Post-pago: el webhook ya otorga acceso; no exigir sesión (redirect desde Stripe/dLocal).
+    if (isPostPaymentPath(pathname)) {
+        return response;
+    }
     
     try {
         // Verifica si el token JWT no existe y redirige a login
@@ -75,7 +100,9 @@ export async function middleware(request: NextRequest) {
 
         return response;
     } catch (error) {
-        // Si hay un error en la verificación, redirige a login
+        if (isPostPaymentPath(pathname)) {
+            return response;
+        }
         return NextResponse.redirect(new URL('/iniciar-sesion', request.url));
     }
 }

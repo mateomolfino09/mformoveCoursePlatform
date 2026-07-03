@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { useCursoLanding } from './CursoLandingContext';
+import { sectionMainTitle } from './courseSectionTitle';
 
 const padX =
   'mx-auto w-full max-w-none px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-28';
@@ -25,22 +26,10 @@ const CourseFAQ = () => {
 
   return (
     <section
-      className="relative isolate overflow-hidden bg-palette-cloud py-14 font-montserrat text-palette-ink md:py-20 lg:py-24"
+      className="relative isolate overflow-hidden bg-palette-cream py-14 font-montserrat text-palette-ink md:py-20 lg:py-24"
       id={faqSectionId}
       aria-labelledby="course-faq-heading"
     >
-      <motion.div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-br from-palette-skysteel/35 via-palette-cream/85 to-palette-steel/[0.14]"
-        aria-hidden
-        animate={
-          reduceMotion
-            ? undefined
-            : {
-                opacity: [0.92, 1, 0.92],
-              }
-        }
-        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-      />
       <motion.div
         className="pointer-events-none absolute -right-[12%] top-[-18%] h-[min(420px,52vw)] w-[min(420px,72vw)] rounded-full bg-palette-steel/18 blur-[100px]"
         aria-hidden
@@ -104,10 +93,9 @@ const CourseFAQ = () => {
             viewport={{ once: true, margin: '-40px' }}
             className="mx-auto max-w-3xl text-center lg:sticky lg:top-28 lg:mx-0 lg:max-w-none lg:text-left"
           >
-  
             <h2
               id="course-faq-heading"
-              className="mc-text-depth-light-title font-montserrat text-4xl font-semibold leading-[1.04] tracking-tight text-palette-ink md:text-5xl"
+              className={`mc-text-depth-light-title ${sectionMainTitle} text-palette-ink`}
             >
               {cursoConfig.faq.titulo}
             </h2>
@@ -139,7 +127,7 @@ const CourseFAQ = () => {
                     aria-expanded={open}
                     className="flex w-full items-start gap-4 px-4 py-4 text-left transition-colors duration-200 hover:bg-palette-cream sm:px-5 sm:py-5 md:gap-5"
                   >
-                    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-palette-steel/30 bg-palette-cloud/80 font-montserrat text-[11px] font-semibold tabular-nums text-palette-stone">
+                    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-palette-steel/30 bg-palette-cream/90 font-montserrat text-[11px] font-semibold tabular-nums text-palette-stone">
                       {String(index + 1).padStart(2, '0')}
                     </span>
                     <span className="mc-text-depth-light-title min-w-0 flex-1 font-montserrat text-[clamp(1rem,2.2vw,1.2rem)] font-semibold leading-snug tracking-tight text-palette-ink md:leading-snug">

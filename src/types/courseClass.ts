@@ -1,8 +1,15 @@
-import { MODULE_CLASS_MATERIALS, type ModuleClassMaterial } from '../constants/moduleClassMaterials';
+/** Materiales disponibles para las clases de un producto tipo curso. */
+export const COURSE_CLASS_MATERIALS = [
+  'pelota',
+  'baston',
+  'banda elastica',
+  'banco',
+  'bloque',
+  'libreta',
+  'lapicera',
+] as const;
 
-export type CourseClassMaterial = ModuleClassMaterial;
-
-export const COURSE_CLASS_MATERIALS = MODULE_CLASS_MATERIALS;
+export type CourseClassMaterial = (typeof COURSE_CLASS_MATERIALS)[number];
 
 /** Misma forma que ModuleClass para reutilizar la vista de práctica/biblioteca. */
 export type CourseClassFields = {
@@ -18,6 +25,8 @@ export type CourseClassFields = {
   order: number;
   materials: CourseClassMaterial[];
   visibleInLibrary: boolean;
+  /** URL del PDF descargable asociado a la clase (Cloudinary u otra). */
+  pdfUrl?: string;
 };
 
 export type CourseClassDocument = CourseClassFields & {

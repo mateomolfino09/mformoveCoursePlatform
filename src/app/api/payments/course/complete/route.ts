@@ -3,6 +3,13 @@ import connectDB from '../../../../../config/connectDB';
 import dLocalApi from '../../dlocalConfig';
 import { stripe } from '../../stripe/stripeConfig';
 import { fulfillCoursePurchase } from '../fulfillCoursePurchase';
+import {
+  coursePaymentDebug,
+  coursePaymentError,
+  coursePaymentWarn,
+} from '../../../../../lib/coursePaymentDebug';
+import { resolveProductIdFromDlocalOrderId } from '../../../../../lib/resolveCursoDlocalOrderId';
+import { resolveAuthUserIdFromCookies } from '../../../../../lib/resolveAuthUserIdFromCookies';
 
 export const runtime = 'nodejs';
 
@@ -28,13 +35,27 @@ const resolveStripeProductId = async (session: any, fallbackProductId?: string) 
 };
 
 export async function POST(req: NextRequest) {
+  const startedAt = Date.now();
+
   try {
     await connectDB();
 
     const body = await req.json();
     const provider = body?.provider as 'stripe' | 'dlocalgo' | undefined;
     const productId = body?.productId as string | undefined;
-    const userId = body?.userId as string | undefined;
+    const userId =
+      (body?.userId as string | undefined)?.trim() ||
+      resolveAuthUserIdFromCookies() ||
+      undefined;
+
+    coursePaymentDebug('complete.received', {
+      provider,
+      productId,
+      userId,
+      hasSessionId: Boolean(body?.sessionId),
+      hasPaymentId: Boolean(body?.paymentId),
+      hasOrderId: Boolean(body?.orderId),
+    });
 
     if (!provider) {
       return NextResponse.json({ error: 'Proveedor de pago requerido' }, { status: 400 });
@@ -66,6 +87,12 @@ export async function POST(req: NextRequest) {
         moneda: session.currency?.toUpperCase(),
       });
 
+      coursePaymentDebug('complete.stripe.done', {
+        productId: resolvedProductId,
+        alreadyProcessed: result.alreadyProcessed,
+        elapsedMs: Date.now() - startedAt,
+      });
+
       return NextResponse.json({ success: true, ...result }, { status: 200 });
     }
 
@@ -84,15 +111,23 @@ export async function POST(req: NextRequest) {
       const payment = paymentResponse.data?.data || paymentResponse.data;
       const status = String(payment?.status || payment?.payment_status || '').toUpperCase();
 
+      coursePaymentDebug('complete.dlocal.payment_fetched', {
+        paymentId: payment?.id ? String(payment.id) : paymentId,
+        orderId: payment?.order_id || orderId,
+        status,
+        payerEmail: payment?.payer?.email || payment?.email,
+      });
+
       if (!PAID_DLOCAL_STATUSES.has(status)) {
+        coursePaymentWarn('complete.dlocal.not_paid', { status });
         return NextResponse.json({ error: 'El pago de dLocal GO no está confirmado' }, { status: 409 });
       }
 
       const resolvedProductId =
         productId ||
-        (typeof payment?.order_id === 'string' && payment.order_id.startsWith('curso-')
-          ? payment.order_id.replace(/^curso-/, '')
-          : undefined);
+        resolveProductIdFromDlocalOrderId(
+          typeof payment?.order_id === 'string' ? payment.order_id : orderId
+        );
 
       if (!resolvedProductId) {
         return NextResponse.json({ error: 'No se pudo resolver el producto del curso' }, { status: 422 });
@@ -108,14 +143,20 @@ export async function POST(req: NextRequest) {
         moneda: payment?.currency,
       });
 
+      coursePaymentDebug('complete.dlocal.done', {
+        productId: resolvedProductId,
+        alreadyProcessed: result.alreadyProcessed,
+        userId: result.userId,
+        elapsedMs: Date.now() - startedAt,
+      });
+
       return NextResponse.json({ success: true, ...result }, { status: 200 });
     }
 
     return NextResponse.json({ error: 'Proveedor de pago no soportado' }, { status: 400 });
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || 'No se pudo completar la compra del curso' },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    coursePaymentError('complete.failed', error, { elapsedMs: Date.now() - startedAt });
+    const message = error instanceof Error ? error.message : 'No se pudo completar la compra del curso';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

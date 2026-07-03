@@ -16,7 +16,7 @@ export const prepareEmail = async (titulo, link, action, user, contenido, subjec
         <div style="margin:20px 0 24px;">
         <a href="${link}" style="display:inline-block;color:#FAF8F4;background:#141411;text-decoration:none;font-weight:400;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;padding:12px 28px;border-radius:9999px;font-family:${font}">${action}</a>
         </div>
-        <p style="font-size:12px;font-weight:300;color:#787867;margin:20px 0 24px;letter-spacing:0.02em">El equipo de Cuerpo autónomo.</p>
+        <p style="font-size:12px;font-weight:300;color:#787867;margin:20px 0 24px;letter-spacing:0.02em">El equipo de MMOVE.</p>
         <hr style="height:1px;background:#787867;border:none;opacity:0.2">
     </div>`;
 

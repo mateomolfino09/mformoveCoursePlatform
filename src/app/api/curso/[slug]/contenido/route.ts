@@ -8,14 +8,19 @@ import Users from '../../../../../models/userModel';
 import {
   canUserAccessCursoContenido,
   cursoContenidoBlockedMessage,
-} from '../../../../../lib/courseAccess';
-import {
   isCursoContenidoDisponible,
-  parseCursoPublicationDate,
-} from '../../../../../lib/cursoLandingPublication';
+} from '../../../../../lib/courseAccess';
+import { parseCursoPublicationDate } from '../../../../../lib/cursoLandingPublication';
 import { normalizeCursoLandingConfig } from '../../../../../types/cursoLanding';
 import { resolveInvitacionGrupoWhatsappFromProduct } from '../../../../../lib/resolveInvitacionGrupoWhatsapp';
 import { formatTitleCaseWords } from '../../../../../lib/formatDisplayTitle';
+import {
+  joinAboutDescriptionLines,
+  resolveCursoAboutDescriptionLines,
+} from '../../../../../lib/cursoAboutDescription';
+import MoveCrewEvent from '../../../../../models/moveCrewEventModel';
+import { resolveNextMoveCrewEventOccurrence } from '../../../../../lib/resolveNextMoveCrewEvent';
+import { routes } from '../../../../../constants/routes';
 
 export const dynamic = 'force-dynamic';
 
@@ -106,6 +111,10 @@ export async function GET(
                 _id: c.courseClassId,
                 name: c.name,
                 description: c.description,
+                descripcionGeneral: c.descripcionGeneral,
+                descripcionCorta: c.descripcionCorta,
+                descripcionCompleta: c.descripcionCompleta,
+                pdfUrl: c.pdfUrl,
                 videoUrl: c.videoUrl,
                 videoId: c.videoId,
                 videoThumbnail: c.videoThumbnail,
@@ -116,14 +125,38 @@ export async function GET(
                 timelineIndex: mod.timelineIndex,
               }));
 
+      const highlight = cursoConfig.highlights.items[mod.timelineIndex];
+      const landingModulo = cursoConfig.queIncluye.modulos[mod.timelineIndex];
+
       return {
         timelineIndex: mod.timelineIndex,
         titulo: mod.titulo,
+        esencia: mod.esencia?.trim() || '',
+        descripcion: highlight?.resumen || highlight?.detalle || landingModulo?.descripcion || '',
+        imagenPublicId:
+          highlight?.imagenPublicId?.trim() ||
+          landingModulo?.imagenPublicId?.trim() ||
+          '',
         bundleTipo: mod.bundleTipo,
         vimeoPlaylistId: mod.vimeoPlaylistId,
         clases: merged,
       };
     });
+
+    const practicesCount = modulos.reduce((acc, mod) => acc + mod.clases.length, 0);
+    const aboutLines = resolveCursoAboutDescriptionLines(cursoConfig);
+    const aboutDescription = joinAboutDescriptionLines(aboutLines);
+
+    const moveCrewEvents = await MoveCrewEvent.find().lean();
+    const proximoEncuentroRaw = resolveNextMoveCrewEventOccurrence(moveCrewEvents);
+    const proximoEncuentro = proximoEncuentroRaw
+      ? {
+          ...proximoEncuentroRaw,
+          calendarUrl: `/api/membership-events/${proximoEncuentroRaw.eventId}/calendar?date=${encodeURIComponent(proximoEncuentroRaw.fechaIso)}`,
+        }
+      : null;
+
+    const invitacionGrupo = resolveInvitacionGrupoWhatsappFromProduct(product) || null;
 
     return NextResponse.json(
       {
@@ -132,8 +165,45 @@ export async function GET(
         nombre: formatTitleCaseWords(product.nombre),
         contenidoDisponible,
         fechaLanzamiento: launchDate?.toISOString() ?? null,
-        invitacionGrupoWhatsapp: resolveInvitacionGrupoWhatsappFromProduct(product) || null,
+        invitacionGrupoWhatsapp: invitacionGrupo,
         modulos,
+        comunidad: {
+          whatsappGrupo: {
+            url: invitacionGrupo,
+            titulo: 'Comunidad de WhatsApp',
+            descripcion:
+              'El lugar donde conectás con otros alumnos y con Mateo. Avisos, soporte y novedades del programa.',
+            ctaTexto: 'Unirme al grupo',
+          },
+          proximoEncuentro,
+          contactoMateo: {
+            url: cursoConfig.whatsapp?.enlace?.trim() || '',
+            titulo: 'Diagnóstico técnico con Mateo',
+            descripcion:
+              '¿Tenés una consulta específica o querés ir más profundo? Escribime directo — también es el puente hacia la mentoría.',
+            ctaTexto: cursoConfig.whatsapp?.ctaTexto?.trim() || 'Escribirme por WhatsApp',
+            mentoriaUrl: routes.navegation.mentoria,
+          },
+        },
+        hub: {
+          /** Mismo video que la landing del curso (CourseHero). */
+          heroVideoId: cursoConfig.hero?.videoPresentacionVimeoId?.trim() || '',
+          heroHeadline:
+            cursoConfig.betweenHero?.titulo?.trim() ||
+            cursoConfig.hero?.tagline?.trim() ||
+            formatTitleCaseWords(product.nombre),
+          heroEyebrow:
+            cursoConfig.betweenHero?.eyebrow?.trim() ||
+            formatTitleCaseWords(product.nombre),
+          heroTagline: cursoConfig.hero?.tagline?.trim() || '',
+          aboutDescription,
+          heroThumbnailPublicId:
+            cursoConfig.introHighlights?.imagenDesktopPublicId?.trim() ||
+            cursoConfig.outcomes?.imagenPublicId?.trim() ||
+            '',
+          practicesCount,
+          modulosCount: modulos.length,
+        },
       },
       { status: 200, headers: { 'Cache-Control': 'no-store' } }
     );

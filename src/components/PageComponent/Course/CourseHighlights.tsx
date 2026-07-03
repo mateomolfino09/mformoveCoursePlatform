@@ -5,6 +5,7 @@ import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import CourseHighlightsIntro from './CourseHighlightsIntro';
 import { useCursoLanding } from './CursoLandingContext';
+import { sectionMainTitle } from './courseSectionTitle';
 import type { IconType } from 'react-icons';
 import {
   PiHexagonLight,
@@ -302,10 +303,10 @@ const CourseHighlights = ({ hideIntro = false }: CourseHighlightsProps) => {
               className="relative mx-auto mb-12 max-w-4xl space-y-4 text-balance text-center text-palette-ink md:mb-16 md:max-w-5xl"
               aria-label="Antes de la línea de tiempo"
             >
-              <p className="mc-text-depth-light-title font-montserrat text-[clamp(2.15rem,6.2vw,4rem)] font-bold leading-[1.05] tracking-[-0.03em]">
+              <p className={`mc-text-depth-light-title ${sectionMainTitle}`}>
                 {cursoConfig.highlights.titulos[0]}
               </p>
-              <p className="mc-text-depth-light-title font-montserrat text-[clamp(2.15rem,6.2vw,4rem)] font-bold leading-[1.05] tracking-[-0.03em]">
+              <p className={`mc-text-depth-light-title ${sectionMainTitle}`}>
                 {cursoConfig.highlights.titulos[1]}
               </p>
               <p className="mx-auto max-w-2xl pt-2 font-raleway text-[clamp(1.25rem,3.2vw,1.875rem)] font-semibold italic leading-snug text-palette-ink md:pt-4">

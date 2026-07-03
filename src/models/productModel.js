@@ -73,6 +73,9 @@ const cursoClaseContenidoSchema = new mongoose.Schema({
   courseClassId: { type: String, default: '' },
   name: { type: String, default: '' },
   description: { type: String, default: '' },
+  descripcionGeneral: { type: String, default: '' },
+  descripcionCorta: { type: String, default: '' },
+  descripcionCompleta: { type: String, default: '' },
   videoUrl: { type: String, default: '' },
   videoId: { type: String, default: '' },
   videoThumbnail: { type: String, default: '' },
@@ -80,10 +83,11 @@ const cursoClaseContenidoSchema = new mongoose.Schema({
   level: { type: Number, min: 1, max: 10, default: 1 },
   order: { type: Number, default: 0 },
   materials: {
-    type: [{ type: String, enum: ['baston', 'banda elastica', 'banco', 'pelota'] }],
+    type: [{ type: String, enum: ['pelota', 'baston', 'banda elastica', 'banco', 'bloque', 'libreta', 'lapicera'] }],
     default: [],
   },
   visibleInLibrary: { type: Boolean, default: true },
+  pdfUrl: { type: String, default: '' },
   /** Legacy */
   titulo: { type: String, default: '' },
   vimeoVideoId: { type: String, default: '' },
@@ -94,6 +98,7 @@ const cursoClaseContenidoSchema = new mongoose.Schema({
 const cursoModuloContenidoSchema = new mongoose.Schema({
   timelineIndex: { type: Number, required: true },
   titulo: { type: String, default: '' },
+  esencia: { type: String, default: '' },
   bundleTipo: { type: String, enum: ['vimeo_playlist', 'videos'], default: 'videos' },
   vimeoPlaylistId: { type: String, default: '' },
   clases: [cursoClaseContenidoSchema],

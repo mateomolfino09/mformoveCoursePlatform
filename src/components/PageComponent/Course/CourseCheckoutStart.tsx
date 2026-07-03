@@ -5,12 +5,15 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { CldImage } from 'next-cloudinary';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSnapshot } from 'valtio';
 import imageLoader from '../../../../imageLoader';
 import { useAuth } from '../../../hooks/useAuth';
+import { useDetectedCountry } from '../../../hooks/useDetectedCountry';
 import { toast } from '../../../hooks/useToast';
 import state from '../../../valtio';
 import { CursoClaseContenido, CursoPlanPago } from '../../../types/cursoLanding';
 import { formatTitleCaseWords } from '../../../lib/formatDisplayTitle';
+import { resolveClaseDescripcionCorta } from '../../../lib/cursoClaseDescripcion';
 import { MiniLoadingSpinner } from '../Products/MiniSpinner';
 import { useCursoLanding } from './CursoLandingContext';
 import {
@@ -20,6 +23,12 @@ import {
   type CourseCheckoutIntent,
 } from '../../../utils/redirectQueue';
 import { savePendingPreventaRedemption } from '../../../utils/cursoPreventaCheckoutStorage';
+import type { DlocalLocalizedAmount } from '../../../lib/dlocalLocalCurrency';
+
+type DlocalQuoteResponse = DlocalLocalizedAmount & {
+  countrySource?: 'profile' | 'geo' | null;
+  payerCountry?: string;
+};
 
 type CourseCheckoutStartProps = {
   checkoutPlans: CursoPlanPago[];
@@ -182,18 +191,100 @@ export default function CourseCheckoutStart({
   preventaTierIndex,
 }: CourseCheckoutStartProps) {
   const auth = useAuth();
+  const snap = useSnapshot(state);
+  const { dlocalCountryLabel: geoCountryLabel } = useDetectedCountry();
   const { cursoConfig, productName } = useCursoLanding();
   const [loadingMethod, setLoadingMethod] = useState<PaymentMethodId | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId | null>(null);
   const [transferCooldownUntilMs, setTransferCooldownUntilMs] = useState(0);
   const [transferCooldownTick, setTransferCooldownTick] = useState(0);
+  const [dlocalQuote, setDlocalQuote] = useState<DlocalQuoteResponse | null>(null);
+  const [dlocalQuoteLoading, setDlocalQuoteLoading] = useState(false);
   const pendingCheckoutRan = useRef(false);
+
+  const profileCountry = (auth.user as { country?: string } | null)?.country?.trim() || '';
+  const payerCountry =
+    profileCountry || dlocalQuote?.payerCountry || geoCountryLabel || '';
+  const countryFromGeo = !profileCountry && Boolean(dlocalQuote?.localized);
 
   const stripePlan = checkoutPlans.find((plan) => plan.proveedor === 'stripe');
   const dlocalPlan = checkoutPlans.find((plan) => plan.proveedor === 'dlocalgo');
 
   const displayPrice = stripePlan || dlocalPlan || checkoutPlans[0];
   const transferEmail = cursoConfig.planes.emailSinPlanes || 'info@mateomove.com';
+
+  useEffect(() => {
+    if (!displayPrice?.monto) {
+      setDlocalQuote(null);
+      return;
+    }
+
+    let cancelled = false;
+    setDlocalQuoteLoading(true);
+
+    const params = new URLSearchParams({
+      amount: String(displayPrice.monto),
+      currency: displayPrice.moneda || 'USD',
+    });
+    if (profileCountry) params.set('country', profileCountry);
+
+    fetch(`/api/payments/course/dlocal-quote?${params.toString()}`, { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: DlocalQuoteResponse | null) => {
+        if (!cancelled) setDlocalQuote(data?.localized ? data : null);
+      })
+      .catch(() => {
+        if (!cancelled) setDlocalQuote(null);
+      })
+      .finally(() => {
+        if (!cancelled) setDlocalQuoteLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [displayPrice?.monto, displayPrice?.moneda, profileCountry]);
+
+  const checkoutPriceLabel = useMemo(() => {
+    if (!displayPrice) return null;
+    if (selectedMethod === 'dlocalgo' && dlocalQuote?.localized) {
+      return formatPrice(dlocalQuote.currency, dlocalQuote.amount);
+    }
+    return formatPrice(displayPrice.moneda, displayPrice.monto);
+  }, [displayPrice, dlocalQuote, selectedMethod]);
+
+  const checkoutPriceHint = useMemo(() => {
+    if (!displayPrice) return null;
+    if (selectedMethod === 'dlocalgo' && dlocalQuote?.localized && dlocalQuote.sourceAmount) {
+      return `Referencia internacional: ${formatPrice(
+        dlocalQuote.sourceCurrency || displayPrice.moneda,
+        dlocalQuote.sourceAmount
+      )}`;
+    }
+    if (selectedMethod === 'dlocalgo' && countryFromGeo && dlocalQuote?.localized) {
+      return 'Precio estimado según tu ubicación. Confirmalo al registrarte.';
+    }
+    if (selectedMethod === 'dlocalgo' && !payerCountry && !dlocalQuoteLoading) {
+      return 'Indicá tu país al registrarte para ver el precio en moneda local y cuotas.';
+    }
+    if (selectedMethod === 'dlocalgo' && dlocalQuoteLoading) {
+      return 'Calculando precio en moneda local…';
+    }
+    if (selectedMethod === 'stripe' || selectedMethod === 'transferencia') {
+      return null;
+    }
+    if (dlocalQuote?.localized) {
+      return `Con dLocal GO: ${formatPrice(dlocalQuote.currency, dlocalQuote.amount)} en moneda local`;
+    }
+    return null;
+  }, [
+    displayPrice,
+    dlocalQuote,
+    dlocalQuoteLoading,
+    selectedMethod,
+    payerCountry,
+    countryFromGeo,
+  ]);
 
   const paymentMethods = useMemo<PaymentMethodOption[]>(
     () => [
@@ -218,7 +309,7 @@ export default function CourseCheckoutStart({
           'Pago en moneda local para Uruguay y Latinoamérica, con cuotas en tarjeta.',
         methods: ['Tarjetas locales', 'Débito', 'Crédito', 'Hasta 12 cuotas'],
         plan: dlocalPlan,
-        available: Boolean(dlocalPlan?.activo && dlocalPlan?.paymentLink),
+        available: Boolean(dlocalPlan && dlocalPlan.activo !== false),
         unavailableLabel: 'No disponible para este curso en este momento',
       },
       {
@@ -311,6 +402,12 @@ export default function CourseCheckoutStart({
   }, [transferCooldownUntilMs, cursoConfig.slug]);
 
   useEffect(() => {
+    if (!snap.loginForm && loadingMethod && !auth.user) {
+      setLoadingMethod(null);
+    }
+  }, [snap.loginForm, loadingMethod, auth.user]);
+
+  useEffect(() => {
     if (!auth.user) {
       auth.fetchUser();
     }
@@ -332,6 +429,7 @@ export default function CourseCheckoutStart({
       selectedMethod: methodId,
       paymentLink,
     });
+    state.authModalMode = 'register';
     state.loginForm = true;
   };
 
@@ -372,8 +470,68 @@ export default function CourseCheckoutStart({
     transferEmail,
   ]);
 
+  const executeDlocalCheckout = useCallback(async () => {
+    if (!productId) {
+      toast.error('No se pudo identificar el curso');
+      setLoadingMethod(null);
+      return;
+    }
+
+    setLoadingMethod('dlocalgo');
+    try {
+      const res = await fetch('/api/payments/course/dlocal-checkout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId,
+          country: profileCountry || geoCountryLabel || undefined,
+          preventaTierIndex:
+            pricingModo === 'preventa' && typeof preventaTierIndex === 'number'
+              ? preventaTierIndex
+              : undefined,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.status === 409) {
+        toast.error(data.error || 'Ya tenés acceso a este curso');
+        setLoadingMethod(null);
+        return;
+      }
+
+      if (!res.ok || !data.redirectUrl) {
+        throw new Error(data.error || 'No se pudo abrir el checkout de dLocal');
+      }
+
+      if (
+        pricingModo === 'preventa' &&
+        typeof preventaTierIndex === 'number' &&
+        preventaTierIndex >= 0
+      ) {
+        savePendingPreventaRedemption({
+          productId,
+          preventaTierIndex,
+          createdAt: Date.now(),
+        });
+      }
+
+      window.location.href = data.redirectUrl;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al iniciar el pago';
+      toast.error(message);
+      setLoadingMethod(null);
+    }
+  }, [auth.user, pricingModo, preventaTierIndex, productId]);
+
   const executePaymentLink = useCallback(
     (methodId: PaymentMethodId, paymentLink?: string) => {
+      if (methodId === 'dlocalgo') {
+        executeDlocalCheckout();
+        return;
+      }
+
       const link =
         paymentLink ||
         checkoutPlans.find((plan) => plan.proveedor === methodId && plan.activo && plan.paymentLink)
@@ -381,6 +539,7 @@ export default function CourseCheckoutStart({
 
       if (!link) {
         toast.error('Este plan no tiene link de pago disponible');
+        setLoadingMethod(null);
         return;
       }
 
@@ -400,7 +559,7 @@ export default function CourseCheckoutStart({
       setLoadingMethod(methodId);
       window.location.href = link;
     },
-    [checkoutPlans, pricingModo, productId, preventaTierIndex]
+    [checkoutPlans, executeDlocalCheckout, pricingModo, productId, preventaTierIndex]
   );
 
   const resumePendingCheckout = useCallback(
@@ -409,9 +568,13 @@ export default function CourseCheckoutStart({
         await executeTransferencia();
         return;
       }
+      if (intent.selectedMethod === 'dlocalgo') {
+        await executeDlocalCheckout();
+        return;
+      }
       executePaymentLink(intent.selectedMethod, intent.paymentLink);
     },
-    [executePaymentLink, executeTransferencia]
+    [executeDlocalCheckout, executePaymentLink, executeTransferencia]
   );
 
   useEffect(() => {
@@ -422,8 +585,10 @@ export default function CourseCheckoutStart({
 
     pendingCheckoutRan.current = true;
     setSelectedMethod(intent.selectedMethod);
+    setLoadingMethod(intent.selectedMethod);
     resumePendingCheckout(intent).catch(() => {
       toast.error('No pudimos continuar con el pago. Intentá de nuevo.');
+      setLoadingMethod(null);
     });
   }, [auth.user, cursoConfig.slug, resumePendingCheckout]);
 
@@ -439,6 +604,8 @@ export default function CourseCheckoutStart({
       return;
     }
 
+    setLoadingMethod(selectedMethod);
+
     if (!auth.user) {
       queueAuthForCheckout(selectedMethod, method.plan?.paymentLink);
       return;
@@ -447,6 +614,7 @@ export default function CourseCheckoutStart({
     if (selectedMethod === 'transferencia') {
       if (transferCooldownRemainingSec > 0) {
         toast.error(`Podés pedir otro email en ${transferCooldownRemainingSec}s`);
+        setLoadingMethod(null);
         return;
       }
       executeTransferencia().catch(() => {
@@ -467,20 +635,20 @@ export default function CourseCheckoutStart({
   return (
     <>
       <section className="relative min-h-screen bg-palette-cream font-montserrat text-palette-ink">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className="mx-auto grid min-h-screen w-full max-w-7xl grid-cols-1 gap-10 px-5 pb-16 pt-28 md:grid-cols-2 md:items-start md:gap-12 md:px-10 md:pb-20 md:pt-32 lg:gap-16 lg:px-14"
-        >
+        <div className="mx-auto grid min-h-screen w-full max-w-7xl grid-cols-1 gap-10 px-5 pb-16 pt-28 md:grid-cols-2 md:items-start md:gap-12 md:px-10 md:pb-20 md:pt-32 lg:gap-16 lg:px-14">
           <div className="order-2 md:order-1 md:sticky md:top-28 md:self-start">
             <h1 className="mb-2 font-montserrat text-[clamp(2rem,5vw,3.35rem)] font-bold leading-[1.02] tracking-[-0.03em] text-palette-ink">
               {productName}
             </h1>
             {displayPrice ? (
-              <p className="mb-8 font-montserrat text-lg font-semibold text-palette-ink md:text-xl">
-                {formatPrice(displayPrice.moneda, displayPrice.monto)}
-              </p>
+              <div className="mb-8">
+                <p className="font-montserrat text-lg font-semibold text-palette-ink md:text-xl">
+                  {checkoutPriceLabel}
+                </p>
+                {checkoutPriceHint ? (
+                  <p className="mt-1 font-raleway text-sm text-palette-stone">{checkoutPriceHint}</p>
+                ) : null}
+              </div>
             ) : null}
             <p className="mb-6 max-w-xl font-raleway text-base leading-relaxed text-palette-stone md:text-lg">
               Elegí un método de pago. Podes pagar con tarjetas internacionales, transferencia bancaria o en moneda local hasta 12 cuotas. 
@@ -587,6 +755,27 @@ export default function CourseCheckoutStart({
 
                                   <MethodBadges items={method.methods} />
 
+                                  {method.id === 'dlocalgo' && dlocalQuote?.localized ? (
+                                    <p className="mt-3 font-montserrat text-base font-semibold text-palette-ink">
+                                      {formatPrice(dlocalQuote.currency, dlocalQuote.amount)}
+                                      <span className="ml-2 font-raleway text-sm font-normal text-palette-stone">
+                                        en moneda local
+                                      </span>
+                                    </p>
+                                  ) : null}
+
+                                  {method.id === 'dlocalgo' && countryFromGeo && dlocalQuote?.localized ? (
+                                    <p className="mt-3 font-raleway text-sm text-palette-stone">
+                                      Precio estimado según tu ubicación ({payerCountry}). Confirmalo al registrarte.
+                                    </p>
+                                  ) : null}
+
+                                  {method.id === 'dlocalgo' && !payerCountry && !dlocalQuote?.localized ? (
+                                    <p className="mt-3 font-raleway text-sm text-palette-stone">
+                                      Al crear tu cuenta elegí tu país para pagar en moneda local y ver cuotas.
+                                    </p>
+                                  ) : null}
+
                                   {isDisabled ? (
                                     <p className="mt-3 text-left font-raleway text-sm text-palette-stone">
                                       {method.unavailableLabel}
@@ -649,7 +838,7 @@ export default function CourseCheckoutStart({
               )}
             </motion.div>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       <section className="border-t border-palette-stone/15 bg-palette-cream py-14 font-montserrat text-palette-ink md:py-18 lg:py-20">
@@ -673,19 +862,15 @@ export default function CourseCheckoutStart({
               El temario se publicará pronto.
             </p>
           ) : (
-            <ol className="space-y-10 md:space-y-12 lg:space-y-14">
+            <ol className="space-y-12 md:space-y-16">
               {modulosContenido.map((modulo, index) => (
-                <motion.li
+                <li
                   key={`modulo-${modulo.timelineIndex}-${index}`}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, delay: index * 0.04 }}
-                  viewport={{ once: true, margin: '-48px' }}
-                  className="border-b border-palette-stone/15 pb-10 last:border-b-0 last:pb-0 md:pb-12"
+                  className="border-b border-palette-stone/15 pb-12 last:border-b-0 last:pb-0 md:pb-16"
                 >
-                  <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start md:mb-6 md:gap-5">
+                  <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center md:mb-8 md:gap-6">
                     {modulo.imagenPublicId ? (
-                      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl sm:h-[5.5rem] sm:w-[5.5rem] md:h-24 md:w-24">
+                      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full sm:h-[5.5rem] sm:w-[5.5rem] md:h-24 md:w-24">
                         <CldImage
                           src={modulo.imagenPublicId}
                           alt=""
@@ -698,15 +883,10 @@ export default function CourseCheckoutStart({
                     ) : null}
 
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                        <span className="font-montserrat text-xl font-bold tabular-nums text-palette-deep-teal/30 md:text-2xl">
-                          {(index + 1).toString().padStart(2, '0')}
-                        </span>
-                        <h3 className="mc-text-depth-light-title font-montserrat text-[clamp(1.35rem,3.2vw,2.1rem)] font-bold leading-[1.1] tracking-[-0.02em] text-palette-ink">
-                          {modulo.titulo}
-                        </h3>
-                      </div>
-                      <p className="mt-1.5 font-montserrat text-xs font-medium uppercase tracking-[0.18em] text-palette-sage md:text-sm">
+                      <h3 className="mc-text-depth-light-title font-montserrat text-[clamp(1.35rem,3.2vw,2.1rem)] font-bold leading-[1.1] tracking-[-0.02em] text-palette-ink">
+                        {modulo.titulo}
+                      </h3>
+                      <p className="mt-1.5 font-montserrat text-xs font-medium uppercase tracking-[0.16em] text-palette-stone md:text-sm">
                         {modulo.clases.length} clase{modulo.clases.length === 1 ? '' : 's'}
                       </p>
                     </div>
@@ -717,26 +897,32 @@ export default function CourseCheckoutStart({
                       Sin clases cargadas en este módulo.
                     </p>
                   ) : (
-                    <ul className="grid grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2 md:gap-y-5 lg:gap-x-12">
+                    <ul className="grid grid-cols-1 gap-x-10 gap-y-6 md:grid-cols-2 md:gap-x-14 md:gap-y-7">
                       {modulo.clases.map((clase, claseIndex) => {
                         const durationLabel = formatClaseDuration(clase.duration);
+                        const descripcionCorta = resolveClaseDescripcionCorta(clase);
                         return (
                           <li
                             key={`${modulo.timelineIndex}-clase-${claseIndex}-${clase.courseClassId || clase.name || claseIndex}`}
                             className="flex items-start gap-3 md:gap-4"
                           >
                             <span
-                              className="shrink-0 font-montserrat text-base font-bold tabular-nums leading-none text-palette-sage/65 md:text-lg"
+                              className="shrink-0 font-montserrat text-base font-bold tabular-nums leading-none text-palette-stone md:text-lg"
                               aria-hidden
                             >
                               {(claseIndex + 1).toString().padStart(2, '0')}
                             </span>
                             <div className="min-w-0 flex-1">
-                              <p className="font-montserrat text-[clamp(1.02rem,2vw,1.35rem)] font-semibold leading-snug text-palette-ink">
+                              <p className="font-montserrat text-[clamp(1rem,1.9vw,1.25rem)] font-semibold leading-snug text-palette-ink">
                                 {formatTitleCaseWords(getClaseDisplayName(clase))}
                               </p>
+                              {descripcionCorta ? (
+                                <p className="mt-1 font-raleway text-sm leading-relaxed text-palette-stone">
+                                  {descripcionCorta}
+                                </p>
+                              ) : null}
                               {durationLabel ? (
-                                <p className="mt-1 font-montserrat text-xs font-medium uppercase tracking-[0.12em] text-palette-stone md:text-sm">
+                                <p className="mt-1 font-montserrat text-xs font-medium uppercase tracking-[0.12em] text-palette-stone">
                                   {durationLabel}
                                 </p>
                               ) : null}
@@ -746,7 +932,7 @@ export default function CourseCheckoutStart({
                       })}
                     </ul>
                   )}
-                </motion.li>
+                </li>
               ))}
             </ol>
           )}

@@ -216,7 +216,7 @@ export default function MentorshipProcess() {
               <div>
                 <p className="text-[10px] uppercase tracking-[0.22em] text-palette-ink opacity-80">Siguiente paso</p>
                 <h3 className="mt-1.5 text-xl md:text-2xl font-semibold text-palette-ink tracking-tight leading-tight">
-                  ¿Te cierra este recorrido?
+                  ¿Sentís que esto es para vos?
                 </h3>
                 <p className="mt-2 max-w-md text-[13px] md:text-[14px] text-palette-ink font-light leading-relaxed opacity-90">
                   Completá la solicitud con tu contexto; después alineamos si encaja y cómo seguir. Si preferís mirar números antes,{' '}

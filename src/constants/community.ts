@@ -7,3 +7,6 @@ const COMMUNITY_WHATSAPP_LINK = 'https://chat.whatsapp.com/LgVResfArGjIn9qByXXUS
  */
 export const WHATSAPP_GROUP_LINK =
   process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || COMMUNITY_WHATSAPP_LINK;
+
+/** Color oficial de botones de acción WhatsApp (CTA). */
+export const WHATSAPP_BUTTON_COLOR = '#25D366';

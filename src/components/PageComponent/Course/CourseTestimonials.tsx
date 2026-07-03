@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import { useCursoLanding } from './CursoLandingContext';
+import { sectionMainTitle } from './courseSectionTitle';
 
 export type CourseTestimonialsVariant = 'community' | 'clientVideos' | 'written';
 
@@ -72,18 +73,20 @@ const CourseTestimonials = ({
   return (
     <section
       id={sectionId}
-      className={`relative isolate py-12 font-montserrat text-palette-ink md:py-14 ${
+      className={`relative isolate py-12 md:py-14 ${
         variant === 'written'
-          ? 'bg-gradient-to-t from-palette-steel via-palette-steel to-palette-cream py-14 md:py-20 lg:py-24'
-          : 'bg-palette-cream'
+          ? 'bg-palette-cream py-14 font-montserrat text-palette-ink md:py-20 lg:py-24'
+          : 'bg-palette-cream font-montserrat text-palette-ink'
       }`}
     >
       {variant === 'written' ? (
         <>
-
           <div
-            className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-overlay"
-            style={{ backgroundImage: WRITTEN_CARD_NOISE, backgroundSize: '120px 120px' }}
+            className="pointer-events-none absolute -top-24 right-[-14%] h-[min(300px,48vw)] w-[min(300px,48vw)] rounded-full bg-palette-sage/12 blur-[100px]"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute bottom-[-8%] left-[-10%] h-[240px] w-[320px] rounded-full bg-palette-steel/10 blur-[96px]"
             aria-hidden
           />
         </>
@@ -104,7 +107,7 @@ const CourseTestimonials = ({
               </p>
             ) : null}
             {title ? (
-              <h2 className="mc-text-depth-light-title mb-4 font-montserrat text-[clamp(1.95rem,4.35vw,3.35rem)] font-semibold leading-[1.04] tracking-tight text-palette-ink md:text-[clamp(2.35rem,4.75vw,3.75rem)]">
+              <h2 className={`mc-text-depth-light-title mb-4 ${sectionMainTitle} text-palette-ink`}>
                 {title}
               </h2>
             ) : null}
@@ -223,11 +226,11 @@ const CourseTestimonials = ({
                         }`}
                       >
                         <div
-                          className="absolute -inset-0.5 rounded-full bg-gradient-to-br from-palette-skysteel/25 via-transparent to-palette-deepmoka/40 opacity-90 blur-md md:opacity-100"
+                          className="absolute -inset-0.5 rounded-full bg-gradient-to-br from-palette-sage/25 via-transparent to-palette-steel/20 opacity-90 blur-md md:opacity-100"
                           aria-hidden
                         />
-                        <div className="absolute inset-2 rounded-full border border-palette-cream/15 md:inset-3" aria-hidden />
-                        <div className="relative z-[1] h-full w-full overflow-hidden rounded-full shadow-[0_22px_48px_-16px_rgba(10,10,8,0.55)] ring-[3px] ring-palette-cream/35 ring-offset-2 ring-offset-palette-granite">
+                        <div className="absolute inset-2 rounded-full border border-palette-sage/20 md:inset-3" aria-hidden />
+                        <div className="relative z-[1] h-full w-full overflow-hidden rounded-full shadow-[0_22px_48px_-16px_rgba(20,20,17,0.22)] ring-[3px] ring-palette-sage/30 ring-offset-2 ring-offset-palette-cream">
                           <CldImage
                             src={testimonial.photo}
                             alt={testimonial.name}
@@ -238,7 +241,7 @@ const CourseTestimonials = ({
                           />
                         </div>
                         <span
-                          className="pointer-events-none absolute -bottom-1 left-1/2 z-[2] hidden h-2 w-2 -translate-x-1/2 rounded-full bg-palette-skysteel/50 shadow-[0_0_12px_rgba(224,236,255,0.35)] md:block"
+                          className="pointer-events-none absolute -bottom-1 left-1/2 z-[2] hidden h-2 w-2 -translate-x-1/2 rounded-full bg-palette-sage/40 shadow-[0_0_12px_rgba(172,174,137,0.35)] md:block"
                           aria-hidden
                         />
                       </div>
@@ -254,7 +257,7 @@ const CourseTestimonials = ({
                         {!reduceMotion ? (
                           <motion.div
                             aria-hidden
-                            className="pointer-events-none absolute -inset-6 -z-10 rounded-[1.75rem] bg-gradient-to-br from-palette-skysteel/35 via-palette-deepmoka/[0.12] to-transparent blur-2xl"
+                            className="pointer-events-none absolute -inset-6 -z-10 rounded-[1.75rem] bg-gradient-to-br from-palette-sage/20 via-palette-granite/[0.15] to-transparent blur-2xl"
                             animate={{
                               opacity: [0.28, 0.48, 0.28],
                               scale: [1, 1.04, 1],
@@ -269,7 +272,7 @@ const CourseTestimonials = ({
                         ) : (
                           <div
                             aria-hidden
-                            className="pointer-events-none absolute -inset-5 -z-10 rounded-[1.75rem] bg-gradient-to-br from-palette-skysteel/22 via-transparent to-palette-deepmoka/15 opacity-50 blur-2xl"
+                            className="pointer-events-none absolute -inset-5 -z-10 rounded-[1.75rem] bg-gradient-to-br from-palette-sage/15 via-transparent to-palette-granite/20 opacity-50 blur-2xl"
                           />
                         )}
 

@@ -229,6 +229,8 @@ const userSchema = new mongoose.Schema(
       transaccionId: { type: String },
       monto: { type: Number },
       moneda: { type: String, default: 'USD' },
+      /** Onboarding post-compra: redirige a /pago/exito hasta completar bienvenida. */
+      bienvenidaPendiente: { type: Boolean, default: false },
     }],
   },
   { timestamps: true }

@@ -12,8 +12,10 @@ import { toast } from '../../../hooks/useToast';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { MiniLoadingSpinner } from '../Products/MiniSpinner';
 import { savePlanIntent } from '../../../utils/redirectQueue';
+import { fetchOwnedCursoRedirectPath } from '../../../lib/resolveOwnedCursoRedirect';
 import imageLoader from '../../../../imageLoader';
 import { useCursoLanding } from './CursoLandingContext';
+import { sectionMainTitle } from './courseSectionTitle';
 import {
   formatCursoFechaConHora,
   formatCursoFechaLargo,
@@ -57,7 +59,7 @@ const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: CoursePlansProps) => {
   const router = useRouter();
   const auth = useAuth();
-  const { cursoConfig, plansSectionId, checkoutStartPath } = useCursoLanding();
+  const { cursoConfig, plansSectionId, checkoutStartPath, slug } = useCursoLanding();
   const { planes } = cursoConfig;
   const preventaPricing = useCursoPreventaPricing(cursoConfig);
   const lanzamientoMonto = resolveCursoLanzamientoMonto(cursoConfig);
@@ -68,11 +70,21 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
   const [isNavigatingToCheckout, setIsNavigatingToCheckout] = useState(false);
 
-  const handleGoToCheckout = useCallback(() => {
+  const handleGoToCheckout = useCallback(async () => {
     if (isNavigatingToCheckout) return;
     setIsNavigatingToCheckout(true);
-    router.push(checkoutStartPath);
-  }, [checkoutStartPath, isNavigatingToCheckout, router]);
+    try {
+      const ownedPath = await fetchOwnedCursoRedirectPath({ slug });
+      if (ownedPath) {
+        router.push(ownedPath);
+        return;
+      }
+      router.push(checkoutStartPath);
+    } catch {
+      setIsNavigatingToCheckout(false);
+      toast.error('No pudimos abrir el checkout. Intentá de nuevo.');
+    }
+  }, [checkoutStartPath, isNavigatingToCheckout, router, slug]);
   const activeCheckoutPlans = checkoutPlans.filter((plan) => plan.activo && plan.paymentLink);
   const activePlans = plans.filter((plan) => plan.active);
   const monthlyPlan = activePlans.find(
@@ -136,21 +148,6 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
     }
   }, [auth.user]);
 
-  const handleCheckoutSelect = (plan: CursoPlanPago) => {
-    if (!auth.user) {
-      state.loginForm = true;
-      return;
-    }
-
-    if (!plan.paymentLink) {
-      toast.error('Este plan no tiene link de pago disponible');
-      return;
-    }
-
-    setLoadingPlanId(plan.proveedor);
-    window.location.href = plan.paymentLink;
-  };
-
   const handleSelect = async (plan: Plan) => {
     // Si el usuario no está logueado, guardar la intención del plan y abrir el modal de login
     if (!auth.user) {
@@ -163,6 +160,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           plan_token: plan.plan_token
         });
       }
+      state.authModalMode = 'register';
       state.loginForm = true;
       return;
     }
@@ -577,58 +575,36 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
             viewport={{ once: true }}
             className="mx-auto mt-10 max-w-3xl px-4 text-center md:mt-14"
           >
-            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-              {activeCheckoutPlans.map((plan) => {
-                const isStripe = plan.proveedor === 'stripe';
-                const buttonLabel = isStripe ? 'Empezar AHORA' : plan.etiqueta;
-
-                if (isStripe) {
-                  return (
-                    <button
-                      key={plan.proveedor}
-                      type="button"
-                      onClick={handleGoToCheckout}
-                      disabled={isNavigatingToCheckout}
-                      className="inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-cream bg-palette-cream px-8 py-4 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-ink transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-                    >
-                      {isNavigatingToCheckout ? (
-                        <>
-                          <MiniLoadingSpinner />
-                          <span>Redirigiendo...</span>
-                        </>
-                      ) : (
-                        <span>{buttonLabel}</span>
-                      )}
-                    </button>
-                  );
-                }
-
-                return (
-                  <button
-                    key={plan.proveedor}
-                    type="button"
-                    onClick={() => handleCheckoutSelect(plan)}
-                    disabled={loadingPlanId === plan.proveedor}
-                    className="inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-cream bg-palette-cream px-8 py-4 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-ink transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-                  >
-                    {loadingPlanId === plan.proveedor ? (
-                      <>
-                        <MiniLoadingSpinner />
-                        <span>Procesando...</span>
-                      </>
-                    ) : (
-                      <span>{buttonLabel}</span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+            <button
+              type="button"
+              onClick={handleGoToCheckout}
+              disabled={isNavigatingToCheckout}
+              className="inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-cream bg-palette-cream px-10 py-4 font-montserrat text-base font-semibold uppercase tracking-[0.18em] text-palette-ink shadow-[0_18px_60px_-24px_rgba(224,236,255,0.45)] transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage disabled:cursor-not-allowed disabled:opacity-50 sm:px-12 md:w-auto md:px-14"
+            >
+              {isNavigatingToCheckout ? (
+                <>
+                  <MiniLoadingSpinner />
+                  <span>Redirigiendo...</span>
+                </>
+              ) : (
+                <>
+                  <span>Empezar AHORA</span>
+                  <span className="opacity-80 translate-y-[0.5px] transition-transform duration-200">
+                    →
+                  </span>
+                </>
+              )}
+            </button>
             <div className="mx-auto mt-6 max-w-2xl space-y-3.5 text-balance text-palette-cloud/90 md:mt-8 md:max-w-3xl md:space-y-4">
-              {activeCheckoutPlans.map((plan) => (
-                <p key={`${plan.proveedor}-copy`} className="text-sm font-light leading-relaxed md:text-base">
-                  {plan.descripcion}
-                </p>
-              ))}
+              <p className="font-montserrat text-xs font-semibold uppercase tracking-[0.14em] text-palette-cream md:text-sm">
+                {planes.etiquetaFormasPago}
+              </p>
+              <p className="text-sm font-light leading-relaxed md:text-base">
+                {planes.copyUruguayLatam}
+              </p>
+              <p className="text-sm font-light leading-relaxed md:text-base">
+                {planes.copyRestoMundo}
+              </p>
             </div>
           </motion.div>
         </motion.div>
@@ -750,7 +726,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
   return (
     <>
     <section
-      className="relative isolate overflow-hidden bg-gradient-to-r from-palette-granite via-palette-ink to-palette-ink py-14 font-montserrat text-palette-cream md:py-20"
+      className="mc-curso-dark-section py-14 md:py-20"
       id={plansSectionId}
     >
 
@@ -762,7 +738,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           viewport={{ once: true }}
           className="mx-auto mb-8 max-w-3xl md:mb-10 text-center"
         >
-          <h2 className="mc-text-depth-light-title relative font-montserrat text-[clamp(2.55rem,7vw,4.75rem)] font-black uppercase leading-[0.98] tracking-[-0.04em] text-palette-cream">
+          <h2 className={`mc-text-depth-light-title relative ${sectionMainTitle} uppercase text-palette-cream`}>
             <span className="pointer-events-none absolute -inset-x-4 -inset-y-2 -z-10 rounded-[2rem] blur-[0.5px]" aria-hidden />
             <span className="bg-gradient-to-br from-palette-cream via-palette-skysteel to-palette-steel bg-clip-text text-transparent drop-shadow-[0_14px_38px_rgba(224,236,255,0.28)]">
               {planesTitulo}

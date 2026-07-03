@@ -1,6 +1,7 @@
 'use client'
 import { motion } from 'framer-motion';
 import { useCursoLanding } from './CursoLandingContext';
+import { sectionMainTitle } from './courseSectionTitle';
 
 const CourseCTA = () => {
   const { cursoConfig, scrollToPlans } = useCursoLanding();
@@ -16,7 +17,7 @@ const CourseCTA = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="mc-text-glow-ink-title text-4xl md:text-5xl lg:text-6xl font-montserrat font-semibold text-palette-cream leading-[1.08] mb-6 tracking-tight"
+          className={`mc-text-glow-ink-title ${sectionMainTitle} text-palette-cream mb-6`}
         >
          {ctaFinal.titulo}
         </motion.h2>

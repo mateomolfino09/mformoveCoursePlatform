@@ -394,7 +394,8 @@ const EventSuccessPageContent: React.FC<EventSuccessProps> = ({ params }) => {
                           }
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex w-full justify-center rounded-2xl bg-[#25D366] py-3 px-6 font-bold text-white hover:opacity-90 transition-opacity"
+                          className="inline-flex w-full justify-center rounded-2xl py-3 px-6 font-bold text-white hover:opacity-90 transition-opacity"
+                          style={{ backgroundColor: '#25D366' }}
                         >
                           Unirme al grupo de WhatsApp
                         </a>

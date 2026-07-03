@@ -55,6 +55,7 @@ export async function GET() {
           metodoPago: entry.metodoPago,
           monto: entry.monto,
           moneda: entry.moneda,
+          bienvenidaPendiente: entry.bienvenidaPendiente === true,
         };
       });
 

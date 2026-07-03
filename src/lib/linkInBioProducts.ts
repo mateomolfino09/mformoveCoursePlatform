@@ -1,5 +1,6 @@
 import { isCursoLandingPublished } from './cursoLandingPublication';
 import { routes } from '../constants/routes';
+import { resolveProductImagePublicId } from './resolveMediaImageUrl';
 
 export type LinkInBioProductCard = {
   id: string;
@@ -54,23 +55,7 @@ function resolveProductHref(product: Record<string, unknown>): string | null {
 }
 
 function resolveProductImage(product: Record<string, unknown>): string {
-  const tipo = String(product.tipo || product.productType || '').toLowerCase();
-  const cfg = product.cursoConfig as Record<string, unknown> | undefined;
-  const hero = cfg?.hero as Record<string, unknown> | undefined;
-  const candidates = [
-    product.imagenBio,
-    product.portada,
-    product.portadaMobile,
-    hero?.imagenPublicId,
-    hero?.imagenMobilePublicId,
-    product.image_url,
-    Array.isArray(product.imagenes) ? product.imagenes[0] : null,
-  ];
-
-  for (const c of candidates) {
-    if (typeof c === 'string' && c.trim()) return c.trim();
-  }
-  return '';
+  return resolveProductImagePublicId(product as Parameters<typeof resolveProductImagePublicId>[0]);
 }
 
 function resolveProductSubtitle(product: Record<string, unknown>): string {

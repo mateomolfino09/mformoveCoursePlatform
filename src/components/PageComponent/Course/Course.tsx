@@ -158,11 +158,11 @@ const Course = ({ plans = [], promociones = [], checkoutPlans = [] }: CourseProp
         {/* 6. Plans - Precios y CTA principal (momento de decisión) */}
         <CoursePlans plans={plans} promociones={promociones} checkoutPlans={checkoutPlans} />
 
+        {/* 9. FAQ - Objecciones finales (resuelve dudas antes del cierre) */}
+        <CourseFAQ />
+
         {/* Contacto — full width */}
         <CourseWhatsAppBanner />
-        
-        {/* 9. FAQ - Objecciones finales (resuelve dudas) */}
-        <CourseFAQ />
         
         {/* 10. CTA Final - Última oportunidad */}
         <CourseCTA />

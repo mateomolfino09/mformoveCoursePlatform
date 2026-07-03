@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import { useCursoLanding } from './CursoLandingContext';
+import { sectionMainTitle } from './courseSectionTitle';
 
 /** Mismo padding horizontal que el resto de Course. */
 const padX =
@@ -19,17 +20,17 @@ export default function CourseHighlightsIntro() {
 
   return (
     <section className="relative isolate w-full overflow-hidden font-montserrat">
-      <div className=" bg-gradient-to-r from-palette-granite via-palette-ink to-palette-ink py-9 md:py-11 lg:py-12">
+      <div className="mc-curso-dark-section py-9 md:py-11 lg:py-12">
         <div className={`mx-auto w-full max-w-none ${padX} text-center`}>
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true, margin: '-40px' }}
-            className="flex flex-col items-center gap-5 md:flex-row md:flex-wrap md:items-baseline md:justify-center md:gap-2 lg:gap-4"
+            className="flex flex-col items-center md:flex-row md:flex-wrap md:items-baseline md:justify-center gap-1"
           >
             <div className="w-full min-w-0 max-w-none text-center">
-              <h2 className="font-montserrat text-[clamp(2.2rem,6.2vw,4.25rem)] font-bold leading-[0.88] tracking-[-0.045em] md:text-[clamp(2.65rem,6.8vw,5rem)] lg:text-[clamp(2.85rem,6.2vw,5.35rem)]">
+              <h2 className={sectionMainTitle}>
                 <span className="relative inline-block drop-shadow-[0_2px_16px_rgba(0,27,28,0.2)]">
                   <span className="bg-gradient-to-br from-palette-cream from-[5%] via-palette-cream to-palette-cream bg-clip-text">
                     {introHighlights.titulo}

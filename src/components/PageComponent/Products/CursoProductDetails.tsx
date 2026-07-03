@@ -8,6 +8,7 @@ import { toast } from '../../../hooks/useToast';
 import { toDatetimeLocalValue } from '../../../lib/cursoLandingPublication';
 import type { CursoLandingConfig } from '../../../types/cursoLanding';
 import { routes } from '../../../constants/routes';
+import { resolveClaseDescripcionGeneral } from '../../../lib/cursoClaseDescripcion';
 
 type Props = {
   cursoConfig?: CursoLandingConfig | null;
@@ -370,12 +371,18 @@ export default function CursoProductDetails({
                         clase.duration > 0
                           ? Math.round(clase.duration / 60)
                           : clase.duracionMinutos;
+                      const descripcionGeneral = resolveClaseDescripcionGeneral(clase);
                       return (
                         <li key={`clase-${ci}`} className="rounded border border-gray-100 px-2 py-1.5">
                           <span className="font-medium text-gray-800">{name}</span>
                           <span className="text-gray-500"> — Vimeo {videoId}</span>
                           {mins ? <span className="text-gray-500"> ({mins} min)</span> : null}
                           <span className="text-gray-500"> · Nivel {clase.level ?? 1}</span>
+                          {descripcionGeneral ? (
+                            <span className="block text-xs text-gray-600 mt-1 whitespace-pre-line">
+                              {descripcionGeneral}
+                            </span>
+                          ) : null}
                           {clase.materials?.length ? (
                             <span className="block text-xs text-gray-500 mt-0.5">
                               Materiales: {clase.materials.join(', ')}

@@ -5,6 +5,7 @@ import { useRef } from 'react';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import { useCursoLanding } from './CursoLandingContext';
+import { sectionMainTitle } from './courseSectionTitle';
 
 const padX =
   'px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-28';
@@ -110,8 +111,8 @@ export default function CourseOutcomesHighlights() {
             className="relative mb-6 space-y-2 text-balance text-palette-ink md:mb-7 md:text-left"
             aria-label="Resultados del método"
           >
-            <p className="mc-text-depth-light-title text-center font-montserrat text-[clamp(1.65rem,4.2vw,2.35rem)] font-bold leading-[1.1] tracking-[-0.03em] md:text-left">
-            {cursoConfig.outcomes.titulo}
+            <p className={`mc-text-depth-light-title text-center ${sectionMainTitle} md:text-left`}>
+            {cursoConfig.outcomes.titulo} <span className="font-bold text-3xl md:text-4xl">(paso a paso):</span>
             </p>
           </div>
 

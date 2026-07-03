@@ -12,6 +12,7 @@ import { stripe } from '../../payments/stripe/stripeConfig';
 import { getApiErrorMessage, getApiErrorStatus } from '../../../../utils/apiError';
 import { normalizeCursoLandingConfig } from '../../../../types/cursoLanding';
 import { resolveInvitacionGrupoWhatsappFromPayload } from '../../../../lib/resolveInvitacionGrupoWhatsapp';
+import { buildCursoStripeSuccessUrl } from '../../../../lib/cursoPaymentUrls';
 
 connectDB();
 
@@ -396,7 +397,7 @@ export async function POST(req) {
 
       if (tipo === 'curso') {
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-        const successUrl = `${baseUrl}/pago/exito?productId=${product._id.toString()}&tipo=curso&session_id={CHECKOUT_SESSION_ID}`;
+        const successUrl = buildCursoStripeSuccessUrl(baseUrl, product._id.toString());
 
         const pagosUnicos = await createCourseOneTimePayments({
           productId: product._id.toString(),

@@ -13,6 +13,7 @@ import { cursoEmpezarPath, cursoLandingPath } from '../../../lib/cursoPaths';
 type CursoLandingContextValue = {
   cursoConfig: CursoLandingConfig;
   productName: string;
+  slug: string;
   landingPath: string;
   checkoutStartPath: string;
   plansSectionId: string;
@@ -75,6 +76,7 @@ export function CursoLandingProvider({
     () => ({
       cursoConfig: resolvedConfig,
       productName: displayProductName,
+      slug,
       landingPath,
       checkoutStartPath,
       plansSectionId,
@@ -82,7 +84,7 @@ export function CursoLandingProvider({
       scrollToPlans,
       scrollToSection,
     }),
-    [resolvedConfig, checkoutStartPath, displayProductName, faqSectionId, landingPath, plansSectionId, scrollToPlans, scrollToSection]
+    [resolvedConfig, checkoutStartPath, displayProductName, faqSectionId, landingPath, plansSectionId, scrollToPlans, scrollToSection, slug]
   );
 
   return (
@@ -101,6 +103,7 @@ export function useCursoLanding() {
     return {
       cursoConfig: fallback,
       productName: fallback.introHighlights.titulo,
+      slug: fallback.slug,
       landingPath: cursoLandingPath(fallback.slug),
       checkoutStartPath: cursoEmpezarPath(fallback.slug),
       plansSectionId,
