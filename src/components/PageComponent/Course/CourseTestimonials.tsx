@@ -3,7 +3,12 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import { useCursoLanding } from './CursoLandingContext';
-import { sectionMainTitle } from './courseSectionTitle';
+import {
+  landingEyebrow,
+  landingSectionContainer,
+  landingSectionShell,
+  landingSectionTitle,
+} from '../../../constants/landingSectionDesign';
 
 export type CourseTestimonialsVariant = 'community' | 'clientVideos' | 'written';
 
@@ -73,10 +78,10 @@ const CourseTestimonials = ({
   return (
     <section
       id={sectionId}
-      className={`relative isolate py-12 md:py-14 ${
+      className={`${landingSectionShell} relative isolate py-12 md:py-16 ${
         variant === 'written'
-          ? 'bg-palette-cream py-14 font-montserrat text-palette-ink md:py-20 lg:py-24'
-          : 'bg-palette-cream font-montserrat text-palette-ink'
+          ? 'text-palette-ink'
+          : 'text-palette-ink'
       }`}
     >
       {variant === 'written' ? (
@@ -92,27 +97,27 @@ const CourseTestimonials = ({
         </>
       ) : null}
 
-      <div className="relative mx-auto w-full max-w-none px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-28">
+      <div className={`relative ${landingSectionContainer}`}>
         {showHeader && (eyebrow || title || subtitle) ? (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            viewport={{ once: true }}
-            className="mx-auto mb-8 max-w-3xl text-center md:mb-10 lg:max-w-[min(52rem,calc(100vw-10rem))]"
+            transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: '-36px' }}
+            className="mx-auto mb-8 max-w-3xl text-center md:mb-10"
           >
             {eyebrow ? (
-              <p className="mc-text-depth-light mb-3 font-montserrat text-[11px] uppercase tracking-[0.28em] text-palette-stone/90 md:text-xs">
+              <p className={`${landingEyebrow} mb-3`}>
                 {eyebrow}
               </p>
             ) : null}
             {title ? (
-              <h2 className={`mc-text-depth-light-title mb-4 ${sectionMainTitle} text-palette-ink`}>
+              <h2 className={`${landingSectionTitle} mb-4`}>
                 {title}
               </h2>
             ) : null}
             {subtitle ? (
-              <p className="mx-auto max-w-2xl font-raleway text-base leading-relaxed text-palette-stone md:text-[1.05rem]">
+              <p className="mx-auto max-w-2xl text-[15px] font-light leading-[1.65] text-palette-stone md:text-[16px]">
                 {subtitle}
               </p>
             ) : null}

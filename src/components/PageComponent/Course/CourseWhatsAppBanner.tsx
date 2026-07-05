@@ -5,7 +5,11 @@ import { motion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import { useCursoLanding } from './CursoLandingContext';
-import { sectionMainTitle } from './courseSectionTitle';
+import {
+  landingCtaPrimary,
+  landingSectionContainer,
+  landingSectionTitle,
+} from '../../../constants/landingSectionDesign';
 import {
   CURSO_WHATSAPP_BANNER_MOBILE_PUBLIC_ID,
   resolveCursoWhatsappBannerPublicIds,
@@ -77,21 +81,23 @@ export default function CourseWhatsAppBanner() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
         viewport={{ once: true, margin: '-40px' }}
-        className="relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-evenly mt-32 md:mt-0 md:justify-center py-[min(11vw,4.5rem)] px-5 text-center sm:px-8 sm:py-24 md:py-[min(21vw,7.5rem)] md:px-5 md:py-28 lg:py-32"
+        className={`relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-evenly mt-32 px-5 py-[min(11vw,4.5rem)] text-center sm:px-8 sm:py-24 md:mt-0 md:justify-center md:px-5 md:py-28 lg:py-32`}
       >
-        <h2 className={`max-w-[14ch] text-balance ${sectionMainTitle} text-black [text-shadow:white_1px_1px_1px]`}>
-          {whatsapp.titulo}
-        </h2>
+        <div className="relative overflow-hidden rounded-2xl border border-palette-stone/25 bg-palette-ink/75 px-6 py-8 backdrop-blur-sm md:rounded-3xl md:px-10 md:py-10">
+          <h2 className={`max-w-[14ch] text-balance ${landingSectionTitle} text-palette-cream`}>
+            {whatsapp.titulo}
+          </h2>
 
-        <div className="mt-10 md:mt-12">
-          <a
-            href={whatsapp.enlace}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-full border-2 border-palette-ink bg-palette-ink px-7 py-3.5 font-montserrat text-base font-semibold uppercase tracking-[0.18em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-palette-sage/55 focus-visible:ring-offset-2 focus-visible:ring-offset-palette-cream"
-          >
-            {whatsapp.ctaTexto}
-          </a>
+          <div className="mt-8 md:mt-10">
+            <a
+              href={whatsapp.enlace}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${landingCtaPrimary} px-7 py-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-palette-sage/55 focus-visible:ring-offset-2 focus-visible:ring-offset-palette-cream`}
+            >
+              {whatsapp.ctaTexto}
+            </a>
+          </div>
         </div>
       </motion.div>
     </section>

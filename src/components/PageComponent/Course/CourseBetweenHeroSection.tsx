@@ -2,7 +2,10 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { useCursoLanding } from './CursoLandingContext';
-import { sectionMainTitle } from './courseSectionTitle';
+import {
+  landingEyebrowDark,
+  landingSectionTitleDark,
+} from '../../../constants/landingSectionDesign';
 
 const WATER_PATH_STEPS = 20;
 
@@ -86,7 +89,7 @@ export default function CourseBetweenHeroSection() {
   const { betweenHero } = cursoConfig;
 
   return (
-    <section className="mc-curso-dark-section py-14 md:py-16 lg:py-20">
+    <section className="relative border-t border-white/10 bg-palette-ink py-14 font-montserrat md:py-16 lg:py-20">
       <div
         className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
         aria-hidden
@@ -187,15 +190,15 @@ export default function CourseBetweenHeroSection() {
           viewport={{ once: true, margin: '-80px' }}
           className='mx-auto max-w-none lg:max-w-[min(52rem,calc(100vw-10rem))]'
         >
-          <p className="mb-3 font-montserrat text-[11px] uppercase tracking-[0.28em] text-palette-cream/75 md:text-xs">
+          <p className={`${landingEyebrowDark} mb-3 md:text-xs`}>
             {betweenHero.eyebrow}
           </p>
-          <h2 className={`mc-text-ink-shadow-title ${sectionMainTitle} text-palette-cream`}>
+          <h2 className={landingSectionTitleDark}>
             {betweenHero.titulo}
           </h2>
         </motion.div>
 
-        <motion.div className="mt-11 mx-auto max-w-4xl space-y-8 text-center font-raleway font-semibold text-palette-cream/90 md:mt-16 md:space-y-10 lg:mt-20">
+        <motion.div className="mt-11 mx-auto max-w-4xl space-y-6 text-center md:mt-14 md:space-y-7">
           {betweenHero.parrafos.map((paragraph, index) => (
             <motion.p
               key={`between-hero-${index}`}
@@ -207,7 +210,7 @@ export default function CourseBetweenHeroSection() {
                 ease: [0.16, 1, 0.3, 1],
               }}
               viewport={{ once: true, margin: '-80px' }}
-              className="text-lg leading-[1.4] tracking-tight md:text-xl md:leading-[1.37] lg:text-[clamp(1.3125rem,2.2vw,1.75rem)] lg:leading-[1.36] xl:text-[clamp(1.4rem,1.95vw,1.8125rem)]"
+              className="text-[15px] font-normal leading-[1.72] text-palette-cream/88 md:text-[16px]"
             >
               {paragraph}
             </motion.p>

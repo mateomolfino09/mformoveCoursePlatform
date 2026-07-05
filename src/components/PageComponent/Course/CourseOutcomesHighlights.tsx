@@ -5,10 +5,11 @@ import { useRef } from 'react';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import { useCursoLanding } from './CursoLandingContext';
-import { sectionMainTitle } from './courseSectionTitle';
-
-const padX =
-  'px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-28';
+import {
+  landingSectionContainer,
+  landingSectionShell,
+  landingSectionTitle,
+} from '../../../constants/landingSectionDesign';
 
 type OutcomeItem = {
   title: string;
@@ -49,7 +50,7 @@ const OutcomeRow = ({
             </span>
             {item.title}
           </h3>
-          <p className="mc-text-depth-light max-w-none font-raleway text-sm font-normal leading-relaxed text-palette-stone md:text-[0.9375rem] md:leading-relaxed">
+          <p className="max-w-none text-[15px] font-normal leading-[1.72] text-palette-stone md:text-[16px]">
             {item.body}
           </p>
         </div>
@@ -66,7 +67,7 @@ export default function CourseOutcomesHighlights() {
   }));
 
   return (
-    <section className="relative isolate overflow-hidden bg-palette-cream pt-8 pb-12 font-montserrat md:pt-9 md:pb-14 lg:pb-16">
+    <section className={`${landingSectionShell} relative isolate overflow-hidden py-12 md:py-16`}>
       <div
         className="pointer-events-none absolute -top-28 right-[-18%] h-[min(340px,52vw)] w-[min(340px,52vw)] rounded-full bg-palette-sage/14 blur-[104px]"
         aria-hidden
@@ -77,9 +78,7 @@ export default function CourseOutcomesHighlights() {
       />
 
       {/* Misma lógica que HighlightsIntro: md:justify-evenly + altura mínima; imagen a la izquierda, contenido a la derecha */}
-      <div
-        className={`relative z-10 mx-auto flex w-full max-w-none flex-col gap-7 text-left ${padX} py-8 md:min-h-[min(320px,48vh)] md:flex-row md:items-stretch md:justify-evenly md:gap-0 md:py-10 md:pl-8 lg:min-h-[min(360px,52vh)] lg:gap-10 lg:py-11 lg:pl-12`}
-      >
+      <div className={`relative z-10 ${landingSectionContainer} flex flex-col gap-7 py-4 text-left md:min-h-[min(320px,48vh)] md:flex-row md:items-stretch md:justify-between md:gap-10 md:py-6 lg:min-h-[min(360px,52vh)]`}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -111,9 +110,9 @@ export default function CourseOutcomesHighlights() {
             className="relative mb-6 space-y-2 text-balance text-palette-ink md:mb-7 md:text-left"
             aria-label="Resultados del método"
           >
-            <p className={`mc-text-depth-light-title text-center ${sectionMainTitle} md:text-left`}>
-            {cursoConfig.outcomes.titulo} <span className="font-bold text-3xl md:text-4xl">(paso a paso):</span>
-            </p>
+            <h2 className={`${landingSectionTitle} text-center md:text-left`}>
+            {cursoConfig.outcomes.titulo}
+            </h2>
           </div>
 
           <ol className="list-none" aria-label="Ocho resultados claros">

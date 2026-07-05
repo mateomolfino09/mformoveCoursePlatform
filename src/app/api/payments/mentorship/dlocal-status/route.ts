@@ -12,6 +12,8 @@ export const runtime = 'nodejs';
 const PAID_DLOCAL_STATUSES = new Set(['PAID', 'COMPLETED', 'APPROVED', 'SUCCESS']);
 
 import { normalizeDlocalPaymentId } from '../../../../../lib/normalizeDlocalPaymentId';
+
+export async function GET(req: NextRequest) {
   try {
     await connectDB();
 

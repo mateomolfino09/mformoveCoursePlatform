@@ -10,7 +10,10 @@ import {
   PiUsersThreeLight,
 } from 'react-icons/pi';
 import { useCursoLanding } from './CursoLandingContext';
-import { sectionMainTitle } from './courseSectionTitle';
+import {
+  landingSectionContainer,
+  landingSectionTitleDark,
+} from '../../../constants/landingSectionDesign';
 
 const offerIconByKey = {
   book: PiBookOpenLight,
@@ -85,7 +88,7 @@ export default function CourseWhatWeTeach() {
   return (
     <>
     <section
-      className="mc-curso-dark-section py-16 md:py-20 lg:py-24"
+      className="relative border-t border-white/10 bg-palette-ink py-16 font-montserrat md:py-20 lg:py-24"
       id={queIncluye.anclaId}
       aria-labelledby={`${queIncluye.anclaId}-heading`}
     >
@@ -94,17 +97,17 @@ export default function CourseWhatWeTeach() {
         aria-hidden
       />
 
-      <div className={`relative ${padX} text-center`}>
+      <div className={`relative ${landingSectionContainer} text-center`}>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          viewport={{ once: true }}
+          transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, margin: '-36px' }}
           className="mx-auto mb-10 max-w-4xl md:mb-12"
         >
           <h2
             id={`${queIncluye.anclaId}-heading`}
-            className={`mc-text-ink-shadow-title ${sectionMainTitle} text-palette-cream`}
+            className={landingSectionTitleDark}
           >
             {queIncluye.titulo}
           </h2>

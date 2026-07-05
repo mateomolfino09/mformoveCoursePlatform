@@ -1,7 +1,19 @@
+import { landingSectionTitle } from '../../../constants/landingSectionDesign';
+
 /**
- * Tipografía unificada de los títulos principales de cada sección de la landing.
- * Toma como referencia el título de CourseHighlightsIntro (grosor + tamaño).
- * Componer con las clases de color/efecto propias de cada sección.
+ * Títulos de sección — alineados con la escala de la landing de mentoría.
+ * Componer con color/efecto propios de cada sección.
  */
-export const sectionMainTitle =
-  'font-montserrat text-[clamp(2.2rem,6.2vw,4.25rem)] font-bold leading-[0.88] tracking-[-0.045em] md:text-[clamp(2.65rem,6.8vw,5rem)] lg:text-[clamp(2.85rem,6.2vw,5.35rem)]';
+export const sectionMainTitle = landingSectionTitle;
+
+export {
+  landingEyebrow,
+  landingSectionBody,
+  landingSectionBodyMuted,
+  landingSectionContainer,
+  landingSectionShell,
+  landingHeaderBlock,
+  landingFadeUp,
+  landingCtaPrimary,
+  landingCtaInverted,
+} from '../../../constants/landingSectionDesign';

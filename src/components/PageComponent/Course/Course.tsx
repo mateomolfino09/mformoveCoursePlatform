@@ -127,7 +127,7 @@ const Course = ({ plans = [], promociones = [], checkoutPlans = [] }: CourseProp
   return (
     <div
       ref={scrollContainerRef}
-      className="relative lg:h-full min-h-screen overflow-scroll overflow-x-hidden bg-black"
+      className="relative lg:h-full min-h-screen overflow-scroll overflow-x-hidden bg-palette-cream"
     >
       <MainSideBar where={'membership'}>
         {/* 1. Hero - Hook emocional inicial */}
