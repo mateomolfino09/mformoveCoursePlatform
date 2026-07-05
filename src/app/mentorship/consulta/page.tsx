@@ -6,6 +6,7 @@ import Link from 'next/link';
 import MainSideBar from '../../../components/MainSidebar/MainSideBar';
 import Footer from '../../../components/Footer';
 import imageLoader from '../../../../imageLoader';
+import { buildMentorshipBudgetOptions } from '../../../lib/mentorshipPricing';
 
 const CONSULTA_BG = 'my_uploads/plaza/DSC03350_vgjrrh';
 
@@ -237,7 +238,7 @@ const preguntas = [
   },
   {
     name: "presupuesto",
-    label: "¿Preferís pagar la mentoría en ciclo trimestral o en ciclo anual?",
+    label: "¿Preferís pagar en plan mensual o anual?",
     type: "radio",
     options: [],
     required: true,
@@ -407,56 +408,7 @@ export default function MentorshipConsultaPage() {
       const activePlans = plans.filter((plan) => plan.active);
       const plan = activePlans[0];
 
-      const options: RadioOption[] = [];
-      if (plan) {
-        const trimestralPrice = plan.prices?.find((p: PlanPrice) => p.interval === 'trimestral');
-        const anualPrice = plan.prices?.find((p: PlanPrice) => p.interval === 'anual');
-
-        const monthlyFromTrimestral = trimestralPrice ? Math.round(trimestralPrice.price / 3) : null;
-        const monthlyFromAnual = anualPrice ? Math.round(anualPrice.price / 12) : null;
-        let discountPercent = 0;
-        if (
-          monthlyFromTrimestral != null &&
-          monthlyFromAnual != null &&
-          monthlyFromAnual < monthlyFromTrimestral
-        ) {
-          discountPercent = Math.max(
-            0,
-            Math.round((1 - monthlyFromAnual / monthlyFromTrimestral) * 100),
-          );
-        }
-
-        const cur = trimestralPrice?.currency ?? anualPrice?.currency ?? 'USD';
-        const sym = currencyDisplay(cur);
-
-        if (trimestralPrice) {
-          options.push({
-            value: `Mentoría — ciclo trimestral — ${sym} ${trimestralPrice.price}`,
-            label: `Mentoría · ciclo trimestral (${sym} ${trimestralPrice.price})`,
-            description: `Facturás cada tres meses${
-              monthlyFromTrimestral != null
-                ? ` · equivale a ~${sym} ${monthlyFromTrimestral}/mes`
-                : ''
-            }.`,
-            monthlyFromTrimestral,
-            monthlyFromAnual,
-            discountPercent: 0,
-          });
-        }
-
-        if (anualPrice) {
-          options.push({
-            value: `Mentoría — ciclo anual — ${sym} ${anualPrice.price}`,
-            label: `Mentoría · ciclo anual (${sym} ${anualPrice.price})`,
-            description: `Mismo programa${
-              monthlyFromAnual != null ? ` · ~${sym} ${monthlyFromAnual}/mes` : ''
-            }.`,
-            monthlyFromTrimestral,
-            monthlyFromAnual,
-            discountPercent,
-          });
-        }
-      }
+      const options: RadioOption[] = plan ? buildMentorshipBudgetOptions(plan.prices) : [];
 
       setBudgetOptions(options);
     } catch (error) {

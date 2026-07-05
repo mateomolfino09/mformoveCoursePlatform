@@ -1,18 +1,112 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import { CldImage } from 'next-cloudinary';
 import Link from 'next/link';
+import imageLoader from '../../../../imageLoader';
+import { useAuth } from '../../../hooks/useAuth';
+
+const EXITO_BG = 'my_uploads/plaza/DSC03350_vgjrrh';
+
+function ExitoBackdrop() {
+  return (
+    <div className="pointer-events-none fixed inset-0 z-0">
+      <CldImage
+        src={EXITO_BG}
+        alt=""
+        fill
+        sizes="100vw"
+        priority
+        className="object-cover object-[center_42%]"
+        loader={imageLoader}
+        preserveTransformations
+      />
+      <div
+        className="absolute inset-0 bg-gradient-to-br from-palette-cream/88 via-palette-cream/72 to-palette-ink/35"
+        aria-hidden
+      />
+      <div className="absolute inset-0 bg-palette-cream/20" aria-hidden />
+    </div>
+  );
+}
 
 export default function MentorshipSuccessPage() {
   const searchParams = useSearchParams();
+  const auth = useAuth();
+  const fulfillRequested = useRef(false);
   const planId = searchParams.get('plan_id');
+  const interval = searchParams.get('interval');
+  const provider = searchParams.get('provider');
+  const externalId = searchParams.get('external_id');
+  const paymentId =
+    searchParams.get('payment_id')?.trim() ||
+    searchParams.get('paymentId')?.trim() ||
+    searchParams.get('id')?.trim() ||
+    undefined;
+  const orderIdParam = searchParams.get('order_id')?.trim() || undefined;
+  const sessionId = searchParams.get('session_id')?.trim() || undefined;
   const [planDetails, setPlanDetails] = useState<any>(null);
 
   useEffect(() => {
+    if (!auth.user) auth.fetchUser();
+  }, [auth.user, auth]);
+
+  useEffect(() => {
+    if (!planId || !interval || !provider || fulfillRequested.current) return;
+
+    const isDlocal = provider === 'dlocalgo';
+    const isStripe = provider === 'stripe';
+
+    if (isStripe && !sessionId) return;
+
+    const dedupeKey = `mentorship-complete:${planId}:${interval}:${provider}:${paymentId || sessionId || externalId || 'pending'}`;
+    try {
+      if (sessionStorage.getItem(dedupeKey)) return;
+    } catch {
+      /* ignore */
+    }
+
+    fulfillRequested.current = true;
+
+    const userId =
+      externalId?.trim() ||
+      (auth.user?._id != null ? String(auth.user._id) : undefined);
+
+    fetch('/api/payments/mentorship/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        provider: isDlocal ? 'dlocalgo' : 'stripe',
+        planId,
+        interval,
+        ...(userId ? { userId } : {}),
+        ...(paymentId ? { paymentId } : {}),
+        ...(orderIdParam ? { orderId: orderIdParam } : {}),
+        ...(sessionId ? { sessionId } : {}),
+      }),
+    })
+      .then(async (res) => {
+        if (res.ok || res.status === 409) {
+          try {
+            sessionStorage.setItem(dedupeKey, '1');
+          } catch {
+            /* ignore */
+          }
+          if (auth.user) auth.fetchUser();
+        } else {
+          fulfillRequested.current = false;
+        }
+      })
+      .catch(() => {
+        fulfillRequested.current = false;
+      });
+  }, [auth.user?._id, externalId, interval, orderIdParam, paymentId, planId, provider, sessionId]);
+
+  useEffect(() => {
     if (planId) {
-      // Aquí podrías hacer una llamada para obtener los detalles del plan
       fetchPlanDetails(planId);
     }
   }, [planId]);
@@ -43,14 +137,15 @@ export default function MentorshipSuccessPage() {
   };
 
   return (
-    <div className="min-h-screen bg-palette-cream flex items-center justify-center py-12 px-4 font-montserrat">
+    <div className="relative min-h-screen flex items-center justify-center py-12 px-4 font-montserrat">
+      <ExitoBackdrop />
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.45 }}
-        className="max-w-2xl w-full"
+        className="relative z-10 max-w-2xl w-full"
       >
-        <div className="relative overflow-hidden rounded-3xl border border-palette-stone/25 bg-white/55 backdrop-blur-sm p-8 text-center shadow-[0_10px_40px_rgba(20,20,17,0.08)]">
+        <div className="relative overflow-hidden rounded-3xl border border-palette-stone/20 bg-palette-cream p-8 text-center shadow-[0_10px_40px_rgba(20,20,17,0.12)]">
           <div className="pointer-events-none absolute -top-24 -right-16 h-48 w-48 rounded-full bg-palette-stone/15 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-28 -left-20 h-56 w-56 rounded-full bg-palette-sage/10 blur-3xl" />
           {/* Success Icon */}
@@ -88,7 +183,7 @@ export default function MentorshipSuccessPage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.36 }}
-              className="relative mt-8 rounded-2xl border border-palette-stone/20 bg-palette-cream/70 p-6 text-left"
+              className="relative mt-8 rounded-2xl border border-palette-stone/15 bg-white p-6 text-left"
             >
               <p className="text-xs font-montserrat uppercase tracking-[0.22em] text-palette-stone/75">Tu plan</p>
               <h3 className="mt-2 text-xl font-semibold text-palette-ink md:text-2xl">
@@ -147,13 +242,13 @@ export default function MentorshipSuccessPage() {
           >
             <Link
               href="/cuenta"
-              className="inline-flex items-center justify-center rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-steel hover:bg-palette-steel hover:text-palette-ink"
+              className="inline-flex items-center justify-center rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink"
             >
               Ir a mi cuenta
             </Link>
             <Link
               href="/"
-              className="inline-flex items-center justify-center rounded-full border border-palette-stone/35 bg-white/70 px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.18em] text-palette-ink transition-all duration-200 hover:border-palette-stone/55 hover:bg-palette-cream"
+              className="inline-flex items-center justify-center rounded-full border border-palette-stone/25 bg-white px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.18em] text-palette-ink transition-all duration-200 hover:border-palette-stone/45 hover:bg-palette-cream"
             >
               Volver al inicio
             </Link>

@@ -65,7 +65,12 @@ const endpoints = {
   },
   mentorship: {
     plans: `/api/payments/getPlans?type=mentorship`,
+    checkout: `/api/mentorship/checkout`,
     createCheckoutSession: `/api/mentorship/stripe/createCheckoutSession`,
+    dlocalWebhook: `/api/payments/mentorship/dlocalWebhook`,
+    dlocalCheckout: `/api/payments/mentorship/dlocal-checkout`,
+    completePurchase: `/api/payments/mentorship/complete`,
+    createPaymentLinks: `/api/mentorship/stripe/createPaymentLinks`,
   },
   admin: {
     emailMarketing: '/api/admin/emailMarketing'

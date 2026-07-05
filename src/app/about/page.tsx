@@ -12,6 +12,7 @@ import {
 import MainSideBar from '../../components/MainSidebar/MainSideBar'
 import Footer from '../../components/Footer'
 import { Card, Badge } from '../../components/ui'
+import { MENTORSHIP_APPLY_CTA, MENTORSHIP_LANDING_CTA } from '../../constants/mentorshipCta'
 
 const About = () => {
   return (
@@ -155,16 +156,16 @@ const About = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
-                  href="/mentorship" 
+                  href={MENTORSHIP_APPLY_CTA.href} 
                   className="bg-[#234C8C] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#1a3763] transition-colors"
                 >
-                  Explorar Mentorías
+                  {MENTORSHIP_APPLY_CTA.label}
                 </a>
                 <a 
-                  href="/mentorship" 
+                  href={MENTORSHIP_LANDING_CTA.href} 
                   className="border-2 border-[#234C8C] text-[#234C8C] px-8 py-3 rounded-lg font-semibold hover:bg-[#234C8C] hover:text-white transition-colors"
                 >
-                  Agendar Mentoría
+                  {MENTORSHIP_LANDING_CTA.label}
                 </a>
               </div>
             </Card>

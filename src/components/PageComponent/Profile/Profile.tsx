@@ -14,6 +14,7 @@ import {
 } from '@heroicons/react/24/outline';
 import ProfileSkeleton from '../../ProfileSkeleton';
 import ProfileCommunitySection from './ProfileCommunitySection';
+import ProfileMentorshipSection from './ProfileMentorshipSection';
 import { useLogout } from '../../../hooks/useLogout';
 import { routes } from '../../../constants/routes';
 
@@ -182,6 +183,8 @@ function Profile() {
                 </div>
               </div>
             </motion.div>
+
+            <ProfileMentorshipSection itemVariants={itemVariants} />
 
             <UserCoursesSection />
 

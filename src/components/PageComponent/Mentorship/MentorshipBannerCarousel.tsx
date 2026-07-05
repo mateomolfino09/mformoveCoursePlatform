@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import { useRouter } from 'next/navigation';
+import { MENTORSHIP_APPLY_CTA } from '../../../constants/mentorshipCta';
 
 const HERO_IMAGE = 'my_uploads/fondos/DSC01559_elui2h';
 
@@ -15,13 +16,13 @@ const MentorshipBannerCarousel = ({ hideText = false }: { hideText?: boolean }) 
   const ConsultaButton = ({ className = '' }: { className?: string }) => (
     <motion.button
       type="button"
-      onClick={() => router.push('/mentoria/consulta')}
+      onClick={() => router.push(MENTORSHIP_APPLY_CTA.href)}
       className={`${ctaButtonClass} ${className}`}
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.2 }}
     >
-      <span>Aplicar a mentoría</span>
+      <span>{MENTORSHIP_APPLY_CTA.label}</span>
       <span className="text-palette-cream/80 transition-transform duration-200 group-hover:translate-x-0.5 shrink-0">
         →
       </span>
@@ -76,20 +77,23 @@ const MentorshipBannerCarousel = ({ hideText = false }: { hideText?: boolean }) 
                   Mentoría
                 </p>
                 <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.55, delay: 0.04, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-5xl  md:text-6xl lg:text-[4rem] font-montserrat font-semibold text-palette-ink tracking-tight leading-[1.00] text-start"
+                  initial="hidden"
+                  animate="show"
+                  variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1, delayChildren: 0.06 } } }}
+                  className="text-[2.5rem] md:text-[3.25rem] lg:text-[3.5rem] font-montserrat font-bold text-palette-ink tracking-[-0.02em] leading-[1.02] text-start"
                 >
-                  Recuperá tu autonomía.
-                </motion.h1>
-                <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.55, delay: 0.04, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-xl md:text-2xl mt-3 lg:text-[1.85rem] font-montserrat font-semibold text-palette-ink tracking-tight leading-[1.2] text-start"
-                >
-                  Movete mejor, sentite mejor.
+                  {['Transformemos tu práctica juntos.'].map(
+                    (line, i) => (
+                      <motion.span
+                        key={line}
+                        variants={{ hidden: { opacity: 0, y: 22 }, show: { opacity: 1, y: 0 } }}
+                        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                        className={`block ${i === 2 ? 'mt-2.5' : 'mb-1'}`}
+                      >
+                        {line}
+                      </motion.span>
+                    )
+                  )}
                 </motion.h1>
                 <motion.p
                   initial={{ opacity: 0, y: 14 }}
@@ -97,8 +101,15 @@ const MentorshipBannerCarousel = ({ hideText = false }: { hideText?: boolean }) 
                   transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                   className="mt-5 text-base md:text-lg text-palette-stone leading-relaxed font-light"
                 >
-                  Programa personalizado guiado por{' '}
-                  <span className="font-medium text-palette-ink">Mateo Molfino</span>.
+                  Un acompañamiento personalizado para desarrollar fuerza, movilidad y habilidades dentro de una práctica integral de movimiento.
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
+                  className="mt-3 text-sm md:text-base text-palette-stone/80 leading-relaxed font-light"
+                >
+                  Guiado por <span className="font-medium text-palette-ink">Mateo Molfino</span>.
                 </motion.p>
 
   

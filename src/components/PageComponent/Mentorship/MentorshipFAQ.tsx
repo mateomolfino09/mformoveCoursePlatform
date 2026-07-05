@@ -8,56 +8,57 @@ const faqs = [
   {
     question: '¿Qué es exactamente la mentoría?',
     answer:
-      'Es un proceso de acompañamiento personalizado donde trabajamos juntos durante tres meses. Recibís un plan adaptado a tu cuerpo, feedback sobre tus videos, llamadas para ajustar el proceso y acceso a material educativo. No es solo entrenamiento: es entender cómo moverte mejor.',
+      'Es un proceso de acompañamiento personalizado donde trabajamos juntos durante tres meses. Recibís un plan adaptado a tu práctica, feedback sobre tus videos, llamadas para ajustar el proceso y espacios de formación sobre el cuerpo y el movimiento. El objetivo no es solo entrenar, sino construir una práctica más consciente, sólida y sostenible.',
   },
   {
     question: '¿Cuánto cuesta?',
     answer:
-      'Los precios varían según el nivel de acompañamiento que elijas. Podés verlos en la sección de planes. Es un servicio personalizado con atención directa, no un producto masivo, y el precio refleja eso.',
+      'Los valores dependen del nivel de acompañamiento que elijas. Podés consultarlos en la sección de planes y elegir la modalidad que mejor se adapte a tu proceso.',
   },
   {
     question: '¿Por qué tres meses mínimo?',
     answer:
-      'Porque la transformación real lleva tiempo. Tres meses permiten una base sólida, ver progreso y consolidar hábitos. Si no podés comprometerte por ese período, mejor esperá a estar listo/a.',
+      'El movimiento necesita tiempo, práctica y continuidad. Tres meses permiten construir una base sólida, ajustar el proceso y observar cambios reales. En el plan mensual abonás mes a mes, pero el compromiso mínimo sigue siendo de tres meses.',
   },
   {
     question: '¿Cómo funciona el feedback de videos?',
     answer:
-      'Enviás videos de tu práctica regularmente. Los reviso personalmente, te doy correcciones y ajusto tu programa según tu progreso. Es seguimiento constante sin necesidad de coordinar horarios cada vez.',
+      'Enviás videos de tu práctica y los reviso personalmente. A partir de eso realizamos correcciones, ajustes y nuevas propuestas para acompañar tu evolución sin depender de encuentros constantes.',
   },
   {
     question: '¿Puedo cambiar de plan?',
     answer:
-      'Se evalúa caso por caso. Si tu progreso lo justifica, lo hablamos. Igual recomendamos completar al menos un trimestre en tu plan inicial.',
+      'Sí. Lo evaluamos según tus necesidades y objetivos. La idea es encontrar el formato de acompañamiento que mejor funcione para tu proceso.',
   },
   {
     question: '¿Qué incluye la formación teórica?',
     answer:
-      'Anatomía funcional, biomecánica y principios del movimiento consciente: el por qué detrás de cada ejercicio. En niveles avanzados entra también metodología de enseñanza.',
+      'Trabajamos conceptos relacionados con anatomía funcional, biomecánica, aprendizaje motor y principios del movimiento. La intención es comprender el qué, el cómo y el por qué detrás de la práctica.',
   },
   {
     question: '¿Garantizan resultados?',
     answer:
-      'No. Garantizamos compromiso, atención y metodología. Los resultados dependen de tu consistencia y aplicación. Te damos las herramientas; vos ponés el trabajo.',
+      'No podemos garantizar resultados específicos, porque cada proceso depende del contexto y la constancia de cada persona. Lo que sí garantizamos es acompañamiento cercano, atención personalizada y una metodología construida a lo largo de años de práctica y enseñanza.',
   },
   {
     question: '¿Incluye acceso a la comunidad?',
-    answer: 'Sí. Todos los planes incluyen acceso a la comunidad de MForMove más el seguimiento cercano de la mentoría.',
+    answer:
+      'Sí. Todos los planes incluyen acceso a la comunidad de MForMove, además del seguimiento cercano y personalizado de la mentoría.',
   },
   {
     question: '¿Qué pasa después del trimestre?',
     answer:
-      'Revisamos avances y decidimos juntos si seguís. La mayoría continúa porque el proceso se profundiza con el tiempo. No hay obligación de renovar.',
+      'Al finalizar el trimestre revisamos el proceso y decidimos juntos cómo seguir. Algunas personas continúan profundizando la práctica y otras siguen su camino de forma más autónoma.',
   },
   {
     question: '¿Es para mí?',
     answer:
-      'Si querés transformación real, podés comprometerte tres meses y trabajar con constancia, probablemente sí. Si buscás algo casual o económico, la membresía suele encajar mejor.',
+      'Si buscás profundizar tu práctica, trabajar con acompañamiento personalizado y comprometerte con un proceso de varios meses, probablemente sí. Si preferís una propuesta más flexible o exploratoria, la membresía puede ser una mejor opción.',
   },
   {
     question: '¿Política de cancelación?',
     answer:
-      'Podés cancelar cuando quieras, sin penalidades. El compromiso trimestral es el tiempo mínimo recomendado para ver resultados, no una obligación contractual rígida.',
+      'El plan mensual se abona mes a mes, con un compromiso mínimo de tres meses. Pasado ese período, podés evaluar continuar o dar por cerrado el ciclo. Recomendamos sostener el proceso durante al menos tres meses para poder construir una base sólida y observar cambios significativos.',
   },
 ];
 
@@ -79,7 +80,7 @@ export default function MentorshipFAQ() {
           className="mb-10 mr-auto max-w-2xl md:mb-12"
         >
           <p className="text-[10px] font-normal uppercase tracking-[0.28em] text-palette-ink">Preguntas frecuentes</p>
-          <h2 className="mt-3 text-[1.65rem] font-semibold leading-[1.1] tracking-tight text-palette-ink sm:text-[2rem] md:text-[2.2rem]">
+          <h2 className="mt-3 text-[1.65rem] font-bold leading-[1.1] tracking-tight text-palette-ink sm:text-[2rem] md:text-[2.2rem]">
             Antes de escribirme
           </h2>
           <p className="mt-3 text-[14px] font-light leading-[1.65] text-palette-ink opacity-90 md:text-[15px]">

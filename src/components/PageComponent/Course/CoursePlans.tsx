@@ -740,7 +740,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
         >
           <h2 className={`mc-text-depth-light-title relative ${sectionMainTitle} uppercase text-palette-cream`}>
             <span className="pointer-events-none absolute -inset-x-4 -inset-y-2 -z-10 rounded-[2rem] blur-[0.5px]" aria-hidden />
-            <span className="bg-gradient-to-br from-palette-cream via-palette-skysteel to-palette-steel bg-clip-text text-transparent drop-shadow-[0_14px_38px_rgba(224,236,255,0.28)]">
+            <span className="bg-gradient-to-br from-palette-cream via-palette-skysteel to-palette-steel bg-clip-text text-transparent font-bold drop-shadow-[0_14px_38px_rgba(224,236,255,0.28)]">
               {planesTitulo}
             </span>
           </h2>

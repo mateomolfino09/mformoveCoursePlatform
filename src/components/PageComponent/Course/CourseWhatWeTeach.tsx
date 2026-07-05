@@ -31,6 +31,40 @@ const OFFER_CARD_NOISE_BG =
 
 const padX = 'w-[90%] max-w-7xl mx-auto px-4 sm:px-5';
 
+/** Grilla bento 12 cols — mismo ritmo que MentorshipProcess (5 módulos). */
+const moduleBentoGridClass: Record<number, string> = {
+  0: 'md:col-span-8 md:row-span-2 md:row-start-1 md:col-start-1 md:min-h-[280px]',
+  1: 'md:col-span-4 md:row-start-1 md:col-start-9',
+  2: 'md:col-span-4 md:row-start-2 md:col-start-9',
+  3: 'md:col-span-6 md:row-start-3 md:col-start-1',
+  4: 'md:col-span-6 md:row-start-3 md:col-start-7',
+};
+
+function ModuleNumberWatermark({
+  step,
+  size = 'default',
+}: {
+  step: number;
+  size?: 'hero' | 'default' | 'band';
+}) {
+  const num = step.toString().padStart(2, '0');
+  const numberClass =
+    size === 'hero'
+      ? 'text-[3.25rem] sm:text-[3.75rem] md:text-[4.5rem] px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5'
+      : size === 'band'
+        ? 'text-[2.75rem] sm:text-[3.1rem] px-2 py-1 sm:px-3 sm:py-1.5'
+        : 'text-[2.85rem] sm:text-[3.35rem] px-2 py-1 sm:px-3 sm:py-1.5';
+
+  return (
+    <span
+      className={`pointer-events-none absolute right-1 top-1 z-0 inline-block select-none font-montserrat font-semibold tabular-nums leading-none text-palette-ink/[0.075] sm:right-2 sm:top-2 md:right-3 md:top-3 ${numberClass}`}
+      aria-hidden
+    >
+      {num}
+    </span>
+  );
+}
+
 export default function CourseWhatWeTeach() {
   const { cursoConfig } = useCursoLanding();
   const { queIncluye } = cursoConfig;
@@ -49,6 +83,7 @@ export default function CourseWhatWeTeach() {
   }));
 
   return (
+    <>
     <section
       className="mc-curso-dark-section py-16 md:py-20 lg:py-24"
       id={queIncluye.anclaId}
@@ -170,52 +205,120 @@ export default function CourseWhatWeTeach() {
             })}
           </div>
         </motion.div>
+      </div>
+    </section>
 
+    <section
+      className="border-t border-palette-stone/20 bg-palette-cream font-montserrat py-16 md:py-24"
+      aria-label="Módulos del programa"
+    >
+      <div className="mx-auto w-[92%] max-w-6xl px-3 sm:px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, margin: '-36px' }}
+          className="mb-9 max-w-3xl md:mb-11"
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-ink">
+            El recorrido
+          </p>
+          <h2 className="mt-3 text-[1.85rem] font-bold leading-[1.1] tracking-tight text-palette-ink md:text-[2.25rem] md:leading-[1.08] lg:text-[2.5rem]">
+            {modules.length} módulo{modules.length !== 1 ? 's' : ''} que se complementan entre sí
+          </h2>
+          <p className="mt-5 text-[15px] font-normal leading-[1.72] text-palette-ink md:text-[16px]">
+            No son bloques sueltos: cada pieza ordena la siguiente. Podés avanzar en secuencia o volver al módulo que
+            tu cuerpo necesita hoy.
+          </p>
+        </motion.div>
 
-        <div className="mt-2 border-t border-palette-cream/10 pt-12 md:pt-14">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-10 lg:gap-12">
-          {modules.map((item, i) => {
-            const n = (i + 1).toString().padStart(2, '0');
-            const isLastOdd = i === modules.length - 1 && modules.length % 2 === 1;
+        <div
+          className="-mx-3 flex gap-3 overflow-x-auto overflow-y-visible px-3 pb-2 pt-1 snap-x snap-mandatory scrollbar-thin sm:-mx-4 sm:px-4 md:mx-0 md:grid md:grid-cols-12 md:gap-4 md:overflow-visible md:px-0 md:pb-0 md:snap-none md:auto-rows-min"
+          style={{ scrollbarGutter: 'stable' }}
+        >
+          {modules.map((item, index) => {
+            const isHero = index === 0;
+            const hasBand = index === modules.length - 1 && modules.length >= 5;
+            const bentoClass = moduleBentoGridClass[index] ?? 'md:col-span-6';
 
             return (
               <motion.article
                 key={item.title}
-                initial={{ opacity: 0, y: 22 }}
+                initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-32px' }}
-                transition={{ duration: 0.4, delay: i * 0.06 }}
-                className={`flex flex-col text-left ${
-                  isLastOdd ? 'md:col-span-2 md:mx-auto md:max-w-2xl' : ''
-                }`}
+                viewport={{ once: true, margin: '-20px' }}
+                transition={{
+                  duration: 0.38,
+                  delay: Math.min(index * 0.03, 0.12),
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className={`group/card relative shrink-0 snap-center overflow-hidden rounded-2xl border border-palette-stone/22 bg-gradient-to-br from-white/72 to-palette-cream/90 shadow-[0_6px_22px_rgba(20,20,17,0.05)] min-w-[min(100vw-1.75rem,300px)] w-[min(100vw-1.75rem,300px)] md:w-auto md:min-w-0 ${bentoClass} ${isHero ? 'p-0 md:flex md:flex-row' : hasBand ? 'flex flex-col p-0' : 'p-4 sm:p-5'}`}
               >
-                <div className="mb-4 flex items-baseline gap-3 md:mb-5">
-                  <span className="font-montserrat text-[clamp(2rem,4.5vw,3.25rem)] font-bold tabular-nums tracking-tight text-palette-cream/25">
-                    {n}
-                  </span>
-                  <h3 className="mc-text-ink-shadow flex-1 font-montserrat text-[clamp(1.05rem,2.4vw,1.45rem)] font-semibold leading-snug text-palette-cream md:leading-tight lg:text-[clamp(1.15rem,1.8vw,1.6rem)]">
-                    {item.title}
-                  </h3>
-                </div>
-                <div className="group relative mb-4 aspect-[4/3] w-full overflow-hidden rounded-2xl border border-palette-cream/15 bg-palette-ink/40 shadow-[0_8px_36px_rgba(0,0,0,0.25)] md:mb-5 md:rounded-3xl">
-                  <CldImage
-                    src={item.src}
-                    alt={item.title}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                    sizes="(max-width: 768px) 100vw, 42vw"
-                    loader={imageLoader}
-                  />
-                </div>
-                <p className="font-raleway text-[clamp(1rem,2.3vw,1.2rem)] leading-relaxed text-palette-cream/85 md:text-[1.125rem] md:leading-relaxed">
-                  {item.line}
-                </p>
+                {isHero ? (
+                  <>
+                    <div className="relative aspect-[16/11] shrink-0 overflow-hidden sm:aspect-[5/4] md:aspect-auto md:w-[44%] md:min-h-[260px]">
+                      <CldImage
+                        src={item.src}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 768px) 90vw, 36vw"
+                        className="object-cover object-[center_22%] transition-transform duration-[1.15s] ease-out group-hover/card:scale-[1.035]"
+                        loader={imageLoader}
+                        preserveTransformations
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-palette-ink/35 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-palette-cream/15" />
+                    </div>
+                    <div className="relative flex min-w-0 flex-1 flex-col p-4 pr-[4.75rem] sm:p-5 sm:pr-[5.25rem] md:justify-center md:p-6 md:pr-24">
+                      <ModuleNumberWatermark step={index + 1} size="hero" />
+                      <h3 className="relative z-[1] font-semibold text-palette-ink text-[17px] leading-snug tracking-tight md:text-lg">
+                        {item.title}
+                      </h3>
+                      <p className="relative z-[1] mt-2 text-[13px] font-light leading-[1.6] text-palette-ink opacity-90 md:text-[14px]">
+                        {item.line}
+                      </p>
+                    </div>
+                  </>
+                ) : hasBand ? (
+                  <>
+                    <div className="relative h-[100px] w-full shrink-0 overflow-hidden sm:h-[112px]">
+                      <CldImage
+                        src={item.src}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 45vw"
+                        className="object-cover object-[center_40%] transition-transform duration-[1.05s] ease-out group-hover/card:scale-[1.03]"
+                        loader={imageLoader}
+                        preserveTransformations
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-palette-cream/90 via-palette-cream/20 to-transparent" />
+                    </div>
+                    <div className="relative flex flex-col px-4 pb-4 pt-4 pr-[3.5rem] sm:px-5 sm:pb-5 sm:pr-16 sm:pt-5 md:pr-[7rem]">
+                      <ModuleNumberWatermark step={index + 1} size="band" />
+                      <h3 className="relative z-[1] font-semibold text-palette-ink text-[15px] leading-snug tracking-tight md:text-[16px]">
+                        {item.title}
+                      </h3>
+                      <p className="relative z-[1] mt-2 text-[12px] font-light leading-[1.58] text-palette-ink opacity-90 md:text-[13px]">
+                        {item.line}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="relative z-[1] flex min-h-0 flex-1 flex-col pr-[3.25rem] sm:pr-16 md:pr-[7rem]">
+                    <ModuleNumberWatermark step={index + 1} size="default" />
+                    <h3 className="relative z-[1] font-semibold text-palette-ink text-[15px] leading-snug tracking-tight md:text-[16px]">
+                      {item.title}
+                    </h3>
+                    <p className="relative z-[1] mt-2 text-[12px] font-light leading-[1.58] text-palette-ink opacity-90 md:text-[13px]">
+                      {item.line}
+                    </p>
+                  </div>
+                )}
               </motion.article>
             );
           })}
         </div>
-        </div>
       </div>
     </section>
+    </>
   );
 }
