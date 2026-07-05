@@ -3,7 +3,8 @@ import { stripe } from '../../payments/stripe/stripeConfig';
 import connectDB from '../../../../config/connectDB';
 import Product from '../../../../models/productModel';
 import { EmailService, EmailType } from '../../../../services/email/emailService';
-import { fulfillCoursePurchase } from '../../payments/course/fulfillCoursePurchase';
+import { constructStripeEvent } from '../../../../lib/stripeWebhookVerify';
+import { handleStripeCourseCheckoutCompleted } from '../../../../lib/handleStripeCourseCheckout';
 
 export const runtime = 'nodejs';
 
@@ -20,15 +21,6 @@ export async function OPTIONS() {
 export async function POST(req: NextRequest) {
   // Endpoint: /api/webhooks/stripe (productos/eventos)
   // Usa un signing secret dedicado para evitar choques con otros endpoints de Stripe.
-  const webhookSecret =
-    process.env.STRIPE_WEBHOOK_SECRET_WEBHOOKS_STRIPE ?? process.env.STRIPE_WEBHOOK_SECRET;
-  if (!webhookSecret) {
-    console.error(
-      '❌ Falta STRIPE_WEBHOOK_SECRET_WEBHOOKS_STRIPE (o fallback STRIPE_WEBHOOK_SECRET)'
-    );
-    return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 });
-  }
-
   const body = await req.text();
   const signature = req.headers.get('stripe-signature');
 
@@ -39,11 +31,7 @@ export async function POST(req: NextRequest) {
   let event: any;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      webhookSecret
-    );
+    event = constructStripeEvent(stripe, body, signature);
   } catch (err: any) {
     console.error('❌ Firma de webhook inválida:', err?.message);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
@@ -89,57 +77,27 @@ async function processStripeEvent(event: any) {
 }
 
 async function handleCheckoutSessionCompleted(session: any) {
-  let productId = session.metadata?.productId;
-  
-  // Si no hay productId en la sesión, intentar obtenerlo del payment link
-  if (!productId && session.payment_link) {
-    try {
-      const paymentLink = await stripe.paymentLinks.retrieve(session.payment_link);
-      productId = paymentLink.metadata?.productId;
-    } catch (error) {
-      console.error('❌ Error recuperando payment link:', error);
-    }
-  } else if (!productId) {
-    // Si no hay payment_link, intentar obtenerlo del payment intent
-    try {
-      const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent);
-      if (paymentIntent.metadata?.productId) {
-        productId = paymentIntent.metadata.productId;
-      }
-    } catch (error) {
-      console.error('❌ Error recuperando payment intent:', error);
-    }
-  }
-  
+  const courseResult = await handleStripeCourseCheckoutCompleted(session);
+  const productId = courseResult.productId ?? session.metadata?.productId;
+
   try {
     const customerEmail = session.customer_details?.email;
     const customerPhone = session.customer_details?.phone;
     const amount = session.amount_total / 100;
-    
+
     if (!productId || !customerEmail) {
       return;
     }
 
     let product = await Product.findById(productId).lean();
-    
+
     if (!product) {
       product = await Product.findOne({ nombre: { $regex: new RegExp(productId, 'i') } }).lean();
     }
-    
+
     if (!product) {
       console.error('❌ Producto no encontrado:', productId);
       return;
-    }
-
-    if (product.tipo === 'curso') {
-      await fulfillCoursePurchase({
-        productId: product._id.toString(),
-        provider: 'stripe',
-        transactionId: String(session.payment_intent || session.id),
-        email: customerEmail,
-        amount,
-        moneda: session.currency?.toUpperCase(),
-      });
     }
 
     if (product.tipo === 'evento') {

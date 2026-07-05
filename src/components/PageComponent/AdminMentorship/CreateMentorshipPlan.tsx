@@ -29,7 +29,7 @@ const CreateMentorshipPlan = () => {
     name: '',
     price: 0,
     currency: 'USD',
-    interval: 'trimestral',
+    interval: 'mensual' as 'mensual' | 'trimestral',
     description: '',
     features: '',
     level: mentorshipLevels[0].value,
@@ -71,15 +71,22 @@ const CreateMentorshipPlan = () => {
           const plan = data[0];
           
           // Obtener el precio trimestral del array de precios
-          const trimestralPrice = plan.prices?.find((p: any) => p.interval === 'trimestral');
-          const price = trimestralPrice?.price || plan.price || 0;
-          const currency = trimestralPrice?.currency || plan.currency || 'USD';
+          const shortPrice = plan.prices?.find(
+            (p: any) => p.interval === 'mensual' || p.interval === 'trimestral',
+          );
+          const shortInterval = shortPrice?.interval === 'trimestral' ? 'trimestral' : 'mensual';
+          const rawPrice = shortPrice?.price || plan.price || 0;
+          const price =
+            shortInterval === 'trimestral'
+              ? Math.round(Number(rawPrice) / 3)
+              : Number(rawPrice);
+          const currency = shortPrice?.currency || plan.currency || 'USD';
           
           setForm({
             name: plan.name || '',
             price: price,
             currency: currency,
-            interval: plan.interval || 'trimestral',
+            interval: shortInterval,
             description: plan.description || '',
             features: plan.features ? plan.features.join(', ') : '',
             level: plan.level || mentorshipLevels[0].value,
@@ -135,7 +142,7 @@ const CreateMentorshipPlan = () => {
         description: form.description,
         features: featuresArray,
         level: form.level,
-        priceTrimestral: form.price,
+        priceMensual: form.price,
         currency: form.currency
       };
 
@@ -222,7 +229,7 @@ const CreateMentorshipPlan = () => {
                 
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                   <label className='flex flex-col space-y-2'>
-                    <p className='text-sm font-medium text-gray-700'>Precio del plan (USD)</p>
+                    <p className='text-sm font-medium text-gray-700'>Precio mensual (USD)</p>
                     <input
                       type='number'
                       name='price'
@@ -248,18 +255,26 @@ const CreateMentorshipPlan = () => {
                     />
                   </label>
                 </div>
-                <div className='space-y-4'>
-                  <p className='text-sm font-medium text-gray-700'>Intervalo del plan</p>
-                  <select
-                    name='interval'
-                    value={form.interval}
-                    onChange={handleChange}
-                    className='w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat cursor-not-allowed'
-                    disabled
-                  >
-                    <option value='trimestral'>Trimestral</option>
-                  </select>
-                  <p className='text-xs text-gray-500 font-montserrat'>Se crean anuales con 15% de descuento</p>
+                <div className='space-y-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-4'>
+                  <p className='text-sm font-medium text-gray-700'>Facturación del plan</p>
+                  <div className='flex flex-wrap gap-2'>
+                    <span className='rounded-full bg-[#4F7CCF]/10 px-3 py-1 text-xs font-semibold text-[#234C8C]'>
+                      Mensual
+                    </span>
+                    <span className='rounded-full bg-[#4F7CCF]/10 px-3 py-1 text-xs font-semibold text-[#234C8C]'>
+                      Anual (−15%)
+                    </span>
+                  </div>
+                  <p className='text-xs text-gray-500 font-montserrat leading-relaxed'>
+                    El precio de arriba es el monto mensual. Al guardar se crean ambos ciclos en Stripe y
+                    los links de pago (Stripe + dLocal).
+                  </p>
+                  {isEditing && form.interval === 'trimestral' ? (
+                    <p className='text-xs text-amber-700 font-montserrat leading-relaxed'>
+                      Este plan usa facturación trimestral legacy. Mostramos el equivalente mensual; al
+                      guardar pasará a facturación mensual.
+                    </p>
+                  ) : null}
                 </div>
               </div>
             </div>

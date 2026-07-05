@@ -13,6 +13,7 @@ import { CldImage } from 'next-cloudinary';
 import Vimeo from '@u-wave/react-vimeo';
 import ShimmerBox from './ShimmerBox';
 import { routes } from '../constants/routes';
+import { MENTORSHIP_APPLY_CTA } from '../constants/mentorshipCta';
 import { useAuth } from '../hooks/useAuth';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
@@ -95,7 +96,7 @@ function Banner({ onVideoLoaded }) {
 
   const primaryCta = (() => {
     if (!cursoLoading && !latestCurso) {
-      return { href: routes.navegation.mentorship, label: 'Mentoría' };
+      return { href: MENTORSHIP_APPLY_CTA.href, label: MENTORSHIP_APPLY_CTA.label };
     }
     if (latestCurso?.slug) {
       return {

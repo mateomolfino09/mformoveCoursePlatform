@@ -20,6 +20,13 @@ type UserCourse = {
   moneda?: string;
 };
 
+function courseContenidoHref(course: UserCourse): string | null {
+  if (course.rutaContenido?.trim()) return course.rutaContenido.trim();
+  const slug = course.slug?.trim();
+  if (!slug) return null;
+  return routes.navegation.membership.cursoContenido(slug);
+}
+
 const paymentLabel: Record<string, string> = {
   stripe: 'Stripe',
   dlocalgo: 'dLocal GO',
@@ -96,7 +103,9 @@ export default function UserCoursesSection() {
         </div>
       ) : (
         <div className="space-y-4">
-          {courses.map((course) => (
+          {courses.map((course) => {
+            const contenidoHref = courseContenidoHref(course);
+            return (
             <div
               key={`${course.productoId}-${course.fechaCompra}`}
               className="rounded-2xl border border-palette-stone/20 bg-white/60 p-5 md:p-6"
@@ -122,28 +131,19 @@ export default function UserCoursesSection() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2 sm:flex-row">
-                  {course.rutaContenido ? (
-                    <Link
-                      href={course.rutaContenido}
-                      className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-palette-ink bg-palette-ink px-5 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.16em] text-palette-cream transition-all duration-200 hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink"
-                    >
-                      Ver contenido
-                      <ArrowRightIcon className="w-4 h-4" />
-                    </Link>
-                  ) : null}
-                  {course.ruta ? (
-                    <Link
-                      href={course.ruta}
-                      className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-palette-stone/40 bg-transparent px-5 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.16em] text-palette-ink transition-all duration-200 hover:border-palette-ink"
-                    >
-                      Landing
-                    </Link>
-                  ) : null}
-                </div>
+                {contenidoHref ? (
+                  <Link
+                    href={contenidoHref}
+                    className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-palette-ink bg-palette-ink px-5 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.16em] text-palette-cream transition-all duration-200 hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink"
+                  >
+                    Ir al curso
+                    <ArrowRightIcon className="w-4 h-4" />
+                  </Link>
+                ) : null}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </motion.div>

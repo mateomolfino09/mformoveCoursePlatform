@@ -18,6 +18,7 @@ import {
   EnvelopeIcon
 } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MENTORSHIP_APPLY_CTA } from '../../../constants/mentorshipCta';
 import { Disclosure, Transition } from '@headlessui/react';
 
 interface Props {
@@ -230,11 +231,11 @@ const FAQComponent = ({ questions }: Props) => {
                       Contactar Soporte
                     </a>
                     <a 
-                      href="/mentoria" 
+                      href={MENTORSHIP_APPLY_CTA.href} 
                       className="border-2 border-white text-white px-4 md:px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-[#234C8C] transition-colors flex items-center justify-center gap-2 text-sm md:text-base"
                     >
                       <PhoneIcon className="w-5 h-5" />
-                      Agendar Consulta
+                      {MENTORSHIP_APPLY_CTA.label}
                     </a>
                   </div>
                 </div>

@@ -2,6 +2,10 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { useCursoLanding } from './CursoLandingContext';
+import {
+  landingEyebrowDark,
+  landingSectionTitleDark,
+} from '../../../constants/landingSectionDesign';
 
 const WATER_PATH_STEPS = 20;
 
@@ -85,14 +89,13 @@ export default function CourseBetweenHeroSection() {
   const { betweenHero } = cursoConfig;
 
   return (
-    <section className='relative isolate overflow-hidden bg-palette-skysteel py-14 md:py-16 lg:py-20 font-montserrat'>
+    <section className="relative border-t border-white/10 bg-palette-ink py-14 font-montserrat md:py-16 lg:py-20">
       <div
-        className='pointer-events-none absolute inset-0 z-0 overflow-hidden'
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
         aria-hidden
       >
-        <div className='absolute inset-0 bg-gradient-to-br from-palette-cream via-palette-skysteel to-[#c9d8ee]' />
         <motion.div
-          className='absolute -top-28 right-[-12%] h-[min(420px,45vw)] w-[min(420px,85vw)] rounded-full bg-palette-sage/22 blur-[100px]'
+          className="absolute -top-28 right-[-12%] h-[min(420px,45vw)] w-[min(420px,85vw)] rounded-full bg-palette-sage/12 blur-[100px]"
           animate={{
             x: [0, 28, -12, 0],
             y: [0, -24, 16, 0],
@@ -101,7 +104,7 @@ export default function CourseBetweenHeroSection() {
           transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className='absolute -bottom-36 left-[-18%] h-[400px] w-[400px] rounded-full bg-palette-steel/28 blur-[110px]'
+          className="absolute -bottom-36 left-[-18%] h-[400px] w-[400px] rounded-full bg-palette-granite/30 blur-[110px]"
           animate={{
             x: [0, -22, 18, 0],
             y: [0, 18, -14, 0],
@@ -115,7 +118,7 @@ export default function CourseBetweenHeroSection() {
           }}
         />
         <motion.div
-          className='absolute top-[42%] right-[8%] h-[180px] w-[180px] rounded-full bg-white/50 blur-[72px] md:h-[220px] md:w-[220px]'
+          className="absolute top-[42%] right-[8%] h-[180px] w-[180px] rounded-full bg-palette-sage/10 blur-[72px] md:h-[220px] md:w-[220px]"
           animate={{ opacity: [0.35, 0.55, 0.38], scale: [1, 1.12, 1] }}
           transition={{
             duration: 16,
@@ -156,7 +159,7 @@ export default function CourseBetweenHeroSection() {
               style={{ left: `${d.leftPct}%`, top: `${d.topPct}%` }}
             >
               <motion.div
-                className='h-3 w-3 rounded-full bg-[#5c6d88]/35 shadow-[0_0_10px_rgba(92,109,136,0.22)] md:h-[14px] md:w-[14px]'
+                className="h-3 w-3 rounded-full bg-palette-cream/20 shadow-[0_0_10px_rgba(250,248,244,0.12)] md:h-[14px] md:w-[14px]"
                 initial={false}
                 animate={
                   reduceMotion
@@ -187,15 +190,15 @@ export default function CourseBetweenHeroSection() {
           viewport={{ once: true, margin: '-80px' }}
           className='mx-auto max-w-none lg:max-w-[min(52rem,calc(100vw-10rem))]'
         >
-          <p className='mc-text-depth-steel-eyebrow mb-3 font-montserrat text-[11px] uppercase tracking-[0.28em] text-palette-ink md:text-xs'>
+          <p className={`${landingEyebrowDark} mb-3 md:text-xs`}>
             {betweenHero.eyebrow}
           </p>
-          <h2 className='mc-text-depth-steel-title font-montserrat text-[clamp(1.95rem,4.35vw,3.35rem)] font-semibold leading-[1.04] tracking-tight text-palette-ink md:text-[clamp(2.35rem,4.75vw,3.75rem)]'>
+          <h2 className={landingSectionTitleDark}>
             {betweenHero.titulo}
           </h2>
         </motion.div>
 
-        <motion.div className='mt-11 mx-auto max-w-4xl space-y-8 text-center font-raleway font-semibold text-palette-ink md:mt-16 md:space-y-10 lg:mt-20'>
+        <motion.div className="mt-11 mx-auto max-w-4xl space-y-6 text-center md:mt-14 md:space-y-7">
           {betweenHero.parrafos.map((paragraph, index) => (
             <motion.p
               key={`between-hero-${index}`}
@@ -207,7 +210,7 @@ export default function CourseBetweenHeroSection() {
                 ease: [0.16, 1, 0.3, 1],
               }}
               viewport={{ once: true, margin: '-80px' }}
-              className='mc-text-depth-steel text-lg leading-[1.4] tracking-tight md:text-xl md:leading-[1.37] lg:text-[clamp(1.3125rem,2.2vw,1.75rem)] lg:leading-[1.36] xl:text-[clamp(1.4rem,1.95vw,1.8125rem)]'
+              className="text-[15px] font-normal leading-[1.72] text-palette-cream/88 md:text-[16px]"
             >
               {paragraph}
             </motion.p>

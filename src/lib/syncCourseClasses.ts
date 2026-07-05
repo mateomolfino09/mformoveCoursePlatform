@@ -5,7 +5,7 @@ import {
   type CursoModuloContenido,
 } from '../types/cursoLanding';
 
-const ALLOWED_MATERIALS = ['baston', 'banda elastica', 'banco', 'pelota'] as const;
+const ALLOWED_MATERIALS = ['pelota', 'baston', 'banda elastica', 'banco', 'bloque', 'libreta', 'lapicera'] as const;
 
 function toCourseClassPayload(
   clase: CursoModuloContenido['clases'][number],
@@ -16,6 +16,10 @@ function toCourseClassPayload(
     timelineIndex,
     name: normalized.name || 'Clase sin título',
     description: normalized.description,
+    descripcionGeneral: normalized.descripcionGeneral || '',
+    descripcionCorta: normalized.descripcionCorta || '',
+    descripcionCompleta: normalized.descripcionCompleta || '',
+    pdfUrl: normalized.pdfUrl || '',
     videoUrl: normalized.videoUrl,
     videoId: normalized.videoId || undefined,
     videoThumbnail: normalized.videoThumbnail,

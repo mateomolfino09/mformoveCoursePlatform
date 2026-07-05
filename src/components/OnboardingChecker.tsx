@@ -1,130 +1,174 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAuth } from '../hooks/useAuth';
-import { isCursoPublicPath } from '../lib/cursoPaths';
+import { isCursoPublicPath, parseCursoPublicPath } from '../lib/cursoPaths';
+import {
+  clearCursoBienvenidaPendiente,
+  getCursoBienvenidaPendiente,
+  setCursoBienvenidaPendiente,
+} from '../utils/redirectQueue';
 import state from '../valtio';
 
+const AUTH_PATHS = [
+  '/iniciar-sesion',
+  '/registro',
+  '/olvide-contrasena',
+  '/restablecer',
+  '/restablecer-correo',
+  '/verificar-correo',
+];
+
+const MEMBERSHIP_ONBOARDING_EXCLUDED = [
+  '/incorporacion',
+  '/iniciar-sesion',
+  '/registro',
+  '/olvide-contrasena',
+  '/restablecer',
+  '/restablecer-correo',
+  '/verificar-correo',
+  '/',
+  '/nosotros',
+  '/productos',
+  '/mentoria',
+];
+
 /**
- * Componente global que verifica continuamente el estado del onboarding
- * y redirige automáticamente si el usuario necesita completarlo.
- * 
- * Se ejecuta en todas las páginas excepto las de onboarding y login/registro.
+ * Verifica onboarding de membresía y bienvenida post-compra de curso.
  */
 export default function OnboardingChecker() {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const auth = useAuth();
 
   useEffect(() => {
-    // Rutas que no requieren verificación de onboarding
-    const excludedPaths = [
-      '/incorporacion',
-      '/iniciar-sesion',
-      '/registro',
-      '/olvide-contrasena',
-      '/restablecer',
-      '/restablecer-correo',
-      '/verificar-correo',
-      '/',
-      '/nosotros',
-      '/productos',
-      '/mentoria'
-    ];
+    const isAuthPath = AUTH_PATHS.some(
+      (path) => pathname === path || pathname.startsWith(`${path}/`)
+    );
 
-    // Verificar si la ruta actual está excluida
-    const isExcluded =
-      isCursoPublicPath(pathname) ||
-      excludedPaths.some((path) => {
-        if (path === '/') {
-          return pathname === '/';
+    const cursoPath = parseCursoPublicPath(pathname);
+    const skipCourseWelcome =
+      isAuthPath ||
+      cursoPath?.subpath === 'empezar' ||
+      pathname === '/pago/error';
+
+    const isOnMatchingCourseWelcomePage = (
+      successPath: string,
+      productId: string
+    ) => {
+      if (pathname !== '/pago/exito') return false;
+      if (searchParams.get('tipo') !== 'curso') return false;
+      const currentPathWithQuery =
+        pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
+      return (
+        searchParams.get('productId') === productId || currentPathWithQuery === successPath
+      );
+    };
+
+    const checkCourseWelcome = async (): Promise<boolean> => {
+      if (skipCourseWelcome) return false;
+
+      const hasToken = document.cookie.split('; ').some((row) => row.startsWith('userToken='));
+      if (!hasToken) {
+        const cookieProductId = getCursoBienvenidaPendiente();
+        if (cookieProductId && pathname !== '/pago/exito') {
+          router.push(`/pago/exito?productId=${cookieProductId}&tipo=curso`);
+          return true;
         }
-        return pathname === path || pathname.startsWith(path + '/');
-      });
+        return false;
+      }
 
-    // CRÍTICO: Si estamos en /incorporacion/bienvenida, NO hacer NADA
-    // El usuario puede estar aceptando el contrato o viendo el modal
-    if (pathname === '/incorporacion/bienvenida' || pathname.startsWith('/incorporacion/bienvenida')) {
-      return; // Salir completamente, no ejecutar ninguna verificación
-    }
-
-    if (isExcluded) {
-      // No hacer nada si estamos en una ruta excluida
-      return;
-    }
-
-    // Verificar onboarding solo si el usuario está autenticado
-    const checkOnboarding = async () => {
       try {
-        // Si no hay usuario, esperar a que se cargue
-        if (!auth.user) {
-          // Si hay token, intentar cargar el usuario
-          const token = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('userToken='));
-          
-          if (token) {
-            await auth.fetchUser();
-            // Esperar un momento para que se cargue el usuario
-            await new Promise(resolve => setTimeout(resolve, 500));
-          } else {
-            return;
-          }
-        }
-        // Verificar si el usuario tiene suscripción activa
-        if (!auth.user?.subscription?.active) {
-          return; // No necesita onboarding si no tiene suscripción activa
-        }
-
-        // Verificar estado del onboarding
-        const response = await fetch('/api/onboarding/status', {
+        const response = await fetch('/api/user/cursos/bienvenida-pendiente', {
           credentials: 'include',
-          cache: 'no-store'
+          cache: 'no-store',
         });
 
         if (response.ok) {
           const data = await response.json();
-          console.log('[OnboardingChecker] Estado del onboarding:', data);
-
-          state.weeklyPathNavOpen = false; 
-
-          // Si no tiene suscripción activa, no hacer nada
-          if (data.sinSuscripcion) {
-            console.log('[OnboardingChecker] Usuario sin suscripción activa');
-            return;
-          }
-
-          // Si necesita onboarding (contrato no aceptado), redirigir
-          if (data.necesitaOnboarding) {
-            console.log('[OnboardingChecker] Necesita onboarding, contratoAceptado:', data.contratoAceptado);
-            if (!data.contratoAceptado) {
-              console.log('[OnboardingChecker] Redirigiendo a /incorporacion/bienvenida');
-              // Solo redirigir a bienvenida si no estamos ya ahí
-              router.push('/incorporacion/bienvenida');
+          if (data.pendiente && data.successPath && data.productId) {
+            setCursoBienvenidaPendiente(data.productId);
+            if (!isOnMatchingCourseWelcomePage(data.successPath, data.productId)) {
+              router.replace(data.successPath);
+              return true;
             }
-            // Si el contrato está aceptado, NO hacer nada (dejar que el usuario complete el flujo)
-          } else {
-            console.log('[OnboardingChecker] No necesita onboarding');
+            return false;
           }
-        } else {
-          console.error('[OnboardingChecker] Error en respuesta:', response.status);
+          clearCursoBienvenidaPendiente();
         }
+      } catch {
+        /* ignore */
+      }
+
+      return false;
+    };
+
+    const checkMembershipOnboarding = async () => {
+      if (
+        pathname === '/incorporacion/bienvenida' ||
+        pathname.startsWith('/incorporacion/bienvenida')
+      ) {
+        return;
+      }
+
+      const isMembershipExcluded =
+        isCursoPublicPath(pathname) ||
+        MEMBERSHIP_ONBOARDING_EXCLUDED.some((path) => {
+          if (path === '/') return pathname === '/';
+          return pathname === path || pathname.startsWith(`${path}/`);
+        });
+
+      if (isMembershipExcluded) return;
+
+      if (!auth.user?.subscription?.active) return;
+
+      const response = await fetch('/api/onboarding/status', {
+        credentials: 'include',
+        cache: 'no-store',
+      });
+
+      if (!response.ok) return;
+
+      const data = await response.json();
+      state.weeklyPathNavOpen = false;
+
+      if (data.sinSuscripcion) return;
+
+      if (data.necesitaOnboarding && !data.contratoAceptado) {
+        router.push('/incorporacion/bienvenida');
+      }
+    };
+
+    const run = async () => {
+      try {
+        if (!auth.user) {
+          const token = document.cookie
+            .split('; ')
+            .find((row) => row.startsWith('userToken='));
+
+          if (token) {
+            await auth.fetchUser();
+            await new Promise((resolve) => setTimeout(resolve, 300));
+          }
+        }
+
+        const redirected = await checkCourseWelcome();
+        if (redirected) return;
+
+        await checkMembershipOnboarding();
       } catch (error) {
         console.error('Error verificando onboarding:', error);
       }
     };
 
-    // Verificar inmediatamente
-    checkOnboarding();
+    run();
 
-    // Verificar periódicamente cada 30 segundos (por si el usuario paga mientras está navegando)
-    const interval = setInterval(checkOnboarding, 30000);
+    const interval = setInterval(run, 15000);
 
     return () => clearInterval(interval);
-  }, [pathname, auth.user, router, auth]);
+  }, [pathname, searchParams, auth.user, router, auth]);
 
-  // Este componente no renderiza nada
   return null;
 }
-

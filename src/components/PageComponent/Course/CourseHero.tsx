@@ -164,14 +164,14 @@ const CourseHero = () => {
           {tagline}
         </p>
       </div>
-      <div className="w-[85%] max-w-6xl mx-auto pt-24 mt-20 pb-10 md:py-14 flex flex-col md:flex-row md:items-start md:gap-10 lg:gap-14">
+      <div className="w-[90%] max-w-6xl mx-auto pt-24 mt-20 pb-10 md:py-14 flex flex-col md:flex-row md:items-start md:gap-10 lg:gap-14 px-3 sm:px-4">
 
         <div className="w-full min-w-0 order-2 md:order-1 md:flex-1 text-center">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="w-full mb-8 rounded-2xl md:rounded-3xl overflow-hidden bg-black shadow-2xl h-[60vh] md:h-auto md:max-h-[65vh] lg:max-h-[70vh]"
+          className="w-full mb-8 rounded-2xl md:rounded-3xl overflow-hidden bg-black shadow-[0_22px_55px_rgba(20,20,17,0.09)] ring-1 ring-palette-stone/20 h-[60vh] md:h-auto md:max-h-[65vh] lg:max-h-[70vh]"
         >
           <div className="relative w-full h-full md:aspect-video md:h-auto">
             {!isPlaying ? (

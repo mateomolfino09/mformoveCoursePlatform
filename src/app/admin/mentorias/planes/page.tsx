@@ -7,6 +7,21 @@ import AdmimDashboardLayout from '../../../../components/AdmimDashboardLayout';
 import Link from 'next/link';
 import { PlusCircleIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { toast } from '../../../../hooks/useToast';
+import {
+  mentorshipPricesHaveStaleLinks,
+  stripTrailingSlash,
+} from '../../../../lib/resolveMentorshipPaymentOrigin';
+
+interface MentorshipPlanPagoOption {
+  proveedor: 'stripe' | 'dlocalgo';
+  etiqueta: string;
+  descripcion: string;
+  monto: number;
+  moneda: string;
+  paymentLink: string;
+  activo: boolean;
+  originBase?: string;
+}
 
 interface MentorshipPlan {
   _id?: string;
@@ -24,7 +39,49 @@ interface MentorshipPlan {
     price: number;
     currency: string;
     stripePriceId: string;
+    opcionesPago?: MentorshipPlanPagoOption[];
   }>;
+}
+
+function PaymentLinkField({ label, href }: { label: string; href?: string }) {
+  const copyLink = () => {
+    if (!href) return;
+    navigator.clipboard.writeText(href);
+    toast.success('Link copiado al portapapeles');
+  };
+
+  return (
+    <div className="space-y-1">
+      <p className="text-xs font-medium text-[#1A1A1A]">{label}</p>
+      <div className="flex items-center space-x-2">
+        <input
+          type="text"
+          value={href || 'Sin link generado'}
+          readOnly
+          className="flex-1 text-xs text-gray-600 bg-white border border-gray-300 rounded px-2 py-1 font-mono"
+        />
+        {href ? (
+          <>
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#234C8C] text-white px-3 py-1 rounded text-xs hover:bg-[#1a3763] transition-colors"
+            >
+              Abrir
+            </a>
+            <button
+              type="button"
+              onClick={copyLink}
+              className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 transition-colors"
+            >
+              Copiar
+            </button>
+          </>
+        ) : null}
+      </div>
+    </div>
+  );
 }
 
 const emptyPlan: MentorshipPlan = {
@@ -54,6 +111,16 @@ export default function AdminMentorshipPlansPage() {
   const [planSelected, setPlanSelected] = useState<MentorshipPlan | null>(null);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [isOpenInfo, setIsOpenInfo] = useState(false);
+  const [regeneratingLinks, setRegeneratingLinks] = useState(false);
+
+  const expectedPaymentOrigin = stripTrailingSlash(
+    process.env.NEXT_PUBLIC_BASE_URL ||
+      (typeof window !== 'undefined' ? window.location.origin : ''),
+  );
+
+  const planHasStaleLinks = planSelected
+    ? mentorshipPricesHaveStaleLinks(planSelected.prices, expectedPaymentOrigin)
+    : false;
 
   // Protección de admin
   useEffect(() => {
@@ -120,6 +187,47 @@ export default function AdminMentorshipPlansPage() {
     setPlanSelected(p);
     setIsOpenInfo(true);
   }
+
+  const regeneratePaymentLinks = async (forceRegenerate = false) => {
+    if (!planSelected?._id) return;
+
+    setRegeneratingLinks(true);
+    try {
+      const response = await fetch('/api/mentorship/stripe/createPaymentLinks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planId: planSelected._id,
+          forceRegenerate,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.prices) {
+        setPlanSelected({ ...planSelected, prices: data.prices });
+        setPlans((prev) =>
+          prev.map((plan) =>
+            plan._id === planSelected._id ? { ...plan, prices: data.prices } : plan,
+          ),
+        );
+        const originNote = data.originUsed ? ` (${data.originUsed})` : '';
+        toast.success(
+          forceRegenerate
+            ? `Links regenerados con base${originNote}`
+            : data.regeneratedBecauseStale
+              ? `Links actualizados (había URLs de localhost)${originNote}`
+              : `Links de pago actualizados${originNote}`,
+        );
+      } else {
+        toast.error(data.error || 'Error al generar los links de pago');
+      }
+    } catch {
+      toast.error('Error al generar los links de pago');
+    } finally {
+      setRegeneratingLinks(false);
+    }
+  };
 
   return (
     <AdmimDashboardLayout>
@@ -304,139 +412,81 @@ export default function AdminMentorshipPlansPage() {
 
                         {/* Links de Pago */}
                         <div>
-                          <h3 className="font-semibold text-[#1A1A1A] mb-3">Links de Pago Stripe</h3>
+                          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                            <h3 className="font-semibold text-[#1A1A1A]">Links de pago (Stripe y dLocal)</h3>
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                type="button"
+                                disabled={regeneratingLinks}
+                                onClick={() => regeneratePaymentLinks(false)}
+                                className="bg-[#234C8C] text-white px-3 py-1 rounded text-xs hover:bg-[#1a3763] transition-colors disabled:opacity-60"
+                              >
+                                {regeneratingLinks ? 'Generando…' : 'Actualizar links'}
+                              </button>
+                              <button
+                                type="button"
+                                disabled={regeneratingLinks}
+                                onClick={() => regeneratePaymentLinks(true)}
+                                className="bg-[#F7F7F7] text-[#1A1A1A] px-3 py-1 rounded text-xs border border-[#E5E7EB] hover:bg-gray-200 transition-colors disabled:opacity-60"
+                              >
+                                Regenerar todos
+                              </button>
+                            </div>
+                          </div>
+                          {planHasStaleLinks ? (
+                            <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                              Estos links se generaron con otra URL base (p. ej. localhost). dLocal no
+                              redirige bien después del pago. Usá <strong>Actualizar links</strong> con{' '}
+                              <code className="font-mono">NEXT_PUBLIC_BASE_URL</code> apuntando a ngrok.
+                              Base esperada: <span className="font-mono">{expectedPaymentOrigin}</span>
+                            </div>
+                          ) : null}
+                          <p className="mb-3 text-xs text-gray-500">
+                            Para pagos desde <code className="font-mono">/mentoria/empezar</code>, dLocal
+                            crea un checkout nuevo al vuelo. Estos links son útiles para pruebas directas
+                            desde admin.
+                          </p>
                           <div className="space-y-3">
                             {planSelected.prices && planSelected.prices.length > 0 ? (
-                              planSelected.prices.map((price, index) => (
-                                <div key={index} className="bg-[#F7F7F7] p-3 rounded-lg">
-                                  <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-medium text-[#1A1A1A] capitalize">
-                                      {price.interval}
-                                    </span>
-                                    <span className="text-sm font-semibold text-[#234C8C]">
-                                      ${price.price} {price.currency}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <input
-                                      type="text"
-                                      value="Generando link..."
-                                      readOnly
-                                      id={`payment-link-${price.interval}`}
-                                      className="flex-1 text-xs text-gray-600 bg-white border border-gray-300 rounded px-2 py-1 font-mono"
+                              planSelected.prices.map((price, index) => {
+                                const stripeOption = price.opcionesPago?.find(
+                                  (o) => o.proveedor === 'stripe',
+                                );
+                                const dlocalOption = price.opcionesPago?.find(
+                                  (o) => o.proveedor === 'dlocalgo',
+                                );
+
+                                return (
+                                  <div key={index} className="bg-[#F7F7F7] p-3 rounded-lg space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-sm font-medium text-[#1A1A1A] capitalize">
+                                        {price.interval}
+                                      </span>
+                                      <span className="text-sm font-semibold text-[#234C8C]">
+                                        ${price.price} {price.currency}
+                                      </span>
+                                    </div>
+                                    {stripeOption?.originBase ? (
+                                      <p className="text-[10px] text-gray-500 font-mono">
+                                        Base: {stripeOption.originBase}
+                                      </p>
+                                    ) : null}
+                                    <PaymentLinkField
+                                      label="Stripe — suscripción"
+                                      href={stripeOption?.paymentLink}
                                     />
-                                    <button
-                                      onClick={async () => {
-                                        try {
-                                          const response = await fetch('/api/mentorship/stripe/createPaymentLinks', {
-                                            method: 'POST',
-                                            headers: {
-                                              'Content-Type': 'application/json',
-                                            },
-                                            body: JSON.stringify({
-                                              planId: planSelected._id,
-                                            }),
-                                          });
-                                          
-                                          const data = await response.json();
-                                          
-                                          if (data.success && data.paymentLinks[price.interval]) {
-                                            const linkInput = document.getElementById(`payment-link-${price.interval}`) as HTMLInputElement;
-                                            if (linkInput) {
-                                              linkInput.value = data.paymentLinks[price.interval];
-                                            }
-                                            navigator.clipboard.writeText(data.paymentLinks[price.interval]);
-                                            toast.success('Link de Stripe copiado al portapapeles');
-                                          } else {
-                                            toast.error('Error al generar el link de pago');
-                                          }
-                                        } catch (error) {
-                                          toast.error('Error al generar el link de pago');
-                                        }
-                                      }}
-                                      className="bg-[#234C8C] text-white px-3 py-1 rounded text-xs hover:bg-[#1a3763] transition-colors"
-                                    >
-                                      Generar
-                                    </button>
-                                    <button
-                                      onClick={() => {
-                                        const linkInput = document.getElementById(`payment-link-${price.interval}`) as HTMLInputElement;
-                                        if (linkInput && linkInput.value !== 'Generando link...') {
-                                          navigator.clipboard.writeText(linkInput.value);
-                                          toast.success('Link copiado al portapapeles');
-                                        }
-                                      }}
-                                      className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 transition-colors"
-                                    >
-                                      Copiar
-                                    </button>
+                                    <PaymentLinkField
+                                      label="dLocal GO — cuotas locales"
+                                      href={dlocalOption?.paymentLink}
+                                    />
                                   </div>
-                                </div>
-                              ))
+                                );
+                              })
                             ) : (
                               <div className="bg-[#F7F7F7] p-3 rounded-lg">
-                                <div className="flex items-center justify-between mb-2">
-                                  <span className="text-sm font-medium text-[#1A1A1A] capitalize">
-                                    {planSelected.interval}
-                                  </span>
-                                  <span className="text-sm font-semibold text-[#234C8C]">
-                                    ${planSelected.price} {planSelected.currency}
-                                  </span>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <input
-                                    type="text"
-                                    value="Generando link..."
-                                    readOnly
-                                    id={`payment-link-${planSelected.interval}`}
-                                    className="flex-1 text-xs text-gray-600 bg-white border border-gray-300 rounded px-2 py-1 font-mono"
-                                  />
-                                  <button
-                                    onClick={async () => {
-                                      try {
-                                        const response = await fetch('/api/mentorship/stripe/createPaymentLinks', {
-                                          method: 'POST',
-                                          headers: {
-                                            'Content-Type': 'application/json',
-                                          },
-                                          body: JSON.stringify({
-                                            planId: planSelected._id,
-                                          }),
-                                        });
-                                        
-                                        const data = await response.json();
-                                        
-                                        if (data.success && data.paymentLinks[planSelected.interval]) {
-                                          const linkInput = document.getElementById(`payment-link-${planSelected.interval}`) as HTMLInputElement;
-                                          if (linkInput) {
-                                            linkInput.value = data.paymentLinks[planSelected.interval];
-                                          }
-                                          navigator.clipboard.writeText(data.paymentLinks[planSelected.interval]);
-                                          toast.success('Link de Stripe copiado al portapapeles');
-                                        } else {
-                                          toast.error('Error al generar el link de pago');
-                                        }
-                                      } catch (error) {
-                                        toast.error('Error al generar el link de pago');
-                                      }
-                                    }}
-                                    className="bg-[#234C8C] text-white px-3 py-1 rounded text-xs hover:bg-[#1a3763] transition-colors"
-                                  >
-                                    Generar
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      const linkInput = document.getElementById(`payment-link-${planSelected.interval}`) as HTMLInputElement;
-                                      if (linkInput && linkInput.value !== 'Generando link...') {
-                                        navigator.clipboard.writeText(linkInput.value);
-                                        toast.success('Link copiado al portapapeles');
-                                      }
-                                    }}
-                                    className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 transition-colors"
-                                  >
-                                    Copiar
-                                  </button>
-                                </div>
+                                <p className="text-sm text-gray-600">
+                                  Este plan no tiene precios por intervalo configurados.
+                                </p>
                               </div>
                             )}
                           </div>

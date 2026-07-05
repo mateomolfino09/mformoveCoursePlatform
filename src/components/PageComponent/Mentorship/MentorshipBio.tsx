@@ -34,7 +34,7 @@ export default function MentorshipBio() {
           <div className="min-w-0 flex-1">
             <p className="text-[10px] font-normal uppercase tracking-[0.28em] text-palette-cream/55">Sobre mí</p>
             <h2 className="mt-3 text-[1.65rem] font-semibold leading-[1.12] tracking-tight text-palette-cream sm:text-[2rem] md:text-[2.2rem]">
-              El origen de la metodología
+              Mateo Molfino
             </h2>
             <div className="mt-4 space-y-4 text-[14px] font-light leading-[1.72] text-palette-cream/88 md:text-[15px] md:leading-[1.7]">
               <p>

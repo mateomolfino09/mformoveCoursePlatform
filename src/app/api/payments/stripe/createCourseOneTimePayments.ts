@@ -1,6 +1,7 @@
-import dLocalApi from '../dlocalConfig';
-import { isDlocalGoEnabled } from '../../../../lib/dlocalGo';
 import { stripe } from './stripeConfig';
+import { coursePaymentWarn } from '../../../../lib/coursePaymentDebug';
+import { createCursoDlocalPaymentLink } from '../../../../lib/cursoDlocalPaymentLink';
+import { resolveCloudinaryOrHttpUrl } from '../../../../lib/resolveMediaImageUrl';
 
 type CreateCourseOneTimePaymentsParams = {
   productId: string;
@@ -11,6 +12,8 @@ type CreateCourseOneTimePaymentsParams = {
   portadaUrl?: string;
   successUrl: string;
   origin: string;
+  /** Sufijo para order_id único al regenerar links (evita "Order id is duplicated"). */
+  dlocalOrderSuffix?: string;
 };
 
 const toStripeCurrency = (moneda?: string) => {
@@ -18,8 +21,6 @@ const toStripeCurrency = (moneda?: string) => {
   if (normalized === '$') return 'usd';
   return normalized.toLowerCase();
 };
-
-const toDlocalCurrency = (moneda?: string) => toStripeCurrency(moneda).toUpperCase();
 
 const toStripeAmount = (precio: number, moneda?: string) => {
   const currency = toStripeCurrency(moneda);
@@ -31,12 +32,11 @@ const toStripeAmount = (precio: number, moneda?: string) => {
 };
 
 const resolvePortadaUrl = (portadaUrl?: string) => {
-  if (!portadaUrl) return undefined;
-  if (portadaUrl.startsWith('http')) return portadaUrl;
-  return `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${portadaUrl}.jpg`;
+  const resolved = resolveCloudinaryOrHttpUrl(portadaUrl);
+  return resolved || undefined;
 };
 
-export async function createCourseOneTimePayments({
+export async function createStripeCoursePaymentLink({
   productId,
   nombre,
   descripcion,
@@ -44,8 +44,7 @@ export async function createCourseOneTimePayments({
   moneda = 'USD',
   portadaUrl,
   successUrl,
-  origin,
-}: CreateCourseOneTimePaymentsParams) {
+}: Omit<CreateCourseOneTimePaymentsParams, 'origin' | 'dlocalOrderSuffix'>) {
   const stripeCurrency = toStripeCurrency(moneda);
   const portadaStripeUrl = resolvePortadaUrl(portadaUrl);
 
@@ -79,48 +78,61 @@ export async function createCourseOneTimePayments({
     phone_number_collection: { enabled: true },
   });
 
-  const orderId = `curso-${productId}`;
-  let dlocalData: {
-    id?: string;
-    redirect_url?: string;
-    merchant_checkout_token?: string;
-  } | null = null;
+  return {
+    productId: stripeProduct.id,
+    priceId: stripePrice.id,
+    paymentLink: stripePaymentLink.url,
+  };
+}
 
-  if (isDlocalGoEnabled()) {
-    try {
-      const dlocalResponse = await dLocalApi.post('/payments', {
-        name: nombre,
-        currency: toDlocalCurrency(moneda),
-        amount: Number(precio),
-        order_id: orderId,
-        description: descripcion?.slice(0, 200) || nombre,
-        success_url: `${successUrl}&provider=dlocalgo`,
-        back_url: `${origin}/pago/atras?productId=${productId}`,
-        notification_url: `${origin}/api/payments/course/dlocalWebhook`,
-        error_url: `${origin}/pago/error?productId=${productId}`,
-      });
-      dlocalData = dlocalResponse.data;
-    } catch (error: any) {
-      const dlocalMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error?.message ||
-        'No se pudo crear el link de dLocal GO';
-      console.warn('[createCourseOneTimePayments] dLocal GO no disponible:', dlocalMessage);
-    }
+export async function createCourseOneTimePayments({
+  productId,
+  nombre,
+  descripcion,
+  precio,
+  moneda = 'USD',
+  portadaUrl,
+  successUrl,
+  origin,
+  dlocalOrderSuffix,
+}: CreateCourseOneTimePaymentsParams) {
+  const stripeResult = await createStripeCoursePaymentLink({
+    productId,
+    nombre,
+    descripcion,
+    precio,
+    moneda,
+    portadaUrl,
+    successUrl,
+  });
+
+  let dlocalResult: Awaited<ReturnType<typeof createCursoDlocalPaymentLink>> | null = null;
+
+  try {
+    dlocalResult = await createCursoDlocalPaymentLink({
+      productId,
+      nombre,
+      descripcion,
+      precio,
+      moneda,
+      origin,
+      orderSuffix: dlocalOrderSuffix,
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'No se pudo crear el link de dLocal GO';
+    coursePaymentWarn('create_link.dlocal.failed', {
+      productId,
+      message,
+    });
   }
 
   return {
-    stripe: {
-      productId: stripeProduct.id,
-      priceId: stripePrice.id,
-      paymentLink: stripePaymentLink.url,
-    },
+    stripe: stripeResult,
     dlocalgo: {
-      orderId,
-      paymentId: dlocalData?.id,
-      paymentLink: dlocalData?.redirect_url,
-      merchantCheckoutToken: dlocalData?.merchant_checkout_token,
+      orderId: dlocalResult?.orderId,
+      paymentId: dlocalResult?.paymentId,
+      paymentLink: dlocalResult?.paymentLink,
+      merchantCheckoutToken: dlocalResult?.merchantCheckoutToken,
     },
   };
 }
@@ -165,11 +177,11 @@ export function buildCursoOpcionesPago({
   opciones.push({
     proveedor: 'dlocalgo' as const,
     etiqueta: 'Empezar AHORA (paga en cuotas)',
-    descripcion: 'Pago con tarjetas regionales y hasta 12cuotas en moneda local.',
+    descripcion: 'Pago con tarjetas regionales y hasta 12 cuotas en moneda local.',
     monto: precio,
     moneda,
     paymentLink: pagos.dlocalgo.paymentLink || '',
-    activo: Boolean(isDlocalGoEnabled() && pagos.dlocalgo.paymentLink),
+    activo: Boolean(pagos.dlocalgo.paymentLink),
     dlocalOrderId: pagos.dlocalgo.orderId,
     dlocalPaymentId: pagos.dlocalgo.paymentId,
     merchantCheckoutToken: pagos.dlocalgo.merchantCheckoutToken,
@@ -204,6 +216,24 @@ type PreventaTierInput = {
   }>;
 };
 
+function mergePreventaOpcionesPago(
+  existing: PreventaTierInput['opcionesPago'],
+  nuevas: NonNullable<PreventaTierInput['opcionesPago']>
+): NonNullable<PreventaTierInput['opcionesPago']> {
+  const merged = [...(existing || [])];
+
+  for (const nueva of nuevas) {
+    const idx = merged.findIndex((o) => o.proveedor === nueva.proveedor);
+    if (idx >= 0) {
+      merged[idx] = { ...merged[idx], ...nueva };
+    } else {
+      merged.push(nueva);
+    }
+  }
+
+  return merged;
+}
+
 /** Genera links de pago para tiers de preventa que aún no los tienen. */
 export async function generateCursoPreciosPreventaLinks({
   productId,
@@ -229,36 +259,94 @@ export async function generateCursoPreciosPreventaLinks({
   for (let i = 0; i < preciosPreventa.length; i++) {
     const tier = preciosPreventa[i];
     const monto = Number(tier.monto) || 0;
-    const hasLinks = (tier.opcionesPago || []).some((o) => o.paymentLink);
+    const opcionesPago = tier.opcionesPago || [];
+    const needsStripe = !opcionesPago.some(
+      (o) => o.proveedor === 'stripe' && o.paymentLink?.trim()
+    );
+    const needsDlocal = !opcionesPago.some(
+      (o) => o.proveedor === 'dlocalgo' && o.paymentLink?.trim()
+    );
 
-    if (monto <= 0 || hasLinks) {
+    if (monto <= 0 || (!needsStripe && !needsDlocal)) {
       result.push(tier);
       continue;
     }
 
-    const pagos = await createCourseOneTimePayments({
-      productId,
-      nombre: `${nombre} — ${tier.etiqueta || `Preventa ${i + 1}`}`,
-      descripcion: tier.descripcion || descripcion,
-      precio: monto,
-      moneda: tier.moneda,
-      portadaUrl,
-      successUrl: `${successUrl}&preventaTier=${i}`,
-      origin,
-    });
+    const tierNombre = `${nombre} — ${tier.etiqueta || `Preventa ${i + 1}`}`;
+    const tierSuccessUrl = `${successUrl}&preventaTier=${i}`;
 
-    result.push({
-      ...tier,
-      opcionesPago: buildCursoOpcionesPago({
+    const pagos: Awaited<ReturnType<typeof createCourseOneTimePayments>> = {
+      stripe: { productId: '', priceId: '', paymentLink: '' },
+      dlocalgo: {
+        orderId: undefined,
+        paymentId: undefined,
+        paymentLink: undefined,
+        merchantCheckoutToken: undefined,
+      },
+    };
+
+    if (needsStripe) {
+      pagos.stripe = await createStripeCoursePaymentLink({
+        productId,
+        nombre: tierNombre,
+        descripcion: tier.descripcion || descripcion,
         precio: monto,
         moneda: tier.moneda,
-        pagos,
-      }).map((plan) => ({
+        portadaUrl,
+        successUrl: tierSuccessUrl,
+      });
+    }
+
+    if (needsDlocal) {
+      try {
+        const dlocalResult = await createCursoDlocalPaymentLink({
+          productId,
+          nombre: tierNombre,
+          descripcion: tier.descripcion || descripcion,
+          precio: monto,
+          moneda: tier.moneda,
+          origin,
+          orderSuffix: `preventa-${i}-${Date.now().toString(36)}`,
+        });
+        pagos.dlocalgo = {
+          orderId: dlocalResult.orderId,
+          paymentId: dlocalResult.paymentId,
+          paymentLink: dlocalResult.paymentLink,
+          merchantCheckoutToken: dlocalResult.merchantCheckoutToken,
+        };
+      } catch (error: unknown) {
+        const message =
+          error instanceof Error ? error.message : 'No se pudo crear el link de dLocal GO';
+        coursePaymentWarn('create_link.preventa.dlocal.failed', {
+          productId,
+          tierIndex: i,
+          message,
+        });
+      }
+    }
+
+    const nuevasOpciones = buildCursoOpcionesPago({
+      precio: monto,
+      moneda: tier.moneda,
+      pagos,
+    })
+      .filter((plan) => {
+        if (plan.proveedor === 'stripe') return needsStripe;
+        if (plan.proveedor === 'dlocalgo') {
+          return needsDlocal && Boolean(plan.paymentLink?.trim());
+        }
+        return false;
+      })
+      .map((plan) => ({
         ...plan,
         etiqueta: tier.etiqueta
           ? `${tier.etiqueta} — ${plan.proveedor === 'dlocalgo' ? 'cuotas' : 'tarjeta'}`
           : plan.etiqueta,
-      })),
+      }));
+
+    result.push({
+      ...tier,
+      opcionesPago: mergePreventaOpcionesPago(opcionesPago, nuevasOpciones),
     });
   }
 

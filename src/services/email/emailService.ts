@@ -18,9 +18,10 @@ const LOGO_URLS = {
 const EMAIL_COURSE_TRANSFER_COVER_IMAGE =
   'https://res.cloudinary.com/dbeem2avp/image/upload/my_uploads/mails/fondoMoveCrew_mu0l8z.jpg';
 
-// Estilo minimalista Cuerpo autónomo: tipografía fina, botones pill
+// Estilo minimalista MMOVE: tipografía fina, botones pill
 const EMAIL_BRAND = {
-  teamName: 'Cuerpo autónomo',
+  teamName: 'MMOVE',
+  platformName: 'MMOVE Online',
   copyright: 'MMOVE',
   font: "'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif",
   fontWeightLight: 300,
@@ -31,6 +32,103 @@ const EMAIL_BRAND = {
   btnStyleFilled: (href: string, label: string) =>
     `<a href="${href}" style="display:inline-block;color:${p.white};background:${p.ink};text-decoration:none;font-weight:400;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;padding:12px 28px;border-radius:9999px;font-family:${EMAIL_BRAND.font};border:none;">${label}</a>`,
 };
+
+const emailBtnCommonStyle = `display:inline-block;padding:11px 20px;text-decoration:none;border-radius:12px;font-size:14px;font-weight:500;font-family:${EMAIL_BRAND.font};margin:4px 6px;`;
+
+const EMAIL_BTN_PRIMARY = (href: string, label: string) =>
+  `<a href="${href}" style="${emailBtnCommonStyle}background:linear-gradient(135deg,rgba(7,70,71,0.08) 0%,rgba(172,174,137,0.12) 100%);color:${p.ink};border:1px solid rgba(7,70,71,0.2);box-shadow:0 2px 8px rgba(7,70,71,0.08);">${label}</a>`;
+
+const EMAIL_SECTION_TITLE = (title: string) =>
+  `<h2 style="color:${p.ink};font-size:21px;font-weight:700;margin:0 0 14px 0;text-align:left;font-family:${EMAIL_BRAND.font};letter-spacing:0.015em;line-height:1.3;">${title}</h2>`;
+
+const EMAIL_WELCOME_INTRO = (userName: string, courseName: string) =>
+  `<p style="color:${p.ink};font-size:20px;font-weight:700;margin:0 0 20px 0;text-align:left;font-family:${EMAIL_BRAND.font};letter-spacing:0.01em;line-height:1.45;">¡Hola ${userName}! Tu lugar en <strong style="font-weight:700;">${courseName}</strong> ya está confirmado.</p>`;
+
+const EMAIL_SUBSECTION_LABEL = (label: string) =>
+  `<p style="font-size:12px;color:rgba(0,0,0,0.52);letter-spacing:0.14em;text-transform:uppercase;margin:0 0 8px;font-weight:600;font-family:${EMAIL_BRAND.font};text-align:left;">${label}</p>`;
+
+const EMAIL_SUBSECTION_TITLE = (title: string) =>
+  `<p style="font-size:17px;color:${p.ink};font-weight:700;margin:0 0 8px;font-family:${EMAIL_BRAND.font};line-height:1.35;text-align:left;">${title}</p>`;
+
+const EMAIL_SECTION_DIVIDER = () =>
+  `<div style="border-top:1px solid rgba(0,0,0,0.1);margin:32px 0;font-size:0;line-height:0;height:0;">&nbsp;</div>`;
+
+const EMAIL_BTN_SAGE = (href: string, label: string) =>
+  `<a href="${href}" style="${emailBtnCommonStyle}background:${p.sage};color:${p.ink};border:1px solid rgba(172,174,137,0.5);box-shadow:0 2px 10px rgba(172,174,137,0.25);">${label}</a>`;
+
+const EMAIL_BTN_OUTLINE = (href: string, label: string) =>
+  `<a href="${href}" style="${emailBtnCommonStyle}background:transparent;color:${p.ink};border:1px solid rgba(20,20,17,0.22);">${label}</a>`;
+
+const EMAIL_BTN_WHATSAPP = (href: string, label: string) =>
+  `<a href="${href}" style="${emailBtnCommonStyle}background:linear-gradient(135deg,rgba(37,211,102,0.1) 0%,rgba(37,211,102,0.18) 100%);color:${p.ink};border:1px solid rgba(37,211,102,0.4);">${label}</a>`;
+
+function buildWelcomeCourseCommunityBlock(data: EmailData): string {
+  const proximo = data.proximoEncuentro as
+    | {
+        titulo?: string;
+        fechaFormateada?: string;
+        horaFormateada?: string;
+        zoomLink?: string;
+        googleCalendarUrl?: string;
+      }
+    | undefined;
+
+  const whatsappBtn = data.whatsappInviteUrl
+    ? `<div style="text-align:left;margin:10px 0 6px;">${EMAIL_BTN_WHATSAPP(String(data.whatsappInviteUrl), 'Unirme al grupo')}</div>`
+    : '';
+
+  const encuentroDate = proximo?.fechaFormateada
+    ? `<p style="font-size:16px;color:rgba(0,0,0,0.82);line-height:1.5;margin:8px 0 2px;text-align:left;font-weight:500;font-family:${EMAIL_BRAND.font};text-transform:capitalize;">${proximo.fechaFormateada}</p>
+       <p style="font-size:15px;color:rgba(0,0,0,0.68);line-height:1.5;margin:0 0 12px;text-align:left;font-weight:400;font-family:${EMAIL_BRAND.font};">${proximo.horaFormateada} hs · Uruguay</p>`
+    : `<p style="font-size:15px;color:rgba(0,0,0,0.68);line-height:1.55;margin:8px 0 12px;text-align:left;font-weight:400;font-family:${EMAIL_BRAND.font};">Los encuentros mensuales se anuncian en el grupo de WhatsApp.</p>`;
+
+  const encuentroBtns = [
+    proximo?.googleCalendarUrl
+      ? EMAIL_BTN_PRIMARY(String(proximo.googleCalendarUrl), 'Agregar al calendario')
+      : '',
+    proximo?.zoomLink ? EMAIL_BTN_OUTLINE(String(proximo.zoomLink), 'Abrir Zoom') : '',
+  ]
+    .filter(Boolean)
+    .join('');
+
+  const mateoBtns = [
+    data.mateoWhatsappUrl ? EMAIL_BTN_WHATSAPP(String(data.mateoWhatsappUrl), String(data.mateoCtaTexto || 'Escribirme por WhatsApp')) : '',
+    data.mentoriaUrl ? EMAIL_BTN_OUTLINE(String(data.mentoriaUrl), 'Conocer la mentoría') : '',
+  ]
+    .filter(Boolean)
+    .join('');
+
+  return `
+    <div style="margin:0;">
+      <div style="margin:0 0 24px;">
+        ${EMAIL_SUBSECTION_LABEL('1 · Comunidad')}
+        ${EMAIL_SUBSECTION_TITLE('Comunidad de WhatsApp')}
+        <p style="font-size:15px;color:rgba(0,0,0,0.72);line-height:1.55;margin:0 0 4px;font-weight:400;font-family:${EMAIL_BRAND.font};text-align:left;">
+          Conectá con otros alumnos y con Mateo. Avisos, soporte y novedades del programa.
+        </p>
+        ${whatsappBtn}
+      </div>
+
+      <div style="margin:0 0 24px;padding-top:20px;border-top:1px solid rgba(0,0,0,0.06);">
+        ${EMAIL_SUBSECTION_LABEL('2 · En vivo')}
+        ${EMAIL_SUBSECTION_TITLE(proximo?.titulo || 'Próximo encuentro en vivo')}
+        <p style="font-size:15px;color:rgba(0,0,0,0.72);line-height:1.55;margin:0 0 4px;font-weight:400;font-family:${EMAIL_BRAND.font};text-align:left;">
+          Q&amp;A grupal para dudas, correcciones y profundizar técnica.
+        </p>
+        ${encuentroDate}
+        ${encuentroBtns ? `<div style="text-align:left;margin:12px 0 0;">${encuentroBtns}</div>` : ''}
+      </div>
+
+      <div style="margin:0;padding-top:20px;border-top:1px solid rgba(0,0,0,0.06);">
+        ${EMAIL_SUBSECTION_LABEL('3 · Contacto')}
+        ${EMAIL_SUBSECTION_TITLE('Diagnóstico técnico con Mateo')}
+        <p style="font-size:15px;color:rgba(0,0,0,0.72);line-height:1.55;margin:0 0 4px;font-weight:400;font-family:${EMAIL_BRAND.font};text-align:left;">
+          ¿Tenés una consulta específica o querés ir más profundo? También es el puente hacia la mentoría.
+        </p>
+        ${mateoBtns ? `<div style="text-align:left;margin:12px 0 0;">${mateoBtns}</div>` : ''}
+      </div>
+    </div>`;
+}
 
 // Tipos de email disponibles
 export enum EmailType {
@@ -47,6 +145,7 @@ export enum EmailType {
   WELCOME_EMAIL = 'welcome_email',
   WELCOME_MENTORSHIP = 'welcome_mentorship',
   WELCOME_MEMBERSHIP = 'welcome_membership',
+  WELCOME_COURSE = 'welcome_course',
   COURSE_COMPLETION = 'course_completion',
   REMINDER_EMAIL = 'reminder_email',
   TRANSFORMATIONAL_PROGRAM_WEEK = 'transformational_program_week',
@@ -99,13 +198,15 @@ const getBaseTemplateUser = (content: string) => `
     <!--[if mso]>
     <style type="text/css">body, table, td { font-family: Arial, sans-serif !important; }</style>
     <![endif]-->
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
       body, table, td, p, a, li { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-      h1, h2, h3, p, span, a { font-family: ${EMAIL_FONT} !important; font-weight: 300 !important; }
+      h1, h2, h3, p, span { font-family: ${EMAIL_FONT} !important; font-weight: 400 !important; }
+      a { font-family: ${EMAIL_FONT} !important; }
+      a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; font-size: inherit !important; font-family: inherit !important; font-weight: inherit !important; }
     </style>
   </head>
-  <body style="margin: 0; padding: 0; background-color: ${p.cream}; font-family: ${EMAIL_FONT}; font-weight: 300; -webkit-font-smoothing: antialiased;">
+  <body style="margin: 0; padding: 0; background-color: ${p.cream}; font-family: ${EMAIL_FONT}; font-weight: 400; -webkit-font-smoothing: antialiased;">
     <div style="background-color: ${p.cream}; padding: 32px 16px;">
       <div style="max-width: 520px; margin: 0 auto; background-color: ${p.white}; padding: 0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(20, 20, 17, 0.04);">
         <div style="padding: 28px 24px 24px; text-align: center; border-bottom: 1px solid rgba(120, 120, 103, 0.12);">
@@ -115,8 +216,8 @@ const getBaseTemplateUser = (content: string) => `
         </div>
       ${content}
         <div style="padding: 24px; text-align: center; border-top: 1px solid rgba(120, 120, 103, 0.12);">
-          <p style="font-size: 12px; color: ${p.stone}; margin: 0 0 6px 0; font-weight: 300; letter-spacing: 0.02em;">El equipo de ${EMAIL_BRAND.teamName}</p>
-          <p style="font-size: 11px; color: ${p.stone}; margin: 0; font-weight: 300; opacity: 0.7;">© 2025 ${EMAIL_BRAND.copyright}. Todos los derechos reservados.</p>
+          <p style="font-size: 13px; color: ${p.stone}; margin: 0 0 6px 0; font-weight: 400; letter-spacing: 0.02em;">El equipo de ${EMAIL_BRAND.teamName}</p>
+          <p style="font-size: 12px; color: ${p.stone}; margin: 0; font-weight: 400; opacity: 0.75;">© 2025 ${EMAIL_BRAND.copyright}. Todos los derechos reservados.</p>
         </div>
       </div>
     </div>
@@ -314,7 +415,7 @@ const emailTemplates = {
         <!-- Footer informativo -->
         <div style="background: rgba(255, 255, 255, 0.02); padding: 16px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05);">
           <p style="font-size: 11px; color: rgba(255, 255, 255, 0.4); margin: 0; font-weight: 300; text-align: center; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-            Este es un email automático del sistema de contacto de Cuerpo autónomo.
+            Este es un email automático del sistema de contacto de MMOVE.
           </p>
         </div>
       </div>
@@ -432,7 +533,7 @@ const emailTemplates = {
           <tr>
             <td style="text-align: center; padding: 0;">
               <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764363987/my_uploads/mails/fondoMoveCrew_1_k98l1d.png" 
-                   alt="Bienvenida Cuerpo autónomo" 
+                   alt="Bienvenida MMOVE Online" 
                    width="420"
                    height="260"
                    style="width: 100%; max-width: 420px; height: auto; border-radius: 14px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
@@ -485,7 +586,7 @@ const emailTemplates = {
           <tr>
             <td style="text-align: center; padding: 0;">
               <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png" 
-                   alt="Cuerpo autónomo" 
+                   alt="MMOVE Online" 
                    width="400"
                    height="267"
                    style="width: 100%; max-width: 400px; height: auto; border-radius: 10px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
@@ -531,7 +632,7 @@ const emailTemplates = {
 
         <!-- Mensaje de reactivación -->
         <p style="font-size: 15px; color: rgba(0, 0, 0, 0.7); line-height: 1.6; margin: 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-          Si en algún momento querés retomar tu proceso con nosotros, estaremos acá. Las puertas de Cuerpo autónomo siempre están abiertas.
+          Si en algún momento querés retomar tu proceso con nosotros, estaremos acá. Siempre vas a poder volver cuando quieras.
       </p>
 
         <!-- Botón CTA para reactivar -->
@@ -572,7 +673,7 @@ const emailTemplates = {
           <tr>
             <td style="text-align: center; padding: 0;">
               <img src="${EMAIL_COURSE_TRANSFER_COVER_IMAGE}"
-                   alt="Cuerpo autónomo"
+                   alt="MMOVE Online"
                    width="420"
                    height="260"
                    style="width: 100%; max-width: 420px; height: auto; border-radius: 14px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
@@ -600,9 +701,7 @@ const emailTemplates = {
       ${
         data.whatsappProofUrl
           ? `<div style="text-align: center; margin-bottom: 20px;">
-        <a href="${data.whatsappProofUrl}" style="background-color: #25D366; color: ${p.white}; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 500; display: inline-block;">
-          Enviar comprobante por WhatsApp
-        </a>
+        ${EMAIL_BTN_WHATSAPP(String(data.whatsappProofUrl), 'Enviar comprobante por WhatsApp')}
       </div>`
           : ''
       }
@@ -648,7 +747,7 @@ const emailTemplates = {
           <tr>
             <td style="text-align: center; padding: 0;">
               <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764426772/my_uploads/mails/fondoMoveCrew_2_do594q.png" 
-                   alt="Cuerpo autónomo" 
+                   alt="MMOVE Online" 
                    width="400"
                    height="267"
                    style="width: 100%; max-width: 400px; height: auto; border-radius: 10px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
@@ -769,13 +868,13 @@ const emailTemplates = {
     const content = `
       <!-- Header minimalista -->
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
-        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; text-align: center;">¡Bienvenido a la Cuerpo autónomo!</div>
+        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; text-align: center;">¡Bienvenido a ${EMAIL_BRAND.platformName}!</div>
         <!-- Imagen debajo del título -->
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 16px auto 0; max-width: 400px; width: 100%;">
           <tr>
             <td style="text-align: center; padding: 0;">
               <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764363987/my_uploads/mails/fondoMoveCrew_1_k98l1d.png" 
-                   alt="Cuerpo autónomo" 
+                   alt="MMOVE Online" 
                    width="400"
                    height="267"
                    style="width: 100%; max-width: 400px; height: auto; border-radius: 10px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
@@ -857,8 +956,86 @@ el bienestar fisico y emocional.
             Comunidad WhatsApp
           </a>
           <p style="font-size: 13px; color: rgba(0, 0, 0, 0.6); line-height: 1.5; margin: 10px 0 0; text-align: center; font-weight: 400; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-            Allí compartimos avisos, soporte y las novedades de la Cuerpo autónomo.
+            Allí compartimos avisos, soporte y las novedades de la plataforma.
           </p>
+        </div>
+      </div>
+    `;
+    return getBaseTemplateUser(content);
+  },
+
+  [EmailType.WELCOME_COURSE]: (data: EmailData) => {
+    const courseName = data.courseName || 'tu curso';
+    const coverImage =
+      data.coverImageUrl ||
+      'https://res.cloudinary.com/dbeem2avp/image/upload/v1764363987/my_uploads/mails/fondoMoveCrew_1_k98l1d.png';
+    const incluyeTitulo = data.incluyeTitulo || 'Lo que incluye tu curso';
+
+    const offerBlocks = Array.isArray(data.offerBlocks) ? data.offerBlocks : [];
+    const offerBlocksHtml =
+      offerBlocks.length > 0
+        ? offerBlocks
+            .map(
+              (block: { title?: string; hint?: string }, index: number) => `
+            <div style="margin: 0 0 ${index < offerBlocks.length - 1 ? '16px' : '0'}; padding-bottom: ${index < offerBlocks.length - 1 ? '16px' : '0'}; border-bottom: ${index < offerBlocks.length - 1 ? '1px solid rgba(0, 0, 0, 0.06)' : 'none'};">
+              <p style="color: ${p.ink}; font-size: 15px; margin: 0 0 6px 0; line-height: 1.45; font-weight: 700; font-family: ${EMAIL_BRAND.font}; mso-line-height-rule: exactly;">
+                ${block.title || ''}
+              </p>
+              ${
+                block.hint
+                  ? `<p style="color: rgba(0, 0, 0, 0.72); font-size: 15px; margin: 0; line-height: 1.55; font-weight: 400; font-family: ${EMAIL_BRAND.font}; mso-line-height-rule: exactly;">${block.hint}</p>`
+                  : ''
+              }
+            </div>`
+            )
+            .join('')
+        : `<p style="color: rgba(0, 0, 0, 0.75); font-size: 15px; margin: 0; line-height: 1.55; font-weight: 400; font-family: ${EMAIL_BRAND.font}; mso-line-height-rule: exactly;">Acceso completo al contenido del curso</p>`;
+
+    const communityBlock = buildWelcomeCourseCommunityBlock(data);
+    const welcomeUrl = data.welcomeUrl || data.dashboardUrl || 'https://mateomove.com';
+    const userName = data.name || 'Mover';
+
+    const content = `
+      <div style="padding: 32px 24px 32px; text-align: left;">
+        ${EMAIL_WELCOME_INTRO(userName, courseName)}
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 0 8px 0; max-width: 400px; width: 100%;">
+          <tr>
+            <td style="text-align: left; padding: 0;">
+              <img src="${coverImage}"
+                   alt="${courseName}"
+                   width="400"
+                   height="267"
+                   style="width: 100%; max-width: 400px; height: auto; border-radius: 10px; display: block; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
+                   border="0" />
+            </td>
+          </tr>
+        </table>
+
+        ${EMAIL_SECTION_DIVIDER()}
+
+        <div>
+          ${EMAIL_SECTION_TITLE(incluyeTitulo)}
+          <div style="background: ${p.cream}; padding: 20px 20px 18px; border-radius: 12px;">
+            ${offerBlocksHtml}
+          </div>
+        </div>
+
+        ${EMAIL_SECTION_DIVIDER()}
+
+        <div>
+          ${EMAIL_SECTION_TITLE('Información relevante')}
+          ${communityBlock}
+        </div>
+
+        ${EMAIL_SECTION_DIVIDER()}
+
+        <div style="text-align: center;">
+          <p style="font-size: 16px; color: rgba(0, 0, 0, 0.75); line-height: 1.65; margin: 0 0 20px 0; text-align: center; font-weight: 500; font-family: ${EMAIL_BRAND.font}; mso-line-height-rule: exactly;">
+            Simple, claro y sostenible. <strong style="font-weight: 600;">Hecho para acompañar tu día a día.</strong>
+          </p>
+          <div style="text-align: center; margin: 0;">
+            ${EMAIL_BTN_PRIMARY(welcomeUrl, 'Comenzar ahora')}
+          </div>
         </div>
       </div>
     `;
@@ -970,9 +1147,7 @@ el bienestar fisico y emocional.
 
       ${data.invitacionGrupoWhatsapp || data.grupoWhatsapp || data.whatsappInviteUrl ? `
       <div style="text-align: center; margin: 24px 0;">
-        <a href="${data.invitacionGrupoWhatsapp || data.grupoWhatsapp || data.whatsappInviteUrl}" style="background-color: #25D366; color: ${p.white}; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
-          Unirme al grupo de WhatsApp del evento
-        </a>
+        ${EMAIL_BTN_WHATSAPP(String(data.invitacionGrupoWhatsapp || data.grupoWhatsapp || data.whatsappInviteUrl), 'Unirme al grupo de WhatsApp del evento')}
         <p style="margin: 12px 0 0; color: ${p.stone}; font-size: 14px;">Invitación al grupo de este evento (distinta del link general de la comunidad).</p>
       </div>
       ` : ''}
@@ -1174,7 +1349,7 @@ el bienestar fisico y emocional.
           <div style="text-align: left;">
             <div style="margin: 10px 0; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
               <p style="margin: 0 0 3px 0; color: rgba(255, 255, 255, 0.5); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px;">Plan</p>
-              <p style="margin: 0; color: ${p.white}; font-size: 14px; font-weight: 500;">${data.planName || 'Cuerpo autónomo'}</p>
+              <p style="margin: 0; color: ${p.white}; font-size: 14px; font-weight: 500;">${data.planName || 'Membresía'}</p>
             </div>
             <div style="margin: 10px 0; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
               <p style="margin: 0 0 3px 0; color: rgba(255, 255, 255, 0.5); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px;">Estado</p>
@@ -1238,7 +1413,7 @@ el bienestar fisico y emocional.
         <!-- Footer de notificación -->
         <div style="text-align: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
           <p style="font-size: 11px; color: rgba(255, 255, 255, 0.4); margin: 3px 0; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-            Este es un email automático del sistema de notificaciones de Cuerpo autónomo.
+            Este es un email automático del sistema de notificaciones de MMOVE.
           </p>
           <p style="font-size: 11px; color: rgba(255, 255, 255, 0.4); margin: 3px 0; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
             Si recibiste este email por error, por favor ignorálo.
@@ -1292,7 +1467,7 @@ el bienestar fisico y emocional.
           <div style="text-align: left;">
             <div style="margin: 10px 0; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
               <p style="margin: 0 0 3px 0; color: rgba(255, 255, 255, 0.5); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px;">Plan</p>
-              <p style="margin: 0; color: ${p.white}; font-size: 14px; font-weight: 500;">${data.planName || 'Cuerpo autónomo'}</p>
+              <p style="margin: 0; color: ${p.white}; font-size: 14px; font-weight: 500;">${data.planName || 'Membresía'}</p>
             </div>
             <div style="margin: 10px 0; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
               <p style="margin: 0 0 3px 0; color: rgba(255, 255, 255, 0.5); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px;">Fecha de Cancelación</p>
@@ -1354,7 +1529,7 @@ el bienestar fisico y emocional.
         <!-- Footer de notificación -->
         <div style="text-align: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
           <p style="font-size: 11px; color: rgba(255, 255, 255, 0.4); margin: 3px 0; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-            Este es un email automático del sistema de notificaciones de Cuerpo autónomo.
+            Este es un email automático del sistema de notificaciones de MMOVE.
           </p>
         </div>
       </div>
@@ -1405,7 +1580,7 @@ el bienestar fisico y emocional.
           <div style="text-align: left;">
             <div style="margin: 10px 0; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
               <p style="margin: 0 0 3px 0; color: rgba(255, 255, 255, 0.5); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px;">Plan</p>
-              <p style="margin: 0; color: ${p.white}; font-size: 14px; font-weight: 500;">${data.planName || data.productName || 'Cuerpo autónomo'}</p>
+              <p style="margin: 0; color: ${p.white}; font-size: 14px; font-weight: 500;">${data.planName || data.productName || 'Membresía'}</p>
             </div>
             ${data.amount ? `
             <div style="margin: 10px 0; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
@@ -1475,7 +1650,7 @@ el bienestar fisico y emocional.
         <!-- Footer de notificación -->
         <div style="text-align: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
           <p style="font-size: 11px; color: rgba(255, 255, 255, 0.4); margin: 3px 0; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-            Este es un email automático del sistema de notificaciones de Cuerpo autónomo.
+            Este es un email automático del sistema de notificaciones de MMOVE.
           </p>
         </div>
       </div>
@@ -1671,13 +1846,13 @@ el bienestar fisico y emocional.
     const content = `
       <!-- Header minimalista -->
       <div style="padding: 32px 20px 24px; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08);">
-        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; text-align: center;">¡Bienvenido a la Cuerpo autónomo!</div>
+        <div style="color: ${p.ink}; font-size: 28px; font-weight: 300; margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; line-height: 1.2; text-align: center;">¡Bienvenido a ${EMAIL_BRAND.platformName}!</div>
         <div style="color: rgba(0, 0, 0, 0.6); font-size: 18px; font-weight: 500; margin: 0; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;">
           Primer Círculo
         </div>
         <div style="margin: 18px auto 0; text-align: center;">
           <img src="https://res.cloudinary.com/dbeem2avp/image/upload/v1764363987/my_uploads/mails/moveCrewBienvenida_bipiwj.png"
-               alt="Cuerpo autónomo"
+               alt="MMOVE Online"
                width="520"
                height="320"
                style="display: block; width: 100%; max-width: 520px; height: auto; border-radius: 16px; border: 1px solid rgba(0,0,0,0.06); margin: 0 auto;" />
@@ -1687,7 +1862,7 @@ el bienestar fisico y emocional.
       <!-- Contenido principal -->
       <div style="padding: 28px 20px;">
         <p style="font-size: 16px; color: rgba(0, 0, 0, 0.8); line-height: 1.6; margin: 0 0 24px 0; text-align: center; font-weight: 300; font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif; mso-line-height-rule: exactly;">
-          ¡Hola ${data.name}! Tu viaje en Cuerpo autónomo comienza ahora.
+          ¡Hola ${data.name}! Tu viaje en ${EMAIL_BRAND.platformName} comienza ahora.
         </p>
 
         <!-- Mensaje motivacional -->
@@ -1794,6 +1969,7 @@ export class EmailService {
         EmailType.WELCOME_EMAIL,
         EmailType.ONBOARDING_WELCOME,
         EmailType.WELCOME_MEMBERSHIP,
+        EmailType.WELCOME_COURSE,
         EmailType.WELCOME_MENTORSHIP,
         EmailType.COURSE_COMPLETION,
         EmailType.TRANSFORMATIONAL_PROGRAM_WEEK,
@@ -1906,7 +2082,7 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.ACCOUNT_CREATED,
       to: data.email,
-      subject: 'Tu acceso a Cuerpo autónomo',
+      subject: `Tu acceso a ${EMAIL_BRAND.platformName}`,
       data
     });
   }
@@ -1924,7 +2100,7 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.WELCOME_EMAIL,
       to: data.email,
-      subject: '¡Bienvenido a Cuerpo autónomo!',
+      subject: `¡Bienvenido a ${EMAIL_BRAND.platformName}!`,
       data
     });
   }
@@ -1933,7 +2109,7 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.SUBSCRIPTION_CANCELLED,
       to: data.email,
-      subject: 'Tu viaje continúa - Cuerpo autónomo',
+      subject: 'Tu viaje continúa - MMOVE',
       data
     });
   }
@@ -1951,7 +2127,7 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.PAYMENT_FAILED,
       to: data.email,
-      subject: 'Tu proceso es importante - Cuerpo autónomo',
+      subject: 'Tu proceso es importante - MMOVE',
       data
     });
   }
@@ -1969,7 +2145,17 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.WELCOME_MEMBERSHIP,
       to: data.email,
-      subject: '¡Bienvenido a la Cuerpo autónomo!',
+      subject: `¡Bienvenido a ${EMAIL_BRAND.platformName}!`,
+      data
+    });
+  }
+
+  public async sendWelcomeCourse(data: EmailData) {
+    const courseName = data.courseName || 'tu curso';
+    return this.sendEmail({
+      type: EmailType.WELCOME_COURSE,
+      to: data.email,
+      subject: `Te doy la bienvenida a ${courseName}`,
       data
     });
   }
@@ -1978,7 +2164,7 @@ export class EmailService {
     return this.sendEmail({
       type: EmailType.ONBOARDING_WELCOME,
       to: data.email,
-      subject: '¡Bienvenido a Cuerpo autónomo! - El Primer Círculo',
+      subject: `¡Bienvenido a ${EMAIL_BRAND.platformName}! - El Primer Círculo`,
       data
     });
   }

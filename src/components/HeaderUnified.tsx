@@ -15,7 +15,8 @@ import { useAppSelector } from '../redux/hooks';
 import { useAuth } from '../hooks/useAuth';
 import { useLogout } from '../hooks/useLogout';
 import { routes } from '../constants/routes';
-import { isCursoPublicPath } from '../lib/cursoPaths';
+import { hasActiveMentorship } from '../lib/mentorshipUser';
+import { isCursoPublicPath, parseCursoPublicPath } from '../lib/cursoPaths';
 import { PiHouseLineThin } from 'react-icons/pi';
 import { SiEditorconfig } from 'react-icons/si';
 import { ArrowLeftEndOnRectangleIcon, ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -23,6 +24,8 @@ import { BiLeftArrow } from 'react-icons/bi';
 import { BsMenuButton } from 'react-icons/bs';
 import { CrossIcon } from 'react-select/dist/declarations/src/components/indicators';
 import { IoCloseOutline } from 'react-icons/io5';
+import HeaderCoursesMenu from './HeaderCoursesMenu';
+import UserAvatarBadge from './UserAvatarBadge';
 
 interface Props {
 	user: User | null;
@@ -63,14 +66,28 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	);
 
     const isMentorship = path === routes.navegation.mentorship;
+    const isMentorshipCheckout =
+      path.startsWith(`${routes.navegation.mentorship}/empezar`) ||
+      path.startsWith(`${routes.navegation.mentorship}/exito`);
+    const cursoPublicPath = parseCursoPublicPath(path);
     const isCursoLanding = isCursoPublicPath(path);
-	/** Landing comercial: mentoría y páginas de curso */
-	const isMembershipLanding = isMentorship || isCursoLanding;
+    /** Hub de contenido del curso (fondo oscuro, header claro). */
+    const isCursoContenidoHub = cursoPublicPath?.subpath === 'contenido';
+    /** Reproductor de clase del curso. */
+    const isCursoClasePage = cursoPublicPath?.subpath === 'clase';
+    /** Landing comercial: mentoría, landing y checkout de curso (no contenido/clase). */
+    const isCursoCommercialLanding =
+      isCursoLanding && !isCursoContenidoHub && !isCursoClasePage;
+	const isMembershipLanding = isMentorship || isMentorshipCheckout || isCursoCommercialLanding;
+	const showHeaderSecondaryNav = !isCursoCommercialLanding;
     const isPaymentSuccess = path === routes.navegation.paymentSuccess;
     const isAccount = path === routes.user.perfil || path.startsWith(routes.navegation.account);
 
 	const isWeeklyPath = (path === routes.navegation.membership.weeklyPath || path.startsWith(routes.navegation.membership.weeklyPath));
 	const isBienvenida = path === routes.navegation.onboarding.bienvenida || path.startsWith(routes.navegation.onboarding.bienvenida);
+	const isMentorshipConsulta =
+		path === routes.navegation.mentorshipConsulta ||
+		path.startsWith(`${routes.navegation.mentorshipConsulta}/`);
 	const isInfoLight =
 		path === routes.navegation.preguntasFrecuentes ||
 		path === routes.navegation.about ||
@@ -303,7 +320,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
                         ? true
                         : ((isAccount || isWeeklyPath)
                             ? false
-                            : (isMentorship
+                            : (isMentorship || isMentorshipConsulta
                                 ? true
                                 : (isCursoLanding
                                     ? false
@@ -313,19 +330,35 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
     // Páginas informativas con fondo claro (ej. /terminos): aunque el header sea transparente,
     // el texto debe ser oscuro para mantener contraste.
     const isLightTextBaseEffective = isInfoLight ? false : isLightTextBase;
-    // En weekly path y práctica (video): texto blanco. En página de módulo: sin scroll blanco, con scroll negro. Resto de library: texto negro. Con navegación abierta: texto claro.
-    const isLightText = isWeeklyPath ? true : (isLibraryPracticePage ? true : (isLibraryModulePage ? !scrolled : (isLibraryArea ? (forceLight ? true : false) : (forceLight ? true : isLightTextBaseEffective))));
+    // En weekly path y práctica (video): texto blanco. En módulo de biblioteca o hub de curso: sin scroll blanco, con scroll negro. Resto de library: texto negro. Con navegación abierta: texto claro.
+    const isLightText = isWeeklyPath
+        ? true
+        : (isLibraryPracticePage
+            ? true
+            : (isLibraryModulePage
+                ? !scrolled
+                : (isCursoClasePage
+                    ? true
+                    : (isCursoContenidoHub
+                        ? !scrolled
+                        : (isLibraryArea
+                            ? (forceLight ? true : false)
+                            : (forceLight ? true : isLightTextBaseEffective))))));
 
     // Si el texto es claro y hay scroll, aplicar fondo difuminado para contraste (no en etapa 1 index). Cuerpo autónomo no cambia.
     if (!isMembershipLanding && !isLibraryArea && scrolled && isLightText && !isIndexStage1) {
         headerBgClass = 'bg-black/40 backdrop-blur-md';
     }
+    // Consulta mentoría: header claro al scrollear (sin pasar a texto oscuro ni fondo blanco).
+    if (isMentorshipConsulta && scrolled) {
+        headerBgClass = 'bg-palette-ink/45 backdrop-blur-md';
+    }
     // Páginas informativas con fondo claro: al scrollear, fondo blanco (como cursos / Cuerpo autónomo).
     if (isInfoLight && scrolled) {
         headerBgClass = 'bg-white/90 backdrop-blur-sm';
     }
-    // Solo en página de módulo (/biblioteca/modulo/xxx), cuando hay scroll: fondo blanco y texto negro. En práctica (video) el header siempre transparente.
-    if (isLibraryModulePage && !isLibraryPracticePage && scrolled) {
+    // Solo en página de módulo (/biblioteca/modulo/xxx) o hub de curso (/slug/contenido), cuando hay scroll: fondo blanco y texto negro. En práctica (video) el header siempre transparente.
+    if ((isLibraryModulePage && !isLibraryPracticePage && scrolled) || (isCursoContenidoHub && scrolled)) {
         headerBgClass = 'bg-white backdrop-blur-sm';
     }
     // Resto de library (/biblioteca, /biblioteca/clases-individuales...) al hacer scroll: fondo crema
@@ -340,12 +373,16 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	const textColorMuted = isIndexStage1 ? 'text-gray-600 hover:text-black' : (isLightText ? 'text-white/60 hover:text-white' : (isAuth || isIndex ? 'text-gray-300 hover:text-gray-100' : 'text-gray-600 hover:text-gray-800'));
 	const underlineFill = isWeeklyPath ? 'white' : (isLightText ? 'white' : 'black');
 
-	// Color del título MMOVE ACADEMY: en weekly path y práctica (video) siempre blanco; en página de módulo blanco sin scroll, negro con scroll; resto de library negro. Con navegación abierta: siempre claro.
+	// Color del título MMOVE ACADEMY: en weekly path y práctica (video) siempre blanco; en módulo de biblioteca o hub de curso blanco sin scroll, negro con scroll; resto de library negro. Con navegación abierta: siempre claro.
 	const headerTitleLight = (isWeeklyPath
 		? true
 		: (isLibraryPracticePage
 		? true
 		: (isLibraryModulePage
+		? !scrolled
+		: (isCursoClasePage
+		? true
+		: (isCursoContenidoHub
 		? !scrolled
 		: (isLibraryArea
 			? false
@@ -357,13 +394,22 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 						? false
 							: (isAccount
 							? forceLight
-							: ((isAuth || isIndex) ? true : isLightText))))))))) || forceLightByNav;
+							: ((isAuth || isIndex) ? true : isLightText))))))))))) || forceLightByNav;
 
 	// En página de práctica (video) los botones del header con fondo opaco para que se vean
-	const headerButtonsOpaque = isLibraryPracticePage;
+	const headerButtonsOpaque = isLibraryPracticePage || isCursoClasePage;
 
 	const membershipLandingButtonClass =
-		'text-palette-ink border border-palette-stone/50 hover:border-palette-sage hover:bg-palette-sage/30';
+		'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-cream';
+
+	const headerIconButtonClass = (light: boolean) =>
+		light
+			? isMembershipLanding
+				? 'text-white border-white/40 hover:bg-white/15 hover:border-white/70'
+				: 'text-white border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage'
+			: isMembershipLanding
+				? 'text-palette-ink border-palette-stone/40 hover:bg-palette-cream hover:border-palette-stone/60'
+				: 'text-palette-ink border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage';
 
 	// Logo MMOVE ACADEMY en blanco en weekly path y cuando el menú o el navegador Cuerpo autónomo están abiertos
 	const logoLight = headerTitleLight || showNav || snap.weeklyPathNavOpen || isWeeklyPath;
@@ -371,6 +417,16 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	const linkBase = `block text-base/6 cursor-pointer focus:outline-none transition-colors duration-200`;
 	const linkMuted = `${textColorMuted}`;
 	const linkActive = isLightText ? 'text-white' : 'text-[#234C8C]';
+	const headerNavLinkClass = (active: boolean) =>
+		`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${
+			headerTitleLight
+				? active
+					? 'text-white font-semibold'
+					: 'text-white/80 hover:text-white font-light'
+				: active
+					? 'text-palette-ink font-semibold'
+					: 'text-palette-stone hover:text-palette-ink font-light'
+		}`;
 
 	const menuOpenOnMobile = (snap.weeklyPathNavOpen || snap.bitacoraNavOpen) && isMobile;
 
@@ -414,12 +470,15 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								<div className="mr-4 md:mr-24">{brandBlock('text-sm md:text-xl', true)}</div>
 								<div className="hidden md:flex items-center gap-6 shrink-0 flex-wrap">
 								<span className={`hidden md:block shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'}`}>|</span>
-									<Link href={routes.navegation.eventos} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${isLightText ? (isEvents ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isEvents ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}`}>
+									<Link href={routes.navegation.eventos} className={`${headerNavLinkClass(isEvents)} whitespace-nowrap`}>
 										Eventos
 									</Link>
-									<Link href={routes.navegation.mentorship} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 whitespace-nowrap ${isLightText ? (isMentorship ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isMentorship ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}`}>
+									<Link href={routes.navegation.mentorship} className={`${headerNavLinkClass(isMentorship)} whitespace-nowrap`}>
 										Mentoría
 									</Link>
+									{auth?.user ? (
+										<HeaderCoursesMenu lightText={isLightText} isActive={isCursoLanding} />
+									) : null}
 								</div>
 							</div>
 							{/* Derecha: en móvil = dropdown + usuario + menú; en desktop = Menú + Admin + usuario */}
@@ -439,7 +498,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 													if (tutorialActive) return;
 													state.weeklyPathNavOpen = !snap.weeklyPathNavOpen;
 												}}
-												className={`rounded-full p-2 border transition-colors ${isLightText ? 'text-white border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage'}`}
+												className={`rounded-full p-2 border transition-colors ${headerIconButtonClass(isLightText)}`}
 												aria-expanded={snap.weeklyPathNavOpen}
 												aria-label="Menú"
 											>
@@ -452,7 +511,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									<button
 										type="button"
 										onClick={(e) => { e.stopPropagation(); setEventsMentorshipOpen((v) => !v); }}
-										className={`rounded-full p-2 border transition-colors ${isLightText ? 'text-white border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage'}`}
+										className={`rounded-full p-2 border transition-colors ${headerIconButtonClass(isLightText)}`}
 										aria-expanded={eventsMentorshipOpen}
 										aria-haspopup="true"
 										aria-label="Mentoría y eventos"
@@ -464,7 +523,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 											<Link href={routes.navegation.eventos} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isEvents ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-sage/25'}`} onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
 											<Link href={routes.navegation.mentorship} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMentorship ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-white/10'}`} onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
 											{!auth?.user && (
-												<button type="button" className="block w-full text-left px-4 py-2.5 font-montserrat font-light text-xs tracking-[0.12em] uppercase text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.loginForm = true; }}>Iniciar sesión</button>
+												<button type="button" className="block w-full text-left px-4 py-2.5 font-montserrat font-light text-xs tracking-[0.12em] uppercase text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.authModalMode = 'login'; state.loginForm = true; }}>Iniciar sesión</button>
 											)}
 										</div>
 									)}
@@ -488,13 +547,12 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 														<circle cx="20" cy="20" r={r} fill="none" stroke="rgba(249,115,22,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeDasharray={`${circumference} ${circumference}`} strokeDashoffset={strokeDashoffset} className="transition-all duration-500" />
 													</svg>
 												)}
-												<div className={`w-8 h-8 rounded-full overflow-hidden bg-palette-ink/80 flex items-center justify-center text-palette-cream font-montserrat font-semibold text-xs ring-2 ${isLightText ? 'ring-white/30' : 'ring-palette-stone/30'}`}>
-													{(auth.user as any).profileImageUrl ? (
-														<img src={(auth.user as any).profileImageUrl} alt="" className="w-full h-full object-cover" />
-													) : (
-														<span>{(auth.user.nombre || auth.user.name || auth.user.email || 'U').charAt(0).toUpperCase()}</span>
-													)}
-												</div>
+												<UserAvatarBadge
+													user={auth.user}
+													size="sm"
+													onDarkHeader={isLightText}
+													ringClassName={isLightText ? 'ring-white/30' : 'ring-palette-stone/30'}
+												/>
 												{isWeeklyPath && hasSub && userLevel != null && (
 													<span className="absolute -bottom-1 -right-1 min-w-[14px] h-3.5 rounded-full bg-palette-sage/90 text-palette-ink text-[10px] font-bold flex items-center justify-center px-1">{userLevel}</span>
 												)}
@@ -503,6 +561,9 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 										{profileMenuOpen && (
 											<div className="absolute right-0 top-full mt-2 w-44 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
 												<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
+												{hasActiveMentorship(auth.user) ? (
+													<Link href={`${routes.user.perfil}#mentoria`} className="block px-4 py-2.5 text-sm font-montserrat text-palette-sage hover:bg-palette-sage/25 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi mentoría</Link>
+												) : null}
 												<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-sage/25 transition-colors" onClick={() => { setProfileMenuOpen(false); performLogout('/'); }}>Cerrar sesión</button>
 											</div>
 										)}
@@ -562,13 +623,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 														<circle cx="22" cy="22" r={r} fill="none" stroke="rgba(249,115,22,0.9)" strokeWidth="2" strokeLinecap="round" strokeDasharray={`${circumference} ${circumference}`} strokeDashoffset={strokeDashoffset} className="transition-all duration-500" />
 													</svg>
 												)}
-												<div className="w-9 h-9 rounded-full overflow-hidden bg-palette-ink/80 flex items-center justify-center text-palette-cream font-montserrat font-semibold text-sm ring-2 ring-white/30">
-													{(auth.user as any).profileImageUrl ? (
-														<img src={(auth.user as any).profileImageUrl} alt="" className="w-full h-full object-cover" />
-													) : (
-														<span>{(auth.user.nombre || auth.user.name || auth.user.email || 'U').charAt(0).toUpperCase()}</span>
-													)}
-												</div>
+												<UserAvatarBadge user={auth.user} size="md" onDarkHeader={isLightText} ringClassName="ring-white/30" />
 												{hasSub && userLevel != null && (
 													<span className="absolute -bottom-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full bg-palette-sage text-palette-ink text-xs font-bold flex items-center justify-center">{userLevel}</span>
 												)}
@@ -577,6 +632,9 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 										{profileMenuOpen && (
 											<div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
 												<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
+												{hasActiveMentorship(auth.user) ? (
+													<Link href={`${routes.user.perfil}#mentoria`} className="block px-4 py-2.5 text-sm font-montserrat text-palette-sage hover:bg-palette-sage/25 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi mentoría</Link>
+												) : null}
 												<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-sage/25 transition-colors" onClick={() => { setProfileMenuOpen(false); performLogout('/'); }}>Cerrar sesión</button>
 											</div>
 										)}
@@ -589,22 +647,35 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 					) : (
 						// Distribución normal
 						<div className="flex justify-between items-center pl-3 pr-4 md:pl-8 md:pr-8 lg:gap-x-8 h-full">
-					<div className='flex items-center justify-start shrink-0 gap-4'>
-										{brandBlock('text-sm md:text-2xl', false)}
+					<div className="flex min-w-0 shrink-0 items-center justify-start">
+						{brandBlock('text-sm md:text-2xl', false)}
 					</div>
-					{/* Centro: Mentoría y Eventos */}
-					<div className="flex flex-1 w-full justify-start items-center min-h-[2rem]">
-						<div className={`hidden items-center gap-6 flex-wrap -translate-x-[15%] ${isMembershipLanding || isBienvenida ? 'md:hidden' : 'md:flex'} ml-4`}>
-						<span className={`hidden md:block shrink-0 ${isLightText ? 'text-white/60' : 'text-palette-stone/60'}`}>|</span>
-							<Link href={routes.navegation.mentorship} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? (isMentorship ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isMentorship ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}`}>
-								Mentoría
-							</Link>
-			
-							<Link href={routes.navegation.eventos} className={`font-montserrat text-sm tracking-[0.1em] uppercase transition-all duration-200 ${headerTitleLight ? (isEvents ? 'text-white font-semibold' : 'text-white/80 hover:text-white font-light') : (isEvents ? 'text-palette-ink font-semibold' : 'text-palette-stone hover:text-palette-ink font-light')}`}>
-								Eventos
-							</Link>
+					{/* Centro: separador fijo + links (oculto en landing comercial del curso) */}
+					{showHeaderSecondaryNav ? (
+					<div className="hidden relative right-4 md:flex flex-1 w-full justify-start items-center min-h-[2rem]">
+						<div className="flex items-center">
+							<span
+								className={`shrink-0 ${headerTitleLight ? 'text-white/60' : 'text-palette-stone/60'}`}
+								aria-hidden
+							>
+								|
+							</span>
+							<div className="flex items-center relative top-0.5 gap-6 pl-6 -translate-x-16 lg:translate-x-0">
+								<Link href={routes.navegation.mentorship} className={headerNavLinkClass(isMentorship)}>
+									Mentoría
+								</Link>
+								<Link href={routes.navegation.eventos} className={headerNavLinkClass(isEvents)}>
+									Eventos
+								</Link>
+								{auth?.user ? (
+									<HeaderCoursesMenu lightText={headerTitleLight} isActive={isCursoLanding} />
+								) : null}
+							</div>
 						</div>
 					</div>
+					) : (
+						<div className="hidden md:block flex-1 min-w-0" aria-hidden />
+					)}
 					{/* Móvil (layout normal): con acceso = menú navegación (bitácora en index, weekly en resto); sin acceso = popover */}
 					<div className="flex md:hidden items-center gap-2 shrink-0">
 						{(() => {
@@ -626,11 +697,26 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 												state.weeklyPathNavOpen = !snap.weeklyPathNavOpen;
 											}
 										}}
-										className={`rounded-full p-2 border transition-colors ${headerTitleLight ? 'text-white border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage'}`}
+										className={`rounded-full p-2 border transition-colors ${headerIconButtonClass(headerTitleLight)}`}
 										aria-expanded={navOpen}
 										aria-label="Menú"
 									>
 										<ChevronDownIcon className={`h-5 w-5 transition-transform ${navOpen ? 'rotate-180' : ''}`} />
+									</button>
+								);
+							}
+							if (isCursoCommercialLanding) {
+								return (
+									<button
+										type="button"
+										onClick={() => { state.authModalMode = 'login'; state.loginForm = true; }}
+										className={`rounded-full px-3 py-2 border transition-colors duration-200 font-montserrat font-light text-[0.68rem] tracking-[0.12em] uppercase shrink-0 ${
+											headerTitleLight
+												? 'text-white border-white/40 hover:bg-white/15 hover:border-white/70'
+												: 'text-palette-ink border-palette-stone/40 hover:bg-palette-cream hover:border-palette-stone/60'
+										}`}
+									>
+										Iniciar sesión
 									</button>
 								);
 							}
@@ -639,7 +725,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							<button
 								type="button"
 								onClick={(e) => { e.stopPropagation(); setEventsMentorshipOpen((v) => !v); }}
-								className={`rounded-full p-2 border transition-colors ${headerTitleLight ? 'text-white border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage' : 'text-palette-ink border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage'}`}
+								className={`rounded-full p-2 border transition-colors ${headerIconButtonClass(headerTitleLight)}`}
 								aria-expanded={eventsMentorshipOpen}
 								aria-haspopup="true"
 								aria-label="Mentoría y eventos"
@@ -651,7 +737,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									<Link href={routes.navegation.mentorship} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMentorship ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-white/10'}`} onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
 									<Link href={routes.navegation.eventos} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isEvents ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-sage/25'}`} onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
 									{!auth?.user && (
-										<button type="button" className="block w-full text-left px-4 py-2.5 font-montserrat font-light text-xs tracking-[0.12em] uppercase text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.loginForm = true; }}>Iniciar sesión</button>
+										<button type="button" className="block w-full text-left px-4 py-2.5 font-montserrat font-light text-xs tracking-[0.12em] uppercase text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.authModalMode = 'login'; state.loginForm = true; }}>Iniciar sesión</button>
 									)}
 								</div>
 							)}
@@ -662,18 +748,15 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							<div className="relative shrink-0" ref={profileMenuRefDesktop}>
 								<button type="button" onClick={(e) => { e.stopPropagation(); setProfileMenuOpen((v) => !v); }} className="flex items-center shrink-0 rounded-full hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-palette-stone/50" aria-expanded={profileMenuOpen} aria-haspopup="true" title="Abrir menú de perfil">
 									<div className="relative flex items-center justify-center w-9 h-9">
-										<div className="w-8 h-8 rounded-full overflow-hidden bg-palette-ink/80 flex items-center justify-center text-palette-cream font-montserrat font-semibold text-xs ring-2 ring-palette-stone/30">
-											{(auth.user as any).profileImageUrl ? (
-												<img src={(auth.user as any).profileImageUrl} alt="" className="w-full h-full object-cover" />
-											) : (
-												<span>{(auth.user.nombre || auth.user.name || auth.user.email || 'U').charAt(0).toUpperCase()}</span>
-											)}
-										</div>
+										<UserAvatarBadge user={auth.user} size="sm" onDarkHeader={isLightText} />
 									</div>
 								</button>
 								{profileMenuOpen && (
 									<div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
 										<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
+										{hasActiveMentorship(auth.user) ? (
+											<Link href={`${routes.user.perfil}#mentoria`} className="block px-4 py-2.5 text-sm font-montserrat text-palette-sage hover:bg-palette-sage/25 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi mentoría</Link>
+										) : null}
 										<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-sage/25 transition-colors" onClick={() => { setProfileMenuOpen(false); performLogout('/'); }}>Cerrar sesión</button>
 									</div>
 								)}
@@ -692,7 +775,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 											if (tutorialActive) return;
 											state.weeklyPathNavOpen = !snap.weeklyPathNavOpen; 
 										}}
-										className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${snap.weeklyPathNavOpen ? 'text-white border border-white/80 hover:bg-palette-sage hover:text-palette-ink hover:border-palette-sage' : isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-palette-sage hover:text-palette-ink hover:border-palette-sage' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-sage hover:border-palette-sage' : isMembershipLanding ? membershipLandingButtonClass : isLightText ? 'text-white border border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage hover:text-palette-ink' : membershipLandingButtonClass}`}
+										className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${snap.weeklyPathNavOpen ? 'text-white border border-white/80 hover:bg-palette-cream hover:text-palette-ink hover:border-palette-cream' : isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-palette-cream hover:text-palette-ink hover:border-palette-cream' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream hover:border-palette-ink' : isMembershipLanding ? membershipLandingButtonClass : isLightText ? 'text-white border border-white/40 hover:bg-white/15 hover:border-white/70 hover:text-white' : membershipLandingButtonClass}`}
 										aria-label="Abrir menú"
 									>
 										{snap.weeklyPathNavOpen ? (
@@ -709,7 +792,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									<button
 										type='button'
 										onClick={() => router.push('/admin')}
-										className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-palette-sage hover:text-palette-ink hover:border-palette-sage' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-sage hover:border-palette-sage' : isMembershipLanding ? membershipLandingButtonClass : isLightText ? 'text-white border border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage hover:text-palette-ink' : membershipLandingButtonClass}`}
+										className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 md:px-5 py-2 transition-all duration-200 shrink-0 inline-flex items-center justify-center gap-1.5 cursor-pointer ${isAnyMenuOpen ? 'text-white border border-white/80 hover:bg-palette-cream hover:text-palette-ink hover:border-palette-cream' : headerButtonsOpaque ? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-cream hover:border-palette-ink' : isMembershipLanding ? membershipLandingButtonClass : isLightText ? 'text-white border border-white/40 hover:bg-white/15 hover:border-white/70 hover:text-white' : membershipLandingButtonClass}`}
 												aria-label='Ir al panel de administración'
 									>
 										<span>Admin</span>
@@ -721,18 +804,15 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								<div className="relative shrink-0" ref={profileMenuRefDesktop}>
 									<button type="button" onClick={(e) => { e.stopPropagation(); setProfileMenuOpen((v) => !v); }} className="flex items-center shrink-0 rounded-full hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-palette-stone/50" aria-expanded={profileMenuOpen} aria-haspopup="true" title="Abrir menú de perfil">
 										<div className="relative flex items-center justify-center w-10 h-10">
-											<div className="w-9 h-9 rounded-full overflow-hidden bg-palette-ink/80 flex items-center justify-center text-palette-cream font-montserrat font-semibold text-sm ring-2 ring-palette-stone/30">
-												{(auth.user as any).profileImageUrl ? (
-													<img src={(auth.user as any).profileImageUrl} alt="" className="w-full h-full object-cover" />
-												) : (
-													<span>{(auth.user.nombre || auth.user.name || auth.user.email || 'U').charAt(0).toUpperCase()}</span>
-												)}
-											</div>
+											<UserAvatarBadge user={auth.user} size="md" onDarkHeader={isLightText} />
 										</div>
 									</button>
 									{profileMenuOpen && (
 										<div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-palette-ink border border-palette-stone/20 shadow-xl py-2 z-[260]">
 											<Link href={routes.user.perfil} className="block px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi perfil</Link>
+											{hasActiveMentorship(auth.user) ? (
+												<Link href={`${routes.user.perfil}#mentoria`} className="block px-4 py-2.5 text-sm font-montserrat text-palette-sage hover:bg-palette-sage/25 transition-colors" onClick={() => setProfileMenuOpen(false)}>Mi mentoría</Link>
+											) : null}
 											<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-red-500 hover:bg-palette-sage/25 transition-colors" onClick={() => { setProfileMenuOpen(false); performLogout('/'); }}>Cerrar sesión</button>
 										</div>
 									)}
@@ -740,12 +820,12 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							) : (
 								<button
 									type="button"
-									onClick={() => { state.loginForm = true; }}
+									onClick={() => { state.authModalMode = 'login'; state.loginForm = true; }}
 									className={`rounded-full px-4 py-2 border transition-colors duration-200 font-montserrat font-light text-xs tracking-[0.12em] uppercase shrink-0 ${
 										headerButtonsOpaque
 											? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-sage hover:border-palette-sage'
 											: isMembershipLanding
-												? 'text-palette-ink border border-palette-ink/60 hover:bg-palette-sage/30 hover:border-palette-sage'
+												? 'text-palette-ink border border-palette-ink/60 hover:bg-palette-cream hover:border-palette-ink'
 												: isLightText
 													? 'text-white border border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage hover:text-palette-ink'
 													: 'text-palette-ink border border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage'

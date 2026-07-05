@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 const REDIRECT_QUEUE_COOKIE = 'redirectQueue';
 const PLAN_INTENT_COOKIE = 'planIntent';
 const COURSE_CHECKOUT_INTENT_COOKIE = 'courseCheckoutIntent';
+export const CURSO_BIENVENIDA_PENDIENTE_COOKIE = 'cursoBienvenidaPendiente';
 const COOKIE_EXPIRES_DAYS = 1; // 1 día de expiración
 
 export interface PlanIntent {
@@ -159,6 +160,26 @@ export const getAndClearCourseCheckoutIntent = (): CourseCheckoutIntent | null =
   return intent;
 };
 
+export const setCursoBienvenidaPendiente = (productId: string): void => {
+  if (typeof window === 'undefined' || !productId.trim()) return;
+  Cookies.set(CURSO_BIENVENIDA_PENDIENTE_COOKIE, productId.trim(), {
+    expires: 30,
+    sameSite: 'lax',
+    path: '/',
+  });
+};
+
+export const getCursoBienvenidaPendiente = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  const value = Cookies.get(CURSO_BIENVENIDA_PENDIENTE_COOKIE)?.trim();
+  return value || null;
+};
+
+export const clearCursoBienvenidaPendiente = (): void => {
+  if (typeof window === 'undefined') return;
+  Cookies.remove(CURSO_BIENVENIDA_PENDIENTE_COOKIE, { path: '/' });
+};
+
 /** Acciones guardadas en cookies que se pierden al cerrar sesión. */
 export function getPendingUserActions(): string[] {
   if (typeof window === 'undefined') return [];
@@ -191,6 +212,7 @@ export function clearPendingUserActions(): void {
   if (typeof window === 'undefined') return;
   getAndClearPlanIntent();
   getAndClearCourseCheckoutIntent();
+  clearCursoBienvenidaPendiente();
   getAndClearRedirectUrl();
 }
 

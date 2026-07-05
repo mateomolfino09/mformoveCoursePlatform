@@ -58,9 +58,9 @@ const Mentorship = ({ plans, origin }: MentorshipProps) => {
         <MentorshipIncludes />
         <MentorshipProcess />
         <MentorshipTestimonials />
-        <MentorshipFAQ />
         <MentorshipBio />
         <MentorshipPlans plans={plans} origin={origin} />
+        <MentorshipFAQ />
         <MentorshipCTA />
         
         <FooterProfile />

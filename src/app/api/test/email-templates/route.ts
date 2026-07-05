@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { EmailService, EmailType } from '../../../../services/email/emailService';
 import connectDB from '../../../../config/connectDB';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
+import { buildWelcomeCourseEmailPreviewData } from '../../../../lib/welcomeCourseEmailPreviewData';
 
 /** Primer letra mayúscula, resto minúscula (para nombre en mails del cron). */
 function formatFirstName(s: string): string {
@@ -45,6 +46,45 @@ export async function POST(req: NextRequest) {
     const { testEmail, type, subject, data, preview } = body || {};
 
     const emailService = EmailService.getInstance();
+
+    if (type === EmailType.WELCOME_COURSE) {
+      const previewData = buildWelcomeCourseEmailPreviewData({
+        ...(data || {}),
+        email: data?.email || testEmail || 'preview@example.com',
+      });
+
+      if (preview) {
+        const html = EmailService.renderTemplate(EmailType.WELCOME_COURSE, previewData);
+        return NextResponse.json({
+          success: true,
+          preview: true,
+          to: previewData.email,
+          subject: `Te doy la bienvenida a ${previewData.courseName}`,
+          html,
+        });
+      }
+
+      const to = data?.email || testEmail;
+      if (!to) {
+        return NextResponse.json(
+          { success: false, message: 'Email requerido (data.email o testEmail)' },
+          { status: 400 }
+        );
+      }
+
+      const result = await emailService.sendWelcomeCourse({
+        ...previewData,
+        email: to,
+      });
+
+      return NextResponse.json({
+        success: result.success,
+        message: result.message,
+        type: EmailType.WELCOME_COURSE,
+        to,
+        error: result.error,
+      });
+    }
 
     if (preview && type === EmailType.WEEKLY_LOGBOOK_RELEASE) {
       const to = data?.email || testEmail || 'preview@example.com';

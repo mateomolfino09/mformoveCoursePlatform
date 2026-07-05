@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation'
 import { routes } from '../constants/routes'
 
 const ProfileHeader = () => {
-  const { performLogout } = useLogout('/iniciar-sesion');
+  const { performLogout } = useLogout(routes.navegation.index);
   const path = usePathname()
   const logoHref = routes.navegation.index
 

@@ -79,12 +79,18 @@ export type CursoClaseContenido = CourseClassFields & {
   vimeoVideoId?: string;
   /** @deprecated usar `duration` (segundos) */
   duracionMinutos?: number;
+  /** Describe el concepto central y su función en el módulo. */
+  descripcionGeneral?: string;
+  /** Copy corto orientado a interés/venta. */
+  descripcionCorta?: string;
+  /** Narrativa completa y contexto para el alumno. */
+  descripcionCompleta?: string;
 };
 
 export function normalizeClaseContenido(
   raw: Partial<CursoClaseContenido> | null | undefined,
   orden = 0
-): CourseClassFields {
+): CursoClaseContenido {
   const name = String(raw?.name || raw?.titulo || '').trim();
   const videoId = String(raw?.videoId || raw?.vimeoVideoId || '').trim();
   let duration = Number(raw?.duration) || 0;
@@ -97,10 +103,17 @@ export function normalizeClaseContenido(
       )
     : [];
 
+  const legacyDescription = String(raw?.description || '');
+  const descripcionGeneral =
+    String(raw?.descripcionGeneral || '').trim() || legacyDescription;
+
   return {
     courseClassId: raw?.courseClassId,
     name,
-    description: String(raw?.description || ''),
+    description: legacyDescription,
+    descripcionGeneral,
+    descripcionCorta: String(raw?.descripcionCorta || ''),
+    descripcionCompleta: String(raw?.descripcionCompleta || ''),
     videoUrl: String(raw?.videoUrl || ''),
     videoId,
     videoThumbnail: String(raw?.videoThumbnail || ''),
@@ -109,6 +122,7 @@ export function normalizeClaseContenido(
     order: typeof raw?.order === 'number' ? raw.order : orden,
     materials,
     visibleInLibrary: raw?.visibleInLibrary !== false,
+    pdfUrl: String(raw?.pdfUrl || '').trim(),
   };
 }
 
@@ -117,6 +131,8 @@ export type CursoModuloContenido = {
   /** Índice en highlights.items */
   timelineIndex: number;
   titulo: string;
+  /** Frase que resume la "esencia" del módulo. */
+  esencia: string;
   bundleTipo: 'vimeo_playlist' | 'videos';
   /** ID de showcase/álbum Vimeo cuando bundleTipo es vimeo_playlist */
   vimeoPlaylistId: string;
@@ -473,6 +489,9 @@ export const createDefaultClaseContenido = (orden = 0): CursoClaseContenido =>
     {
       name: '',
       description: '',
+      descripcionGeneral: '',
+      descripcionCorta: '',
+      descripcionCompleta: '',
       videoUrl: '',
       videoId: '',
       videoThumbnail: '',
@@ -481,6 +500,7 @@ export const createDefaultClaseContenido = (orden = 0): CursoClaseContenido =>
       order: orden,
       materials: [],
       visibleInLibrary: true,
+      pdfUrl: '',
     },
     orden
   );
@@ -491,6 +511,7 @@ export const createDefaultModuloContenido = (
 ): CursoModuloContenido => ({
   timelineIndex,
   titulo,
+  esencia: '',
   bundleTipo: 'videos',
   vimeoPlaylistId: '',
   clases: [],
@@ -506,6 +527,7 @@ export function syncContenidoModulosFromHighlights(
     return {
       timelineIndex: index,
       titulo: item.titulo?.trim() || prev?.titulo || '',
+      esencia: prev?.esencia || '',
       bundleTipo: prev?.bundleTipo === 'vimeo_playlist' ? 'vimeo_playlist' : 'videos',
       vimeoPlaylistId: prev?.vimeoPlaylistId || '',
       clases: prev?.clases?.length ? prev.clases : [],
@@ -579,7 +601,7 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
     ctaImagenPublicId: 'my_uploads/fondos/DSC01753_qdv9o0',
   },
   queIncluye: {
-    titulo: 'Esto es lo que incluye tu programa',
+    titulo: 'Esto es lo que incluye tu programa:',
     anclaId: 'course-que-incluye',
     offerBlocks: [
       { lineas: ['WORKBOOK Y', 'EJERCICIOS'], hint: 'Guías y prácticas descargables para ordenar tu entrenamiento durante la semana.', iconKey: 'book' },
@@ -767,6 +789,7 @@ const mergeContenidoModulos = (
       ...mod,
       ...src,
       timelineIndex: index,
+      esencia: String(src.esencia ?? mod.esencia ?? '').trim(),
       bundleTipo: src.bundleTipo === 'vimeo_playlist' ? 'vimeo_playlist' : 'videos',
       clases: (src.clases || []).map((c, ci) => normalizeClaseContenido(c, ci)),
     };
@@ -801,6 +824,14 @@ export const normalizeCursoLandingConfig = (
     presentacionTestimonios: {
       ...defaults.presentacionTestimonios,
       ...partial.presentacionTestimonios,
+    },
+    betweenHero: {
+      ...defaults.betweenHero,
+      ...partial.betweenHero,
+      parrafos:
+        partial.betweenHero?.parrafos?.filter(Boolean).length
+          ? partial.betweenHero.parrafos.filter(Boolean)
+          : defaults.betweenHero.parrafos,
     },
     whatsapp: (() => {
       const merged = {

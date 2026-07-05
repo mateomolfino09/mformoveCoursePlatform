@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '../../../payments/stripe/stripeConfig';
-import { getCurrentURL } from '../../../assets/getCurrentURL';
+import { resolveMentorshipPaymentOrigin } from '../../../../../lib/resolveMentorshipPaymentOrigin';
 import connectDB from '../../../../../config/connectDB';
 import MentorshipPlan from '../../../../../models/mentorshipPlanModel';
 import User from '../../../../../models/userModel';
@@ -42,10 +42,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Plan no disponible' }, { status: 400 });
     }
 
-    const origin = getCurrentURL();
+    const origin = resolveMentorshipPaymentOrigin(request);
     const successUrl = new URL(`${origin}/mentoria/exito`);
-    successUrl.searchParams.append("external_id", user._id);
-    successUrl.searchParams.append("plan_id", planId);
+    successUrl.searchParams.append('external_id', user._id);
+    successUrl.searchParams.append('plan_id', planId);
+    successUrl.searchParams.append('interval', interval);
+    successUrl.searchParams.append('provider', 'stripe');
+    successUrl.searchParams.append('session_id', '{CHECKOUT_SESSION_ID}');
 
 
 

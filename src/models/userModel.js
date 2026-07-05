@@ -131,6 +131,71 @@ const subscriptionSchema = new mongoose.Schema(
   },
 );
 
+const mentorshipSchema = new mongoose.Schema(
+  {
+    active: {
+      type: Boolean,
+      default: () => false,
+    },
+    planId: {
+      type: String,
+    },
+    planName: {
+      type: String,
+    },
+    planLevel: {
+      type: String,
+    },
+    interval: {
+      type: String,
+      enum: ['mensual', 'trimestral', 'anual'],
+    },
+    provider: {
+      type: String,
+      enum: ['stripe', 'dlocalgo'],
+    },
+    subscriptionId: {
+      type: String,
+    },
+    startDate: {
+      type: Date,
+    },
+    lastPaymentDate: {
+      type: Date,
+    },
+    status: {
+      type: String,
+      default: () => 'active',
+    },
+    amount: {
+      type: Number,
+    },
+    moneda: {
+      type: String,
+    },
+  },
+  { _id: false },
+);
+
+const pendingMentorshipDlocalSchema = new mongoose.Schema(
+  {
+    orderId: {
+      type: String,
+    },
+    planId: {
+      type: String,
+    },
+    interval: {
+      type: String,
+    },
+    createdAt: {
+      type: Date,
+      default: () => Date.now(),
+    },
+  },
+  { _id: false },
+);
+
 const freeSubscriptionSchema = new mongoose.Schema(
   {
     email: {
@@ -229,7 +294,11 @@ const userSchema = new mongoose.Schema(
       transaccionId: { type: String },
       monto: { type: Number },
       moneda: { type: String, default: 'USD' },
+      /** Onboarding post-compra: redirige a /pago/exito hasta completar bienvenida. */
+      bienvenidaPendiente: { type: Boolean, default: false },
     }],
+    mentorship: mentorshipSchema,
+    pendingMentorshipDlocal: pendingMentorshipDlocalSchema,
   },
   { timestamps: true }
 );

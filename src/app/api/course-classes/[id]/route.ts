@@ -123,6 +123,10 @@ export async function PATCH(
     const fields = [
       'name',
       'description',
+      'descripcionGeneral',
+      'descripcionCorta',
+      'descripcionCompleta',
+      'pdfUrl',
       'videoUrl',
       'videoId',
       'videoThumbnail',

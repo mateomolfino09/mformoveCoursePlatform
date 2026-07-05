@@ -172,6 +172,30 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
     patch({ contenidoModulos: next });
   };
 
+  /**
+   * El título del módulo de contenido se sincroniza desde el timeline (highlights).
+   * Al editarlo actualizamos el highlight correspondiente y re-sincronizamos para
+   * que el cambio persista y no lo pise el sync.
+   */
+  const updateModuloTitulo = (index: number, titulo: string) => {
+    if (index < value.highlights.items.length) {
+      const items = value.highlights.items.map((item, i) =>
+        i === index ? { ...item, titulo } : item
+      );
+      const contenidoModulos = syncContenidoModulosFromHighlights(
+        items,
+        value.contenidoModulos
+      ).map((mod, i) => (i === index ? { ...mod, titulo } : mod));
+      onChange({
+        ...value,
+        highlights: { ...value.highlights, items },
+        contenidoModulos,
+      });
+    } else {
+      updateModuloContenido(index, { titulo });
+    }
+  };
+
   const updateClaseContenido = (
     moduloIndex: number,
     claseIndex: number,
@@ -189,6 +213,10 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
     return {
       name: n.name,
       description: n.description,
+      descripcionGeneral: n.descripcionGeneral,
+      descripcionCorta: n.descripcionCorta,
+      descripcionCompleta: n.descripcionCompleta,
+      pdfUrl: n.pdfUrl,
       videoUrl: n.videoUrl,
       videoId: n.videoId,
       videoThumbnail: n.videoThumbnail,
@@ -868,9 +896,25 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
                 key={`contenido-mod-${modulo.timelineIndex}`}
                 className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 space-y-4"
               >
-                <p className="text-sm font-semibold text-gray-900">
-                  Módulo {moduloIndex + 1}: {modulo.titulo || 'Sin título'}
-                </p>
+                <p className="text-sm font-semibold text-gray-100">Módulo {moduloIndex + 1}</p>
+                <Field label="Título del módulo">
+                  <input
+                    className={`${inputClass} text-gray-100 placeholder:text-gray-500`}
+                    value={modulo.titulo}
+                    onChange={(e) => updateModuloTitulo(moduloIndex, e.target.value)}
+                    placeholder="Ej. Regulación (trabajos internos)"
+                  />
+                </Field>
+                <Field label="Esencia del módulo">
+                  <textarea
+                    className={`${textareaClass} text-gray-100 placeholder:text-gray-500`}
+                    value={modulo.esencia ?? ''}
+                    onChange={(e) =>
+                      updateModuloContenido(moduloIndex, { esencia: e.target.value })
+                    }
+                    placeholder="Ej. La experiencia puede cambiar cuando dejás de reaccionar automáticamente y empezás a observar."
+                  />
+                </Field>
                 <motion.div className="grid gap-4 md:grid-cols-2">
                   <Field label="Tipo de bundle">
                     <select

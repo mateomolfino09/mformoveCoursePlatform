@@ -5,6 +5,11 @@ import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import CourseHighlightsIntro from './CourseHighlightsIntro';
 import { useCursoLanding } from './CursoLandingContext';
+import {
+  landingSectionContainer,
+  landingSectionShell,
+  landingSectionTitle,
+} from '../../../constants/landingSectionDesign';
 import type { IconType } from 'react-icons';
 import {
   PiHexagonLight,
@@ -22,10 +27,6 @@ type TimelineHighlightItem = {
   expandedDescription: string;
   imagenPublicId: string;
 };
-
-/** Alineado con HighlightsIntro / BetweenHero: márgenes horizontales + bloque ancho para la “línea de tiempo”. */
-const highlightsSectionPad =
-  'mx-auto w-full max-w-none px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-28';
 
 const splitDescription = (text: string) => {
   const cleaned = text.trim().replace(/\s+/g, ' ');
@@ -288,27 +289,20 @@ const CourseHighlights = ({ hideIntro = false }: CourseHighlightsProps) => {
   return (
     <>
       {!hideIntro && <CourseHighlightsIntro />}
-      <section className="relative isolate overflow-hidden bg-palette-cream pt-10 pb-16 font-montserrat md:pt-12 md:pb-20 lg:pb-28">
-        <div className="pointer-events-none absolute -top-28 right-[-18%] h-[min(340px,52vw)] w-[min(340px,52vw)] rounded-full bg-palette-sage/14 blur-[104px]" aria-hidden />
-        <div className="pointer-events-none absolute bottom-0 left-[-12%] h-[260px] w-[340px] rounded-full bg-palette-steel/12 blur-[98px]" aria-hidden />
-        <div
-          className="pointer-events-none absolute left-[-10%] top-[18%] h-[min(420px,55vw)] w-[min(420px,55vw)] rounded-full bg-palette-granite/[0.075] blur-[118px]"
-          aria-hidden
-        />
-        <div className={`${highlightsSectionPad} relative z-10 text-left`}>
+      <section className={`${landingSectionShell} relative isolate overflow-hidden py-12 md:py-16`}>
+        <div className={`${landingSectionContainer} relative z-10 text-left`}>
           <div className="mx-auto max-w-5xl">
-            {/* div (no <header>): en globals.css `header` está en fixed top-0 para la barra del sitio */}
             <div
-              className="relative mx-auto mb-12 max-w-4xl space-y-4 text-balance text-center text-palette-ink md:mb-16 md:max-w-5xl"
+              className="relative mx-auto mb-10 max-w-3xl space-y-3 text-balance text-center text-palette-ink md:mb-12"
               aria-label="Antes de la línea de tiempo"
             >
-              <p className="mc-text-depth-light-title font-montserrat text-[clamp(2.15rem,6.2vw,4rem)] font-bold leading-[1.05] tracking-[-0.03em]">
+              <h2 className={landingSectionTitle}>
                 {cursoConfig.highlights.titulos[0]}
-              </p>
-              <p className="mc-text-depth-light-title font-montserrat text-[clamp(2.15rem,6.2vw,4rem)] font-bold leading-[1.05] tracking-[-0.03em]">
+              </h2>
+              <h2 className={landingSectionTitle}>
                 {cursoConfig.highlights.titulos[1]}
-              </p>
-              <p className="mx-auto max-w-2xl pt-2 font-raleway text-[clamp(1.25rem,3.2vw,1.875rem)] font-semibold italic leading-snug text-palette-ink md:pt-4">
+              </h2>
+              <p className="mx-auto max-w-2xl pt-2 text-[15px] font-light italic leading-relaxed text-palette-stone md:pt-3 md:text-[16px]">
                 {cursoConfig.highlights.puente}
               </p>
             </div>
