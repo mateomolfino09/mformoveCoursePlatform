@@ -19,7 +19,16 @@ function tierNeedsPaymentLinks(
   if (!preciosPreventa?.length) return false;
   const active = resolveActivePrecioPreventa(preciosPreventa);
   if (!active) return false;
-  return !(active.opcionesPago || []).some((o) => o.activo && o.paymentLink);
+
+  const opcionesPago = active.opcionesPago || [];
+  const hasStripe = opcionesPago.some(
+    (o) => o.proveedor === 'stripe' && o.activo && o.paymentLink?.trim()
+  );
+  const hasDlocal = opcionesPago.some(
+    (o) => o.proveedor === 'dlocalgo' && o.activo && o.paymentLink?.trim()
+  );
+
+  return !hasStripe || !hasDlocal;
 }
 
 /**

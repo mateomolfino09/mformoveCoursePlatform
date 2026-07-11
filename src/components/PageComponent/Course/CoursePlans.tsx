@@ -12,8 +12,21 @@ import { toast } from '../../../hooks/useToast';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { MiniLoadingSpinner } from '../Products/MiniSpinner';
 import { savePlanIntent } from '../../../utils/redirectQueue';
+import { fetchOwnedCursoRedirectPath } from '../../../lib/resolveOwnedCursoRedirect';
 import imageLoader from '../../../../imageLoader';
 import { useCursoLanding } from './CursoLandingContext';
+import {
+  landingCtaPrimary,
+  landingEyebrow,
+  landingFadeUp,
+  landingHeaderBlock,
+  landingSectionBody,
+  landingSectionContainer,
+  landingSectionShell,
+  landingSectionTitle,
+  landingPlanCard,
+  landingPlanCardSide,
+} from '../../../constants/landingSectionDesign';
 import {
   formatCursoFechaConHora,
   formatCursoFechaLargo,
@@ -57,7 +70,7 @@ const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: CoursePlansProps) => {
   const router = useRouter();
   const auth = useAuth();
-  const { cursoConfig, plansSectionId, checkoutStartPath } = useCursoLanding();
+  const { cursoConfig, plansSectionId, checkoutStartPath, slug } = useCursoLanding();
   const { planes } = cursoConfig;
   const preventaPricing = useCursoPreventaPricing(cursoConfig);
   const lanzamientoMonto = resolveCursoLanzamientoMonto(cursoConfig);
@@ -68,11 +81,21 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
   const [isNavigatingToCheckout, setIsNavigatingToCheckout] = useState(false);
 
-  const handleGoToCheckout = useCallback(() => {
+  const handleGoToCheckout = useCallback(async () => {
     if (isNavigatingToCheckout) return;
     setIsNavigatingToCheckout(true);
-    router.push(checkoutStartPath);
-  }, [checkoutStartPath, isNavigatingToCheckout, router]);
+    try {
+      const ownedPath = await fetchOwnedCursoRedirectPath({ slug });
+      if (ownedPath) {
+        router.push(ownedPath);
+        return;
+      }
+      router.push(checkoutStartPath);
+    } catch {
+      setIsNavigatingToCheckout(false);
+      toast.error('No pudimos abrir el checkout. Intentá de nuevo.');
+    }
+  }, [checkoutStartPath, isNavigatingToCheckout, router, slug]);
   const activeCheckoutPlans = checkoutPlans.filter((plan) => plan.activo && plan.paymentLink);
   const activePlans = plans.filter((plan) => plan.active);
   const monthlyPlan = activePlans.find(
@@ -136,21 +159,6 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
     }
   }, [auth.user]);
 
-  const handleCheckoutSelect = (plan: CursoPlanPago) => {
-    if (!auth.user) {
-      state.loginForm = true;
-      return;
-    }
-
-    if (!plan.paymentLink) {
-      toast.error('Este plan no tiene link de pago disponible');
-      return;
-    }
-
-    setLoadingPlanId(plan.proveedor);
-    window.location.href = plan.paymentLink;
-  };
-
   const handleSelect = async (plan: Plan) => {
     // Si el usuario no está logueado, guardar la intención del plan y abrir el modal de login
     if (!auth.user) {
@@ -163,6 +171,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           plan_token: plan.plan_token
         });
       }
+      state.authModalMode = 'register';
       state.loginForm = true;
       return;
     }
@@ -313,23 +322,23 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.42, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
         viewport={{ once: true }}
-        className="group relative isolate flex h-full min-h-[21.5rem] w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-palette-steel/25 bg-palette-cream/80 p-5 shadow-[0_28px_70px_-28px_rgba(20,20,17,0.42)] transition-all duration-300 hover:-translate-y-0.5 hover:border-palette-steel/55 hover:shadow-[0_40px_90px_-36px_rgba(20,20,17,0.5)] sm:min-h-[22rem] md:min-h-0 md:rounded-3xl md:p-5"
+        className={`group relative isolate flex h-full min-h-[21.5rem] w-full min-w-0 flex-col overflow-hidden ${landingPlanCard} p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-palette-sage/40 hover:shadow-[0_28px_60px_-28px_rgba(20,20,17,0.2)] sm:min-h-[22rem] md:min-h-0 md:p-5`}
       >
         {/* Acentos sutiles (debajo del contenido y del precio) */}
         <div className="pointer-events-none absolute inset-0 z-0">
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-skysteel/55 to-transparent opacity-90" />
-          <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-palette-skysteel/55 blur-3xl opacity-65" />
-          <div className="absolute -bottom-28 -left-28 h-80 w-80 rounded-full bg-palette-steel/25 blur-3xl opacity-70" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-sage/35 to-transparent opacity-90" />
+          <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-palette-sage/[0.12] blur-3xl opacity-65" />
+          <div className="absolute -bottom-28 -left-28 h-80 w-80 rounded-full bg-palette-stone/10 blur-3xl opacity-70" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_60%_at_50%_0%,rgba(255,253,253,0.9),transparent_62%)] opacity-60" />
         </div>
 
         {/* Precio: centrado en la tarjeta, por encima de acentos / degradados (z-20) */}
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-3">
           <div className="relative mx-auto w-fit px-2 pb-8 md:pb-6">
-            <p className="text-center font-montserrat text-[4rem] md:text-[5rem] font-bold leading-tight tracking-[-0.095em] text-palette-ink tabular-nums">
+            <p className="text-center font-montserrat text-[2.75rem] font-bold leading-none tracking-[-0.09em] text-palette-ink tabular-nums md:text-[3.5rem]">
               <b>{new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 }).format(precioPrincipal)}</b>
             </p>
-            <span className="pointer-events-none absolute bottom-6 right-2 font-montserrat text-[0.82rem] font-semibold uppercase tracking-[0.22em] text-palette-ink md:text-[0.58rem]">
+            <span className="pointer-events-none absolute bottom-4 right-2 font-montserrat text-[0.82rem] font-semibold uppercase tracking-[0.22em] text-palette-ink md:text-[0.58rem]">
               USD
             </span>
           </div>
@@ -414,11 +423,11 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
         viewport={{ once: true }}
-        className="relative isolate flex w-full min-w-0 flex-col items-center gap-2 overflow-hidden rounded-2xl border border-palette-steel/25 bg-palette-cream/80 px-4 py-3.5 text-center text-palette-ink shadow-[0_14px_40px_-22px_rgba(20,20,17,0.22)] backdrop-blur-[2px] md:h-full md:min-h-[20rem] md:items-stretch md:gap-0 md:rounded-3xl md:p-5"
+        className={`relative isolate flex w-full min-w-0 flex-col items-center gap-2 overflow-hidden ${landingPlanCardSide} px-4 py-3.5 text-center text-palette-ink md:h-full md:min-h-[20rem] md:items-stretch md:gap-0 md:p-5`}
       >
         <div className="pointer-events-none absolute inset-0 z-0">
-          <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-palette-steel/12 blur-3xl" />
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-steel/30 to-transparent opacity-80" />
+          <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-palette-sage/[0.1] blur-3xl" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-stone/30 to-transparent opacity-80" />
         </div>
 
         <div className="relative z-30 w-full text-center md:pointer-events-none md:absolute md:inset-x-0 md:top-0 md:px-5 md:pt-2">
@@ -475,11 +484,11 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
         viewport={{ once: true }}
-        className="relative isolate flex h-full min-h-[20.5rem] w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-palette-steel/25 bg-palette-cream/80 p-5 text-center text-palette-ink shadow-[0_14px_40px_-22px_rgba(20,20,17,0.22)] backdrop-blur-[2px] sm:min-h-[21rem] md:min-h-[20rem] md:rounded-3xl md:p-5"
+        className={`relative isolate flex h-full min-h-[20.5rem] w-full min-w-0 flex-col overflow-hidden ${landingPlanCardSide} p-5 text-center text-palette-ink sm:min-h-[21rem] md:min-h-[20rem] md:p-5`}
       >
         <div className="pointer-events-none absolute inset-0 z-0">
-          <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-palette-skysteel/40 blur-3xl" />
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-skysteel/35 to-transparent opacity-80" />
+          <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-palette-sage/[0.12] blur-3xl" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-sage/30 to-transparent opacity-80" />
         </div>
 
         {/* Ilustración medios de pago — centrada en la tarjeta */}
@@ -577,58 +586,36 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
             viewport={{ once: true }}
             className="mx-auto mt-10 max-w-3xl px-4 text-center md:mt-14"
           >
-            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-              {activeCheckoutPlans.map((plan) => {
-                const isStripe = plan.proveedor === 'stripe';
-                const buttonLabel = isStripe ? 'Empezar AHORA' : plan.etiqueta;
-
-                if (isStripe) {
-                  return (
-                    <button
-                      key={plan.proveedor}
-                      type="button"
-                      onClick={handleGoToCheckout}
-                      disabled={isNavigatingToCheckout}
-                      className="inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-cream bg-palette-cream px-8 py-4 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-ink transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-                    >
-                      {isNavigatingToCheckout ? (
-                        <>
-                          <MiniLoadingSpinner />
-                          <span>Redirigiendo...</span>
-                        </>
-                      ) : (
-                        <span>{buttonLabel}</span>
-                      )}
-                    </button>
-                  );
-                }
-
-                return (
-                  <button
-                    key={plan.proveedor}
-                    type="button"
-                    onClick={() => handleCheckoutSelect(plan)}
-                    disabled={loadingPlanId === plan.proveedor}
-                    className="inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-cream bg-palette-cream px-8 py-4 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-ink transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-                  >
-                    {loadingPlanId === plan.proveedor ? (
-                      <>
-                        <MiniLoadingSpinner />
-                        <span>Procesando...</span>
-                      </>
-                    ) : (
-                      <span>{buttonLabel}</span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-            <div className="mx-auto mt-6 max-w-2xl space-y-3.5 text-balance text-palette-cloud/90 md:mt-8 md:max-w-3xl md:space-y-4">
-              {activeCheckoutPlans.map((plan) => (
-                <p key={`${plan.proveedor}-copy`} className="text-sm font-light leading-relaxed md:text-base">
-                  {plan.descripcion}
-                </p>
-              ))}
+            <button
+              type="button"
+              onClick={handleGoToCheckout}
+              disabled={isNavigatingToCheckout}
+              className={`${landingCtaPrimary} w-full px-10 py-4 disabled:cursor-not-allowed disabled:opacity-50 sm:px-12 md:w-auto md:px-14`}
+            >
+              {isNavigatingToCheckout ? (
+                <>
+                  <MiniLoadingSpinner />
+                  <span>Redirigiendo...</span>
+                </>
+              ) : (
+                <>
+                  <span>Empezar AHORA</span>
+                  <span className="opacity-80 translate-y-[0.5px] transition-transform duration-200">
+                    →
+                  </span>
+                </>
+              )}
+            </button>
+            <div className="mx-auto mt-6 max-w-2xl space-y-3.5 text-balance text-palette-stone md:mt-8 md:max-w-3xl md:space-y-4">
+              <p className="font-montserrat text-xs font-semibold uppercase tracking-[0.14em] text-palette-ink md:text-sm">
+                {planes.etiquetaFormasPago}
+              </p>
+              <p className="text-sm font-light leading-relaxed md:text-base">
+                {planes.copyUruguayLatam}
+              </p>
+              <p className="text-sm font-light leading-relaxed md:text-base">
+                {planes.copyRestoMundo}
+              </p>
             </div>
           </motion.div>
         </motion.div>
@@ -637,7 +624,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
 
     if (activePlans.length === 0) {
       return (
-        <div className="relative bg-palette-cream border border-palette-steel/25 rounded-2xl md:rounded-3xl p-8 md:p-10 text-center text-palette-stone font-light overflow-hidden shadow-[0_4px_24px_rgba(20,20,17,0.05)]">
+        <div className={`relative ${landingPlanCard} p-8 text-center font-light text-palette-stone md:p-10`}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-palette-sage/15 rounded-full blur-3xl" />
           <div className="relative z-10">
             <p className="text-lg md:text-xl leading-relaxed">
@@ -715,7 +702,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           <button
             onClick={() => handleSelect(displayPlan)}
             disabled={loadingPlanId === displayPlan._id}
-            className="inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-cream bg-palette-cream px-10 py-4 font-montserrat text-base font-semibold uppercase tracking-[0.18em] text-palette-ink shadow-[0_18px_60px_-24px_rgba(224,236,255,0.45)] transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage disabled:cursor-not-allowed disabled:opacity-50 sm:px-12 md:w-auto md:px-14"
+            className={`${landingCtaPrimary} w-full px-10 py-4 disabled:cursor-not-allowed disabled:opacity-50 sm:px-12 md:w-auto md:px-14`}
           >
             {loadingPlanId === displayPlan._id ? (
               <>
@@ -731,8 +718,8 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
               </>
             )}
           </button>
-          <div className="mx-auto mt-6 max-w-2xl space-y-3.5 text-balance text-palette-cloud/90 md:mt-8 md:max-w-3xl md:space-y-4">
-            <p className="font-montserrat text-xs font-semibold uppercase tracking-[0.14em] text-palette-cream md:text-sm">
+          <div className="mx-auto mt-6 max-w-2xl space-y-3.5 text-balance text-palette-stone md:mt-8 md:max-w-3xl md:space-y-4">
+            <p className="font-montserrat text-xs font-semibold uppercase tracking-[0.14em] text-palette-ink md:text-sm">
               {planes.etiquetaFormasPago}
             </p>
             <p className="text-sm font-light leading-relaxed md:text-base">
@@ -750,26 +737,21 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
   return (
     <>
     <section
-      className="relative isolate overflow-hidden bg-gradient-to-r from-palette-granite via-palette-ink to-palette-ink py-14 font-montserrat text-palette-cream md:py-20"
+      className={`${landingSectionShell} py-14 md:py-20`}
       id={plansSectionId}
     >
 
-      <div className="relative mx-auto w-[85%] max-w-6xl px-4 text-center">
+      <div className={`relative ${landingSectionContainer} text-center`}>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          viewport={{ once: true }}
-          className="mx-auto mb-8 max-w-3xl md:mb-10 text-center"
+          {...landingFadeUp}
+          className={`${landingHeaderBlock} mx-auto text-center`}
         >
-          <h2 className="mc-text-depth-light-title relative font-montserrat text-[clamp(2.55rem,7vw,4.75rem)] font-black uppercase leading-[0.98] tracking-[-0.04em] text-palette-cream">
-            <span className="pointer-events-none absolute -inset-x-4 -inset-y-2 -z-10 rounded-[2rem] blur-[0.5px]" aria-hidden />
-            <span className="bg-gradient-to-br from-palette-cream via-palette-skysteel to-palette-steel bg-clip-text text-transparent drop-shadow-[0_14px_38px_rgba(224,236,255,0.28)]">
-              {planesTitulo}
-            </span>
+          <p className={landingEyebrow}>Inversión</p>
+          <h2 className={landingSectionTitle}>
+            {planesTitulo}
           </h2>
           {preventaPricing.enPreventa ? (
-            <p className="mt-4 font-montserrat text-sm font-medium uppercase tracking-[0.16em] text-palette-skysteel md:text-base">
+            <p className="mt-4 font-montserrat text-xs font-semibold uppercase tracking-[0.26em] text-palette-stone md:text-sm">
               Preventa
             </p>
           ) : null}
@@ -780,7 +762,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true }}
-          className="mx-auto mb-10 max-w-4xl space-y-6 text-balance text-center font-raleway text-[clamp(1.05rem,2.35vw,1.35rem)] font-normal leading-[1.62] tracking-[-0.01em] text-palette-cream [text-shadow:0_1px_28px_rgba(0,0,0,0.35),0_0_1px_rgba(0,0,0,0.25)] md:mb-14 md:max-w-5xl md:space-y-8 md:text-[clamp(1.15rem,2.1vw,1.45rem)] md:leading-[1.68]"
+          className={`${landingSectionBody} mx-auto mb-10 max-w-4xl space-y-4 text-balance text-center md:mb-14 md:space-y-5`}
         >
           {planes.parrafosValor.map((paragraph, i) => (
             <p key={i}>{paragraph}</p>

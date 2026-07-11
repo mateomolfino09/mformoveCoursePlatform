@@ -2,10 +2,10 @@ import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import connectDB from '../../../../../config/connectDB';
-const User = require('../../../../../models/userModel');
-const MentorshipPlan = require('../../../../../models/mentorshipPlanModel');
+import { fulfillMentorshipPurchase } from '../../../payments/mentorship/fulfillMentorshipPurchase';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
+const User = require('../../../../../models/userModel');
 
 export async function POST(req: NextRequest) {
   if (req.method === 'POST') {
@@ -36,25 +36,14 @@ export async function POST(req: NextRequest) {
           const customer = await stripe.customers.retrieve(session.customer as string);
           const email = (customer as Stripe.Customer).email;
 
-          if (email) {
-            // Buscar el usuario
-            const user = await User.findOne({ email });
-            if (user) {
-              // Actualizar el usuario con la información de mentoría
-              user.mentorship = {
-                active: true,
-                planId: session.metadata.planId,
-                planName: session.metadata.planName,
-                planLevel: session.metadata.planLevel,
-                subscriptionId: session.subscription as string,
-                startDate: new Date(),
-                lastPaymentDate: new Date(),
-                status: 'active'
-              };
-
-              await user.save();
-      
-            }
+          if (email && session.metadata?.planId) {
+            await fulfillMentorshipPurchase({
+              planId: session.metadata.planId,
+              interval: session.metadata.interval || 'mensual',
+              provider: 'stripe',
+              transactionId: String(session.subscription || session.payment_intent || session.id),
+              email,
+            });
           }
           break;
         }

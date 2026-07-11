@@ -240,6 +240,20 @@ export interface User {
   freeSubscription: FreeSubscription;
   isVip: boolean;
   cursosAdquiridos?: CursoAdquirido[];
+  mentorship?: {
+    active?: boolean;
+    planId?: string;
+    planName?: string;
+    planLevel?: string;
+    interval?: 'mensual' | 'anual' | 'trimestral';
+    provider?: 'stripe' | 'dlocalgo';
+    subscriptionId?: string;
+    startDate?: string;
+    lastPaymentDate?: string;
+    status?: string;
+    amount?: number;
+    moneda?: string;
+  };
 }
 
 export interface ClassesDB {

@@ -8,9 +8,11 @@ import { useSnapshot } from 'valtio';
 import state from '../../valtio';
 import { routes } from '../../constants/routes';
 import { formatTitleCaseWords } from '../../lib/formatDisplayTitle';
+import { resolveOwnedCursoRedirectPath } from '../../lib/resolveOwnedCursoRedirect';
 
 interface CursoNavItem {
   slug: string;
+  /** Texto corto para el header (prioriza nombre comercial del bloque intro si existe). */
   label: string;
 }
 
@@ -21,6 +23,7 @@ const WeeklyPathNavigator = () => {
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [cursoNavItems, setCursoNavItems] = useState<CursoNavItem[]>([]);
+  const [ownedCursoHrefBySlug, setOwnedCursoHrefBySlug] = useState<Record<string, string>>({});
   const [cursosLoading, setCursosLoading] = useState(true);
   const [isNavigating, setIsNavigating] = useState(false);
   const [navigationTarget, setNavigationTarget] = useState<string | null>(null);
@@ -87,8 +90,11 @@ const WeeklyPathNavigator = () => {
     const load = async () => {
       try {
         setCursosLoading(true);
-        const res = await fetch('/api/product/cursos-nav', { cache: 'no-store' });
-        const data = await res.json().catch(() => ({ items: [] }));
+        const [navRes, userRes] = await Promise.all([
+          fetch('/api/product/cursos-nav', { cache: 'no-store' }),
+          fetch('/api/user/cursos', { credentials: 'include', cache: 'no-store' }),
+        ]);
+        const data = await navRes.json().catch(() => ({ items: [] }));
         const items = Array.isArray(data.items) ? data.items : [];
         setCursoNavItems(
           items.filter(
@@ -99,9 +105,22 @@ const WeeklyPathNavigator = () => {
               typeof (x as CursoNavItem).label === 'string'
           )
         );
+
+        const ownedMap: Record<string, string> = {};
+        if (userRes.ok) {
+          const userData = await userRes.json().catch(() => ({ cursos: [] }));
+          const owned = Array.isArray(userData.cursos) ? userData.cursos : [];
+          for (const entry of owned) {
+            const slug = typeof entry?.slug === 'string' ? entry.slug.trim().toLowerCase() : '';
+            if (!slug) continue;
+            ownedMap[slug] = resolveOwnedCursoRedirectPath(entry, slug);
+          }
+        }
+        setOwnedCursoHrefBySlug(ownedMap);
       } catch (e) {
         console.error('[WeeklyPathNavigator] cursos-nav', e);
         setCursoNavItems([]);
+        setOwnedCursoHrefBySlug({});
       } finally {
         setCursosLoading(false);
       }
@@ -151,7 +170,9 @@ const WeeklyPathNavigator = () => {
   const goCurso = (slug: string) => {
     const tutorialActive = document.body.classList.contains('tutorial-active');
     if (tutorialActive) return;
-    const href = routes.navegation.membership.curso(slug);
+    const slugKey = slug.trim().toLowerCase();
+    const href =
+      ownedCursoHrefBySlug[slugKey] ?? routes.navegation.membership.curso(slug);
     closeMenu();
     setNavigationTarget(href);
     setIsNavigating(true);

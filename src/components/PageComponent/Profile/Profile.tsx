@@ -14,12 +14,14 @@ import {
 } from '@heroicons/react/24/outline';
 import ProfileSkeleton from '../../ProfileSkeleton';
 import ProfileCommunitySection from './ProfileCommunitySection';
+import ProfileMentorshipSection from './ProfileMentorshipSection';
 import { useLogout } from '../../../hooks/useLogout';
+import { routes } from '../../../constants/routes';
 
 function Profile() {
   const router = useRouter();
   const auth = useAuth()
-  const { performLogout } = useLogout('/iniciar-sesion');
+  const { performLogout } = useLogout(routes.navegation.index);
   const [initialLoading, setInitialLoading] = useState(true)
   const [hasCourses, setHasCourses] = useState(false)
   const [firstCourseSlug, setFirstCourseSlug] = useState<string | null>(null)
@@ -181,6 +183,8 @@ function Profile() {
                 </div>
               </div>
             </motion.div>
+
+            <ProfileMentorshipSection itemVariants={itemVariants} />
 
             <UserCoursesSection />
 

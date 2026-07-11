@@ -14,6 +14,7 @@ import { generateMd5 } from '../../../helper/generateMd5';
 import mailchimp from "@mailchimp/mailchimp_marketing";
 import { getCurrentURL } from '../../../assets/getCurrentURL';
 import { emailService, EmailType } from '../../../../../services/email/emailService';
+import { resolveCountryFromHeaders } from '../../../../../lib/resolveRequestCountry';
 
 connectDB();
 mailchimp.setConfig({
@@ -24,8 +25,11 @@ mailchimp.setConfig({
 export async function POST(request) {
   try {
     if (request.method === 'POST') {
-      const { email, name, gender, country } =
+      const { email, name, gender, country: countryRaw } =
       await request.json();
+      const geoCountry = resolveCountryFromHeaders(request);
+      const country =
+        String(countryRaw || '').trim() || geoCountry.countryLabel || 'Uruguay';
       const MailchimpKey = process.env.MAILCHIMP_API_KEY;
       const MailchimpServer = process.env.MAILCHIMP_API_SERVER;
       const MailchimpNewsletterAudience = process.env.MAILCHIMP_RUTINAS_AUDIENCE_ID;

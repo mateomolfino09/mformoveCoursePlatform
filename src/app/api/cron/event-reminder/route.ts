@@ -193,7 +193,7 @@ export async function GET(req: NextRequest) {
           await emailService.sendEmail({
             type: EmailType.MOVE_CREW_EVENT_REMINDER,
             to: usuario.email,
-            subject: `En 1 hora: ${ev.title || 'Clase en vivo Cuerpo autónomo'}`,
+            subject: `En 1 hora: ${ev.title || 'Clase en vivo'}`,
             data: {
               name: usuario.name || 'Miembro',
               eventTitle: ev.title,

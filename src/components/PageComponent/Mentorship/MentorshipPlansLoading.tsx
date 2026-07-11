@@ -28,7 +28,7 @@ const MentorshipPlansLoading = ({ show }: { show: boolean }) => {
         >
           <div className="absolute inset-0">
             <CldImage
-              src="my_uploads/fondos/DSC01437_ds4vxz"
+              src="my_uploads/fondos/DSC01753_qdv9o0"
               alt="Mentoría Online"
               fill
               priority

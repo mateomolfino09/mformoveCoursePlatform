@@ -12,6 +12,15 @@ type UserWithCourses = {
 export function userHasCourseAccess(user: UserWithCourses | null, productId: string): boolean {
   if (!user) return false;
   if (user.rol === 'Admin') return true;
+  return userHasPurchasedCourse(user, productId);
+}
+
+/** Compra real en cursosAdquiridos (sin bypass de Admin). */
+export function userHasPurchasedCourse(
+  user: UserWithCourses | null,
+  productId: string
+): boolean {
+  if (!user) return false;
   const target = productId.toString();
   return (user.cursosAdquiridos || []).some(
     (entry) => entry?.productoId?.toString() === target

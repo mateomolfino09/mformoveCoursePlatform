@@ -6,6 +6,7 @@ import { stripe } from '../../payments/stripe/stripeConfig';
 import { resolveInvitacionGrupoWhatsappFromPayload } from '../../../../lib/resolveInvitacionGrupoWhatsapp';
 import { normalizeCursoLandingConfig } from '../../../../types/cursoLanding';
 import { ensureCursoPreventaPaymentLinks } from '../../../../lib/ensureCursoPreventaPaymentLinks';
+import { ensureCursoLanzamientoPaymentLinks } from '../../../../lib/ensureCursoLanzamientoPaymentLinks';
 
 connectDB();
 
@@ -128,26 +129,49 @@ export async function PUT(req) {
             )
           : undefined;
 
-      if (tipo === 'curso' && cursoConfigParaGuardar?.preciosPreventa?.length) {
+      if (tipo === 'curso' && cursoConfigParaGuardar) {
         const origin =
           req.headers.get('origin') ||
           process.env.NEXT_PUBLIC_APP_URL ||
+          process.env.NEXT_PUBLIC_BASE_URL ||
           'http://localhost:3000';
-        const withPreventaLinks = await ensureCursoPreventaPaymentLinks(
+
+        const withLanzamientoLinks = await ensureCursoLanzamientoPaymentLinks(
           {
             _id: productId,
             nombre: nombre || existingProduct.nombre,
             descripcion: descripcion || existingProduct.descripcion,
+            precio: precio ?? existingProduct.precio,
+            moneda: moneda || existingProduct.moneda,
             portada: portada || existingProduct.portada,
             cursoConfig: cursoConfigParaGuardar,
           },
           origin
         );
-        if (withPreventaLinks) {
+        if (withLanzamientoLinks) {
           cursoConfigParaGuardar = normalizeCursoLandingConfig(
-            withPreventaLinks,
+            withLanzamientoLinks,
             nombre || existingProduct.nombre
           );
+        }
+
+        if (cursoConfigParaGuardar?.preciosPreventa?.length) {
+          const withPreventaLinks = await ensureCursoPreventaPaymentLinks(
+            {
+              _id: productId,
+              nombre: nombre || existingProduct.nombre,
+              descripcion: descripcion || existingProduct.descripcion,
+              portada: portada || existingProduct.portada,
+              cursoConfig: cursoConfigParaGuardar,
+            },
+            origin
+          );
+          if (withPreventaLinks) {
+            cursoConfigParaGuardar = normalizeCursoLandingConfig(
+              withPreventaLinks,
+              nombre || existingProduct.nombre
+            );
+          }
         }
       }
 
@@ -332,7 +356,11 @@ export async function PUT(req) {
       // Construir objeto de actualización
       const updateData = {
         nombre,
-        descripcion,
+        // No pisar la descripción existente con un valor vacío/ausente.
+        descripcion:
+          typeof descripcion === 'string' && descripcion.trim()
+            ? descripcion
+            : existingProduct.descripcion,
         tipo,
         precio,
         moneda,

@@ -7,6 +7,8 @@ export type InvitacionGrupoSource = {
   invitacionGrupoWhatsapp?: string;
   /** @deprecated usar invitacionGrupoWhatsapp */
   grupoWhatsapp?: string;
+  /** Fallback: algunos productos guardan el invite en descripcion */
+  descripcion?: string;
   cursoConfig?: {
     whatsapp?: {
       invitacionGrupoWhatsapp?: string;
@@ -22,6 +24,21 @@ export type InvitacionGrupoSource = {
     };
   };
 };
+
+const WHATSAPP_INVITE_CODE_RE = /^https?:\/\/chat\.whatsapp\.com\/([A-Za-z0-9_-]+)/i;
+
+/** Extrae el primer invite chat.whatsapp.com de un texto (soporta URLs duplicadas pegadas). */
+export function extractWhatsappInviteLink(text?: string | null): string {
+  if (!text?.trim()) return '';
+  const parts = text.split(/(?=https?:\/\/)/i);
+  for (const part of parts) {
+    const match = part.trim().match(WHATSAPP_INVITE_CODE_RE);
+    if (match?.[1]) {
+      return `https://chat.whatsapp.com/${match[1]}`;
+    }
+  }
+  return '';
+}
 
 function pickInvitacion(...values: Array<string | undefined>): string {
   for (const v of values) {
@@ -41,7 +58,8 @@ export function resolveInvitacionGrupoWhatsappFromPayload(
     data.cursoConfig?.whatsapp?.invitacionGrupoWhatsapp,
     data.cursoConfig?.whatsapp?.grupoWhatsapp,
     data.programaTransformacional?.comunidad?.invitacionGrupoWhatsapp,
-    data.programaTransformacional?.comunidad?.grupoWhatsapp
+    data.programaTransformacional?.comunidad?.grupoWhatsapp,
+    extractWhatsappInviteLink(data.descripcion)
   );
 }
 
@@ -52,6 +70,7 @@ export function resolveInvitacionGrupoWhatsappFromProduct(
   return resolveInvitacionGrupoWhatsappFromPayload({
     invitacionGrupoWhatsapp: product.invitacionGrupoWhatsapp,
     grupoWhatsapp: product.grupoWhatsapp,
+    descripcion: product.descripcion,
     cursoConfig: product.cursoConfig,
     programaTransformacional: product.programaTransformacional,
   });

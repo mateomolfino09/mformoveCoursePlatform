@@ -26,6 +26,10 @@ const courseClassSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    descripcionGeneral: { type: String, default: '' },
+    descripcionCorta: { type: String, default: '' },
+    descripcionCompleta: { type: String, default: '' },
+    pdfUrl: { type: String, default: '' },
     videoUrl: { type: String, default: '' },
     videoId: { type: String },
     videoThumbnail: { type: String, default: '' },
@@ -39,7 +43,7 @@ const courseClassSchema = new mongoose.Schema(
     },
     order: { type: Number, default: 0 },
     materials: {
-      type: [{ type: String, enum: ['baston', 'banda elastica', 'banco', 'pelota'] }],
+      type: [{ type: String, enum: ['pelota', 'baston', 'banda elastica', 'banco', 'bloque', 'libreta', 'lapicera'] }],
       default: [],
     },
     visibleInLibrary: {

@@ -3,6 +3,16 @@
 import type { CursoClaseContenido } from '../../../types/cursoLanding';
 import { COURSE_CLASS_MATERIALS } from '../../../types/courseClass';
 
+const MATERIAL_LABELS: Record<string, string> = {
+  pelota: 'Pelota',
+  baston: 'Bastón',
+  'banda elastica': 'Banda elástica',
+  banco: 'Banco',
+  bloque: 'Bloque',
+  libreta: 'Libreta',
+  lapicera: 'Lapicera',
+};
+
 const inputClass =
   'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900';
 
@@ -58,12 +68,30 @@ export default function CursoClaseContenidoFields({
           />
         </div>
         <div className="md:col-span-2">
-          <label className={labelClass}>Descripción</label>
+          <label className={labelClass}>Descripción general</label>
           <textarea
             className={`${inputClass} min-h-[72px]`}
-            value={clase.description}
-            onChange={(e) => onChange({ description: e.target.value })}
-            placeholder="Qué hace esta clase"
+            value={clase.descripcionGeneral ?? ''}
+            onChange={(e) => onChange({ descripcionGeneral: e.target.value })}
+            placeholder="¿Qué aprende el alumno? (concepto y función dentro del módulo)"
+          />
+        </div>
+        <div className="md:col-span-2">
+          <label className={labelClass}>Descripción corta</label>
+          <textarea
+            className={`${inputClass} min-h-[72px]`}
+            value={clase.descripcionCorta ?? ''}
+            onChange={(e) => onChange({ descripcionCorta: e.target.value })}
+            placeholder="¿Por qué debería importarme esta clase?"
+          />
+        </div>
+        <div className="md:col-span-2">
+          <label className={labelClass}>Descripción completa</label>
+          <textarea
+            className={`${inputClass} min-h-[92px]`}
+            value={clase.descripcionCompleta ?? ''}
+            onChange={(e) => onChange({ descripcionCompleta: e.target.value })}
+            placeholder="¿Por qué esto es relevante para mí y qué voy a descubrir? (narrativa y contexto)"
           />
         </div>
         <div>
@@ -106,6 +134,15 @@ export default function CursoClaseContenidoFields({
             placeholder="Opcional"
           />
         </div>
+        <div className="md:col-span-2">
+          <label className={labelClass}>PDF de la clase (URL)</label>
+          <input
+            className={inputClass}
+            value={clase.pdfUrl ?? ''}
+            onChange={(e) => onChange({ pdfUrl: e.target.value })}
+            placeholder="https://…/material.pdf (opcional)"
+          />
+        </div>
       </div>
       <div>
         <p className={labelClass}>Materiales necesarios</p>
@@ -117,13 +154,13 @@ export default function CursoClaseContenidoFields({
                 key={mat}
                 type="button"
                 onClick={() => toggleMaterial(mat)}
-                className={`rounded-full border px-3 py-1 text-xs capitalize transition-colors ${
+                className={`rounded-full border px-3 py-1 text-xs transition-colors ${
                   active
                     ? 'border-palette-sage bg-palette-sage/15 text-gray-900'
                     : 'border-gray-300 text-gray-600 hover:border-gray-500'
                 }`}
               >
-                {mat}
+                {MATERIAL_LABELS[mat] ?? mat}
               </button>
             );
           })}

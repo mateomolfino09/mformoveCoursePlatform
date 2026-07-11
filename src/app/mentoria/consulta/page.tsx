@@ -5,7 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import MainSideBar from '../../../components/MainSidebar/MainSideBar';
 import Footer from '../../../components/Footer';
+import MentorshipConsultaSkeleton from '../../../components/PageComponent/Mentorship/MentorshipConsultaSkeleton';
 import imageLoader from '../../../../imageLoader';
+import { useAppDispatch } from '../../../hooks/useTypeSelector';
+import { toggleScroll } from '../../../redux/features/headerLibrarySlice';
+import { buildMentorshipBudgetOptions } from '../../../lib/mentorshipPricing';
 
 const CONSULTA_BG = 'my_uploads/plaza/DSC03350_vgjrrh';
 
@@ -237,7 +241,7 @@ const preguntas = [
   },
   {
     name: "presupuesto",
-    label: "¿Preferís pagar la mentoría en ciclo trimestral o en ciclo anual?",
+    label: "¿Preferís pagar en plan mensual o anual?",
     type: "radio",
     options: [],
     required: true,
@@ -381,6 +385,7 @@ const validators = {
 };
 
 export default function MentorshipConsultaPage() {
+  const dispatch = useAppDispatch();
   const [form, setForm] = useState<FormState>(initialState);
   const [step, setStep] = useState(0);
   const [enviado, setEnviado] = useState(false);
@@ -393,6 +398,13 @@ export default function MentorshipConsultaPage() {
 
   const preguntaActual = preguntas[step];
   const isPresupuestoStep = preguntaActual.name === 'presupuesto';
+
+  useEffect(() => {
+    dispatch(toggleScroll(false));
+    return () => {
+      dispatch(toggleScroll(false));
+    };
+  }, [dispatch]);
 
   const loadMentorshipPlans = async () => {
     try {
@@ -407,56 +419,7 @@ export default function MentorshipConsultaPage() {
       const activePlans = plans.filter((plan) => plan.active);
       const plan = activePlans[0];
 
-      const options: RadioOption[] = [];
-      if (plan) {
-        const trimestralPrice = plan.prices?.find((p: PlanPrice) => p.interval === 'trimestral');
-        const anualPrice = plan.prices?.find((p: PlanPrice) => p.interval === 'anual');
-
-        const monthlyFromTrimestral = trimestralPrice ? Math.round(trimestralPrice.price / 3) : null;
-        const monthlyFromAnual = anualPrice ? Math.round(anualPrice.price / 12) : null;
-        let discountPercent = 0;
-        if (
-          monthlyFromTrimestral != null &&
-          monthlyFromAnual != null &&
-          monthlyFromAnual < monthlyFromTrimestral
-        ) {
-          discountPercent = Math.max(
-            0,
-            Math.round((1 - monthlyFromAnual / monthlyFromTrimestral) * 100),
-          );
-        }
-
-        const cur = trimestralPrice?.currency ?? anualPrice?.currency ?? 'USD';
-        const sym = currencyDisplay(cur);
-
-        if (trimestralPrice) {
-          options.push({
-            value: `Mentoría — ciclo trimestral — ${sym} ${trimestralPrice.price}`,
-            label: `Mentoría · ciclo trimestral (${sym} ${trimestralPrice.price})`,
-            description: `Facturás cada tres meses${
-              monthlyFromTrimestral != null
-                ? ` · equivale a ~${sym} ${monthlyFromTrimestral}/mes`
-                : ''
-            }.`,
-            monthlyFromTrimestral,
-            monthlyFromAnual,
-            discountPercent: 0,
-          });
-        }
-
-        if (anualPrice) {
-          options.push({
-            value: `Mentoría — ciclo anual — ${sym} ${anualPrice.price}`,
-            label: `Mentoría · ciclo anual (${sym} ${anualPrice.price})`,
-            description: `Mismo programa${
-              monthlyFromAnual != null ? ` · ~${sym} ${monthlyFromAnual}/mes` : ''
-            }.`,
-            monthlyFromTrimestral,
-            monthlyFromAnual,
-            discountPercent,
-          });
-        }
-      }
+      const options: RadioOption[] = plan ? buildMentorshipBudgetOptions(plan.prices) : [];
 
       setBudgetOptions(options);
     } catch (error) {
@@ -685,22 +648,26 @@ export default function MentorshipConsultaPage() {
     setLoading(false);
   };
 
+  if (!plansLoaded && !enviado) {
+    return <MentorshipConsultaSkeleton />;
+  }
+
   if (enviado) {
     return (
-      <MainSideBar where={'mentorship'}>
-      <div className="relative min-h-screen bg-palette-cream font-montserrat flex items-center justify-center pb-24 pt-[7rem] md:pt-28 md:pb-28">
-        <ConsultaBackdrop />
+      <MainSideBar where="mentorship">
+        <div className="relative min-h-screen bg-palette-cream font-montserrat flex items-center justify-center pb-24 pt-[7rem] md:pt-28 md:pb-28">
+          <ConsultaBackdrop />
 
-        <motion.div
-          className="relative z-10 mx-auto flex w-full max-w-lg min-h-[52vh] items-center justify-center px-4 pb-8 md:px-6 md:pb-12"
-          variants={boxVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <div className="w-full rounded-3xl border border-palette-stone/20 bg-white/95 px-8 py-10 text-center shadow-[0_14px_48px_rgba(20,20,17,0.1)] backdrop-blur-md md:px-12 md:py-12">
-            <p className="mb-6 font-montserrat text-[10px] font-semibold uppercase tracking-[0.28em] text-palette-stone/75 md:text-[11px]">
-              Mentoría
-            </p>
+          <motion.div
+            className="relative z-10 mx-auto flex w-full max-w-lg min-h-[52vh] items-center justify-center px-4 pb-8 md:px-6 md:pb-12"
+            variants={boxVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <div className="w-full rounded-3xl border border-palette-stone/20 bg-white/95 px-8 py-10 text-center shadow-[0_14px_48px_rgba(20,20,17,0.1)] backdrop-blur-md md:px-12 md:py-12">
+              <p className="mb-6 font-montserrat text-[10px] font-semibold uppercase tracking-[0.28em] text-palette-stone/75 md:text-[11px]">
+                Mentoría
+              </p>
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -748,9 +715,9 @@ export default function MentorshipConsultaPage() {
             >
               <Link
                 href="/"
-                className="inline-flex items-center justify-center rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-colors duration-200 hover:border-palette-steel hover:bg-palette-steel hover:text-palette-ink"
+                className="inline-flex items-center justify-center rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-colors duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink"
               >
-                Volver al inicio
+                Volver
               </Link>
               <Link
                 href="/mentoria"
@@ -767,9 +734,8 @@ export default function MentorshipConsultaPage() {
     );
   }
 
-  // Render pregunta actual
   return (
-    <MainSideBar where={'mentorship'}>
+    <MainSideBar where="mentorship">
     <div
       className={`relative min-h-screen bg-palette-cream font-montserrat flex ${isPresupuestoStep ? 'items-start' : 'items-center'} justify-center pb-28 pt-[7rem] md:pt-28 md:pb-32`}
     >
@@ -810,7 +776,6 @@ export default function MentorshipConsultaPage() {
               que necesitás.
             </motion.p>
           )}
-          
           <AnimatePresence mode="wait">
             <motion.div
               key={preguntaActual.name + step}
@@ -1020,7 +985,7 @@ export default function MentorshipConsultaPage() {
                       </p>
                       <Link
                         href={ROUTE_MEMBERSHIP_SELECT_PLAN}
-                        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-palette-ink bg-palette-ink px-6 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-steel hover:bg-palette-steel hover:text-palette-ink sm:w-auto"
+                        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-palette-ink bg-palette-ink px-6 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink sm:w-auto"
                       >
                         Ir a seleccionar plan
                         <span aria-hidden className="text-palette-cream/90">
@@ -1183,7 +1148,7 @@ export default function MentorshipConsultaPage() {
                 onClick={handleNext}
                 disabled={muestraPuenteMembresia}
                 title={muestraPuenteMembresia ? 'Elegí mentoría para continuar esta solicitud, o entrá por el enlace de membresía' : undefined}
-                className="group inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-steel hover:bg-palette-steel hover:text-palette-ink disabled:cursor-not-allowed disabled:opacity-40 sm:ml-auto sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink disabled:cursor-not-allowed disabled:opacity-40 sm:ml-auto sm:w-auto"
               >
                 Siguiente
                 <svg
@@ -1199,7 +1164,7 @@ export default function MentorshipConsultaPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-steel hover:bg-palette-steel hover:text-palette-ink disabled:opacity-50 sm:ml-auto sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink disabled:opacity-50 sm:ml-auto sm:w-auto"
               >
                 {loading ? 'Enviando…' : 'Enviar solicitud'}
                 {!loading && (
@@ -1237,4 +1202,4 @@ export default function MentorshipConsultaPage() {
     <Footer />
     </MainSideBar>
   );
-} 
+}

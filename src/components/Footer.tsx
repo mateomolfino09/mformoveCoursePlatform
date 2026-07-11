@@ -17,7 +17,7 @@ const Footer = () => {
   const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`
 
   return (
-    <footer className="w-full border-t border-black/5 bg-white">
+    <footer className="w-full border-t border-black/5 bg-palette-cream">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8 md:py-8">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <Link

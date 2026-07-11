@@ -12,6 +12,8 @@ import User from '../../../../../models/userModel.js';
 import { EmailService } from '../../../../../services/email/emailService';
 import CoherenceTracking from '../../../../../models/coherenceTrackingModel';
 import { routes } from '../../../../../constants/routes';
+import { constructStripeEvent } from '../../../../../lib/stripeWebhookVerify';
+import { handleStripeCourseCheckoutCompleted } from '../../../../../lib/handleStripeCourseCheckout';
 
 // Helper robusto para inicializar tracking incluso si el método estático no está disponible
 const ensureCoherenceTracking = async (userId: any) => {
@@ -53,19 +55,8 @@ export const POST = async (req: NextRequest) => {
     const body = await req.text();
     let event;
     const origin = getCurrentURL();
-    const webhookSecret =
-      process.env.STRIPE_WEBHOOK_SECRET_PAYMENTS_STRIPE_WEBHOOK ?? process.env.STRIPE_WEBHOOK_SECRET;
-
-    if (!webhookSecret) {
-      console.error(
-        '❌ Falta STRIPE_WEBHOOK_SECRET_PAYMENTS_STRIPE_WEBHOOK (o fallback STRIPE_WEBHOOK_SECRET)'
-      );
-      return new NextResponse("Webhook no configurado", { status: 500 });
-    }
-
     try {
-      // Verifica que el webhook proviene de Stripe
-      event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+      event = constructStripeEvent(stripe, body, sig);
     } catch (err: any) {
       console.error(`Error al verificar la firma del webhook: ${err?.message}`);
       return new NextResponse("Invalido", {status:400})
@@ -74,17 +65,15 @@ export const POST = async (req: NextRequest) => {
     try {
       switch (event.type) {
         case 'checkout.session.completed': {
-    const session = event.data.object as Stripe.Checkout.Session;
-          
-          // Verificar si es una membresía
+          const session = event.data.object as Stripe.Checkout.Session;
           const isMembership = session.metadata?.type === 'membership';
-          
-          if (isMembership) {
+
+          if (!isMembership) {
+            await handleStripeCourseCheckoutCompleted(session);
+          } else {
             const customerEmail = session.customer_details?.email || session.metadata?.email;
-            
             if (customerEmail) {
-              // La suscripción se procesará cuando llegue el evento customer.subscription.created
-              // Este evento solo sirve como log/confirmación
+              // La suscripción se procesará cuando llegue customer.subscription.created
             }
           }
           break;

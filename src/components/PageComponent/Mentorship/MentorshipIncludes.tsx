@@ -2,21 +2,29 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import {
+  landingEyebrowDark,
+  landingSectionBodyDark,
+  landingSectionTitleDark,
+} from '../../../constants/landingSectionDesign';
 
-const productLines = [
-  'Un programa de entrenamiento',
-  'Ajustes cada dos semanas',
-  'Una llamada al mes para trabajar conocimientos teóricos en el campo del movimiento y aprender más sobre el QUÉ, el CÓMO y el POR QUÉ de la práctica.',
+const includes = [
+  {
+    title: 'Programa personalizado',
+    description:
+      'Un plan de entrenamiento adaptado a tus objetivos, experiencia, disponibilidad y momento actual de la práctica.',
+  },
+  {
+    title: 'Ajustes quincenales',
+    description:
+      'Cada dos semanas revisamos el proceso y realizamos los cambios necesarios para que el entrenamiento siga teniendo sentido y dirección.',
+  },
+  {
+    title: 'Llamadas de mentoría',
+    description:
+      'Una llamada mensual para profundizar en los principios del movimiento, entender el qué, el cómo y el por qué de la práctica, y desarrollar una mirada más consciente y crítica sobre el cuerpo.',
+  },
 ] as const;
-
-const lineFade = {
-  hidden: { opacity: 0, y: 12 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1], delay: 0.08 + i * 0.07 },
-  }),
-};
 
 const MentorshipIncludes = () => {
   return (
@@ -27,40 +35,70 @@ const MentorshipIncludes = () => {
 
       <div className="relative mx-auto my-12 md:my-0 w-[92%] max-w-6xl px-3 py-18 sm:px-4 md:py-24">
         <motion.div
-          className="mb-12 max-w-3xl md:mb-14"
+          className="max-w-3xl"
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true, margin: '-50px' }}
         >
-          <p className="mb-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-cream/55 md:text-xs">
-            Lo que incluye
-          </p>
-          <h2 className="mb-4 text-[1.85rem] font-semibold leading-[1.1] tracking-tight text-palette-cream md:text-4xl lg:text-[2.5rem] lg:leading-[1.08]">
-            ¿Qué incluye la mentoría?
+          <p className={landingEyebrowDark}>Lo que vas a recibir</p>
+          <h2 className={landingSectionTitleDark}>
+            Qué incluye el acompañamiento
           </h2>
+          <p className={`${landingSectionBodyDark} max-w-2xl`}>
+            Herramientas y espacios diseñados para acompañar tu proceso, profundizar la práctica y avanzar con claridad
+            en tus objetivos.
+          </p>
         </motion.div>
 
         <motion.ul
-          className="max-w-3xl border-t border-white/10 pt-2"
           role="list"
           initial="hidden"
-          whileInView="visible"
+          whileInView="show"
           viewport={{ once: true, margin: '-40px' }}
+          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}
+          className="mt-10 max-w-4xl border-t border-white/10 md:mt-12"
         >
-          {productLines.map((line, i) => (
+          {includes.map((item, index) => (
             <motion.li
-              key={line}
-              custom={i}
-              variants={lineFade}
-              className="border-b border-white/[0.08] py-6 md:py-7"
+              key={item.title}
+              variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              className="grid gap-3 border-b border-white/[0.08] py-6 md:grid-cols-[4.5rem_1fr] md:items-start md:gap-8 md:py-8"
             >
-              <p className="max-w-2xl font-montserrat text-[17px] font-medium leading-snug tracking-tight text-palette-cream/95 md:text-[1.125rem] md:leading-snug lg:text-xl">
-                {line}
-              </p>
+              <span
+                aria-hidden
+                className="font-montserrat text-sm font-semibold tabular-nums tracking-wide text-palette-sage md:pt-0.5 md:text-base"
+              >
+                {(index + 1).toString().padStart(2, '0')}
+              </span>
+              <div className="min-w-0">
+                <h3 className="text-[1.1rem] font-semibold tracking-tight text-palette-cream md:text-[1.25rem] lg:text-[1.35rem]">
+                  {item.title}
+                </h3>
+                <p className={`${landingSectionBodyDark} mt-2`}>
+                  {item.description}
+                </p>
+              </div>
             </motion.li>
           ))}
         </motion.ul>
+
+        <motion.div
+          className="mt-14 max-w-3xl md:mt-20"
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, margin: '-40px' }}
+        >
+          <p className="border-l-2 border-palette-sage pl-5 font-semibold leading-[1.2] tracking-tight text-palette-cream/65 text-[1.25rem] md:pl-6 md:text-[1.75rem]">
+            No se trata solo de desarrollar formas.
+            <span className="mt-2 block text-palette-cream">
+              Se trata de construir una práctica{' '}
+              <span className="text-palette-sage">propia, sostenible y con sentido</span>.
+            </span>
+          </p>
+        </motion.div>
       </div>
     </section>
   );

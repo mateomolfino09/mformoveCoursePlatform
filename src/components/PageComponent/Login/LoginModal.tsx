@@ -15,6 +15,8 @@ import { MiniLoadingSpinner } from '../Products/MiniSpinner';
 import { getAndClearRedirectUrl, getCourseCheckoutIntent } from '../../../utils/redirectQueue';
 import { executePlanIntent } from '../../../utils/executePlanIntent';
 import endpoints from '../../../services/api';
+import { dlocalCountries } from '../../../constants/dlocalCountries';
+import { useDetectedCountry } from '../../../hooks/useDetectedCountry';
 
 const overlayVariants = {
   hidden: { opacity: 0 },
@@ -31,6 +33,7 @@ const LoginModal = () => {
   const router = useRouter();
   const auth = useAuth();
   const snap = useSnapshot(state);
+  const { dlocalCountryLabel } = useDetectedCountry();
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loginForm, setLoginForm] = useState(false);
@@ -40,7 +43,28 @@ const LoginModal = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, setValue, reset } = useForm({
+    defaultValues: { country: 'Uruguay', name: '', email: '' },
+  });
+
+  useEffect(() => {
+    if (!snap.loginForm) return;
+    setLoginForm(snap.authModalMode === 'login');
+    setForgetForm(false);
+    setForgetSend(false);
+    setErrorMessage(null);
+    reset({
+      country: dlocalCountryLabel || 'Uruguay',
+      name: '',
+      email: '',
+    });
+  }, [snap.loginForm, snap.authModalMode, dlocalCountryLabel, reset]);
+
+  useEffect(() => {
+    if (dlocalCountryLabel && snap.loginForm && snap.authModalMode === 'register') {
+      setValue('country', dlocalCountryLabel);
+    }
+  }, [dlocalCountryLabel, setValue, snap.loginForm, snap.authModalMode]);
 
   useEffect(() => {
     setMounted(true);
@@ -65,14 +89,19 @@ const LoginModal = () => {
     setForgetSend(false);
   };
 
-  const signupUser = async (name: string, email: string) => {
+  const signupUser = async (name: string, email: string, country: string) => {
     setLoading(true);
     setErrorMessage(null);
     try {
       const res = await fetch(endpoints.auth.easyRegisterSubscribe, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name, gender: '', country: '' }),
+        body: JSON.stringify({
+          email,
+          name,
+          gender: '',
+          country: country?.trim() || dlocalCountryLabel || 'Uruguay',
+        }),
       });
       const data = await res.json();
 
@@ -151,10 +180,10 @@ const LoginModal = () => {
   };
 
   const onSubmit = async (data: any) => {
-    const { name, email, password } = data;
+    const { name, email, password, country } = data;
     if (loginForm && !forgetForm) await signinUser(email, password);
     else if (loginForm && forgetForm) await forgetPassword(email);
-    else await signupUser(name, email);
+    else await signupUser(name, email, country);
   };
 
   const modalCard = (
@@ -209,6 +238,8 @@ const LoginModal = () => {
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
+
             {!loginForm && !forgetForm && (
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-palette-ink mb-1.5">
@@ -240,6 +271,25 @@ const LoginModal = () => {
               )}
             </div>
 
+            {!loginForm && !forgetForm && (
+              <div>
+                <label htmlFor="country" className="block text-sm font-medium text-palette-ink mb-1.5">
+                  País
+                </label>
+                <select
+                  id="country"
+                  className={`${inputBase} ${errorMessage ? inputError : 'border-palette-stone/40'}`}
+                  {...register('country', { required: true })}
+                >
+                  {dlocalCountries.map((c) => (
+                    <option key={c.value} value={c.label}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             {loginForm && !forgetForm && (
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-palette-ink mb-1.5">
@@ -255,7 +305,7 @@ const LoginModal = () => {
                 <button
                   type="button"
                   onClick={() => { setForgetForm(true); setErrorMessage(null); }}
-                  className="mt-1.5 text-xs text-palette-sage hover:text-palette-ink font-medium"
+                  className="mt-1.5 text-xs text-palette-ink hover:text-palette-deepmoka font-medium"
                 >
                   Olvidé mi contraseña
                 </button>
@@ -276,8 +326,8 @@ const LoginModal = () => {
                     ¿No tenés cuenta?{' '}
                     <button
                       type="button"
-                      onClick={() => { setLoginForm(false); setErrorMessage(null); }}
-                      className="font-medium text-palette-sage hover:text-palette-ink underline"
+                      onClick={() => { state.authModalMode = 'register'; setLoginForm(false); setErrorMessage(null); }}
+                      className="font-medium text-palette-ink hover:text-palette-deepmoka underline"
                     >
                       Registrate
                     </button>
@@ -287,8 +337,8 @@ const LoginModal = () => {
                     ¿Ya tenés cuenta?{' '}
                     <button
                       type="button"
-                      onClick={() => { setLoginForm(true); setErrorMessage(null); }}
-                      className="font-medium text-palette-sage hover:text-palette-ink underline"
+                      onClick={() => { state.authModalMode = 'login'; setLoginForm(true); setErrorMessage(null); }}
+                      className="font-medium text-palette-ink hover:text-palette-granite underline"
                     >
                       Ingresá acá
                     </button>

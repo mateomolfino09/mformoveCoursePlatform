@@ -2,7 +2,12 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
+import MentorshipApplyButton from './MentorshipApplyButton';
+import {
+  landingEyebrowDark,
+  landingSectionBodyDark,
+  landingSectionTitleDark,
+} from '../../../constants/landingSectionDesign';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 
@@ -25,7 +30,7 @@ const MentorshipCTA = () => {
                 alt=""
                 fill
                 sizes="(max-width: 1280px) 85vw, 1152px"
-                className="object-cover object-[center_42%] opacity-[0.14] md:opacity-[0.18]"
+                className="object-cover object-[center_42%] opacity-[0.8] md:opacity-[0.8]"
                 loader={imageLoader}
                 preserveTransformations
               />
@@ -34,35 +39,21 @@ const MentorshipCTA = () => {
             <div className="absolute inset-0 z-[1] bg-palette-ink/20" />
 
             <div className="relative z-[2] px-6 py-10 md:px-10 md:py-12">
-              <p className="font-montserrat uppercase tracking-[0.2em] text-xs text-palette-cream/70">
+              <p className={`${landingEyebrowDark} !text-palette-cream/70`}>
                 Mentoría
               </p>
-              <h2 className="mt-4 text-2xl md:text-3xl font-montserrat font-semibold text-palette-cream tracking-tight max-w-2xl">
-                Si querés avanzar con claridad, elegí un plan y empezamos.
+              <h2 className={`${landingSectionTitleDark} max-w-2xl`}>
+              Elegí el plan que mejor acompañe tu proceso.
               </h2>
-              <p className="mt-4 text-sm md:text-base text-palette-cream/85 leading-relaxed font-light max-w-2xl">
-                Menos ruido. Más práctica, feedback y dirección.
+              <p className={`${landingSectionBodyDark} max-w-2xl`}>
+              Más práctica, más claridad y un seguimiento adaptado a vos.
               </p>
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <Link
-                  href="/mentoria/consulta"
-                  className="group inline-flex w-full items-center justify-between gap-4 rounded-full border-2 border-palette-cream/80 bg-palette-cream px-7 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.2em] text-palette-ink transition-all duration-200 hover:border-white hover:bg-white sm:w-auto"
-                >
-                  <span>Aplicar a mentoría</span>
-                  <span className="text-palette-ink/70 transition-transform duration-200 group-hover:translate-x-0.5">→</span>
-                </Link>
+                <MentorshipApplyButton variant="inverted" className="w-full sm:w-auto" />
 
                 <p className="text-xs font-light text-palette-cream/70 md:text-sm">
-                  Cupos y disponibilidad varían por ciclo. Podés revisar&nbsp;
-                  <button
-                    type="button"
-                    onClick={() => document.getElementById('mentorship-plans')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="underline decoration-palette-cream/40 underline-offset-2 hover:decoration-palette-cream/80"
-                  >
-                    planes
-                  </button>
-                  &nbsp;cuando quieras.
+                Los cupos son limitados y varían según cada ciclo de trabajo.
                 </p>
               </div>
             </div>

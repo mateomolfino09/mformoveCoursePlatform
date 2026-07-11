@@ -1,61 +1,49 @@
 'use client';
 
-import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { motion } from 'framer-motion';
+import { useCursoLanding } from './CursoLandingContext';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
-import { useCursoLanding } from './CursoLandingContext';
+import {
+  landingCardBody,
+  landingSectionTitle,
+  landingSplitSectionImageBase,
+  landingSplitSectionLayout,
+} from '../../../constants/landingSectionDesign';
 
-const padX =
-  'px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-28';
-
-type OutcomeItem = {
+type OutcomeEntry = {
   title: string;
   body: string;
 };
 
-const OutcomeRow = ({
+const OutcomeListItem = ({
   item,
   index,
+  isLast,
 }: {
-  item: OutcomeItem;
+  item: OutcomeEntry;
   index: number;
-}) => {
-  const rowRef = useRef(null);
-  const isInView = useInView(rowRef, { once: true, margin: '-120px' });
-  const n = (index + 1).toString().padStart(2, '0');
-
-  return (
-    <motion.li
-      ref={rowRef}
-      initial={{ opacity: 0, y: 12 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1], delay: index * 0.04 }}
-      className="py-3.5 md:py-4 lg:py-5"
-    >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-6 lg:gap-7">
-        <span
-          className="shrink-0 font-montserrat text-[clamp(1.25rem,2.8vw,1.5rem)] font-bold tabular-nums leading-none tracking-[-0.03em] text-palette-ink md:w-9 md:pt-0.5 md:text-[1.35rem]"
-          aria-hidden
-        >
-          {n}
-        </span>
-
-        <div className="min-w-0 flex-1 space-y-2 md:space-y-2.5">
-          <h3 className="mc-text-depth-light-title text-base font-montserrat font-semibold leading-snug tracking-tight text-palette-ink md:text-lg md:leading-snug">
-            <span className="sr-only">
-              {n}.{' '}
-            </span>
-            {item.title}
-          </h3>
-          <p className="mc-text-depth-light max-w-none font-raleway text-sm font-normal leading-relaxed text-palette-stone md:text-[0.9375rem] md:leading-relaxed">
-            {item.body}
-          </p>
-        </div>
-      </div>
-    </motion.li>
-  );
-};
+  isLast: boolean;
+}) => (
+  <motion.li
+    initial={{ opacity: 0, y: 10 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.36, delay: Math.min(index * 0.04, 0.2), ease: [0.16, 1, 0.3, 1] }}
+    viewport={{ once: true, margin: '-40px' }}
+    className={`relative flex items-start justify-between gap-4 pl-0 pr-5 md:gap-5 md:pr-6 ${!isLast ? 'border-b border-palette-stone/12 pb-5 md:pb-6' : ''} ${index > 0 ? 'pt-5 md:pt-6' : ''}`}
+  >
+    <div className="min-w-0 flex-1">
+      <h3 className="font-montserrat text-[15px] font-semibold leading-snug tracking-tight text-palette-ink md:text-[16px]">
+        {item.title}
+      </h3>
+      <p className={`${landingCardBody} !mt-1.5 !text-palette-ink/82`}>{item.body}</p>
+    </div>
+    <span
+      aria-hidden
+      className="relative z-10 mt-[0.6rem] size-2 shrink-0 rounded-full bg-palette-sage shadow-[0_0_0_4px_#FAF8F4]"
+    />
+  </motion.li>
+);
 
 export default function CourseOutcomesHighlights() {
   const { cursoConfig } = useCursoLanding();
@@ -65,33 +53,21 @@ export default function CourseOutcomesHighlights() {
   }));
 
   return (
-    <section className="relative isolate overflow-hidden bg-palette-cream pt-8 pb-12 font-montserrat md:pt-9 md:pb-14 lg:pb-16">
-      <div
-        className="pointer-events-none absolute -top-28 right-[-18%] h-[min(340px,52vw)] w-[min(340px,52vw)] rounded-full bg-palette-sage/14 blur-[104px]"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute bottom-0 left-[-12%] h-[260px] w-[340px] rounded-full bg-palette-steel/12 blur-[98px]"
-        aria-hidden
-      />
-
-      {/* Misma lógica que HighlightsIntro: md:justify-evenly + altura mínima; imagen a la izquierda, contenido a la derecha */}
-      <div
-        className={`relative z-10 mx-auto flex w-full max-w-none flex-col gap-7 text-left ${padX} py-8 md:min-h-[min(320px,48vh)] md:flex-row md:items-stretch md:justify-evenly md:gap-0 md:py-10 md:pl-8 lg:min-h-[min(360px,52vh)] lg:gap-10 lg:py-11 lg:pl-12`}
-      >
+    <section className="relative isolate w-full overflow-hidden bg-palette-cream font-montserrat">
+      <div className={landingSplitSectionLayout}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.5, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true, margin: '-40px' }}
-          className="order-2 relative w-full shrink-0 overflow-hidden rounded-2xl min-h-[min(52vw,220px)] sm:min-h-[min(48vw,240px)] md:order-1 md:mt-0 md:min-h-0 md:w-[min(38vw,400px)] md:flex-none md:self-stretch md:rounded-3xl md:rounded-tr-3xl md:rounded-br-3xl lg:w-[min(34vw,420px)]"
+          className={`${landingSplitSectionImageBase} order-1 md:order-1 md:rounded-tr-3xl md:rounded-br-3xl md:border-r-0`}
         >
           <div className="absolute inset-0 md:relative md:h-full md:min-h-full">
             <CldImage
               src={cursoConfig.outcomes.imagenPublicId}
               alt={cursoConfig.outcomes.imagenAlt || cursoConfig.outcomes.titulo}
               fill
-              className="object-cover object-[center_22%] md:object-[center_28%]"
+              className="object-cover object-[center_24%] md:object-[center_28%]"
               sizes="(max-width: 768px) 100vw, min(42vw, 520px)"
               loader={imageLoader}
               priority={false}
@@ -102,22 +78,26 @@ export default function CourseOutcomesHighlights() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.04, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.45, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true, margin: '-40px' }}
-          className="order-1 flex min-w-0 flex-1 flex-col justify-center md:order-2 md:max-w-[min(100%,38rem)] lg:max-w-[min(100%,40rem)]"
+          className="order-2 flex min-w-0 flex-1 flex-col justify-center md:order-2"
         >
-          <div
-            className="relative mb-6 space-y-2 text-balance text-palette-ink md:mb-7 md:text-left"
-            aria-label="Resultados del método"
-          >
-            <p className="mc-text-depth-light-title text-center font-montserrat text-[clamp(1.65rem,4.2vw,2.35rem)] font-bold leading-[1.1] tracking-[-0.03em] md:text-left">
+          <h2 className={`${landingSectionTitle} !mt-0 max-w-2xl text-balance lg:max-w-[36rem]`}>
             {cursoConfig.outcomes.titulo}
-            </p>
-          </div>
+          </h2>
 
-          <ol className="list-none" aria-label="Ocho resultados claros">
+          <ol className="relative mt-6 list-none md:mt-8" aria-label="Resultados del método">
+            <span
+              aria-hidden
+              className="absolute bottom-3 right-[3px] top-3 w-px bg-gradient-to-b from-palette-sage/25 via-palette-sage/60 to-palette-sage/25"
+            />
             {outcomes.map((item, index) => (
-              <OutcomeRow key={item.title} item={item} index={index} />
+              <OutcomeListItem
+                key={item.title}
+                item={item}
+                index={index}
+                isLast={index === outcomes.length - 1}
+              />
             ))}
           </ol>
         </motion.div>

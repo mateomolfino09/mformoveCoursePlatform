@@ -692,4 +692,16 @@
       0 2px 26px rgba(250, 248, 244, 0.16),
       0 0 42px rgba(250, 248, 244, 0.07);
   }
+  /* Sección oscura curso (granite → ink) + sombra corrida tipo bio */
+  .mc-curso-dark-section {
+    @apply relative isolate overflow-hidden bg-gradient-to-r from-palette-granite via-palette-ink to-palette-ink font-montserrat text-palette-cream;
+  }
+  .mc-text-ink-shadow {
+    text-shadow: 1.5px 1.5px 0 rgba(20, 20, 17, 0.35);
+  }
+  .mc-text-ink-shadow-title {
+    text-shadow:
+      1.5px 1.5px 0 rgba(20, 20, 17, 0.4),
+      0 2px 18px rgba(20, 20, 17, 0.22);
+  }
 }

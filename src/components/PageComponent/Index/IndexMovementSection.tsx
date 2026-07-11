@@ -7,6 +7,8 @@ import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { CldImage } from 'next-cloudinary';
 import { routes } from '../../../constants/routes';
+import MentorshipApplyButton from '../../../components/PageComponent/Mentorship/MentorshipApplyButton';
+import { MENTORSHIP_LANDING_CTA } from '../../../constants/mentorshipCta';
 import imageLoader from '../../../../imageLoader';
 import type { IndexLatestCursoPayload } from '../../../types/indexLatestCurso';
 
@@ -102,18 +104,17 @@ function IndexMentorshipPromoSection({
           transition={{ duration: 0.5, delay: 0.15 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 px-2"
         >
+          <MentorshipApplyButton
+            variant="custom"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-900 px-8 py-3 text-sm font-medium text-[#FAF8F5] transition-all duration-300 hover:bg-gray-800 md:text-base"
+            showArrow={false}
+          />
           <Link
-            href={routes.navegation.mentorship}
+            href={MENTORSHIP_LANDING_CTA.href}
             className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full border-2 border-gray-900 text-gray-900 font-medium text-sm md:text-base hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink transition-all duration-300"
           >
-            Conocer mentoría
+            {MENTORSHIP_LANDING_CTA.label}
             <ArrowRightIcon className="w-4 h-4 shrink-0" />
-          </Link>
-          <Link
-            href={routes.navegation.mentorshipConsulta}
-            className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full bg-gray-900 text-[#FAF8F5] font-medium text-sm md:text-base hover:bg-gray-800 transition-all duration-300"
-          >
-            Aplicar ahora
           </Link>
         </motion.div>
       </motion.div>
@@ -239,75 +240,7 @@ export default function IndexMovementSection() {
           </motion.div>
         ) : null}
 
-        {!loading && curso && curso.modulos.length > 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.45 }}
-            className="mb-14 md:mb-20"
-          >
-            <p className="text-xs md:text-sm font-light tracking-[0.28em] uppercase text-gray-500 mb-3 text-center">
-              Temario
-            </p>
-            <h3 className="text-2xl md:text-4xl font-semibold text-gray-900 tracking-tight text-center mb-10 md:mb-14 max-w-3xl mx-auto">
-              {curso.temarioTitulo}
-            </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-10 max-w-6xl mx-auto">
-              {curso.modulos.map((modulo, index) => (
-                <motion.article
-                  key={`${modulo.titulo}-${index}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }}
-                  transition={{ duration: 0.4, delay: index * 0.06 }}
-                  className="flex flex-col w-full"
-                >
-                  <motion.div style={{ opacity }} className="flex items-baseline gap-3 mb-3">
-                    <span className="text-3xl font-bold tabular-nums tracking-tight text-gray-900/25">
-                      {(index + 1).toString().padStart(2, '0')}
-                    </span>
-                    <h4 className="text-lg md:text-xl font-semibold leading-snug text-gray-900">
-                      {modulo.titulo}
-                    </h4>
-                  </motion.div>
-                  {modulo.imagenPublicId ? (
-                    <div className="relative mb-4 aspect-[4/3] overflow-hidden rounded-2xl md:rounded-3xl bg-gray-200/80 ring-1 ring-black/5">
-                      <CldImage
-                        src={modulo.imagenPublicId}
-                        alt={modulo.titulo}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        loader={imageLoader}
-                      />
-                    </div>
-                  ) : null}
-                  <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed line-clamp-6 md:line-clamp-none">
-                    {modulo.descripcion}
-                  </p>
-                </motion.article>
-              ))}
-            </div>
-          </motion.div>
-        ) : null}
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          className="flex justify-center px-2"
-        >
-          <Link
-            href={cursoHref}
-            className="inline-flex items-center justify-center gap-2 max-w-full px-6 sm:px-8 py-3 rounded-full border-2 border-gray-900 text-gray-900 font-medium text-sm md:text-base hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink transition-all duration-300 text-center"
-          >
-            <span className="line-clamp-2 sm:line-clamp-1">{loading ? '…' : primaryLabel}</span>
-            <ArrowRightIcon className="w-4 h-4 shrink-0" />
-          </Link>
-        </motion.div>
       </motion.div>
     </section>
   );
