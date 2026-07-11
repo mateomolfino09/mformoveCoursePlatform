@@ -3,6 +3,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import {
+  landingCardBody,
+  landingEyebrow,
+  landingFaqContainer,
+  landingSectionBodyMuted,
+  landingSectionTitle,
+} from '../../../constants/landingSectionDesign';
 
 const faqs = [
   {
@@ -79,16 +86,16 @@ export default function MentorshipFAQ() {
           viewport={{ once: true, margin: '-36px' }}
           className="mb-10 mr-auto max-w-2xl md:mb-12"
         >
-          <p className="text-[10px] font-normal uppercase tracking-[0.28em] text-palette-ink">Preguntas frecuentes</p>
-          <h2 className="mt-3 text-[1.65rem] font-bold leading-[1.1] tracking-tight text-palette-ink sm:text-[2rem] md:text-[2.2rem]">
+          <p className={landingEyebrow}>Preguntas frecuentes</p>
+          <h2 className={landingSectionTitle}>
             Antes de escribirme
           </h2>
-          <p className="mt-3 text-[14px] font-light leading-[1.65] text-palette-ink opacity-90 md:text-[15px]">
+          <p className={landingSectionBodyMuted}>
             Respuestas directas a lo que suele aparecer cuando alguien está evaluando si esto es para su momento.
           </p>
         </motion.div>
 
-        <div className="w-full max-w-3xl divide-y divide-palette-stone/16 rounded-2xl border border-palette-stone/18 bg-white/40 text-left">
+        <div className={landingFaqContainer}>
           {faqs.map((faq, index) => {
             const open = openIndex === index;
             return (
@@ -105,7 +112,7 @@ export default function MentorshipFAQ() {
                   aria-expanded={open}
                   className="flex w-full items-start gap-4 px-4 py-4 text-left transition-colors hover:bg-palette-cream/50 sm:px-5 sm:py-5"
                 >
-                  <span className="min-w-0 flex-1 text-[15px] font-medium leading-snug tracking-tight text-palette-ink sm:text-[16px]">
+                  <span className="min-w-0 flex-1 text-[15px] font-medium leading-snug tracking-tight text-palette-ink md:text-[17px]">
                     {faq.question}
                   </span>
                   <ChevronDownIcon
@@ -122,7 +129,7 @@ export default function MentorshipFAQ() {
                       transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                       className="overflow-hidden"
                     >
-                      <p className="px-4 pb-4 pt-0 text-[13px] font-light leading-[1.7] text-palette-ink opacity-[0.92] sm:px-5 sm:pb-5 sm:text-[14px] sm:leading-[1.65]">
+                      <p className={`${landingCardBody} px-4 pb-4 pt-0 sm:px-5 sm:pb-5`}>
                         {faq.answer}
                       </p>
                     </motion.div>

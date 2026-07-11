@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import Mentorship from '../../components/PageComponent/Mentorship/Mentorship';
 import { MentorshipPlan } from '../../types/mentorship';
-import MentorshipPlansLoading from '../../components/PageComponent/Mentorship/MentorshipPlansLoading';
+import MentorshipLandingSkeleton from '../../components/PageComponent/Mentorship/MentorshipLandingSkeleton';
 
 export const revalidate = 0;
 export const fetchCache = 'force-no-store'
@@ -60,9 +60,7 @@ export default function MentorshipPage() {
   }, []);
 
   if (loading) {
-    return (
-      <MentorshipPlansLoading show={true} />
-    );
+    return <MentorshipLandingSkeleton />;
   }
 
   if (error) {

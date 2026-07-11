@@ -65,7 +65,7 @@ const CourseFAQ = () => {
                   aria-expanded={open}
                   className="flex w-full items-start gap-4 px-4 py-4 text-left transition-colors hover:bg-palette-cream/50 sm:px-5 sm:py-5"
                 >
-                  <span className="min-w-0 flex-1 text-[15px] font-medium leading-snug tracking-tight text-palette-ink sm:text-[16px]">
+                  <span className="min-w-0 flex-1 text-[15px] font-medium leading-snug tracking-tight text-palette-ink md:text-[17px]">
                     {faq.question}
                   </span>
                   <ChevronDownIcon
@@ -82,7 +82,7 @@ const CourseFAQ = () => {
                       transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                       className="overflow-hidden"
                     >
-                      <p className="px-4 pb-4 pt-0 text-[13px] font-light leading-[1.7] text-palette-ink opacity-[0.92] sm:px-5 sm:pb-5 sm:text-[14px] sm:leading-[1.65]">
+                      <p className="px-4 pb-4 pt-0 text-[14px] font-normal leading-[1.7] text-palette-ink/90 sm:px-5 sm:pb-5 sm:text-[15px] sm:leading-[1.68]">
                         {faq.answer}
                       </p>
                     </motion.div>

@@ -2,6 +2,11 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import {
+  landingEyebrowDark,
+  landingSectionBodyDark,
+  landingSectionTitleDark,
+} from '../../../constants/landingSectionDesign';
 
 const includes = [
   {
@@ -36,13 +41,11 @@ const MentorshipIncludes = () => {
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true, margin: '-50px' }}
         >
-          <p className="mb-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-cream/55 md:text-xs">
-            Lo que vas a recibir
-          </p>
-          <h2 className="text-[1.85rem] font-bold leading-[1.1] tracking-tight text-palette-cream md:text-4xl lg:text-[2.5rem] lg:leading-[1.08]">
+          <p className={landingEyebrowDark}>Lo que vas a recibir</p>
+          <h2 className={landingSectionTitleDark}>
             Qué incluye el acompañamiento
           </h2>
-          <p className="mt-4 max-w-2xl text-[15px] font-light leading-[1.7] text-palette-cream/70 md:text-[16px]">
+          <p className={`${landingSectionBodyDark} max-w-2xl`}>
             Herramientas y espacios diseñados para acompañar tu proceso, profundizar la práctica y avanzar con claridad
             en tus objetivos.
           </p>
@@ -70,10 +73,10 @@ const MentorshipIncludes = () => {
                 {(index + 1).toString().padStart(2, '0')}
               </span>
               <div className="min-w-0">
-                <h3 className="text-[1.05rem] font-semibold tracking-tight text-palette-cream md:text-[1.15rem]">
+                <h3 className="text-[1.1rem] font-semibold tracking-tight text-palette-cream md:text-[1.25rem] lg:text-[1.35rem]">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-[15px] font-light leading-[1.65] text-palette-cream/70 md:text-[16px]">
+                <p className={`${landingSectionBodyDark} mt-2`}>
                   {item.description}
                 </p>
               </div>

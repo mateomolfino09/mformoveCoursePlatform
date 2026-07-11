@@ -1,11 +1,17 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
-import { MENTORSHIP_APPLY_CTA } from '../../../constants/mentorshipCta';
+import MentorshipApplyButton from './MentorshipApplyButton';
+import {
+  landingCardBody,
+  landingEyebrow,
+  landingSectionBody,
+  landingSectionLead,
+  landingSectionTitle,
+} from '../../../constants/landingSectionDesign';
 
 const steps = [
   {
@@ -75,7 +81,6 @@ function StepNumberWatermark({
 }
 
 export default function MentorshipProcess() {
-  const router = useRouter();
   const scrollToPlans = () =>
     document.getElementById('mentorship-plans')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -89,15 +94,15 @@ export default function MentorshipProcess() {
           viewport={{ once: true, margin: '-36px' }}
           className="mb-9 max-w-3xl md:mb-11"
         >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-ink">El proceso</p>
-          <h2 className="mt-3 text-[1.85rem] font-bold leading-[1.1] tracking-tight text-palette-ink md:text-[2.25rem] md:leading-[1.08] lg:text-[2.5rem]">
+          <p className={landingEyebrow}>El proceso</p>
+          <h2 className={landingSectionTitle}>
             De la evaluación inicial a construir una práctica propia
           </h2>
-          <p className="mt-5 text-[15px] font-normal leading-[1.72] text-palette-ink md:text-[16px]">
+          <p className={landingSectionBody}>
             La mentoría busca algo más que cumplir un programa. El objetivo es desarrollar una práctica que tenga sentido
             para vos, entendiendo el qué, el cómo y el por qué de cada decisión.
           </p>
-          <p className="mt-9 border-l-2 border-palette-ink/80 pl-5 text-[1.15rem] font-semibold leading-snug tracking-tight text-palette-ink md:pl-6 md:text-[1.45rem]">
+          <p className={`${landingSectionLead} mt-9 border-l-2 border-palette-ink/80 pl-5 md:pl-6`}>
             La teoría aparece cuando ayuda a ordenar la práctica; el cuerpo sigue ocupando el centro del proceso.
           </p>
         </motion.div>
@@ -142,7 +147,7 @@ export default function MentorshipProcess() {
                       <h3 className="relative z-[1] font-semibold text-palette-ink text-[17px] leading-snug tracking-tight md:text-lg">
                         {step.title}
                       </h3>
-                      <p className="relative z-[1] mt-2 text-[13px] font-light leading-[1.6] text-palette-ink opacity-90 md:text-[14px]">
+                      <p className={`${landingCardBody} relative z-[1] mt-2 !text-palette-ink/90`}>
                         {step.description}
                       </p>
                     </div>
@@ -163,7 +168,7 @@ export default function MentorshipProcess() {
                     </div>
                     <div className="relative flex flex-col px-4 pb-4 pt-4 pr-[3.5rem] sm:px-5 sm:pb-5 sm:pr-16 sm:pt-5 md:pr-[7rem]">
                       <StepNumberWatermark step={index + 1} size="band" />
-                      <h3 className="relative z-[1] font-semibold text-palette-ink text-[15px] leading-snug tracking-tight md:text-[16px]">
+                      <h3 className="relative z-[1] text-[15px] font-semibold leading-snug tracking-tight text-palette-ink md:text-[17px]">
                         {step.title}
                       </h3>
                       <p className="relative z-[1] mt-2 text-[12px] font-light leading-[1.58] text-palette-ink opacity-90 md:text-[13px]">
@@ -174,7 +179,7 @@ export default function MentorshipProcess() {
                 ) : (
                   <div className="relative z-[1] flex min-h-0 flex-1 flex-col pr-[3.25rem] sm:pr-16 md:pr-[7rem]">
                     <StepNumberWatermark step={index + 1} size="default" />
-                    <h3 className="relative z-[1] font-semibold text-palette-ink text-[15px] leading-snug tracking-tight md:text-[16px]">
+                    <h3 className="relative z-[1] text-[15px] font-semibold leading-snug tracking-tight text-palette-ink md:text-[17px]">
                       {step.title}
                     </h3>
                     <p className="relative z-[1] mt-2 text-[12px] font-light leading-[1.58] text-palette-ink opacity-90 md:text-[13px]">
@@ -197,10 +202,10 @@ export default function MentorshipProcess() {
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between md:gap-10">
             <div className="max-w-xl">
               <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-ink/70">Siguiente paso</p>
-              <h3 className="mt-3 text-[1.4rem] font-semibold leading-tight tracking-tight text-palette-ink md:text-[1.75rem]">
+              <h3 className="mt-3 text-[1.45rem] font-semibold leading-tight tracking-tight text-palette-ink md:text-[1.85rem] lg:text-[2rem]">
                 ¿Sentís que esto es para vos?
               </h3>
-              <p className="mt-3 text-[15px] font-light leading-[1.65] text-palette-ink/85 md:text-[16px]">
+              <p className={`${landingCardBody} mt-3`}>
                 Contame tu contexto, tus objetivos y en qué etapa de la práctica estás. Después evaluamos juntos si la
                 mentoría es el camino indicado para vos y cómo podemos avanzar.
               </p>
@@ -216,14 +221,7 @@ export default function MentorshipProcess() {
                 antes de aplicar.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => router.push(MENTORSHIP_APPLY_CTA.href)}
-              className="group inline-flex shrink-0 items-center justify-center gap-2.5 self-start rounded-full border-2 border-palette-ink bg-palette-ink px-6 py-2.5 font-montserrat text-[10px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink md:self-end"
-            >
-              {MENTORSHIP_APPLY_CTA.label}
-              <span className="transition-transform group-hover:translate-x-0.5">→</span>
-            </button>
+            <MentorshipApplyButton variant="compact" />
           </div>
         </motion.div>
       </div>

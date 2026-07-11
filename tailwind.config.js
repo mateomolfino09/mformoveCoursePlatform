@@ -7,7 +7,8 @@ module.exports = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     './src/layout/**/*.{js,ts,jsx,tsx,mdx}',
     './src/common/**/*.{js,ts,jsx,tsx,mdx}',
-    
+    './src/constants/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/lib/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     fontFamily: {
@@ -48,6 +49,10 @@ module.exports = {
         palette: {
           ink: '#141411',
           sage: '#dfe0c3',
+          'sage-vivid': '#8fad3a',
+          'sage-ring': '#c9db6b',
+          'sage-mid': '#d2d3b4',
+          'sage-soft': '#c5c6a6',
           stone: '#787867',
           steel: '#8f9db3',
           skysteel: '#e0ecff',

@@ -108,79 +108,75 @@ function ToastItemComponent({
         className={[
           'group relative overflow-hidden',
           'rounded-2xl bg-palette-ink backdrop-blur-md',
-          'px-4 py-5 font-montserrat',
+          'px-4 py-4 font-montserrat',
           'shadow-[0_18px_50px_rgba(20,20,17,0.45),0_4px_16px_rgba(20,20,17,0.25)]',
           'text-palette-cream',
           'transition-[transform,box-shadow] duration-200 will-change-transform',
           'hover:shadow-[0_22px_56px_rgba(20,20,17,0.5),0_6px_20px_rgba(20,20,17,0.3)]',
         ].join(' ')}
       >
-        <span
-          className={[
-            'pointer-events-none absolute left-3 top-1/2 z-[60]',
-            '-translate-y-1/2',
-            'flex h-10 w-10 items-center justify-center rounded-full',
-            'text-[13px] font-semibold',
-            'ring-1 ring-white/20 shadow-[0_10px_30px_rgba(20,20,17,0.35)]',
-            typeIconBg[type],
-          ].join(' ')}
-          aria-hidden="true"
-        >
-          {typeIcon[type]}
-        </span>
-
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-sage/35 to-transparent opacity-80" />
           <div className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b ${typeAccent[type]}`} />
           <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-palette-sage/10 blur-3xl" />
         </div>
 
-        <div className="relative z-10 ml-[3.25rem]">
-          <div className="flex items-start gap-2">
-            <div className="min-w-0 flex-1">
-              <p className="text-[11px] uppercase tracking-[0.22em] text-palette-cream/60">
-                {typeLabel[type]}
-              </p>
-              <p className="mt-1 min-w-0 text-palette-cream/95 text-sm leading-snug">{message}</p>
-            </div>
+        <div className="relative z-10 flex items-start gap-3">
+          <span
+            className={[
+              'mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full',
+              'text-[13px] font-semibold',
+              'ring-1 ring-white/20 shadow-[0_10px_30px_rgba(20,20,17,0.35)]',
+              typeIconBg[type],
+            ].join(' ')}
+            aria-hidden="true"
+          >
+            {typeIcon[type]}
+          </span>
 
-            <div className="flex flex-none items-center gap-1.5 pt-0.5">
-              <span
-                className={[
-                  'inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full',
-                  'bg-white/8 px-2 tabular-nums text-[11px] font-semibold text-palette-cream/55',
-                  'ring-1 ring-white/10',
-                  paused ? 'text-palette-cream/75 ring-white/20' : '',
-                ].join(' ')}
-                aria-hidden="true"
-                title={paused ? 'Pausado' : 'Se cierra automáticamente'}
-              >
-                {remainingSeconds}s
-              </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-palette-cream/60">
+              {typeLabel[type]}
+            </p>
+            <p className="mt-1 min-w-0 text-sm leading-snug text-palette-cream/95">{message}</p>
+          </div>
 
-              <button
-                type="button"
-                onClick={() => onRemove(id)}
-                className={[
-                  'flex h-8 w-8 flex-none items-center justify-center rounded-full',
-                  'bg-white/12 ring-1 ring-white/20',
-                  'hover:bg-white/22 hover:ring-white/35',
-                  'active:scale-95',
-                  'transition-all duration-150',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-palette-sage/70',
-                ].join(' ')}
-                aria-label="Cerrar notificación"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4" fill="none">
-                  <path
-                    d="M6 6l12 12M18 6L6 18"
-                    stroke="#FAF8F4"
-                    strokeWidth={2.25}
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
-            </div>
+          <div className="flex shrink-0 items-center gap-1.5 pt-0.5">
+            <span
+              className={[
+                'inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full',
+                'bg-white/8 px-2 tabular-nums text-[11px] font-semibold text-palette-cream/55',
+                'ring-1 ring-white/10',
+                paused ? 'text-palette-cream/75 ring-white/20' : '',
+              ].join(' ')}
+              aria-hidden="true"
+              title={paused ? 'Pausado' : 'Se cierra automáticamente'}
+            >
+              {remainingSeconds}s
+            </span>
+
+            <button
+              type="button"
+              onClick={() => onRemove(id)}
+              className={[
+                'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
+                'bg-white/12 ring-1 ring-white/20',
+                'hover:bg-white/22 hover:ring-white/35',
+                'active:scale-95',
+                'transition-all duration-150',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-palette-sage/70',
+              ].join(' ')}
+              aria-label="Cerrar notificación"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4" fill="none">
+                <path
+                  d="M6 6l12 12M18 6L6 18"
+                  stroke="#FAF8F4"
+                  strokeWidth={2.25}
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
           </div>
         </div>
 

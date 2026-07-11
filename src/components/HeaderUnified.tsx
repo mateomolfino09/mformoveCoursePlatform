@@ -448,7 +448,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 					<span className={`hidden sm:inline shrink-0 ${logoLight ? 'text-white/50' : 'text-palette-stone/50'}`} aria-hidden>
 						|
 					</span>
-					<span className={`${cursoTitleClass} text-sm md:text-lg`} title={snap.cursoHeaderTitle}>
+					<span className={`${cursoTitleClass} hidden text-sm md:inline md:text-lg`} title={snap.cursoHeaderTitle}>
 						{snap.cursoHeaderTitle}
 					</span>
 				</>
@@ -550,8 +550,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 												<UserAvatarBadge
 													user={auth.user}
 													size="sm"
-													onDarkHeader={isLightText}
-													ringClassName={isLightText ? 'ring-white/30' : 'ring-palette-stone/30'}
+													onDarkHeader={headerTitleLight}
+													ringClassName={headerTitleLight ? 'ring-white/30' : 'ring-palette-stone/30'}
 												/>
 												{isWeeklyPath && hasSub && userLevel != null && (
 													<span className="absolute -bottom-1 -right-1 min-w-[14px] h-3.5 rounded-full bg-palette-sage/90 text-palette-ink text-[10px] font-bold flex items-center justify-center px-1">{userLevel}</span>
@@ -623,7 +623,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 														<circle cx="22" cy="22" r={r} fill="none" stroke="rgba(249,115,22,0.9)" strokeWidth="2" strokeLinecap="round" strokeDasharray={`${circumference} ${circumference}`} strokeDashoffset={strokeDashoffset} className="transition-all duration-500" />
 													</svg>
 												)}
-												<UserAvatarBadge user={auth.user} size="md" onDarkHeader={isLightText} ringClassName="ring-white/30" />
+												<UserAvatarBadge user={auth.user} size="md" onDarkHeader={headerTitleLight} ringClassName={headerTitleLight ? 'ring-white/30' : 'ring-palette-stone/30'} />
 												{hasSub && userLevel != null && (
 													<span className="absolute -bottom-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full bg-palette-sage text-palette-ink text-xs font-bold flex items-center justify-center">{userLevel}</span>
 												)}
@@ -748,7 +748,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							<div className="relative shrink-0" ref={profileMenuRefDesktop}>
 								<button type="button" onClick={(e) => { e.stopPropagation(); setProfileMenuOpen((v) => !v); }} className="flex items-center shrink-0 rounded-full hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-palette-stone/50" aria-expanded={profileMenuOpen} aria-haspopup="true" title="Abrir menú de perfil">
 									<div className="relative flex items-center justify-center w-9 h-9">
-										<UserAvatarBadge user={auth.user} size="sm" onDarkHeader={isLightText} />
+										<UserAvatarBadge user={auth.user} size="sm" onDarkHeader={headerTitleLight} ringClassName={headerTitleLight ? 'ring-white/30' : 'ring-palette-stone/30'} />
 									</div>
 								</button>
 								{profileMenuOpen && (
@@ -804,7 +804,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								<div className="relative shrink-0" ref={profileMenuRefDesktop}>
 									<button type="button" onClick={(e) => { e.stopPropagation(); setProfileMenuOpen((v) => !v); }} className="flex items-center shrink-0 rounded-full hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-palette-stone/50" aria-expanded={profileMenuOpen} aria-haspopup="true" title="Abrir menú de perfil">
 										<div className="relative flex items-center justify-center w-10 h-10">
-											<UserAvatarBadge user={auth.user} size="md" onDarkHeader={isLightText} />
+											<UserAvatarBadge user={auth.user} size="md" onDarkHeader={headerTitleLight} ringClassName={headerTitleLight ? 'ring-white/30' : 'ring-palette-stone/30'} />
 										</div>
 									</button>
 									{profileMenuOpen && (

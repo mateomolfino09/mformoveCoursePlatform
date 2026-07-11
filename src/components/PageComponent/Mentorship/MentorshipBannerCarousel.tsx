@@ -2,8 +2,7 @@
 import { motion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
-import { useRouter } from 'next/navigation';
-import { MENTORSHIP_APPLY_CTA } from '../../../constants/mentorshipCta';
+import MentorshipApplyButton from './MentorshipApplyButton';
 
 const HERO_IMAGE = 'my_uploads/fondos/DSC01559_elui2h';
 
@@ -11,22 +10,13 @@ const ctaButtonClass =
   'group inline-flex items-center justify-center gap-4 font-montserrat font-semibold text-[0.775rem] md:text-[0.9rem] uppercase tracking-[0.2em] rounded-full px-7 py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink transition-all duration-200';
 
 const MentorshipBannerCarousel = ({ hideText = false }: { hideText?: boolean }) => {
-  const router = useRouter();
-
   const ConsultaButton = ({ className = '' }: { className?: string }) => (
-    <motion.button
-      type="button"
-      onClick={() => router.push(MENTORSHIP_APPLY_CTA.href)}
+    <MentorshipApplyButton
+      variant="custom"
       className={`${ctaButtonClass} ${className}`}
-      whileHover={{ y: -2 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.2 }}
-    >
-      <span>{MENTORSHIP_APPLY_CTA.label}</span>
-      <span className="text-palette-cream/80 transition-transform duration-200 group-hover:translate-x-0.5 shrink-0">
-        →
-      </span>
-    </motion.button>
+      animated
+      showArrow
+    />
   );
 
   return (

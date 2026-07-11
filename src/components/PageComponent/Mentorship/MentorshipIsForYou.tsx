@@ -4,6 +4,14 @@ import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
+import {
+  landingEyebrow,
+  landingEyebrowDark,
+  landingSectionBody,
+  landingSectionBodyDark,
+  landingSectionTitle,
+  landingSectionTitleDark,
+} from '../../../constants/landingSectionDesign';
 
 const ROOTS_IMAGE = 'my_uploads/fondos/DSC01642_rioxq5';
 
@@ -137,10 +145,10 @@ export default function MentorshipIsForYou() {
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true, margin: '-36px' }}
           >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-cream/55">
+            <p className={landingEyebrowDark}>
               Para quién es
             </p>
-            <h2 className="mt-3 max-w-2xl text-[1.85rem] font-semibold leading-[1.1] tracking-tight text-palette-cream md:text-[2.25rem] md:leading-[1.08] lg:text-[2.5rem]">
+            <h2 className={`${landingSectionTitleDark} max-w-2xl`}>
               Esta mentoría es para vos si…
             </h2>
 
@@ -159,7 +167,7 @@ export default function MentorshipIsForYou() {
                   className="flex items-start gap-4 border-b border-white/[0.08] py-5 md:gap-5 md:py-6"
                 >
                   <ListMarker />
-                  <p className="text-[15px] font-normal leading-[1.65] text-palette-cream/85 md:text-[16px]">{item}</p>
+                  <p className={landingSectionBodyDark}>{item}</p>
                 </motion.li>
               ))}
             </motion.ul>
@@ -179,18 +187,18 @@ export default function MentorshipIsForYou() {
         >
           <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-12">
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-ink/70">
+              <p className={landingEyebrow}>
                 Las raíces
               </p>
               <h3
                 id="mentorship-method-roots-heading"
-                className="mt-3 text-[2rem] font-bold leading-[1.15] tracking-tight text-palette-ink md:text-[2.5rem]"
+                className={landingSectionTitle}
               >
                 Un enfoque construido desde muchas disciplinas
               </h3>
 
               <div className="mt-6 md:mt-8">
-                <p className="text-[15px] font-normal leading-[1.72] text-palette-ink md:text-[16px]">
+                <p className={`${landingSectionBody} !mt-0`}>
                   La práctica integra herramientas de las artes marciales, el yoga, la gimnasia, la danza y el
                   entrenamiento físico para construir <span className="font-semibold">un mapa propio</span>, donde todo
                   dialoga y se complementa.
@@ -203,7 +211,7 @@ export default function MentorshipIsForYou() {
 
                 <PullQuote>Las capacidades son expresiones de un todo más grande.</PullQuote>
 
-                <p className="mt-9 text-[15px] font-normal leading-[1.72] text-palette-ink md:mt-11 md:text-[16px]">
+                <p className={`${landingSectionBody} mt-9 md:mt-11`}>
                   El objetivo no es únicamente moverte mejor, sino desarrollar una relación más consciente con tu cuerpo
                   y con la práctica. Aprender a observar, interpretar y construir tu propio camino, entendiendo que la
                   fuerza, la movilidad o las habilidades son parte de un sistema integrado.
@@ -235,10 +243,10 @@ export default function MentorshipIsForYou() {
           </div>
 
           <div className="mt-16 border-t border-palette-stone/20 pt-12 md:mt-20 md:pt-14">
-            <h3 className="text-[1.5rem] font-semibold leading-[1.15] tracking-tight text-palette-ink md:text-[1.9rem]">
+            <h3 className={`${landingSectionTitle} !mt-0`}>
               Los pilares del método
             </h3>
-            <p className="mt-3 max-w-2xl text-[15px] font-normal leading-[1.72] text-palette-ink md:text-[16px]">
+            <p className={`${landingSectionBody} max-w-2xl`}>
               Cinco dimensiones que aparecen en diferentes momentos del proceso, según lo que tu práctica necesita.
             </p>
             <MethodPillarsConnected />
