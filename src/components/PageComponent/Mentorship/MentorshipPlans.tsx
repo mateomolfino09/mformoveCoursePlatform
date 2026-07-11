@@ -13,8 +13,15 @@ import {
   resolveMentorshipShortInterval,
   type MentorshipBillingInterval,
 } from '../../../lib/mentorshipPricing';
-import { MENTORSHIP_APPLY_CTA, MENTORSHIP_START_CTA } from '../../../constants/mentorshipCta';
-import Link from 'next/link';
+import { MENTORSHIP_START_CTA } from '../../../constants/mentorshipCta';
+import MentorshipApplyLink from './MentorshipApplyLink';
+import {
+  landingEyebrow,
+  landingFadeUp,
+  landingHeaderBlock,
+  landingSectionBody,
+  landingSectionTitle,
+} from '../../../constants/landingSectionDesign';
 
 type MentorshipPlan = MentorshipProps['plans'][number];
 
@@ -65,19 +72,16 @@ const MentorshipPlans = ({ plans }: MentorshipProps) => {
           viewport={{ once: true, margin: '-36px' }}
           className="mx-auto mb-9 max-w-3xl text-center md:mb-11"
         >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-ink">Inversión</p>
-          <h2 className="mt-3 text-[1.85rem] font-bold leading-[1.1] tracking-tight text-palette-ink md:text-[2.25rem] md:leading-[1.08] lg:text-[2.5rem]">
+          <p className={landingEyebrow}>Inversión</p>
+          <h2 className={landingSectionTitle}>
             Elegí el plan que mejor acompañe tu proceso
 
           </h2>
-          <p className="mt-5 text-[15px] font-normal leading-[1.72] text-palette-ink md:text-[16px]">
+          <p className={landingSectionBody}>
             Si ya aplicaste, elegí tu modalidad y empezá acá. Si es tu primera vez,{' '}
-            <Link
-              href={MENTORSHIP_APPLY_CTA.href}
-              className="font-medium underline decoration-palette-ink/25 underline-offset-[3px] hover:decoration-palette-sage"
-            >
+            <MentorshipApplyLink className="font-medium underline decoration-palette-ink/25 underline-offset-[3px] hover:decoration-palette-sage">
               aplicá a mentoría
-            </Link>{' '}
+            </MentorshipApplyLink>{' '}
             antes de pagar.
           </p>
         </motion.div>

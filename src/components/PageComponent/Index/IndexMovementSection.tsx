@@ -7,7 +7,8 @@ import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { CldImage } from 'next-cloudinary';
 import { routes } from '../../../constants/routes';
-import { MENTORSHIP_APPLY_CTA, MENTORSHIP_LANDING_CTA } from '../../../constants/mentorshipCta';
+import MentorshipApplyButton from '../../../components/PageComponent/Mentorship/MentorshipApplyButton';
+import { MENTORSHIP_LANDING_CTA } from '../../../constants/mentorshipCta';
 import imageLoader from '../../../../imageLoader';
 import type { IndexLatestCursoPayload } from '../../../types/indexLatestCurso';
 
@@ -103,12 +104,11 @@ function IndexMentorshipPromoSection({
           transition={{ duration: 0.5, delay: 0.15 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 px-2"
         >
-          <Link
-            href={MENTORSHIP_APPLY_CTA.href}
-            className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full bg-gray-900 text-[#FAF8F5] font-medium text-sm md:text-base hover:bg-gray-800 transition-all duration-300"
-          >
-            {MENTORSHIP_APPLY_CTA.label}
-          </Link>
+          <MentorshipApplyButton
+            variant="custom"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-900 px-8 py-3 text-sm font-medium text-[#FAF8F5] transition-all duration-300 hover:bg-gray-800 md:text-base"
+            showArrow={false}
+          />
           <Link
             href={MENTORSHIP_LANDING_CTA.href}
             className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full border-2 border-gray-900 text-gray-900 font-medium text-sm md:text-base hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink transition-all duration-300"

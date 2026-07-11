@@ -338,7 +338,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
             <p className="text-center font-montserrat text-[2.75rem] font-bold leading-none tracking-[-0.09em] text-palette-ink tabular-nums md:text-[3.5rem]">
               <b>{new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 }).format(precioPrincipal)}</b>
             </p>
-            <span className="pointer-events-none absolute bottom-6 right-2 font-montserrat text-[0.82rem] font-semibold uppercase tracking-[0.22em] text-palette-ink md:text-[0.58rem]">
+            <span className="pointer-events-none absolute bottom-4 right-2 font-montserrat text-[0.82rem] font-semibold uppercase tracking-[0.22em] text-palette-ink md:text-[0.58rem]">
               USD
             </span>
           </div>

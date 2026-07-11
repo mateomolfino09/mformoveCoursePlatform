@@ -62,8 +62,8 @@ export function getUserAvatarInitial(user: {
 /** Borde sage más vivo: claro sobre ink, más saturado sobre fondo sage. */
 export function getMentorshipAvatarRingClass(onDarkHeader = false): string {
   return onDarkHeader
-    ? 'ring-2 ring-[#c9db6b]'
-    : 'ring-2 ring-[#8fad3a]';
+    ? 'ring-1 ring-palette-sage-ring'
+    : 'ring-1 ring-palette-sage-vivid';
 }
 
 export function getUserAvatarShellClass(
@@ -71,21 +71,18 @@ export function getUserAvatarShellClass(
   ringClassName = 'ring-palette-stone/30',
   onDarkHeader = false,
 ): string {
-  if (isMentorshipActive && !onDarkHeader) {
-    return `bg-gradient-to-br from-palette-sage via-[#d2d3b4] to-[#c5c6a6] ${getMentorshipAvatarRingClass(false)}`;
+  const bg = onDarkHeader ? 'bg-palette-ink/80' : 'bg-palette-cream';
+
+  if (isMentorshipActive) {
+    return `${bg} ${getMentorshipAvatarRingClass(onDarkHeader)}`;
   }
-  if (isMentorshipActive && onDarkHeader) {
-    return `bg-palette-ink/80 ${getMentorshipAvatarRingClass(true)}`;
-  }
-  return `bg-palette-ink/80 ring-2 ${ringClassName}`;
+  return `${bg} ring-2 ${ringClassName}`;
 }
 
-/** Cream sobre header oscuro / ink sobre sage en header claro (p. ej. perfil). */
 export function getUserAvatarTextClass(
-  isMentorshipActive: boolean,
+  _isMentorshipActive: boolean,
   onDarkHeader = false,
 ): string {
-  if (!isMentorshipActive) return 'text-palette-cream';
   return onDarkHeader ? 'text-palette-cream' : 'text-palette-ink';
 }
 

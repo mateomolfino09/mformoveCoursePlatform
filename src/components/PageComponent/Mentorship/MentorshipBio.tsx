@@ -4,6 +4,11 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import imageLoader from '../../../../imageLoader';
+import {
+  landingEyebrowDark,
+  landingSectionBodyDark,
+  landingSectionTitleDark,
+} from '../../../constants/landingSectionDesign';
 
 const PORTRAIT =
   'https://res.cloudinary.com/dbeem2avp/image/upload/v1751917144/my_uploads/plaza/IMG_0333_mheawa.jpg';
@@ -32,11 +37,11 @@ export default function MentorshipBio() {
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-normal uppercase tracking-[0.28em] text-palette-cream/55">Sobre mí</p>
-            <h2 className="mt-3 text-[1.65rem] font-semibold leading-[1.12] tracking-tight text-palette-cream sm:text-[2rem] md:text-[2.2rem]">
+            <p className={landingEyebrowDark}>Sobre mí</p>
+            <h2 className={landingSectionTitleDark}>
               Mateo Molfino
             </h2>
-            <div className="mt-4 space-y-4 text-[14px] font-light leading-[1.72] text-palette-cream/88 md:text-[15px] md:leading-[1.7]">
+            <div className={`${landingSectionBodyDark} mt-4 space-y-4`}>
               <p>
                 Me llamo Mateo: el movimiento y la ciencia siempre me movilizaron. Estudié ingeniería, soy profesor de yoga y me
                 interesa el funcionamiento del cuerpo en diálogo con el entorno. Creo en la relación entre movimiento y vida, entre
@@ -55,7 +60,7 @@ export default function MentorshipBio() {
         >
           <div className="border-l border-palette-sage/35 pl-6">
             <h3 className="text-lg font-semibold tracking-tight text-palette-cream md:text-xl">Filosofía</h3>
-            <div className="mt-4 space-y-4 text-[13px] font-light leading-[1.72] text-palette-cream/78 md:text-[14px]">
+            <div className={`${landingSectionBodyDark} mt-4 space-y-4 opacity-90`}>
               <p>
                 El movimiento no es solo ejercicio: es forma de conocerte, de ver tus límites y ampliarlos. No se trata de un solo
                 objetivo puntual, sino de exponerte a tus puntos débiles para crecer con criterio.
@@ -69,7 +74,7 @@ export default function MentorshipBio() {
 
           <div className="border-l border-palette-sage/35 pl-6">
             <h3 className="text-lg font-semibold tracking-tight text-palette-cream md:text-xl">Método y ciencia</h3>
-            <div className="mt-4 space-y-4 text-[13px] font-light leading-[1.72] text-palette-cream/78 md:text-[14px]">
+            <div className={`${landingSectionBodyDark} mt-4 space-y-4 opacity-90`}>
               <p>
                 Pienso la integralidad del cuerpo — del tejido conectivo a la forma en que te organizás en el espacio. No somos
                 músculos aislados: somos una unidad donde tensiones y compresiones se equilibran.

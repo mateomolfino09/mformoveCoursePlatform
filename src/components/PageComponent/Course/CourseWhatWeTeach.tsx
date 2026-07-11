@@ -10,8 +10,12 @@ import {
   PiUsersThreeLight,
 } from 'react-icons/pi';
 import { useCursoLanding } from './CursoLandingContext';
+import CourseDarkSectionBackground from './CourseDarkSectionBackground';
 import {
+  landingEyebrow,
+  landingSectionBody,
   landingSectionContainer,
+  landingSectionTitle,
   landingSectionTitleDark,
 } from '../../../constants/landingSectionDesign';
 
@@ -88,16 +92,13 @@ export default function CourseWhatWeTeach() {
   return (
     <>
     <section
-      className="relative border-t border-white/10 bg-palette-ink py-16 font-montserrat md:py-20 lg:py-24"
+      className="relative isolate overflow-hidden border-t border-white/10 bg-palette-ink py-16 font-montserrat md:py-20 lg:py-24"
       id={queIncluye.anclaId}
       aria-labelledby={`${queIncluye.anclaId}-heading`}
     >
-      <div
-        className="pointer-events-none absolute -right-[10%] top-[-15%] h-[min(380px,48vw)] w-[min(380px,65vw)] rounded-full bg-palette-sage/10 blur-[100px]"
-        aria-hidden
-      />
+      <CourseDarkSectionBackground />
 
-      <div className={`relative ${landingSectionContainer} text-center`}>
+      <div className={`relative z-20 ${landingSectionContainer} text-center`}>
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -223,13 +224,13 @@ export default function CourseWhatWeTeach() {
           viewport={{ once: true, margin: '-36px' }}
           className="mb-9 max-w-3xl md:mb-11"
         >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-ink">
+          <p className={landingEyebrow}>
             El recorrido
           </p>
-          <h2 className="mt-3 text-[1.85rem] font-bold leading-[1.1] tracking-tight text-palette-ink md:text-[2.25rem] md:leading-[1.08] lg:text-[2.5rem]">
+          <h2 className={landingSectionTitle}>
             {modules.length} módulo{modules.length !== 1 ? 's' : ''} que se complementan entre sí
           </h2>
-          <p className="mt-5 text-[15px] font-normal leading-[1.72] text-palette-ink md:text-[16px]">
+          <p className={landingSectionBody}>
             No son bloques sueltos: cada pieza ordena la siguiente. Podés avanzar en secuencia o volver al módulo que
             tu cuerpo necesita hoy.
           </p>

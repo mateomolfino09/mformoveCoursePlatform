@@ -4,6 +4,12 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import imageLoader from '../../../../imageLoader';
+import {
+  landingCardBodyDark,
+  landingEyebrowDark,
+  landingSectionBodyDark,
+  landingSectionTitleDark,
+} from '../../../constants/landingSectionDesign';
 
 const testimonials = [
   {
@@ -41,11 +47,11 @@ export default function MentorshipTestimonials() {
           viewport={{ once: true, margin: '-40px' }}
           className="mb-10 max-w-xl md:mb-12"
         >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-cream/55">Voces del proceso</p>
-          <h2 className="mt-3 text-[1.65rem] font-bold leading-[1.1] tracking-tight text-palette-cream sm:text-[2rem] md:text-[2.35rem]">
+          <p className={landingEyebrowDark}>Voces del proceso</p>
+          <h2 className={landingSectionTitleDark}>
             Quienes ya recorren este camino
           </h2>
-          <p className="mt-3 max-w-xl text-[14px] font-light leading-[1.65] text-palette-cream/70 md:text-[15px]">
+          <p className={`${landingSectionBodyDark} max-w-xl`}>
             Cada persona llega con objetivos diferentes, pero el proceso siempre busca lo mismo: construir una práctica
             que tenga sentido y pueda sostenerse en el tiempo.
           </p>
@@ -61,7 +67,7 @@ export default function MentorshipTestimonials() {
               viewport={{ once: true, margin: '-24px' }}
               className="flex min-h-[100%] flex-col rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-6 shadow-[0_8px_32px_rgba(0,0,0,0.25)] sm:px-6 sm:py-7"
             >
-              <p className="text-[13px] font-light leading-[1.7] text-palette-cream/85 md:text-[14px]">
+              <p className={landingCardBodyDark}>
                 &ldquo;{t.text}&rdquo;
               </p>
 

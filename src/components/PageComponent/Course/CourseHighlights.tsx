@@ -1,328 +1,170 @@
-'use client'
-import { AnimatePresence, motion, useInView } from 'framer-motion';
-import { useId, useMemo, useRef, useState } from 'react';
+'use client';
+
+import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import CourseHighlightsIntro from './CourseHighlightsIntro';
 import { useCursoLanding } from './CursoLandingContext';
 import {
+  landingCardBody,
+  landingCtaPrimary,
+  landingEyebrow,
+  landingSectionBodyMuted,
   landingSectionContainer,
   landingSectionShell,
   landingSectionTitle,
 } from '../../../constants/landingSectionDesign';
-import type { IconType } from 'react-icons';
-import {
-  PiHexagonLight,
-  PiCircleLight,
-  PiTriangleLight,
-  PiSquareLight,
-  PiDiamondLight,
-  PiCaretDownLight,
-} from 'react-icons/pi';
-
-type TimelineHighlightItem = {
-  icon: IconType;
-  title: string;
-  description: string;
-  expandedDescription: string;
-  imagenPublicId: string;
-};
-
-const splitDescription = (text: string) => {
-  const cleaned = text.trim().replace(/\s+/g, ' ');
-  const idx = cleaned.indexOf('. ');
-  if (idx === -1) return { lead: cleaned, rest: '' };
-  const lead = cleaned.slice(0, idx + 1);
-  const rest = cleaned.slice(idx + 2);
-  return { lead, rest };
-};
-
-const HighlightItem = ({
-  item,
-  index,
-  isOpen,
-  onToggle,
-}: {
-  item: TimelineHighlightItem;
-  index: number;
-  isOpen: boolean;
-  onToggle: () => void;
-}) => {
-  const rowRef = useRef(null);
-  const isInView = useInView(rowRef, { once: true, margin: '-120px' });
-  const uid = useId();
-  const panelId = `highlight-panel-${uid}-${index}`;
-  const titleId = `highlight-title-${uid}-${index}`;
-
-  const { lead, rest } = useMemo(() => splitDescription(item.description), [item.description]);
-
-  return (
-    <motion.div
-      ref={rowRef}
-      initial={{ opacity: 0, y: 10 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1], delay: index * 0.06 }}
-      className="relative"
-    >
-      <div
-        className="absolute left-[23px] top-0 bottom-0 w-[2px] bg-[linear-gradient(180deg,transparent_0%,rgba(59,50,44,0.38)_46%,rgba(143,157,179,0.26)_74%,transparent_100%)] md:left-[27px]"
-        aria-hidden
-      />
-
-      <div className="group border-b border-palette-granite/[0.14]">
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-expanded={isOpen}
-          aria-controls={panelId}
-          className="w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-palette-steel/50 focus-visible:ring-offset-2 focus-visible:ring-offset-palette-cream"
-        >
-          <div className="flex items-start gap-5 py-8 md:gap-6 md:py-10">
-            <div className="relative mt-0.5 shrink-0">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-palette-steel/40 bg-palette-cloud text-[12px] font-montserrat font-semibold tracking-[0.18em] text-palette-ink shadow-[inset_0_1px_0_rgba(255,253,253,0.45),0_4px_22px_-8px_rgba(59,50,44,0.28)] md:h-14 md:w-14 md:text-[13px]">
-                {(index + 1).toString().padStart(2, '0')}
-              </div>
-              <div className="pointer-events-none absolute left-1/2 top-[3.25rem] h-4 w-px -translate-x-1/2 bg-gradient-to-b from-palette-steel/45 to-palette-granite/25 md:top-[3.75rem]" />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <div className="flex items-start justify-between gap-5">
-                <div className="min-w-0">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                    <span className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-2xl border border-palette-steel/35 bg-palette-granite text-palette-cream shadow-[inset_0_1px_0_rgba(255,253,253,0.42)] md:h-12 md:w-12">
-                      <item.icon className="h-6 w-6 text-palette-cream md:h-[1.65rem] md:w-[1.65rem]" />
-                    </span>
-                    <h3
-                      id={titleId}
-                      className="mc-text-depth-light-title text-xl font-montserrat font-semibold leading-snug tracking-tight text-palette-ink md:text-2xl md:leading-tight lg:text-[1.65rem] lg:leading-snug"
-                    >
-                      {item.title}
-                    </h3>
-                  </div>
-                  <p className="mc-text-depth-light mt-4 font-raleway text-lg font-semibold leading-relaxed text-palette-stone md:mt-5 md:text-xl md:leading-relaxed">
-                    {lead}
-                  </p>
-                  <div className="relative mt-5 aspect-[16/10] w-full overflow-hidden rounded-2xl border border-palette-stone/20 bg-palette-stone/10 shadow-[0_8px_32px_-12px_rgba(20,20,17,0.12)] md:mt-6 md:rounded-3xl">
-                    <CldImage
-                      src={item.imagenPublicId}
-                      alt={item.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 36rem"
-                      loader={imageLoader}
-                    />
-                  </div>
-                </div>
-
-                <motion.span
-                  aria-hidden="true"
-                  animate={{ rotate: isOpen ? 180 : 0 }}
-                  transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-                  className="mt-1 shrink-0 text-palette-granite/50"
-                >
-                  <PiCaretDownLight className="h-6 w-6 md:h-7 md:w-7" />
-                </motion.span>
-              </div>
-            </div>
-          </div>
-        </button>
-
-        <AnimatePresence initial={false}>
-          {isOpen && (
-            <motion.div
-              id={panelId}
-              role="region"
-              aria-labelledby={titleId}
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-              className="overflow-hidden"
-            >
-              <div className="pb-8 md:pb-10">
-                <div className="ml-[3.25rem] border-t border-palette-granite/[0.18] pt-6 md:ml-[4rem] md:pt-7">
-                  <p className="mc-text-depth-light font-raleway text-lg font-normal leading-relaxed text-palette-stone md:text-xl md:leading-relaxed">
-                    {item.expandedDescription || rest || item.description.trim()}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
-  );
-};
-
-const CTACard = ({ index }: { index: number }) => {
-  const cardRef = useRef(null);
-  const isInView = useInView(cardRef, { once: true, margin: '-100px' });
-  const { cursoConfig, scrollToPlans } = useCursoLanding();
-  const { highlights } = cursoConfig;
-
-  return (
-    <motion.div
-      ref={cardRef}
-      className="relative"
-      initial={{ opacity: 0, y: 12, scale: 0.97 }}
-      animate={isInView ? {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-      } : {}}
-      transition={{
-        duration: 0.45,
-        ease: [0.16, 1, 0.3, 1],
-        delay: index * 0.08,
-      }}
-      whileHover={{
-        scale: 1.03,
-        y: -2,
-        transition: {
-          type: 'spring',
-          stiffness: 220,
-          damping: 18,
-        },
-      }}
-      whileTap={{
-        scale: 0.96,
-        transition: {
-          type: 'spring',
-          stiffness: 380,
-          damping: 28,
-        },
-      }}
-    >
-      <motion.div className="relative overflow-hidden border-y border-palette-stone/25">
-        <div className="absolute inset-0">
-          <CldImage
-            src={highlights.ctaImagenPublicId}
-            alt={cursoConfig.introHighlights.titulo}
-            fill
-            className="object-cover"
-            loader={imageLoader}
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-palette-ink/90 via-palette-ink/75 to-palette-ink/35" />
-          <div className="absolute inset-0 bg-palette-ink/35 md:bg-transparent" />
-        </div>
-
-        <motion.div
-          className="relative z-10 px-6 py-10 md:px-10 md:py-12"
-          initial={{ opacity: 0, y: 6 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.35, delay: 0.1 + (index * 0.08), ease: [0.16, 1, 0.3, 1] }}
-        >
-          <p className="mc-text-glow-ink font-montserrat uppercase tracking-[0.22em] text-sm text-palette-cloud/90">
-            {highlights.ctaEyebrow}
-          </p>
-
-          <div className="mt-4 max-w-2xl">
-            <motion.h3
-              className="mc-text-glow-ink-title text-3xl md:text-4xl font-montserrat font-semibold text-palette-cream tracking-tight"
-              initial={{ opacity: 0, y: 4 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.3, delay: 0.2 + (index * 0.08), ease: [0.16, 1, 0.3, 1] }}
-            >
-              {highlights.ctaTitulo}
-            </motion.h3>
-            <motion.p
-              className="mc-text-glow-ink mt-4 text-base md:text-lg text-palette-cream/90 leading-relaxed font-light"
-              initial={{ opacity: 0, y: 4 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.3, delay: 0.25 + (index * 0.08), ease: [0.16, 1, 0.3, 1] }}
-            >
-              {highlights.ctaDescripcion}
-            </motion.p>
-          </div>
-
-          <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <motion.button
-              onClick={scrollToPlans}
-              className="group inline-flex items-center justify-between gap-4 font-montserrat font-semibold text-base uppercase tracking-[0.18em] rounded-full px-7 py-3.5 bg-palette-cream text-palette-ink border-2 border-palette-cream/80 hover:bg-palette-sage hover:border-palette-sage transition-all duration-200 w-full sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-palette-cream/50 focus-visible:ring-offset-2 focus-visible:ring-offset-palette-ink"
-              initial={{ opacity: 0, y: 4 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.3, delay: 0.3 + (index * 0.08), ease: [0.16, 1, 0.3, 1] }}
-              whileHover={{ y: -1 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span>{highlights.ctaBoton}</span>
-              <span className="text-palette-ink/70 transition-transform duration-200 group-hover:translate-x-0.5">
-                →
-              </span>
-            </motion.button>
-
-          </div>
-        </motion.div>
-      </motion.div>
-    </motion.div>
-  );
-};
 
 type CourseHighlightsProps = {
   /** Cuando es true, no renderiza la intro (ej. si ya se montó arriba en la página). */
   hideIntro?: boolean;
 };
 
-const CourseHighlights = ({ hideIntro = false }: CourseHighlightsProps) => {
-  const [openIndex, setOpenIndex] = useState<number>(0);
-  const { cursoConfig } = useCursoLanding();
-  const timelineItems: TimelineHighlightItem[] = useMemo(() => {
-    const icons = [PiHexagonLight, PiCircleLight, PiTriangleLight, PiSquareLight, PiDiamondLight];
-    const fallbackImg =
-      cursoConfig.highlights.ctaImagenPublicId?.trim() || 'my_uploads/fondos/DSC01753_qdv9o0';
+type TimelineHighlightItem = {
+  titulo: string;
+  resumen: string;
+  detalle: string;
+  imagenPublicId: string;
+};
 
-    return cursoConfig.highlights.items.map((item, index) => {
+const CourseHighlights = ({ hideIntro = false }: CourseHighlightsProps) => {
+  const { cursoConfig, scrollToPlans } = useCursoLanding();
+  const { highlights } = cursoConfig;
+
+  const timelineItems = useMemo((): TimelineHighlightItem[] => {
+    const fallbackImg =
+      highlights.ctaImagenPublicId?.trim() || 'my_uploads/fondos/DSC01753_qdv9o0';
+
+    return highlights.items.map((item) => {
       const fromConfig = item.imagenPublicId?.trim();
-      const fromModulo = cursoConfig.queIncluye.modulos.find((m) => m.titulo === item.titulo)
+      const fromModulo = cursoConfig.queIncluye.modulos
+        .find((m) => m.titulo === item.titulo)
         ?.imagenPublicId?.trim();
+      const detalle =
+        item.detalle?.trim() && item.detalle.trim() !== item.resumen.trim()
+          ? item.detalle.trim()
+          : '';
 
       return {
-        icon: icons[index % icons.length],
-        title: item.titulo,
-        description: item.resumen,
-        expandedDescription: item.detalle,
+        titulo: item.titulo,
+        resumen: item.resumen,
+        detalle,
         imagenPublicId: fromConfig || fromModulo || fallbackImg,
       };
     });
-  }, [cursoConfig.highlights.items, cursoConfig.highlights.ctaImagenPublicId, cursoConfig.queIncluye.modulos]);
+  }, [cursoConfig.queIncluye.modulos, highlights.ctaImagenPublicId, highlights.items]);
 
   return (
     <>
       {!hideIntro && <CourseHighlightsIntro />}
-      <section className={`${landingSectionShell} relative isolate overflow-hidden py-12 md:py-16`}>
+      <section className={`${landingSectionShell} relative isolate overflow-hidden py-10 md:py-14`}>
         <div className={`${landingSectionContainer} relative z-10 text-left`}>
-          <div className="mx-auto max-w-5xl">
-            <div
-              className="relative mx-auto mb-10 max-w-3xl space-y-3 text-balance text-center text-palette-ink md:mb-12"
-              aria-label="Antes de la línea de tiempo"
-            >
-              <h2 className={landingSectionTitle}>
-                {cursoConfig.highlights.titulos[0]}
-              </h2>
-              <h2 className={landingSectionTitle}>
-                {cursoConfig.highlights.titulos[1]}
-              </h2>
-              <p className="mx-auto max-w-2xl pt-2 text-[15px] font-light italic leading-relaxed text-palette-stone md:pt-3 md:text-[16px]">
-                {cursoConfig.highlights.puente}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: '-36px' }}
+            className="max-w-3xl"
+          >
+            <h2 className={landingSectionTitle}>{highlights.titulos[0]}</h2>
+            {highlights.titulos[1] ? (
+              <p className={`${landingSectionBodyMuted} mt-2 max-w-2xl !text-palette-ink/85`}>
+                {highlights.titulos[1]}
               </p>
-            </div>
+            ) : null}
+            {highlights.puente ? (
+              <p className={`${landingSectionBodyMuted} mt-4 max-w-2xl italic`}>{highlights.puente}</p>
+            ) : null}
+          </motion.div>
 
-            <div className="flex flex-col">
-              {timelineItems.map((item, index) => (
-                <HighlightItem
-                  key={item.title}
-                  item={item}
-                  index={index}
-                  isOpen={openIndex === index}
-                  onToggle={() => setOpenIndex((cur) => (cur === index ? -1 : index))}
-                />
+          <ol className="relative mt-8 md:mt-10" aria-label="Pasos del método">
+            <span
+              aria-hidden
+              className="absolute bottom-3 left-[17px] top-3 w-0.5 bg-gradient-to-b from-palette-sage/25 via-palette-sage/70 to-palette-sage/25"
+            />
+
+            {timelineItems.map((item, index) => (
+                <motion.li
+                  key={`${item.titulo}-${index}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.38,
+                    delay: Math.min(index * 0.04, 0.16),
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                  viewport={{ once: true, margin: '-24px' }}
+                  className={`relative flex items-start gap-4 md:gap-5 ${
+                    index < timelineItems.length - 1
+                      ? 'border-b border-palette-stone/12 pb-6 md:pb-8'
+                      : 'pb-0'
+                  } ${index > 0 ? 'pt-6 md:pt-8' : ''}`}
+                >
+                  <div className="relative z-10 shrink-0">
+                    <span
+                      aria-hidden
+                      className="flex size-9 items-center justify-center rounded-full border-2 border-palette-sage bg-white font-montserrat text-sm font-semibold tabular-nums text-palette-ink shadow-[0_0_0_4px_rgba(223,224,195,0.42)] md:size-10 md:text-[15px]"
+                    >
+                      {(index + 1).toString().padStart(2, '0')}
+                    </span>
+                  </div>
+
+                  <div className="flex min-w-0 flex-1 items-start gap-4 sm:gap-5 md:gap-6 lg:gap-8">
+                    <div className="min-w-0 flex-1 py-2 pr-1 md:py-3 md:pr-2 lg:py-4">
+                      <h3 className="font-semibold text-[16px] leading-snug tracking-tight text-palette-ink md:text-[17px]">
+                        {item.titulo}
+                      </h3>
+                      <p className={`${landingCardBody} !mt-2 !text-palette-ink/88 md:!mt-2.5`}>
+                        {item.resumen}
+                      </p>
+                      {item.detalle ? (
+                        <p className="mt-2 text-[14px] font-light leading-[1.6] text-palette-stone md:mt-2.5 md:text-[15px]">
+                          {item.detalle}
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <div className="relative mt-1 h-[4.5rem] w-[4.5rem] shrink-0 overflow-hidden rounded-xl border border-palette-stone/15 bg-palette-stone/5 sm:h-20 sm:w-20 md:mt-0.5 md:h-[5.5rem] md:w-[5.5rem] md:rounded-2xl lg:h-24 lg:w-24">
+                      <CldImage
+                        src={item.imagenPublicId}
+                        alt={item.titulo}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 72px, 96px"
+                        loader={imageLoader}
+                      />
+                    </div>
+                  </div>
+                </motion.li>
               ))}
-            </div>
+          </ol>
 
-            <div className="mt-12 md:mt-14">
-              <CTACard index={5} />
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: '-24px' }}
+            className="mt-10 border-t border-palette-stone/20 pt-8 md:mt-12 md:pt-10"
+          >
+            <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between md:gap-10">
+              <div className="max-w-xl">
+                <p className={landingEyebrow}>{highlights.ctaEyebrow}</p>
+                <h3 className="mt-3 text-[1.35rem] font-semibold leading-tight tracking-tight text-palette-ink md:text-[1.65rem]">
+                  {highlights.ctaTitulo}
+                </h3>
+                <p className={`${landingCardBody} mt-2`}>{highlights.ctaDescripcion}</p>
+              </div>
+              <button
+                type="button"
+                onClick={scrollToPlans}
+                className={`${landingCtaPrimary} group shrink-0 self-start md:self-end`}
+              >
+                <span>{highlights.ctaBoton}</span>
+                <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+              </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
     </>
