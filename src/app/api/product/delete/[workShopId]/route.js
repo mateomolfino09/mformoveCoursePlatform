@@ -3,8 +3,14 @@ import Bills from '../../../../../models/billModel';
 import User from '../../../../../models/userModel';
 import Exam from '../../../../../models/examModel';
 import Product from '../../../../../models/productModel';
+import connectDB from '../../../../../config/connectDB';
+import { revalidateLinkInBio } from '../../../../../lib/revalidateLinkInBio';
 
 import { ObjectId } from 'mongodb';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 export async function DELETE(req) {
     try {
@@ -12,10 +18,13 @@ export async function DELETE(req) {
         productId
         } = await req.json();
     if (req.method === 'DELETE') {
+      await connectDB();
 
       const product = await Product.deleteOne({
         _id: ObjectId(productId)
       });
+
+      revalidateLinkInBio();
 
       return NextResponse.json({ message: `Product deleted`, success: true }, { status: 200 })
     }

@@ -13,6 +13,7 @@ import { getApiErrorMessage, getApiErrorStatus } from '../../../../utils/apiErro
 import { normalizeCursoLandingConfig } from '../../../../types/cursoLanding';
 import { resolveInvitacionGrupoWhatsappFromPayload } from '../../../../lib/resolveInvitacionGrupoWhatsapp';
 import { buildCursoStripeSuccessUrl } from '../../../../lib/cursoPaymentUrls';
+import { revalidateLinkInBio } from '../../../../lib/revalidateLinkInBio';
 
 connectDB();
 
@@ -483,6 +484,8 @@ export async function POST(req) {
       } catch (cacheError) {
       }
     }
+
+    revalidateLinkInBio();
 
     return NextResponse.json(
       { message: 'Producto creado con éxito', product },

@@ -2,6 +2,11 @@ import { NextResponse } from 'next/server';
 import connectDB from '../../../../config/connectDB';
 import Users from '../../../../models/userModel';
 import LinkInBioConfig from '../../../../models/linkInBioConfigModel';
+import { revalidateLinkInBio } from '../../../../lib/revalidateLinkInBio';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 const CONFIG_KEY = 'default';
 
@@ -30,7 +35,12 @@ export async function GET() {
       {
         mentoria: doc.mentoria || {},
       },
-      { status: 200 }
+      {
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
     );
   } catch (error) {
     console.error('GET /api/link-in-bio/config:', error);
@@ -74,12 +84,19 @@ export async function PUT(req) {
       { new: true, upsert: true, setDefaultsOnInsert: true }
     ).lean();
 
+    revalidateLinkInBio();
+
     return NextResponse.json(
       {
         message: 'Configuración de bio actualizada',
         mentoria: doc?.mentoria || {},
       },
-      { status: 200 }
+      {
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
     );
   } catch (error) {
     console.error('PUT /api/link-in-bio/config:', error);
