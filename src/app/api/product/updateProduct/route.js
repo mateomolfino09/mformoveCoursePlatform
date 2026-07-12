@@ -7,6 +7,7 @@ import { resolveInvitacionGrupoWhatsappFromPayload } from '../../../../lib/resol
 import { normalizeCursoLandingConfig } from '../../../../types/cursoLanding';
 import { ensureCursoPreventaPaymentLinks } from '../../../../lib/ensureCursoPreventaPaymentLinks';
 import { ensureCursoLanzamientoPaymentLinks } from '../../../../lib/ensureCursoLanzamientoPaymentLinks';
+import { revalidateLinkInBio } from '../../../../lib/revalidateLinkInBio';
 
 connectDB();
 
@@ -427,6 +428,8 @@ export async function PUT(req) {
         updatedProduct.markModified('cursoConfig');
         await updatedProduct.save();
       }
+
+      revalidateLinkInBio();
 
       return NextResponse.json(
         { message: 'Producto actualizado con éxito', product: updatedProduct },

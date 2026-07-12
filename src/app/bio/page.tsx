@@ -7,6 +7,11 @@ import LinkInBioConfig from '../../models/linkInBioConfigModel';
 import { buildMentoriaLinkInBioCard } from '../../lib/linkInBioMentoria';
 import { mapProductsForLinkInBio } from '../../lib/linkInBioProducts';
 
+/** Evita Full Route Cache de Vercel: la bio lee Mongo en cada request. */
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 export const metadata: Metadata = {
   title: 'Mateo Molfino | Bio',
   description:
