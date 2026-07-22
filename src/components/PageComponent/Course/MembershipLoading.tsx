@@ -71,7 +71,7 @@ const MembershipLoading = ({ show }: { show: boolean }) => {
               transition={{ duration: 0.4, delay: 0.2 }}
               className="h-10 w-10 border-2 border-white/30 border-t-white rounded-full animate-spin"
             />
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

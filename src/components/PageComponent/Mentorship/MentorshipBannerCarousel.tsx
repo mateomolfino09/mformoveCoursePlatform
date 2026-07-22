@@ -173,10 +173,8 @@ const MentorshipBannerCarousel = ({ hideText = false }: { hideText?: boolean }) 
           )}
 
           {/* Foto: más alto relativo (flex-grow) pero con aire arriba/abajo vía justify-evenly */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: hideText ? 0 : 0.08, ease: [0.16, 1, 0.3, 1] }}
+          {/* Sin fade opacity:0: el hero es LCP — debe pintar visible de inmediato */}
+          <div
             className={`relative flex w-full shrink-0 justify-center items-center md:flex-none md:justify-stretch ${
               hideText ? 'max-w-md' : 'md:col-span-6 md:order-2 lg:col-span-7'
             }`}
@@ -187,10 +185,9 @@ const MentorshipBannerCarousel = ({ hideText = false }: { hideText?: boolean }) 
                 src={HERO_IMAGE}
                 alt="Mentoría Online"
                 fill
-                sizes="(max-width: 768px) 240px, 55vw"
+                sizes="(max-width: 768px) 82vw, (max-width: 1280px) 55vw, 640px"
                 priority
                 className="object-cover object-[center_top]"
-                preserveTransformations
                 loader={imageLoader}
               />
 
@@ -206,7 +203,7 @@ const MentorshipBannerCarousel = ({ hideText = false }: { hideText?: boolean }) 
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
 
           {!hideText && (
             <motion.div

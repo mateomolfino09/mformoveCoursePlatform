@@ -237,7 +237,6 @@ export default function MentorshipIsForYou() {
                   sizes="(max-width: 1024px) 92vw, 40vw"
                   className="object-cover object-[center_40%]"
                   loader={imageLoader}
-                  preserveTransformations
                 />
               </div>
             </motion.div>

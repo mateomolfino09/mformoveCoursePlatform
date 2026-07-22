@@ -31,7 +31,6 @@ function ConsultaBackdrop() {
         priority
         className="object-cover object-[center_42%]"
         loader={imageLoader}
-        preserveTransformations
       />
       <div className="absolute inset-0 opacity-[0.22] md:opacity-[0.26] mix-blend-overlay bg-palette-ink" aria-hidden />
       <div

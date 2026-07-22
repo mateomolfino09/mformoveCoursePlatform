@@ -41,4 +41,7 @@ export type MentorshipPlan = {
 export interface MentorshipProps {
   plans: MentorshipPlan[];
   origin: string;
+  /** Mientras cargan planes, la landing (hero+) ya se muestra. */
+  plansLoading?: boolean;
+  plansError?: string | null;
 } 

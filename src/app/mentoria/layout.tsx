@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { SITE_URL } from '../../lib/siteMetadata';
 
+const MENTORIA_HERO_PRELOAD =
+  'https://res.cloudinary.com/dbeem2avp/image/upload/f_auto,q_auto,c_limit,w_828/my_uploads/fondos/DSC01559_elui2h';
+
 export const metadata: Metadata = {
   title: 'Mentoría 1:1',
   description:
@@ -60,5 +63,10 @@ export default function MentorshipLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <section>{children}</section>;
+  return (
+    <section>
+      <link rel="preload" as="image" href={MENTORIA_HERO_PRELOAD} />
+      {children}
+    </section>
+  );
 }

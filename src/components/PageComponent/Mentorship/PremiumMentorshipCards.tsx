@@ -446,7 +446,6 @@ const MentorshipIncludesBlock = ({ variant }: { variant: IncludesVariant }) => {
           sizes="(max-width: 768px) 100vw, 672px"
           className="object-cover object-[center_70%]"
           loader={imageLoader}
-          preserveTransformations
         />
       </div>
 
