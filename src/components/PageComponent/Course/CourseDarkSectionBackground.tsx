@@ -1,8 +1,9 @@
 'use client';
 
-import { motion, useReducedMotion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
 
-const WATER_PATH_STEPS = 20;
+const WATER_PATH_STEPS = 12;
 
 function waterPathKeyframes(
   seed: number,
@@ -47,6 +48,7 @@ function waterOpacityKeyframes(seed: number): number[] {
   });
 }
 
+/** Menos partículas: alcanza el look sin saturar GPU en landings con varios fondos. */
 const DRIFT_DOTS: {
   leftPct: number;
   topPct: number;
@@ -60,60 +62,82 @@ const DRIFT_DOTS: {
   { leftPct: 23, topPct: 76, dur: 9.5, delay: 0.15 },
   { leftPct: 66, topPct: 40, dur: 10, delay: 1.45 },
   { leftPct: 42, topPct: 18, dur: 9.2, delay: 0.85 },
-  { leftPct: 93, topPct: 44, dur: 10.2, delay: 2.1 },
   { leftPct: 8, topPct: 52, dur: 8.6, delay: 1.75 },
-  { leftPct: 55, topPct: 88, dur: 11.3, delay: 0.5 },
-  { leftPct: 34, topPct: 48, dur: 9.8, delay: 2.65 },
-  { leftPct: 72, topPct: 58, dur: 8.4, delay: 1.3 },
-  { leftPct: 18, topPct: 14, dur: 10.8, delay: 3.2 },
-  { leftPct: 48, topPct: 34, dur: 9.6, delay: 0.95 },
-  { leftPct: 61, topPct: 12, dur: 8.9, delay: 2.4 },
-  { leftPct: 5, topPct: 88, dur: 11.6, delay: 1.95 },
-  { leftPct: 95, topPct: 28, dur: 10.1, delay: 0.22 },
-  { leftPct: 38, topPct: 92, dur: 9.4, delay: 2.85 },
 ];
 
 const DRIFT_PX = 24;
 
-/** Fondo animado compartido (blur, conic, partículas) para secciones ink del curso. */
-export default function CourseDarkSectionBackground() {
+type Props = {
+  /** Si false, solo blobs estáticos (sin partículas ni loops). */
+  enableMotion?: boolean;
+};
+
+/** Fondo animado compartido (blur, conic, partículas) para secciones ink. */
+export default function CourseDarkSectionBackground({ enableMotion = true }: Props) {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const inView = useInView(rootRef, { margin: '120px 0px', amount: 0.08 });
   const reduceMotion = useReducedMotion();
+  const shouldAnimate = Boolean(enableMotion && inView && !reduceMotion);
 
   return (
-    <>
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
+    <div ref={rootRef} className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+      <div className="absolute inset-0 overflow-hidden">
         <motion.div
           className="absolute -top-28 right-[-12%] h-[min(420px,45vw)] w-[min(420px,85vw)] rounded-full bg-palette-sage/12 blur-[100px]"
-          animate={{
-            x: [0, 28, -12, 0],
-            y: [0, -24, 16, 0],
-            scale: [1, 1.06, 0.97, 1],
-          }}
-          transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+          animate={
+            shouldAnimate
+              ? {
+                  x: [0, 28, -12, 0],
+                  y: [0, -24, 16, 0],
+                  scale: [1, 1.06, 0.97, 1],
+                }
+              : { x: 0, y: 0, scale: 1 }
+          }
+          transition={
+            shouldAnimate
+              ? { duration: 22, repeat: Infinity, ease: 'easeInOut' }
+              : { duration: 0 }
+          }
         />
         <motion.div
           className="absolute -bottom-36 left-[-18%] h-[400px] w-[400px] rounded-full bg-palette-granite/30 blur-[110px]"
-          animate={{
-            x: [0, -22, 18, 0],
-            y: [0, 18, -14, 0],
-            scale: [1, 1.04, 0.99, 1],
-          }}
-          transition={{
-            duration: 28,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: 1.5,
-          }}
+          animate={
+            shouldAnimate
+              ? {
+                  x: [0, -22, 18, 0],
+                  y: [0, 18, -14, 0],
+                  scale: [1, 1.04, 0.99, 1],
+                }
+              : { x: 0, y: 0, scale: 1 }
+          }
+          transition={
+            shouldAnimate
+              ? {
+                  duration: 28,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: 1.5,
+                }
+              : { duration: 0 }
+          }
         />
         <motion.div
           className="absolute top-[42%] right-[8%] h-[180px] w-[180px] rounded-full bg-palette-sage/10 blur-[72px] md:h-[220px] md:w-[220px]"
-          animate={{ opacity: [0.35, 0.55, 0.38], scale: [1, 1.12, 1] }}
-          transition={{
-            duration: 16,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: 0.5,
-          }}
+          animate={
+            shouldAnimate
+              ? { opacity: [0.35, 0.55, 0.38], scale: [1, 1.12, 1] }
+              : { opacity: 0.42, scale: 1 }
+          }
+          transition={
+            shouldAnimate
+              ? {
+                  duration: 16,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: 0.5,
+                }
+              : { duration: 0 }
+          }
         />
         <motion.div
           className="absolute inset-0 opacity-[0.14]"
@@ -121,8 +145,12 @@ export default function CourseDarkSectionBackground() {
             background:
               'conic-gradient(from 220deg at 65% 35%, transparent 0deg, rgba(172,174,137,0.35) 100deg, transparent 220deg)',
           }}
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 90, repeat: Infinity, ease: 'linear' }}
+          animate={shouldAnimate ? { rotate: [0, 360] } : { rotate: 0 }}
+          transition={
+            shouldAnimate
+              ? { duration: 90, repeat: Infinity, ease: 'linear' }
+              : { duration: 0 }
+          }
         />
         <div
           className="absolute inset-0 opacity-[0.04] mix-blend-overlay"
@@ -133,35 +161,37 @@ export default function CourseDarkSectionBackground() {
         />
       </div>
 
-      <div className="pointer-events-none absolute inset-0 z-[15] overflow-hidden" aria-hidden>
-        {DRIFT_DOTS.map((d, i) => {
-          const flow = waterPathKeyframes(i, DRIFT_PX);
-          const depth = waterOpacityKeyframes(i);
-          return (
-            <div
-              key={i}
-              className="absolute -translate-x-1/2 -translate-y-1/2"
-              style={{ left: `${d.leftPct}%`, top: `${d.topPct}%` }}
-            >
-              <motion.div
-                className="h-3 w-3 rounded-full bg-palette-cream/20 shadow-[0_0_10px_rgba(250,248,244,0.12)] md:h-[14px] md:w-[14px]"
-                initial={false}
-                animate={
-                  reduceMotion
-                    ? { x: 0, y: 0, opacity: 0.28 }
-                    : { x: flow.x, y: flow.y, opacity: depth }
-                }
-                transition={{
-                  duration: d.dur,
-                  delay: d.delay,
-                  repeat: reduceMotion ? 0 : Infinity,
-                  ease: 'linear',
-                }}
-              />
-            </div>
-          );
-        })}
-      </div>
-    </>
+      {enableMotion && !reduceMotion ? (
+        <div className="pointer-events-none absolute inset-0 z-[15] overflow-hidden">
+          {DRIFT_DOTS.map((d, i) => {
+            const flow = waterPathKeyframes(i, DRIFT_PX);
+            const depth = waterOpacityKeyframes(i);
+            return (
+              <div
+                key={i}
+                className="absolute -translate-x-1/2 -translate-y-1/2"
+                style={{ left: `${d.leftPct}%`, top: `${d.topPct}%` }}
+              >
+                <motion.div
+                  className="h-3 w-3 rounded-full bg-palette-cream/20 shadow-[0_0_10px_rgba(250,248,244,0.12)] md:h-[14px] md:w-[14px]"
+                  initial={false}
+                  animate={
+                    shouldAnimate
+                      ? { x: flow.x, y: flow.y, opacity: depth }
+                      : { x: 0, y: 0, opacity: 0.22 }
+                  }
+                  transition={{
+                    duration: d.dur,
+                    delay: d.delay,
+                    repeat: shouldAnimate ? Infinity : 0,
+                    ease: 'linear',
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
   );
 }

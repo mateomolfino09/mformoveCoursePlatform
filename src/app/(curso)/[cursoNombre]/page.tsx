@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import Course from '../../../components/PageComponent/Course/Course';
 import CourseLandingSkeleton from '../../../components/PageComponent/Course/CourseLandingSkeleton';
 import { CursoLandingProvider } from '../../../components/PageComponent/Course/CursoLandingContext';
@@ -32,10 +31,7 @@ export default function CursoNombrePage({ params }: CursoNombrePageProps) {
       try {
         setError(null);
         const response = await fetch(`/api/product/curso/${params.cursoNombre}`, {
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0',
-          },
+          cache: 'default',
         });
 
         const text = await response.text();
@@ -86,7 +82,7 @@ export default function CursoNombrePage({ params }: CursoNombrePageProps) {
 
   if (error) {
     return (
-      <motion.div className="min-h-screen bg-black flex flex-col items-center justify-center text-white font-montserrat px-6 text-center">
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white font-montserrat px-6 text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-4">Tuvimos un problema</h1>
         <p className="text-base md:text-lg text-white/70 max-w-xl mb-6">{error}</p>
         <button
@@ -95,7 +91,7 @@ export default function CursoNombrePage({ params }: CursoNombrePageProps) {
         >
           Reintentar
         </button>
-      </motion.div>
+      </div>
     );
   }
 
@@ -117,9 +113,7 @@ export default function CursoNombrePage({ params }: CursoNombrePageProps) {
       productName={landing.product?.nombre || landing.cursoConfig.introHighlights.titulo}
       slug={params.cursoNombre}
     >
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
-        <Course checkoutPlans={checkoutPlans} />
-      </motion.div>
+      <Course checkoutPlans={checkoutPlans} />
     </CursoLandingProvider>
   );
 }

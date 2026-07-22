@@ -138,7 +138,6 @@ export default function MentorshipProcess() {
                         sizes="(max-width: 768px) 90vw, 36vw"
                         className="object-cover object-[center_22%] transition-transform duration-[1.15s] ease-out group-hover/card:scale-[1.035]"
                         loader={imageLoader}
-                        preserveTransformations
                       />
                       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-palette-ink/35 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-palette-cream/15" />
                     </div>
@@ -162,7 +161,6 @@ export default function MentorshipProcess() {
                         sizes="(max-width: 768px) 100vw, 45vw"
                         className="object-cover object-[center_40%] transition-transform duration-[1.05s] ease-out group-hover/card:scale-[1.03]"
                         loader={imageLoader}
-                        preserveTransformations
                       />
                       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-palette-cream/90 via-palette-cream/20 to-transparent" />
                     </div>

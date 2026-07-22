@@ -602,7 +602,6 @@ export default function MentorshipCheckoutStart({ payload }: MentorshipCheckoutS
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover object-[center_42%]"
                   loader={imageLoader}
-                  preserveTransformations
                 />
               </div>
               {interval === 'anual' ? (
