@@ -34,7 +34,6 @@ const MentorshipPlansLoading = ({ show }: { show: boolean }) => {
               priority
               className="hidden md:block object-cover opacity-50"
               style={{ objectPosition: 'center top' }}
-              preserveTransformations
               loader={imageLoader}
             />
             <CldImage
@@ -44,7 +43,6 @@ const MentorshipPlansLoading = ({ show }: { show: boolean }) => {
               priority
               className="md:hidden object-cover opacity-50"
               style={{ objectPosition: 'center top' }}
-              preserveTransformations
               loader={imageLoader}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-palette-ink/90 via-palette-ink/70 to-palette-ink/35" />

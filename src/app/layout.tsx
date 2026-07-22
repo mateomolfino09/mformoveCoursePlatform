@@ -21,6 +21,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
+      <head>
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="preconnect" href="https://i.vimeocdn.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://i.vimeocdn.com" />
+        <link rel="dns-prefetch" href="https://vumbnail.com" />
+      </head>
       <body
         className={`${BoldFont.variable} ${MontserratFont.variable} ${LoraFont.variable} ${RalewayFont.variable}`}
       >

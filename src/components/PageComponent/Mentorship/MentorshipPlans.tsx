@@ -24,7 +24,7 @@ import state from '../../../valtio';
 
 type MentorshipPlan = MentorshipProps['plans'][number];
 
-const MentorshipPlans = ({ plans }: MentorshipProps) => {
+const MentorshipPlans = ({ plans, plansLoading = false, plansError = null }: MentorshipProps) => {
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
   const { trackPlanClick } = useMentorshipAnalytics();
   const auth = useAuth();
@@ -82,15 +82,38 @@ const MentorshipPlans = ({ plans }: MentorshipProps) => {
           </h2>
         </motion.div>
 
-        <div className="[perspective:1200px]">
-          <PremiumMentorshipCards
-            plans={plans}
-            interval={interval}
-            onPlanSelect={handlePlanSelect}
-            loadingPlanId={loadingPlanId}
-            setInterval={setInterval}
-          />
-        </div>
+        {plansLoading ? (
+          <div className="mx-auto flex max-w-xl flex-col items-center gap-3 py-10 text-center">
+            <div className="h-10 w-10 animate-spin rounded-full border-2 border-palette-stone/25 border-t-palette-ink" />
+            <p className="font-montserrat text-sm text-palette-stone">Cargando planes…</p>
+          </div>
+        ) : plansError ? (
+          <div className="mx-auto max-w-md rounded-2xl border border-palette-stone/25 bg-white/60 p-6 text-center">
+            <p className="text-palette-ink font-medium">No pudimos cargar los planes.</p>
+            <p className="mt-2 text-sm text-palette-stone">{plansError}</p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="mt-4 rounded-full border-2 border-palette-ink bg-palette-ink px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] text-palette-cream"
+            >
+              Reintentar
+            </button>
+          </div>
+        ) : !plans.length ? (
+          <p className="text-center text-sm text-palette-stone">
+            No hay planes disponibles en este momento.
+          </p>
+        ) : (
+          <div className="[perspective:1200px]">
+            <PremiumMentorshipCards
+              plans={plans}
+              interval={interval}
+              onPlanSelect={handlePlanSelect}
+              loadingPlanId={loadingPlanId}
+              setInterval={setInterval}
+            />
+          </div>
+        )}
       </div>
     </section>
   );

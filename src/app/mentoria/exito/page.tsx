@@ -21,7 +21,6 @@ function ExitoBackdrop() {
         priority
         className="object-cover object-[center_42%]"
         loader={imageLoader}
-        preserveTransformations
       />
       <div
         className="absolute inset-0 bg-gradient-to-br from-palette-cream/88 via-palette-cream/72 to-palette-ink/35"
