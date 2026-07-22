@@ -13,6 +13,7 @@ function resolveOrigin(req) {
   );
 }
 
+/** A partir de ahora: ciclo corto = 3 meses (trimestral) + anual (−15%). */
 export async function POST(req) {
   await connectDB();
   try {
@@ -25,42 +26,28 @@ export async function POST(req) {
       priceMensual,
       priceTrimestral,
       currency = 'USD',
+      proveedoresHabilitados,
     } = body;
 
-    const basePrice = priceMensual ?? priceTrimestral;
-    const isLegacyTrimestral = priceMensual == null && priceTrimestral != null;
+    const shortPrice =
+      priceTrimestral != null && priceTrimestral !== ''
+        ? Number(priceTrimestral)
+        : priceMensual != null && priceMensual !== ''
+          ? Math.round(Number(priceMensual) * 3)
+          : NaN;
 
-    if (!name || !description || !features || !level || !basePrice) {
+    if (!name || !description || !features || !level || !shortPrice || shortPrice <= 0) {
       return new Response(JSON.stringify({ error: 'Faltan datos requeridos' }), { status: 400 });
     }
 
-    let shortInterval;
-    let stripeShort;
-    let shortPrice;
+    const stripeTrimestral = await stripe.prices.create({
+      unit_amount: Math.round(shortPrice * 100),
+      currency: currency.toLowerCase(),
+      recurring: { interval: 'month', interval_count: 3 },
+      product_data: { name: `${name} (Trimestral)` },
+    });
 
-    if (isLegacyTrimestral) {
-      shortInterval = 'trimestral';
-      shortPrice = basePrice;
-      stripeShort = await stripe.prices.create({
-        unit_amount: Math.round(basePrice * 100),
-        currency: currency.toLowerCase(),
-        recurring: { interval: 'month', interval_count: 3 },
-        product_data: { name: `${name} (Trimestral)` },
-      });
-    } else {
-      shortInterval = 'mensual';
-      shortPrice = basePrice;
-      stripeShort = await stripe.prices.create({
-        unit_amount: Math.round(basePrice * 100),
-        currency: currency.toLowerCase(),
-        recurring: { interval: 'month', interval_count: 1 },
-        product_data: { name: `${name} (Mensual)` },
-      });
-    }
-
-    const priceAnual = Math.round(
-      isLegacyTrimestral ? basePrice * 4 * 0.85 : basePrice * 12 * 0.85,
-    );
+    const priceAnual = Math.round(shortPrice * 4 * 0.85);
 
     const stripeAnual = await stripe.prices.create({
       unit_amount: Math.round(priceAnual * 100),
@@ -76,12 +63,16 @@ export async function POST(req) {
       description,
       features,
       level,
+      proveedoresHabilitados:
+        Array.isArray(proveedoresHabilitados) && proveedoresHabilitados.length
+          ? proveedoresHabilitados
+          : ['stripe', 'mercadopago'],
       prices: [
         {
-          interval: shortInterval,
+          interval: 'trimestral',
           price: shortPrice,
           currency,
-          stripePriceId: stripeShort.id,
+          stripePriceId: stripeTrimestral.id,
         },
         {
           interval: 'anual',

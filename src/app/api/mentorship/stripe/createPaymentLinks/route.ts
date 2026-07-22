@@ -34,10 +34,11 @@ export async function POST(request: NextRequest) {
     const paymentLinks: Record<string, { stripe?: string; dlocalgo?: string }> = {};
 
     for (const price of pricesWithLinks) {
-      paymentLinks[price.interval] = {
-        stripe: price.opcionesPago?.find((o) => o.proveedor === 'stripe')?.paymentLink,
-        dlocalgo: price.opcionesPago?.find((o) => o.proveedor === 'dlocalgo')?.paymentLink,
-      };
+        paymentLinks[price.interval] = {
+          stripe: price.opcionesPago?.find((o) => o.proveedor === 'stripe')?.paymentLink,
+          dlocalgo: price.opcionesPago?.find((o) => o.proveedor === 'dlocalgo')?.paymentLink,
+          mercadopago: price.opcionesPago?.find((o) => o.proveedor === 'mercadopago')?.paymentLink,
+        };
     }
 
     return NextResponse.json({

@@ -54,7 +54,7 @@ export type CursoFaqItem = {
 };
 
 export type CursoPlanPago = {
-  proveedor: 'stripe' | 'dlocalgo';
+  proveedor: 'stripe' | 'dlocalgo' | 'mercadopago';
   etiqueta: string;
   descripcion: string;
   monto: number;
@@ -66,6 +66,8 @@ export type CursoPlanPago = {
   dlocalOrderId?: string;
   dlocalPaymentId?: string;
   merchantCheckoutToken?: string;
+  mercadoPagoPreferenceId?: string;
+  mercadoPagoExternalReference?: string;
 };
 
 /**
@@ -235,6 +237,8 @@ export type CursoLandingConfig = {
     emailSinPlanes: string;
     ctaSinPlanes: string;
     mensajeSinPlanes: string;
+    /** stripe | dlocalgo | mercadopago — si falta, se asume stripe+dlocal (legacy). */
+    proveedoresHabilitados?: Array<'stripe' | 'dlocalgo' | 'mercadopago'>;
     opcionesPago: CursoPlanPago[];
   };
   whatsapp: {
@@ -620,16 +624,18 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
       'Hoy, podés tener el mapa completo para recuperar tu soberanía, los encuentros en vivo conmigo y un rehabilitador por una parte mínima de este monto.',
     ],
     etiquetaFormasPago: 'Formas de pago y financiación',
-    copyUruguayLatam: 'Uruguay y Latinoamérica: Pagá en tu moneda local y aprovechá hasta 12 cuotas',
+    copyUruguayLatam:
+      'Uruguay y Latinoamérica: Pagá en tu moneda local y aprovechá hasta 12 cuotas (dLocal o Mercado Pago)',
     copyRestoMundo: 'Resto del Mundo (Stripe): Pago rápido en USD mediante tarjetas internacionales, Apple Pay o Google Pay.',
-    copyCuotasTarjeta: 'Hasta 12 cuotas en Uruguay y Latinoamérica',
+    copyCuotasTarjeta: 'Hasta 12 cuotas en Uruguay y Latinoamérica con dLocal o Mercado Pago',
     imagenPagosUrl: '/images/svg/pagodoble.png',
-    imagenPagosAlt: 'Cuotas con tarjeta local e internacional: dLocal y Stripe.',
+    imagenPagosAlt: 'Cuotas con tarjeta: Mercado Pago, dLocal y Stripe.',
     diasUrgencia: 7,
     emailSinPlanes: 'hola@mformove.com',
     ctaSinPlanes: 'Recibir novedades',
     mensajeSinPlanes:
       'Estoy actualizando los planes en este momento. Si querés reservar tu lugar, escribime o tocá el botón para recibir novedades.',
+    proveedoresHabilitados: ['stripe', 'mercadopago'],
     opcionesPago: [],
   },
   whatsapp: {

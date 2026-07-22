@@ -1128,6 +1128,54 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
         <Field label="Copy cuotas con tarjeta">
           <textarea className={textareaClass} value={value.planes.copyCuotasTarjeta} onChange={(e) => patchNested('planes', { copyCuotasTarjeta: e.target.value })} />
         </Field>
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
+          <p className={labelClass}>Métodos de pago habilitados</p>
+          <p className="text-sm text-gray-500">
+            Por defecto: Stripe + Mercado Pago (Checkout Bricks). Podés activar dLocal cuando
+            quieras. Mercado Pago y dLocal ofrecen hasta 12 cuotas.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            {(
+              [
+                { id: 'stripe' as const, label: 'Stripe (internacional)' },
+                { id: 'mercadopago' as const, label: 'Mercado Pago (Checkout Bricks · 12 cuotas)' },
+                { id: 'dlocalgo' as const, label: 'dLocal GO (opcional · locales + 12 cuotas)' },
+              ] as const
+            ).map((opt) => {
+              const enabled = (value.planes.proveedoresHabilitados || [
+                'stripe',
+                'mercadopago',
+              ]).includes(opt.id);
+              return (
+                <label
+                  key={opt.id}
+                  className="flex items-center gap-2 text-sm text-gray-900 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300 text-[#4F7CCF] focus:ring-[#4F7CCF]"
+                    checked={enabled}
+                    onChange={(e) => {
+                      const current = value.planes.proveedoresHabilitados || [
+                        'stripe',
+                        'mercadopago',
+                      ];
+                      const next = e.target.checked
+                        ? Array.from(new Set([...current, opt.id]))
+                        : current.filter((p) => p !== opt.id);
+                      patchNested('planes', {
+                        proveedoresHabilitados: next.length
+                          ? next
+                          : (['stripe'] as Array<'stripe' | 'dlocalgo' | 'mercadopago'>),
+                      });
+                    }}
+                  />
+                  {opt.label}
+                </label>
+              );
+            })}
+          </div>
+        </div>
         <Field label="Mensaje sin planes activos">
           <textarea className={textareaClass} value={value.planes.mensajeSinPlanes} onChange={(e) => patchNested('planes', { mensajeSinPlanes: e.target.value })} />
         </Field>
@@ -1153,18 +1201,22 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
           <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
             <p className={labelClass}>Links de pago del curso</p>
             <p className="text-sm text-gray-500">
-              Se generan al crear el producto. La landing usa estos planes en lugar de getPlans.
+              Se generan al crear/guardar el producto según los métodos habilitados arriba.
             </p>
             {value.planes.opcionesPago.map((plan) => (
               <motion.div key={plan.proveedor} className="rounded-md border border-gray-200 bg-white p-3 space-y-1">
-                <p className="text-sm font-medium text-gray-900">{plan.etiqueta}</p>
-                <p className="text-xs text-gray-600 break-all">{plan.paymentLink}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {plan.etiqueta}{' '}
+                  <span className="text-xs font-normal text-gray-500">({plan.proveedor})</span>
+                </p>
+                <p className="text-xs text-gray-600 break-all">{plan.paymentLink || '—'}</p>
               </motion.div>
             ))}
           </div>
         ) : (
           <p className="text-sm text-gray-500">
-            Al crear el curso se genera automáticamente el link de pago único con Stripe.
+            Al crear o guardar el curso se generan los links de pago según los métodos habilitados
+            (Stripe, dLocal y/o Mercado Pago).
           </p>
         )}
       </Section>
@@ -1210,16 +1262,16 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
         </Field>
       </Section>
 
-      <Section title="FAQ" description="Preguntas frecuentes y ancla de la sección.">
+      <Section title="Preguntas frecuentes" description="Preguntas frecuentes y ancla de la sección.">
         <motion.div className="grid gap-4 md:grid-cols-2">
           <Field label="Título">
             <input className={inputClass} value={value.faq.titulo} onChange={(e) => patchNested('faq', { titulo: e.target.value })} />
           </Field>
-          <Field label="Ancla FAQ (id HTML)">
+          <Field label="Ancla Preguntas frecuentes (id HTML)">
             <input className={inputClass} value={value.faq.anclaId} onChange={(e) => patchNested('faq', { anclaId: e.target.value })} />
           </Field>
         </motion.div>
-        <Field label="Intro FAQ">
+        <Field label="Intro Preguntas frecuentes">
           <textarea className={textareaClass} value={value.faq.intro} onChange={(e) => patchNested('faq', { intro: e.target.value })} />
         </Field>
         <div className="space-y-3">

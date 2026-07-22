@@ -6,7 +6,8 @@ import Link from 'next/link';
 import MainSideBar from '../../../components/MainSidebar/MainSideBar';
 import Footer from '../../../components/Footer';
 import imageLoader from '../../../../imageLoader';
-import { buildMentorshipBudgetOptions } from '../../../lib/mentorshipPricing';
+import { buildMentorshipBudgetOptions, type MentorshipBudgetOption } from '../../../lib/mentorshipPricing';
+import MentorshipConsultaBudgetOptions from '../../../components/PageComponent/Mentorship/MentorshipConsultaBudgetOptions';
 
 const CONSULTA_BG = 'my_uploads/plaza/DSC03350_vgjrrh';
 
@@ -49,7 +50,7 @@ interface FormState {
   interesadoEn: string[];
   dondeEntrena: string;
   nivelActual: string;
-  nivelBuscado: string;
+  objetivos: string[];
   principalFrenoJustificacion: string;
   principalFreno: string;
   porQueElegirme: string;
@@ -57,6 +58,7 @@ interface FormState {
   whatsappDialCode: string;
   whatsappNationalNumber: string;
   whatsapp: string;
+  modalidad: string;
   presupuesto: string;
   comentarios: string;
 }
@@ -72,6 +74,7 @@ interface RadioOption {
   monthlyFromTrimestral?: number | null;
   monthlyFromAnual?: number | null;
   discountPercent?: number;
+  interval?: 'mensual' | 'trimestral' | 'anual';
 }
 
 interface SelectOptionKV {
@@ -145,111 +148,132 @@ const MENTORSHIP_PLAN_WHAT_YOU_GET = [
 const MENTORSHIP_PLAN_METHOD_BASIS =
   'Artes marciales, el baile, el yoga, la calistenia, la gimnasia, el entrenamiento y los deportes.';
 
-const preguntas = [
-  {
-    name: "nombre",
-    label: "Nombre completo",
-    type: "text",
-    required: true,
-  },
-  {
-    name: "email",
-    label: "Correo electrónico",
-    type: "email",
-    required: true,
-  },
-  {
-    name: "paisCiudad",
-    label: "¿País y ciudad de residencia?",
-    type: "text",
-    required: true,
-  },
-  {
-    name: "interesadoEn",
-    label: "¿En qué estás interesad@?",
-    type: "select",
-    options: [
-      { value: INTERES_MENTORIA, label: 'Mentoría' },
-      { value: INTERES_CUERPO_AUTONOMO, label: 'Cuerpo Autónomo' },
-    ],
-    required: true,
-  },
-  {
-    name: "dondeEntrena",
-    label: "¿Dónde sueles entrenar?",
-    type: "select",
-    options: [
-      "Entreno en el parque de calistenia",
-      "Entreno en casa",
-      "Entreno en el gimnasio",
-      "Otro"
-    ],
-    required: true,
-  },
-  {
-    name: "nivelActual",
-    label: "¿En qué punto te encontras?",
-    type: "select",
-    options: [
-      "Quiero entrenar pero me falta adherencia",
-      "Entreno pero soy poco constante",
-      "Entreno 2-3 días a la semana",
-      "Entreno 4-5 días a la semana",
-      "Otro"
-    ],
-    required: true,
-  },
-  {
-    name: "nivelBuscado",
-    label: "¿Cuales son tus objetivos con tu cuerpo?",
-    type: "select",
-    options: [
-      "Mejorar mi salud fisica y mental",
-      "Tener mas constancia y regularidad en mi vida",
-      "Tener resultados fisicos y esteticos visibles",
-      "Prevenir y aliviar lesiones y dolores",
-      "Otro"
-    ],
-    required: true,
-  },
-  {
-    name: "principalFrenoJustificacion",
-    label: "¿Te gustaría detallar la justificación de tu elección?",
-    type: "textarea",
-    required: true,
-  },
-  {
-    name: "principalFreno",
-    label: "¿Que te está frenando para conseguir tus objetivos? ",
-    type: "textarea",
-    required: true,
-  },
-  {
-    name: "porQueElegirme",
-    label: "¿Por qué te gustaría entrenar/aprender conmigo? ¿Cuáles crees que son las cosas más importantes que puedo hacer yo como entrenador para que logres alcanzar estos objetivos?",
-    type: "textarea",
-    required: true,
-  },
-  {
-    name: "whatsapp",
-    label: 'Tu WhatsApp para contactarte',
-    type: 'text',
-    required: true,
-  },
-  {
-    name: "presupuesto",
-    label: "¿Preferís pagar en plan mensual o anual?",
-    type: "radio",
-    options: [],
-    required: true,
-  },
-  {
-    name: "comentarios",
-    label: "Comentarios adicionales (opcional)",
-    type: "textarea",
-    required: false,
-  },
-];
+  const preguntas = [
+    {
+      name: "nombre",
+      label: "Nombre completo",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "email",
+      label: "Correo electrónico",
+      type: "email",
+      required: true,
+    },
+    {
+      name: "paisCiudad",
+      label: "¿País y ciudad de residencia?",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "interesadoEn",
+      label: "¿En qué estás interesad@?",
+      type: "select",
+      options: [
+        { value: INTERES_MENTORIA, label: "Mentoría" },
+        { value: INTERES_CUERPO_AUTONOMO, label: "Cuerpo Autónomo" },
+      ],
+      required: true,
+    },
+    {
+      name: "dondeEntrena",
+      label: "¿Dónde solés entrenar?",
+      type: "select",
+      options: [
+        "Entreno en un parque de calistenia",
+        "Entreno en casa",
+        "Entreno en un gimnasio",
+        "Otro",
+      ],
+      required: true,
+    },
+    {
+      name: "nivelActual",
+      label: "¿Cómo describirías tu situación actual?",
+      type: "select",
+      options: [
+        "Quiero entrenar, pero me cuesta empezar",
+        "Entreno, pero soy poco constante",
+        "Entreno 2 o 3 veces por semana",
+        "Entreno 4 o más veces por semana",
+        "Otro",
+      ],
+      required: true,
+    },
+    {
+      name: "objetivos",
+      label: "¿Cuáles son tus principales objetivos? (Podés elegir más de uno)",
+      type: "checkbox",
+      options: [
+        "Mejorar mi salud física y mental",
+        "Tener más constancia",
+        "Ganar fuerza",
+        "Mejorar mi movilidad y flexibilidad",
+        "Aprender habilidades (parada de manos, muscle up, etc.)",
+        "Reducir dolores o prevenir lesiones",
+        "Cambiar mi físico",
+        "Otro",
+      ],
+      required: true,
+    },
+    {
+      name: "principalFreno",
+      label: "¿Qué sentís que hoy te está frenando para conseguir esos objetivos?",
+      type: "textarea",
+      required: true,
+    },
+    {
+      name: "principalFrenoJustificacion",
+      label: "Contame un poco más sobre eso.",
+      type: "textarea",
+      required: true,
+    },
+    {
+      name: "porQueElegirme",
+      label:
+        "¿Por qué te gustaría entrenar conmigo? ¿Qué esperás de mí como mentor para ayudarte a conseguir esos objetivos?",
+      type: "textarea",
+      required: true,
+    },
+    {
+      name: "whatsapp",
+      label: "¿Cuál es tu WhatsApp?",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "modalidad",
+      label: "¿Qué inversión mensual te sentirías cómodo haciendo si vemos que la mentoría es para vos?",
+      type: "radio",
+      options: [
+        "Hasta USD 100 por mes",
+        "Entre USD 100 y USD 170 por mes",
+        "Más de USD 170 por mes",
+        "No puedo acceder a ninguna de las opciones anteriores",
+      ],
+      required: true,
+    },
+    {
+      name: "presupuesto",
+      label: "Si vemos que la mentoría es para vos, ¿qué modalidad considerarías?",
+      type: "radio",
+      options: [
+        "Plan trimestral",
+        "Plan anual",
+        "Podría evaluar cualquiera de las dos",
+        "Todavía no lo sé",
+      ],
+      required: true,
+    },
+    {
+      name: "comentarios",
+      label: "¿Hay algo más que te gustaría contarme?",
+      type: "textarea",
+      required: false,
+    },
+  ];
 
 const initialState: FormState = {
   nombre: "",
@@ -258,13 +282,14 @@ const initialState: FormState = {
   interesadoEn: [INTERES_MENTORIA],
   dondeEntrena: "",
   nivelActual: "",
-  nivelBuscado: "",
+  objetivos: [],
   principalFrenoJustificacion: "",
   principalFreno: "",
   porQueElegirme: "",
   whatsappDialCode: '+598',
   whatsappNationalNumber: '',
   whatsapp: '',
+  modalidad: '',
   presupuesto: '',
   comentarios: ""
 };
@@ -331,28 +356,28 @@ const validators = {
     return '';
   },
 
-  nivelBuscado: (value: string): string => {
-    if (!value.trim()) return 'Debes seleccionar tus objetivos';
+  objetivos: (value: string[]): string => {
+    if (!value || value.length === 0) return 'Elegí al menos un objetivo';
     return '';
   },
 
   principalFrenoJustificacion: (value: string): string => {
     if (!value.trim()) return 'Este campo es requerido';
-    if (value.trim().length < 20) return 'Describe tu justificación con más detalle (mínimo 20 caracteres)';
+    if (value.trim().length < 5) return 'Describe tu justificación con más detalle (mínimo 5 caracteres)';
     if (value.trim().length > 500) return 'El texto es demasiado largo (máximo 500 caracteres)';
     return '';
   },
 
   principalFreno: (value: string): string => {
     if (!value.trim()) return 'Este campo es requerido';
-    if (value.trim().length < 20) return 'Describe tu situación con más detalle (mínimo 20 caracteres)';
+    if (value.trim().length < 5) return 'Describe tu situación con más detalle (mínimo 5 caracteres)';
     if (value.trim().length > 500) return 'El texto es demasiado largo (máximo 500 caracteres)';
     return '';
   },
 
   porQueElegirme: (value: string): string => {
     if (!value.trim()) return 'Este campo es requerido';
-    if (value.trim().length < 20) return 'Describe tus expectativas con más detalle (mínimo 20 caracteres)';
+    if (value.trim().length < 5) return 'Describe tus expectativas con más detalle (mínimo 5 caracteres)';
     if (value.trim().length > 500) return 'El texto es demasiado largo (máximo 500 caracteres)';
     return '';
   },
@@ -373,6 +398,11 @@ const validators = {
     return '';
   },
 
+  modalidad: (value: string): string => {
+    if (!value.trim()) return 'Elegí una opción de inversión mensual';
+    return '';
+  },
+
   comentarios: (value: string): string => {
     if (value.trim() && value.trim().length > 300) {
       return 'Los comentarios no pueden exceder 300 caracteres';
@@ -387,7 +417,7 @@ export default function MentorshipConsultaPage() {
   const [enviado, setEnviado] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [budgetOptions, setBudgetOptions] = useState<RadioOption[]>([]);
+  const [budgetOptions, setBudgetOptions] = useState<MentorshipBudgetOption[]>([]);
   const [plansLoaded, setPlansLoaded] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<{[key: string]: boolean}>({});
@@ -408,7 +438,7 @@ export default function MentorshipConsultaPage() {
       const activePlans = plans.filter((plan) => plan.active);
       const plan = activePlans[0];
 
-      const options: RadioOption[] = plan ? buildMentorshipBudgetOptions(plan.prices) : [];
+      const options: MentorshipBudgetOption[] = plan ? buildMentorshipBudgetOptions(plan.prices) : [];
 
       setBudgetOptions(options);
     } catch (error) {
@@ -433,7 +463,7 @@ export default function MentorshipConsultaPage() {
     return '';
   };
 
-  // Función para validar todos los campos
+  // Función para validar todos los campos del flujo
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
     const snapshot: FormState = {
@@ -441,10 +471,15 @@ export default function MentorshipConsultaPage() {
       whatsapp: buildWhatsappFull(form.whatsappDialCode, form.whatsappNationalNumber),
     };
 
-    (Object.keys(snapshot) as (keyof FormState)[]).forEach((key) => {
-      const error = validateField(key as string, snapshot[key]);
+    preguntas.forEach((pregunta) => {
+      const key = pregunta.name as keyof FormState;
+      let value: unknown = snapshot[key];
+      if (pregunta.name === 'whatsapp') {
+        value = snapshot.whatsapp;
+      }
+      const error = validateField(pregunta.name, value);
       if (error) {
-        newErrors[key as string] = error;
+        newErrors[pregunta.name] = error;
       }
     });
 
@@ -606,14 +641,20 @@ export default function MentorshipConsultaPage() {
     
     // Validar todo el formulario
     if (!validateForm()) {
+      setError('Revisá los campos: faltan respuestas o hay algún dato inválido.');
       return;
     }
     
     setLoading(true);
 
+    const whatsapp = buildWhatsappFull(form.whatsappDialCode, form.whatsappNationalNumber);
     const payload = {
       ...form,
-      whatsapp: buildWhatsappFull(form.whatsappDialCode, form.whatsappNationalNumber),
+      whatsapp,
+      // Compatibilidad con el modelo/API histórico
+      nivelBuscado: form.objetivos.join(', '),
+      objetivos: form.objetivos,
+      modalidad: form.modalidad,
     };
 
     try {
@@ -1028,6 +1069,48 @@ export default function MentorshipConsultaPage() {
                 </div>
               )}
               
+              {preguntaActual.type === "radio" &&
+                preguntaActual.name === "modalidad" &&
+                Array.isArray(preguntaActual.options) &&
+                preguntaActual.options.length > 0 && (
+                <div>
+                  <div className="space-y-3">
+                    {preguntaActual.options.map((opt: any) => {
+                      const optionValue = typeof opt === 'string' ? opt : opt.value;
+                      const optionLabel = typeof opt === 'string' ? opt : opt.label;
+                      return (
+                        <label
+                          key={optionValue}
+                          className="flex cursor-pointer items-start gap-3 rounded-2xl border border-palette-stone/18 bg-white/85 p-4 shadow-[0_6px_22px_rgba(20,20,17,0.05)] transition-all duration-200 hover:border-palette-stone/32 hover:bg-palette-cream/65"
+                        >
+                          <input
+                            type="radio"
+                            name={preguntaActual.name}
+                            value={optionValue}
+                            checked={form.modalidad === optionValue}
+                            onChange={() => handleRadioChange('modalidad', optionValue)}
+                            className="mt-0.5 h-5 w-5 shrink-0 border border-palette-stone/30 bg-white text-palette-ink transition-all duration-200 focus:ring-2 focus:ring-palette-sage/30"
+                          />
+                          <span className="font-montserrat text-[15px] text-palette-ink/90">{optionLabel}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {errors.modalidad && touched.modalidad ? (
+                    <p className="mt-2 flex items-center font-montserrat text-sm text-red-600">
+                      <svg className="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {errors.modalidad}
+                    </p>
+                  ) : null}
+                </div>
+              )}
+
               {preguntaActual.type === "radio" && preguntaActual.name === "presupuesto" && !plansLoaded && (
                 <div className="flex items-center justify-center py-12">
                   <div className="flex flex-col items-center space-y-4">
@@ -1043,64 +1126,15 @@ export default function MentorshipConsultaPage() {
 
               {preguntaActual.type === "radio" && preguntaActual.name === "presupuesto" && budgetOptions.length > 0 && (
                 <div>
-                  <div className="space-y-4">
-                    {budgetOptions.map((opt: any) => (
-                    <label key={opt.value} className="block cursor-pointer">
-                      <div className="rounded-2xl border border-palette-stone/18 bg-white/85 p-4 shadow-[0_6px_22px_rgba(20,20,17,0.05)] transition-all duration-200 hover:border-palette-stone/32 hover:bg-palette-cream/65">
-                        <div className="flex items-start space-x-3">
-                          <input
-                            type="radio"
-                            name={preguntaActual.name}
-                            value={opt.value}
-                            checked={form[preguntaActual.name as keyof FormState] === opt.value}
-                            onChange={() => handleRadioChange(preguntaActual.name, opt.value)}
-                            className="mt-1 h-5 w-5 border border-palette-stone/30 bg-white text-palette-ink transition-all duration-200 focus:ring-2 focus:ring-palette-sage/30"
-                          />
-                          <div className="flex-1">
-                            <div className="font-medium mb-2 text-palette-ink text-base">
-                              {opt.label}
-                            </div>
-                            {opt.discountPercent > 0 && (
-                              <div className="mt-1">
-                                <span className="inline-block rounded-full border border-palette-stone/20 bg-palette-cream/90 px-3 py-1 text-xs font-medium text-palette-ink">
-                                  Ahorra {opt.discountPercent}% pagando anual
-                                </span>
-                              </div>
-                            )}
-                            <div className="text-xs mt-2 font-montserrat text-palette-stone font-light">
-                              {opt.description}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </label>
-                  ))}
-                  </div>
-                  {errors[preguntaActual.name] && touched[preguntaActual.name] && (
-                    <p className="text-red-600 text-sm mt-2 font-montserrat flex items-center">
-                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                      {errors[preguntaActual.name]}
-                    </p>
-                  )}
-                  <div className="mt-6 rounded-2xl border border-palette-stone/22 bg-white/80 p-5 shadow-[0_6px_22px_rgba(20,20,17,0.04)] md:p-6">
-                    <p className="mb-3 font-montserrat text-xs font-semibold uppercase tracking-[0.2em] text-palette-ink/75">
-                      Qué obtenés con el plan
-                    </p>
-                    <ol className="mb-4 list-decimal list-outside space-y-2.5 pl-5 font-montserrat text-[15px] leading-relaxed text-palette-ink marker:font-semibold md:text-base">
-                      {MENTORSHIP_PLAN_WHAT_YOU_GET.map((item) => (
-                        <li key={item} className="pl-1">
-                          {item}
-                        </li>
-                      ))}
-                    </ol>
-                    <p className="border-l-2 border-palette-sage/35 pl-4 font-montserrat text-sm leading-relaxed text-palette-stone md:text-[15px]">
-                      <span className="font-semibold text-palette-ink/90">Basado en:</span>{' '}
-                      <span className="italic text-palette-stone">{MENTORSHIP_PLAN_METHOD_BASIS}</span>{' '}
-                      Todo integrado en un mismo lenguaje.
-                    </p>
-                  </div>
+                  <MentorshipConsultaBudgetOptions
+                    options={budgetOptions}
+                    name={preguntaActual.name}
+                    value={String(form[preguntaActual.name as keyof FormState] ?? '')}
+                    onChange={(next) => handleRadioChange(preguntaActual.name, next)}
+                    error={errors[preguntaActual.name]}
+                    showError={Boolean(touched[preguntaActual.name])}
+                  />
+
                 </div>
               )}
             </motion.div>

@@ -55,7 +55,7 @@ const cursoFaqItemSchema = new mongoose.Schema({
 }, { _id: false });
 
 const cursoPlanPagoSchema = new mongoose.Schema({
-  proveedor: { type: String, enum: ['stripe', 'dlocalgo'], required: true },
+  proveedor: { type: String, enum: ['stripe', 'dlocalgo', 'mercadopago'], required: true },
   etiqueta: { type: String, default: '' },
   descripcion: { type: String, default: '' },
   monto: { type: Number, default: 0 },
@@ -67,6 +67,8 @@ const cursoPlanPagoSchema = new mongoose.Schema({
   dlocalOrderId: { type: String },
   dlocalPaymentId: { type: String },
   merchantCheckoutToken: { type: String },
+  mercadoPagoPreferenceId: { type: String },
+  mercadoPagoExternalReference: { type: String },
 }, { _id: false });
 
 const cursoClaseContenidoSchema = new mongoose.Schema({
@@ -200,6 +202,11 @@ const cursoLandingConfigSchema = new mongoose.Schema({
     emailSinPlanes: { type: String, default: '' },
     ctaSinPlanes: { type: String, default: '' },
     mensajeSinPlanes: { type: String, default: '' },
+    /** Métodos de pago habilitados al crear/editar: stripe | dlocalgo | mercadopago */
+    proveedoresHabilitados: {
+      type: [{ type: String, enum: ['stripe', 'dlocalgo', 'mercadopago'] }],
+      default: undefined,
+    },
     opcionesPago: [cursoPlanPagoSchema],
   },
   whatsapp: {

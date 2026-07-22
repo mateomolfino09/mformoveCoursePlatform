@@ -42,6 +42,7 @@ export default function MentorshipSuccessPage() {
   const externalId = searchParams.get('external_id');
   const paymentId =
     searchParams.get('payment_id')?.trim() ||
+    searchParams.get('collection_id')?.trim() ||
     searchParams.get('paymentId')?.trim() ||
     searchParams.get('id')?.trim() ||
     undefined;
@@ -57,9 +58,11 @@ export default function MentorshipSuccessPage() {
     if (!planId || !interval || !provider || fulfillRequested.current) return;
 
     const isDlocal = provider === 'dlocalgo';
+    const isMercadoPago = provider === 'mercadopago';
     const isStripe = provider === 'stripe';
 
     if (isStripe && !sessionId) return;
+    if (isMercadoPago && !paymentId) return;
 
     const dedupeKey = `mentorship-complete:${planId}:${interval}:${provider}:${paymentId || sessionId || externalId || 'pending'}`;
     try {
@@ -74,18 +77,27 @@ export default function MentorshipSuccessPage() {
       externalId?.trim() ||
       (auth.user?._id != null ? String(auth.user._id) : undefined);
 
+    const resolvedProvider = isDlocal
+      ? 'dlocalgo'
+      : isMercadoPago
+        ? 'mercadopago'
+        : 'stripe';
+
     fetch('/api/payments/mentorship/complete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({
-        provider: isDlocal ? 'dlocalgo' : 'stripe',
+        provider: resolvedProvider,
         planId,
         interval,
         ...(userId ? { userId } : {}),
         ...(paymentId ? { paymentId } : {}),
         ...(orderIdParam ? { orderId: orderIdParam } : {}),
         ...(sessionId ? { sessionId } : {}),
+        ...(searchParams.get('external_reference')
+          ? { externalReference: searchParams.get('external_reference') }
+          : {}),
       }),
     })
       .then(async (res) => {

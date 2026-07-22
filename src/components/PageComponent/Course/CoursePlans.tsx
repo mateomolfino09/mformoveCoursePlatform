@@ -96,7 +96,13 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
       toast.error('No pudimos abrir el checkout. Intentá de nuevo.');
     }
   }, [checkoutStartPath, isNavigatingToCheckout, router, slug]);
-  const activeCheckoutPlans = checkoutPlans.filter((plan) => plan.activo && plan.paymentLink);
+  const activeCheckoutPlans = checkoutPlans.filter(
+    (plan) =>
+      plan.activo &&
+      (Boolean(plan.paymentLink?.trim()) ||
+        plan.proveedor === 'mercadopago' ||
+        Boolean(plan.mercadoPagoPreferenceId))
+  );
   const activePlans = plans.filter((plan) => plan.active);
   const monthlyPlan = activePlans.find(
     (p) =>
@@ -494,8 +500,8 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
         {/* Ilustración medios de pago — centrada en la tarjeta */}
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-4 pt-[4.5rem] pb-[5.5rem] md:px-4 md:pt-20 md:pb-24">
           <Image
-            src="/images/svg/pagodoble.png"
-            alt="Cuotas con tarjeta local e internacional: dLocal y Stripe."
+            src="/images/logos/tarjetasmpstripe2.png"
+            alt="Pagos con Mercado Pago y Stripe."
             width={640}
             height={400}
             sizes="(max-width: 768px) 90vw, 18rem"
@@ -513,7 +519,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
 
         <div className="pointer-events-none absolute inset-x-0 bottom-5 z-20 px-5 pb-4 text-center text-palette-ink md:bottom-4 md:px-5 md:pb-4">
           <p className="font-raleway text-base leading-snug text-palette-ink md:text-lg">
-            Hasta 12 cuotas en Uruguay y Latinoamérica
+            Hasta 12 cuotas en Uruguay y Latinoamérica (dLocal o Mercado Pago)
           </p>
         </div>
       </motion.div>

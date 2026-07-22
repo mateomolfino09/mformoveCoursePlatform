@@ -9,6 +9,9 @@ export type LinkInBioProductCard = {
   imageSrc: string;
   href: string;
   tipo: string;
+  /** Precio de lista (si existe). */
+  price?: number | null;
+  currency?: string | null;
 };
 
 export type MapProductsForLinkInBioOptions = {
@@ -16,8 +19,8 @@ export type MapProductsForLinkInBioOptions = {
   featuredCursoSlug?: string | null;
 };
 
-/** Índice inicial del carrusel (mentoría = segunda tarjeta). */
-export const LINK_IN_BIO_CAROUSEL_INITIAL_INDEX = 1;
+/** Índice inicial del carrusel (producto / curso destacado primero). */
+export const LINK_IN_BIO_CAROUSEL_INITIAL_INDEX = 0;
 
 function slugifyEventName(nombre: string): string {
   return nombre.replace(/\s+/g, '-').toLowerCase();
@@ -127,6 +130,23 @@ function eventoFechaSortTime(product: Record<string, unknown>): number {
   return Number.isNaN(fecha.getTime()) ? Number.MAX_SAFE_INTEGER : fecha.getTime();
 }
 
+function resolveProductPrice(product: Record<string, unknown>): {
+  price: number | null;
+  currency: string | null;
+} {
+  const raw = product.precio ?? product.price;
+  const n = typeof raw === 'number' ? raw : Number(raw);
+  const price = Number.isFinite(n) && n > 0 ? n : null;
+  const currencyRaw = product.moneda ?? product.currency;
+  const currency =
+    typeof currencyRaw === 'string' && currencyRaw.trim()
+      ? currencyRaw.trim().toUpperCase()
+      : price != null
+        ? 'USD'
+        : null;
+  return { price, currency };
+}
+
 function rawToCard(raw: Record<string, unknown>): LinkInBioProductCard | null {
   if (raw.activo === false) return null;
 
@@ -142,6 +162,8 @@ function rawToCard(raw: Record<string, unknown>): LinkInBioProductCard | null {
   const title = String(raw.nombre || raw.name || '').trim();
   if (!title) return null;
 
+  const { price, currency } = resolveProductPrice(raw);
+
   return {
     id: productId(raw),
     title,
@@ -149,6 +171,8 @@ function rawToCard(raw: Record<string, unknown>): LinkInBioProductCard | null {
     imageSrc,
     href,
     tipo,
+    price,
+    currency,
   };
 }
 
@@ -173,12 +197,24 @@ function pickVigenteEventoRaw(eventos: Record<string, unknown>[]): Record<string
   return vigentes[0];
 }
 
-function resolveMentoriaCard(extraCards: LinkInBioProductCard[]): LinkInBioProductCard | null {
+function mentoriaSortRank(card: LinkInBioProductCard): number {
+  const id = (card.id || '').toLowerCase();
+  if (id.includes('anual')) return 0;
+  if (id.includes('trimestral')) return 1;
+  return 2;
+}
+
+function resolveMentoriaCards(extraCards: LinkInBioProductCard[]): LinkInBioProductCard[] {
+  const cards: LinkInBioProductCard[] = [];
   for (const extra of extraCards) {
     if (!extra?.imageSrc?.trim() || !extra?.href) continue;
-    return { ...extra, tipo: extra.tipo || 'mentoria' };
+    const tipo = (extra.tipo || '').toLowerCase();
+    const id = (extra.id || '').toLowerCase();
+    if (tipo === 'mentoria' || id.startsWith('mentoria')) {
+      cards.push({ ...extra, tipo: 'mentoria' });
+    }
   }
-  return null;
+  return cards.sort((a, b) => mentoriaSortRank(a) - mentoriaSortRank(b));
 }
 
 export function mapProductsForLinkInBio(
@@ -203,11 +239,10 @@ export function mapProductsForLinkInBio(
   const featuredRaw = pickFeaturedCursoRaw(cursoRaws, featuredCursoSlug);
   const featuredId = featuredRaw ? productId(featuredRaw) : '';
   const eventoRaw = pickVigenteEventoRaw(eventoRaws);
-  const eventoId = eventoRaw ? productId(eventoRaw) : '';
 
   const featuredCard = featuredRaw ? rawToCard(featuredRaw) : null;
   const eventoCard = eventoRaw ? rawToCard(eventoRaw) : null;
-  const mentoriaCard = resolveMentoriaCard(extraCards);
+  const mentoriaCards = resolveMentoriaCards(extraCards);
 
   const otherCursoCards: LinkInBioProductCard[] = [];
   for (const raw of cursoRaws) {
@@ -219,7 +254,7 @@ export function mapProductsForLinkInBio(
 
   const ordered: LinkInBioProductCard[] = [];
   if (featuredCard) ordered.push(featuredCard);
-  if (mentoriaCard) ordered.push(mentoriaCard);
+  ordered.push(...mentoriaCards);
   if (eventoCard) ordered.push(eventoCard);
   ordered.push(...otherCursoCards);
 

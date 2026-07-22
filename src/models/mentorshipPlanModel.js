@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const mentorshipPlanPagoSchema = new mongoose.Schema({
-  proveedor: { type: String, enum: ['stripe', 'dlocalgo'], required: true },
+  proveedor: { type: String, enum: ['stripe', 'dlocalgo', 'mercadopago'], required: true },
   etiqueta: { type: String, default: '' },
   descripcion: { type: String, default: '' },
   monto: { type: Number, default: 0 },
@@ -13,6 +13,8 @@ const mentorshipPlanPagoSchema = new mongoose.Schema({
   dlocalOrderId: { type: String },
   dlocalPaymentId: { type: String },
   merchantCheckoutToken: { type: String },
+  mercadoPagoPreferenceId: { type: String },
+  mercadoPagoExternalReference: { type: String },
   originBase: { type: String },
 }, { _id: false });
 
@@ -31,6 +33,11 @@ const mentorshipPlanSchema = new mongoose.Schema({
   level: { type: String, enum: ['explorer', 'practitioner', 'student'], required: true },
   prices: [PriceSchema],
   active: { type: Boolean, default: true },
+  /** Métodos de pago habilitados: stripe | dlocalgo | mercadopago */
+  proveedoresHabilitados: {
+    type: [{ type: String, enum: ['stripe', 'dlocalgo', 'mercadopago'] }],
+    default: undefined,
+  },
   // Campos legacy para compatibilidad/migración
   price: { type: Number },
   currency: { type: String },

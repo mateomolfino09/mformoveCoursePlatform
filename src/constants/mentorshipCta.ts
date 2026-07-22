@@ -10,7 +10,7 @@ export const MENTORSHIP_APPLY_CTA = {
 /** CTA de pago directo: solo planes y checkout para quien ya decidió. */
 export const MENTORSHIP_START_CTA = {
   label: 'Empezar mentoría',
-  href: (interval: MentorshipBillingInterval = 'mensual') =>
+  href: (interval: MentorshipBillingInterval = 'trimestral') =>
     `/mentoria/empezar?interval=${interval}`,
 } as const;
 

@@ -31,6 +31,7 @@
     "@jridgewell/sourcemap-codec": "^1.4.14",
     "@mailchimp/mailchimp_marketing": "^3.0.80",
     "@mailchimp/mailchimp_transactional": "^1.0.59",
+    "@mercadopago/sdk-react": "^1.0.7",
     "@mui/material": "^5.11.6",
     "@mui/x-data-grid": "^5.17.25",
     "@next-auth/mongodb-adapter": "^1.1.1",

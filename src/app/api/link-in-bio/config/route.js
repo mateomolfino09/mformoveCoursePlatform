@@ -10,6 +10,18 @@ export const fetchCache = 'force-no-store';
 
 const CONFIG_KEY = 'default';
 
+const MENTORIA_STRING_FIELDS = [
+  'imagenBio',
+  'imagenBioTrimestral',
+  'imagenBioAnual',
+  'titulo',
+  'subtitulo',
+  'tituloTrimestral',
+  'subtituloTrimestral',
+  'tituloAnual',
+  'subtituloAnual',
+];
+
 async function getOrCreateConfig() {
   await connectDB();
   let doc = await LinkInBioConfig.findOne({ key: CONFIG_KEY }).lean();
@@ -67,14 +79,11 @@ export async function PUT(req) {
     if (mentoria && typeof mentoria === 'object') {
       update['mentoria.activoEnBio'] =
         mentoria.activoEnBio !== undefined ? Boolean(mentoria.activoEnBio) : true;
-      if (typeof mentoria.imagenBio === 'string') {
-        update['mentoria.imagenBio'] = mentoria.imagenBio.trim();
-      }
-      if (typeof mentoria.titulo === 'string') {
-        update['mentoria.titulo'] = mentoria.titulo.trim();
-      }
-      if (typeof mentoria.subtitulo === 'string') {
-        update['mentoria.subtitulo'] = mentoria.subtitulo.trim();
+
+      for (const field of MENTORIA_STRING_FIELDS) {
+        if (typeof mentoria[field] === 'string') {
+          update[`mentoria.${field}`] = mentoria[field].trim();
+        }
       }
     }
 

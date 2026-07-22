@@ -2,6 +2,7 @@ import type { CursoLandingConfig } from '../types/cursoLanding';
 import { isCursoEnPreventa } from './cursoLandingPublication';
 import { resolveActivePrecioPreventa } from './cursoPricing';
 import { generateCursoPreciosPreventaLinks } from '../app/api/payments/stripe/createCourseOneTimePayments';
+import { resolveProveedoresHabilitados } from '../constants/paymentProveedores';
 
 type ProductLike = {
   _id: { toString(): string } | string;
@@ -14,26 +15,29 @@ type ProductLike = {
 };
 
 function tierNeedsPaymentLinks(
-  preciosPreventa: CursoLandingConfig['preciosPreventa'] | undefined
+  preciosPreventa: CursoLandingConfig['preciosPreventa'] | undefined,
+  proveedores: ReturnType<typeof resolveProveedoresHabilitados>
 ): boolean {
   if (!preciosPreventa?.length) return false;
   const active = resolveActivePrecioPreventa(preciosPreventa);
   if (!active) return false;
 
   const opcionesPago = active.opcionesPago || [];
-  const hasStripe = opcionesPago.some(
-    (o) => o.proveedor === 'stripe' && o.activo && o.paymentLink?.trim()
-  );
-  const hasDlocal = opcionesPago.some(
-    (o) => o.proveedor === 'dlocalgo' && o.activo && o.paymentLink?.trim()
-  );
-
-  return !hasStripe || !hasDlocal;
+  for (const proveedor of proveedores) {
+    const has = opcionesPago.some((o) => {
+      if (o.proveedor !== proveedor || !o.activo) return false;
+      if (proveedor === 'mercadopago') {
+        return Boolean(o.paymentLink?.trim() || o.mercadoPagoPreferenceId);
+      }
+      return Boolean(o.paymentLink?.trim());
+    });
+    if (!has) return true;
+  }
+  return false;
 }
 
 /**
- * Genera links de Stripe/dLocal para el tier de preventa activo si aún no existen.
- * Devuelve cursoConfig actualizado (mismo objeto si no hizo falta generar).
+ * Genera links para el tier de preventa activo si aún no existen.
  */
 export async function ensureCursoPreventaPaymentLinks(
   product: ProductLike,
@@ -41,11 +45,12 @@ export async function ensureCursoPreventaPaymentLinks(
 ): Promise<CursoLandingConfig | null | undefined> {
   const cursoConfig = product.cursoConfig;
   if (!cursoConfig || !isCursoEnPreventa(cursoConfig)) return cursoConfig;
-  if (!tierNeedsPaymentLinks(cursoConfig.preciosPreventa)) return cursoConfig;
+
+  const enabled = resolveProveedoresHabilitados(cursoConfig.planes?.proveedoresHabilitados);
+  if (!tierNeedsPaymentLinks(cursoConfig.preciosPreventa, enabled)) return cursoConfig;
 
   const productId =
     typeof product._id === 'string' ? product._id : product._id.toString();
-  const slug = cursoConfig.slug?.trim() || 'curso';
   const nombre = product.nombre || product.name || 'Curso';
   const descripcion = product.descripcion || product.description || nombre;
   const portadaUrl = cursoConfig.imagenCheckoutPublicId || product.portada || '';
@@ -59,6 +64,7 @@ export async function ensureCursoPreventaPaymentLinks(
     successUrl,
     origin,
     preciosPreventa: cursoConfig.preciosPreventa || [],
+    proveedores: enabled,
   });
 
   return {

@@ -2,11 +2,12 @@ import mongoose from 'mongoose';
 import MentorshipPlan from '../../../../models/mentorshipPlanModel';
 import User from '../../../../models/userModel';
 import { coursePaymentDebug, coursePaymentWarn } from '../../../../lib/coursePaymentDebug';
+import { grantAnnualMentorshipProductGifts } from '../../../../lib/grantAnnualMentorshipProductGifts';
 
 export type FulfillMentorshipPurchaseInput = {
   planId: string;
   interval: string;
-  provider: 'stripe' | 'dlocalgo';
+  provider: 'stripe' | 'dlocalgo' | 'mercadopago';
   transactionId: string;
   email?: string | null;
   userId?: string | null;
@@ -25,6 +26,23 @@ export type FulfillMentorshipPurchaseResult = {
 const hasMentorshipForTransaction = (user: any, transactionId: string) => {
   return user?.mentorship?.subscriptionId === transactionId;
 };
+
+async function maybeGrantAnnualGifts(
+  user: any,
+  interval: string,
+  transactionId: string
+) {
+  if (interval !== 'anual') return;
+  try {
+    await grantAnnualMentorshipProductGifts(user, transactionId);
+  } catch (error) {
+    coursePaymentWarn('mentorship.fulfill.annual_gifts_error', {
+      userId: user?._id?.toString(),
+      transactionId,
+      error,
+    });
+  }
+}
 
 export async function fulfillMentorshipPurchase({
   planId,
@@ -75,6 +93,7 @@ export async function fulfillMentorshipPurchase({
       planId,
       transactionId,
     });
+    await maybeGrantAnnualGifts(duplicateUser, interval, transactionId);
     return {
       alreadyProcessed: true,
       userId: duplicateUser._id.toString(),
@@ -154,6 +173,7 @@ export async function fulfillMentorshipPurchase({
   }
 
   if (hasMentorshipForTransaction(user, transactionId)) {
+    await maybeGrantAnnualGifts(user, interval, transactionId);
     return {
       alreadyProcessed: true,
       userId: user._id.toString(),
@@ -182,6 +202,8 @@ export async function fulfillMentorshipPurchase({
   }
 
   await user.save();
+
+  await maybeGrantAnnualGifts(user, interval, transactionId);
 
   coursePaymentDebug('mentorship.fulfill.granted', {
     userId: user._id.toString(),

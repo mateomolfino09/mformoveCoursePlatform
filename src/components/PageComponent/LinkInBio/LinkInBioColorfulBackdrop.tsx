@@ -8,7 +8,7 @@ export default function LinkInBioColorfulBackdrop() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute md:min-h-[150vh] inset-0 z-10 overflow-hidden bg-palette-ink "
+      className="pointer-events-none fixed inset-0 z-10 min-h-[100dvh] overflow-hidden bg-palette-ink"
     >
       <CldImage
         src={LINK_IN_BIO_DESKTOP_BACKDROP_PUBLIC_ID}
@@ -26,6 +26,11 @@ export default function LinkInBioColorfulBackdrop() {
 
       <div className="absolute inset-0 bg-gradient-to-br from-palette-ink/50 via-palette-teal/25 to-palette-sage/35" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(20,20,17,0.55)_100%)]" />
+      {/* Velo ink a pantalla completa */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-palette-ink/25 to-transparent"
+      />
 
       {/* Mobile: velo crema + sage → tono oliva en la parte superior */}
       <div aria-hidden className="pointer-events-none absolute inset-0 md:hidden">

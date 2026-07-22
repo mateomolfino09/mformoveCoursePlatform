@@ -7,7 +7,7 @@ export type UserMentorship = {
   planName?: string;
   planLevel?: string;
   interval?: MentorshipBillingInterval;
-  provider?: 'stripe' | 'dlocalgo';
+  provider?: 'stripe' | 'dlocalgo' | 'mercadopago';
   subscriptionId?: string;
   startDate?: string | Date;
   lastPaymentDate?: string | Date;
@@ -42,6 +42,7 @@ export function mentorshipStatusLabel(status?: string): string {
 export function mentorshipProviderLabel(provider?: string): string {
   if (provider === 'stripe') return 'Stripe (tarjeta internacional)';
   if (provider === 'dlocalgo') return 'dLocal GO (pago local)';
+  if (provider === 'mercadopago') return 'Mercado Pago (hasta 12 cuotas)';
   return provider || '—';
 }
 

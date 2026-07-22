@@ -12,6 +12,7 @@ import {
   landingSectionTitle,
   landingSectionTitleDark,
 } from '../../../constants/landingSectionDesign';
+import CourseDarkSectionBackground from '../Course/CourseDarkSectionBackground';
 
 const ROOTS_IMAGE = 'my_uploads/fondos/DSC01642_rioxq5';
 
@@ -57,8 +58,10 @@ function ListMarker() {
   return (
     <span
       aria-hidden
-      className="mt-[0.55rem] size-1.5 shrink-0 rounded-full bg-palette-sage"
-    />
+      className="flex h-[1.68em] w-1.5 shrink-0 items-center justify-center text-[16px] md:text-[18px] lg:text-[19px]"
+    >
+      <span className="size-1.5 rounded-full bg-palette-sage" />
+    </span>
   );
 }
 
@@ -133,12 +136,10 @@ function MethodPillarsConnected() {
 export default function MentorshipIsForYou() {
   return (
     <>
-      <section className="relative overflow-hidden bg-palette-ink py-16 font-montserrat text-left md:py-24">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-stone/25 to-transparent" />
-        <div className="pointer-events-none absolute -top-32 right-[-20%] h-72 w-72 rounded-full bg-palette-sage/[0.07] blur-3xl" />
-        <div className="pointer-events-none absolute bottom-10 left-[-15%] h-80 w-80 rounded-full bg-palette-stone/[0.06] blur-3xl" />
+      <section className="relative isolate overflow-hidden border-t border-white/10 bg-palette-ink py-16 font-montserrat text-left md:py-24">
+        <CourseDarkSectionBackground />
 
-        <div className="relative mx-auto w-[92%] max-w-6xl px-3 sm:px-4">
+        <div className="relative z-20 mx-auto w-[92%] max-w-6xl px-3 sm:px-4">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -167,7 +168,7 @@ export default function MentorshipIsForYou() {
                   className="flex items-start gap-4 border-b border-white/[0.08] py-5 md:gap-5 md:py-6"
                 >
                   <ListMarker />
-                  <p className={landingSectionBodyDark}>{item}</p>
+                  <p className={`${landingSectionBodyDark} !mt-0`}>{item}</p>
                 </motion.li>
               ))}
             </motion.ul>
