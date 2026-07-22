@@ -6,7 +6,7 @@ import { sendCourseWelcomeEmail } from '../../../../lib/sendCourseWelcomeEmail';
 
 export type FulfillCoursePurchaseInput = {
   productId: string;
-  provider: 'stripe' | 'dlocalgo';
+  provider: 'stripe' | 'dlocalgo' | 'mercadopago';
   transactionId: string;
   email?: string | null;
   userId?: string | null;

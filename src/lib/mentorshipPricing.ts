@@ -8,7 +8,7 @@ export type MentorshipPlanPrice = {
   price: number;
   currency: string;
   opcionesPago?: Array<{
-    proveedor: 'stripe' | 'dlocalgo';
+    proveedor: 'stripe' | 'dlocalgo' | 'mercadopago';
     paymentLink?: string;
     activo?: boolean;
     monto?: number;
@@ -24,16 +24,25 @@ export type MentorshipBudgetOption = {
   description: string;
   monthlyEquivalent: number | null;
   discountPercent: number;
+  interval: MentorshipBillingInterval;
 };
 
-/** Intervalo corto disponible: mensual si existe; si no, trimestral (legacy). */
+/** Intervalo corto disponible: trimestral (3 meses) si existe; si no, mensual (legacy). */
 export function resolveMentorshipShortInterval(
   prices: MentorshipPlanPrice[] | undefined,
 ): 'mensual' | 'trimestral' | null {
   if (!prices?.length) return null;
-  if (prices.some((p) => p.interval === 'mensual')) return 'mensual';
   if (prices.some((p) => p.interval === 'trimestral')) return 'trimestral';
+  if (prices.some((p) => p.interval === 'mensual')) return 'mensual';
   return null;
+}
+
+/** Default de venta: ciclo corto (trimestral/mensual) si existe; si no, anual. */
+export function resolveMentorshipDefaultInterval(
+  prices: MentorshipPlanPrice[] | undefined,
+): MentorshipBillingInterval | null {
+  const toggles = resolveMentorshipToggleIntervals(prices);
+  return toggles[0] ?? null;
 }
 
 export function resolveMentorshipToggleIntervals(
@@ -172,6 +181,7 @@ export function buildMentorshipBudgetOptions(
           : `Equivale a ~${sym} ${monthlyShort}/mes · compromiso mínimo de ${MENTORSHIP_MINIMUM_COMMITMENT_MONTHS} meses · pagable en cuotas.`,
       monthlyEquivalent: monthlyShort,
       discountPercent: 0,
+      interval: shortInterval,
     });
   }
 
@@ -180,10 +190,11 @@ export function buildMentorshipBudgetOptions(
       value: `Mentoría — ciclo anual — ${sym} ${anual.price}`,
       label: `Mentoría · plan anual (${sym} ${formatMentorshipAmount(anual.price)} al año)`,
       description: `Equivale a ~${sym} ${monthlyAnual}/mes · compromiso de 12 meses${
-        discountPercent > 0 ? ' · ahorrás respecto al plan mensual' : ''
+        discountPercent > 0 ? ' · ahorrás respecto al plan trimestral' : ''
       }.`,
       monthlyEquivalent: monthlyAnual,
       discountPercent,
+      interval: 'anual',
     });
   }
 

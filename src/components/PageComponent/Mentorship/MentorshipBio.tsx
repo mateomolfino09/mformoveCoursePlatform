@@ -9,14 +9,17 @@ import {
   landingSectionBodyDark,
   landingSectionTitleDark,
 } from '../../../constants/landingSectionDesign';
+import CourseDarkSectionBackground from '../Course/CourseDarkSectionBackground';
 
 const PORTRAIT =
   'https://res.cloudinary.com/dbeem2avp/image/upload/v1751917144/my_uploads/plaza/IMG_0333_mheawa.jpg';
 
 export default function MentorshipBio() {
   return (
-    <section className="border-t border-white/10 bg-palette-ink py-14 font-montserrat text-left md:py-16">
-      <div className="mx-auto w-[92%] max-w-6xl px-3 sm:px-4">
+    <section className="relative isolate overflow-hidden border-t border-white/10 bg-palette-ink py-14 font-montserrat text-left md:py-16">
+      <CourseDarkSectionBackground />
+
+      <div className="relative z-20 mx-auto w-[92%] max-w-6xl px-3 sm:px-4">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}

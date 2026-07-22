@@ -15,10 +15,12 @@ interface Solicitud {
   dondeEntrena: string;
   nivelActual: string;
   nivelBuscado: string;
+  objetivos?: string[];
   principalFrenoJustificacion: string;
   principalFreno: string;
   porQueElegirme: string;
   whatsapp: string;
+  modalidad?: string;
   presupuesto: string;
   comentarios?: string;
   estado: string;
@@ -313,8 +315,12 @@ export default function SolicitudesMentoriaAdmin() {
           <InfoModalSection title="Objetivos">
             <div className="space-y-4">
               <InfoModalField 
-                label="¿Cuáles son tus objetivos con tu cuerpo?" 
-                value={detalle?.nivelBuscado || ''} 
+                label="¿Cuáles son tus principales objetivos?" 
+                value={
+                  detalle?.objetivos?.length
+                    ? detalle.objetivos.join(', ')
+                    : (detalle?.nivelBuscado || '')
+                } 
               />
             </div>
           </InfoModalSection>
@@ -338,10 +344,14 @@ export default function SolicitudesMentoriaAdmin() {
           </InfoModalSection>
 
           {/* Presupuesto */}
-          <InfoModalSection title="Presupuesto">
+          <InfoModalSection title="Presupuesto y modalidad">
             <div className="space-y-4">
               <InfoModalField 
-                label="¿Qué servicios te interesan más?" 
+                label="Inversión mensual cómoda" 
+                value={detalle?.modalidad || '—'} 
+              />
+              <InfoModalField 
+                label="Modalidad de plan que consideraría" 
                 value={detalle?.presupuesto ? getPresupuestoText(detalle.presupuesto) : ''} 
               />
             </div>

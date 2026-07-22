@@ -15,114 +15,205 @@ type Props = {
   products: LinkInBioProductCard[];
 };
 
-/** Sombra ink corrida solo para el nombre sobre la foto */
-const HERO_NAME_HALO = '[text-shadow:1.5px_1.5px_0_rgba(20,20,17,0.35)]';
-function SocialLinks() {
-  const mailto = `mailto:${LINK_IN_BIO_SOCIAL.email}`;
+const SOCIAL = [
+  {
+    href: LINK_IN_BIO_SOCIAL.instagram,
+    label: 'Instagram @mateo.move',
+    Icon: CiInstagram,
+    external: true,
+  },
+  {
+    href: LINK_IN_BIO_SOCIAL.youtube,
+    label: 'YouTube',
+    Icon: CiYoutube,
+    external: true,
+  },
+  {
+    href: LINK_IN_BIO_SOCIAL.whatsapp,
+    label: 'WhatsApp',
+    Icon: FaWhatsapp,
+    external: true,
+  },
+  {
+    href: `mailto:${LINK_IN_BIO_SOCIAL.email}`,
+    label: `Email ${LINK_IN_BIO_SOCIAL.email}`,
+    Icon: CiMail,
+    external: false,
+  },
+] as const;
 
+const easeOut = [0.16, 1, 0.3, 1] as const;
+
+function SocialLinks({ onCover = false }: { onCover?: boolean }) {
   return (
-    <div className="flex items-center justify-center gap-4">
-      <a
-        href={LINK_IN_BIO_SOCIAL.instagram}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Instagram @mateo.move"
-        className="rounded-full bg-palette-ink/[0.06] p-2.5 text-palette-ink transition hover:bg-palette-ink/10 active:opacity-70"
-      >
-        <CiInstagram className="h-5 w-5 md:h-6 md:w-6" />
-      </a>
-      <a
-        href={LINK_IN_BIO_SOCIAL.youtube}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="YouTube"
-        className="rounded-full bg-palette-ink/[0.06] p-2.5 text-palette-ink transition hover:bg-palette-ink/10 active:opacity-70"
-      >
-        <CiYoutube className="h-5 w-5 md:h-6 md:w-6" />
-      </a>
-      <a
-        href={LINK_IN_BIO_SOCIAL.whatsapp}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="WhatsApp"
-        className="rounded-full bg-palette-ink/[0.06] p-2.5 text-palette-ink transition hover:bg-palette-ink/10 active:opacity-70"
-      >
-        <FaWhatsapp className="h-[18px] w-[18px] md:h-5 md:w-5" />
-      </a>
-      <a
-        href={mailto}
-        aria-label={`Email ${LINK_IN_BIO_SOCIAL.email}`}
-        className="rounded-full bg-palette-ink/[0.06] p-2.5 text-palette-ink transition hover:bg-palette-ink/10 active:opacity-70"
-      >
-        <CiMail className="h-5 w-5 md:h-6 md:w-6" />
-      </a>
+    <div className="flex items-center justify-center gap-3.5 md:gap-4">
+      {SOCIAL.map(({ href, label, Icon, external }, i) => (
+        <motion.a
+          key={label}
+          href={href}
+          {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          aria-label={label}
+          initial={{ opacity: 0, y: 16, scale: 0.85 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.55, delay: 0.55 + i * 0.09, ease: easeOut }}
+          whileHover={{ scale: 1.08, y: -2 }}
+          whileTap={{ scale: 0.94 }}
+          className={
+            onCover
+              ? 'flex h-14 w-14 items-center justify-center rounded-full border border-palette-cream/35 bg-palette-ink/45 text-palette-cream shadow-[0_12px_28px_-10px_rgba(20,20,17,0.55)] backdrop-blur-md transition hover:border-palette-cream/60 hover:bg-palette-ink/60 md:h-[3.75rem] md:w-[3.75rem]'
+              : 'flex h-12 w-12 items-center justify-center rounded-full border border-palette-ink/12 bg-white text-palette-ink shadow-[0_8px_20px_-10px_rgba(20,20,17,0.4)] transition hover:border-palette-ink/30 hover:bg-palette-cream'
+          }
+        >
+          <motion.span
+            className="flex"
+            animate={{ y: [0, -2, 0] }}
+            transition={{
+              duration: 2.8 + i * 0.35,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay: i * 0.2,
+            }}
+          >
+            <Icon className={onCover ? 'h-6 w-6 md:h-7 md:w-7' : 'h-5 w-5 md:h-6 md:w-6'} />
+          </motion.span>
+        </motion.a>
+      ))}
     </div>
   );
 }
 
 export default function LinkInBioPage({ products }: Props) {
   return (
-    <motion.div className="relative flex min-h-[100dvh] justify-center overflow-x-hidden bg-palette-cream/80 font-montserrat md:min-h-[100vh]">
+    <motion.div
+      className="relative flex min-h-[100dvh] justify-center overflow-x-hidden bg-palette-ink font-montserrat md:min-h-[100vh]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
       <LinkInBioColorfulBackdrop />
-      <div className="absolute mx-auto h-full w-0 bg-palette-cream md:top-10 md:min-h-[140vh] md:w-[60%] md:rounded-xl lg:w-[50%]" />
-      <div className="absolute z-10 mx-auto h-full w-full bg-[#EDECDB] md:top-10 md:min-h-[140vh] md:w-[60%] md:rounded-xl md:bg-palette-sage/50 lg:w-[50%]" />
 
-      <div className="relative z-40 flex w-full min-w-0 max-w-[430px] flex-col gap-0 bg-palette-cream/80 pb-[env(safe-area-inset-bottom)] md:top-20 md:min-h-[calc(100vh-5rem)] md:w-[520px] md:max-w-[520px] md:rounded-xl md:shadow-[0_24px_80px_rgba(20,20,17,0.18)]">
-        <div className="relative h-[clamp(12.5rem,58dvh,28rem)] w-full shrink-0 overflow-hidden md:h-auto md:max-h-none md:min-h-[40rem] md:flex-1">
-          <CldImage
-            src={LINK_IN_BIO_HERO_PUBLIC_ID}
-            alt="Mateo Molfino"
-            fill
-            priority
-            sizes="100vw"
-            className="block object-cover object-top md:rounded-t-xl"
-          />
+      <div className="relative z-40 flex w-full min-w-0 max-w-[430px] flex-col overflow-x-hidden overflow-y-visible bg-palette-cream pb-[env(safe-area-inset-bottom)] shadow-[0_0_0_1px_rgba(20,20,17,0.04)] md:my-10 md:w-[520px] md:max-w-[520px] md:rounded-[1.75rem] md:shadow-[0_32px_90px_-28px_rgba(20,20,17,0.55)]">
+        {/* Hero / portada */}
+        <div className="relative h-[clamp(22rem,68dvh,36rem)] w-full shrink-0 overflow-hidden md:h-[min(72vh,40rem)]">
+          <motion.div
+            className="absolute inset-0"
+            initial={{ scale: 1.12 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1.6, ease: easeOut }}
+          >
+            <motion.div
+              className="absolute inset-[-6%]"
+              animate={{ scale: [1, 1.06, 1], x: [0, -6, 0], y: [0, 4, 0] }}
+              transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <CldImage
+                src={LINK_IN_BIO_HERO_PUBLIC_ID}
+                alt="Mateo Molfino"
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 520px"
+                className="block object-cover object-top"
+              />
+            </motion.div>
+          </motion.div>
+
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[42%] bg-gradient-to-t from-[#EDECDB] via-[#EDECDB]/85 to-transparent"
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[78%] bg-[linear-gradient(to_top,#FAF8F4_0%,rgba(250,248,244,0.96)_12%,rgba(250,248,244,0.72)_30%,rgba(250,248,244,0.42)_50%,rgba(250,248,244,0.16)_70%,rgba(250,248,244,0)_100%)]"
           />
 
+          {/* Línea de luz sutil */}
           <motion.div
-            className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-1 px-4 pb-5 text-center"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <h1 className={`font-montserrat text-3xl font-bold tracking-tight text-white md:text-4xl ${HERO_NAME_HALO}`}>
-              Mateo Molfino
-            </h1>
-            <p className="mx-auto max-w-[17rem] font-medium font-montserrat text-[12px] leading-relaxed text-palette-ink md:max-w-xs md:text-sm">
-            <span className={` block text-palette-cream  tracking-[0.14em] ${HERO_NAME_HALO} relative bottom-2`}>Educador de movimiento</span>
+            aria-hidden
+            className="pointer-events-none absolute inset-x-[-20%] top-0 z-[2] h-px bg-gradient-to-r from-transparent via-palette-cream/50 to-transparent"
+            initial={{ opacity: 0, y: 0 }}
+            animate={{ opacity: [0, 0.7, 0], y: ['0%', '100%'] }}
+            transition={{ duration: 3.2, delay: 0.4, ease: 'easeInOut' }}
+          />
 
+          <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center px-6 pb-10 text-center md:pb-11">
+    
+
+            <motion.h1
+              className="font-montserrat text-[2.65rem] font-bold leading-[1.08] tracking-[-0.02em] text-[#141411] md:text-[3.15rem]"
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, delay: 0.26, ease: easeOut }}
+            >
+              Mateo Molfino
+            </motion.h1>
+
+            <motion.div
+              aria-hidden
+              className="mt-4 h-px w-12 bg-palette-ink/40"
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4, ease: easeOut }}
+            />
+
+            <motion.p
+              className="mt-4 font-montserrat text-[12px] font-semibold uppercase tracking-[0.28em] text-palette-ink/65 md:text-[13px]"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.44, ease: easeOut }}
+            >
+              Investigador de movimiento
+            </motion.p>
+
+            <motion.p
+              className="mx-auto mt-4 max-w-[19rem] font-montserrat text-[15.5px] font-medium leading-[1.65] tracking-[0.01em] text-palette-ink/85 md:max-w-[22rem] md:text-[17px]"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.52, ease: easeOut }}
+            >
               De no confiar en tu cuerpo a saber exactamente qué hacer con él.
-            </p>
-            <div className="mt-3">
-              <SocialLinks />
+            </motion.p>
+
+            <div className="mt-7 md:mt-8">
+              <SocialLinks onCover />
             </div>
-          </motion.div>
+          </div>
         </div>
 
-        <div className="relative z-10 -mt-2 flex min-w-0 shrink-0 flex-col bg-[#EDECDB] px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 md:mt-0 md:rounded-b-xl md:pt-0">
-          <div className="mb-5 flex items-center gap-3">
-            <span aria-hidden className="h-px flex-1 bg-palette-ink/10" />
-            <h2 className="shrink-0 font-montserrat text-xs font-bold tracking-[0.24em] text-palette-ink md:text-sm">
-              MÉTODO Y EVENTOS
-            </h2>
-            <span aria-hidden className="h-px flex-1 bg-palette-ink/10" />
-          </div>
+        {/* Misma cream del gradiente — sin corte ni radio que rompa la continuidad */}
+        <div className="relative z-10 -mt-1 flex min-w-0 flex-1 flex-col bg-palette-cream px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 md:px-5 md:pt-3">
+            <div className="mb-4 flex items-center gap-3">
+              <span aria-hidden className="h-px flex-1 bg-palette-ink/10" />
+              <motion.h2
+                className="shrink-0 font-montserrat text-[10px] font-semibold uppercase tracking-[0.26em] text-palette-ink/70"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.85, duration: 0.4 }}
+              >
+                Elegí tu camino
+              </motion.h2>
+              <span aria-hidden className="h-px flex-1 bg-palette-ink/10" />
+            </div>
 
-          <div className="overflow-x-hidden [-webkit-overflow-scrolling:touch]">
-            <LinkInBioProductCarousel products={products} />
-          </div>
+            <div className="min-w-0">
+              <LinkInBioProductCarousel products={products} />
+            </div>
 
-          <footer className="mt-5 pt-1">
-            <Link
-              href="/"
-              className="block w-full rounded-full border border-palette-sage bg-palette-sage py-3 text-center font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-ink shadow-[0_8px_24px_rgba(172,174,137,0.28)] transition hover:border-palette-ink hover:bg-palette-ink/80 hover:text-palette-cream active:scale-[0.98] active:opacity-90"
-            >
-              Deslizarme a la web
-            </Link>
-          </footer>
+            <footer className="mt-6">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.95, duration: 0.45 }}
+              >
+                <Link
+                  href="/"
+                  className="group flex w-full items-center justify-center gap-2 rounded-full bg-palette-ink py-3.5 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-cream transition hover:bg-palette-ink/90 active:scale-[0.985]"
+                >
+                  Ir a la web
+                  <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
+                    →
+                  </span>
+                </Link>
+                <p className="mt-3 text-center font-montserrat text-[10px] tracking-[0.08em] text-palette-stone">
+                  @mateo.move
+                </p>
+              </motion.div>
+            </footer>
         </div>
       </div>
     </motion.div>

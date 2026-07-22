@@ -10,6 +10,19 @@ export function buildCursoDlocalSuccessUrl(baseUrl: string, productId: string): 
   return `${stripTrailingSlash(baseUrl)}/pago/exito?productId=${productId}&tipo=curso&provider=dlocalgo`;
 }
 
+/** Redirect post-pago Mercado Pago. */
+export function buildCursoMercadoPagoSuccessUrl(baseUrl: string, productId: string): string {
+  return `${stripTrailingSlash(baseUrl)}/pago/exito?productId=${productId}&tipo=curso&provider=mercadopago`;
+}
+
+export function resolveCourseMercadoPagoWebhookUrl(origin?: string): string {
+  const base =
+    process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, '') ||
+    origin?.replace(/\/$/, '') ||
+    'http://localhost:3000';
+  return `${base}/api/payments/course/mercadoPagoWebhook`;
+}
+
 /** URL de bienvenida post-compra (onboarding obligatorio). */
 export function buildCursoBienvenidaSuccessUrl(baseUrl: string, productId: string): string {
   return `${stripTrailingSlash(baseUrl)}/pago/exito?productId=${productId}&tipo=curso`;

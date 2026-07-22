@@ -13,7 +13,7 @@ export interface PlanIntent {
   plan_token?: string;
 }
 
-export type CourseCheckoutPaymentMethod = 'stripe' | 'dlocalgo' | 'transferencia';
+export type CourseCheckoutPaymentMethod = 'stripe' | 'dlocalgo' | 'mercadopago' | 'transferencia';
 
 export interface CourseCheckoutIntent {
   courseSlug: string;

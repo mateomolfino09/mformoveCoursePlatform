@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import { PlayIcon } from '@heroicons/react/24/solid';
 import Head from 'next/head';
 import MainSideBar from '../../MainSidebar/MainSideBar';
-import FilterNavWrapper from '../../FilterNavWrapper';
 import Footer from '../../Footer';
 import { useAppDispatch } from '../../../redux/hooks';
 import { toggleScroll } from '../../../redux/features/headerLibrarySlice';
@@ -129,10 +128,20 @@ export default function CourseContentHubView({ data, onVideoReady }: Props) {
       : '';
 
   useEffect(() => {
-    const onWindowScroll = () => dispatch(toggleScroll(window.scrollY > 0));
-    onWindowScroll();
-    window.addEventListener('scroll', onWindowScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onWindowScroll);
+    const syncScroll = () => {
+      const y =
+        window.scrollY ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop ||
+        0;
+      dispatch(toggleScroll(y > 0));
+    };
+    syncScroll();
+    window.addEventListener('scroll', syncScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', syncScroll);
+      dispatch(toggleScroll(false));
+    };
   }, [dispatch]);
 
   const [vimeoTokenFetched, setVimeoTokenFetched] = useState(!vimeoId);
@@ -241,9 +250,8 @@ export default function CourseContentHubView({ data, onVideoReady }: Props) {
   }
 
   return (
-    <FilterNavWrapper>
       <div className="relative isolate min-h-screen overflow-x-hidden bg-palette-ink font-montserrat">
-        <MainSideBar where="membership">
+        <MainSideBar where="membership" flowLayout>
           <Head>
             <title>Contenido — {nombre}</title>
             <meta name="description" content={hub.aboutDescription || `Contenido del curso ${nombre}`} />
@@ -483,6 +491,5 @@ export default function CourseContentHubView({ data, onVideoReady }: Props) {
           </section>
         </MainSideBar>
       </div>
-    </FilterNavWrapper>
   );
 }

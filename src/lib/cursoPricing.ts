@@ -63,7 +63,11 @@ export function resolveCursoCheckoutPlans(
   now = new Date()
 ): CursoCheckoutPricingResult {
   const lanzamientoPlans = (cursoConfig.planes?.opcionesPago || []).filter(
-    (p) => p.activo && p.paymentLink
+    (p) =>
+      p.activo &&
+      (Boolean(p.paymentLink?.trim()) ||
+        p.proveedor === 'mercadopago' ||
+        Boolean(p.mercadoPagoPreferenceId))
   );
 
   if (!isCursoEnPreventa(cursoConfig, now)) {
@@ -85,7 +89,13 @@ export function resolveCursoCheckoutPlans(
     };
   }
 
-  const preventaPlans = (preventa.opcionesPago || []).filter((p) => p.activo && p.paymentLink);
+  const preventaPlans = (preventa.opcionesPago || []).filter(
+    (p) =>
+      p.activo &&
+      (Boolean(p.paymentLink?.trim()) ||
+        p.proveedor === 'mercadopago' ||
+        Boolean(p.mercadoPagoPreferenceId))
+  );
   const preventaTierIndex = findPreventaTierIndex(cursoConfig.preciosPreventa, preventa);
 
   const plans =
@@ -96,7 +106,7 @@ export function resolveCursoCheckoutPlans(
           monto: preventa.monto,
           moneda: preventa.moneda || plan.moneda,
           etiqueta: preventa.etiqueta
-            ? `${preventa.etiqueta} — ${plan.proveedor === 'dlocalgo' ? 'cuotas' : 'tarjeta'}`
+            ? `${preventa.etiqueta} — ${plan.proveedor === 'dlocalgo' || plan.proveedor === 'mercadopago' ? 'cuotas' : 'tarjeta'}`
             : plan.etiqueta,
           descripcion: preventa.descripcion || plan.descripcion,
         }));

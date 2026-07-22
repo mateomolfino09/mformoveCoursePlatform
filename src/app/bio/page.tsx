@@ -4,7 +4,7 @@ import connectDB from '../../config/connectDB';
 import Product from '../../models/productModel';
 import { getLatestPublishedCursoPayload } from '../../lib/latestPublishedCurso';
 import LinkInBioConfig from '../../models/linkInBioConfigModel';
-import { buildMentoriaLinkInBioCard } from '../../lib/linkInBioMentoria';
+import { buildMentoriaLinkInBioCards } from '../../lib/linkInBioMentoria';
 import { mapProductsForLinkInBio } from '../../lib/linkInBioProducts';
 
 /** Evita Full Route Cache de Vercel: la bio lee Mongo en cada request. */
@@ -42,8 +42,8 @@ export default async function BioPage() {
     })(),
   ]);
 
-  const mentoriaCard = buildMentoriaLinkInBioCard(bioConfig?.mentoria);
-  const products = mapProductsForLinkInBio(productsRaw, mentoriaCard ? [mentoriaCard] : [], {
+  const mentoriaCards = buildMentoriaLinkInBioCards(bioConfig?.mentoria);
+  const products = mapProductsForLinkInBio(productsRaw, mentoriaCards, {
     featuredCursoSlug: latestCurso?.slug ?? null,
   });
 

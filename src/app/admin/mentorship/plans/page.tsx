@@ -13,7 +13,7 @@ import {
 } from '../../../../lib/resolveMentorshipPaymentOrigin';
 
 interface MentorshipPlanPagoOption {
-  proveedor: 'stripe' | 'dlocalgo';
+  proveedor: 'stripe' | 'dlocalgo' | 'mercadopago';
   etiqueta: string;
   descripcion: string;
   monto: number;
@@ -420,7 +420,7 @@ export default function AdminMentorshipPlansPage() {
                         {/* Links de Pago */}
                         <div>
                           <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                            <h3 className="font-semibold text-[#1A1A1A]">Links de pago (Stripe y dLocal)</h3>
+                            <h3 className="font-semibold text-[#1A1A1A]">Links de pago (Stripe, dLocal y Mercado Pago)</h3>
                             <div className="flex flex-wrap gap-2">
                               <button
                                 type="button"
@@ -462,6 +462,9 @@ export default function AdminMentorshipPlansPage() {
                                 const dlocalOption = price.opcionesPago?.find(
                                   (o) => o.proveedor === 'dlocalgo',
                                 );
+                                const mercadoPagoOption = price.opcionesPago?.find(
+                                  (o) => o.proveedor === 'mercadopago',
+                                );
 
                                 return (
                                   <div key={index} className="bg-[#F7F7F7] p-3 rounded-lg space-y-3">
@@ -480,6 +483,10 @@ export default function AdminMentorshipPlansPage() {
                                     <PaymentLinkField
                                       label="dLocal GO — cuotas locales"
                                       href={dlocalOption?.paymentLink}
+                                    />
+                                    <PaymentLinkField
+                                      label="Mercado Pago — hasta 12 cuotas"
+                                      href={mercadoPagoOption?.paymentLink}
                                     />
                                   </div>
                                 );

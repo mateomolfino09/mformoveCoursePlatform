@@ -41,7 +41,7 @@ const CreateFAQ = () => {
       <div className='h-full w-full relative flex flex-col md:items-center md:justify-center py-8'>
         <div className='w-full flex justify-between items-center mb-8 px-8'>
           <div>
-            <h1 className='text-4xl md:text-5xl font-bold text-gray-900 mb-2 font-montserrat'>Crear una FAQ</h1>
+            <h1 className='text-4xl md:text-5xl font-bold text-gray-900 mb-2 font-montserrat'>Crear una Pregunta frecuente</h1>
             <p className='text-gray-600 text-lg font-montserrat'>Completa la información para crear una nueva pregunta frecuente</p>
           </div>
           <div className='flex items-center space-x-2 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm'>
@@ -92,7 +92,7 @@ const CreateFAQ = () => {
               type='submit'
               className='px-8 py-3 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#4F7CCF] text-white font-semibold rounded-xl hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg font-montserrat'
             >
-              Crear FAQ
+              Crear Preguntas frecuentes
             </button>
           </div>
         </form>

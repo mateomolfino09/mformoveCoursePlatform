@@ -7,6 +7,7 @@ import {
   landingSectionBodyDark,
   landingSectionTitleDark,
 } from '../../../constants/landingSectionDesign';
+import CourseDarkSectionBackground from '../Course/CourseDarkSectionBackground';
 
 const includes = [
   {
@@ -28,12 +29,10 @@ const includes = [
 
 const MentorshipIncludes = () => {
   return (
-    <section className="relative overflow-hidden bg-palette-ink font-montserrat">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-stone/25 to-transparent" />
-      <div className="pointer-events-none absolute -top-32 right-[-20%] h-72 w-72 rounded-full bg-palette-sage/[0.07] blur-3xl" />
-      <div className="pointer-events-none absolute bottom-20 left-[-15%] h-96 w-96 rounded-full bg-palette-stone/[0.06] blur-3xl" />
+    <section className="relative isolate overflow-hidden border-t border-white/10 bg-palette-ink font-montserrat">
+      <CourseDarkSectionBackground />
 
-      <div className="relative mx-auto my-12 md:my-0 w-[92%] max-w-6xl px-3 py-18 sm:px-4 md:py-24">
+      <div className="relative z-20 mx-auto my-12 w-[92%] max-w-6xl px-3 py-18 sm:px-4 md:my-0 md:py-24">
         <motion.div
           className="max-w-3xl"
           initial={{ opacity: 0, y: 14 }}

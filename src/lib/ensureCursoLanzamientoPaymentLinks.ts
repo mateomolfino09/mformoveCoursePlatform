@@ -5,8 +5,13 @@ import {
   createStripeCoursePaymentLink,
 } from '../app/api/payments/stripe/createCourseOneTimePayments';
 import { createCursoDlocalPaymentLink } from './cursoDlocalPaymentLink';
+import { createCursoMercadoPagoPaymentLink } from './cursoMercadoPagoPaymentLink';
 import { buildCursoStripeSuccessUrl } from './cursoPaymentUrls';
 import { coursePaymentWarn } from './coursePaymentDebug';
+import {
+  resolveProveedoresHabilitados,
+  type PaymentProveedor,
+} from '../constants/paymentProveedores';
 
 type ProductLike = {
   _id: { toString(): string } | string;
@@ -22,9 +27,12 @@ type ProductLike = {
 
 function hasPaymentLink(
   opcionesPago: CursoPlanPago[] | undefined,
-  proveedor: 'stripe' | 'dlocalgo'
+  proveedor: PaymentProveedor
 ): boolean {
   const option = (opcionesPago || []).find((o) => o.proveedor === proveedor);
+  if (proveedor === 'mercadopago') {
+    return Boolean(option?.paymentLink?.trim() || option?.mercadoPagoPreferenceId);
+  }
   return Boolean(option?.paymentLink?.trim());
 }
 
@@ -47,8 +55,8 @@ function mergeOpcionesPago(
 }
 
 /**
- * Completa links de lanzamiento (Stripe y dLocal) de forma independiente:
- * solo genera el proveedor que aún no tiene paymentLink.
+ * Completa links de lanzamiento de forma independiente:
+ * solo genera el proveedor habilitado que aún no tiene paymentLink.
  */
 export async function ensureCursoLanzamientoPaymentLinks(
   product: ProductLike,
@@ -57,11 +65,25 @@ export async function ensureCursoLanzamientoPaymentLinks(
   const cursoConfig = product.cursoConfig;
   if (!cursoConfig) return cursoConfig;
 
+  const enabled = resolveProveedoresHabilitados(cursoConfig.planes?.proveedoresHabilitados);
   const opcionesPago = cursoConfig.planes?.opcionesPago;
-  const needsStripe = !hasPaymentLink(opcionesPago, 'stripe');
-  const needsDlocal = !hasPaymentLink(opcionesPago, 'dlocalgo');
+  const needsStripe = enabled.includes('stripe') && !hasPaymentLink(opcionesPago, 'stripe');
+  const needsDlocal = enabled.includes('dlocalgo') && !hasPaymentLink(opcionesPago, 'dlocalgo');
+  const needsMercadoPago =
+    enabled.includes('mercadopago') && !hasPaymentLink(opcionesPago, 'mercadopago');
 
-  if (!needsStripe && !needsDlocal) return cursoConfig;
+  if (!needsStripe && !needsDlocal && !needsMercadoPago) {
+    const pruned = (opcionesPago || []).filter((o) => enabled.includes(o.proveedor));
+    if (pruned.length === (opcionesPago || []).length) return cursoConfig;
+    return {
+      ...cursoConfig,
+      planes: {
+        ...(cursoConfig.planes || {}),
+        proveedoresHabilitados: enabled,
+        opcionesPago: pruned,
+      },
+    };
+  }
 
   const productId =
     typeof product._id === 'string' ? product._id : product._id.toString();
@@ -76,6 +98,7 @@ export async function ensureCursoLanzamientoPaymentLinks(
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || origin;
   const successUrl = buildCursoStripeSuccessUrl(baseUrl, productId);
+  const orderSuffix = Date.now().toString(36);
 
   const pagos: Awaited<ReturnType<typeof createCourseOneTimePayments>> = {
     stripe: {
@@ -88,6 +111,11 @@ export async function ensureCursoLanzamientoPaymentLinks(
       paymentId: undefined,
       paymentLink: undefined,
       merchantCheckoutToken: undefined,
+    },
+    mercadopago: {
+      preferenceId: undefined,
+      externalReference: undefined,
+      paymentLink: undefined,
     },
   };
 
@@ -112,7 +140,7 @@ export async function ensureCursoLanzamientoPaymentLinks(
         precio,
         moneda,
         origin: baseUrl,
-        orderSuffix: Date.now().toString(36),
+        orderSuffix,
       });
       pagos.dlocalgo = {
         orderId: dlocalResult.orderId,
@@ -130,11 +158,45 @@ export async function ensureCursoLanzamientoPaymentLinks(
     }
   }
 
-  const nuevasOpciones = buildCursoOpcionesPago({ precio, moneda, pagos });
+  if (needsMercadoPago) {
+    try {
+      const mpResult = await createCursoMercadoPagoPaymentLink({
+        productId,
+        nombre,
+        descripcion,
+        precio,
+        moneda,
+        origin: baseUrl,
+        orderSuffix,
+      });
+      pagos.mercadopago = {
+        preferenceId: mpResult.preferenceId,
+        externalReference: mpResult.externalReference,
+        paymentLink: mpResult.paymentLink,
+      };
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'No se pudo crear el link de Mercado Pago';
+      coursePaymentWarn('ensure_lanzamiento.mercadopago.failed', {
+        productId,
+        message,
+      });
+    }
+  }
+
+  const nuevasOpciones = buildCursoOpcionesPago({
+    precio,
+    moneda,
+    pagos,
+    proveedores: enabled,
+  });
   const opcionesAMezclar = nuevasOpciones.filter((opcion) => {
     if (opcion.proveedor === 'stripe') return needsStripe;
     if (opcion.proveedor === 'dlocalgo') {
       return needsDlocal && Boolean(opcion.paymentLink?.trim());
+    }
+    if (opcion.proveedor === 'mercadopago') {
+      return needsMercadoPago && Boolean(opcion.paymentLink?.trim() || opcion.mercadoPagoPreferenceId);
     }
     return false;
   });
@@ -145,7 +207,10 @@ export async function ensureCursoLanzamientoPaymentLinks(
     ...cursoConfig,
     planes: {
       ...(cursoConfig.planes || {}),
-      opcionesPago: mergeOpcionesPago(opcionesPago, opcionesAMezclar),
+      proveedoresHabilitados: enabled,
+      opcionesPago: mergeOpcionesPago(opcionesPago, opcionesAMezclar).filter((o) =>
+        enabled.includes(o.proveedor)
+      ),
     },
   };
 }
