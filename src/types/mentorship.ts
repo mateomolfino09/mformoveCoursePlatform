@@ -1,7 +1,7 @@
 export type MentorshipBillingInterval = 'mensual' | 'anual' | 'trimestral';
 
 export type MentorshipPlanPagoOption = {
-  proveedor: 'stripe' | 'dlocalgo';
+  proveedor: 'stripe' | 'dlocalgo' | 'mercadopago';
   etiqueta: string;
   descripcion: string;
   monto: number;
@@ -13,6 +13,9 @@ export type MentorshipPlanPagoOption = {
   dlocalOrderId?: string;
   dlocalPaymentId?: string;
   merchantCheckoutToken?: string;
+  mercadoPagoPreferenceId?: string;
+  mercadoPagoExternalReference?: string;
+  originBase?: string;
 };
 
 export type PlanPrice = {
@@ -31,6 +34,8 @@ export type MentorshipPlan = {
   level: string;
   active: boolean;
   prices: PlanPrice[];
+  /** stripe | dlocalgo | mercadopago */
+  proveedoresHabilitados?: Array<'stripe' | 'dlocalgo' | 'mercadopago'>;
 };
 
 export interface MentorshipProps {

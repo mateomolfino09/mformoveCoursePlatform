@@ -106,7 +106,7 @@ const Success = () => {
     if (!isCurso || !productId || stripeFulfillRequested.current) return;
 
     const providerParam = searchParams.get('provider');
-    if (providerParam === 'dlocalgo') return;
+    if (providerParam === 'dlocalgo' || providerParam === 'mercadopago') return;
 
     const rawSessionId = searchParams.get('session_id')?.trim();
     const sessionId =
@@ -155,6 +155,57 @@ const Success = () => {
   }, [auth.user?._id, isCurso, productId, searchParams]);
 
   useEffect(() => {
+    if (!isCurso || !productId || stripeFulfillRequested.current) return;
+
+    const providerParam = searchParams.get('provider');
+    if (providerParam !== 'mercadopago') return;
+
+    const paymentId =
+      searchParams.get('payment_id')?.trim() ||
+      searchParams.get('collection_id')?.trim() ||
+      searchParams.get('id')?.trim();
+
+    if (!paymentId || paymentId === 'null') return;
+
+    const dedupeKey = `mp-course-complete:${productId}:${paymentId}`;
+    try {
+      if (sessionStorage.getItem(dedupeKey)) return;
+    } catch {
+      /* ignore */
+    }
+
+    stripeFulfillRequested.current = true;
+    const authUserId = auth.user?._id ? String(auth.user._id) : undefined;
+
+    fetch('/api/payments/course/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        provider: 'mercadopago',
+        productId,
+        paymentId,
+        externalReference: searchParams.get('external_reference') || undefined,
+        ...(authUserId ? { userId: authUserId } : {}),
+      }),
+    })
+      .then(async (res) => {
+        if (res.ok || res.status === 409) {
+          try {
+            sessionStorage.setItem(dedupeKey, '1');
+          } catch {
+            /* ignore */
+          }
+        } else {
+          stripeFulfillRequested.current = false;
+        }
+      })
+      .catch(() => {
+        stripeFulfillRequested.current = false;
+      });
+  }, [auth.user?._id, isCurso, productId, searchParams]);
+
+  useEffect(() => {
     if (!isCurso || !productId || preventaCupoRequested.current) return;
 
     const providerParam = searchParams.get('provider');
@@ -167,7 +218,10 @@ const Success = () => {
       searchParams.get('id')?.trim() ||
       undefined;
 
-    if (providerParam === 'dlocalgo' && !sessionIdParam) {
+    if (
+      (providerParam === 'dlocalgo' || providerParam === 'mercadopago') &&
+      !sessionIdParam
+    ) {
       return;
     }
 

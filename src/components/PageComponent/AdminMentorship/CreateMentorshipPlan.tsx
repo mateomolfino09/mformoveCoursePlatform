@@ -29,11 +29,14 @@ const CreateMentorshipPlan = () => {
     name: '',
     price: 0,
     currency: 'USD',
-    interval: 'mensual' as 'mensual' | 'trimestral',
+    interval: 'trimestral' as 'mensual' | 'trimestral',
     description: '',
     features: '',
     level: mentorshipLevels[0].value,
-    active: true
+    active: true,
+    proveedoresHabilitados: ['stripe', 'mercadopago'] as Array<
+      'stripe' | 'dlocalgo' | 'mercadopago'
+    >,
   });
   const [descriptionLength, setDescriptionLength] = useState<number>(0);
   const [selectedLevel, setSelectedLevel] = useState(mentorshipLevels[0]);
@@ -70,15 +73,15 @@ const CreateMentorshipPlan = () => {
         if (data && data.length > 0) {
           const plan = data[0];
           
-          // Obtener el precio trimestral del array de precios
+          // Precio del ciclo corto: preferir trimestral (3 meses); mensual legacy → ×3
           const shortPrice = plan.prices?.find(
-            (p: any) => p.interval === 'mensual' || p.interval === 'trimestral',
+            (p: any) => p.interval === 'trimestral' || p.interval === 'mensual',
           );
-          const shortInterval = shortPrice?.interval === 'trimestral' ? 'trimestral' : 'mensual';
+          const shortInterval = shortPrice?.interval === 'mensual' ? 'mensual' : 'trimestral';
           const rawPrice = shortPrice?.price || plan.price || 0;
           const price =
-            shortInterval === 'trimestral'
-              ? Math.round(Number(rawPrice) / 3)
+            shortInterval === 'mensual'
+              ? Math.round(Number(rawPrice) * 3)
               : Number(rawPrice);
           const currency = shortPrice?.currency || plan.currency || 'USD';
           
@@ -86,11 +89,14 @@ const CreateMentorshipPlan = () => {
             name: plan.name || '',
             price: price,
             currency: currency,
-            interval: shortInterval,
+            interval: 'trimestral',
             description: plan.description || '',
             features: plan.features ? plan.features.join(', ') : '',
             level: plan.level || mentorshipLevels[0].value,
-            active: plan.active !== undefined ? plan.active : true
+            active: plan.active !== undefined ? plan.active : true,
+            proveedoresHabilitados: plan.proveedoresHabilitados?.length
+              ? plan.proveedoresHabilitados
+              : ['stripe', 'mercadopago'],
           });
           setDescriptionLength(plan.description ? plan.description.length : 0);
           const levelObj = mentorshipLevels.find(l => l.value === plan.level);
@@ -142,8 +148,9 @@ const CreateMentorshipPlan = () => {
         description: form.description,
         features: featuresArray,
         level: form.level,
-        priceMensual: form.price,
-        currency: form.currency
+        priceTrimestral: form.price,
+        currency: form.currency,
+        proveedoresHabilitados: form.proveedoresHabilitados,
       };
 
       let response;
@@ -214,6 +221,46 @@ const CreateMentorshipPlan = () => {
               </h2>
               
               <div className='space-y-6'>
+                <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3'>
+                  <p className='text-sm font-medium text-gray-900'>Métodos de pago habilitados</p>
+                  <p className="text-sm text-gray-500">
+                    Por defecto: Stripe + Mercado Pago. Activá dLocal solo si lo necesitás. Podés
+                    cambiarlo cuando quieras.
+                  </p>
+                  <div className='flex flex-wrap gap-4'>
+                    {(
+                      [
+                        { id: 'stripe' as const, label: 'Stripe (internacional)' },
+                        { id: 'mercadopago' as const, label: 'Mercado Pago (Checkout Bricks · 12 cuotas)' },
+                        { id: 'dlocalgo' as const, label: 'dLocal GO (opcional · locales + 12 cuotas)' },
+                      ] as const
+                    ).map((opt) => (
+                      <label
+                        key={opt.id}
+                        className='flex items-center gap-2 text-sm text-gray-900 cursor-pointer'
+                      >
+                        <input
+                          type='checkbox'
+                          className='h-4 w-4 rounded border-gray-300 text-[#4F7CCF] focus:ring-[#4F7CCF]'
+                          checked={form.proveedoresHabilitados.includes(opt.id)}
+                          onChange={(e) => {
+                            setForm((prev) => {
+                              const next = e.target.checked
+                                ? Array.from(new Set([...prev.proveedoresHabilitados, opt.id]))
+                                : prev.proveedoresHabilitados.filter((p) => p !== opt.id);
+                              return {
+                                ...prev,
+                                proveedoresHabilitados: next.length ? next : (['stripe'] as typeof prev.proveedoresHabilitados),
+                              };
+                            });
+                          }}
+                        />
+                        {opt.label}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
                 <label className='flex flex-col space-y-2'>
                   <p className='text-sm font-medium text-gray-700'>Nombre del plan</p>
                   <input
@@ -229,7 +276,7 @@ const CreateMentorshipPlan = () => {
                 
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                   <label className='flex flex-col space-y-2'>
-                    <p className='text-sm font-medium text-gray-700'>Precio mensual (USD)</p>
+                    <p className='text-sm font-medium text-gray-700'>Precio cada 3 meses (USD)</p>
                     <input
                       type='number'
                       name='price'
@@ -259,20 +306,21 @@ const CreateMentorshipPlan = () => {
                   <p className='text-sm font-medium text-gray-700'>Facturación del plan</p>
                   <div className='flex flex-wrap gap-2'>
                     <span className='rounded-full bg-[#4F7CCF]/10 px-3 py-1 text-xs font-semibold text-[#234C8C]'>
-                      Mensual
+                      Trimestral (3 meses)
                     </span>
                     <span className='rounded-full bg-[#4F7CCF]/10 px-3 py-1 text-xs font-semibold text-[#234C8C]'>
                       Anual (−15%)
                     </span>
                   </div>
                   <p className='text-xs text-gray-500 font-montserrat leading-relaxed'>
-                    El precio de arriba es el monto mensual. Al guardar se crean ambos ciclos en Stripe y
-                    los links de pago (Stripe + dLocal).
+                    El precio de arriba es el cobro cada 3 meses. Al guardar se crean ambos ciclos en
+                    Stripe y los links de pago (Stripe + Mercado Pago / dLocal si están habilitados). El
+                    anual se calcula con 15% de descuento sobre 4 trimestres.
                   </p>
-                  {isEditing && form.interval === 'trimestral' ? (
+                  {isEditing && form.interval === 'mensual' ? (
                     <p className='text-xs text-amber-700 font-montserrat leading-relaxed'>
-                      Este plan usa facturación trimestral legacy. Mostramos el equivalente mensual; al
-                      guardar pasará a facturación mensual.
+                      Este plan tenía facturación mensual legacy. Al guardar pasará a trimestral +
+                      anual.
                     </p>
                   ) : null}
                 </div>

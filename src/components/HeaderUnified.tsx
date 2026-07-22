@@ -115,16 +115,16 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	const scrolled = isPaymentSuccess ? isScrolled : (isScrolled || headerScroll);
 
 	// Usar useRef para evitar que el efecto se ejecute constantemente
-	const isCursoLandingRef = useRef(isCursoLanding);
+	const isCursoCommercialLandingRef = useRef(isCursoCommercialLanding);
 	const isMembershipLandingRef = useRef(isMembershipLanding);
 	const pathRef = useRef(path);
 
 	// Actualizar refs cuando cambian
 	useEffect(() => {
-		isCursoLandingRef.current = isCursoLanding;
+		isCursoCommercialLandingRef.current = isCursoCommercialLanding;
 		isMembershipLandingRef.current = isMembershipLanding;
 		pathRef.current = path;
-	}, [isCursoLanding, isMembershipLanding, path]);
+	}, [isCursoCommercialLanding, isMembershipLanding, path]);
 
 	// Tracking de coherencia (Camino) para el avatar cuando hay sesión
 	useEffect(() => {
@@ -215,7 +215,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 		let landingScrollTimeout: ReturnType<typeof setTimeout> | null = null;
 
 		const handleCourseScroll = (event: Event) => {
-			if (!isCursoLandingRef.current) return;
+			// Solo landing comercial del curso (no hub /contenido ni clase)
+			if (!isCursoCommercialLandingRef.current) return;
 			const detail = (event as CustomEvent).detail;
 			const scrollTop = detail?.scrollTop ?? 0;
 			const isAtTop = scrollTop === 0;
@@ -357,9 +358,12 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
     if (isInfoLight && scrolled) {
         headerBgClass = 'bg-white/90 backdrop-blur-sm';
     }
-    // Solo en página de módulo (/biblioteca/modulo/xxx) o hub de curso (/slug/contenido), cuando hay scroll: fondo blanco y texto negro. En práctica (video) el header siempre transparente.
-    if ((isLibraryModulePage && !isLibraryPracticePage && scrolled) || (isCursoContenidoHub && scrolled)) {
+    // Solo en página de módulo (/biblioteca/modulo/xxx) o hub de curso (/slug/contenido), cuando hay scroll: fondo opaco y texto negro. En práctica (video) el header siempre transparente.
+    if (isLibraryModulePage && !isLibraryPracticePage && scrolled) {
         headerBgClass = 'bg-white backdrop-blur-sm';
+    }
+    if (isCursoContenidoHub && scrolled) {
+        headerBgClass = 'bg-palette-cream';
     }
     // Resto de library (/biblioteca, /biblioteca/clases-individuales...) al hacer scroll: fondo crema
     if (isLibraryArea && !isLibraryModulePage && scrolled) {

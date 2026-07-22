@@ -399,6 +399,14 @@ export async function POST(req) {
       if (tipo === 'curso') {
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
         const successUrl = buildCursoStripeSuccessUrl(baseUrl, product._id.toString());
+        const { resolveProveedoresHabilitados, DEFAULT_PAYMENT_PROVEEDORES } = await import(
+          '../../../../constants/paymentProveedores'
+        );
+        const proveedores = resolveProveedoresHabilitados(
+          cursoConfigParaGuardar?.planes?.proveedoresHabilitados?.length
+            ? cursoConfigParaGuardar.planes.proveedoresHabilitados
+            : DEFAULT_PAYMENT_PROVEEDORES
+        );
 
         const pagosUnicos = await createCourseOneTimePayments({
           productId: product._id.toString(),
@@ -409,6 +417,7 @@ export async function POST(req) {
           portadaUrl: cursoPortadaCheckout,
           successUrl,
           origin: baseUrl,
+          proveedores,
         });
 
         product.stripeProductId = pagosUnicos.stripe.productId;
@@ -417,6 +426,7 @@ export async function POST(req) {
           precio,
           moneda,
           pagos: pagosUnicos,
+          proveedores,
         });
         const existingCfg =
           product.cursoConfig?.toObject?.() ?? product.cursoConfig ?? {};
@@ -435,6 +445,7 @@ export async function POST(req) {
           planes: {
             ...(baseCfg.planes || {}),
             ...(existingCfg.planes || {}),
+            proveedoresHabilitados: proveedores,
             opcionesPago,
           },
         });
@@ -448,6 +459,7 @@ export async function POST(req) {
             successUrl,
             origin: baseUrl,
             preciosPreventa: product.cursoConfig.preciosPreventa,
+            proveedores,
           });
         }
 

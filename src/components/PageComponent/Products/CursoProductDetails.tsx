@@ -503,9 +503,9 @@ export default function CursoProductDetails({
         ) : (
           <InfoModalField label="WhatsApp" value="—" showBorder={false} />
         )}
-        <InfoModalField label="FAQ título" value={cursoConfig.faq.titulo || '—'} showBorder={false} />
-        <InfoModalField label="FAQ ancla" value={cursoConfig.faq.anclaId || '—'} showBorder={false} />
-        <InfoModalField label="FAQ intro" value={cursoConfig.faq.intro || '—'} showBorder={false} />
+        <InfoModalField label="Preguntas frecuentes título" value={cursoConfig.faq.titulo || '—'} showBorder={false} />
+        <InfoModalField label="Preguntas frecuentes ancla" value={cursoConfig.faq.anclaId || '—'} showBorder={false} />
+        <InfoModalField label="Preguntas frecuentes intro" value={cursoConfig.faq.intro || '—'} showBorder={false} />
         <p className="text-sm font-medium text-gray-700 mt-4">Preguntas frecuentes ({cursoConfig.faq.items.length})</p>
         {cursoConfig.faq.items.map((item, index) => (
           <div key={`faq-${index}`} className="rounded-lg border border-gray-200 p-3 mt-2">

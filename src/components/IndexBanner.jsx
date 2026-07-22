@@ -15,7 +15,7 @@ import ShimmerBox from './ShimmerBox';
 import { routes } from '../constants/routes';
 import { MENTORSHIP_APPLY_CTA } from '../constants/mentorshipCta';
 import { useAuth } from '../hooks/useAuth';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import { ArrowRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 
 
 function Banner({ onVideoLoaded }) {
@@ -270,21 +270,22 @@ function Banner({ onVideoLoaded }) {
   return (
     <>
     
-    {/* Título animado con palabras cambiantes */}
+    {/* Título a ~1/4 de pantalla (más presencia) */}
     <div 
-      className='fixed top-1/3 left-1/2 w-full px-3 md:px-32 md:pt-24 -translate-x-1/2 -translate-y-1/2 z-[100] text-white text-start pointer-events-none flex mt-12 flex-col items-start gap-5'
+      className='fixed top-[22%] left-1/2 z-[100] flex w-full max-w-[100vw] -translate-x-1/2 flex-col items-stretch gap-2.5 px-4 pointer-events-none text-start text-white md:top-[28%] md:items-start md:gap-4 md:px-32'
       style={{ 
         opacity: textOpacity,
         transition: 'opacity 0.3s ease-out'
       }}
     >
-      {/* Texto pequeño arriba */}
-      <p className='text-base md:text-lg font-light tracking-wider opacity-80 uppercase'>
+      <p className='text-sm font-light uppercase tracking-[0.2em] text-white/90 md:text-lg md:tracking-wider'>
         Academia de movimiento
       </p>
       
-      {/* Título principal con letra más gruesa y sombra */}
-      <h1 className='text-7xl md:text-[7rem] font-semibold tracking-wide' style={{ textShadow: '0 2px 12px rgba(0, 0, 0, 0.2), 0 1px 6px rgba(0, 0, 0, 0.3)' }}>
+      <h1
+        className='text-[3.1rem] font-bold leading-[1.02] tracking-wide sm:text-6xl md:text-[7rem] md:font-semibold'
+        style={{ textShadow: '0 2px 20px rgba(0, 0, 0, 0.45), 0 1px 8px rgba(0, 0, 0, 0.35)' }}
+      >
         <span className='inline-block'>
           <AnimatePresence mode="wait" initial={false}>
             {words.map((word, index) => {
@@ -296,7 +297,6 @@ function Banner({ onVideoLoaded }) {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={index === 2 ? 
-                    // Efecto simple pero impactante para "Sentite": desvanecimiento rápido con movimiento
                     { 
                       opacity: [1, 0.5, 0],
                       y: -40,
@@ -307,7 +307,6 @@ function Banner({ onVideoLoaded }) {
                         ease: "easeIn"
                       }
                     } : 
-                    // Animación normal para otras palabras
                     { 
                       opacity: 0, 
                       y: -20,
@@ -325,23 +324,51 @@ function Banner({ onVideoLoaded }) {
         </span>
         <span className='ml-2'>mejor</span>
       </h1>
-      
-      {/* Botones */}
-      <div className='flex flex-row sm:flex-row gap-4 !pt-32 pointer-events-auto'>
+    </div>
+
+    {/* Botones debajo del título */}
+    <div
+      className='pointer-events-none fixed left-1/2 top-[42%] z-[100] w-full max-w-[100vw] -translate-x-1/2 px-4 md:top-[52%] md:px-32'
+      style={{
+        opacity: textOpacity,
+        transition: 'opacity 0.3s ease-out',
+      }}
+    >
+      <div className='pointer-events-auto flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:items-center md:gap-4'>
         <Link 
           href={primaryCta.href}
-          className='px-8 py-3 bg-white text-black rounded-full font-medium text-sm md:text-base hover:bg-gray-100 transition-all duration-300 transform hover:scale-105'
+          className='inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3.5 text-center text-sm font-semibold text-black shadow-[0_8px_24px_-8px_rgba(0,0,0,0.45)] transition-all duration-300 hover:bg-gray-100 active:scale-[0.98] sm:w-auto sm:px-8 md:py-3 md:text-base md:font-medium'
         >
           {cursoLoading ? '…' : primaryCta.label}
         </Link>
         <Link 
           href={auth.user ? routes.user.perfil : routes.user.login}
-          className='px-8 py-3 border-2 border-white text-white rounded-full font-medium text-sm md:text-base hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-105 flex items-center gap-2'
+          className='inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white bg-black/20 px-5 py-3.5 text-center text-sm font-semibold text-white backdrop-blur-[2px] transition-all duration-300 hover:bg-white hover:text-black active:scale-[0.98] sm:w-auto sm:px-8 md:py-3 md:text-base md:font-medium'
         >
           {auth.user ? 'Mi Perfil' : 'Iniciar Sesión'}
-          <ArrowRightIcon className='w-5 h-5' />
+          <ArrowRightIcon className='h-4 w-4 shrink-0 md:h-5 md:w-5' />
         </Link>
       </div>
+    </div>
+
+    {/* Señal de scroll — solo mobile */}
+    <div
+      className='pointer-events-none fixed inset-x-0 bottom-5 z-[100] flex flex-col items-center gap-1 md:hidden'
+      style={{
+        opacity: textOpacity > 0.15 ? textOpacity : 0,
+        transition: 'opacity 0.3s ease-out',
+      }}
+      aria-hidden
+    >
+      <span className='font-montserrat text-[10px] font-medium uppercase tracking-[0.28em] text-white/75'>
+        Deslizá
+      </span>
+      <m.div
+        animate={{ y: [0, 6, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <ChevronDownIcon className='h-5 w-5 text-white/80' strokeWidth={2} />
+      </m.div>
     </div>
     
     <div className='flex flex-col relative' style={{ minHeight: 'calc(100vh + 400px)' }}>

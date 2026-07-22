@@ -7,10 +7,11 @@ import {
   resolveMentorshipPaymentOrigin,
 } from '../../../../lib/resolveMentorshipPaymentOrigin';
 import {
-  resolveMentorshipShortInterval,
+  resolveMentorshipDefaultInterval,
   resolveMentorshipToggleIntervals,
   type MentorshipBillingInterval,
 } from '../../../../lib/mentorshipPricing';
+import { resolveProveedoresHabilitados } from '../../../../constants/paymentProveedores';
 
 function plainPriceEntry(entry: unknown) {
   if (!entry || typeof entry !== 'object') return null;
@@ -84,15 +85,11 @@ export async function GET(req: NextRequest) {
 
     const availableIntervals = resolveMentorshipToggleIntervals(planPrices);
 
-    const defaultShort = resolveMentorshipShortInterval(planPrices);
-
     let interval: MentorshipBillingInterval | null = null;
-    if (preferredInterval) {
+    if (preferredInterval && availableIntervals.includes(preferredInterval)) {
       interval = preferredInterval;
-    } else if (defaultShort) {
-      interval = defaultShort;
-    } else if (availableIntervals.includes('anual')) {
-      interval = 'anual';
+    } else {
+      interval = resolveMentorshipDefaultInterval(planPrices);
     }
 
     if (!interval || !availableIntervals.includes(interval)) {
@@ -117,18 +114,39 @@ export async function GET(req: NextRequest) {
       planPrices.some((p) => !hasActivePaymentLinks(p.opcionesPago)) ||
       mentorshipPricesHaveStaleLinks(planPrices, origin);
 
-    if (needsLinks) {
-      prices = await ensureMentorshipPlanPaymentLinks(
-        {
-          _id: plan._id,
-          name: plan.name,
-          description: plan.description,
-          level: plan.level,
-          prices: planPrices,
-        },
-        origin,
-      );
-      await MentorshipPlan.findByIdAndUpdate(plan._id, { prices });
+    const proveedoresHabilitados = resolveProveedoresHabilitados(
+      plan.proveedoresHabilitados?.length
+        ? plan.proveedoresHabilitados
+        : planPrices.some((p) =>
+            (p.opcionesPago || []).some((o: { proveedor?: string }) => o.proveedor === 'mercadopago'),
+          )
+          ? ['stripe', 'mercadopago']
+          : null,
+    );
+
+    // Siempre corre ensure: genera faltantes y elimina proveedores deshabilitados.
+    prices = await ensureMentorshipPlanPaymentLinks(
+      {
+        _id: plan._id,
+        name: plan.name,
+        description: plan.description,
+        level: plan.level,
+        prices: planPrices,
+        proveedoresHabilitados,
+      },
+      origin,
+      { forceRegenerate: false },
+    );
+
+    const pricesChanged =
+      needsLinks || JSON.stringify(prices) !== JSON.stringify(planPrices);
+    if (pricesChanged) {
+      await MentorshipPlan.findByIdAndUpdate(plan._id, {
+        prices,
+        ...(plan.proveedoresHabilitados?.length
+          ? {}
+          : { proveedoresHabilitados }),
+      });
     }
 
     const resolvedPrice = prices.find((p) => p.interval === interval);
@@ -148,6 +166,10 @@ export async function GET(req: NextRequest) {
         features: plan.features,
         level: plan.level,
         active: plan.active,
+        proveedoresHabilitados:
+          plan.proveedoresHabilitados?.length > 0
+            ? plan.proveedoresHabilitados
+            : proveedoresHabilitados,
       },
       interval,
       availableIntervals,
@@ -157,7 +179,11 @@ export async function GET(req: NextRequest) {
         currency: resolvedPrice.currency,
         stripePriceId: resolvedPrice.stripePriceId,
       },
-      opcionesPago: resolvedPrice.opcionesPago || [],
+      opcionesPago: (resolvedPrice.opcionesPago || []).filter((o: { proveedor?: string }) =>
+        proveedoresHabilitados.includes(
+          o.proveedor as 'stripe' | 'dlocalgo' | 'mercadopago',
+        ),
+      ),
     });
   } catch (error) {
     console.error('Error en checkout de mentoría:', error);

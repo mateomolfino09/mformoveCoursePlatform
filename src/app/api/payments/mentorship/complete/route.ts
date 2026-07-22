@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '../../../../../config/connectDB';
 import dLocalApi from '../../dlocalConfig';
+import mercadoPagoApi, { isMercadoPagoPaidStatus } from '../../mercadoPagoConfig';
 import { stripe } from '../../stripe/stripeConfig';
 import User from '../../../../../models/userModel';
 import {
@@ -9,6 +10,7 @@ import {
   coursePaymentWarn,
 } from '../../../../../lib/coursePaymentDebug';
 import { resolveMentorshipPlanFromDlocalOrderId } from '../../../../../lib/resolveMentorshipDlocalOrderId';
+import { resolveMentorshipPlanFromMercadoPagoExternalRef } from '../../../../../lib/resolveMentorshipMercadoPagoExternalRef';
 import { resolveAuthUserIdFromCookies } from '../../../../../lib/resolveAuthUserIdFromCookies';
 import { fulfillMentorshipPurchase } from '../fulfillMentorshipPurchase';
 import { normalizeDlocalPaymentId } from '../../../../../lib/normalizeDlocalPaymentId';
@@ -24,7 +26,7 @@ export async function POST(req: NextRequest) {
     await connectDB();
 
     const body = await req.json();
-    const provider = body?.provider as 'stripe' | 'dlocalgo' | undefined;
+    const provider = body?.provider as 'stripe' | 'dlocalgo' | 'mercadopago' | undefined;
     const planId = body?.planId as string | undefined;
     const interval = body?.interval as string | undefined;
     const userId =
@@ -152,6 +154,76 @@ export async function POST(req: NextRequest) {
       });
 
       coursePaymentDebug('mentorship.complete.dlocal.done', {
+        planId: resolvedPlanId,
+        alreadyProcessed: result.alreadyProcessed,
+        userId: result.userId,
+        elapsedMs: Date.now() - startedAt,
+      });
+
+      return NextResponse.json({ success: true, ...result }, { status: 200 });
+    }
+
+    if (provider === 'mercadopago') {
+      const paymentId =
+        (body?.paymentId as string | undefined) ||
+        (body?.collectionId as string | undefined);
+      const externalReference = body?.externalReference as string | undefined;
+
+      if (!paymentId) {
+        return NextResponse.json(
+          { error: 'paymentId requerido para Mercado Pago' },
+          { status: 400 },
+        );
+      }
+
+      const paymentResponse = await mercadoPagoApi.get(`/v1/payments/${paymentId}`);
+      const payment = paymentResponse.data as {
+        id?: string | number;
+        status?: string;
+        external_reference?: string;
+        transaction_amount?: number;
+        currency_id?: string;
+        payer?: { email?: string };
+        metadata?: { planId?: string; interval?: string; userId?: string };
+      };
+
+      if (!isMercadoPagoPaidStatus(payment?.status)) {
+        coursePaymentWarn('mentorship.complete.mercadopago.not_paid', {
+          status: payment?.status,
+        });
+        return NextResponse.json(
+          { error: 'El pago de Mercado Pago no está confirmado' },
+          { status: 409 },
+        );
+      }
+
+      const fromRef = resolveMentorshipPlanFromMercadoPagoExternalRef(
+        payment?.external_reference || externalReference,
+      );
+      const resolvedPlanId = planId || payment?.metadata?.planId || fromRef.planId;
+      const resolvedInterval =
+        interval || payment?.metadata?.interval || fromRef.interval;
+
+      if (!resolvedPlanId || !resolvedInterval) {
+        return NextResponse.json(
+          { error: 'No se pudo resolver el plan de mentoría' },
+          { status: 422 },
+        );
+      }
+
+      const result = await fulfillMentorshipPurchase({
+        planId: resolvedPlanId,
+        interval: resolvedInterval,
+        provider: 'mercadopago',
+        transactionId: String(payment?.id || paymentId),
+        email: payment?.payer?.email,
+        userId: userId || payment?.metadata?.userId,
+        orderId: payment?.external_reference || externalReference,
+        amount: payment?.transaction_amount,
+        moneda: payment?.currency_id,
+      });
+
+      coursePaymentDebug('mentorship.complete.mercadopago.done', {
         planId: resolvedPlanId,
         alreadyProcessed: result.alreadyProcessed,
         userId: result.userId,

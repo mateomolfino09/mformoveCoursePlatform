@@ -126,7 +126,7 @@ export default function MentorshipCompletarPagoPage() {
             </Link>
           ) : null}
           <Link
-            href="/mentoria/empezar?interval=mensual"
+            href="/mentoria/empezar?interval=anual"
             className="text-sm font-medium text-palette-sage underline underline-offset-4"
           >
             Volver al checkout

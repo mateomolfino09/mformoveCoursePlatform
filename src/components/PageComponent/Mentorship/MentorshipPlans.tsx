@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useMentorshipAnalytics } from '../../../hooks/useMentorshipAnalytics';
 import { useAuth } from '../../../hooks/useAuth';
@@ -10,18 +10,17 @@ import { MentorshipProps } from '../../../types/mentorship';
 import PremiumMentorshipCards from './PremiumMentorshipCards';
 import { saveRedirectUrl } from '../../../utils/redirectQueue';
 import {
-  resolveMentorshipShortInterval,
+  resolveMentorshipDefaultInterval,
   type MentorshipBillingInterval,
 } from '../../../lib/mentorshipPricing';
 import { MENTORSHIP_START_CTA } from '../../../constants/mentorshipCta';
 import MentorshipApplyLink from './MentorshipApplyLink';
 import {
   landingEyebrow,
-  landingFadeUp,
-  landingHeaderBlock,
   landingSectionBody,
   landingSectionTitle,
 } from '../../../constants/landingSectionDesign';
+import state from '../../../valtio';
 
 type MentorshipPlan = MentorshipProps['plans'][number];
 
@@ -32,19 +31,23 @@ const MentorshipPlans = ({ plans }: MentorshipProps) => {
   const router = useRouter();
 
   const defaultInterval = useMemo(
-    () => resolveMentorshipShortInterval(plans[0]?.prices) ?? 'mensual',
+    () => resolveMentorshipDefaultInterval(plans[0]?.prices) ?? 'trimestral',
     [plans],
   );
 
   const [interval, setInterval] = useState<MentorshipBillingInterval>(defaultInterval);
+
+  useEffect(() => {
+    setInterval(defaultInterval);
+  }, [defaultInterval]);
 
   const handlePlanSelect = async (plan: MentorshipPlan) => {
     if (!auth.user) {
       if (typeof window !== 'undefined') {
         saveRedirectUrl(MENTORSHIP_START_CTA.href(interval));
       }
-      toast.error('Debes iniciar sesión para continuar');
-      router.push('/iniciar-sesion');
+      state.authModalMode = 'register';
+      state.loginForm = true;
       return;
     }
 
@@ -77,13 +80,6 @@ const MentorshipPlans = ({ plans }: MentorshipProps) => {
             Elegí el plan que mejor acompañe tu proceso
 
           </h2>
-          <p className={landingSectionBody}>
-            Si ya aplicaste, elegí tu modalidad y empezá acá. Si es tu primera vez,{' '}
-            <MentorshipApplyLink className="font-medium underline decoration-palette-ink/25 underline-offset-[3px] hover:decoration-palette-sage">
-              aplicá a mentoría
-            </MentorshipApplyLink>{' '}
-            antes de pagar.
-          </p>
         </motion.div>
 
         <div className="[perspective:1200px]">

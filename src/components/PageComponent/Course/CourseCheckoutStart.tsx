@@ -24,6 +24,13 @@ import {
 } from '../../../utils/redirectQueue';
 import { savePendingPreventaRedemption } from '../../../utils/cursoPreventaCheckoutStorage';
 import type { DlocalLocalizedAmount } from '../../../lib/dlocalLocalCurrency';
+import dynamic from 'next/dynamic';
+import { scrollMercadoPagoPanelIntoView } from '../../../lib/scrollMercadoPagoPanel';
+
+const MercadoPagoPaymentBrick = dynamic(
+  () => import('../Payments/MercadoPagoPaymentBrick'),
+  { ssr: false }
+);
 
 type DlocalQuoteResponse = DlocalLocalizedAmount & {
   countrySource?: 'profile' | 'geo' | null;
@@ -38,7 +45,7 @@ type CourseCheckoutStartProps = {
   preventaTierIndex?: number | null;
 };
 
-type PaymentMethodId = 'stripe' | 'dlocalgo' | 'transferencia';
+type PaymentMethodId = 'stripe' | 'dlocalgo' | 'mercadopago' | 'transferencia';
 
 const TRANSFER_EMAIL_COOLDOWN_MS = 30_000;
 
@@ -127,6 +134,12 @@ const DlocalLogo = () => (
   />
 );
 
+const MercadoPagoLogo = () => (
+  <span className="font-montserrat text-sm font-bold tracking-tight text-[#009EE3]">
+    Mercado Pago
+  </span>
+);
+
 const BankIcon = () => (
   <motion.div
     className="flex h-10 w-10 items-center justify-center rounded-xl bg-palette-ink text-palette-cream"
@@ -200,7 +213,20 @@ export default function CourseCheckoutStart({
   const [transferCooldownTick, setTransferCooldownTick] = useState(0);
   const [dlocalQuote, setDlocalQuote] = useState<DlocalQuoteResponse | null>(null);
   const [dlocalQuoteLoading, setDlocalQuoteLoading] = useState(false);
+  const [mpPreferenceId, setMpPreferenceId] = useState<string | null>(null);
+  const [mpBrickAmount, setMpBrickAmount] = useState<number | null>(null);
+  const [mpBrickCurrency, setMpBrickCurrency] = useState<string | null>(null);
+  const [mpBrickLoading, setMpBrickLoading] = useState(false);
+  const mpPanelRef = useRef<HTMLDivElement | null>(null);
   const pendingCheckoutRan = useRef(false);
+
+  useEffect(() => {
+    if (selectedMethod !== 'mercadopago') return;
+    const id = window.setTimeout(() => {
+      scrollMercadoPagoPanelIntoView(mpPanelRef.current);
+    }, 50);
+    return () => window.clearTimeout(id);
+  }, [selectedMethod, mpBrickLoading]);
 
   const profileCountry = (auth.user as { country?: string } | null)?.country?.trim() || '';
   const payerCountry =
@@ -209,8 +235,9 @@ export default function CourseCheckoutStart({
 
   const stripePlan = checkoutPlans.find((plan) => plan.proveedor === 'stripe');
   const dlocalPlan = checkoutPlans.find((plan) => plan.proveedor === 'dlocalgo');
+  const mercadoPagoPlan = checkoutPlans.find((plan) => plan.proveedor === 'mercadopago');
 
-  const displayPrice = stripePlan || dlocalPlan || checkoutPlans[0];
+  const displayPrice = stripePlan || dlocalPlan || mercadoPagoPlan || checkoutPlans[0];
   const transferEmail = cursoConfig.planes.emailSinPlanes || 'info@mateomove.com';
 
   useEffect(() => {
@@ -287,43 +314,65 @@ export default function CourseCheckoutStart({
   ]);
 
   const paymentMethods = useMemo<PaymentMethodOption[]>(
-    () => [
-      {
-        id: 'stripe',
-        title: 'Stripe',
-        subtitle: 'Pagos internacionales / International Payments',
-        description:
-          stripePlan?.descripcion ||
-          'Pago internacional en USD con tarjetas, Apple Pay y Google Pay.',
-        methods: ['Visa', 'Mastercard', 'Amex', 'Apple Pay', 'Google Pay'],
-        plan: stripePlan,
-        available: Boolean(stripePlan?.activo && stripePlan?.paymentLink),
-        unavailableLabel: 'No disponible para este curso en este momento',
-      },
-      {
-        id: 'dlocalgo',
-        title: 'dLocal GO',
-        subtitle: 'Pagos locales / Local Payments',
-        description:
-          dlocalPlan?.descripcion ||
-          'Pago en moneda local para Uruguay y Latinoamérica, con cuotas en tarjeta.',
-        methods: ['Tarjetas locales', 'Débito', 'Crédito', 'Hasta 12 cuotas'],
-        plan: dlocalPlan,
-        available: Boolean(dlocalPlan && dlocalPlan.activo !== false),
-        unavailableLabel: 'No disponible para este curso en este momento',
-      },
-      {
-        id: 'transferencia',
-        title: 'Transferencia bancaria',
-        subtitle: 'Transferencia local / Local bank transfer',
-        description:
-          'Tocá el botón de abajo y te enviamos los datos bancarios a tu email. Después transferís y nos mandás el comprobante.',
-        methods: ['Itaú Uruguay', 'Pesos y dólares', 'Datos por email'],
-        available: true,
-        unavailableLabel: '',
-      },
-    ],
-    [dlocalPlan, stripePlan]
+    () => {
+      const enabled = resolveProveedoresHabilitados(
+        cursoConfig.planes?.proveedoresHabilitados
+      );
+      return (
+        [
+          {
+            id: 'stripe' as const,
+            title: 'Stripe',
+            subtitle: 'Pagos internacionales / International Payments',
+            description:
+              stripePlan?.descripcion ||
+              'Pago internacional en USD con tarjetas, Apple Pay y Google Pay.',
+            methods: ['Visa', 'Mastercard', 'Amex', 'Apple Pay', 'Google Pay'],
+            plan: stripePlan,
+            available: Boolean(stripePlan?.activo && stripePlan?.paymentLink),
+            unavailableLabel: 'No disponible para este curso en este momento',
+          },
+          {
+            id: 'mercadopago' as const,
+            title: 'Mercado Pago',
+            subtitle: 'Checkout Bricks · Hasta 12 cuotas',
+            description:
+              mercadoPagoPlan?.descripcion ||
+              'Completá el pago con Mercado Pago. Tarjetas y hasta 12 cuotas.',
+            methods: ['Mercado Pago', 'Tarjetas', 'Hasta 12 cuotas'],
+            plan: mercadoPagoPlan,
+            available: Boolean(mercadoPagoPlan && mercadoPagoPlan.activo !== false),
+            unavailableLabel: 'No disponible para este curso en este momento',
+          },
+          {
+            id: 'dlocalgo' as const,
+            title: 'dLocal GO',
+            subtitle: 'Pagos locales / Local Payments',
+            description:
+              dlocalPlan?.descripcion ||
+              'Pago en moneda local para Uruguay y Latinoamérica, con cuotas en tarjeta.',
+            methods: ['Tarjetas locales', 'Débito', 'Crédito', 'Hasta 12 cuotas'],
+            plan: dlocalPlan,
+            available: Boolean(dlocalPlan && dlocalPlan.activo !== false),
+            unavailableLabel: 'No disponible para este curso en este momento',
+          },
+          {
+            id: 'transferencia' as const,
+            title: 'Transferencia bancaria',
+            subtitle: 'Transferencia local / Local bank transfer',
+            description:
+              'Tocá el botón de abajo y te enviamos los datos bancarios a tu email. Después transferís y nos mandás el comprobante.',
+            methods: ['Itaú Uruguay', 'Pesos y dólares', 'Datos por email'],
+            available: true,
+            unavailableLabel: '',
+          },
+        ] as PaymentMethodOption[]
+      ).filter((method) => {
+        if (method.id === 'transferencia') return true;
+        return enabled.includes(method.id as 'stripe' | 'dlocalgo' | 'mercadopago') && method.available;
+      });
+    },
+    [cursoConfig.planes?.proveedoresHabilitados, dlocalPlan, mercadoPagoPlan, stripePlan]
   );
 
   const heroImagePublicId =
@@ -523,12 +572,93 @@ export default function CourseCheckoutStart({
       toast.error(message);
       setLoadingMethod(null);
     }
-  }, [auth.user, pricingModo, preventaTierIndex, productId]);
+  }, [auth.user, pricingModo, preventaTierIndex, productId, profileCountry, geoCountryLabel]);
+
+  const executeMercadoPagoCheckout = useCallback(async () => {
+    if (!productId) {
+      toast.error('No se pudo identificar el curso');
+      setLoadingMethod(null);
+      return;
+    }
+
+    setMpBrickLoading(true);
+    try {
+      const res = await fetch('/api/payments/course/mercadopago-checkout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId,
+          preventaTierIndex:
+            pricingModo === 'preventa' && typeof preventaTierIndex === 'number'
+              ? preventaTierIndex
+              : undefined,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.status === 409) {
+        toast.error(data.error || 'Ya tenés acceso a este curso');
+        return;
+      }
+
+      if (!res.ok || !data.preferenceId) {
+        throw new Error(data.error || 'No se pudo iniciar Mercado Pago');
+      }
+
+      if (
+        pricingModo === 'preventa' &&
+        typeof preventaTierIndex === 'number' &&
+        preventaTierIndex >= 0
+      ) {
+        savePendingPreventaRedemption({
+          productId,
+          preventaTierIndex,
+          createdAt: Date.now(),
+        });
+      }
+
+      setMpPreferenceId(String(data.preferenceId));
+      setMpBrickAmount(Number(data.amount) > 0 ? Number(data.amount) : null);
+      setMpBrickCurrency(data.currency ? String(data.currency) : 'UYU');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al iniciar el pago';
+      toast.error(message);
+      setMpPreferenceId(null);
+      setMpBrickAmount(null);
+      setMpBrickCurrency(null);
+    } finally {
+      setMpBrickLoading(false);
+      setLoadingMethod(null);
+    }
+  }, [pricingModo, preventaTierIndex, productId]);
+
+  useEffect(() => {
+    if (selectedMethod !== 'mercadopago') {
+      setMpPreferenceId(null);
+      setMpBrickAmount(null);
+      setMpBrickCurrency(null);
+      return;
+    }
+    if (!auth.user || !productId) return;
+    executeMercadoPagoCheckout().catch(() => undefined);
+    // Solo al elegir MP o al loguearse / cambiar producto
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedMethod, auth.user?._id, productId, pricingModo, preventaTierIndex]);
 
   const executePaymentLink = useCallback(
     (methodId: PaymentMethodId, paymentLink?: string) => {
       if (methodId === 'dlocalgo') {
         executeDlocalCheckout();
+        return;
+      }
+      if (methodId === 'mercadopago') {
+        if (!auth.user) {
+          queueAuthForCheckout('mercadopago', paymentLink);
+          return;
+        }
+        executeMercadoPagoCheckout();
         return;
       }
 
@@ -559,7 +689,15 @@ export default function CourseCheckoutStart({
       setLoadingMethod(methodId);
       window.location.href = link;
     },
-    [checkoutPlans, executeDlocalCheckout, pricingModo, productId, preventaTierIndex]
+    [
+      auth.user,
+      checkoutPlans,
+      executeDlocalCheckout,
+      executeMercadoPagoCheckout,
+      pricingModo,
+      productId,
+      preventaTierIndex,
+    ]
   );
 
   const resumePendingCheckout = useCallback(
@@ -572,9 +710,13 @@ export default function CourseCheckoutStart({
         await executeDlocalCheckout();
         return;
       }
+      if (intent.selectedMethod === 'mercadopago') {
+        await executeMercadoPagoCheckout();
+        return;
+      }
       executePaymentLink(intent.selectedMethod, intent.paymentLink);
     },
-    [executeDlocalCheckout, executePaymentLink, executeTransferencia]
+    [executeDlocalCheckout, executeMercadoPagoCheckout, executePaymentLink, executeTransferencia]
   );
 
   useEffect(() => {
@@ -629,14 +771,15 @@ export default function CourseCheckoutStart({
   const renderLogo = (id: PaymentMethodId) => {
     if (id === 'stripe') return <StripeLogo />;
     if (id === 'dlocalgo') return <DlocalLogo />;
+    if (id === 'mercadopago') return <MercadoPagoLogo />;
     return <BankIcon />;
   };
 
   return (
     <>
       <section className="relative min-h-screen bg-palette-cream font-montserrat text-palette-ink">
-        <div className="mx-auto grid min-h-screen w-full max-w-7xl grid-cols-1 gap-10 px-5 pb-16 pt-28 md:grid-cols-2 md:items-start md:gap-12 md:px-10 md:pb-20 md:pt-32 lg:gap-16 lg:px-14">
-          <div className="order-2 md:order-1 md:sticky md:top-28 md:self-start">
+        <div className="mx-auto grid min-h-screen w-full max-w-7xl grid-cols-1 gap-8 px-0 pb-16 pt-28 md:grid-cols-2 md:items-start md:gap-12 md:px-10 md:pb-20 md:pt-32 lg:gap-16 lg:px-14">
+          <div className="order-2 px-5 md:order-1 md:sticky md:top-28 md:self-start md:px-0">
             <h1 className="mb-2 font-montserrat text-[clamp(2rem,5vw,3.35rem)] font-bold leading-[1.02] tracking-[-0.03em] text-palette-ink">
               {productName}
             </h1>
@@ -651,7 +794,7 @@ export default function CourseCheckoutStart({
               </div>
             ) : null}
             <p className="mb-6 max-w-xl font-raleway text-base leading-relaxed text-palette-stone md:text-lg">
-              Elegí un método de pago. Podes pagar con tarjetas internacionales, transferencia bancaria o en moneda local hasta 12 cuotas. 
+              Elegí un método de pago. Con Mercado Pago completás el pago acá mismo (hasta 12 cuotas). También podés usar Stripe o transferencia. 
             </p>
 
             <div className="space-y-1" role="radiogroup" aria-label="Métodos de pago">
@@ -776,6 +919,27 @@ export default function CourseCheckoutStart({
                                     </p>
                                   ) : null}
 
+                                  {method.id === 'mercadopago' ? (
+                                    <p className="mt-3 font-raleway text-sm text-palette-stone">
+                                      El formulario de pago se abre arriba.
+                                      {mpBrickAmount ? (
+                                        <>
+                                          {' '}
+                                          Total:{' '}
+                                          <span className="font-semibold text-palette-ink">
+                                            ${' '}
+                                            {mpBrickAmount.toLocaleString('es-UY', {
+                                              maximumFractionDigits: 0,
+                                            })}{' '}
+                                            {mpBrickCurrency || 'UYU'}
+                                          </span>
+                                        </>
+                                      ) : mpBrickLoading ? (
+                                        <> Calculando monto en pesos…</>
+                                      ) : null}
+                                    </p>
+                                  ) : null}
+
                                   {isDisabled ? (
                                     <p className="mt-3 text-left font-raleway text-sm text-palette-stone">
                                       {method.unavailableLabel}
@@ -800,9 +964,12 @@ export default function CourseCheckoutStart({
               disabled={
                 !selectedMethod ||
                 loadingMethod !== null ||
+                selectedMethod === 'mercadopago' ||
                 (selectedMethod === 'transferencia' && transferCooldownRemainingSec > 0)
               }
-              className="mt-8 inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3.5 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-cream transition-all duration-200 hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink disabled:cursor-not-allowed disabled:opacity-50"
+              className={`mt-8 inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3.5 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-cream transition-all duration-200 hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink disabled:cursor-not-allowed disabled:opacity-50 ${
+                selectedMethod === 'mercadopago' ? 'hidden' : ''
+              }`}
             >
               {loadingMethod ? (
                 <>
@@ -817,26 +984,108 @@ export default function CourseCheckoutStart({
                 <span>Empezar AHORA</span>
               )}
             </button>
+            {selectedMethod === 'mercadopago' && !auth.user ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setLoadingMethod('mercadopago');
+                  queueAuthForCheckout('mercadopago', mercadoPagoPlan?.paymentLink);
+                }}
+                className="mt-8 inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3.5 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-cream transition-all duration-200 hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink"
+              >
+                <span>Iniciar sesión para pagar</span>
+              </button>
+            ) : null}
           </div>
 
           <div className="order-1 md:order-2">
-            <motion.div className="relative mx-auto aspect-[4/5] w-full max-w-xl overflow-hidden rounded-[1.75rem] border border-palette-stone/20 bg-palette-stone/10 shadow-[0_24px_64px_-28px_rgba(20,20,17,0.28)] md:aspect-[3/4] md:max-w-none">
-              {heroImagePublicId ? (
-                <CldImage
-                  src={heroImagePublicId}
-                  alt={productName}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 90vw, 42vw"
-                  loader={imageLoader}
-                  priority
-                />
-              ) : (
-                <motion.div className="flex h-full items-center justify-center px-6 text-center font-raleway text-palette-stone">
-                  Imagen del curso no disponible.
-                </motion.div>
-              )}
-            </motion.div>
+            {selectedMethod === 'mercadopago' ? (
+              <div
+                ref={mpPanelRef}
+                id="mercadopago-checkout-panel"
+                className="scroll-mt-28 overflow-hidden rounded-none border-0 bg-white shadow-none md:rounded-[1.75rem] md:border md:border-palette-stone/20 md:shadow-[0_24px_64px_-28px_rgba(20,20,17,0.28)]"
+              >
+                <div className="border-b border-palette-stone/10 px-5 py-4 md:px-6">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-stone">
+                    Mercado Pago
+                  </p>
+                  <h2 className="mt-1 font-montserrat text-lg font-semibold text-palette-ink">
+                    Completá tu pago
+                  </h2>
+                  <p className="mt-1 font-raleway text-sm text-palette-stone">
+                    Hasta 12 cuotas · Checkout Bricks
+                  </p>
+                  {mpBrickAmount ? (
+                    <p className="mt-3 font-montserrat text-2xl font-semibold tabular-nums text-palette-ink">
+                      ${' '}
+                      {mpBrickAmount.toLocaleString('es-UY', { maximumFractionDigits: 0 })}{' '}
+                      <span className="font-raleway text-base font-medium text-palette-stone">
+                        {mpBrickCurrency || 'UYU'}
+                      </span>
+                    </p>
+                  ) : mpBrickLoading ? (
+                    <p className="mt-3 font-raleway text-sm text-palette-stone">
+                      Calculando monto en pesos…
+                    </p>
+                  ) : null}
+                </div>
+                <div className="md:p-6">
+                  {!auth.user ? (
+                    <p className="font-raleway text-sm text-palette-stone">
+                      Iniciá sesión a la izquierda para cargar el formulario.
+                    </p>
+                  ) : mpBrickLoading ? (
+                    <div className="flex min-h-[16rem] items-center justify-center gap-2 font-raleway text-sm text-palette-stone">
+                      <MiniLoadingSpinner />
+                      Preparando Checkout Bricks…
+                    </div>
+                  ) : mpPreferenceId && mpBrickAmount ? (
+                    <MercadoPagoPaymentBrick
+                      amount={mpBrickAmount}
+                      preferenceId={mpPreferenceId}
+                      payerEmail={(auth.user as { email?: string } | null)?.email || null}
+                      processUrl="/api/payments/course/mercadopago-process"
+                      processBody={{
+                        productId,
+                        preventaTierIndex:
+                          pricingModo === 'preventa' && typeof preventaTierIndex === 'number'
+                            ? preventaTierIndex
+                            : undefined,
+                      }}
+                      onPaymentApproved={({ redirectUrl }) => {
+                        if (redirectUrl) {
+                          window.location.href = redirectUrl;
+                        } else if (productId) {
+                          window.location.href = `/pago/exito?productId=${productId}&tipo=curso&provider=mercadopago`;
+                        }
+                      }}
+                    />
+                  ) : (
+                    <p className="font-raleway text-sm text-palette-stone">
+                      No pudimos cargar el formulario. Probá de nuevo.
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <motion.div className="relative mx-auto aspect-[4/5] w-full max-w-none overflow-hidden rounded-none border-0 bg-palette-stone/10 shadow-none md:aspect-[3/4] md:rounded-[1.75rem] md:border md:border-palette-stone/20 md:shadow-[0_24px_64px_-28px_rgba(20,20,17,0.28)]">
+                {heroImagePublicId ? (
+                  <CldImage
+                    src={heroImagePublicId}
+                    alt={productName}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 90vw, 42vw"
+                    loader={imageLoader}
+                    priority
+                  />
+                ) : (
+                  <motion.div className="flex h-full items-center justify-center px-6 text-center font-raleway text-palette-stone">
+                    Imagen del curso no disponible.
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
           </div>
         </div>
       </section>

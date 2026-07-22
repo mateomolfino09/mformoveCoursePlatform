@@ -103,7 +103,13 @@ export default function CursoNombrePage({ params }: CursoNombrePageProps) {
     return <CourseLandingSkeleton />;
   }
 
-  const checkoutPlans = landing.opcionesPago.filter((plan) => plan.activo && plan.paymentLink);
+  const checkoutPlans = landing.opcionesPago.filter(
+    (plan) =>
+      plan.activo &&
+      (Boolean(plan.paymentLink?.trim()) ||
+        plan.proveedor === 'mercadopago' ||
+        Boolean(plan.mercadoPagoPreferenceId))
+  );
 
   return (
     <CursoLandingProvider

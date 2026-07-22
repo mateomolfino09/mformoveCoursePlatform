@@ -22,6 +22,7 @@ function plainPriceEntry(entry) {
   return { ...entry };
 }
 
+/** Actualiza planes con ciclo corto trimestral (3 meses) + anual (−15%). */
 export async function PUT(req) {
   try {
     const body = await req.json();
@@ -34,6 +35,7 @@ export async function PUT(req) {
       priceMensual,
       priceTrimestral,
       currency,
+      proveedoresHabilitados,
     } = body;
 
     if (!planId) {
@@ -59,46 +61,44 @@ export async function PUT(req) {
       active: existingPlan.active,
     };
 
-    const incomingPrice = priceMensual ?? priceTrimestral;
+    if (Array.isArray(proveedoresHabilitados) && proveedoresHabilitados.length) {
+      updateData.proveedoresHabilitados = proveedoresHabilitados;
+    }
+
+    const incomingTrimestral =
+      priceTrimestral != null && priceTrimestral !== ''
+        ? Number(priceTrimestral)
+        : priceMensual != null && priceMensual !== ''
+          ? Math.round(Number(priceMensual) * 3)
+          : undefined;
+
     let priceChanged = false;
 
-    if (incomingPrice !== undefined) {
+    if (incomingTrimestral !== undefined && !Number.isNaN(incomingTrimestral)) {
       const currentMensual = existingPlan.prices.find((p) => p.interval === 'mensual');
       const currentTrimestral = existingPlan.prices.find((p) => p.interval === 'trimestral');
       const currentAnual = existingPlan.prices.find((p) => p.interval === 'anual');
-      const currentShort = currentMensual ?? currentTrimestral;
+      const currentShort = currentTrimestral ?? currentMensual;
 
-      const resolvedInterval = priceMensual != null ? 'mensual' : 'trimestral';
-      const oldShortPrice = currentShort?.price ?? null;
-      const oldComparablePrice =
-        currentShort?.interval === 'trimestral' && oldShortPrice != null
-          ? Math.round(oldShortPrice / 3)
-          : oldShortPrice;
+      const oldShortAsTrimestral =
+        currentShort?.interval === 'mensual' && currentShort?.price != null
+          ? Math.round(currentShort.price * 3)
+          : currentShort?.price ?? null;
 
-      const shouldMigrateToMensual =
-        Boolean(currentTrimestral) && !currentMensual && priceMensual != null;
+      const shouldMigrateToTrimestral = Boolean(currentMensual) && !currentTrimestral;
 
-      if (oldComparablePrice !== incomingPrice || shouldMigrateToMensual) {
-        priceChanged = oldComparablePrice !== incomingPrice || shouldMigrateToMensual;
+      if (oldShortAsTrimestral !== incomingTrimestral || shouldMigrateToTrimestral) {
+        priceChanged = true;
 
         try {
-          const stripeShort = await stripe.prices.create({
-            unit_amount: Math.round(incomingPrice * 100),
+          const stripeTrimestral = await stripe.prices.create({
+            unit_amount: Math.round(incomingTrimestral * 100),
             currency: (currency || 'USD').toLowerCase(),
-            recurring: {
-              interval: 'month',
-              interval_count: resolvedInterval === 'trimestral' ? 3 : 1,
-            },
-            product_data: {
-              name: `${name} (${resolvedInterval === 'trimestral' ? 'Trimestral' : 'Mensual'})`,
-            },
+            recurring: { interval: 'month', interval_count: 3 },
+            product_data: { name: `${name} (Trimestral)` },
           });
 
-          const priceAnual = Math.round(
-            resolvedInterval === 'trimestral'
-              ? incomingPrice * 4 * 0.85
-              : incomingPrice * 12 * 0.85,
-          );
+          const priceAnual = Math.round(incomingTrimestral * 4 * 0.85);
 
           const stripeAnual = await stripe.prices.create({
             unit_amount: Math.round(priceAnual * 100),
@@ -107,23 +107,22 @@ export async function PUT(req) {
             product_data: { name: `${name} (Anual)` },
           });
 
-          const shortPayload = {
-            interval: resolvedInterval,
-            price: incomingPrice,
-            currency: currency || 'USD',
-            stripePriceId: stripeShort.id,
-            opcionesPago: plainPriceEntry(currentShort)?.opcionesPago,
-          };
-
-          const anualPayload = {
-            interval: 'anual',
-            price: priceAnual,
-            currency: currency || 'USD',
-            stripePriceId: stripeAnual.id,
-            opcionesPago: plainPriceEntry(currentAnual)?.opcionesPago,
-          };
-
-          existingPlan.prices = [shortPayload, anualPayload];
+          existingPlan.prices = [
+            {
+              interval: 'trimestral',
+              price: incomingTrimestral,
+              currency: currency || 'USD',
+              stripePriceId: stripeTrimestral.id,
+              opcionesPago: plainPriceEntry(currentShort)?.opcionesPago,
+            },
+            {
+              interval: 'anual',
+              price: priceAnual,
+              currency: currency || 'USD',
+              stripePriceId: stripeAnual.id,
+              opcionesPago: plainPriceEntry(currentAnual)?.opcionesPago,
+            },
+          ];
         } catch (stripeError) {
           console.error('Error creando nuevos precios en Stripe:', stripeError);
           return NextResponse.json(
@@ -139,7 +138,11 @@ export async function PUT(req) {
         existingPlan.prices = existingPlan.prices.map((entry) => {
           const plain = plainPriceEntry(entry);
           if (!plain) return entry;
-          if (plain.interval === 'mensual' || plain.interval === 'trimestral' || plain.interval === 'anual') {
+          if (
+            plain.interval === 'mensual' ||
+            plain.interval === 'trimestral' ||
+            plain.interval === 'anual'
+          ) {
             return { ...plain, currency: currency || plain.currency || 'USD' };
           }
           return plain;
@@ -148,6 +151,10 @@ export async function PUT(req) {
     }
 
     const origin = resolveOrigin(req);
+    const resolvedProveedores =
+      Array.isArray(proveedoresHabilitados) && proveedoresHabilitados.length
+        ? proveedoresHabilitados
+        : existingPlan.proveedoresHabilitados;
     const pricesWithLinks = await ensureMentorshipPlanPaymentLinks(
       {
         _id: planId,
@@ -155,6 +162,7 @@ export async function PUT(req) {
         description: description ?? existingPlan.description,
         level: level ?? existingPlan.level,
         prices: existingPlan.prices,
+        proveedoresHabilitados: resolvedProveedores,
       },
       origin,
       { forceRegenerate: priceChanged },

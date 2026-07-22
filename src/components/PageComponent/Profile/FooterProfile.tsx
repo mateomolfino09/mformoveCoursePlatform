@@ -88,7 +88,7 @@ const FooterProfile = () => {
 
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-palette-cream/50 md:justify-end">
             <Link href="/preguntas-frecuentes" className="hover:text-palette-cream hover:underline">
-              FAQ
+              Preguntas
             </Link>
             <Link href="/terminos" className="hover:text-palette-cream hover:underline">
               Términos

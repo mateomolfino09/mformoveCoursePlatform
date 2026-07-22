@@ -72,7 +72,7 @@ export default function CourseContentHub({ slug }: Props) {
 
   if (error) {
     return (
-      <MainSideBar where="membership">
+      <MainSideBar where="membership" flowLayout>
         <div className="min-h-screen bg-palette-cream font-montserrat text-palette-ink">
           <motion.div className="mx-auto w-[90%] max-w-4xl px-4 py-10 md:py-14">
             <Link

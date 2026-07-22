@@ -152,7 +152,7 @@ const mentorshipSchema = new mongoose.Schema(
     },
     provider: {
       type: String,
-      enum: ['stripe', 'dlocalgo'],
+      enum: ['stripe', 'dlocalgo', 'mercadopago'],
     },
     subscriptionId: {
       type: String,
@@ -290,7 +290,7 @@ const userSchema = new mongoose.Schema(
     cursosAdquiridos: [{
       productoId: { type: mongoose.Types.ObjectId, ref: 'Product', required: true },
       fechaCompra: { type: Date, default: Date.now },
-      metodoPago: { type: String, enum: ['stripe', 'dlocalgo', 'transferencia', 'gratis'] },
+      metodoPago: { type: String, enum: ['stripe', 'dlocalgo', 'mercadopago', 'transferencia', 'gratis'] },
       transaccionId: { type: String },
       monto: { type: Number },
       moneda: { type: String, default: 'USD' },

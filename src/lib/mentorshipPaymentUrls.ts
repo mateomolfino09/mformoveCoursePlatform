@@ -44,3 +44,32 @@ export function resolveMentorshipDlocalWebhookUrl(origin?: string): string {
     'http://localhost:3000';
   return `${base}/api/payments/mentorship/dlocalWebhook`;
 }
+
+export function buildMentorshipMercadoPagoSuccessUrl(
+  baseUrl: string,
+  planId: string,
+  interval: string,
+  options?: { userId?: string; externalRef?: string },
+): string {
+  const base = stripTrailingSlash(baseUrl);
+  const params = new URLSearchParams({
+    plan_id: planId,
+    interval,
+    provider: 'mercadopago',
+  });
+  if (options?.userId?.trim()) {
+    params.set('external_id', options.userId.trim());
+  }
+  if (options?.externalRef?.trim()) {
+    params.set('external_reference', options.externalRef.trim());
+  }
+  return `${base}/mentoria/exito?${params.toString()}`;
+}
+
+export function resolveMentorshipMercadoPagoWebhookUrl(origin?: string): string {
+  const base =
+    process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, '') ||
+    origin?.replace(/\/$/, '') ||
+    'http://localhost:3000';
+  return `${base}/api/payments/mentorship/mercadoPagoWebhook`;
+}
