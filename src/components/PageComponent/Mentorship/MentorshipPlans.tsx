@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useMentorshipAnalytics } from '../../../hooks/useMentorshipAnalytics';
 import { useAuth } from '../../../hooks/useAuth';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from '../../../hooks/useToast';
 import { MentorshipProps } from '../../../types/mentorship';
 import PremiumMentorshipCards from './PremiumMentorshipCards';
@@ -14,32 +14,58 @@ import {
   type MentorshipBillingInterval,
 } from '../../../lib/mentorshipPricing';
 import { MENTORSHIP_START_CTA } from '../../../constants/mentorshipCta';
-import MentorshipApplyLink from './MentorshipApplyLink';
 import {
   landingEyebrow,
-  landingSectionBody,
   landingSectionTitle,
 } from '../../../constants/landingSectionDesign';
 import state from '../../../valtio';
 
 type MentorshipPlan = MentorshipProps['plans'][number];
 
+const VALID_INTERVALS = new Set<MentorshipBillingInterval>(['mensual', 'trimestral', 'anual']);
+
+function parseIntervalParam(value: string | null): MentorshipBillingInterval | null {
+  if (!value) return null;
+  return VALID_INTERVALS.has(value as MentorshipBillingInterval)
+    ? (value as MentorshipBillingInterval)
+    : null;
+}
+
 const MentorshipPlans = ({ plans, plansLoading = false, plansError = null }: MentorshipProps) => {
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
   const { trackPlanClick } = useMentorshipAnalytics();
   const auth = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const intervalFromUrl = parseIntervalParam(searchParams.get('interval'));
 
   const defaultInterval = useMemo(
     () => resolveMentorshipDefaultInterval(plans[0]?.prices) ?? 'trimestral',
     [plans],
   );
 
-  const [interval, setInterval] = useState<MentorshipBillingInterval>(defaultInterval);
+  const [interval, setInterval] = useState<MentorshipBillingInterval>(
+    () => intervalFromUrl ?? defaultInterval,
+  );
 
   useEffect(() => {
-    setInterval(defaultInterval);
-  }, [defaultInterval]);
+    setInterval(intervalFromUrl ?? defaultInterval);
+  }, [intervalFromUrl, defaultInterval]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.location.hash !== '#mentorship-plans') return;
+
+    const scrollToPlans = () => {
+      document.getElementById('mentorship-plans')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    };
+
+    const t = window.setTimeout(scrollToPlans, plansLoading ? 180 : 60);
+    return () => window.clearTimeout(t);
+  }, [plansLoading, plans.length, interval]);
 
   const handlePlanSelect = async (plan: MentorshipPlan) => {
     if (!auth.user) {
@@ -78,7 +104,6 @@ const MentorshipPlans = ({ plans, plansLoading = false, plansError = null }: Men
           <p className={landingEyebrow}>Inversión</p>
           <h2 className={landingSectionTitle}>
             Elegí el plan que mejor acompañe tu proceso
-
           </h2>
         </motion.div>
 
