@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { Suspense, useEffect } from 'react'
 import MainSideBar from '../../MainSidebar/MainSideBar'
 import FooterProfile from '../Profile/FooterProfile'
 import { useAppDispatch } from '../../../hooks/useTypeSelector'
@@ -60,12 +60,25 @@ const Mentorship = ({ plans, origin, plansLoading = false, plansError = null }: 
         <MentorshipProcess />
         <MentorshipTestimonials />
         <MentorshipBio />
-        <MentorshipPlans
-          plans={plans}
-          origin={origin}
-          plansLoading={plansLoading}
-          plansError={plansError}
-        />
+        <Suspense
+          fallback={
+            <section
+              id="mentorship-plans"
+              className="border-t border-palette-stone/20 bg-palette-cream py-16 md:py-24"
+            >
+              <div className="mx-auto flex max-w-xl flex-col items-center gap-3 py-10">
+                <div className="h-10 w-10 animate-spin rounded-full border-2 border-palette-stone/25 border-t-palette-ink" />
+              </div>
+            </section>
+          }
+        >
+          <MentorshipPlans
+            plans={plans}
+            origin={origin}
+            plansLoading={plansLoading}
+            plansError={plansError}
+          />
+        </Suspense>
         <MentorshipFAQ />
         <MentorshipCTA />
         

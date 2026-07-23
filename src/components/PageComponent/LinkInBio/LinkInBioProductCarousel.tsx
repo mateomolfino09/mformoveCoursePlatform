@@ -62,10 +62,10 @@ function ProductCard({
         href={product.href}
         aria-label={`${typeEyebrow(product)}: ${product.title}`}
         aria-current={isActive ? 'true' : undefined}
-        className={`group relative block aspect-[3/4] overflow-hidden rounded-[1.35rem] bg-palette-ink/10 transition duration-500 ease-out active:scale-[0.985] ${
+        className={`group relative block aspect-[3/4] overflow-hidden rounded-[1.35rem] bg-palette-cream/5 transition duration-500 ease-out active:scale-[0.985] ${
           isActive
-            ? 'scale-[1.01] ring-2 ring-palette-ink/25 shadow-[0_18px_40px_-18px_rgba(20,20,17,0.45)]'
-            : 'ring-1 ring-palette-ink/5 opacity-90'
+            ? 'scale-[1.01] ring-2 ring-palette-cream/30 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.55)]'
+            : 'ring-1 ring-palette-cream/10 opacity-90'
         }`}
       >
         <CldImage
@@ -242,7 +242,7 @@ export default function LinkInBioProductCarousel({ products }: Props) {
 
   if (products.length === 0) {
     return (
-      <p className="py-6 text-center font-montserrat text-sm text-palette-stone">
+      <p className="py-6 text-center font-montserrat text-sm text-palette-cream/55">
         Próximamente más caminos.
       </p>
     );
@@ -281,8 +281,8 @@ export default function LinkInBioProductCarousel({ products }: Props) {
               }}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 index === activeIndex
-                  ? 'w-5 bg-palette-ink'
-                  : 'w-1.5 bg-palette-ink/20 hover:bg-palette-ink/35'
+                  ? 'w-5 bg-palette-cream'
+                  : 'w-1.5 bg-palette-cream/25 hover:bg-palette-cream/45'
               }`}
             />
           ))}
@@ -294,7 +294,7 @@ export default function LinkInBioProductCarousel({ products }: Props) {
         onClick={() => scrollByCard('left')}
         disabled={!canScrollLeft}
         aria-label="Ver anterior"
-        className="absolute left-0.5 top-[38%] z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-palette-ink/8 bg-palette-cream/70 text-palette-ink/55 shadow-[0_4px_12px_-6px_rgba(20,20,17,0.25)] backdrop-blur-[2px] transition active:scale-95 disabled:pointer-events-none disabled:opacity-0 md:left-0 md:h-10 md:w-10 md:border-palette-ink/10 md:bg-palette-cream/95 md:text-palette-ink md:shadow-[0_8px_20px_-8px_rgba(20,20,17,0.35)] md:hover:bg-white"
+        className="absolute left-0.5 top-[38%] z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-palette-cream/15 bg-palette-ink/70 text-palette-cream/80 shadow-[0_4px_12px_-6px_rgba(0,0,0,0.45)] backdrop-blur-md transition active:scale-95 disabled:pointer-events-none disabled:opacity-0 md:left-0 md:h-10 md:w-10 md:border-palette-cream/20 md:bg-palette-ink/85 md:text-palette-cream md:hover:bg-palette-ink"
       >
         <ChevronLeftIcon className="h-4 w-4 md:h-5 md:w-5" strokeWidth={2} />
       </button>
@@ -303,7 +303,7 @@ export default function LinkInBioProductCarousel({ products }: Props) {
         onClick={() => scrollByCard('right')}
         disabled={!canScrollRight}
         aria-label="Ver siguiente"
-        className="absolute right-0.5 top-[38%] z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-palette-ink/8 bg-palette-cream/70 text-palette-ink/55 shadow-[0_4px_12px_-6px_rgba(20,20,17,0.25)] backdrop-blur-[2px] transition active:scale-95 disabled:pointer-events-none disabled:opacity-0 md:right-0 md:h-10 md:w-10 md:border-palette-ink/10 md:bg-palette-cream/95 md:text-palette-ink md:shadow-[0_8px_20px_-8px_rgba(20,20,17,0.35)] md:hover:bg-white"
+        className="absolute right-0.5 top-[38%] z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-palette-cream/15 bg-palette-ink/70 text-palette-cream/80 shadow-[0_4px_12px_-6px_rgba(0,0,0,0.45)] backdrop-blur-md transition active:scale-95 disabled:pointer-events-none disabled:opacity-0 md:right-0 md:h-10 md:w-10 md:border-palette-cream/20 md:bg-palette-ink/85 md:text-palette-cream md:hover:bg-palette-ink"
       >
         <ChevronRightIcon className="h-4 w-4 md:h-5 md:w-5" strokeWidth={2} />
       </button>
