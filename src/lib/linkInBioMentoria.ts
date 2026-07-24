@@ -1,4 +1,5 @@
-import { MENTORSHIP_START_CTA } from '../constants/mentorshipCta';
+import { routes } from '../constants/routes';
+import type { MentorshipBillingInterval } from '../lib/mentorshipPricing';
 import type { LinkInBioProductCard } from './linkInBioProducts';
 
 export type LinkInBioMentoriaConfig = {
@@ -17,6 +18,13 @@ export type LinkInBioMentoriaConfig = {
 
 function trimId(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';
+}
+
+/** Landing de mentoría anclada a planes, con intervalo preseleccionado. */
+export function mentorshipPlansLandingHref(
+  interval: MentorshipBillingInterval = 'trimestral',
+): string {
+  return `${routes.navegation.mentoria}?interval=${interval}#mentorship-plans`;
 }
 
 /** Una o dos cards de mentoría (trimestral / anual) para el carrusel de /bio. */
@@ -40,7 +48,7 @@ export function buildMentoriaLinkInBioCards(
         title: baseTitle,
         subtitle: baseSubtitle,
         imageSrc: imagenLegacy,
-        href: MENTORSHIP_START_CTA.href('trimestral'),
+        href: mentorshipPlansLandingHref('trimestral'),
         tipo: 'mentoria',
       },
     ];
@@ -54,7 +62,7 @@ export function buildMentoriaLinkInBioCards(
       title: trimId(config.tituloAnual) || `${baseTitle} · Anual`,
       subtitle: trimId(config.subtituloAnual) || '12 meses · beneficios y bonos exclusivos',
       imageSrc: imagenAnual,
-      href: MENTORSHIP_START_CTA.href('anual'),
+      href: mentorshipPlansLandingHref('anual'),
       tipo: 'mentoria',
     });
   }
@@ -65,7 +73,7 @@ export function buildMentoriaLinkInBioCards(
       title: trimId(config.tituloTrimestral) || `${baseTitle} · Trimestral`,
       subtitle: trimId(config.subtituloTrimestral) || 'Ciclo de 3 meses · seguimiento personalizado',
       imageSrc: imagenTri,
-      href: MENTORSHIP_START_CTA.href('trimestral'),
+      href: mentorshipPlansLandingHref('trimestral'),
       tipo: 'mentoria',
     });
   }
