@@ -1,5 +1,6 @@
 'use client'
 import React, { Suspense, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import MainSideBar from '../../MainSidebar/MainSideBar'
 import FooterProfile from '../Profile/FooterProfile'
 import { useAppDispatch } from '../../../hooks/useTypeSelector'
@@ -7,15 +8,17 @@ import { toggleScroll } from '../../../redux/features/headerLibrarySlice'
 import { useAuth } from '../../../hooks/useAuth'
 import { useMentorshipAnalytics } from '../../../hooks/useMentorshipAnalytics'
 import MentorshipIntro from './MentorshipIntro'
-import MentorshipPlans from './MentorshipPlans'
-import MentorshipProcess from './MentorshipProcess'
-import MentorshipFAQ from './MentorshipFAQ'
-import MentorshipCTA from './MentorshipCTA'
-import MentorshipTestimonials from './MentorshipTestimonials'
-import MentorshipIsForYou from './MentorshipIsForYou'
-import MentorshipIncludes from './MentorshipIncludes'
-import MentorshipBio from './MentorshipBio'
 import { MentorshipProps } from '../../../types/mentorship'
+
+// Below-the-fold: se cargan aparte del bundle inicial para no bloquear el primer render del hero.
+const MentorshipPlans = dynamic(() => import('./MentorshipPlans'), { ssr: false })
+const MentorshipProcess = dynamic(() => import('./MentorshipProcess'), { ssr: false })
+const MentorshipFAQ = dynamic(() => import('./MentorshipFAQ'), { ssr: false })
+const MentorshipCTA = dynamic(() => import('./MentorshipCTA'), { ssr: false })
+const MentorshipTestimonials = dynamic(() => import('./MentorshipTestimonials'), { ssr: false })
+const MentorshipIsForYou = dynamic(() => import('./MentorshipIsForYou'), { ssr: false })
+const MentorshipIncludes = dynamic(() => import('./MentorshipIncludes'), { ssr: false })
+const MentorshipBio = dynamic(() => import('./MentorshipBio'), { ssr: false })
 
 const Mentorship = ({ plans, origin, plansLoading = false, plansError = null }: MentorshipProps) => {
   const dispatch = useAppDispatch();
