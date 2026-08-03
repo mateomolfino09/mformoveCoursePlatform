@@ -60,7 +60,12 @@ export async function GET(_req: Request, { params }: { params: { slug: string } 
         precioPreventaActivo: pricing.precioPreventaActivo,
         preventaTierIndex: pricing.preventaTierIndex,
       },
-      { status: 200 }
+      {
+        status: 200,
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+        },
+      }
     );
   } catch (error: any) {
     return NextResponse.json(

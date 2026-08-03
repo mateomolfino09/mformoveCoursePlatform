@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import FooterProfile from '../Profile/FooterProfile';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
@@ -12,15 +13,17 @@ import CourseBetweenHeroSection from './CourseBetweenHeroSection';
 import CourseFullWidthBanner from './CourseFullWidthBanner';
 import CourseOutcomesHighlights from './CourseOutcomesHighlights';
 import CourseHighlightsIntro from './CourseHighlightsIntro';
-import CourseHighlights from './CourseHighlights';
-import CourseTestimonials from './CourseTestimonials';
-import CoursePlans from './CoursePlans';
-import CourseFAQ from './CourseFAQ';
 import CourseWhatsAppBanner from './CourseWhatsAppBanner';
 import CourseCTA from './CourseCTA';
 import PromocionFooter from '../Membership/PromocionFooter';
-import CourseWhatWeTeach from './CourseWhatWeTeach';
 import { useCursoLanding } from './CursoLandingContext';
+
+// Below-the-fold: se cargan aparte del bundle inicial para no bloquear el primer render del hero.
+const CourseHighlights = dynamic(() => import('./CourseHighlights'), { ssr: false });
+const CourseTestimonials = dynamic(() => import('./CourseTestimonials'), { ssr: false });
+const CoursePlans = dynamic(() => import('./CoursePlans'), { ssr: false });
+const CourseFAQ = dynamic(() => import('./CourseFAQ'), { ssr: false });
+const CourseWhatWeTeach = dynamic(() => import('./CourseWhatWeTeach'), { ssr: false });
 
 interface Promocion {
   _id: string;

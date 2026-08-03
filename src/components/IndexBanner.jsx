@@ -339,11 +339,24 @@ function Banner({ onVideoLoaded }) {
           href={primaryCta.href}
           className='inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3.5 text-center text-sm font-semibold text-black shadow-[0_8px_24px_-8px_rgba(0,0,0,0.45)] transition-all duration-300 hover:bg-gray-100 active:scale-[0.98] sm:w-auto sm:px-8 md:py-3 md:text-base md:font-medium'
         >
-          {cursoLoading ? '…' : primaryCta.label}
+          {cursoLoading ? (
+            <span className='flex items-center gap-1' aria-label='Cargando'>
+              {[0, 1, 2].map((i) => (
+                <m.span
+                  key={i}
+                  className='h-1.5 w-1.5 rounded-full bg-black'
+                  animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1, 0.8] }}
+                  transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut', delay: i * 0.15 }}
+                />
+              ))}
+            </span>
+          ) : (
+            primaryCta.label
+          )}
         </Link>
         <Link 
           href={auth.user ? routes.user.perfil : routes.user.login}
-          className='inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white bg-black/20 px-5 py-3.5 text-center text-sm font-semibold text-white backdrop-blur-[2px] transition-all duration-300 hover:bg-white hover:text-black active:scale-[0.98] sm:w-auto sm:px-8 md:py-3 md:text-base md:font-medium'
+          className='inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white bg-black/20 px-5 py-3.5 text-center text-sm font-semibold text-white backdrop-blur-[2px] transition-all duration-300 hover:bg-white/20 hover:border-white active:scale-[0.98] sm:w-auto sm:px-8 md:py-3 md:text-base md:font-medium'
         >
           {auth.user ? 'Mi Perfil' : 'Iniciar Sesión'}
           <ArrowRightIcon className='h-4 w-4 shrink-0 md:h-5 md:w-5' />
