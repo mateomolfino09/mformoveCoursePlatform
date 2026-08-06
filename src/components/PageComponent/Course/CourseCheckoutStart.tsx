@@ -1,8 +1,7 @@
 'use client';
 
 import { CheckIcon } from '@heroicons/react/24/solid';
-import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSnapshot } from 'valtio';
@@ -26,6 +25,7 @@ import { savePendingPreventaRedemption } from '../../../utils/cursoPreventaCheck
 import type { DlocalLocalizedAmount } from '../../../lib/dlocalLocalCurrency';
 import dynamic from 'next/dynamic';
 import { scrollMercadoPagoPanelIntoView } from '../../../lib/scrollMercadoPagoPanel';
+import { resolveProveedoresHabilitados } from '../../../constants/paymentProveedores';
 
 const MercadoPagoPaymentBrick = dynamic(
   () => import('../Payments/MercadoPagoPaymentBrick'),
@@ -112,58 +112,6 @@ const formatPrice = (currency: string, amount: number) => {
   }
 };
 
-const StripeLogo = () => (
-  <Image
-    src="/images/stripelogo.png"
-    alt="Stripe"
-    width={72}
-    height={28}
-    className="block h-7 w-auto object-contain object-left"
-    loader={imageLoader}
-  />
-);
-
-const DlocalLogo = () => (
-  <Image
-    src="/images/dlocalGoLogo.svg"
-    alt="dLocal GO"
-    width={88}
-    height={28}
-    className="block h-7 w-auto object-contain object-left"
-    loader={imageLoader}
-  />
-);
-
-const MercadoPagoLogo = () => (
-  <span className="font-montserrat text-sm font-bold tracking-tight text-[#009EE3]">
-    Mercado Pago
-  </span>
-);
-
-const BankIcon = () => (
-  <motion.div
-    className="flex h-10 w-10 items-center justify-center rounded-xl bg-palette-ink text-palette-cream"
-    aria-hidden
-  >
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-      <path d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zm6 0v7h3v-7h-3zM2 4h20v4H2V4z" />
-    </svg>
-  </motion.div>
-);
-
-const MethodBadges = ({ items }: { items: string[] }) => (
-  <div className="flex flex-wrap gap-2">
-    {items.map((item) => (
-      <span
-        key={item}
-        className="rounded-full border border-palette-stone/20 bg-palette-cloud/80 px-2.5 py-1 font-montserrat text-[0.68rem] font-medium uppercase tracking-[0.08em] text-palette-stone"
-      >
-        {item}
-      </span>
-    ))}
-  </div>
-);
-
 const MethodRadioControl = ({
   checked,
   disabled,
@@ -176,23 +124,12 @@ const MethodRadioControl = ({
       disabled
         ? 'border-palette-stone/25 bg-palette-cloud/50'
         : checked
-          ? 'border-palette-sage bg-palette-sage'
+          ? 'border-palette-ink bg-palette-ink'
           : 'border-palette-stone/35 bg-transparent'
     }`}
     aria-hidden
   >
-    <AnimatePresence>
-      {checked ? (
-        <motion.span
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0, opacity: 0 }}
-          transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <CheckIcon className="h-3 w-3 text-palette-cream" strokeWidth={3} />
-        </motion.span>
-      ) : null}
-    </AnimatePresence>
+    {checked ? <CheckIcon className="h-3 w-3 text-palette-cream" /> : null}
   </span>
 );
 
@@ -313,11 +250,20 @@ export default function CourseCheckoutStart({
     countryFromGeo,
   ]);
 
+  const enabledProviders = useMemo(() => {
+    const configured = cursoConfig.planes?.proveedoresHabilitados;
+    if (configured?.length) {
+      return resolveProveedoresHabilitados(configured);
+    }
+    // Cursos con MP en opciones pero sin campo guardado: no mostrar dLocal residual.
+    if (checkoutPlans.some((o) => o.proveedor === 'mercadopago')) {
+      return resolveProveedoresHabilitados(['stripe', 'mercadopago']);
+    }
+    return resolveProveedoresHabilitados(null);
+  }, [checkoutPlans, cursoConfig.planes?.proveedoresHabilitados]);
+
   const paymentMethods = useMemo<PaymentMethodOption[]>(
     () => {
-      const enabled = resolveProveedoresHabilitados(
-        cursoConfig.planes?.proveedoresHabilitados
-      );
       return (
         [
           {
@@ -341,7 +287,10 @@ export default function CourseCheckoutStart({
               'Completá el pago con Mercado Pago. Tarjetas y hasta 12 cuotas.',
             methods: ['Mercado Pago', 'Tarjetas', 'Hasta 12 cuotas'],
             plan: mercadoPagoPlan,
-            available: Boolean(mercadoPagoPlan && mercadoPagoPlan.activo !== false),
+            // Preferencia se crea al pagar; alcanza con estar habilitado (como mentoría).
+            available:
+              enabledProviders.includes('mercadopago') &&
+              (!mercadoPagoPlan || mercadoPagoPlan.activo !== false),
             unavailableLabel: 'No disponible para este curso en este momento',
           },
           {
@@ -369,10 +318,13 @@ export default function CourseCheckoutStart({
         ] as PaymentMethodOption[]
       ).filter((method) => {
         if (method.id === 'transferencia') return true;
-        return enabled.includes(method.id as 'stripe' | 'dlocalgo' | 'mercadopago') && method.available;
+        return (
+          enabledProviders.includes(method.id as 'stripe' | 'dlocalgo' | 'mercadopago') &&
+          method.available
+        );
       });
     },
-    [cursoConfig.planes?.proveedoresHabilitados, dlocalPlan, mercadoPagoPlan, stripePlan]
+    [dlocalPlan, enabledProviders, mercadoPagoPlan, stripePlan]
   );
 
   const heroImagePublicId =
@@ -768,13 +720,6 @@ export default function CourseCheckoutStart({
     executePaymentLink(selectedMethod, method.plan?.paymentLink);
   };
 
-  const renderLogo = (id: PaymentMethodId) => {
-    if (id === 'stripe') return <StripeLogo />;
-    if (id === 'dlocalgo') return <DlocalLogo />;
-    if (id === 'mercadopago') return <MercadoPagoLogo />;
-    return <BankIcon />;
-  };
-
   return (
     <>
       <section className="relative min-h-screen bg-palette-cream font-montserrat text-palette-ink">
@@ -794,10 +739,11 @@ export default function CourseCheckoutStart({
               </div>
             ) : null}
             <p className="mb-6 max-w-xl font-raleway text-base leading-relaxed text-palette-stone md:text-lg">
-              Elegí un método de pago. Con Mercado Pago completás el pago acá mismo (hasta 12 cuotas). También podés usar Stripe o transferencia. 
+              Elegí cómo querés pagar. Mercado Pago se completa acá mismo (hasta 12 cuotas). Stripe es
+              para pagos internacionales; también podés pagar por transferencia.
             </p>
 
-            <div className="space-y-1" role="radiogroup" aria-label="Métodos de pago">
+            <div className="space-y-2" role="radiogroup" aria-label="Métodos de pago">
               {paymentMethods.map((method) => {
                 const isSelected = selectedMethod === method.id;
                 const isDisabled = !method.available;
@@ -805,154 +751,77 @@ export default function CourseCheckoutStart({
                 return (
                   <label
                     key={method.id}
-                    className={`block rounded-2xl border px-4 py-3 text-left transition-colors duration-200 md:px-5 md:py-3.5 ${
+                    className={`block rounded-2xl border px-4 py-3 text-left transition-colors duration-200 ${
                       isDisabled ? 'cursor-not-allowed opacity-55' : 'cursor-pointer'
                     } ${
                       isSelected
                         ? isDisabled
                           ? 'border-palette-stone/20 bg-palette-cloud/30'
-                          : 'border-palette-sage/35 bg-white/50'
-                        : 'border-transparent'
+                          : 'border-palette-ink/30 bg-palette-ink/[0.06]'
+                        : 'border-transparent hover:border-palette-stone/15'
                     }`}
                   >
-                    <motion.div
-                      layout
-                      animate={{ scale: isSelected ? 1.012 : 1 }}
-                      transition={{ type: 'spring', stiffness: 520, damping: 32 }}
-                      className="origin-left"
-                    >
-                      <div className="flex items-start gap-3.5">
-                        <input
-                          type="radio"
-                          name="payment-method"
-                          value={method.id}
-                          checked={isSelected}
-                          disabled={isDisabled}
-                          onChange={() => {
-                            if (!isDisabled) setSelectedMethod(method.id);
-                          }}
-                          className="sr-only"
-                          aria-label={`Seleccionar ${method.id === 'transferencia' ? method.title : method.subtitle}`}
-                        />
-                        <MethodRadioControl checked={isSelected} disabled={isDisabled} />
-                        <motion.div className="min-w-0 flex-1 text-left">
-                          {method.id === 'transferencia' ? (
-                            <motion.div className="flex min-w-0 items-start gap-3">
-                              {renderLogo(method.id)}
-                              <motion.div className="min-w-0">
-                                <h2
-                                  className={`text-left font-montserrat text-lg font-semibold md:text-xl ${
-                                    isDisabled ? 'text-palette-stone' : 'text-palette-ink'
-                                  }`}
-                                >
-                                  {method.title}
-                                </h2>
-                                <p
-                                  className={`mt-0.5 text-left font-montserrat text-xs leading-snug md:text-[0.8rem] ${
-                                    isDisabled ? 'text-palette-stone/80' : 'text-palette-stone'
-                                  }`}
-                                >
-                                  {method.subtitle}
-                                </p>
-                                {isDisabled ? (
-                                  <p className="mt-1 text-left font-montserrat text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-palette-stone">
-                                    No disponible
-                                  </p>
-                                ) : null}
-                              </motion.div>
-                            </motion.div>
-                          ) : (
-                            <motion.div className="flex w-full min-w-0 flex-col items-start gap-1.5">
-                              <motion.div className="flex h-7 w-full items-center justify-start">
-                                {renderLogo(method.id)}
-                              </motion.div>
-                              <p
-                                className={`text-left font-montserrat text-xs leading-snug md:text-[0.8rem] ${
-                                  isDisabled ? 'text-palette-stone/80' : 'text-palette-stone'
-                                }`}
-                              >
-                                {method.subtitle}
-                              </p>
-                              {isDisabled ? (
-                                <p className="text-left font-montserrat text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-palette-stone">
-                                  No disponible
-                                </p>
-                              ) : null}
-                            </motion.div>
-                          )}
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="radio"
+                        name="payment-method"
+                        value={method.id}
+                        checked={isSelected}
+                        disabled={isDisabled}
+                        onChange={() => {
+                          if (!isDisabled) setSelectedMethod(method.id);
+                        }}
+                        className="sr-only"
+                        aria-label={`Seleccionar ${method.title}`}
+                      />
+                      <MethodRadioControl checked={isSelected} disabled={isDisabled} />
+                      <div className="min-w-0 flex-1">
+                        <p
+                          className={`font-semibold ${
+                            isDisabled ? 'text-palette-stone' : 'text-palette-ink'
+                          }`}
+                        >
+                          {method.title}
+                        </p>
+                        <p className="text-xs uppercase tracking-[0.12em] text-palette-stone">
+                          {method.subtitle}
+                        </p>
+                        <p className="mt-1 text-sm text-palette-stone">{method.description}</p>
+                        {isDisabled ? (
+                          <p className="mt-1 text-xs text-red-600">
+                            {method.unavailableLabel || 'No disponible en este momento'}
+                          </p>
+                        ) : null}
 
-                          <AnimatePresence initial={false}>
-                            {isSelected ? (
-                              <motion.div
-                                key={`${method.id}-details`}
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: 'auto', opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                                className="overflow-hidden"
-                              >
-                                <motion.div className="pt-3 text-left">
-                                  <p className="mb-3 text-left font-raleway text-sm leading-relaxed text-palette-stone md:text-base">
-                                    {method.description}
-                                  </p>
+                        {isSelected && method.id === 'dlocalgo' && dlocalQuote?.localized ? (
+                          <p className="mt-2 font-montserrat text-base font-semibold text-palette-ink">
+                            {formatPrice(dlocalQuote.currency, dlocalQuote.amount)}
+                            <span className="ml-2 font-raleway text-sm font-normal text-palette-stone">
+                              en moneda local
+                            </span>
+                          </p>
+                        ) : null}
 
-                                  <MethodBadges items={method.methods} />
+                        {isSelected && method.id === 'mercadopago' && mpBrickAmount ? (
+                          <p className="mt-2 text-sm text-palette-stone">
+                            Total:{' '}
+                            <span className="font-semibold text-palette-ink">
+                              ${' '}
+                              {mpBrickAmount.toLocaleString('es-UY', {
+                                maximumFractionDigits: 0,
+                              })}{' '}
+                              {mpBrickCurrency || 'UYU'}
+                            </span>
+                          </p>
+                        ) : null}
 
-                                  {method.id === 'dlocalgo' && dlocalQuote?.localized ? (
-                                    <p className="mt-3 font-montserrat text-base font-semibold text-palette-ink">
-                                      {formatPrice(dlocalQuote.currency, dlocalQuote.amount)}
-                                      <span className="ml-2 font-raleway text-sm font-normal text-palette-stone">
-                                        en moneda local
-                                      </span>
-                                    </p>
-                                  ) : null}
-
-                                  {method.id === 'dlocalgo' && countryFromGeo && dlocalQuote?.localized ? (
-                                    <p className="mt-3 font-raleway text-sm text-palette-stone">
-                                      Precio estimado según tu ubicación ({payerCountry}). Confirmalo al registrarte.
-                                    </p>
-                                  ) : null}
-
-                                  {method.id === 'dlocalgo' && !payerCountry && !dlocalQuote?.localized ? (
-                                    <p className="mt-3 font-raleway text-sm text-palette-stone">
-                                      Al crear tu cuenta elegí tu país para pagar en moneda local y ver cuotas.
-                                    </p>
-                                  ) : null}
-
-                                  {method.id === 'mercadopago' ? (
-                                    <p className="mt-3 font-raleway text-sm text-palette-stone">
-                                      El formulario de pago se abre arriba.
-                                      {mpBrickAmount ? (
-                                        <>
-                                          {' '}
-                                          Total:{' '}
-                                          <span className="font-semibold text-palette-ink">
-                                            ${' '}
-                                            {mpBrickAmount.toLocaleString('es-UY', {
-                                              maximumFractionDigits: 0,
-                                            })}{' '}
-                                            {mpBrickCurrency || 'UYU'}
-                                          </span>
-                                        </>
-                                      ) : mpBrickLoading ? (
-                                        <> Calculando monto en pesos…</>
-                                      ) : null}
-                                    </p>
-                                  ) : null}
-
-                                  {isDisabled ? (
-                                    <p className="mt-3 text-left font-raleway text-sm text-palette-stone">
-                                      {method.unavailableLabel}
-                                    </p>
-                                  ) : null}
-
-                                </motion.div>
-                              </motion.div>
-                            ) : null}
-                          </AnimatePresence>
-                        </motion.div>
+                        {isSelected && method.id === 'mercadopago' && mpBrickLoading ? (
+                          <p className="mt-2 text-sm text-palette-stone">
+                            Calculando monto en pesos…
+                          </p>
+                        ) : null}
                       </div>
-                    </motion.div>
+                    </div>
                   </label>
                 );
               })}
@@ -967,21 +836,21 @@ export default function CourseCheckoutStart({
                 selectedMethod === 'mercadopago' ||
                 (selectedMethod === 'transferencia' && transferCooldownRemainingSec > 0)
               }
-              className={`mt-8 inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3.5 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-cream transition-all duration-200 hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink disabled:cursor-not-allowed disabled:opacity-50 ${
+              className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full border-2 bg-palette-ink px-6 py-3.5 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-cream transition-colors hover:bg-palette-sage hover:text-palette-ink disabled:cursor-not-allowed disabled:opacity-60 md:w-auto ${
                 selectedMethod === 'mercadopago' ? 'hidden' : ''
               }`}
             >
               {loadingMethod ? (
                 <>
                   <MiniLoadingSpinner />
-                  <span>Procesando...</span>
+                  <span>Procesando…</span>
                 </>
               ) : selectedMethod === 'transferencia' && transferCooldownRemainingSec > 0 ? (
                 <span>Reenviar en {transferCooldownRemainingSec}s</span>
               ) : selectedMethod === 'transferencia' ? (
                 <span>Recibir datos por email</span>
               ) : (
-                <span>Empezar AHORA</span>
+                <span>Continuar al pago</span>
               )}
             </button>
             {selectedMethod === 'mercadopago' && !auth.user ? (
@@ -991,7 +860,7 @@ export default function CourseCheckoutStart({
                   setLoadingMethod('mercadopago');
                   queueAuthForCheckout('mercadopago', mercadoPagoPlan?.paymentLink);
                 }}
-                className="mt-8 inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3.5 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-cream transition-all duration-200 hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink"
+                className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-palette-ink bg-palette-ink px-6 py-3.5 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-cream transition-colors hover:bg-palette-stone hover:text-palette-ink md:w-auto"
               >
                 <span>Iniciar sesión para pagar</span>
               </button>
