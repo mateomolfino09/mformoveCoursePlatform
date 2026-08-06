@@ -1,0 +1,35 @@
+name: PR develop -> main
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Crear PR hacia main si no existe uno abierto
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          EXISTING_PR=$(gh pr list --base main --head develop --state open --json number --jq '.[0].number')
+
+          if [ -n "$EXISTING_PR" ]; then
+            echo "Ya existe el PR #$EXISTING_PR develop -> main. No se crea uno nuevo."
+            exit 0
+          fi
+
+          gh pr create \
+            --base main \
+            --head develop \
+            --title "Release: develop -> main" \
+            --body "PR automático generado al pushear a \`develop\`. Revisar y mergear cuando esté listo para producción." \
+            || echo "No se pudo crear el PR (probablemente no hay diferencias entre develop y main). El workflow no falla por esto."
