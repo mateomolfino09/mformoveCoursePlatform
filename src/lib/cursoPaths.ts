@@ -11,6 +11,7 @@ const RESERVED_FIRST_SEGMENTS = new Set([
   'bitacora',
   'categoria-clases',
   'clases',
+  'clases-gratis',
   'contacto',
   'cuenta',
   'dev',

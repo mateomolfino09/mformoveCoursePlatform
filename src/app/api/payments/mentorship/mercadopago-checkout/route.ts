@@ -9,6 +9,13 @@ import { resolveMentorshipDlocalCheckoutOrigins } from '../../../../../lib/resol
 import { coursePaymentDebug, coursePaymentWarn } from '../../../../../lib/coursePaymentDebug';
 import { MERCADO_PAGO_MAX_INSTALLMENTS } from '../../mercadoPagoConfig';
 import { isProveedorHabilitado } from '../../../../../constants/paymentProveedores';
+import { userHasCuerpoAutonomo } from '../../../../../lib/userHasCuerpoAutonomo';
+import {
+  resolveCuerpoAutonomoDiscountFromPlan,
+  type MentorshipCuerpoAutonomoDiscount,
+} from '../../../../../lib/ensureMentorshipCuerpoAutonomoDiscount';
+import { applyCuerpoAutonomoDiscount } from '../../../../../constants/mentorshipCuerpoAutonomoDiscount';
+import type { MentorshipBillingInterval } from '../../../../../lib/mentorshipPricing';
 
 export const runtime = 'nodejs';
 
@@ -26,14 +33,16 @@ export async function POST(req: NextRequest) {
       _id?: string;
     };
 
-    const user = await User.findById(decoded.userId || decoded._id).select('email name');
+    const user = await User.findById(decoded.userId || decoded._id).select(
+      'email name cursosAdquiridos rol',
+    );
     if (!user) {
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
     }
 
     const body = await req.json().catch(() => ({}));
     const planId = String(body.planId || '').trim();
-    const interval = String(body.interval || '').trim();
+    const interval = String(body.interval || '').trim() as MentorshipBillingInterval;
 
     if (!planId || !interval) {
       return NextResponse.json({ error: 'planId e interval son requeridos' }, { status: 400 });
@@ -47,7 +56,7 @@ export async function POST(req: NextRequest) {
     if (!isProveedorHabilitado(plan.proveedoresHabilitados, 'mercadopago')) {
       return NextResponse.json(
         { error: 'Mercado Pago no está habilitado para este plan' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -59,12 +68,26 @@ export async function POST(req: NextRequest) {
     const { successBaseUrl, notificationBaseUrl } =
       resolveMentorshipDlocalCheckoutOrigins(req);
 
+    const elegible = await userHasCuerpoAutonomo(user);
+    const applied = elegible
+      ? resolveCuerpoAutonomoDiscountFromPlan(
+          plan.descuentoCuerpoAutonomo as MentorshipCuerpoAutonomoDiscount | undefined,
+          interval,
+        )
+      : null;
+
+    const basePrice = Number(priceEntry.price);
+    const precio = applied ? applyCuerpoAutonomoDiscount(basePrice, interval) : basePrice;
+
     coursePaymentDebug('mentorship.mercadopago_checkout.regenerate', {
       planId,
       interval,
       successBaseUrl,
       notificationBaseUrl,
-      precio: priceEntry.price,
+      precio,
+      precioBase: basePrice,
+      discountPercent: applied?.percent,
+      discountCode: applied?.code,
       moneda: priceEntry.currency,
       maxInstallments: MERCADO_PAGO_MAX_INSTALLMENTS,
     });
@@ -72,9 +95,11 @@ export async function POST(req: NextRequest) {
     const created = await createMentorshipMercadoPagoPaymentLink({
       planId,
       interval,
-      nombre: `${plan.name} (${interval})`,
+      nombre: applied
+        ? `${plan.name} (${interval}) · ${applied.percent}% OFF Cuerpo Autónomo`
+        : `${plan.name} (${interval})`,
       descripcion: plan.description || plan.name,
-      precio: Number(priceEntry.price),
+      precio,
       moneda: priceEntry.currency || 'USD',
       origin: successBaseUrl,
       notificationOrigin: notificationBaseUrl,
@@ -82,12 +107,20 @@ export async function POST(req: NextRequest) {
       maxInstallments: MERCADO_PAGO_MAX_INSTALLMENTS,
       userId: user._id.toString(),
       payerEmail: user.email,
+      discountMeta: applied
+        ? {
+            discountCode: applied.code,
+            discountPercent: applied.percent,
+            from: 'cuerpo-autonomo',
+            precioBase: basePrice,
+          }
+        : undefined,
     });
 
     if (!created.preferenceId) {
       return NextResponse.json(
         { error: 'No se pudo generar la preferencia de Mercado Pago' },
-        { status: 502 }
+        { status: 502 },
       );
     }
 
@@ -97,6 +130,8 @@ export async function POST(req: NextRequest) {
       externalReference: created.externalReference,
       amount: created.amount,
       currency: created.currency,
+      discountApplied: Boolean(applied),
+      discountPercent: applied?.percent ?? 0,
     });
   } catch (error) {
     coursePaymentWarn('mentorship.mercadopago_checkout.failed', {
@@ -104,7 +139,7 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Error al iniciar el pago' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

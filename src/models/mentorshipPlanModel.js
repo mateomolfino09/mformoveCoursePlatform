@@ -38,6 +38,18 @@ const mentorshipPlanSchema = new mongoose.Schema({
     type: [{ type: String, enum: ['stripe', 'dlocalgo', 'mercadopago'] }],
     default: undefined,
   },
+  /** Descuento alumni Cuerpo Autónomo (15% corto / 25% anual). */
+  descuentoCuerpoAutonomo: {
+    activo: { type: Boolean, default: true },
+    porcentajeCorto: { type: Number, default: 15 },
+    porcentajeAnual: { type: Number, default: 25 },
+    codigoCorto: { type: String },
+    codigoAnual: { type: String },
+    stripeCouponIdCorto: { type: String },
+    stripePromotionCodeIdCorto: { type: String },
+    stripeCouponIdAnual: { type: String },
+    stripePromotionCodeIdAnual: { type: String },
+  },
   // Campos legacy para compatibilidad/migración
   price: { type: Number },
   currency: { type: String },

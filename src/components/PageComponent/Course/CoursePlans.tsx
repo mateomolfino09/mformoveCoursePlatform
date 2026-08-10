@@ -9,11 +9,12 @@ import state from '../../../valtio';
 import endpoints from '../../../services/api';
 import Cookies from 'js-cookie';
 import { toast } from '../../../hooks/useToast';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react';
 import { MiniLoadingSpinner } from '../Products/MiniSpinner';
 import { savePlanIntent } from '../../../utils/redirectQueue';
 import { fetchOwnedCursoRedirectPath } from '../../../lib/resolveOwnedCursoRedirect';
 import imageLoader from '../../../../imageLoader';
+import { CldImage } from 'next-cloudinary';
 import { useCursoLanding } from './CursoLandingContext';
 import {
   landingCtaPrimary,
@@ -78,6 +79,12 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
     preventaPricing.enPreventa && preventaPricing.fechaLanzamiento
       ? `Accedé a todo el método el ${formatCursoFechaLargo(preventaPricing.fechaLanzamiento)}`
       : planes.titulo;
+  const sellosCorner = cursoConfig.mostrarSellosValidacion
+    ? [...(cursoConfig.sellosValidacion || [])]
+        .filter((s) => s.imagenPublicId?.trim())
+        .sort((a, b) => a.orden - b.orden)
+    : [];
+  const selloCorner = sellosCorner[0] ?? null;
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
   const [isNavigatingToCheckout, setIsNavigatingToCheckout] = useState(false);
 
@@ -408,6 +415,60 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
     );
   };
 
+  const resolvePrecioReferencia = (
+    plan: Plan,
+    referenceAmount?: number | null,
+  ) => {
+    if (referenceAmount != null && referenceAmount > 0) {
+      return Math.round(referenceAmount);
+    }
+    return Math.round((plan.amount || 0) * 3);
+  };
+
+  const PrecioAnteriorCompact = ({
+    plan,
+    currentAmount,
+    referenceAmount,
+  }: {
+    plan: Plan;
+    currentAmount: number;
+    referenceAmount?: number | null;
+  }) => {
+    const precioReferencia = resolvePrecioReferencia(plan, referenceAmount);
+    const precioActual = Math.round(currentAmount);
+    const ahorro = Math.max(0, precioReferencia - precioActual);
+    if (precioReferencia <= 0 || ahorro <= 0) return null;
+
+    const formatNum = (n: number) =>
+      new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 }).format(n);
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+        viewport={{ once: true }}
+        className="mt-3 flex flex-col items-center gap-1.5 px-2 text-center md:mt-4"
+      >
+        <p className="font-montserrat text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-palette-ink/70">
+          Precio anterior{' '}
+          <span className="relative inline-block tabular-nums text-palette-ink/60">
+            <span className="line-through decoration-red-600/80 decoration-2">
+              {formatNum(precioReferencia)}
+            </span>{' '}
+            <span className="text-[0.55rem] tracking-[0.16em]">USD</span>
+          </span>
+        </p>
+        <p className="font-montserrat text-sm font-semibold tracking-tight text-palette-ink md:text-base">
+          Ahorrás{' '}
+          <span className="tabular-nums">
+            {formatPrice(plan.currency || 'USD', ahorro)}
+          </span>
+        </p>
+      </motion.div>
+    );
+  };
+
   const PriceReferenceCard = ({
     plan,
     referenceAmount,
@@ -415,10 +476,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
     plan: Plan;
     referenceAmount?: number | null;
   }) => {
-    const precioReferencia =
-      referenceAmount != null && referenceAmount > 0
-        ? Math.round(referenceAmount)
-        : Math.round((plan.amount || 0) * 3);
+    const precioReferencia = resolvePrecioReferencia(plan, referenceAmount);
     const precioFormateado = new Intl.NumberFormat('es-AR', {
       maximumFractionDigits: 0,
     }).format(precioReferencia);
@@ -500,8 +558,8 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
         {/* Ilustración medios de pago — centrada en la tarjeta */}
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-4 pt-[4.5rem] pb-[5.5rem] md:px-4 md:pt-20 md:pb-24">
           <Image
-            src="/images/logos/tarjetasmpstripe2.png"
-            alt="Pagos con Mercado Pago y Stripe."
+            src={planes.imagenPagosUrl || '/images/logos/tarjetasmpstripe2.png'}
+            alt={planes.imagenPagosAlt || 'Pagos con Mercado Pago y Stripe.'}
             width={640}
             height={400}
             sizes="(max-width: 768px) 90vw, 18rem"
@@ -519,12 +577,104 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
 
         <div className="pointer-events-none absolute inset-x-0 bottom-5 z-20 px-5 pb-4 text-center text-palette-ink md:bottom-4 md:px-5 md:pb-4">
           <p className="font-raleway text-base leading-snug text-palette-ink md:text-lg">
-            Hasta 12 cuotas en Uruguay y Latinoamérica (dLocal o Mercado Pago)
+            Hasta 12 cuotas · Uruguay y Latinoamérica
           </p>
         </div>
       </motion.div>
     );
   };
+
+  const SelloRecomendacionCard = () => {
+    if (!selloCorner) return null;
+
+    const image = (
+      <CldImage
+        src={selloCorner.imagenPublicId}
+        alt={selloCorner.alt || 'Sello de validación'}
+        width={480}
+        height={240}
+        className="h-auto max-h-[10.5rem] w-full max-w-[min(100%,15rem)] object-contain drop-shadow-[0_12px_28px_rgba(20,20,17,0.14)] md:max-h-[11.5rem] md:max-w-[16rem]"
+      />
+    );
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+        viewport={{ once: true }}
+        className={`relative isolate flex h-full min-h-[20.5rem] w-full min-w-0 flex-col overflow-hidden ${landingPlanCardSide} p-5 text-center text-palette-ink sm:min-h-[21rem] md:min-h-[20rem] md:p-5`}
+      >
+        <div className="pointer-events-none absolute inset-0 z-0">
+          <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-palette-sage/[0.12] blur-3xl" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-sage/30 to-transparent opacity-80" />
+        </div>
+
+        <div className="relative z-20 shrink-0 px-1 pt-2 text-center md:pt-3">
+          <h3 className="text-balance font-montserrat text-[clamp(1.2rem,3.1vw,1.72rem)] font-semibold tracking-tight leading-tight text-palette-ink">
+            <b>PRODUCTO</b>
+            <br />{' '}
+            <span className="relative bottom-1 text-xl text-palette-ink md:bottom-2 md:text-2xl">
+              RECOMENDADO POR:
+            </span>
+          </h3>
+        </div>
+
+        <div className="relative z-10 flex flex-1 items-center justify-center px-3 pb-4 pt-6 md:pb-5 md:pt-8">
+          <motion.div
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+            whileHover={{ scale: 1.04 }}
+          >
+            {selloCorner.enlace?.trim() ? (
+              <a
+                href={selloCorner.enlace.trim()}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={
+                  selloCorner.alt ||
+                  cursoConfig.sellosValidacionTitulo ||
+                  'Sello de validación'
+                }
+                className="block"
+              >
+                {image}
+              </a>
+            ) : (
+              image
+            )}
+          </motion.div>
+        </div>
+      </motion.div>
+    );
+  };
+
+  const PlansCheckoutFooter = ({
+    cta,
+  }: {
+    cta: ReactNode;
+  }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true }}
+      className="mx-auto mt-10 max-w-3xl px-4 text-center md:mt-14"
+    >
+      {cta}
+      <div className="mx-auto mt-6 max-w-2xl space-y-3.5 text-balance text-palette-stone md:mt-8 md:max-w-3xl md:space-y-4">
+        <p className="font-montserrat text-xs font-semibold uppercase tracking-[0.14em] text-palette-ink md:text-sm">
+          {planes.etiquetaFormasPago}
+        </p>
+        <p className="text-sm font-light leading-relaxed md:text-base">
+          {planes.copyUruguayLatam}
+        </p>
+        <p className="text-sm font-light leading-relaxed md:text-base">
+          {planes.copyRestoMundo}
+        </p>
+      </div>
+    </motion.div>
+  );
 
   const renderPlans = () => {
     if (activeCheckoutPlans.length > 0) {
@@ -560,15 +710,19 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           <motion.div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-6 lg:gap-7">
             <div className="order-2 flex h-auto items-start min-h-0 md:order-1 md:h-full md:col-span-4 md:items-stretch md:pt-10 md:[transform:translateZ(-80px)_rotateY(9deg)]">
               <motion.div className="h-auto w-full md:h-full md:min-h-0 md:translate-x-5 md:scale-[0.96] md:opacity-90">
-                <PriceReferenceCard
-                  plan={displayPlan}
-                  referenceAmount={
-                    preventaPricing.enPreventa ? lanzamientoMonto : null
-                  }
-                />
+                {selloCorner ? (
+                  <SelloRecomendacionCard />
+                ) : (
+                  <PriceReferenceCard
+                    plan={displayPlan}
+                    referenceAmount={
+                      preventaPricing.enPreventa ? lanzamientoMonto : null
+                    }
+                  />
+                )}
               </motion.div>
             </div>
-            <div className="order-1 flex h-full min-h-0 md:order-2 md:col-span-4 md:[transform:translateZ(60px)]">
+            <div className="order-1 flex h-full min-h-0 flex-col md:order-2 md:col-span-4 md:[transform:translateZ(60px)]">
               <PlanCard
                 plan={displayPlan}
                 index={0}
@@ -577,6 +731,15 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
                 fechaLanzamiento={preventaPricing.fechaLanzamiento}
                 preventaFechaFin={preventaPricing.preventaFechaFin}
               />
+              {selloCorner ? (
+                <PrecioAnteriorCompact
+                  plan={displayPlan}
+                  currentAmount={checkoutDisplayAmount}
+                  referenceAmount={
+                    preventaPricing.enPreventa ? lanzamientoMonto : null
+                  }
+                />
+              ) : null}
             </div>
             <div className="order-3 flex h-full min-h-0 md:order-3 md:col-span-4 md:pt-10 md:[transform:translateZ(-80px)_rotateY(-9deg)]">
               <motion.div className="h-full min-h-0 w-full md:-translate-x-5 md:scale-[0.96] md:opacity-90">
@@ -585,45 +748,30 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
             </div>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-            viewport={{ once: true }}
-            className="mx-auto mt-10 max-w-3xl px-4 text-center md:mt-14"
-          >
-            <button
-              type="button"
-              onClick={handleGoToCheckout}
-              disabled={isNavigatingToCheckout}
-              className={`${landingCtaPrimary} w-full px-10 py-4 disabled:cursor-not-allowed disabled:opacity-50 sm:px-12 md:w-auto md:px-14`}
-            >
-              {isNavigatingToCheckout ? (
-                <>
-                  <MiniLoadingSpinner />
-                  <span>Redirigiendo...</span>
-                </>
-              ) : (
-                <>
-                  <span>Empezar AHORA</span>
-                  <span className="opacity-80 translate-y-[0.5px] transition-transform duration-200">
-                    →
-                  </span>
-                </>
-              )}
-            </button>
-            <div className="mx-auto mt-6 max-w-2xl space-y-3.5 text-balance text-palette-stone md:mt-8 md:max-w-3xl md:space-y-4">
-              <p className="font-montserrat text-xs font-semibold uppercase tracking-[0.14em] text-palette-ink md:text-sm">
-                {planes.etiquetaFormasPago}
-              </p>
-              <p className="text-sm font-light leading-relaxed md:text-base">
-                {planes.copyUruguayLatam}
-              </p>
-              <p className="text-sm font-light leading-relaxed md:text-base">
-                {planes.copyRestoMundo}
-              </p>
-            </div>
-          </motion.div>
+          <PlansCheckoutFooter
+            cta={
+              <button
+                type="button"
+                onClick={handleGoToCheckout}
+                disabled={isNavigatingToCheckout}
+                className={`${landingCtaPrimary} w-full px-10 py-4 disabled:cursor-not-allowed disabled:opacity-50 sm:px-12 md:w-auto md:px-14`}
+              >
+                {isNavigatingToCheckout ? (
+                  <>
+                    <MiniLoadingSpinner />
+                    <span>Redirigiendo...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Empezar AHORA</span>
+                    <span className="opacity-80 translate-y-[0.5px] transition-transform duration-200">
+                      →
+                    </span>
+                  </>
+                )}
+              </button>
+            }
+          />
         </motion.div>
       );
     }
@@ -664,17 +812,21 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           {/* Mobile: el plan primero. Desktop: a la izquierda, “card atrás” con precio viejo */}
           <div className="order-2 flex h-auto items-start min-h-0 md:order-1 md:h-full md:col-span-4 md:items-stretch md:pt-10 md:[transform:translateZ(-80px)_rotateY(9deg)]">
             <div className="h-auto w-full md:h-full md:min-h-0 md:translate-x-5 md:scale-[0.96] md:opacity-90">
-              <PriceReferenceCard
-                plan={displayPlan}
-                referenceAmount={
-                  preventaPricing.enPreventa ? lanzamientoMonto : null
-                }
-              />
+              {selloCorner ? (
+                <SelloRecomendacionCard />
+              ) : (
+                <PriceReferenceCard
+                  plan={displayPlan}
+                  referenceAmount={
+                    preventaPricing.enPreventa ? lanzamientoMonto : null
+                  }
+                />
+              )}
             </div>
           </div>
 
           {/* Centro: plan principal */}
-          <motion.div className="order-1 flex h-full min-h-0 md:order-2 md:col-span-4 md:[transform:translateZ(60px)]">
+          <motion.div className="order-1 flex h-full min-h-0 flex-col md:order-2 md:col-span-4 md:[transform:translateZ(60px)]">
             <PlanCard
               plan={displayPlan}
               index={0}
@@ -687,6 +839,19 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
               fechaLanzamiento={preventaPricing.fechaLanzamiento}
               preventaFechaFin={preventaPricing.preventaFechaFin}
             />
+            {selloCorner ? (
+              <PrecioAnteriorCompact
+                plan={displayPlan}
+                currentAmount={
+                  preventaPricing.enPreventa && preventaPricing.precioPreventaActivo
+                    ? preventaPricing.precioPreventaActivo.monto
+                    : displayPlan.amount
+                }
+                referenceAmount={
+                  preventaPricing.enPreventa ? lanzamientoMonto : null
+                }
+              />
+            ) : null}
           </motion.div>
 
           {/* Derecha: cuotas / MercadoPago Uruguay */}
@@ -697,45 +862,29 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           </div>
         </div>
 
-        {/* CTA abajo del bloque 3D */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          viewport={{ once: true }}
-          className="mx-auto mt-10 max-w-3xl px-4 text-center md:mt-14"
-        >
-          <button
-            onClick={() => handleSelect(displayPlan)}
-            disabled={loadingPlanId === displayPlan._id}
-            className={`${landingCtaPrimary} w-full px-10 py-4 disabled:cursor-not-allowed disabled:opacity-50 sm:px-12 md:w-auto md:px-14`}
-          >
-            {loadingPlanId === displayPlan._id ? (
-              <>
-                <MiniLoadingSpinner />
-                <span>Procesando...</span>
-              </>
-            ) : (
-              <>
-                <span>Entrar ahora</span>
-                <span className="opacity-80 translate-y-[0.5px] transition-transform duration-200">
-                  →
-                </span>
-              </>
-            )}
-          </button>
-          <div className="mx-auto mt-6 max-w-2xl space-y-3.5 text-balance text-palette-stone md:mt-8 md:max-w-3xl md:space-y-4">
-            <p className="font-montserrat text-xs font-semibold uppercase tracking-[0.14em] text-palette-ink md:text-sm">
-              {planes.etiquetaFormasPago}
-            </p>
-            <p className="text-sm font-light leading-relaxed md:text-base">
-              {planes.copyUruguayLatam}
-            </p>
-            <p className="text-sm font-light leading-relaxed md:text-base">
-              {planes.copyRestoMundo}
-            </p>
-          </div>
-        </motion.div>
+        <PlansCheckoutFooter
+          cta={
+            <button
+              onClick={() => handleSelect(displayPlan)}
+              disabled={loadingPlanId === displayPlan._id}
+              className={`${landingCtaPrimary} w-full px-10 py-4 disabled:cursor-not-allowed disabled:opacity-50 sm:px-12 md:w-auto md:px-14`}
+            >
+              {loadingPlanId === displayPlan._id ? (
+                <>
+                  <MiniLoadingSpinner />
+                  <span>Procesando...</span>
+                </>
+              ) : (
+                <>
+                  <span>Entrar ahora</span>
+                  <span className="opacity-80 translate-y-[0.5px] transition-transform duration-200">
+                    →
+                  </span>
+                </>
+              )}
+            </button>
+          }
+        />
       </div>
     );
   };
@@ -743,19 +892,16 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
   return (
     <>
     <section
-      className={`${landingSectionShell} py-14 md:py-20`}
+      className={`${landingSectionShell} relative overflow-visible py-14 md:py-20`}
       id={plansSectionId}
     >
-
       <div className={`relative ${landingSectionContainer} text-center`}>
         <motion.div
           {...landingFadeUp}
-          className={`${landingHeaderBlock} mx-auto text-center`}
+          className={`${landingHeaderBlock} relative z-10 mx-auto max-w-3xl text-center`}
         >
           <p className={landingEyebrow}>Inversión</p>
-          <h2 className={landingSectionTitle}>
-            {planesTitulo}
-          </h2>
+          <h2 className={landingSectionTitle}>{planesTitulo}</h2>
           {preventaPricing.enPreventa ? (
             <p className="mt-4 font-montserrat text-xs font-semibold uppercase tracking-[0.26em] text-palette-stone md:text-sm">
               Preventa
@@ -768,14 +914,14 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true }}
-          className={`${landingSectionBody} mx-auto mb-10 max-w-4xl space-y-4 text-balance text-center md:mb-14 md:space-y-5`}
+          className={`${landingSectionBody} relative z-10 mx-auto mb-10 max-w-3xl space-y-4 text-balance text-center md:mb-14 md:max-w-4xl md:space-y-5`}
         >
           {planes.parrafosValor.map((paragraph, i) => (
             <p key={i}>{paragraph}</p>
           ))}
         </motion.div>
 
-        <div className="[perspective:1200px]">
+        <div className="relative z-10 [perspective:1200px]">
           {renderPlans()}
         </div>
       </div>

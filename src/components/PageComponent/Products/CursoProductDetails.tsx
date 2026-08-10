@@ -130,6 +130,15 @@ export default function CursoProductDetails({
             value={cursoConfig.imagenCheckoutPublicId || portada || 'Sin imagen'}
             showBorder={false}
           />
+          <InfoModalField
+            label="Sellos de validación"
+            value={
+              cursoConfig.mostrarSellosValidacion
+                ? `Activos (${cursoConfig.sellosValidacion?.filter((s) => s.imagenPublicId).length || 0})`
+                : 'Desactivados'
+            }
+            showBorder={false}
+          />
         </div>
       </InfoModalSection>
 

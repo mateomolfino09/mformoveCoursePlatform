@@ -18,6 +18,14 @@ export type MentorshipCheckoutPayload = {
     stripePriceId: string;
   };
   opcionesPago: MentorshipPlanPagoOption[];
+  descuentoCuerpoAutonomo?: {
+    elegible: boolean;
+    porcentajeCorto: number;
+    porcentajeAnual: number;
+    porcentajeAplicado: number;
+    codigo: string;
+    activo: boolean;
+  };
 };
 
 type BootstrapState =

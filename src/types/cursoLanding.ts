@@ -156,10 +156,23 @@ export type CursoPrecioPreventa = {
   opcionesPago: CursoPlanPago[];
 };
 
+/** Logo de seguro, patrocinador o validador del producto (landing). */
+export type CursoSelloValidacion = {
+  imagenPublicId: string;
+  alt: string;
+  /** URL opcional al hacer click en el sello. */
+  enlace: string;
+  orden: number;
+};
+
 export type CursoLandingConfig = {
   slug: string;
   publicado: boolean;
   fechaPublicacion: string | null;
+  /** Default false. Si es true, reemplaza la card de precio anterior por el sello en Inversión. */
+  mostrarSellosValidacion: boolean;
+  sellosValidacionTitulo: string;
+  sellosValidacion: CursoSelloValidacion[];
   preciosPreventa: CursoPrecioPreventa[];
   contenidoModulos: CursoModuloContenido[];
   imagenCheckoutPublicId: string;
@@ -475,6 +488,13 @@ export const createDefaultTestimonioEscrito = (
   };
 };
 
+export const createDefaultSelloValidacion = (orden = 0): CursoSelloValidacion => ({
+  imagenPublicId: '',
+  alt: '',
+  enlace: '',
+  orden,
+});
+
 export const createDefaultPrecioPreventa = (orden = 0): CursoPrecioPreventa => ({
   etiqueta: 'Preventa',
   descripcion: 'Precio especial antes del lanzamiento.',
@@ -543,6 +563,9 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
   slug: 'cuerpo-autonomo',
   publicado: false,
   fechaPublicacion: null,
+  mostrarSellosValidacion: false,
+  sellosValidacionTitulo: 'Respaldado por',
+  sellosValidacion: [],
   preciosPreventa: [],
   contenidoModulos: syncContenidoModulosFromHighlights(
     CURSO_HIGHLIGHTS_PRESETS.map((item) => ({ ...item }))
@@ -625,11 +648,11 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
     ],
     etiquetaFormasPago: 'Formas de pago y financiación',
     copyUruguayLatam:
-      'Uruguay y Latinoamérica: Pagá en tu moneda local y aprovechá hasta 12 cuotas (dLocal o Mercado Pago)',
+      'Uruguay y Latinoamérica: Pagá en tu moneda local y aprovechá hasta 12 cuotas con Mercado Pago.',
     copyRestoMundo: 'Resto del Mundo (Stripe): Pago rápido en USD mediante tarjetas internacionales, Apple Pay o Google Pay.',
-    copyCuotasTarjeta: 'Hasta 12 cuotas en Uruguay y Latinoamérica con dLocal o Mercado Pago',
-    imagenPagosUrl: '/images/svg/pagodoble.png',
-    imagenPagosAlt: 'Cuotas con tarjeta: Mercado Pago, dLocal y Stripe.',
+    copyCuotasTarjeta: 'Hasta 12 cuotas · Uruguay y Latinoamérica con Mercado Pago',
+    imagenPagosUrl: '/images/logos/tarjetasmpstripe2.png',
+    imagenPagosAlt: 'Pagos con Mercado Pago y Stripe.',
     diasUrgencia: 7,
     emailSinPlanes: 'hola@mformove.com',
     ctaSinPlanes: 'Recibir novedades',
@@ -817,6 +840,17 @@ export const normalizeCursoLandingConfig = (
   return {
     ...defaults,
     ...partial,
+    mostrarSellosValidacion: Boolean(partial.mostrarSellosValidacion),
+    sellosValidacionTitulo:
+      partial.sellosValidacionTitulo?.trim() || defaults.sellosValidacionTitulo,
+    sellosValidacion: Array.isArray(partial.sellosValidacion)
+      ? partial.sellosValidacion.map((item, index) => ({
+          imagenPublicId: normalizeCloudinaryAssetId(item?.imagenPublicId || ''),
+          alt: item?.alt?.trim() || '',
+          enlace: item?.enlace?.trim() || '',
+          orden: typeof item?.orden === 'number' ? item.orden : index,
+        }))
+      : defaults.sellosValidacion,
     preciosPreventa: mergePreciosPreventa(partial.preciosPreventa),
     contenidoModulos: mergeContenidoModulos(partial.contenidoModulos, mergedHighlights),
     hero: {

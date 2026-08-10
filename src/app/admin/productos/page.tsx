@@ -1,7 +1,7 @@
 'use client';
 
 import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
-import { PlusCircleIcon, TableCellsIcon } from '@heroicons/react/24/outline';
+import { PlusCircleIcon, TableCellsIcon, GiftIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { useRouter } from 'next13-progressbar';
 import { useAuth } from '../../../hooks/useAuth';
@@ -40,7 +40,7 @@ const Index = () => {
         </p>
       </div>
 
-      <div className='grid lg:grid-cols-3 gap-6 mb-8'>
+      <div className='grid lg:grid-cols-4 gap-6 mb-8'>
         <Link href={'/admin/productos/crear-producto'}>
           <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
             <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
@@ -66,6 +66,15 @@ const Index = () => {
               <TableCellsIcon className='w-12 h-12 text-white transition-colors duration-300' />
             </div>
             <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Productos</p>
+          </div>
+        </Link>
+        <Link href={'/admin/productos/clases-gratis'}>
+          <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
+            <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+            <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
+              <GiftIcon className='w-12 h-12 text-white transition-colors duration-300' />
+            </div>
+            <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Clases Gratuitas</p>
           </div>
         </Link>
       </div>

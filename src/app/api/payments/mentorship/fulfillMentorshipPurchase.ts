@@ -3,6 +3,7 @@ import MentorshipPlan from '../../../../models/mentorshipPlanModel';
 import User from '../../../../models/userModel';
 import { coursePaymentDebug, coursePaymentWarn } from '../../../../lib/coursePaymentDebug';
 import { grantAnnualMentorshipProductGifts } from '../../../../lib/grantAnnualMentorshipProductGifts';
+import { EmailService } from '../../../../services/email/emailService';
 
 export type FulfillMentorshipPurchaseInput = {
   planId: string;
@@ -204,6 +205,28 @@ export async function fulfillMentorshipPurchase({
   await user.save();
 
   await maybeGrantAnnualGifts(user, interval, transactionId);
+
+  try {
+    if (user.email) {
+      const emailService = EmailService.getInstance();
+      await emailService.sendWelcomeMentorship({
+        email: user.email,
+        name: user.name || 'Mover',
+        calendlyLink:
+          process.env.NEXT_PUBLIC_MENTORSHIP_CALENDLY_URL ||
+          'https://calendly.com/mformovers/consulta-mentoria',
+      });
+      coursePaymentDebug('mentorship.fulfill.welcome_email_sent', {
+        userId: user._id.toString(),
+        email: user.email,
+      });
+    }
+  } catch (emailError) {
+    coursePaymentWarn('mentorship.fulfill.welcome_email_error', {
+      userId: user._id.toString(),
+      emailError,
+    });
+  }
 
   coursePaymentDebug('mentorship.fulfill.granted', {
     userId: user._id.toString(),
