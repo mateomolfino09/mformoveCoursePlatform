@@ -32,8 +32,8 @@ export function buildWelcomeCourseEmailPreviewData(
     courseName: 'Cuerpo Autónomo',
     welcomeUrl: `${origin}/pago/exito?productId=6a0a4d25d13df40e5d2ecfeb&tipo=curso`,
     coverImageUrl:
-      'https://res.cloudinary.com/dbeem2avp/image/upload/my_uploads/vvjbwcqxcrncvk90nmzs.jpg',
-    incluyeTitulo: 'Esto es lo que incluye tu programa',
+      'https://res.cloudinary.com/dbeem2avp/image/upload/c_fill,g_auto,w_800,h_1067,f_jpg,q_auto/v1/my_uploads/pk3mfwueblbu7jgrxorq',
+    incluyeTitulo: 'Esto es lo que incluye tu programa:',
     offerBlocks: [
       {
         title: 'Clases en video',

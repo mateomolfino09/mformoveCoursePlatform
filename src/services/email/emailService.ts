@@ -1004,7 +1004,7 @@ el bienestar fisico y emocional.
               <img src="${coverImage}"
                    alt="${courseName}"
                    width="400"
-                   height="267"
+                   height="533"
                    style="width: 100%; max-width: 400px; height: auto; border-radius: 10px; display: block; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;"
                    border="0" />
             </td>

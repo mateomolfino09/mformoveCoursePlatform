@@ -116,6 +116,7 @@ export async function createStripeMentorshipPaymentLink({
   try {
     const paymentLink = await stripe.paymentLinks.create({
       ...baseParams,
+      allow_promotion_codes: true,
       subscription_data: {
         metadata: {
           planId,
@@ -143,7 +144,10 @@ export async function createStripeMentorshipPaymentLink({
       message,
     });
 
-    const paymentLink = await stripe.paymentLinks.create(baseParams);
+    const paymentLink = await stripe.paymentLinks.create({
+      ...baseParams,
+      allow_promotion_codes: true,
+    });
 
     return {
       paymentLink: paymentLink.url || '',

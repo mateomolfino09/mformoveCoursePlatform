@@ -1,4 +1,5 @@
 import EditProduct from '../../../../../components/PageComponent/Products/EditProduct';
+import EditFreeSequentialProduct from '../../../../../components/PageComponent/Products/EditFreeSequentialProduct';
 import connectDB from '../../../../../config/connectDB';
 import Product from '../../../../../models/productModel';
 import { notFound } from 'next/navigation';
@@ -23,6 +24,10 @@ export default async function Page({ params }: Props) {
 
     // Convertir el objeto de Mongoose a JSON para evitar problemas de serialización
     const productJson = JSON.parse(JSON.stringify(product));
+
+    if (productJson.tipo === 'clases_gratuitas_secuenciales') {
+      return <EditFreeSequentialProduct product={productJson} />;
+    }
 
     return <EditProduct product={productJson} />;
   } catch (error) {

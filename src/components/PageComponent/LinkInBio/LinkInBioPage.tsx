@@ -1,11 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { FormEvent, useState } from 'react';
 import { CldImage } from 'next-cloudinary';
 import { motion } from 'framer-motion';
 import { CiInstagram, CiMail, CiYoutube } from 'react-icons/ci';
 import { FaWhatsapp } from 'react-icons/fa';
+import { WHATSAPP_GROUP_LINK } from '../../../constants/community';
 import { LINK_IN_BIO_HERO_PUBLIC_ID, LINK_IN_BIO_SOCIAL } from '../../../constants/linkInBio';
+import { toast } from '../../../hooks/useToast';
 import type { LinkInBioProductCard } from '../../../lib/linkInBioProducts';
 import LinkInBioColorfulBackdrop from './LinkInBioColorfulBackdrop';
 import LinkInBioProductCarousel from './LinkInBioProductCarousel';
@@ -14,6 +17,8 @@ type Props = {
   latestCursoSlug?: string | null;
   products: LinkInBioProductCard[];
 };
+
+const EMAIL_RE = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const SOCIAL = [
   {
@@ -29,8 +34,8 @@ const SOCIAL = [
     external: true,
   },
   {
-    href: LINK_IN_BIO_SOCIAL.whatsapp,
-    label: 'WhatsApp',
+    href: WHATSAPP_GROUP_LINK,
+    label: 'Comunidad de WhatsApp',
     Icon: FaWhatsapp,
     external: true,
   },
@@ -75,6 +80,86 @@ function SocialLinks() {
         </motion.a>
       ))}
     </div>
+  );
+}
+
+function LinkInBioNewsletter() {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const onSubscribe = async (e: FormEvent) => {
+    e.preventDefault();
+    const trimmed = email.trim();
+
+    if (!EMAIL_RE.test(trimmed.toLowerCase())) {
+      toast.error('Ingresá un email válido');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: trimmed }),
+      });
+      const result = await response.json();
+
+      if (result.status >= 400) {
+        if (result.title === 'Member Exists') {
+          toast.error('Este email ya está en la lista.');
+        } else {
+          toast.error('No pudimos suscribirte. Probá de nuevo.');
+        }
+        return;
+      }
+
+      toast.success('¡Gracias por sumarte!');
+      setEmail('');
+    } catch {
+      toast.error('No pudimos suscribirte. Probá de nuevo.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <motion.form
+      onSubmit={onSubscribe}
+      className="mt-10 space-y-4"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.9, duration: 0.45, ease: easeOut }}
+    >
+      <div className="mb-1 flex items-center gap-3">
+        <span aria-hidden className="h-px flex-1 bg-palette-cream/15" />
+        <p className="shrink-0 font-montserrat text-[10px] font-semibold uppercase tracking-[0.22em] text-palette-cream/65">
+          Recibí ideas para moverte mejor
+        </p>
+        <span aria-hidden className="h-px flex-1 bg-palette-cream/15" />
+      </div>
+      <div className="flex items-stretch gap-2">
+        <input
+          id="bio-newsletter-email"
+          type="email"
+          name="email"
+          autoComplete="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Tu email"
+          disabled={loading}
+          className="min-w-0 flex-1 rounded-full border border-palette-cream/25 bg-white px-4 py-3 font-montserrat text-sm text-gray-900 placeholder:text-gray-500 outline-none transition focus:border-palette-cream/50 disabled:opacity-60"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="shrink-0 rounded-full border border-palette-cream/30 bg-palette-cream px-4 py-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.14em] text-palette-ink transition hover:bg-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {loading ? '...' : 'Sumarme'}
+        </button>
+      </div>
+    </motion.form>
   );
 }
 
@@ -184,6 +269,8 @@ export default function LinkInBioPage({ products }: Props) {
           <div className="min-w-0">
             <LinkInBioProductCarousel products={products} />
           </div>
+
+          <LinkInBioNewsletter />
 
           <footer className="mt-6">
             <motion.div

@@ -111,6 +111,7 @@ export async function POST(req) {
       grupoWhatsapp,
       esProgramaTransformacional,
       programaTransformacional,
+      secuenciaConfig,
     } = data;
 
     const invitacionGrupoResolved = resolveInvitacionGrupoWhatsappFromPayload({
@@ -316,7 +317,7 @@ export async function POST(req) {
 
       product = await Product.create(productoData);
 
-      
+
       const stripeResult = await createEventProductWithPrices({
         nombre,
         descripcion,
@@ -380,6 +381,7 @@ export async function POST(req) {
           stripePromotionCodeId
         } : undefined,
         cursoConfig: tipo === 'curso' ? cursoConfigParaGuardar : undefined,
+        secuenciaConfig: tipo === 'clases_gratuitas_secuenciales' ? secuenciaConfig : undefined,
         invitacionGrupoWhatsapp: invitacionGrupoResolved || undefined,
         esProgramaTransformacional: esProgramaTransformacional || undefined,
         programaTransformacional: programaTransformacionalParaGuardar,

@@ -75,6 +75,9 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
     const isCursoContenidoHub = cursoPublicPath?.subpath === 'contenido';
     /** Reproductor de clase del curso. */
     const isCursoClasePage = cursoPublicPath?.subpath === 'clase';
+    /** Clases gratuitas secuenciales (/clases-gratis/...). */
+    const isClasesGratisPage = path.startsWith('/clases-gratis');
+    const isClasesGratisClasePage = /^\/clases-gratis\/[^/]+\/clase\//.test(path);
     /** Landing comercial: mentoría, landing y checkout de curso (no contenido/clase). */
     const isCursoCommercialLanding =
       isCursoLanding && !isCursoContenidoHub && !isCursoClasePage;
@@ -338,7 +341,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
             ? true
             : (isLibraryModulePage
                 ? !scrolled
-                : (isCursoClasePage
+                : (isCursoClasePage || isClasesGratisClasePage
                     ? true
                     : (isCursoContenidoHub
                         ? !scrolled
@@ -369,6 +372,15 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
     if (isLibraryArea && !isLibraryModulePage && scrolled) {
         headerBgClass = 'bg-palette-cream/70 backdrop-blur-sm';
     }
+    // Clase de curso con sidebar de clases abierto (desktop): header sólido, mismo color que el sidebar
+    // (bg-palette-ink) y sin blur/transparencia, para que ambos se vean como una sola superficie continua.
+    if ((isCursoClasePage || isClasesGratisClasePage) && sidebarOpen) {
+        headerBgClass = 'bg-palette-ink';
+    }
+    // Clases gratis: fondo oscuro muy sutil para que logo/botones se lean sobre el video.
+    if (isClasesGratisPage && !sidebarOpen && !(showNav || snap.weeklyPathNavOpen)) {
+        headerBgClass = 'bg-black/20 backdrop-blur-[2px]';
+    }
     // Con el menú normal o Cuerpo autónomo abierto, el header siempre transparente (blanco/negro queda transparente)
     if (showNav || snap.weeklyPathNavOpen) {
         headerBgClass = 'bg-transparent';
@@ -384,7 +396,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 		? true
 		: (isLibraryModulePage
 		? !scrolled
-		: (isCursoClasePage
+		: (isCursoClasePage || isClasesGratisClasePage
 		? true
 		: (isCursoContenidoHub
 		? !scrolled
@@ -464,7 +476,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 				<m.div
 					initial={{ y: 0, opacity: 1 }}
 					animate={{ y: 0, opacity: 1 }}
-					className={`fixed w-full h-16 min-h-14 px-4 py-3 md:py-12 md:px-8 transition-all duration-500 ease-in-out ${(snap.weeklyPathNavOpen || snap.bitacoraNavOpen) ? 'z-[300]' : 'z-[250]'} ${headerBgClass}`} 
+					className={`fixed w-full h-16 min-h-14 px-4 py-3 ${(isCursoClasePage || isClasesGratisClasePage) && sidebarOpen ? 'md:py-4' : 'md:py-12'} md:px-8 transition-all duration-500 ease-in-out ${(snap.weeklyPathNavOpen || snap.bitacoraNavOpen) ? 'z-[300]' : 'z-[250]'} ${headerBgClass}`}
 				>
 					{isWeeklyPath ? (
 						// Distribución especial para camino: flex en 3 zonas; más espacio a la derecha del logo solo aquí
@@ -826,13 +838,15 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									type="button"
 									onClick={() => { state.authModalMode = 'login'; state.loginForm = true; }}
 									className={`rounded-full px-4 py-2 border transition-colors duration-200 font-montserrat font-light text-xs tracking-[0.12em] uppercase shrink-0 ${
-										headerButtonsOpaque
-											? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-sage hover:border-palette-sage'
-											: isMembershipLanding
-												? 'text-palette-ink border border-palette-ink/60 hover:bg-palette-cream hover:border-palette-ink'
-												: isLightText
-													? 'text-white border border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage hover:text-palette-ink'
-													: 'text-palette-ink border border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage'
+										isClasesGratisPage
+											? 'bg-transparent text-white border-white/80 hover:bg-white/10 hover:border-white'
+											: headerButtonsOpaque
+												? 'bg-palette-cream/95 text-palette-ink border border-palette-stone/30 hover:bg-palette-sage hover:border-palette-sage'
+												: isMembershipLanding
+													? 'text-palette-ink border border-palette-ink/60 hover:bg-palette-cream hover:border-palette-ink'
+													: isLightText
+														? 'text-white border border-white/40 hover:bg-palette-sage/40 hover:border-palette-sage hover:text-palette-cream'
+														: 'text-palette-ink border border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage'
 									}`}
 								>
 									Iniciar sesión

@@ -17,7 +17,8 @@
     "create-mentorship-plans": "node scripts/createMentorshipPlans.js",
     "migrate:mentorship": "node scripts/migrateMentorshipStudents.js",
     "seed:courses": "npx tsx scripts/seedCourses.js",
-    "seed:courses:fresh": "npx tsx scripts/seedCourses.js --fresh"
+    "seed:courses:fresh": "npx tsx scripts/seedCourses.js --fresh",
+    "ensure:curso-mp": "npx tsx scripts/ensureCursoMercadoPagoPayments.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.58.0",

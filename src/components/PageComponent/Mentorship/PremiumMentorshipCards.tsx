@@ -584,7 +584,7 @@ const MentorshipIncludesBlock = ({ variant }: { variant: IncludesVariant }) => {
                             </span>
                           ) : null}
                           <span className="font-montserrat text-sm font-semibold uppercase tracking-[0.12em] text-palette-stone md:text-base">
-                            Ahora U$S 0
+                            Incluido
                           </span>
         
                         </div>

@@ -164,10 +164,10 @@ export default function MercadoPagoPaymentBrick({
         }
 
         if (status === 'in_process' || status === 'pending') {
-          toast.success('Pago en proceso. Te avisamos cuando se acredite.');
-          if (data.redirectUrl) {
-            window.location.href = data.redirectUrl;
-          }
+          toast.success(
+            'Pago en revisión por Mercado Pago. Cuando se acredite te damos acceso y te enviamos el email de confirmación.'
+          );
+          // No redirigir a /pago/exito: esa página implica compra cumplida.
           return data;
         }
 

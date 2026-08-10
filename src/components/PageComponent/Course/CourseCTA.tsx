@@ -16,9 +16,9 @@ const CTA_BG = 'my_uploads/plaza/DSC03350_vgjrrh';
 
 const CourseCTA = () => {
   return (
-    <section className="bg-palette-cream pb-20 pt-6 font-montserrat">
+    <section className="relative isolate overflow-hidden border-t border-palette-stone/40 bg-palette-ink pb-20 pt-10 font-montserrat md:pt-12">
       <div className={`${landingSectionContainer.replace('w-[92%]', 'w-[85%]')}`}>
-        <div className="relative overflow-hidden border-y border-palette-stone/25">
+        <div className="relative overflow-hidden rounded-2xl border border-palette-stone/45 shadow-[0_20px_50px_-28px_rgba(0,0,0,0.55)] ring-1 ring-black/30 md:rounded-3xl">
           <div className="pointer-events-none absolute inset-0 z-0">
             <CldImage
               src={CTA_BG}
@@ -29,8 +29,8 @@ const CourseCTA = () => {
               loader={imageLoader}
             />
           </div>
-          <div className="absolute inset-0 z-[1] bg-gradient-to-r from-palette-ink/90 via-palette-ink/70 to-palette-ink/35" />
-          <div className="absolute inset-0 z-[1] bg-palette-ink/20" />
+          <div className="absolute inset-0 z-[1] bg-gradient-to-r from-palette-ink/92 via-palette-ink/75 to-palette-ink/40" />
+          <div className="absolute inset-0 z-[1] bg-palette-ink/25" />
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}

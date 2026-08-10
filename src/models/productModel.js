@@ -1,5 +1,18 @@
 import mongoose from 'mongoose';
 
+const secuenciaGratuitaConfigSchema = new mongoose.Schema({
+  slug: { type: String, trim: true, lowercase: true },
+  /** Toggle manual del admin, NUNCA una fecha — este producto es evergreen. */
+  publicado: { type: Boolean, default: true },
+  /**
+   * Producto de pago al que apunta el CTA inferior de la clase.
+   * Si es null/ausente, el CTA cae a mentoría.
+   */
+  ctaProductId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', default: null },
+  /** Texto opcional del CTA; si vacío, se usa el nombre del producto o el label de mentoría. */
+  ctaLabel: { type: String, trim: true, default: '' },
+}, { _id: false });
+
 const ubicacionSchema = new mongoose.Schema({
   display_name: { type: String },
   lat: { type: String },
@@ -119,10 +132,22 @@ const cursoPrecioPreventaSchema = new mongoose.Schema({
   opcionesPago: [cursoPlanPagoSchema],
 });
 
+/** Logos de seguro / patrocinadores / validadores del curso (landing). */
+const cursoSelloValidacionSchema = new mongoose.Schema({
+  imagenPublicId: { type: String, default: '' },
+  alt: { type: String, default: '' },
+  enlace: { type: String, default: '' },
+  orden: { type: Number, default: 0 },
+}, { _id: false });
+
 const cursoLandingConfigSchema = new mongoose.Schema({
   slug: { type: String, trim: true, lowercase: true },
   publicado: { type: Boolean, default: false },
   fechaPublicacion: { type: Date, default: null },
+  /** Si es true, se muestran sellos debajo de los planes en la landing. */
+  mostrarSellosValidacion: { type: Boolean, default: false },
+  sellosValidacionTitulo: { type: String, default: '' },
+  sellosValidacion: [cursoSelloValidacionSchema],
   preciosPreventa: [cursoPrecioPreventaSchema],
   /** session_id de Stripe u otros IDs para no contar dos veces el mismo pago en preventa */
   preventaRedencionesSessionIds: [{ type: String }],
@@ -237,7 +262,7 @@ const cursoLandingConfigSchema = new mongoose.Schema({
 const productSchema = new mongoose.Schema({
   nombre: { type: String, required: true },
   descripcion: { type: String, required: true, minLength: 20 },
-  tipo: { type: String, enum: ['curso', 'bundle', 'evento', 'programa_transformacional', 'recurso'], required: true },
+  tipo: { type: String, enum: ['curso', 'bundle', 'evento', 'programa_transformacional', 'recurso', 'clases_gratuitas_secuenciales'], required: true },
   precio: { type: Number, required: true },
   moneda: { type: String, default: 'USD' },
   imagenes: [{ type: String }], // URLs de imágenes
@@ -336,6 +361,9 @@ const productSchema = new mongoose.Schema({
 
   // --- Curso (landing comercial tipo Cuerpo autónomo) ---
   cursoConfig: cursoLandingConfigSchema,
+
+  // --- Clases gratuitas secuenciales (lead magnet evergreen, sin fechas) ---
+  secuenciaConfig: secuenciaGratuitaConfigSchema,
 
   // --- Comunes ---
   etiquetas: [{ type: String }],

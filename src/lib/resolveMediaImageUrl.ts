@@ -27,6 +27,24 @@ function extractCloudinaryPublicIdFromUrl(url: string): string | null {
   }
 }
 
+/**
+ * Normaliza un public id de Cloudinary (sin extensión forzada).
+ * Forzar `.jpg` rompe assets cuyo public_id no incluye extensión.
+ */
+function normalizeCloudinaryPublicId(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  if (cloudinaryPublicIdHasExtension(trimmed)) {
+    return trimmed.replace(/\.(jpe?g|png|webp|gif|avif)$/i, '');
+  }
+  return trimmed;
+}
+
+/**
+ * URL de entrega Cloudinary.
+ * Incluye `/v1/` para que carpetas como `my_uploads/...` no se interpreten como
+ * transformaciones (sin versión Cloudinary responde 400: Invalid transformation parameter - my).
+ */
 export function resolveCloudinaryOrHttpUrl(value: string | null | undefined): string {
   const trimmed = (value || '').trim();
   if (!trimmed) return '';
@@ -38,9 +56,23 @@ export function resolveCloudinaryOrHttpUrl(value: string | null | undefined): st
     return trimmed;
   }
   const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dbeem2avp';
-  const publicId = cloudinaryPublicIdHasExtension(trimmed) ? trimmed : `${trimmed}.jpg`;
-  // Sin transformaciones en la ruta: IDs con carpeta (my_uploads/…) rompen f_auto,q_auto,w_1200.
-  return `https://res.cloudinary.com/${cloud}/image/upload/${publicId}`;
+  const publicId = normalizeCloudinaryPublicId(trimmed);
+  return `https://res.cloudinary.com/${cloud}/image/upload/v1/${publicId}`;
+}
+
+/** Cover vertical 3:4 (misma proporción que cards de /bio) para emails. */
+export function resolveCloudinaryEmailCoverUrl(value: string | null | undefined): string {
+  const trimmed = (value || '').trim();
+  if (!trimmed) return '';
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    const extracted = extractCloudinaryPublicIdFromUrl(trimmed);
+    if (extracted) return resolveCloudinaryEmailCoverUrl(extracted);
+    return trimmed;
+  }
+  const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dbeem2avp';
+  const publicId = normalizeCloudinaryPublicId(trimmed);
+  // f_jpg: clientes de mail fallan con webp/avif; g_auto centra el crop como en /bio.
+  return `https://res.cloudinary.com/${cloud}/image/upload/c_fill,g_auto,w_800,h_1067,f_jpg,q_auto/v1/${publicId}`;
 }
 
 export function extractVimeoId(link: string | null | undefined): string | null {
@@ -78,9 +110,7 @@ export function resolveCourseClassThumbnailUrl(input: ThumbnailInput): string {
   }
 
   const vimeoId =
-    extractVimeoId(input.videoId) ||
-    extractVimeoId(input.videoUrl);
-
+    extractVimeoId(input.videoId) || extractVimeoId(input.videoUrl);
   return vimeoThumbnailUrl(vimeoId);
 }
 
@@ -126,11 +156,11 @@ export function resolveProductImagePublicId(product: ProductImageSource): string
   return '';
 }
 
-/** URL absoluta de portada para emails, WhatsApp OG y previews. */
+/** URL absoluta de portada para emails, WhatsApp OG y previews (3:4 como /bio). */
 export function resolveCursoProductCoverUrl(product: ProductImageSource): string {
   const publicId = resolveProductImagePublicId(product);
   if (publicId) {
-    return resolveCloudinaryOrHttpUrl(publicId);
+    return resolveCloudinaryEmailCoverUrl(publicId);
   }
   return DEFAULT_COURSE_EMAIL_COVER;
 }

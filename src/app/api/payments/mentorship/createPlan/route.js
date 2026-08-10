@@ -1,6 +1,7 @@
 import connectDB from '../../../../../config/connectDB';
 import MentorshipPlan from '../../../../../models/mentorshipPlanModel';
 import { ensureMentorshipPlanPaymentLinks } from '../../../../../lib/createMentorshipPaymentLinks';
+import { ensureMentorshipCuerpoAutonomoDiscount } from '../../../../../lib/ensureMentorshipCuerpoAutonomoDiscount';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -58,11 +59,27 @@ export async function POST(req) {
 
     await MentorshipPlan.updateMany({ active: true }, { $set: { active: false } });
 
+    let descuentoCuerpoAutonomo;
+    try {
+      descuentoCuerpoAutonomo = await ensureMentorshipCuerpoAutonomoDiscount();
+    } catch (discountError) {
+      console.error('Error creando descuento Cuerpo Autónomo:', discountError);
+      // No bloquear la creación del plan si Stripe falla en el cupón
+      descuentoCuerpoAutonomo = {
+        activo: true,
+        porcentajeCorto: 15,
+        porcentajeAnual: 25,
+        codigoCorto: 'CUERPOAUTONOMO',
+        codigoAnual: 'CUERPOAUTONOMO25',
+      };
+    }
+
     let plan = await MentorshipPlan.create({
       name,
       description,
       features,
       level,
+      descuentoCuerpoAutonomo,
       proveedoresHabilitados:
         Array.isArray(proveedoresHabilitados) && proveedoresHabilitados.length
           ? proveedoresHabilitados

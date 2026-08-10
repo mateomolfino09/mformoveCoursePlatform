@@ -14,6 +14,9 @@ import {
 import MainSideBar from '../../../../../../components/MainSidebar/MainSideBar';
 import OnboardingGuard from '../../../../../../components/OnboardingGuard';
 import MoveCrewVideoPlayer, { type MoveCrewVideoPlayerHandle } from '../../../../../../components/PageComponent/ClassPage/MoveCrewVideoPlayer';
+import ClassMaterialIcon, {
+  getClassMaterialLabel,
+} from '../../../../../../components/icons/ClassMaterialIcon';
 
 function extractVimeoId(link: string | null | undefined): string | null {
   if (!link || typeof link !== 'string') return null;
@@ -55,42 +58,6 @@ type ModuleClass = {
   order?: number;
 };
 
-const MATERIAL_LABELS: Record<string, string> = {
-  baston: 'Bastón',
-  'banda elastica': 'Banda elástica',
-  banco: 'Banco',
-  pelota: 'Pelota',
-};
-
-/** SVGs de materiales para movimiento (uso en clase): bastón apoyo/equilibrio, banda resistencia, banco step, pelota ejercicio */
-const MaterialIcons: Record<string, React.ReactNode> = {
-  baston: (
-    <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" aria-hidden>
-      <path d="M14 44V18l4-4 12 12 4-4v22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M18 14l2-2 8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  ),
-  'banda elastica': (
-    <svg viewBox="0 0 48 24" fill="none" className="w-full h-full" aria-hidden>
-      <path d="M6 12h36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3" />
-      <ellipse cx="10" cy="12" rx="6" ry="4" stroke="currentColor" strokeWidth="2" fill="none" />
-      <ellipse cx="38" cy="12" rx="6" ry="4" stroke="currentColor" strokeWidth="2" fill="none" />
-    </svg>
-  ),
-  banco: (
-    <svg viewBox="0 0 48 32" fill="none" className="w-full h-full" aria-hidden>
-      <rect x="4" y="12" width="40" height="8" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />
-      <path d="M10 20v4h6v-4M32 20v4h6v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  ),
-  pelota: (
-    <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" aria-hidden>
-      <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="2" fill="none" />
-      <path d="M24 4c-6 4-10 12-10 20s4 16 10 20c6-4 10-12 10-20s-4-16-10-20z" stroke="currentColor" strokeWidth="1.5" fill="none" />
-      <path d="M4 24h40" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  ),
-};
 
 const INTRO_COUNTDOWN_SEC = 7;
 const INTRO_MORE_TIME_SEC = 30;
@@ -308,7 +275,7 @@ export default function ModulePracticePage({
 
   const materialsText =
     practice?.materials?.length
-      ? practice.materials.map((m) => MATERIAL_LABELS[m] ?? m).join(', ')
+      ? practice.materials.map((m) => getClassMaterialLabel(m)).join(', ')
       : null;
 
   if (loading) {
@@ -439,11 +406,11 @@ export default function ModulePracticePage({
                               key={key}
                               className="flex items-center gap-2.5 rounded-lg bg-palette-stone/10 border border-palette-stone/20 px-3 py-2"
                             >
-                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-palette-stone/20 text-palette-cream">
-                                {MaterialIcons[key] ?? null}
+                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-palette-stone/20 p-1.5 text-palette-cream">
+                                <ClassMaterialIcon material={key} />
                               </span>
                               <span className="font-montserrat text-palette-cream/90 text-xs font-light">
-                                {MATERIAL_LABELS[key] ?? key}
+                                {getClassMaterialLabel(key)}
                               </span>
                             </li>
                           ))}

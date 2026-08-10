@@ -1,0 +1,56 @@
+{
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [
+      "Edit(.claude/**)",
+      "Write(.claude/**)",
+      "Read(.claude/**)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git branch*)",
+      "Bash(npm run build)",
+      "Bash(npm run lint)",
+      "Bash(gh auth status)",
+      "Bash(gh pr:*)",
+      "Bash(gh api:*)",
+      "Bash(gh issue:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/git-commit-guard.sh\"",
+            "statusMessage": "git commit guard"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/edit-guard.sh\"",
+            "statusMessage": "edit guard (áreas sensibles)"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/context-maintenance-reminder.sh\"",
+            "statusMessage": "context-maintenance check"
+          }
+        ]
+      }
+    ]
+  }
+}

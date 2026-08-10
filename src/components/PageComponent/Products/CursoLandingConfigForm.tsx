@@ -1,7 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { CldImage } from 'next-cloudinary';
+import { useDropzone } from 'react-dropzone';
+import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
 import CursoClaseContenidoFields from './CursoClaseContenidoFields';
 import {
   CursoClaseContenido,
@@ -13,11 +16,13 @@ import {
   CursoOfferBlock,
   CursoOutcome,
   CursoPrecioPreventa,
+  CursoSelloValidacion,
   CursoTestimonioEscrito,
   CursoTestimonioGrabado,
   createDefaultClaseContenido,
   normalizeClaseContenido,
   createDefaultPrecioPreventa,
+  createDefaultSelloValidacion,
   createDefaultTestimonioEscrito,
   normalizeCloudinaryAssetId,
   normalizeCursoLandingConfig,
@@ -28,6 +33,8 @@ import {
   isCursoEnPreventa,
   toDatetimeLocalValue,
 } from '../../../lib/cursoLandingPublication';
+import { toast } from '../../../hooks/useToast';
+import requests from '../../../utils/requests';
 
 type Props = {
   value: CursoLandingConfig;
@@ -36,9 +43,9 @@ type Props = {
 };
 
 const inputClass =
-  'input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors w-full';
+  'input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors w-full text-palette-cream placeholder:text-palette-cream/50';
 const textareaClass =
-  'input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors w-full min-h-[88px]';
+  'input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors w-full min-h-[88px] text-palette-cream placeholder:text-palette-cream/50';
 const labelClass = 'text-sm font-medium text-gray-700';
 const sectionClass = 'border border-gray-200 rounded-xl p-5 space-y-4 bg-white/70';
 const addButtonClass =
@@ -93,6 +100,124 @@ function Field({
       <span className={labelClass}>{label}</span>
       {children}
     </label>
+  );
+}
+
+async function uploadImageToCloudinary(file: File): Promise<string> {
+  if (file.size / 1_000_000 > 10) {
+    throw new Error('La imagen supera 10MB');
+  }
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'my_uploads');
+  const upload = await fetch(requests.fetchCloudinary, {
+    method: 'POST',
+    body: formData,
+  }).then((r) => r.json());
+  if (!upload?.public_id) {
+    throw new Error(upload?.error?.message || 'Error al subir la imagen');
+  }
+  return upload.public_id as string;
+}
+
+function SelloImageUpload({
+  publicId,
+  alt,
+  disabled,
+  onUploaded,
+  onClear,
+}: {
+  publicId: string;
+  alt: string;
+  disabled?: boolean;
+  onUploaded: (publicId: string) => void;
+  onClear: () => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    multiple: false,
+    disabled: disabled || uploading,
+    accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.svg'] },
+    onDrop: async (acceptedFiles) => {
+      const file = acceptedFiles[0];
+      if (!file) return;
+      const preview = URL.createObjectURL(file);
+      setLocalPreview(preview);
+      setUploading(true);
+      try {
+        const id = await uploadImageToCloudinary(file);
+        onUploaded(id);
+        setLocalPreview(null);
+        toast.success('Imagen subida a Cloudinary');
+      } catch (error) {
+        setLocalPreview(null);
+        toast.error(error instanceof Error ? error.message : 'No se pudo subir la imagen');
+      } finally {
+        setUploading(false);
+        URL.revokeObjectURL(preview);
+      }
+    },
+  });
+
+  return (
+    <div className="space-y-2 md:col-span-2">
+      <span className={labelClass}>Logo del sello</span>
+      <div
+        {...getRootProps()}
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-4 transition ${
+          isDragActive
+            ? 'border-blue-500 bg-blue-50'
+            : 'border-gray-300 bg-gray-50 hover:border-blue-400 hover:bg-blue-50/60'
+        } ${uploading || disabled ? 'pointer-events-none opacity-60' : ''}`}
+      >
+        <input {...getInputProps()} />
+        <ArrowUpTrayIcon className="mb-2 h-7 w-7 text-gray-400" />
+        <span className="text-center text-sm text-gray-700">
+          {uploading ? 'Subiendo a Cloudinary…' : 'Arrastrá la imagen o hacé click'}
+        </span>
+        <span className="mt-1 text-center text-xs text-gray-500">
+          JPG, PNG, WEBP o SVG · máx. 10MB
+        </span>
+      </div>
+
+      {localPreview || publicId ? (
+        <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3">
+          <div className="relative flex h-14 w-28 items-center justify-center overflow-hidden rounded bg-gray-50">
+            {localPreview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={localPreview}
+                alt={alt || 'Vista previa'}
+                className="max-h-14 max-w-28 object-contain"
+              />
+            ) : (
+              <CldImage
+                src={publicId}
+                alt={alt || 'Sello de validación'}
+                width={112}
+                height={56}
+                className="max-h-14 w-auto object-contain"
+              />
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-xs text-gray-500">{publicId || 'Subiendo…'}</p>
+            {publicId ? (
+              <button
+                type="button"
+                className={dangerButtonClass}
+                onClick={onClear}
+                disabled={uploading}
+              >
+                Quitar imagen
+              </button>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -298,6 +423,19 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
       return merged;
     });
     patchNested('queIncluye', { modulos: next });
+  };
+
+  const updateSello = (index: number, partial: Partial<CursoSelloValidacion>) => {
+    const current = value.sellosValidacion || [];
+    const next = current.map((item, i) => {
+      if (i !== index) return item;
+      const merged = { ...item, ...partial };
+      if (partial.imagenPublicId !== undefined) {
+        merged.imagenPublicId = normalizeCloudinaryAssetId(partial.imagenPublicId);
+      }
+      return merged;
+    });
+    patch({ sellosValidacion: next });
   };
 
   return (
@@ -896,10 +1034,10 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
                 key={`contenido-mod-${modulo.timelineIndex}`}
                 className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 space-y-4"
               >
-                <p className="text-sm font-semibold text-gray-100">Módulo {moduloIndex + 1}</p>
+                <p className="text-sm font-semibold text-palette-cream">Módulo {moduloIndex + 1}</p>
                 <Field label="Título del módulo">
                   <input
-                    className={`${inputClass} text-gray-100 placeholder:text-gray-500`}
+                    className={inputClass}
                     value={modulo.titulo}
                     onChange={(e) => updateModuloTitulo(moduloIndex, e.target.value)}
                     placeholder="Ej. Regulación (trabajos internos)"
@@ -907,7 +1045,7 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
                 </Field>
                 <Field label="Esencia del módulo">
                   <textarea
-                    className={`${textareaClass} text-gray-100 placeholder:text-gray-500`}
+                    className={textareaClass}
                     value={modulo.esencia ?? ''}
                     onChange={(e) =>
                       updateModuloContenido(moduloIndex, { esencia: e.target.value })
@@ -1219,6 +1357,110 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
             (Stripe, dLocal y/o Mercado Pago).
           </p>
         )}
+      </Section>
+
+      <Section
+        title="Sellos de validación"
+        description="Logos de seguros, patrocinadores o validadores. Si está activo, reemplaza la card de precio anterior por el sello."
+        defaultOpen
+      >
+        <label className="flex flex-col gap-2">
+          <span className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={Boolean(value.mostrarSellosValidacion)}
+              onChange={(e) => patch({ mostrarSellosValidacion: e.target.checked })}
+            />
+            <span className={labelClass}>Mostrar sellos en la landing</span>
+          </span>
+          <span className="text-xs text-gray-500">
+            Por defecto está desactivado. Activá, agregá sellos y subí cada logo: se guarda solo en
+            Cloudinary y queda listo para la landing (reemplaza precio anterior).
+          </span>
+        </label>
+
+        {value.mostrarSellosValidacion ? (
+          <motion.div className="space-y-4">
+            <Field label="Título de la sección (opcional)">
+              <input
+                className={inputClass}
+                value={value.sellosValidacionTitulo || ''}
+                onChange={(e) => patch({ sellosValidacionTitulo: e.target.value })}
+                placeholder="Respaldado por"
+              />
+            </Field>
+
+            {(value.sellosValidacion || []).map((sello, index) => (
+              <motion.div
+                key={`sello-${index}`}
+                className="space-y-3 rounded-lg border border-gray-200 p-4"
+              >
+                <div className="grid gap-3 md:grid-cols-2">
+                  <SelloImageUpload
+                    publicId={sello.imagenPublicId}
+                    alt={sello.alt}
+                    onUploaded={(publicId) => updateSello(index, { imagenPublicId: publicId })}
+                    onClear={() => updateSello(index, { imagenPublicId: '' })}
+                  />
+                  <Field label="Texto alternativo">
+                    <input
+                      className={inputClass}
+                      value={sello.alt}
+                      onChange={(e) => updateSello(index, { alt: e.target.value })}
+                      placeholder="Nombre del validador"
+                    />
+                  </Field>
+                  <Field label="Enlace (opcional)">
+                    <input
+                      className={inputClass}
+                      value={sello.enlace}
+                      onChange={(e) => updateSello(index, { enlace: e.target.value })}
+                      placeholder="https://..."
+                    />
+                  </Field>
+                  <Field label="Orden">
+                    <input
+                      type="number"
+                      className={inputClass}
+                      value={sello.orden}
+                      onChange={(e) =>
+                        updateSello(index, { orden: Number(e.target.value) || 0 })
+                      }
+                    />
+                  </Field>
+                </div>
+                <button
+                  type="button"
+                  className={dangerButtonClass}
+                  onClick={() =>
+                    patch({
+                      sellosValidacion: (value.sellosValidacion || []).filter(
+                        (_, i) => i !== index
+                      ),
+                    })
+                  }
+                >
+                  Eliminar sello
+                </button>
+              </motion.div>
+            ))}
+
+            <button
+              type="button"
+              className={addButtonClass}
+              onClick={() =>
+                patch({
+                  sellosValidacion: [
+                    ...(value.sellosValidacion || []),
+                    createDefaultSelloValidacion((value.sellosValidacion || []).length),
+                  ],
+                })
+              }
+            >
+              Agregar sello
+            </button>
+          </motion.div>
+        ) : null}
       </Section>
 
       <Section

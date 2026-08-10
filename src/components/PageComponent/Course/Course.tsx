@@ -13,7 +13,6 @@ import CourseBetweenHeroSection from './CourseBetweenHeroSection';
 import CourseFullWidthBanner from './CourseFullWidthBanner';
 import CourseOutcomesHighlights from './CourseOutcomesHighlights';
 import CourseHighlightsIntro from './CourseHighlightsIntro';
-import CourseWhatsAppBanner from './CourseWhatsAppBanner';
 import CourseCTA from './CourseCTA';
 import PromocionFooter from '../Membership/PromocionFooter';
 import { useCursoLanding } from './CursoLandingContext';
@@ -163,9 +162,6 @@ const Course = ({ plans = [], promociones = [], checkoutPlans = [] }: CourseProp
 
         {/* 9. FAQ - Objecciones finales (resuelve dudas antes del cierre) */}
         <CourseFAQ />
-
-        {/* Contacto — full width */}
-        <CourseWhatsAppBanner />
         
         {/* 10. CTA Final - Última oportunidad */}
         <CourseCTA />

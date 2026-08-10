@@ -36,35 +36,16 @@ const offerCardShell =
 const OFFER_CARD_NOISE_BG =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E\")";
 
-const padX = 'w-[90%] max-w-7xl mx-auto px-4 sm:px-5';
+/** Grilla uniforme: todos los módulos con el mismo peso visual. */
+const modulesGridClass =
+  'grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6';
 
-/** Grilla bento 12 cols — mismo ritmo que MentorshipProcess (5 módulos). */
-const moduleBentoGridClass: Record<number, string> = {
-  0: 'md:col-span-8 md:row-span-2 md:row-start-1 md:col-start-1 md:min-h-[280px]',
-  1: 'md:col-span-4 md:row-start-1 md:col-start-9',
-  2: 'md:col-span-4 md:row-start-2 md:col-start-9',
-  3: 'md:col-span-6 md:row-start-3 md:col-start-1',
-  4: 'md:col-span-6 md:row-start-3 md:col-start-7',
-};
-
-function ModuleNumberWatermark({
-  step,
-  size = 'default',
-}: {
-  step: number;
-  size?: 'hero' | 'default' | 'band';
-}) {
+function ModuleNumberWatermark({ step }: { step: number }) {
   const num = step.toString().padStart(2, '0');
-  const numberClass =
-    size === 'hero'
-      ? 'text-[3.25rem] sm:text-[3.75rem] md:text-[4.5rem] px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5'
-      : size === 'band'
-        ? 'text-[2.75rem] sm:text-[3.1rem] px-2 py-1 sm:px-3 sm:py-1.5'
-        : 'text-[2.85rem] sm:text-[3.35rem] px-2 py-1 sm:px-3 sm:py-1.5';
 
   return (
     <span
-      className={`pointer-events-none absolute right-1 top-1 z-0 inline-block select-none font-montserrat font-semibold tabular-nums leading-none text-palette-ink/[0.075] sm:right-2 sm:top-2 md:right-3 md:top-3 ${numberClass}`}
+      className="pointer-events-none absolute right-2 top-2 z-0 inline-block select-none px-2 py-1 font-montserrat text-[2.75rem] font-semibold tabular-nums leading-none text-palette-ink/[0.08] sm:right-3 sm:top-3 sm:text-[3.1rem] md:right-4 md:top-4 md:text-[3.5rem]"
       aria-hidden
     >
       {num}
@@ -236,88 +217,42 @@ export default function CourseWhatWeTeach() {
           </p>
         </motion.div>
 
-        <div
-          className="-mx-3 flex gap-3 overflow-x-auto overflow-y-visible px-3 pb-2 pt-1 snap-x snap-mandatory scrollbar-thin sm:-mx-4 sm:px-4 md:mx-0 md:grid md:grid-cols-12 md:gap-4 md:overflow-visible md:px-0 md:pb-0 md:snap-none md:auto-rows-min"
-          style={{ scrollbarGutter: 'stable' }}
-        >
-          {modules.map((item, index) => {
-            const isHero = index === 0;
-            const hasBand = index === modules.length - 1 && modules.length >= 5;
-            const bentoClass = moduleBentoGridClass[index] ?? 'md:col-span-6';
-
-            return (
-              <motion.article
-                key={item.title}
-                initial={{ opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-20px' }}
-                transition={{
-                  duration: 0.38,
-                  delay: Math.min(index * 0.03, 0.12),
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className={`group/card relative shrink-0 snap-center overflow-hidden rounded-2xl border border-palette-stone/22 bg-gradient-to-br from-white/72 to-palette-cream/90 shadow-[0_6px_22px_rgba(20,20,17,0.05)] min-w-[min(100vw-1.75rem,300px)] w-[min(100vw-1.75rem,300px)] md:w-auto md:min-w-0 ${bentoClass} ${isHero ? 'p-0 md:flex md:flex-row' : hasBand ? 'flex flex-col p-0' : 'p-4 sm:p-5'}`}
-              >
-                {isHero ? (
-                  <>
-                    <div className="relative aspect-[16/11] shrink-0 overflow-hidden sm:aspect-[5/4] md:aspect-auto md:w-[44%] md:min-h-[260px]">
-                      <CldImage
-                        src={item.src}
-                        alt={item.title}
-                        fill
-                        sizes="(max-width: 768px) 90vw, 36vw"
-                        className="object-cover object-[center_22%] transition-transform duration-[1.15s] ease-out group-hover/card:scale-[1.035]"
-                        loader={imageLoader}
-                      />
-                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-palette-ink/35 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-palette-cream/15" />
-                    </div>
-                    <div className="relative flex min-w-0 flex-1 flex-col p-4 pr-[4.75rem] sm:p-5 sm:pr-[5.25rem] md:justify-center md:p-6 md:pr-24">
-                      <ModuleNumberWatermark step={index + 1} size="hero" />
-                      <h3 className="relative z-[1] font-semibold text-palette-ink text-[17px] leading-snug tracking-tight md:text-lg">
-                        {item.title}
-                      </h3>
-                      <p className="relative z-[1] mt-2 text-[13px] font-light leading-[1.6] text-palette-ink opacity-90 md:text-[14px]">
-                        {item.line}
-                      </p>
-                    </div>
-                  </>
-                ) : hasBand ? (
-                  <>
-                    <div className="relative h-[100px] w-full shrink-0 overflow-hidden sm:h-[112px]">
-                      <CldImage
-                        src={item.src}
-                        alt={item.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 45vw"
-                        className="object-cover object-[center_40%] transition-transform duration-[1.05s] ease-out group-hover/card:scale-[1.03]"
-                        loader={imageLoader}
-                      />
-                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-palette-cream/90 via-palette-cream/20 to-transparent" />
-                    </div>
-                    <div className="relative flex flex-col px-4 pb-4 pt-4 pr-[3.5rem] sm:px-5 sm:pb-5 sm:pr-16 sm:pt-5 md:pr-[7rem]">
-                      <ModuleNumberWatermark step={index + 1} size="band" />
-                      <h3 className="relative z-[1] font-semibold text-palette-ink text-[15px] leading-snug tracking-tight md:text-[16px]">
-                        {item.title}
-                      </h3>
-                      <p className="relative z-[1] mt-2 text-[12px] font-light leading-[1.58] text-palette-ink opacity-90 md:text-[13px]">
-                        {item.line}
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="relative z-[1] flex min-h-0 flex-1 flex-col pr-[3.25rem] sm:pr-16 md:pr-[7rem]">
-                    <ModuleNumberWatermark step={index + 1} size="default" />
-                    <h3 className="relative z-[1] font-semibold text-palette-ink text-[15px] leading-snug tracking-tight md:text-[16px]">
-                      {item.title}
-                    </h3>
-                    <p className="relative z-[1] mt-2 text-[12px] font-light leading-[1.58] text-palette-ink opacity-90 md:text-[13px]">
-                      {item.line}
-                    </p>
-                  </div>
-                )}
-              </motion.article>
-            );
-          })}
+        <div className={modulesGridClass}>
+          {modules.map((item, index) => (
+            <motion.article
+              key={item.title}
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-20px' }}
+              transition={{
+                duration: 0.38,
+                delay: Math.min(index * 0.03, 0.12),
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="group/card relative flex h-full min-h-[20rem] flex-col overflow-hidden rounded-2xl border border-palette-stone/22 bg-gradient-to-br from-white/72 to-palette-cream/90 shadow-[0_6px_22px_rgba(20,20,17,0.05)] md:min-h-[22rem] md:rounded-3xl"
+            >
+              <div className="relative h-40 w-full shrink-0 overflow-hidden sm:h-44 md:h-48">
+                <CldImage
+                  src={item.src}
+                  alt={item.title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover object-[center_35%] transition-transform duration-[1.05s] ease-out group-hover/card:scale-[1.03]"
+                  loader={imageLoader}
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-palette-cream/95 via-palette-cream/25 to-transparent" />
+              </div>
+              <div className="relative flex flex-1 flex-col px-5 pb-5 pt-4 sm:px-6 sm:pb-6 sm:pt-5">
+                <ModuleNumberWatermark step={index + 1} />
+                <h3 className="relative z-[1] pr-14 font-semibold tracking-tight text-palette-ink text-[1.125rem] leading-snug sm:text-[1.2rem] md:pr-16 md:text-[1.3rem] md:leading-snug">
+                  {item.title}
+                </h3>
+                <p className="relative z-[1] mt-3 text-[0.9375rem] font-light leading-[1.65] text-palette-ink/90 sm:text-[1rem] sm:leading-[1.68] md:mt-3.5 md:text-[1.0625rem] md:leading-[1.7]">
+                  {item.line}
+                </p>
+              </div>
+            </motion.article>
+          ))}
         </div>
       </div>
     </section>

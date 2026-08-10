@@ -145,7 +145,8 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
                 pathname == '/admin/productos' ||
                 pathname == '/admin/productos/crear-producto' ||
                 pathname == '/admin/productos/todos-productos' ||
-                pathname == '/admin/productos/crear-filtros'
+                pathname == '/admin/productos/crear-filtros' ||
+                pathname?.startsWith('/admin/productos/clases-gratis')
                   ? 'bg-white/10 text-white border-l-2 border-[#4F7CCF] shadow-lg'
                   : 'text-gray-400 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
               }`}
@@ -155,7 +156,8 @@ const AdminDashboardSideBar = forwardRef<HTMLInputElement>(
                   pathname == '/admin/productos' ||
                   pathname == '/admin/productos/crear-producto' ||
                   pathname == '/admin/productos/todos-productos' ||
-                  pathname == '/admin/productos/crear-filtros'
+                  pathname == '/admin/productos/crear-filtros' ||
+                  pathname?.startsWith('/admin/productos/clases-gratis')
                     ? 'text-[#4F7CCF]' : ''
                 }`} />
               </div>

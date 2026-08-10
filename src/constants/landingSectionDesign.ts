@@ -58,6 +58,10 @@ export const landingCtaPrimary =
 export const landingCtaInverted =
   'group inline-flex items-center justify-between gap-4 rounded-full border-2 border-palette-cream/80 bg-palette-cream px-7 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.2em] text-palette-ink transition-all duration-200 hover:border-white hover:bg-white';
 
+/** Ghost / outline sobre fondos ink (secundario frente a landingCtaInverted). */
+export const landingCtaGhostDark =
+  'group inline-flex items-center justify-center gap-2 rounded-full border-2 border-palette-cream/45 bg-transparent px-7 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-cream hover:bg-palette-cream/10';
+
 export const landingPlanCard =
   'rounded-2xl border border-palette-stone/25 bg-white/70 shadow-[0_20px_50px_-24px_rgba(20,20,17,0.16)] backdrop-blur-[2px] md:rounded-3xl';
 
