@@ -712,7 +712,7 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
                     Landing, módulos y clases del curso
                   </h2>
                   <p className='text-sm text-gray-600 mb-4'>
-                    Incluye invitación al grupo de WhatsApp, módulos de contenido y clases (CourseClass).
+                    Incluye invitación al grupo de WhatsApp, módulos de contenido, clases (CourseClass) y sellos de validación.
                   </p>
                   <CursoLandingConfigForm
                     value={cursoConfig}

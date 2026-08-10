@@ -32,6 +32,7 @@ export async function createMentorshipMercadoPagoPaymentLink({
   maxInstallments = MERCADO_PAGO_MAX_INSTALLMENTS,
   userId,
   payerEmail,
+  discountMeta,
 }: {
   planId: string;
   interval: string;
@@ -45,6 +46,12 @@ export async function createMentorshipMercadoPagoPaymentLink({
   maxInstallments?: number;
   userId?: string;
   payerEmail?: string;
+  discountMeta?: {
+    discountCode: string;
+    discountPercent: number;
+    from: string;
+    precioBase: number;
+  };
 }): Promise<CreateMentorshipMercadoPagoPaymentResult> {
   const webhookBase = notificationOrigin || origin;
   const notificationUrl = resolveMentorshipMercadoPagoWebhookUrl(webhookBase);
@@ -109,6 +116,14 @@ export async function createMentorshipMercadoPagoPaymentLink({
         type: 'mentorship',
         provider: 'mercadopago',
         ...(userId ? { userId } : {}),
+        ...(discountMeta
+          ? {
+              discountCode: discountMeta.discountCode,
+              discountPercent: String(discountMeta.discountPercent),
+              from: discountMeta.from,
+              precioBase: String(discountMeta.precioBase),
+            }
+          : {}),
       },
       ...(payerEmail?.trim()
         ? { payer: { email: payerEmail.trim().slice(0, 100) } }

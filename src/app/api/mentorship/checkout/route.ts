@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { verify } from 'jsonwebtoken';
 import connectDB from '../../../../config/connectDB';
 import MentorshipPlan from '../../../../models/mentorshipPlanModel';
+import User from '../../../../models/userModel';
 import { ensureMentorshipPlanPaymentLinks } from '../../../../lib/createMentorshipPaymentLinks';
 import {
   mentorshipPricesHaveStaleLinks,
@@ -12,6 +15,18 @@ import {
   type MentorshipBillingInterval,
 } from '../../../../lib/mentorshipPricing';
 import { resolveProveedoresHabilitados } from '../../../../constants/paymentProveedores';
+import {
+  ensureMentorshipCuerpoAutonomoDiscount,
+  resolveCuerpoAutonomoDiscountFromPlan,
+  type MentorshipCuerpoAutonomoDiscount,
+} from '../../../../lib/ensureMentorshipCuerpoAutonomoDiscount';
+import { userHasCuerpoAutonomo } from '../../../../lib/userHasCuerpoAutonomo';
+import {
+  CUERPO_AUTONOMO_DISCOUNT_CODE_ANUAL,
+  CUERPO_AUTONOMO_DISCOUNT_CODE_SHORT,
+  CUERPO_AUTONOMO_DISCOUNT_PERCENT_ANUAL,
+  CUERPO_AUTONOMO_DISCOUNT_PERCENT_SHORT,
+} from '../../../../constants/mentorshipCuerpoAutonomoDiscount';
 
 function plainPriceEntry(entry: unknown) {
   if (!entry || typeof entry !== 'object') return null;
@@ -21,7 +36,7 @@ function plainPriceEntry(entry: unknown) {
 }
 
 function resolveActivePlan(
-  plans: Array<{ prices?: unknown[]; createdAt?: Date }>,
+  plans: any[],
   preferredInterval?: MentorshipBillingInterval | null,
 ) {
   if (!plans.length) return null;
@@ -29,7 +44,7 @@ function resolveActivePlan(
   if (preferredInterval) {
     const match = plans.find((plan) =>
       (plan.prices || []).some(
-        (price) => plainPriceEntry(price)?.interval === preferredInterval,
+        (price: unknown) => plainPriceEntry(price)?.interval === preferredInterval,
       ),
     );
     if (match) return match;
@@ -56,6 +71,22 @@ const VALID_INTERVALS = new Set<MentorshipBillingInterval>([
   'trimestral',
 ]);
 
+async function resolveSessionUser() {
+  try {
+    const userToken = cookies().get('userToken')?.value;
+    if (!userToken) return null;
+    const decoded = verify(userToken, process.env.NEXTAUTH_SECRET as string) as {
+      userId?: string;
+      _id?: string;
+    };
+    const id = decoded.userId || decoded._id;
+    if (!id) return null;
+    return User.findById(id).select('email rol cursosAdquiridos').lean();
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
@@ -74,14 +105,8 @@ export async function GET(req: NextRequest) {
     }
 
     const planPrices = (plan.prices || [])
-      .map((entry) => plainPriceEntry(entry))
-      .filter(Boolean) as Array<{
-      interval: string;
-      price: number;
-      currency: string;
-      stripePriceId: string;
-      opcionesPago?: Array<{ paymentLink?: string; activo?: boolean }>;
-    }>;
+      .map((entry: unknown) => plainPriceEntry(entry))
+      .filter(Boolean) as any[];
 
     const availableIntervals = resolveMentorshipToggleIntervals(planPrices);
 
@@ -124,7 +149,6 @@ export async function GET(req: NextRequest) {
           : null,
     );
 
-    // Siempre corre ensure: genera faltantes y elimina proveedores deshabilitados.
     prices = await ensureMentorshipPlanPaymentLinks(
       {
         _id: plan._id,
@@ -138,15 +162,34 @@ export async function GET(req: NextRequest) {
       { forceRegenerate: false },
     );
 
+    // Asegurar cupones CA si el plan activo aún no los tiene
+    let descuentoCuerpoAutonomo =
+      plan.descuentoCuerpoAutonomo as MentorshipCuerpoAutonomoDiscount | undefined;
+    const needsDiscountIds =
+      !descuentoCuerpoAutonomo?.stripeCouponIdCorto ||
+      !descuentoCuerpoAutonomo?.stripeCouponIdAnual;
+    if (needsDiscountIds) {
+      try {
+        descuentoCuerpoAutonomo = await ensureMentorshipCuerpoAutonomoDiscount(
+          descuentoCuerpoAutonomo,
+        );
+      } catch (e) {
+        console.error('No se pudieron asegurar cupones CA:', e);
+      }
+    }
+
     const pricesChanged =
       needsLinks || JSON.stringify(prices) !== JSON.stringify(planPrices);
-    if (pricesChanged) {
-      await MentorshipPlan.findByIdAndUpdate(plan._id, {
-        prices,
-        ...(plan.proveedoresHabilitados?.length
-          ? {}
-          : { proveedoresHabilitados }),
-      });
+    const updatePayload: Record<string, unknown> = {};
+    if (pricesChanged) updatePayload.prices = prices;
+    if (descuentoCuerpoAutonomo && needsDiscountIds) {
+      updatePayload.descuentoCuerpoAutonomo = descuentoCuerpoAutonomo;
+    }
+    if (!plan.proveedoresHabilitados?.length) {
+      updatePayload.proveedoresHabilitados = proveedoresHabilitados;
+    }
+    if (Object.keys(updatePayload).length) {
+      await MentorshipPlan.findByIdAndUpdate(plan._id, updatePayload);
     }
 
     const resolvedPrice = prices.find((p) => p.interval === interval);
@@ -157,6 +200,15 @@ export async function GET(req: NextRequest) {
         { status: 404 },
       );
     }
+
+    const sessionUser = await resolveSessionUser();
+    const elegible = sessionUser
+      ? await userHasCuerpoAutonomo(sessionUser as any)
+      : false;
+    const applied = resolveCuerpoAutonomoDiscountFromPlan(
+      descuentoCuerpoAutonomo,
+      interval,
+    );
 
     return NextResponse.json({
       plan: {
@@ -179,11 +231,24 @@ export async function GET(req: NextRequest) {
         currency: resolvedPrice.currency,
         stripePriceId: resolvedPrice.stripePriceId,
       },
-      opcionesPago: (resolvedPrice.opcionesPago || []).filter((o: { proveedor?: string }) =>
+      opcionesPago: (resolvedPrice.opcionesPago || []).filter((o: any) =>
         proveedoresHabilitados.includes(
           o.proveedor as 'stripe' | 'dlocalgo' | 'mercadopago',
         ),
       ),
+      descuentoCuerpoAutonomo: {
+        elegible,
+        porcentajeCorto:
+          descuentoCuerpoAutonomo?.porcentajeCorto ?? CUERPO_AUTONOMO_DISCOUNT_PERCENT_SHORT,
+        porcentajeAnual:
+          descuentoCuerpoAutonomo?.porcentajeAnual ?? CUERPO_AUTONOMO_DISCOUNT_PERCENT_ANUAL,
+        porcentajeAplicado: elegible && applied ? applied.percent : 0,
+        codigo: applied?.code
+          ?? (interval === 'anual'
+            ? CUERPO_AUTONOMO_DISCOUNT_CODE_ANUAL
+            : CUERPO_AUTONOMO_DISCOUNT_CODE_SHORT),
+        activo: descuentoCuerpoAutonomo?.activo !== false,
+      },
     });
   } catch (error) {
     console.error('Error en checkout de mentoría:', error);

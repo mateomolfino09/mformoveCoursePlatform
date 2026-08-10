@@ -16,6 +16,8 @@ const state = proxy({
   loginForm: false,
   /** 'register' | 'login' — modo al abrir LoginModal desde checkout vs header */
   authModalMode: 'register',
+  /** Si true, el LoginModal no se puede cerrar (overlay/X/Escape). */
+  authModalForced: false,
   activeVideoId: null, // ID del video activo actualmente (string | null)
   systemNavOpen: false,
   weeklyPathNavOpen: false, // dropdown del navegador de camino (Cuerpo autónomo), controlado desde header en móvil

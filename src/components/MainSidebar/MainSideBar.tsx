@@ -17,6 +17,7 @@ interface Props {
   forceLightTheme?: boolean;
   /** Evita absolute/h-full para que el scroll de ventana funcione (hub de contenido, etc.). */
   flowLayout?: boolean;
+  className?: string;
 }
 
 const MainSideBar = ({
@@ -27,6 +28,7 @@ const MainSideBar = ({
   sidebarOpen,
   forceLightTheme = false,
   flowLayout = false,
+  className = '',
 }: Props) => {  
   const auth = useAuth()
   const [showNav, setShowNav] = useState(false);
@@ -46,7 +48,9 @@ const MainSideBar = ({
   }, [showNav]);
 
   return (
-    <div className={flowLayout ? 'relative w-full min-h-screen' : 'absolute w-full h-full'}>
+    <div
+      className={`${flowLayout ? 'relative w-full min-h-screen' : 'absolute w-full h-full'} ${className}`.trim()}
+    >
       <HeaderUnified
         user={auth.user}
         toggleNav={toggleNav}

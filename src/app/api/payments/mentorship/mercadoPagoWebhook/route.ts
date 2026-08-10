@@ -9,6 +9,7 @@ import {
 } from '../../../../../lib/coursePaymentDebug';
 import { resolveMentorshipMercadoPagoWebhookUrl } from '../../../../../lib/mentorshipPaymentUrls';
 import { resolveMentorshipPlanFromMercadoPagoExternalRef } from '../../../../../lib/resolveMentorshipMercadoPagoExternalRef';
+import { getMercadoPagoMetadataValue } from '../../../../../lib/mercadoPagoMetadata';
 
 export const runtime = 'nodejs';
 
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest) {
       transaction_amount?: number;
       currency_id?: string;
       payer?: { email?: string };
-      metadata?: { planId?: string; interval?: string; userId?: string };
+      metadata?: Record<string, unknown>;
     };
 
     const status = String(payment?.status || '');
@@ -80,8 +81,11 @@ export async function POST(req: NextRequest) {
     const fromRef = resolveMentorshipPlanFromMercadoPagoExternalRef(
       payment?.external_reference
     );
-    const planId = payment?.metadata?.planId || fromRef.planId;
-    const interval = payment?.metadata?.interval || fromRef.interval;
+    const planId =
+      getMercadoPagoMetadataValue(payment?.metadata, 'planId') || fromRef.planId;
+    const interval =
+      getMercadoPagoMetadataValue(payment?.metadata, 'interval') || fromRef.interval;
+    const metaUserId = getMercadoPagoMetadataValue(payment?.metadata, 'userId');
 
     if (!planId || !interval) {
       coursePaymentWarn('mentorship.mercadopago.webhook.plan_unresolved', {
@@ -96,7 +100,7 @@ export async function POST(req: NextRequest) {
       provider: 'mercadopago',
       transactionId: String(payment?.id || paymentId),
       email: payment?.payer?.email,
-      userId: payment?.metadata?.userId,
+      userId: metaUserId,
       orderId: payment?.external_reference,
       amount: payment?.transaction_amount,
       moneda: payment?.currency_id,

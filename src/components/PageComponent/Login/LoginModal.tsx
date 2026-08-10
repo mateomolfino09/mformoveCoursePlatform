@@ -83,10 +83,22 @@ const LoginModal = () => {
     return () => window.removeEventListener('resize', check);
   }, [mounted]);
 
-  const close = () => {
+  const close = (opts?: { allowForced?: boolean }) => {
+    if (snap.authModalForced && !opts?.allowForced) return;
     state.loginForm = false;
+    state.authModalForced = false;
     setErrorMessage(null);
     setForgetSend(false);
+  };
+
+  /** Evita router.push a la misma URL (recarga innecesaria en clases-gratis, etc.). */
+  const redirectAfterAuthIfNeeded = () => {
+    if (getCourseCheckoutIntent()) return;
+    const redirectUrl = getAndClearRedirectUrl();
+    if (!redirectUrl || typeof window === 'undefined') return;
+    const { pathname, search } = window.location;
+    if (redirectUrl === pathname || redirectUrl === `${pathname}${search}`) return;
+    setTimeout(() => router.push(redirectUrl), 500);
   };
 
   const signupUser = async (name: string, email: string, country: string) => {
@@ -109,18 +121,14 @@ const LoginModal = () => {
         const { token, newUser } = data;
         await auth.signInPostRegister(token).then(async (res: any) => {
           toast.success('¡Cuenta creada! Revisa tu correo para confirmar.');
-          close();
+          close({ allowForced: true });
           const userEmail = newUser?.email || res?.user?.email || auth.user?.email;
           const userId = newUser?._id || res?.user?._id || auth.user?._id;
           if (userEmail && userId) {
             const planIntentExecuted = await executePlanIntent(userEmail, userId, router);
-            if (!planIntentExecuted && !getCourseCheckoutIntent()) {
-              const redirectUrl = getAndClearRedirectUrl();
-              if (redirectUrl) setTimeout(() => router.push(redirectUrl), 500);
-            }
-          } else if (!getCourseCheckoutIntent()) {
-            const redirectUrl = getAndClearRedirectUrl();
-            if (redirectUrl) setTimeout(() => router.push(redirectUrl), 500);
+            if (!planIntentExecuted) redirectAfterAuthIfNeeded();
+          } else {
+            redirectAfterAuthIfNeeded();
           }
         }).catch(console.error);
       } else if (data?.error) {
@@ -145,18 +153,14 @@ const LoginModal = () => {
         return;
       }
       toast.success('¡Login exitoso!');
-      close();
+      close({ allowForced: true });
       const userEmail = res?.user?.email ?? auth.user?.email;
       const userId = res?.user?._id ?? auth.user?._id;
       if (userEmail && userId) {
         const planIntentExecuted = await executePlanIntent(userEmail, userId, router);
-        if (!planIntentExecuted && !getCourseCheckoutIntent()) {
-          const redirectUrl = getAndClearRedirectUrl();
-          if (redirectUrl) setTimeout(() => router.push(redirectUrl), 500);
-        }
-      } else if (!getCourseCheckoutIntent()) {
-        const redirectUrl = getAndClearRedirectUrl();
-        if (redirectUrl) setTimeout(() => router.push(redirectUrl), 500);
+        if (!planIntentExecuted) redirectAfterAuthIfNeeded();
+      } else {
+        redirectAfterAuthIfNeeded();
       }
     });
   };
@@ -204,14 +208,18 @@ const LoginModal = () => {
                   : 'Crear cuenta'}
           </h2>
         </div>
-        <button
-          type="button"
-          onClick={close}
-          className="rounded-full p-1.5 text-palette-stone hover:bg-palette-stone/10 hover:text-palette-ink transition"
-          aria-label="Cerrar"
-        >
-          <IoClose className="w-6 h-6" />
-        </button>
+        {!snap.authModalForced ? (
+          <button
+            type="button"
+            onClick={() => close()}
+            className="rounded-full p-1.5 text-palette-stone hover:bg-palette-stone/10 hover:text-palette-ink transition"
+            aria-label="Cerrar"
+          >
+            <IoClose className="w-6 h-6" />
+          </button>
+        ) : (
+          <span className="w-9" aria-hidden />
+        )}
       </div>
 
       <div className="px-6 py-5">
@@ -373,7 +381,9 @@ const LoginModal = () => {
           animate="visible"
           exit="exit"
           className="fixed inset-0 z-[300] flex items-end justify-center bg-palette-ink/60 p-4 md:items-center md:p-6 font-montserrat"
-          onClick={(e) => e.target === e.currentTarget && close()}
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !snap.authModalForced) close();
+          }}
         >
           <m.div
             initial={false}

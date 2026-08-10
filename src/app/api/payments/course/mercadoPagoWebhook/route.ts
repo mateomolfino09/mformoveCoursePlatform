@@ -12,6 +12,10 @@ import {
 } from '../../../../../lib/coursePaymentDebug';
 import { resolveCourseMercadoPagoWebhookUrl } from '../../../../../lib/cursoPaymentUrls';
 import { resolveProductIdFromMercadoPagoExternalRef } from '../../../../../lib/resolveCursoMercadoPagoExternalRef';
+import {
+  getMercadoPagoMetadataNumber,
+  getMercadoPagoMetadataValue,
+} from '../../../../../lib/mercadoPagoMetadata';
 
 export const runtime = 'nodejs';
 
@@ -74,15 +78,24 @@ export async function POST(req: NextRequest) {
       transaction_amount?: number;
       currency_id?: string;
       payer?: { email?: string };
-      metadata?: { productId?: string; userId?: string; preventaTierIndex?: number };
+      metadata?: Record<string, unknown>;
     };
 
     const status = String(payment?.status || '');
+    const metaProductId = getMercadoPagoMetadataValue(payment?.metadata, 'productId');
+    const metaUserId = getMercadoPagoMetadataValue(payment?.metadata, 'userId');
+    const metaPreventaTier = getMercadoPagoMetadataNumber(
+      payment?.metadata,
+      'preventaTierIndex'
+    );
+
     coursePaymentDebug('mercadopago.webhook.payment_fetched', {
       paymentId: payment?.id ? String(payment.id) : paymentId,
       status,
       externalReference: payment?.external_reference,
       isPaid: isMercadoPagoPaidStatus(status),
+      metaProductId,
+      metaUserId,
     });
 
     if (!isMercadoPagoPaidStatus(status)) {
@@ -90,7 +103,7 @@ export async function POST(req: NextRequest) {
     }
 
     const productId =
-      payment?.metadata?.productId ||
+      metaProductId ||
       resolveProductIdFromMercadoPagoExternalRef(payment?.external_reference);
 
     if (!productId) {
@@ -107,7 +120,7 @@ export async function POST(req: NextRequest) {
       provider: 'mercadopago',
       transactionId,
       email: payment?.payer?.email,
-      userId: payment?.metadata?.userId,
+      userId: metaUserId,
       amount: payment?.transaction_amount,
       moneda: payment?.currency_id,
     });
@@ -115,11 +128,11 @@ export async function POST(req: NextRequest) {
     const product = await Product.findById(productId).lean();
     let preventaCupo = null;
     if (product?.tipo === 'curso' && isCursoEnPreventa(product.cursoConfig)) {
-      const tierFromMeta =
-        typeof payment?.metadata?.preventaTierIndex === 'number'
-          ? payment.metadata.preventaTierIndex
-          : undefined;
-      preventaCupo = await incrementCursoPreventaCupo(productId, tierFromMeta, transactionId);
+      preventaCupo = await incrementCursoPreventaCupo(
+        productId,
+        metaPreventaTier,
+        transactionId
+      );
     }
 
     coursePaymentDebug('mercadopago.webhook.done', {

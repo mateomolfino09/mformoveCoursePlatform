@@ -23,6 +23,10 @@ import {
   mentorshipMonthlyEquivalent,
   type MentorshipBillingInterval,
 } from '../../../lib/mentorshipPricing';
+import {
+  applyCuerpoAutonomoDiscount,
+  withStripePrefilledPromoCode,
+} from '../../../constants/mentorshipCuerpoAutonomoDiscount';
 import { MiniLoadingSpinner } from '../Products/MiniSpinner';
 import { saveMentorshipDlocalPending } from '../../../lib/mentorshipDlocalPendingStorage';
 import { saveRedirectUrl } from '../../../utils/redirectQueue';
@@ -75,6 +79,7 @@ export default function MentorshipCheckoutStart({ payload }: MentorshipCheckoutS
   const [dlocalQuoteLoading, setDlocalQuoteLoading] = useState(false);
   const [mpPreferenceId, setMpPreferenceId] = useState<string | null>(null);
   const [mpBrickAmount, setMpBrickAmount] = useState<number | null>(null);
+  const [mpBrickCurrency, setMpBrickCurrency] = useState<string | null>(null);
   const [mpBrickLoading, setMpBrickLoading] = useState(false);
   const mpPanelRef = useRef<HTMLDivElement | null>(null);
 
@@ -91,8 +96,19 @@ export default function MentorshipCheckoutStart({ payload }: MentorshipCheckoutS
     return () => window.clearTimeout(id);
   }, [selectedMethod, mpBrickLoading]);
 
-  const { plan, interval, availableIntervals, price, opcionesPago } = payload;
+  const { plan, interval, availableIntervals, price, opcionesPago, descuentoCuerpoAutonomo } =
+    payload;
   const profileCountry = (auth.user as { country?: string } | null)?.country?.trim() || '';
+
+  const caDiscount =
+    descuentoCuerpoAutonomo?.elegible &&
+    descuentoCuerpoAutonomo.activo !== false &&
+    (descuentoCuerpoAutonomo.porcentajeAplicado || 0) > 0
+      ? descuentoCuerpoAutonomo
+      : null;
+  const discountedPrice = caDiscount
+    ? applyCuerpoAutonomoDiscount(price.price, interval)
+    : price.price;
 
   const stripePlan = opcionesPago.find((p) => p.proveedor === 'stripe');
   const dlocalPlan = opcionesPago.find((p) => p.proveedor === 'dlocalgo');
@@ -108,8 +124,28 @@ export default function MentorshipCheckoutStart({ payload }: MentorshipCheckoutS
   const stripeCheckoutAvailable = Boolean(
     (stripePlan?.activo && stripePlan?.paymentLink) || price.stripePriceId,
   );
-  const monthlyEquivalent = mentorshipMonthlyEquivalent(price.price, interval);
+  const monthlyEquivalent = mentorshipMonthlyEquivalent(discountedPrice, interval);
   const sym = mentorshipCurrencySymbol(price.currency);
+  const mpFxRate =
+    selectedMethod === 'mercadopago' &&
+    mpBrickAmount != null &&
+    mpBrickAmount > 0 &&
+    discountedPrice > 0
+      ? mpBrickAmount / discountedPrice
+      : null;
+  const showMpLocal = Boolean(mpFxRate);
+
+  const formatMpBillingLabel = useCallback(
+    (amountUsd: number) => {
+      const local = Math.round(amountUsd * (mpFxRate || 1));
+      const amount = formatMentorshipAmount(local);
+      const cur = (mpBrickCurrency || 'UYU').toUpperCase();
+      if (interval === 'mensual') return `$ ${amount} ${cur}/mes`;
+      if (interval === 'trimestral') return `$ ${amount} ${cur} cada 3 meses`;
+      return `$ ${amount} ${cur} al año`;
+    },
+    [interval, mpBrickCurrency, mpFxRate],
+  );
 
   useEffect(() => {
     if (!displayPrice?.monto) {
@@ -221,18 +257,16 @@ export default function MentorshipCheckoutStart({ payload }: MentorshipCheckoutS
       return formatPrice(dlocalQuote.currency, dlocalQuote.amount);
     }
     if (selectedMethod === 'mercadopago' && mpBrickAmount) {
-      const amount = formatMentorshipAmount(mpBrickAmount);
-      if (interval === 'mensual') return `$ ${amount} UYU/mes`;
-      if (interval === 'trimestral') return `$ ${amount} UYU cada 3 meses`;
-      return `$ ${amount} UYU al año`;
+      return formatMpBillingLabel(discountedPrice);
     }
-    return mentorshipBillingShortLabel(price.price, price.currency, interval);
+    return mentorshipBillingShortLabel(discountedPrice, price.currency, interval);
   }, [
     dlocalQuote,
+    discountedPrice,
+    formatMpBillingLabel,
     interval,
     mpBrickAmount,
     price.currency,
-    price.price,
     selectedMethod,
   ]);
 
@@ -287,10 +321,16 @@ export default function MentorshipCheckoutStart({ payload }: MentorshipCheckoutS
       }
       setMpPreferenceId(String(data.preferenceId));
       setMpBrickAmount(Number(data.amount) > 0 ? Number(data.amount) : null);
+      setMpBrickCurrency(
+        typeof data.currency === 'string' && data.currency.trim()
+          ? data.currency.trim().toUpperCase()
+          : 'UYU',
+      );
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Error al iniciar el pago');
       setMpPreferenceId(null);
       setMpBrickAmount(null);
+      setMpBrickCurrency(null);
     } finally {
       setMpBrickLoading(false);
       setLoadingMethod(null);
@@ -301,6 +341,7 @@ export default function MentorshipCheckoutStart({ payload }: MentorshipCheckoutS
     if (selectedMethod !== 'mercadopago') {
       setMpPreferenceId(null);
       setMpBrickAmount(null);
+      setMpBrickCurrency(null);
       return;
     }
     if (!auth.user) return;
@@ -361,10 +402,15 @@ export default function MentorshipCheckoutStart({ payload }: MentorshipCheckoutS
         return;
       }
       setLoadingMethod(methodId);
-      window.location.href = link;
+      const finalLink =
+        caDiscount?.codigo
+          ? withStripePrefilledPromoCode(link, caDiscount.codigo)
+          : link;
+      window.location.href = finalLink;
     },
     [
       auth.user,
+      caDiscount?.codigo,
       executeDlocalCheckout,
       executeMercadoPagoCheckout,
       executeStripeCheckout,
@@ -399,7 +445,13 @@ export default function MentorshipCheckoutStart({ payload }: MentorshipCheckoutS
   };
 
   const switchInterval = (next: MentorshipBillingInterval) => {
-    router.push(`/mentoria/empezar?interval=${next}`);
+    const params = new URLSearchParams();
+    params.set('interval', next);
+    if (typeof window !== 'undefined') {
+      const from = new URLSearchParams(window.location.search).get('from');
+      if (from) params.set('from', from);
+    }
+    router.push(`/mentoria/empezar?${params.toString()}`);
   };
 
   return (
@@ -433,10 +485,43 @@ export default function MentorshipCheckoutStart({ payload }: MentorshipCheckoutS
           ) : null}
 
           <div className="mb-6">
-            <p className="text-lg font-semibold text-palette-ink md:text-xl">{checkoutPriceLabel}</p>
+            {caDiscount ? (
+              <div className="mb-3 inline-flex items-center rounded-full border border-palette-sage/40 bg-palette-sage/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-palette-ink">
+                −{caDiscount.porcentajeAplicado}% Cuerpo Autónomo
+              </div>
+            ) : null}
+            {caDiscount ? (
+              <p className="mb-1.5 text-sm text-palette-stone md:text-base">
+                Antes{' '}
+                <span className="line-through">
+                  {showMpLocal
+                    ? formatMpBillingLabel(price.price)
+                    : mentorshipBillingShortLabel(price.price, price.currency, interval)}
+                </span>
+              </p>
+            ) : null}
+            <p
+              className={
+                caDiscount
+                  ? 'font-montserrat text-xl font-bold tracking-tight text-palette-ink sm:text-2xl'
+                  : 'text-lg font-semibold text-palette-ink md:text-xl'
+              }
+            >
+              {checkoutPriceLabel}
+            </p>
             {interval !== 'mensual' ? (
-              <p className="mt-1 text-sm text-palette-stone">
-                Equivale a ~{sym} {formatMentorshipAmount(monthlyEquivalent)}/mes
+              <p
+                className={
+                  caDiscount
+                    ? 'mt-1.5 text-sm font-medium text-palette-ink/75 md:text-[15px]'
+                    : 'mt-1 text-sm text-palette-stone'
+                }
+              >
+                {showMpLocal
+                  ? `Equivale a ~$ ${formatMentorshipAmount(
+                      Math.round(monthlyEquivalent * (mpFxRate || 1)),
+                    )} ${(mpBrickCurrency || 'UYU').toUpperCase()}/mes`
+                  : `Equivale a ~${sym} ${formatMentorshipAmount(monthlyEquivalent)}/mes`}
               </p>
             ) : (
               <p className="mt-1 text-sm text-palette-stone">{mentorshipCommitmentSummary(interval)}</p>
@@ -609,7 +694,10 @@ export default function MentorshipCheckoutStart({ payload }: MentorshipCheckoutS
                   <p className="mb-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-stone">
                     Con el plan anual
                   </p>
-                  <MentorshipAnnualGiftProductsList tone="light" />
+                  <MentorshipAnnualGiftProductsList
+                    tone="light"
+                    excludeCursoSlugs={caDiscount ? ['cuerpo-autonomo'] : []}
+                  />
                 </div>
               ) : null}
               <div className="p-6 md:p-8">

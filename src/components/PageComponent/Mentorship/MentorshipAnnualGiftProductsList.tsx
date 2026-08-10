@@ -19,12 +19,15 @@ type MentorshipAnnualGiftProductsListProps = {
   /** Estilo sobre fondo claro (checkout) o oscuro (landing). */
   tone?: 'light' | 'dark';
   className?: string;
+  /** Slugs de cursos a ocultar (ej. si el usuario ya tiene Cuerpo Autónomo). */
+  excludeCursoSlugs?: string[];
 };
 
 /** Listado de productos de regalo del plan anual (misma fuente que /bio). */
 export default function MentorshipAnnualGiftProductsList({
   tone = 'light',
   className = '',
+  excludeCursoSlugs = [],
 }: MentorshipAnnualGiftProductsListProps) {
   const [products, setProducts] = useState<LinkInBioProductCard[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +40,19 @@ export default function MentorshipAnnualGiftProductsList({
         const data = (await res.json()) as { products?: LinkInBioProductCard[] };
         if (cancelled) return;
         const list = Array.isArray(data.products) ? data.products : [];
-        setProducts(list.filter((p) => p.tipo !== 'mentoria'));
+        const excluded = new Set(
+          excludeCursoSlugs.map((s) => s.trim().toLowerCase()).filter(Boolean),
+        );
+        setProducts(
+          list.filter((p) => {
+            if (p.tipo === 'mentoria') return false;
+            if (excluded.size === 0) return true;
+            const href = (p.href || '').toLowerCase();
+            return ![...excluded].some(
+              (slug) => href === `/${slug}` || href.endsWith(`/${slug}`),
+            );
+          }),
+        );
       } catch {
         if (!cancelled) setProducts([]);
       } finally {
@@ -47,7 +62,7 @@ export default function MentorshipAnnualGiftProductsList({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [excludeCursoSlugs.join('|')]);
 
   if (loading) {
     return (
@@ -108,7 +123,7 @@ export default function MentorshipAnnualGiftProductsList({
                 <span
                   className={`font-montserrat text-xs font-semibold uppercase tracking-[0.12em] md:text-sm ${giftClass}`}
                 >
-                  Ahora U$S 0
+                  Incluido
                 </span>
               </div>
             </div>

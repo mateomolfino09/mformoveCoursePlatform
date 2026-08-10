@@ -2,16 +2,7 @@
 
 import type { CursoClaseContenido } from '../../../types/cursoLanding';
 import { COURSE_CLASS_MATERIALS } from '../../../types/courseClass';
-
-const MATERIAL_LABELS: Record<string, string> = {
-  pelota: 'Pelota',
-  baston: 'Bastón',
-  'banda elastica': 'Banda elástica',
-  banco: 'Banco',
-  bloque: 'Bloque',
-  libreta: 'Libreta',
-  lapicera: 'Lapicera',
-};
+import { getClassMaterialLabel } from '../../icons/ClassMaterialIcon';
 
 const inputClass =
   'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900';
@@ -160,7 +151,7 @@ export default function CursoClaseContenidoFields({
                     : 'border-gray-300 text-gray-600 hover:border-gray-500'
                 }`}
               >
-                {MATERIAL_LABELS[mat] ?? mat}
+                {getClassMaterialLabel(mat)}
               </button>
             );
           })}

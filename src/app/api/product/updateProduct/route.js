@@ -73,6 +73,7 @@ export async function PUT(req) {
         cursoConfig,
         esProgramaTransformacional,
         programaTransformacional,
+        secuenciaConfig,
       } = data;
 
       const invitacionGrupoResolved = resolveInvitacionGrupoWhatsappFromPayload({
@@ -389,6 +390,7 @@ export async function PUT(req) {
         } : undefined,
         invitacionGrupoWhatsapp: invitacionGrupoResolved || undefined,
         cursoConfig: cursoConfigParaGuardar,
+        secuenciaConfig: tipo === 'clases_gratuitas_secuenciales' ? secuenciaConfig : undefined,
         esProgramaTransformacional: esProgramaTransformacional ?? undefined,
         programaTransformacional: programaTransformacionalParaGuardar,
         updatedAt: new Date(),
