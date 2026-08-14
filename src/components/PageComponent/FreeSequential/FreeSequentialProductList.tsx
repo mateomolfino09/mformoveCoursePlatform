@@ -6,6 +6,7 @@ import { LockClosedIcon, PlayIcon } from '@heroicons/react/24/solid';
 import { useRouter } from 'next/navigation';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import { toast } from '../../../hooks/useToast';
+import { useAuth } from '../../../hooks/useAuth';
 
 type FreeSequentialClase = {
   _id: string;
@@ -37,6 +38,7 @@ export default function FreeSequentialProductList({
   autoEnterFirstClass = true,
 }: Props) {
   const router = useRouter();
+  const auth = useAuth();
   const [data, setData] = useState<ContenidoResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -84,7 +86,7 @@ export default function FreeSequentialProductList({
     return () => {
       cancelled = true;
     };
-  }, [slug, router, autoEnterFirstClass]);
+  }, [slug, router, autoEnterFirstClass, auth.user]);
 
   const handleLockedClick = () => {
     toast.error('¡Esta clase se desbloquea pronto! Atención a tu casilla de correo.');
