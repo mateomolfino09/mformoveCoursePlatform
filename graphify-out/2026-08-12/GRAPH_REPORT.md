@@ -1,16 +1,16 @@
-# Graph Report - mformoveCoursePlatform  (2026-08-12)
+# Graph Report - mformoveCoursePlatform  (2026-08-10)
 
 ## Corpus Check
-- 1176 files · ~3,364,841 words
+- 1173 files · ~3,362,879 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 4965 nodes · 11204 edges · 394 communities (249 shown, 145 thin omitted)
+- 4950 nodes · 11164 edges · 386 communities (243 shown, 143 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 15 edges (avg confidence: 0.55)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9a8212f3`
+- Built from commit: `db81b09e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -18,63 +18,63 @@
 - useAuth
 - connectDB
 - userModel.js
-- SelectYourPlanIntro.tsx
+- SelectPlan.tsx
 - productModel.js
 - getCurrentURL
-- mentorship/complete/route.ts
+- coursePaymentWarn
 - AllProducts.tsx
 - useAppSelector
 - colors.ts
 - useToast.ts
 - AdmimDashboardLayout
 - typings.d.ts
-- products/[name]/page.tsx
+- individualClass/create/route.js
 - Course.tsx
 - stripeConfig.ts
 - ruta-semanal/page.tsx
-- clases-individuales/page.tsx
-- ClassPage/ClassQuestions.tsx
-- routes.ts
+- headerLibrarySlice.ts
+- components/ClassQuestions.tsx
+- app/bitacora/page.tsx
 - createCourseOneTimePayments.ts
 - weeklyLogbookModel.js
 - CourseCheckoutStart.tsx
 - cursoLanding.ts
-- dlocalConfig.ts
+- FooterProfile.tsx
 - CourseContentHubView.tsx
 - include
 - MiniSpinner.tsx
 - imageLoader.ts
-- coursePaymentWarn
+- course/dlocal-checkout/route.ts
 - elegir-plan/page.tsx
 - inPersonClassModel.js
 - incorporacion/bitacora-base/page.tsx
-- WeeklyPathNavigator.tsx
+- CursoLandingConfig
 - landingSectionDesign.ts
 - api/index.ts
-- course/dlocal-checkout/route.ts
+- questionModel.js
 - ClassSections.tsx
-- LibraryModuleView.tsx
+- routes.ts
 - CoursePlans.tsx
-- LoginModal.tsx
+- MentorshipIsForYou.tsx
 - classes/[id]/route.ts
-- currencyHelpers.ts
-- [workShopId]/route.js
+- EventDetailPage.tsx
+- config/route.js
 - CourseClassPractice.tsx
 - mentorship/consulta/page.tsx
 - Análisis del Flujo de Pago y Permisos de Cuerpo autónomo
 - CreateInPersonClass.tsx
 - MainSideBar.tsx
 - coherenceTrackingModel.js
-- mentorship/mercadoPagoWebhook/route.ts
+- EditProductStep1.tsx
 - What You Must Do When Invoked
 - individualClassModel.js
 - siteMetadata.ts
 - mentoria/consulta/page.tsx
-- mentorshipCta.ts
+- MentorshipApplyButton.tsx
 - CopywritingAssistant.tsx
 - react
 - Mentorship.tsx
-- PremiumMentorshipCards.tsx
+- MentorshipPlanIncludesList.tsx
 - ProfileMentorshipSection.tsx
 - EmailService
 - dependencies
@@ -83,7 +83,7 @@
 - all/route.ts
 - module-classes/[id]/route.js
 - app/layout.tsx
-- ToastContext.tsx
+- mentorias/planes/page.tsx
 - emailService.ts
 - rules
 - month/route.js
@@ -91,9 +91,9 @@
 - Endpoint Generator
 - ClassMaterialIcon.tsx
 - pageMetadata
-- resolveMentorshipDlocalCheckoutOrigins
+- mentorship/dlocal-checkout/route.ts
 - checkout/route.ts
-- getCursoPageTitle
+- formatTitleCaseWords
 - virtualClassModel.js
 - linkInBioProducts.ts
 - LinkInBioPage.tsx
@@ -102,19 +102,19 @@
 - Frontend Validator
 - classModel.js
 - cursoBienvenidaPendiente.ts
-- completar-pago/page.tsx
-- Products/PlayerControls.tsx
 - MentorshipCheckoutStart.tsx
+- Products/PlayerControls.tsx
+- PremiumMentorshipCards.tsx
 - redirectQueue.ts
 - CarouselClassesThumbnail.tsx
 - Conceptos — Context & Harness Engineering (MMove Course Platform)
 - vercel.json
-- cursoCommunitySnippet.ts
+- BitacoraNavigator.tsx
 - stripe/route.ts
 - instagramService.ts
 - AllPlans.tsx
 - Checks
-- useAppDispatch
+- index.js
 - devDependencies
 - Workflow
 - courseWelcomeEmailCommunity.ts
@@ -133,10 +133,10 @@
 - Agent: feature-implementation
 - Workflow
 - scripts
-- replace-event-with-recording/route.js
-- EventsList.tsx
+- simulate-curso-create-full.mjs
+- EditPromocion.tsx
 - duplicateCuerpoAutonomoToProduction.js
-- createFAQ/route.js
+- getFAQ/route.js
 - latestPublishedCurso.ts
 - GetMembershipModal.tsx
 - Spec — Producto de clases gratuitas secuenciales
@@ -147,9 +147,9 @@
 - Guía de uso de Claude Code — MMove Course Platform
 - package.json
 - analyzeImages.js
-- FreeProducts.tsx
+- AdminBilling.tsx
 - updateQueIncluyeModulos.js
-- FreeSequentialClassFields.tsx
+- getClassMaterialLabel
 - AIService
 - Deployment & Runtime Model — MMove Course Platform
 - backend-architecture.md
@@ -164,7 +164,7 @@
 - Artefactos de `.claude/`
 - graphify reference: extra exports and benchmark
 - event-reminder/route.ts
-- CreateClassType.tsx
+- LoadingSpinner.tsx
 - CreateProduct.tsx
 - course/mercadoPagoWebhook/route.ts
 - Backend Context — MMove Course Platform
@@ -173,7 +173,7 @@
 - Frontend Architecture — MMove Course Platform
 - cleanConsoleLogs.js
 - createMentorshipPlans.js
-- resolveMediaImageUrl.ts
+- sendCourseWelcomeEmail.ts
 - membership-events/[id]/calendar/route.js
 - moveCrewEventModel.js
 - move-crew-events/[id]/calendar/route.js
@@ -185,7 +185,7 @@
 - Roadmap Plataforma de Cursos
 - aiService.ts
 - createMentorshipPaymentLinks.ts
-- QuestionPage.tsx
+- BitacoraSidebar.tsx
 - membership-events/[id]/route.js
 - module-classes/complete/route.js
 - move-crew-events/[id]/route.js
@@ -197,12 +197,12 @@
 - Procedimientos específicos del proyecto (no documentados en otro lado)
 - @types/crypto-js
 - FreeSequentialClassPractice.tsx
-- EventDetailPage.tsx
+- headerHomeSlice.ts
 - Billing.tsx
 - membership-events/[id]/calendar/ics/route.js
 - move-crew-events/[id]/calendar/ics/route.js
 - move-crew-events/route.js
-- CreateFAQ.tsx
+- list/page.tsx
 - updateHighlightsAndClearTestPayments.js
 - cancelSubscription/page.tsx
 - @types/js-cookie
@@ -256,9 +256,9 @@
 - Youtube.tsx
 - brandVoiceModel.js
 - urlHelpers.ts
-- duplicateLaboratorioDelCuerpoToProduction.js
+- jodit-react
 - bcrypt
-- CoherenceContext.tsx
+- eslint
 - course/mercadopago-process/route.ts
 - canvas-confetti
 - @ckeditor/ckeditor5-build-classic
@@ -277,8 +277,8 @@
 - @emotion/react
 - @emotion/styled
 - encoding
-- formatTitleCaseWords
-- MercadoPagoPaymentBrick.tsx
+- cookie
+- @jridgewell/sourcemap-codec
 - Products.tsx
 - eslint-plugin-prettier
 - framer-motion
@@ -286,7 +286,7 @@
 - @headlessui/react
 - @heroicons/react
 - LinkInBioProductCarousel.tsx
-- IndividaulProduct.tsx
+- @mailchimp/mailchimp_marketing
 - AllPromociones.tsx
 - js-cookie
 - jsonwebtoken
@@ -301,9 +301,9 @@
 - createCoursesSlice.ts
 - @mui/x-data-grid
 - next
-- formatCursoOfferBlocksForEmail.ts
-- HeaderUnified.tsx
-- main
+- mercadopago
+- CursoLandingContext.tsx
+- mongodb
 - @next-auth/mongodb-adapter
 - next-cloudinary
 - next.config.js
@@ -320,11 +320,11 @@
 - react-dom
 - react-dropzone
 - react-google-recaptcha
-- list/page.tsx
+- react-pro-sidebar
 - react-hook-form
 - react-icons
 - react-player
-- lista/page.tsx
+- @types/nodemailer
 - react-select
 - bcryptjs
 - redux
@@ -337,35 +337,27 @@
 - stripe
 - styled-jsx
 - tailwind-scrollbar-hide
-- UserCoursesSection.tsx
 - @types/mailchimp__mailchimp_transactional
 - @types/react
 - @types/react-dom
-- eslint-config-prettier
 - @types/react-redux
 - typescript
 - @u-wave/react-vimeo
 - validator
 - valtio
 - vercel
-- html-react-parser
 - @vercel/speed-insights
 - vimeo
 - postcss
-- jose
 - standard
 - tailwind-scrollbar
-- next13-progressbar
-- next-auth
+- QuestionPage.tsx
 - @types/lodash
-- react-social-login-buttons
 - currency.ts
 - individualClassUserModel.js
 - { useGetClassQuery, useAddFilesMutation, useDeleteFileMutation, useDeleteLinkMutation, useAddLinksMutation }
 - { useGetClassQuery, useAddFilesMutation, useDeleteFileMutation, useDeleteLinkMutation, useAddLinksMutation }
 - @vercel/analytics
-- @types/bcrypt
-- @types/react-google-recaptcha
 - crear-producto/clases-gratis/page.tsx
 - @mui/material
 - next-absolute-url
@@ -375,8 +367,8 @@
 - bcrypt-ts
 
 ## God Nodes (most connected - your core abstractions)
-1. `connectDB()` - 406 edges
-2. `useAuth()` - 359 edges
+1. `connectDB()` - 404 edges
+2. `useAuth()` - 355 edges
 3. `AdmimDashboardLayout()` - 105 edges
 4. `toast` - 88 edges
 5. `MainSideBar()` - 77 edges
@@ -387,16 +379,16 @@
 10. `coursePaymentWarn()` - 56 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `DELETE()` --references--> `IndividualClass`  [EXTRACTED]
-  src/app/api/individualClass/delete/[id]/route.js → typings.d.ts
 - `ClassQuestions()` --references--> `Answer`  [EXTRACTED]
   src/components/PageComponent/ClassPage/ClassQuestions.tsx → typings.d.ts
 - `useProvideAuth()` --references--> `cookie`  [EXTRACTED]
   src/hooks/useAuth.tsx → package.json
 - `generateMd5()` --references--> `crypto-js`  [EXTRACTED]
   src/app/api/helper/generateMd5.js → package.json
-- `WeeklyPathPageContent()` --references--> `react`  [EXTRACTED]
-  src/app/ruta-semanal/page.tsx → package.json
+- `CarouselClassesThumbnail()` --references--> `react`  [EXTRACTED]
+  src/components/CarouselClassesThumbnail.tsx → package.json
+- `FreeProductsSideBar()` --references--> `react`  [EXTRACTED]
+  src/components/MainSideBarProducts/FreeProducts.tsx → package.json
 
 ## Import Cycles
 - None detected.
@@ -404,107 +396,107 @@
 ## Hyperedges (group relationships)
 - **InfoModal composite component pattern (modal + section + field)** — src_components_infomodal_readme_infomodal, src_components_infomodal_readme_infomodalsection, src_components_infomodal_readme_infomodalfield [EXTRACTED 1.00]
 
-## Communities (394 total, 145 thin omitted)
+## Communities (386 total, 143 thin omitted)
 
 ### Community 0 - "useAuth"
 Cohesion: 0.03
-Nodes (75): BitacoraAdminPage(), Index(), Index(), Page(), Index(), Page(), Index(), BitacoraAdminPage() (+67 more)
+Nodes (79): BitacoraAdminPage(), Index(), Index(), Page(), Index(), Page(), Index(), BitacoraAdminPage() (+71 more)
 
 ### Community 1 - "connectDB"
 Cohesion: 0.03
-Nodes (70): createTransformationalProgram(), programaTransformacional, Page(), Page(), Page(), Page(), Page(), Page() (+62 more)
+Nodes (76): createTransformationalProgram(), programaTransformacional, Page(), Page(), Page(), Page(), Page(), Page() (+68 more)
 
 ### Community 2 - "userModel.js"
-Cohesion: 0.05
-Nodes (22): prepareEmail(), POST(), createAnswer(), POST(), createQuestion(), deleteQuestion(), DELETE(), deleteQuestion() (+14 more)
+Cohesion: 0.04
+Nodes (13): GET(), runtime, POST(), runtime, CURSO_BIENVENIDA_PENDIENTE_COOKIE, adminUser, classUser, freeSubscriptionSchema (+5 more)
 
-### Community 3 - "SelectYourPlanIntro.tsx"
-Cohesion: 0.29
-Nodes (6): VimeoPlayer(), SelectPlanOptions(), Props, SelectYourPlanIntro(), VimeoPlayerPlan(), savePlanIntent()
+### Community 3 - "SelectPlan.tsx"
+Cohesion: 0.11
+Nodes (19): VimeoPlayer(), Membership(), Promocion, Props, Promocion, Props, SelectYourPlan(), FrequentQuestions() (+11 more)
 
 ### Community 4 - "productModel.js"
-Cohesion: 0.05
-Nodes (34): dynamic, Page(), Props, dynamic, Page(), Props, fetchCache, revalidate (+26 more)
+Cohesion: 0.04
+Nodes (39): dynamic, Page(), Props, POST(), createEventProductWithPrices(), CreateEventProductWithPricesParams, PreciosEvento, fetchCache (+31 more)
 
 ### Community 5 - "getCurrentURL"
-Cohesion: 0.08
-Nodes (34): POST(), POST(), getCurrentURL(), isToday(), generatePassword(), mailchimpClient, POST(), POST() (+26 more)
+Cohesion: 0.06
+Nodes (41): POST(), POST(), getCurrentURL(), isToday(), generatePassword(), mailchimpClient, POST(), POST() (+33 more)
 
-### Community 6 - "mentorship/complete/route.ts"
-Cohesion: 0.10
-Nodes (30): devOnly(), fetchDlocalPayment(), GET(), PAID_DLOCAL_STATUSES, POST(), runtime, POST(), stripe (+22 more)
+### Community 6 - "coursePaymentWarn"
+Cohesion: 0.08
+Nodes (57): devOnly(), fetchDlocalPayment(), GET(), PAID_DLOCAL_STATUSES, POST(), runtime, POST(), stripe (+49 more)
 
 ### Community 7 - "AllProducts.tsx"
-Cohesion: 0.10
+Cohesion: 0.09
 Nodes (21): Solicitud, Solicitud, InfoModal(), InfoModalProps, InfoModalField(), InfoModalFieldProps, InfoModalSection(), InfoModalSectionProps (+13 more)
 
 ### Community 8 - "useAppSelector"
-Cohesion: 0.05
-Nodes (50): CreatePlanStepOne(), Props, ClassesFiltersCategory(), Props, CreateClass(), Props, CreateClassStepOne(), Props (+42 more)
+Cohesion: 0.04
+Nodes (76): CarouselClasses(), Props, CarouselSearchClasses(), Props, CarouselSearchClassesThumbnail(), Props, ClassesFilters(), Props (+68 more)
 
 ### Community 9 - "colors.ts"
 Cohesion: 0.12
 Nodes (19): BadgeProps, colorUtils, Button(), ButtonProps, colorUtils, CardProps, colorUtils, Input (+11 more)
 
 ### Community 10 - "useToast.ts"
-Cohesion: 0.08
-Nodes (28): dynamic, AddResources(), Props, Props, FileUploader(), Props, LinkUploader(), Props (+20 more)
+Cohesion: 0.09
+Nodes (29): AutomationPage(), ViewProgramPage(), AutomationPage(), ViewProgramPage(), AddResources(), Props, ClassResources(), Props (+21 more)
 
 ### Community 11 - "AdmimDashboardLayout"
-Cohesion: 0.04
-Nodes (44): AutoGeneratedEmail, AutoGeneratedEmail, ContentType, CreateBitacoraPage(), emptyContentItem(), WeekContent, WeekContentItem, ContentType (+36 more)
+Cohesion: 0.05
+Nodes (32): AutoGeneratedEmail, AutoGeneratedEmail, ContentType, CreateBitacoraPage(), emptyContentItem(), WeekContent, WeekContentItem, ContentType (+24 more)
 
 ### Community 12 - "typings.d.ts"
 Cohesion: 0.03
 Nodes (59): Address, Answer, Archive, Bill, ClassesDB, ClassesProduct, ClassesUser, ClassModuleGalleryImage (+51 more)
 
-### Community 13 - "products/[name]/page.tsx"
-Cohesion: 0.09
-Nodes (25): InitialData, Page(), PageProps, InitialData, Page(), PageProps, POST(), extractVimeoId() (+17 more)
+### Community 13 - "individualClass/create/route.js"
+Cohesion: 0.13
+Nodes (18): InitialData, Page(), PageProps, InitialData, Page(), PageProps, POST(), extractVimeoId() (+10 more)
 
 ### Community 14 - "Course.tsx"
-Cohesion: 0.06
-Nodes (41): CursoLandingPayload, CursoNombrePage(), CursoNombrePageProps, Course(), CourseFAQ, CourseHighlights, CoursePlans, CourseProps (+33 more)
+Cohesion: 0.08
+Nodes (29): CursoLandingPayload, CursoNombrePage(), CursoNombrePageProps, Course(), CourseFAQ, CourseHighlights, CoursePlans, CourseTestimonials (+21 more)
 
 ### Community 15 - "stripeConfig.ts"
-Cohesion: 0.08
-Nodes (27): dynamic, POST(), deleteStripeSubscription(), createStripeSubscription(), mailchimpClient, sendSubscriptionEmail(), SubscriptionStatus, PUT() (+19 more)
+Cohesion: 0.05
+Nodes (38): dynamic, POST(), cancelStripeSubscription(), deleteStripeSubscription(), mailchimpClient, PUT(), createStripeSubscription(), mailchimpClient (+30 more)
 
 ### Community 16 - "ruta-semanal/page.tsx"
-Cohesion: 0.06
-Nodes (35): CoherenceTracking, DailyContent, Logbook, shapeIcon(), WeeklyContent, WeeklyPathPageContent(), CoherenceTracking, DailyContent (+27 more)
+Cohesion: 0.09
+Nodes (23): CoherenceTracking, DailyContent, Logbook, WeekContentItem, WeeklyContent, CoherenceTracking, DailyContent, Logbook (+15 more)
 
-### Community 17 - "clases-individuales/page.tsx"
-Cohesion: 0.21
-Nodes (10): applyFilters(), IndividualClassesPage(), parseLargoMinutes(), applyFilters(), IndividualClassesPage(), parseLargoMinutes(), CarouselSearchClassesThumbnail(), Props (+2 more)
+### Community 17 - "headerLibrarySlice.ts"
+Cohesion: 0.11
+Nodes (20): applyFilters(), IndividualClassesPage(), parseLargoMinutes(), ClassesSchedulePage(), CursoEmpezarPage(), CursoEmpezarPageProps, ClassesSchedulePage(), applyFilters() (+12 more)
 
-### Community 18 - "ClassPage/ClassQuestions.tsx"
-Cohesion: 0.24
-Nodes (7): Props, DeleteAnswer(), Props, DeleteQuestion(), Props, ClassQuestions(), Props
+### Community 18 - "components/ClassQuestions.tsx"
+Cohesion: 0.28
+Nodes (5): Props, DeleteAnswer(), Props, DeleteQuestion(), Props
 
-### Community 19 - "routes.ts"
-Cohesion: 0.08
-Nodes (26): AlertComponent(), Props, transition, AuthSkeleton(), MainSideBarDash(), Props, MiniLoadingSpinner(), CourseQuickAccess() (+18 more)
+### Community 19 - "app/bitacora/page.tsx"
+Cohesion: 0.11
+Nodes (15): CoherenceTracking, DailyContent, Logbook, shapeIcon(), WeeklyContent, WeeklyPathPageContent(), ClassMaterialIcon(), CoherenceInfoModal() (+7 more)
 
 ### Community 20 - "createCourseOneTimePayments.ts"
 Cohesion: 0.09
-Nodes (41): dynamic, fetchCache, GET(), getOrCreateConfig(), MENTORIA_STRING_FIELDS, PUT(), revalidate, buildCursoOpcionesPago() (+33 more)
+Nodes (44): hasMercadoPagoOption(), loadEnv(), main(), parseArgs(), resolveOrigin(), buildCursoOpcionesPago(), createCourseOneTimePayments(), CreateCourseOneTimePaymentsParams (+36 more)
 
 ### Community 21 - "weeklyLogbookModel.js"
 Cohesion: 0.04
-Nodes (50): fetchCache, GET(), revalidate, fetchCache, POST(), revalidate, extractVimeoId(), fetchCache (+42 more)
+Nodes (53): fetchCache, GET(), revalidate, fetchCache, POST(), revalidate, extractVimeoId(), fetchCache (+45 more)
 
 ### Community 22 - "CourseCheckoutStart.tsx"
-Cohesion: 0.15
-Nodes (19): clearStoredTransferCooldown(), CourseCheckoutStart(), CourseCheckoutStartProps, DlocalQuoteResponse, formatClaseDuration(), formatPrice(), getClaseDisplayName(), MercadoPagoPaymentBrick (+11 more)
+Cohesion: 0.06
+Nodes (46): dynamic, GET(), dynamic, GET(), clearStoredTransferCooldown(), CourseCheckoutStart(), CourseCheckoutStartProps, DlocalQuoteResponse (+38 more)
 
 ### Community 23 - "cursoLanding.ts"
-Cohesion: 0.06
-Nodes (51): clasesPorModulo, courseClassesToCreate, cursoConfigFromForm, cursoConfigParaGuardar, existingCfg, invitacionGrupoResolved, mergedAfterStripe, productData (+43 more)
+Cohesion: 0.09
+Nodes (42): CursoLandingConfigForm(), paragraphSlots(), Props, SelloImageUpload(), trimParagraphs(), uploadImageToCloudinary(), fromDatetimeLocalValue(), syncCourseClassesFromContenidoModulos() (+34 more)
 
-### Community 24 - "dlocalConfig.ts"
-Cohesion: 0.08
-Nodes (20): cancelStripeSubscription(), mailchimpClient, PUT(), createPlanDlocal(), Props, createPlanStripe(), Props, POST() (+12 more)
+### Community 24 - "FooterProfile.tsx"
+Cohesion: 0.16
+Nodes (13): metadata, TerminosPage(), CourseCheckoutSkeleton(), CourseCheckoutSkeletonBody(), CourseLandingSkeleton(), CourseSkeletonShimmer(), MentorshipLandingSkeleton(), FooterProfile() (+5 more)
 
 ### Community 25 - "CourseContentHubView.tsx"
 Cohesion: 0.10
@@ -515,16 +507,16 @@ Cohesion: 0.05
 Nodes (41): canvas/Backdrop.jsx, canvas/CameraRig.jsx, canvas/Shirt.jsx, config/mongodb.js, constants/admin.js, dom, dom.iterable, esnext (+33 more)
 
 ### Community 27 - "MiniSpinner.tsx"
-Cohesion: 0.08
-Nodes (12): filters, filters, classModules, filters, classModules, filters, AllClasses(), AllClassesProps (+4 more)
+Cohesion: 0.09
+Nodes (11): filters, filters, classModules, filters, classModules, filters, AllClasses(), AllClassesProps (+3 more)
 
 ### Community 28 - "imageLoader.ts"
-Cohesion: 0.06
-Nodes (34): imageLoader(), Footer(), Banner(), FreeProductBanner(), FreeProductDescription(), Props, FreeProductTitle(), Props (+26 more)
+Cohesion: 0.07
+Nodes (21): imageLoader(), AlertComponent(), Props, transition, AuthSkeleton(), Footer(), Props, MiniLoadingSpinner() (+13 more)
 
-### Community 29 - "coursePaymentWarn"
-Cohesion: 0.12
-Nodes (36): PAID_DLOCAL_STATUSES, POST(), resolveStripeProductId(), runtime, GET(), PAID_DLOCAL_STATUSES, POST(), resolveProductId() (+28 more)
+### Community 29 - "course/dlocal-checkout/route.ts"
+Cohesion: 0.21
+Nodes (13): POST(), runtime, GET(), resolveCourseDlocalWebhookUrl(), createCursoDlocalPaymentLink(), CreateCursoDlocalPaymentResult, toDlocalCurrency(), buildCursoDlocalSuccessUrl() (+5 more)
 
 ### Community 30 - "elegir-plan/page.tsx"
 Cohesion: 0.24
@@ -535,52 +527,52 @@ Cohesion: 0.13
 Nodes (13): POST(), DELETE(), fetchCache, GET(), revalidate, fetchCache, GET(), revalidate (+5 more)
 
 ### Community 32 - "incorporacion/bitacora-base/page.tsx"
-Cohesion: 0.14
-Nodes (14): VideoData, VideoData, BitacoraBaseSkeleton(), CoherenceCelebrationModal(), CoherenceCelebrationModalProps, shapeIcon(), GorillaLevelDisplay(), GorillaLevelDisplayProps (+6 more)
+Cohesion: 0.10
+Nodes (21): BitacoraBasePageContent(), VideoData, BitacoraBasePageContent(), VideoData, BitacoraBaseSkeleton(), CoherenceCelebrationModal(), CoherenceCelebrationModalProps, shapeIcon() (+13 more)
 
-### Community 33 - "WeeklyPathNavigator.tsx"
+### Community 33 - "CursoLandingConfig"
 Cohesion: 0.21
-Nodes (12): CursoEmpezarPage(), CursoNavItem, WeeklyPathNavigator(), BootstrapState, CursoCheckoutPayload, fetchCursoCheckout(), hasUserToken(), useCursoEmpezarBootstrap() (+4 more)
+Nodes (12): CursoNavItem, WeeklyPathNavigator(), BootstrapState, CursoCheckoutPayload, fetchCursoCheckout(), hasUserToken(), useCursoEmpezarBootstrap(), fetchOwnedCursoRedirectPath() (+4 more)
 
 ### Community 34 - "landingSectionDesign.ts"
-Cohesion: 0.06
-Nodes (44): CourseDarkSectionBackground(), DRIFT_DOTS, Props, waterOpacityKeyframes(), waterPathKeyframes(), CourseHighlightsProps, TimelineHighlightItem, sectionMainTitle (+36 more)
+Cohesion: 0.11
+Nodes (24): CourseHighlightsProps, TimelineHighlightItem, sectionMainTitle, CourseWhatWeTeach(), offerIconByKey, IndexMovementSection(), MENTORSHIP_PILLARS, bentoGridClass (+16 more)
 
 ### Community 35 - "api/index.ts"
-Cohesion: 0.05
-Nodes (35): GetMembershipModal2(), Props, LoadingSpinner(), CreatePromocion(), PromocionFormData, EditPromocion(), EditPromocionProps, PromocionFormData (+27 more)
+Cohesion: 0.07
+Nodes (26): Props, ProductHeader(), Props, Props, Module(), Props, ProductCard(), Props (+18 more)
 
-### Community 36 - "course/dlocal-checkout/route.ts"
-Cohesion: 0.16
-Nodes (18): POST(), runtime, dynamic, GET(), DLOCAL_COUNTRY_CURRENCY, COUNTRY_NAME_ALIASES, DlocalLocalizedAmount, FALLBACK_USD_RATES (+10 more)
+### Community 36 - "questionModel.js"
+Cohesion: 0.11
+Nodes (14): prepareEmail(), POST(), createAnswer(), POST(), createQuestion(), deleteQuestion(), DELETE(), deleteQuestion() (+6 more)
 
 ### Community 37 - "ClassSections.tsx"
 Cohesion: 0.08
 Nodes (22): Benefit, ClassIncludes(), ClassIncludesProps, commonBenefits, personalizedBenefits, ClassIntro(), ClassIntroProps, ClassIsForYou() (+14 more)
 
-### Community 38 - "LibraryModuleView.tsx"
-Cohesion: 0.06
-Nodes (30): LibraryModulePage(), moduleHasVideo(), classes, classModules, filters, classes, classModules, filters (+22 more)
+### Community 38 - "routes.ts"
+Cohesion: 0.04
+Nodes (47): LibraryModulePage(), moduleHasVideo(), classes, classModules, filters, classes, classModules, filters (+39 more)
 
 ### Community 39 - "CoursePlans.tsx"
-Cohesion: 0.11
-Nodes (32): dynamic, GET(), isAuthorizedCron(), GET(), CoursePlans(), CoursePlansProps, formatPrice(), Promocion (+24 more)
+Cohesion: 0.16
+Nodes (20): CourseProps, CoursePlans(), CoursePlansProps, formatPrice(), Promocion, landingPlanCard, landingPlanCardSide, CursoPreventaPricingState (+12 more)
 
-### Community 40 - "LoginModal.tsx"
-Cohesion: 0.17
-Nodes (15): dynamic, GET(), overlayVariants, countries, dlocalCountries, isDlocalLocalCurrencyCountry(), PRIORITY_ORDER, DetectedCountryState (+7 more)
+### Community 40 - "MentorshipIsForYou.tsx"
+Cohesion: 0.12
+Nodes (16): CourseDarkSectionBackground(), DRIFT_DOTS, Props, waterOpacityKeyframes(), waterPathKeyframes(), CourseTestimonialsProps, CourseTestimonialsVariant, includes (+8 more)
 
 ### Community 41 - "classes/[id]/route.ts"
-Cohesion: 0.15
-Nodes (19): dynamic, GET(), getSessionUser(), publicPreviewPayload(), dynamic, GET(), getSessionUser(), ensureProductAccess() (+11 more)
+Cohesion: 0.16
+Nodes (18): dynamic, GET(), getSessionUser(), publicPreviewPayload(), dynamic, GET(), getSessionUser(), ensureProductAccess() (+10 more)
 
-### Community 42 - "currencyHelpers.ts"
-Cohesion: 0.19
-Nodes (15): EventCard(), Props, EventCTA(), Props, EventOverview(), Props, determinarMonedaEvento(), formatearPrecioConDescuento() (+7 more)
+### Community 42 - "EventDetailPage.tsx"
+Cohesion: 0.12
+Nodes (22): EventCard(), Props, EventCTA(), Props, EventDescription(), Props, Props, EventHero() (+14 more)
 
-### Community 43 - "[workShopId]/route.js"
-Cohesion: 0.07
-Nodes (17): getProductByName(), GET(), DELETE(), DELETE(), dynamic, fetchCache, revalidate, getVimeoShowCase() (+9 more)
+### Community 43 - "config/route.js"
+Cohesion: 0.06
+Nodes (24): getProductByName(), GET(), dynamic, fetchCache, GET(), getOrCreateConfig(), MENTORIA_STRING_FIELDS, PUT() (+16 more)
 
 ### Community 44 - "CourseClassPractice.tsx"
 Cohesion: 0.23
@@ -599,16 +591,16 @@ Cohesion: 0.09
 Nodes (18): dynamic, fetchCache, revalidate, ClassType, PageProps, dynamic, fetchCache, revalidate (+10 more)
 
 ### Community 48 - "MainSideBar.tsx"
-Cohesion: 0.06
-Nodes (28): CursoEmpezarPageProps, BienvenidaPage(), MentoriaEmpezarPage(), BienvenidaPage(), metadata, TerminosPage(), IndexSkeleton(), MainSideBar() (+20 more)
+Cohesion: 0.09
+Nodes (18): BienvenidaPage(), MentoriaEmpezarPage(), BienvenidaPage(), MainSideBar(), Props, MembershipNavContext, MembershipNavContextValue, MembershipNavProvider (+10 more)
 
 ### Community 49 - "coherenceTrackingModel.js"
 Cohesion: 0.16
 Nodes (18): loadEnv(), main(), POST(), getWeekNumber(), POST(), GET(), POST(), POST() (+10 more)
 
-### Community 50 - "mentorship/mercadoPagoWebhook/route.ts"
-Cohesion: 0.18
-Nodes (16): GET(), POST(), resolvePaymentId(), runtime, createMentorshipMercadoPagoPaymentLink(), CreateMentorshipMercadoPagoPaymentResult, buildMentorshipDlocalSuccessUrl(), buildMentorshipMercadoPagoSuccessUrl() (+8 more)
+### Community 50 - "EditProductStep1.tsx"
+Cohesion: 0.14
+Nodes (13): EditProductStep1(), Props, LinkInBioImageUpload(), Props, DropzoneProps, ProductImageFields(), Props, LINK_IN_BIO_CARD_ASPECT (+5 more)
 
 ### Community 51 - "What You Must Do When Invoked"
 Cohesion: 0.08
@@ -616,43 +608,43 @@ Nodes (24): For /graphify add and --watch, For /graphify query, For the commit h
 
 ### Community 52 - "individualClassModel.js"
 Cohesion: 0.04
-Nodes (48): extractVimeoId(), fetchCache, GET(), hydrateWeeklyContentsForList(), revalidate, toVimeoUrl(), buildWeekContentsDetail(), dynamic (+40 more)
+Nodes (49): extractVimeoId(), fetchCache, GET(), hydrateWeeklyContentsForList(), revalidate, toVimeoUrl(), extractVimeoId(), fetchCache (+41 more)
 
 ### Community 53 - "siteMetadata.ts"
-Cohesion: 0.10
-Nodes (11): metadata, metadata, metadata, dynamic, metadata, dynamic, metadata, Index() (+3 more)
+Cohesion: 0.14
+Nodes (10): Index(), Props, dynamic, metadata, QuickAccessAdminLight(), LinkInBioMentoriaSettings(), MentoriaConfig, Props (+2 more)
 
 ### Community 54 - "mentoria/consulta/page.tsx"
 Cohesion: 0.09
 Nodes (18): boxVariants, buildWhatsappFull(), fieldClass(), FormErrors, FormState, initialState, MENTORSHIP_PLAN_WHAT_YOU_GET, MentorshipConsultaPage() (+10 more)
 
-### Community 55 - "mentorshipCta.ts"
-Cohesion: 0.15
-Nodes (11): Props, MentorshipApplyLink(), MentorshipApplyLinkProps, MentorshipBannerCarousel(), MenuItemId, MentorshipIntro(), Badge(), Card() (+3 more)
+### Community 55 - "MentorshipApplyButton.tsx"
+Cohesion: 0.14
+Nodes (10): MentorshipApplyButton(), MentorshipApplyButtonProps, MentorshipApplyButtonVariant, variantClasses, MentorshipApplyLink(), MentorshipApplyLinkProps, MentorshipBannerCarousel(), MenuItemId (+2 more)
 
 ### Community 56 - "CopywritingAssistant.tsx"
-Cohesion: 0.16
-Nodes (11): CopywritingAssistant(), CopywritingAssistantProps, InstagramAnalyzer(), InstagramAnalyzerProps, WhatsAppGenerator(), WhatsAppGeneratorProps, initialState, InstagramVideo (+3 more)
+Cohesion: 0.14
+Nodes (12): CopywritingAssistant(), CopywritingAssistantProps, InstagramAnalyzer(), InstagramAnalyzerProps, WhatsAppGenerator(), WhatsAppGeneratorProps, initialState, InstagramVideo (+4 more)
 
 ### Community 57 - "react"
-Cohesion: 0.16
-Nodes (13): react, react, format(), Props, Youtube(), WeeklyPathSidebar(), PlayerControls(), PrettoSlider (+5 more)
+Cohesion: 0.15
+Nodes (14): react, react, WeeklyPathPageContent(), WeeklyPathPageContent(), format(), Props, Youtube(), PlayerControls() (+6 more)
 
 ### Community 58 - "Mentorship.tsx"
 Cohesion: 0.10
-Nodes (22): Mentorship(), MentorshipBio, MentorshipCTA, MentorshipFAQ, MentorshipIncludes, MentorshipIsForYou, MentorshipPlans, MentorshipProcess (+14 more)
+Nodes (24): Mentorship(), MentorshipBio, MentorshipCTA, MentorshipFAQ, MentorshipIncludes, MentorshipIsForYou, MentorshipPlans, MentorshipProcess (+16 more)
 
-### Community 59 - "PremiumMentorshipCards.tsx"
-Cohesion: 0.16
-Nodes (14): courseNamesFromProducts(), MentorshipPlanIncludesList(), Props, IncludesAccordionId, IncludesVariant, MentorshipCommitmentCard(), MentorshipIncludesBlock(), buildMentorshipAnualBonusItems() (+6 more)
+### Community 59 - "MentorshipPlanIncludesList.tsx"
+Cohesion: 0.33
+Nodes (8): courseNamesFromProducts(), MentorshipPlanIncludesList(), Props, buildMentorshipAnualBonusItems(), buildMentorshipCoursesAccessLabel(), MENTORSHIP_ANUAL_BONUS_STATIC, MENTORSHIP_ANUAL_INCLUDES, MENTORSHIP_TRIMESTRAL_INCLUDES
 
 ### Community 60 - "ProfileMentorshipSection.tsx"
-Cohesion: 0.19
-Nodes (21): formatAmount(), formatDate(), ProfileMentorshipSection(), AvatarSize, SIZE_MAP, UserAvatarBadge(), UserAvatarBadgeProps, mentorshipIntervalLabel() (+13 more)
+Cohesion: 0.20
+Nodes (20): formatDate(), ProfileMentorshipSection(), AvatarSize, SIZE_MAP, UserAvatarBadge(), UserAvatarBadgeProps, mentorshipIntervalLabel(), canCancelMentorshipStripe() (+12 more)
 
 ### Community 62 - "dependencies"
 Cohesion: 0.09
-Nodes (23): @anthropic-ai/sdk, countries-list, jodit-react, @jridgewell/sourcemap-codec, @mailchimp/mailchimp_marketing, mercadopago, mongodb, dependencies (+15 more)
+Nodes (23): @anthropic-ai/sdk, countries-list, html-react-parser, jose, next13-progressbar, next-auth, dependencies, @anthropic-ai/sdk (+15 more)
 
 ### Community 63 - "🚀 Queries para Producción - MForMove"
 Cohesion: 0.09
@@ -671,16 +663,16 @@ Cohesion: 0.12
 Nodes (17): fetchCache, fetchVimeoThumbnail(), getAuthUser(), POST(), revalidate, DELETE(), fetchCache, fetchVimeoThumbnail() (+9 more)
 
 ### Community 67 - "app/layout.tsx"
-Cohesion: 0.16
-Nodes (11): metadata, dynamic, metadata, ProgressBarProvider(), globalSiteMetadata, Providers(), store, BoldFont (+3 more)
+Cohesion: 0.05
+Nodes (29): metadata, metadata, metadata, dynamic, metadata, dynamic, metadata, ToastContext (+21 more)
 
-### Community 68 - "ToastContext.tsx"
-Cohesion: 0.12
-Nodes (13): ToastContext, ToastContextValue, ToastItem, ToastProvider(), ToastType, typeAccent, typeIcon, typeIconBg (+5 more)
+### Community 68 - "mentorias/planes/page.tsx"
+Cohesion: 0.15
+Nodes (8): emptyPlan, levels, MentorshipPlan, MentorshipPlanPagoOption, emptyPlan, levels, MentorshipPlan, MentorshipPlanPagoOption
 
 ### Community 69 - "emailService.ts"
 Cohesion: 0.11
-Nodes (13): POST(), buildWelcomeCourseCommunityBlock(), EMAIL_BRAND, EMAIL_BTN_OUTLINE(), EMAIL_BTN_PRIMARY(), EMAIL_BTN_WHATSAPP(), EMAIL_SUBSECTION_LABEL(), EMAIL_SUBSECTION_TITLE() (+5 more)
+Nodes (13): buildWelcomeCourseCommunityBlock(), EMAIL_BRAND, EMAIL_BTN_OUTLINE(), EMAIL_BTN_PRIMARY(), EMAIL_BTN_WHATSAPP(), EMAIL_SUBSECTION_LABEL(), EMAIL_SUBSECTION_TITLE(), EmailConfig (+5 more)
 
 ### Community 70 - "rules"
 Cohesion: 0.10
@@ -703,28 +695,28 @@ Cohesion: 0.12
 Nodes (8): CLASS_MATERIAL_KEYS, CLASS_MATERIAL_LABELS, ClassMaterialIconProps, ClassMaterialKey, iconBase, ICONS, IconSvgProps, stroke
 
 ### Community 75 - "pageMetadata"
-Cohesion: 0.07
-Nodes (15): metadata, metadata, generateMetadata(), Props, generateMetadata(), Props, metadata, metadata (+7 more)
+Cohesion: 0.05
+Nodes (23): metadata, metadata, generateMetadata(), Props, generateMetadata(), Props, metadata, dynamic (+15 more)
 
-### Community 76 - "resolveMentorshipDlocalCheckoutOrigins"
-Cohesion: 0.70
-Nodes (4): resolveMentorshipDlocalCheckoutOrigins(), resolveMentorshipDlocalSuccessBaseUrl(), resolvePublicBaseUrl(), resolveRequestBrowserOrigin()
+### Community 76 - "mentorship/dlocal-checkout/route.ts"
+Cohesion: 0.25
+Nodes (11): POST(), runtime, createMentorshipDlocalPaymentLink(), CreateMentorshipDlocalPaymentResult, toDlocalCurrency(), buildMentorshipDlocalSuccessUrl(), buildMentorshipDlocalOrderId(), resolveMentorshipDlocalCheckoutOrigins() (+3 more)
 
 ### Community 77 - "checkout/route.ts"
-Cohesion: 0.14
-Nodes (28): GET(), hasActivePaymentLinks(), plainPriceEntry(), resolveActivePlan(), resolveOrigin(), resolveSessionUser(), VALID_INTERVALS, POST() (+20 more)
+Cohesion: 0.13
+Nodes (27): GET(), hasActivePaymentLinks(), plainPriceEntry(), resolveActivePlan(), resolveOrigin(), resolveSessionUser(), VALID_INTERVALS, POST() (+19 more)
 
-### Community 78 - "getCursoPageTitle"
-Cohesion: 0.16
-Nodes (10): generateMetadata(), Props, generateMetadata(), Props, generateMetadata(), Props, generateMetadata(), Props (+2 more)
+### Community 78 - "formatTitleCaseWords"
+Cohesion: 0.12
+Nodes (14): generateMetadata(), Props, generateMetadata(), Props, generateMetadata(), Props, generateMetadata(), Props (+6 more)
 
 ### Community 79 - "virtualClassModel.js"
 Cohesion: 0.13
 Nodes (13): POST(), DELETE(), fetchCache, GET(), revalidate, fetchCache, GET(), revalidate (+5 more)
 
 ### Community 80 - "linkInBioProducts.ts"
-Cohesion: 0.17
-Nodes (21): dynamic, GET(), runtime, cursoCreatedSortTime(), eventoFechaSortTime(), getCursoSlug(), isEventoVigente(), mapProductsForLinkInBio() (+13 more)
+Cohesion: 0.22
+Nodes (18): cursoCreatedSortTime(), eventoFechaSortTime(), getCursoSlug(), isEventoVigente(), mapProductsForLinkInBio(), MapProductsForLinkInBioOptions, mentoriaSortRank(), pickFeaturedCursoRaw() (+10 more)
 
 ### Community 81 - "LinkInBioPage.tsx"
 Cohesion: 0.14
@@ -743,28 +735,28 @@ Cohesion: 0.13
 Nodes (10): addFiles(), addLinks(), handler(), handler(), getClassById(), handler(), Class, classSchema (+2 more)
 
 ### Community 86 - "cursoBienvenidaPendiente.ts"
-Cohesion: 0.21
-Nodes (11): GET(), runtime, POST(), runtime, CURSO_BIENVENIDA_PENDIENTE_COOKIE, CursoAdquiridoEntry, CursoBienvenidaPendienteInfo, findCursoBienvenidaPendiente() (+3 more)
+Cohesion: 0.38
+Nodes (6): CursoAdquiridoEntry, CursoBienvenidaPendienteInfo, findCursoBienvenidaPendiente(), ProductPopulated, resolveCursoBienvenidaFromPopulated(), buildCursoBienvenidaSuccessUrl()
 
-### Community 87 - "completar-pago/page.tsx"
-Cohesion: 0.60
-Nodes (4): MentorshipCompletarPagoPage(), clearMentorshipDlocalPending(), MentorshipDlocalPending, readMentorshipDlocalPending()
+### Community 87 - "MentorshipCheckoutStart.tsx"
+Cohesion: 0.16
+Nodes (13): MentorshipCompletarPagoPage(), DlocalQuoteResponse, formatPrice(), MentorshipCheckoutStartProps, MercadoPagoPaymentBrick, PaymentMethodId, withStripePrefilledPromoCode(), BootstrapState (+5 more)
 
 ### Community 88 - "Products/PlayerControls.tsx"
 Cohesion: 0.24
 Nodes (7): PlayerControls(), PrettoSlider, Props, SliderVolume, format(), Props, Youtube()
 
-### Community 89 - "MentorshipCheckoutStart.tsx"
+### Community 89 - "PremiumMentorshipCards.tsx"
 Cohesion: 0.14
-Nodes (29): formatGiftListPrice(), MentorshipAnnualGiftProductsList(), MentorshipAnnualGiftProductsListProps, DlocalQuoteResponse, formatPrice(), MentorshipCheckoutStart(), MentorshipCheckoutStartProps, MercadoPagoPaymentBrick (+21 more)
+Nodes (28): formatGiftListPrice(), MentorshipAnnualGiftProductsList(), MentorshipAnnualGiftProductsListProps, MentorshipCheckoutStart(), formatGiftListPrice(), IncludesAccordionId, IncludesVariant, MentorshipCommitmentCard() (+20 more)
 
 ### Community 90 - "redirectQueue.ts"
-Cohesion: 0.16
-Nodes (15): LoginForm(), LoginModal(), ProfileHeader(), useLogout(), executePlanIntent(), clearPendingUserActions(), CourseCheckoutPaymentMethod, CURSO_BIENVENIDA_PENDIENTE_COOKIE (+7 more)
+Cohesion: 0.08
+Nodes (37): dynamic, HeaderCoursesMenu(), HeaderCoursesMenuProps, resolveCourseContenidoHref(), UserCourseNavItem, HeaderUnified(), Props, AUTH_PATHS (+29 more)
 
 ### Community 91 - "CarouselClassesThumbnail.tsx"
-Cohesion: 0.21
-Nodes (9): CarouselClasses(), Props, CarouselClassesThumbnail(), extractVimeoId(), FILTER_COLORS, getVimeoThumbnail(), Props, Props (+1 more)
+Cohesion: 0.24
+Nodes (8): POST(), GET(), CarouselClassesThumbnail(), extractVimeoId(), FILTER_COLORS, getVimeoThumbnail(), Props, classFilters
 
 ### Community 92 - "Conceptos — Context & Harness Engineering (MMove Course Platform)"
 Cohesion: 0.12
@@ -774,13 +766,13 @@ Nodes (17): Anti-pattern (en un `SKILL.md`), Auto-trigger (skill PROACTIVE), Con
 Cohesion: 0.12
 Nodes (16): iad1, build, env, buildCommand, crons, devCommand, env, NEXT_TELEMETRY_DISABLED (+8 more)
 
-### Community 94 - "cursoCommunitySnippet.ts"
-Cohesion: 0.11
-Nodes (20): dynamic, GET(), GET(), runtime, BitacoraNavigator(), Logbook, CourseFeaturesNav(), CourseFeaturesNavProps (+12 more)
+### Community 94 - "BitacoraNavigator.tsx"
+Cohesion: 0.28
+Nodes (6): BitacoraNavigator(), Logbook, CourseFeaturesNav(), CourseFeaturesNavProps, WHATSAPP_BUTTON_COLOR, WHATSAPP_GROUP_LINK
 
 ### Community 95 - "stripe/route.ts"
-Cohesion: 0.24
-Nodes (10): handleCheckoutSessionCompleted(), handlePaymentIntentSucceeded(), POST(), processStripeEvent(), runtime, sendAdminNotification(), sendEventConfirmationEmail(), sendProductConfirmationEmail() (+2 more)
+Cohesion: 0.20
+Nodes (11): POST(), handleCheckoutSessionCompleted(), handlePaymentIntentSucceeded(), POST(), processStripeEvent(), runtime, sendAdminNotification(), sendEventConfirmationEmail() (+3 more)
 
 ### Community 96 - "instagramService.ts"
 Cohesion: 0.16
@@ -794,29 +786,29 @@ Nodes (5): AllPlans(), Props, DeletePlan(), Props, planFrequencys
 Cohesion: 0.12
 Nodes (14): 1. Build limpio, 2. Lint, 3. Sin secretos ni `.env` en el diff, 4. Sin `console.log` de debug, 5. Regla de inputs visibles, 6. Webhooks/pagos tocados, 7. Rutas en/es, 8. Descripción del cambio (+6 more)
 
-### Community 99 - "useAppDispatch"
-Cohesion: 0.06
-Nodes (43): ClassesSchedulePage(), ClassesSchedulePage(), CarouselSearchClasses(), Props, ClassesFilters(), Props, Props, FilterNav() (+35 more)
+### Community 99 - "index.js"
+Cohesion: 0.08
+Nodes (23): AdminDashboardSideBar, Props, Banner(), IndexSkeleton(), MainSideBarDash(), Props, FreeProductBanner(), FreeProductMainSideBarDash() (+15 more)
 
 ### Community 100 - "devDependencies"
 Cohesion: 0.12
-Nodes (17): autoprefixer, eslint, eslint-plugin-jsx-a11y, devDependencies, autoprefixer, eslint, eslint-plugin-jsx-a11y, prettier (+9 more)
+Nodes (17): autoprefixer, eslint-config-prettier, eslint-plugin-jsx-a11y, devDependencies, autoprefixer, eslint-config-prettier, eslint-plugin-jsx-a11y, prettier (+9 more)
 
 ### Community 101 - "Workflow"
 Cohesion: 0.13
 Nodes (13): 1. Identificar comentarios, 2. Armar el paquete de contexto, 3. Separar hechos de suposiciones, 4. Proponer plan (STOP), 5. Implementar tras aprobación, 6. Verificar, 7. Commit, push, responder comentarios, Anti-Patterns (+5 more)
 
 ### Community 102 - "courseWelcomeEmailCommunity.ts"
-Cohesion: 0.23
-Nodes (13): buildGoogleCalendarUrl(), CourseWelcomeEmailCommunity, formatGoogleDate(), getEventStartEnd(), resolveCourseWelcomeEmailCommunity(), addDaysToDateStr(), formatOccurrence(), getEventStartUtc() (+5 more)
+Cohesion: 0.18
+Nodes (16): GET(), runtime, buildGoogleCalendarUrl(), CourseWelcomeEmailCommunity, formatGoogleDate(), getEventStartEnd(), resolveCourseWelcomeEmailCommunity(), resolveInvitacionGrupoWhatsappFromProduct() (+8 more)
 
 ### Community 103 - "DB Migration"
 Cohesion: 0.14
 Nodes (13): 1. Leer contexto y el modelo objetivo, 2. Presentar el plan (STOP para aprobación), 3. Generar después de aprobación, 4. Self-check, Anti-Patterns, Background — por qué estas reglas, DB Migration, Generation rules (+5 more)
 
 ### Community 104 - "modulo/[slug]/practice/[classId]/page.tsx"
-Cohesion: 0.12
-Nodes (21): extractVimeoId(), isDirectVideoUrl(), ModuleClass, ModulePracticePage(), Practice, extractVimeoId(), isDirectVideoUrl(), ModuleClass (+13 more)
+Cohesion: 0.15
+Nodes (14): extractVimeoId(), isDirectVideoUrl(), ModuleClass, ModulePracticePage(), Practice, extractVimeoId(), isDirectVideoUrl(), ModuleClass (+6 more)
 
 ### Community 105 - "Video Stream (MMove Course Platform)"
 Cohesion: 0.15
@@ -843,8 +835,8 @@ Cohesion: 0.29
 Nodes (11): checkIfAlreadyProcessed(), generateAutoEmail(), handleMediaChange(), handleMentions(), handleStoryMentions(), POST(), processInstagramChange(), saveAutoGeneratedEmail() (+3 more)
 
 ### Community 111 - "curso/[slug]/contenido/route.ts"
-Cohesion: 0.18
-Nodes (19): DELETE(), dynamic, GET(), getSessionUser(), PATCH(), requireAdmin(), dynamic, GET() (+11 more)
+Cohesion: 0.13
+Nodes (25): DELETE(), dynamic, GET(), getSessionUser(), PATCH(), requireAdmin(), dynamic, GET() (+17 more)
 
 ### Community 112 - "updateCuerpoAutonomoContenido.js"
 Cohesion: 0.20
@@ -870,25 +862,25 @@ Nodes (12): Allowed Writes (lista exhaustiva), Anti-Patterns, Fase 1 — Alcance
 Cohesion: 0.15
 Nodes (13): scripts, build, create-mentorship-plans, dev, ensure:curso-mp, eslint, format, lint (+5 more)
 
-### Community 118 - "replace-event-with-recording/route.js"
-Cohesion: 0.16
-Nodes (9): extractVimeoId(), fetchCache, POST(), revalidate, toVimeoUrl(), dynamic, GET(), POST() (+1 more)
+### Community 118 - "simulate-curso-create-full.mjs"
+Cohesion: 0.17
+Nodes (10): clasesPorModulo, courseClassesToCreate, cursoConfigFromForm, cursoConfigParaGuardar, existingCfg, invitacionGrupoResolved, mergedAfterStripe, productData (+2 more)
 
-### Community 119 - "EventsList.tsx"
-Cohesion: 0.19
-Nodes (11): dynamic, ensureConnection(), EventsPage(), metadata, revalidate, dynamic, ensureConnection(), EventsPage() (+3 more)
+### Community 119 - "EditPromocion.tsx"
+Cohesion: 0.32
+Nodes (3): EditPromocion(), EditPromocionProps, PromocionFormData
 
 ### Community 120 - "duplicateCuerpoAutonomoToProduction.js"
 Cohesion: 0.25
 Nodes (8): buildProductDoc(), CONFIRM, CourseClass, CourseClassSchema, main(), mongoose, Product, ProductSchema
 
-### Community 121 - "createFAQ/route.js"
-Cohesion: 0.23
-Nodes (8): POST(), fetchCache, GET(), revalidate, POST(), faqs, Dataset, faqSchema
+### Community 121 - "getFAQ/route.js"
+Cohesion: 0.27
+Nodes (7): fetchCache, GET(), revalidate, POST(), faqs, Dataset, faqSchema
 
 ### Community 122 - "latestPublishedCurso.ts"
-Cohesion: 0.32
-Nodes (8): dynamic, GET(), MembershipPage(), createdSortTime(), getLatestPublishedCursoPayload(), publicationSortTime(), IndexLatestCursoModulo, IndexLatestCursoPayload
+Cohesion: 0.12
+Nodes (19): dynamic, GET(), GET(), CursoNavItem, dynamic, GET(), dynamic, GET() (+11 more)
 
 ### Community 123 - "GetMembershipModal.tsx"
 Cohesion: 0.24
@@ -899,8 +891,8 @@ Cohesion: 0.10
 Nodes (20): 10. Reglas no negociables aplicables (recordatorio), 1. Resumen, 2. Ambigüedades resueltas durante el refinamiento, 3.1 `Product` (extensión — `src/models/productModel.js`), 3.2 `CourseClass` — REUTILIZADO SIN CAMBIOS (`src/models/courseClassModel.js`), 3.3 `ProductAccess` — NUEVO (`src/models/productAccessModel.js`), 3.4 `CourseClassProgress` — NUEVO (`src/models/courseClassProgressModel.js`), 3. Modelos (+12 more)
 
 ### Community 125 - "WeeklyPathSidebar.tsx"
-Cohesion: 0.33
-Nodes (5): DailyContent, Logbook, Props, WeekContentItem, WeeklyContent
+Cohesion: 0.29
+Nodes (6): DailyContent, Logbook, Props, WeekContentItem, WeeklyContent, WeeklyPathSidebar()
 
 ### Community 126 - "scheduleMoveCrewReminders.js"
 Cohesion: 0.27
@@ -926,17 +918,17 @@ Nodes (10): engines, node, npm, eslintConfig, rules, name, private, no-unused-va
 Cohesion: 0.20
 Nodes (10): allImages, analyzeImages(), endTime, extensionStats, formatFileSize(), fs, largeImages, path (+2 more)
 
-### Community 132 - "FreeProducts.tsx"
-Cohesion: 0.21
-Nodes (8): AdminDashboardTopBar(), Props, FreeProductMainSideBarDash(), Props, FreeProductHeader(), Props, FreeProductsSideBar(), Props
+### Community 132 - "AdminBilling.tsx"
+Cohesion: 0.42
+Nodes (5): Page(), Page(), getAllBills(), Billing(), Props
 
 ### Community 133 - "updateQueIncluyeModulos.js"
 Cohesion: 0.29
 Nodes (5): CONFIRM, MODULOS, mongoose, Product, ProductSchema
 
-### Community 134 - "FreeSequentialClassFields.tsx"
-Cohesion: 0.27
-Nodes (8): Draft, emptyDraft(), FreeSequentialClassFields(), Props, COURSE_CLASS_MATERIALS, CourseClassDocument, CourseClassFields, CourseClassMaterial
+### Community 134 - "getClassMaterialLabel"
+Cohesion: 0.20
+Nodes (12): getClassMaterialLabel(), CursoClaseContenidoFields(), Props, Draft, emptyDraft(), FreeSequentialClassFields(), Props, COURSE_CLASS_MATERIALS (+4 more)
 
 ### Community 136 - "Deployment & Runtime Model — MMove Course Platform"
 Cohesion: 0.20
@@ -986,13 +978,17 @@ Nodes (8): graphify reference: extra exports and benchmark, Step 6b - Wiki (only
 Cohesion: 0.36
 Nodes (8): COUNTRY_TO_TZ, dynamic, formatEventInUserTz(), GET(), getEventStartUtc(), getTimezoneForUser(), getTodayInUruguay(), isSameDate()
 
+### Community 149 - "LoadingSpinner.tsx"
+Cohesion: 0.06
+Nodes (18): GetMembershipModal2(), Props, LoadingSpinner(), CreatePlan(), CreatePromocion(), PromocionFormData, CreateClassType(), User (+10 more)
+
 ### Community 150 - "CreateProduct.tsx"
-Cohesion: 0.09
-Nodes (20): dynamic, dynamic, CreateProduct(), CreateProductStep1(), Props, CreateProductStep2(), Module, Props (+12 more)
+Cohesion: 0.08
+Nodes (23): dynamic, dynamic, dynamic, Page(), Props, dynamic, CreateFreeSequentialProduct(), slugify() (+15 more)
 
 ### Community 151 - "course/mercadoPagoWebhook/route.ts"
-Cohesion: 0.19
-Nodes (14): GET(), POST(), resolvePaymentId(), runtime, Body, dynamic, POST(), isCursoEnPreventa() (+6 more)
+Cohesion: 0.20
+Nodes (13): GET(), POST(), resolvePaymentId(), runtime, Body, dynamic, POST(), ConfirmPreventaCupoResult (+5 more)
 
 ### Community 152 - "Backend Context — MMove Course Platform"
 Cohesion: 0.25
@@ -1018,9 +1014,9 @@ Nodes (7): cleanConsoleLogs(), endTime, fs, path, processDirectory(), startTime,
 Cohesion: 0.39
 Nodes (7): axios, checkExistingPlans(), createAllPlans(), createPlan(), main(), mentorshipPlans, showHelp()
 
-### Community 158 - "resolveMediaImageUrl.ts"
-Cohesion: 0.28
-Nodes (12): cloudinaryPublicIdHasExtension(), extractCloudinaryPublicIdFromUrl(), extractVimeoId(), normalizeCloudinaryPublicId(), ProductImageSource, resolveCloudinaryEmailCoverUrl(), resolveCloudinaryOrHttpUrl(), resolveCourseClassThumbnailUrl() (+4 more)
+### Community 158 - "sendCourseWelcomeEmail.ts"
+Cohesion: 0.18
+Nodes (17): CursoOfferBlockEmailItem, formatOfferBlockTitle(), mapOfferBlocksForEmail(), cloudinaryPublicIdHasExtension(), extractCloudinaryPublicIdFromUrl(), extractVimeoId(), normalizeCloudinaryPublicId(), ProductImageSource (+9 more)
 
 ### Community 159 - "membership-events/[id]/calendar/route.js"
 Cohesion: 0.43
@@ -1063,12 +1059,12 @@ Cohesion: 0.29
 Nodes (4): EmailContent, EmailData, geminiModel, genAI
 
 ### Community 169 - "createMentorshipPaymentLinks.ts"
-Cohesion: 0.08
-Nodes (38): AdminMentorshipPlansPage(), emptyPlan, levels, MentorshipPlan, MentorshipPlanPagoOption, AdminMentorshipPlansPage(), emptyPlan, levels (+30 more)
+Cohesion: 0.10
+Nodes (37): AdminMentorshipPlansPage(), AdminMentorshipPlansPage(), POST(), plainPriceEntry(), PUT(), resolveOrigin(), stripe, buildMentorshipOpcionesPago() (+29 more)
 
-### Community 170 - "QuestionPage.tsx"
-Cohesion: 0.09
-Nodes (15): ActionResult, DevPaymentsState, INTERVALS, TestPaymentsPage(), Timer2(), FreeProductForm(), BitacoraSidebar(), DailyContent (+7 more)
+### Community 170 - "BitacoraSidebar.tsx"
+Cohesion: 0.33
+Nodes (5): BitacoraSidebar(), DailyContent, Logbook, Props, WeeklyContent
 
 ### Community 171 - "membership-events/[id]/route.js"
 Cohesion: 0.38
@@ -1107,12 +1103,12 @@ Cohesion: 0.33
 Nodes (6): Cambios de esquema de Mongo, Elegir el área correcta primero, Procedimientos específicos del proyecto (no documentados en otro lado), Router de tareas, Verificar antes de dar por terminado, Workflows — MMove Course Platform
 
 ### Community 181 - "FreeSequentialClassPractice.tsx"
-Cohesion: 0.15
-Nodes (14): extractVimeoId(), FreeSequentialClassPractice(), FreeSequentialCtaPayload, isDirectVideoUrl(), LoadState, NavClase, Practice, Props (+6 more)
+Cohesion: 0.16
+Nodes (13): extractVimeoId(), FreeSequentialClassPractice(), FreeSequentialCtaPayload, isDirectVideoUrl(), LoadState, NavClase, Practice, Props (+5 more)
 
-### Community 182 - "EventDetailPage.tsx"
-Cohesion: 0.24
-Nodes (7): EventDescription(), Props, Props, EventHero(), Props, ProgramaTransformacionalInfo(), Props
+### Community 182 - "headerHomeSlice.ts"
+Cohesion: 0.50
+Nodes (3): HeaderHome, headerHomeSlice, InitialState
 
 ### Community 183 - "Billing.tsx"
 Cohesion: 0.42
@@ -1129,6 +1125,10 @@ Nodes (5): buildIcsContent(), fetchCache, GET(), getEventStartEnd(), revalidate
 ### Community 186 - "move-crew-events/route.js"
 Cohesion: 0.40
 Nodes (4): fetchCache, POST(), requireAdmin(), revalidate
+
+### Community 187 - "list/page.tsx"
+Cohesion: 0.11
+Nodes (11): BitacoraListPage(), IndividualClassForPreview, Logbook, WeekContentItem, WeeklyContent, BitacoraListPage(), IndividualClassForPreview, Logbook (+3 more)
 
 ### Community 188 - "updateHighlightsAndClearTestPayments.js"
 Cohesion: 0.33
@@ -1183,8 +1183,8 @@ Cohesion: 0.67
 Nodes (3): GET(), obtenerTipoCambioDeAPI(), stripe
 
 ### Community 205 - "bio/page.tsx"
-Cohesion: 0.18
-Nodes (12): BioPage(), dynamic, fetchCache, metadata, revalidate, LinkInBioPage(), buildMentoriaLinkInBioCard(), buildMentoriaLinkInBioCards() (+4 more)
+Cohesion: 0.15
+Nodes (15): dynamic, GET(), runtime, BioPage(), dynamic, fetchCache, metadata, revalidate (+7 more)
 
 ### Community 209 - "openai.ts"
 Cohesion: 0.50
@@ -1202,81 +1202,49 @@ Nodes (3): ApiResponse, ContactFormData, Lead
 Cohesion: 0.83
 Nodes (3): extractPrivateTokenFromEmbed(), getCachedVimeoVideoInfo(), POST()
 
-### Community 243 - "duplicateLaboratorioDelCuerpoToProduction.js"
-Cohesion: 0.24
-Nodes (9): buildClaseDocs(), buildProductDoc(), CONFIRM, CourseClass, CourseClassSchema, main(), mongoose, Product (+1 more)
-
-### Community 245 - "CoherenceContext.tsx"
-Cohesion: 0.20
-Nodes (9): BitacoraBasePageContent(), BitacoraBasePageContent(), WeeklyPathPageContent(), WeeklyPathPageContent(), Achievement, CoherenceContext, CoherenceContextType, CoherenceTracking (+1 more)
-
 ### Community 246 - "course/mercadopago-process/route.ts"
-Cohesion: 0.11
-Nodes (30): POST(), runtime, BrickBody, POST(), runtime, BrickBody, POST(), runtime (+22 more)
+Cohesion: 0.09
+Nodes (41): POST(), runtime, BrickBody, POST(), runtime, BrickBody, POST(), runtime (+33 more)
 
-### Community 264 - "formatTitleCaseWords"
-Cohesion: 0.13
-Nodes (14): cookie, cookie, CursoNavItem, dynamic, GET(), dynamic, generateMetadata(), SearchParams (+6 more)
-
-### Community 265 - "MercadoPagoPaymentBrick.tsx"
-Cohesion: 0.29
-Nodes (9): BRAND, ensureMercadoPagoInit(), friendlyBrickError(), isTestPublicKey, MercadoPagoBrickFormData, MercadoPagoPaymentBrick(), MercadoPagoPaymentBrickProps, MP_BRICK_CUSTOMIZATION (+1 more)
+### Community 264 - "cookie"
+Cohesion: 0.67
+Nodes (3): cookie, cookie, fetchCurrentUser()
 
 ### Community 272 - "LinkInBioProductCarousel.tsx"
 Cohesion: 0.36
 Nodes (7): displayTitle(), easeInOutCubic(), LinkInBioProductCarousel(), ProductCard(), Props, typeEyebrow(), LINK_IN_BIO_CAROUSEL_INITIAL_INDEX
 
-### Community 273 - "IndividaulProduct.tsx"
-Cohesion: 0.24
-Nodes (7): IndividualProduct(), Props, Module(), Props, FilterState, InitialState, oneTymePaymentSlice
-
 ### Community 285 - "createCoursesSlice.ts"
 Cohesion: 0.50
 Nodes (3): createCourseSlice, InitialState, RegisterState
 
-### Community 288 - "formatCursoOfferBlocksForEmail.ts"
-Cohesion: 0.38
-Nodes (5): CursoOfferBlockEmailItem, formatOfferBlockTitle(), mapOfferBlocksForEmail(), WelcomeCourseEmailPreviewData, CursoOfferBlock
+### Community 289 - "CursoLandingContext.tsx"
+Cohesion: 0.26
+Nodes (11): CursoLandingContext, CursoLandingContextValue, CursoLandingProvider(), ProviderProps, cursoClasePath(), cursoContenidoPath(), cursoEmpezarPath(), cursoLandingPath() (+3 more)
 
-### Community 289 - "HeaderUnified.tsx"
-Cohesion: 0.21
-Nodes (15): HeaderCoursesMenu(), HeaderCoursesMenuProps, resolveCourseContenidoHref(), UserCourseNavItem, HeaderUnified(), Props, AUTH_PATHS, MEMBERSHIP_ONBOARDING_EXCLUDED (+7 more)
-
-### Community 290 - "main"
-Cohesion: 0.60
-Nodes (5): hasMercadoPagoOption(), loadEnv(), main(), parseArgs(), resolveOrigin()
-
-### Community 307 - "list/page.tsx"
-Cohesion: 0.33
-Nodes (5): BitacoraListPage(), IndividualClassForPreview, Logbook, WeekContentItem, WeeklyContent
-
-### Community 311 - "lista/page.tsx"
-Cohesion: 0.33
-Nodes (5): BitacoraListPage(), IndividualClassForPreview, Logbook, WeekContentItem, WeeklyContent
-
-### Community 324 - "UserCoursesSection.tsx"
-Cohesion: 0.47
-Nodes (5): courseContenidoHref(), formatDate(), paymentLabel, UserCourse, UserCoursesSection()
+### Community 343 - "QuestionPage.tsx"
+Cohesion: 0.40
+Nodes (4): Props, QuestionPage(), OneQuestion(), Props
 
 ## Knowledge Gaps
-- **1706 isolated node(s):** `context-maintenance-reminder.sh script`, `edit-guard.sh script`, `git-commit-guard.sh script`, `./node_modules/standard/eslintrc.json`, `next/core-web-vitals` (+1701 more)
+- **1699 isolated node(s):** `context-maintenance-reminder.sh script`, `edit-guard.sh script`, `git-commit-guard.sh script`, `./node_modules/standard/eslintrc.json`, `next/core-web-vitals` (+1694 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **145 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **143 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `useAuth()` connect `useAuth` to `connectDB`, `SelectYourPlanIntro.tsx`, `FreeProducts.tsx`, `productModel.js`, `AllProducts.tsx`, `useAppSelector`, `formatTitleCaseWords`, `useToast.ts`, `AdmimDashboardLayout`, `Products.tsx`, `products/[name]/page.tsx`, `Course.tsx`, `ruta-semanal/page.tsx`, `clases-individuales/page.tsx`, `AllPromociones.tsx`, `routes.ts`, `AdminUsers.tsx`, `ClassPage/ClassQuestions.tsx`, `CourseCheckoutStart.tsx`, `CreateClassType.tsx`, `CreateProduct.tsx`, `IndividaulProduct.tsx`, `MiniSpinner.tsx`, `imageLoader.ts`, `incorporacion/bitacora-base/page.tsx`, `HeaderUnified.tsx`, `WeeklyPathNavigator.tsx`, `api/index.ts`, `LibraryModuleView.tsx`, `CoursePlans.tsx`, `LoginModal.tsx`, `createMentorshipPaymentLinks.ts`, `QuestionPage.tsx`, `CreateInPersonClass.tsx`, `MainSideBar.tsx`, `list/page.tsx`, `FreeSequentialClassPractice.tsx`, `siteMetadata.ts`, `lista/page.tsx`, `Billing.tsx`, `react`, `Mentorship.tsx`, `CreateFAQ.tsx`, `ProfileMentorshipSection.tsx`, `FreeSequentialProductList.tsx`, `MentorshipCheckoutStart.tsx`, `redirectQueue.ts`, `CarouselClassesThumbnail.tsx`, `cursoCommunitySnippet.ts`, `AllPlans.tsx`, `useAppDispatch`, `CoherenceContext.tsx`, `WeeklyPathSidebar.tsx`?**
-  _High betweenness centrality (0.162) - this node is a cross-community bridge._
-- **Why does `connectDB()` connect `connectDB` to `userModel.js`, `productModel.js`, `getCurrentURL`, `mentorship/complete/route.ts`, `formatTitleCaseWords`, `products/[name]/page.tsx`, `stripeConfig.ts`, `routes.ts`, `event-reminder/route.ts`, `weeklyLogbookModel.js`, `createCourseOneTimePayments.ts`, `course/mercadoPagoWebhook/route.ts`, `dlocalConfig.ts`, `coursePaymentWarn`, `inPersonClassModel.js`, `membership-events/[id]/calendar/route.js`, `moveCrewEventModel.js`, `move-crew-events/[id]/calendar/route.js`, `request-transfer-details/route.ts`, `course/dlocal-checkout/route.ts`, `CoursePlans.tsx`, `classes/[id]/route.ts`, `createMentorshipPaymentLinks.ts`, `[workShopId]/route.js`, `membership-events/[id]/route.js`, `module-classes/complete/route.js`, `move-crew-events/[id]/route.js`, `email-templates/route.ts`, `coherenceTrackingModel.js`, `mentorship/mercadoPagoWebhook/route.ts`, `individualClassModel.js`, `Billing.tsx`, `membership-events/[id]/calendar/ics/route.js`, `move-crew-events/[id]/calendar/ics/route.js`, `move-crew-events/route.js`, `all/route.ts`, `module-classes/[id]/route.js`, `month/route.js`, `checkout/route.ts`, `bio/page.tsx`, `virtualClassModel.js`, `linkInBioProducts.ts`, `getCursoPageTitle`, `classModel.js`, `cursoBienvenidaPendiente.ts`, `EventsList.tsx`, `cursoCommunitySnippet.ts`, `stripe/route.ts`, `useAppDispatch`, `curso/[slug]/contenido/route.ts`, `replace-event-with-recording/route.js`, `course/mercadopago-process/route.ts`, `createFAQ/route.js`, `latestPublishedCurso.ts`?**
-  _High betweenness centrality (0.154) - this node is a cross-community bridge._
-- **Why does `dependencies` connect `dependencies` to `react`, `package.json`, `axios`, `bcrypt`, `canvas-confetti`, `@ckeditor/ckeditor5-build-classic`, `@ckeditor/ckeditor5-react`, `classnames`, `cloudinary-react`, `crypto-js`, `dropzone`, `@emotion/react`, `@emotion/styled`, `encoding`, `formatTitleCaseWords`, `framer-motion`, `@google/generative-ai`, `@headlessui/react`, `@heroicons/react`, `js-cookie`, `jsonwebtoken`, `lodash`, `maath`, `mailchimp`, `mailchimp-api-v3`, `@mailchimp/mailchimp_transactional`, `mailgen`, `@mercadopago/sdk-react`, `mongoose`, `@mui/x-data-grid`, `next`, `@next-auth/mongodb-adapter`, `next-cloudinary`, `next-redux-wrapper`, `nextjs-progressbar`, `nodemailer`, `nookies`, `openai`, `phosphor-react`, `react-canvas-confetti`, `react-confetti`, `react-dom`, `react-dropzone`, `react-google-recaptcha`, `react-hook-form`, `react-icons`, `react-player`, `react-select`, `bcryptjs`, `redux`, `redux-thunk`, `@reduxjs/toolkit`, `@rollup/plugin-inject`, `screenfull`, `@sendgrid/mail`, `stripe`, `styled-jsx`, `tailwind-scrollbar-hide`, `@types/mailchimp__mailchimp_transactional`, `@types/react`, `@types/react-dom`, `@types/react-redux`, `typescript`, `@u-wave/react-vimeo`, `validator`, `valtio`, `vercel`, `html-react-parser`, `@vercel/speed-insights`, `vimeo`, `jose`, `next13-progressbar`, `next-auth`, `react-social-login-buttons`, `@vercel/analytics`, `@types/bcrypt`, `@types/react-google-recaptcha`, `@mui/material`, `next-absolute-url`, `react-google-recaptcha-v3`, `react-redux`, `redux-devtools-extension`, `bcrypt-ts`?**
-  _High betweenness centrality (0.087) - this node is a cross-community bridge._
+- **Why does `useAuth()` connect `useAuth` to `connectDB`, `SelectPlan.tsx`, `AdminBilling.tsx`, `AllProducts.tsx`, `useAppSelector`, `useToast.ts`, `AdmimDashboardLayout`, `Products.tsx`, `Course.tsx`, `ruta-semanal/page.tsx`, `headerLibrarySlice.ts`, `AllPromociones.tsx`, `app/bitacora/page.tsx`, `AdminUsers.tsx`, `LoadingSpinner.tsx`, `CourseCheckoutStart.tsx`, `CreateProduct.tsx`, `FooterProfile.tsx`, `imageLoader.ts`, `incorporacion/bitacora-base/page.tsx`, `CursoLandingConfig`, `api/index.ts`, `routes.ts`, `CoursePlans.tsx`, `createMentorshipPaymentLinks.ts`, `BitacoraSidebar.tsx`, `CreateInPersonClass.tsx`, `MainSideBar.tsx`, `individualClassModel.js`, `siteMetadata.ts`, `FreeSequentialClassPractice.tsx`, `Billing.tsx`, `react`, `Mentorship.tsx`, `list/page.tsx`, `ProfileMentorshipSection.tsx`, `mentorias/planes/page.tsx`, `pageMetadata`, `MentorshipCheckoutStart.tsx`, `QuestionPage.tsx`, `PremiumMentorshipCards.tsx`, `redirectQueue.ts`, `CarouselClassesThumbnail.tsx`, `BitacoraNavigator.tsx`, `AllPlans.tsx`, `index.js`, `EditPromocion.tsx`, `WeeklyPathSidebar.tsx`?**
+  _High betweenness centrality (0.149) - this node is a cross-community bridge._
+- **Why does `connectDB()` connect `connectDB` to `userModel.js`, `AdminBilling.tsx`, `getCurrentURL`, `productModel.js`, `coursePaymentWarn`, `useAppSelector`, `individualClass/create/route.js`, `stripeConfig.ts`, `event-reminder/route.ts`, `weeklyLogbookModel.js`, `CreateProduct.tsx`, `course/mercadoPagoWebhook/route.ts`, `createCourseOneTimePayments.ts`, `course/dlocal-checkout/route.ts`, `inPersonClassModel.js`, `membership-events/[id]/calendar/route.js`, `moveCrewEventModel.js`, `move-crew-events/[id]/calendar/route.js`, `request-transfer-details/route.ts`, `questionModel.js`, `classes/[id]/route.ts`, `createMentorshipPaymentLinks.ts`, `config/route.js`, `membership-events/[id]/route.js`, `module-classes/complete/route.js`, `move-crew-events/[id]/route.js`, `email-templates/route.ts`, `coherenceTrackingModel.js`, `individualClassModel.js`, `Billing.tsx`, `membership-events/[id]/calendar/ics/route.js`, `move-crew-events/[id]/calendar/ics/route.js`, `move-crew-events/route.js`, `all/route.ts`, `module-classes/[id]/route.js`, `month/route.js`, `pageMetadata`, `mentorship/dlocal-checkout/route.ts`, `bio/page.tsx`, `checkout/route.ts`, `virtualClassModel.js`, `formatTitleCaseWords`, `classModel.js`, `stripe/route.ts`, `courseWelcomeEmailCommunity.ts`, `curso/[slug]/contenido/route.ts`, `course/mercadopago-process/route.ts`, `getFAQ/route.js`, `latestPublishedCurso.ts`?**
+  _High betweenness centrality (0.144) - this node is a cross-community bridge._
+- **Why does `dependencies` connect `dependencies` to `react`, `package.json`, `axios`, `jodit-react`, `bcrypt`, `canvas-confetti`, `@ckeditor/ckeditor5-build-classic`, `@ckeditor/ckeditor5-react`, `classnames`, `cloudinary-react`, `crypto-js`, `dropzone`, `@emotion/react`, `@emotion/styled`, `encoding`, `cookie`, `@jridgewell/sourcemap-codec`, `framer-motion`, `@google/generative-ai`, `@headlessui/react`, `@heroicons/react`, `@mailchimp/mailchimp_marketing`, `js-cookie`, `jsonwebtoken`, `lodash`, `maath`, `mailchimp`, `mailchimp-api-v3`, `@mailchimp/mailchimp_transactional`, `mailgen`, `@mercadopago/sdk-react`, `mongoose`, `@mui/x-data-grid`, `next`, `mercadopago`, `mongodb`, `@next-auth/mongodb-adapter`, `next-cloudinary`, `next-redux-wrapper`, `nextjs-progressbar`, `nodemailer`, `nookies`, `openai`, `phosphor-react`, `react-canvas-confetti`, `react-confetti`, `react-dom`, `react-dropzone`, `react-google-recaptcha`, `react-pro-sidebar`, `react-hook-form`, `react-icons`, `react-player`, `@types/nodemailer`, `react-select`, `bcryptjs`, `redux`, `redux-thunk`, `@reduxjs/toolkit`, `@rollup/plugin-inject`, `screenfull`, `@sendgrid/mail`, `stripe`, `styled-jsx`, `tailwind-scrollbar-hide`, `@types/mailchimp__mailchimp_transactional`, `@types/react`, `@types/react-dom`, `@types/react-redux`, `typescript`, `@u-wave/react-vimeo`, `validator`, `valtio`, `vercel`, `@vercel/speed-insights`, `vimeo`, `@vercel/analytics`, `@mui/material`, `next-absolute-url`, `react-google-recaptcha-v3`, `react-redux`, `redux-devtools-extension`, `bcrypt-ts`?**
+  _High betweenness centrality (0.086) - this node is a cross-community bridge._
 - **What connects `context-maintenance-reminder.sh script`, `edit-guard.sh script`, `git-commit-guard.sh script` to the rest of the system?**
-  _1706 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1699 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `useAuth` be split into smaller, more focused modules?**
-  _Cohesion score 0.033710629921259845 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.032 - nodes in this community are weakly interconnected._
 - **Should `connectDB` be split into smaller, more focused modules?**
-  _Cohesion score 0.027418463239358763 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.029962967119290765 - nodes in this community are weakly interconnected._
 - **Should `userModel.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.046464646464646465 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.03773584905660377 - nodes in this community are weakly interconnected._
