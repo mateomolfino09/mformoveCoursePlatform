@@ -266,7 +266,7 @@ export default function FreeSequentialClassPractice({ slug, classId }: Props) {
       mobileVideoRef.current?.pause();
       setPreviewLocked(true);
       setVideoPlayingSource(null);
-      valtioState.authModalMode = 'login';
+      valtioState.authModalMode = 'register';
       valtioState.authModalForced = true;
       valtioState.loginForm = true;
     }, AUTH_PREVIEW_SEC * 1000);
@@ -379,7 +379,7 @@ export default function FreeSequentialClassPractice({ slug, classId }: Props) {
     if (typeof window !== 'undefined') {
       saveRedirectUrl(window.location.pathname);
     }
-    valtioState.authModalMode = 'login';
+    valtioState.authModalMode = 'register';
     valtioState.authModalForced = true;
     valtioState.loginForm = true;
   }, []);
@@ -734,14 +734,14 @@ export default function FreeSequentialClassPractice({ slug, classId }: Props) {
                 }`}
               >
                 <p className="max-w-xs font-montserrat text-base font-semibold leading-snug text-white drop-shadow-md sm:text-lg">
-                  Debés iniciar sesión para ver la clase
+                  Creá tu cuenta gratis para ver la clase
                 </p>
                 <button
                   type="button"
                   onClick={openLoginGate}
                   className="pointer-events-auto inline-flex items-center justify-center rounded-full border border-white/80 bg-transparent px-5 py-2.5 font-montserrat text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-white hover:bg-white/10"
                 >
-                  Iniciar sesión
+                  Crear cuenta
                 </button>
               </div>
             ) : null}
@@ -793,14 +793,14 @@ export default function FreeSequentialClassPractice({ slug, classId }: Props) {
                   }`}
                 >
                   <p className="max-w-sm font-montserrat text-lg font-semibold leading-snug text-white drop-shadow-md sm:text-xl">
-                    Debés iniciar sesión para ver la clase
+                    Creá tu cuenta gratis para ver la clase
                   </p>
                   <button
                     type="button"
                     onClick={openLoginGate}
                     className="pointer-events-auto inline-flex items-center justify-center rounded-full border border-white/80 bg-transparent px-5 py-2.5 font-montserrat text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-white hover:bg-white/10"
                   >
-                    Iniciar sesión
+                    Crear cuenta
                   </button>
                 </div>
               ) : null}
