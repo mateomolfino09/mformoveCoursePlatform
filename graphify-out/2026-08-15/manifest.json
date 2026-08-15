@@ -30,8 +30,8 @@
     "semantic_hash": ""
   },
   ".claude/settings.local.json": {
-    "mtime": 1786807006.1836925,
-    "ast_hash": "64842725fd38bf591d55f074faa2db74",
+    "mtime": 1786803206.3873212,
+    "ast_hash": "f2669ef7ee3ec40f186a90f1ca1e8d1c",
     "semantic_hash": ""
   },
   ".eslintrc.json": {
@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "next.config.js": {
-    "mtime": 1786807546.4325333,
-    "ast_hash": "25a2d56949a786ca62a2d452d5550088",
+    "mtime": 1783869366.4437695,
+    "ast_hash": "2865d632349d5cf1f3a8a7981e28845b",
     "semantic_hash": ""
   },
   "optimize-images-manual.sh": {
@@ -1040,8 +1040,8 @@
     "semantic_hash": ""
   },
   "src/app/api/bitacora/create/route.js": {
-    "mtime": 1786807319.3202538,
-    "ast_hash": "d0f8bf98c3a1ddb65d2f0adfe4460c4a",
+    "mtime": 1780865771.9014628,
+    "ast_hash": "393af640769e14d91b26f3752a7dadad",
     "semantic_hash": ""
   },
   "src/app/api/bitacora/current/route.js": {
@@ -1070,13 +1070,13 @@
     "semantic_hash": ""
   },
   "src/app/api/bitacora/update/[id]/route.js": {
-    "mtime": 1786807323.0129433,
-    "ast_hash": "fb1b68336ea49c7e2080c882b8c675a5",
+    "mtime": 1780865771.902748,
+    "ast_hash": "8efb27c9e1fb9b9ba67299d70943e563",
     "semantic_hash": ""
   },
   "src/app/api/class-modules/[id]/route.js": {
-    "mtime": 1786807294.7962825,
-    "ast_hash": "469384a9c3b7d92ccce0fb2910607997",
+    "mtime": 1780865771.9031346,
+    "ast_hash": "197cbcf25b3e09f8ab367c5bb0bc95f2",
     "semantic_hash": ""
   },
   "src/app/api/class-modules/[id]/submodules/[slug]/route.js": {
@@ -1095,8 +1095,8 @@
     "semantic_hash": ""
   },
   "src/app/api/class-modules/route.js": {
-    "mtime": 1786807284.820138,
-    "ast_hash": "6ad8dc8bce736fae31f32a5b953ba2a7",
+    "mtime": 1780865771.90375,
+    "ast_hash": "34852ea9144615e2996986c47495f688",
     "semantic_hash": ""
   },
   "src/app/api/class/addFiles.js": {
@@ -1180,13 +1180,13 @@
     "semantic_hash": ""
   },
   "src/app/api/cron/weekly-logbook/route.ts": {
-    "mtime": 1786807442.2353642,
-    "ast_hash": "220233bacac827e52d54323f1b80206b",
+    "mtime": 1780865771.906172,
+    "ast_hash": "f07809403c4385fd0af9b8293b740e8c",
     "semantic_hash": ""
   },
   "src/app/api/curso/[slug]/contenido/route.ts": {
-    "mtime": 1786806882.1692894,
-    "ast_hash": "fafdc2473b47cb4471a053c0183c0d49",
+    "mtime": 1783000099.0465615,
+    "ast_hash": "3513479a032bdfef257eda0070fb9cc0",
     "semantic_hash": ""
   },
   "src/app/api/debug/check-stripe-metadata/route.ts": {
@@ -1535,8 +1535,8 @@
     "semantic_hash": ""
   },
   "src/app/api/module-classes/[id]/route.js": {
-    "mtime": 1786807258.37295,
-    "ast_hash": "b14d17914f94bcacb632ee37fab0a5c6",
+    "mtime": 1780865771.9170191,
+    "ast_hash": "f334f1ac659429996116df0bddd09ef6",
     "semantic_hash": ""
   },
   "src/app/api/module-classes/complete/route.js": {
@@ -1545,13 +1545,13 @@
     "semantic_hash": ""
   },
   "src/app/api/module-classes/from-weekly-path/route.js": {
-    "mtime": 1786807271.256035,
-    "ast_hash": "884914d0e8d159fcaa70f573e56bb686",
+    "mtime": 1780865771.9173214,
+    "ast_hash": "6b618f263be70fe7867b9eb93bb621a0",
     "semantic_hash": ""
   },
   "src/app/api/module-classes/route.js": {
-    "mtime": 1786807245.0794125,
-    "ast_hash": "6eaea309255522f336df0ef661c28ace",
+    "mtime": 1780865771.9174352,
+    "ast_hash": "b986893d7542b52f5ed8900ae2b8bc84",
     "semantic_hash": ""
   },
   "src/app/api/move-crew-events/[id]/calendar/ics/route.js": {
@@ -3545,8 +3545,8 @@
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/CourseContentHub.tsx": {
-    "mtime": 1786806810.3315003,
-    "ast_hash": "9dcb12b82896ab8ba669e4e9449dab62",
+    "mtime": 1786631161.2721238,
+    "ast_hash": "57e7494506fbb6db11556446f66b16f8",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/CourseContentHubCommunity.tsx": {
@@ -3555,8 +3555,8 @@
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/CourseContentHubView.tsx": {
-    "mtime": 1786807381.8415205,
-    "ast_hash": "00ed7fed6750cf58bcc42fd79f28ee1d",
+    "mtime": 1786805705.7871583,
+    "ast_hash": "b7018d079f597774e315fbbde3aae24c",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/CourseDarkSectionBackground.tsx": {
@@ -6085,8 +6085,8 @@
     "semantic_hash": ""
   },
   "src/app/api/free-sequential/[slug]/contenido/route.ts": {
-    "mtime": 1786807374.6033313,
-    "ast_hash": "f0c88f6cabf460fc63fa04283ad32f5a",
+    "mtime": 1786387182.8053374,
+    "ast_hash": "fc01795f1d89dfa8159dcf37ab72ea36",
     "semantic_hash": ""
   },
   "src/app/api/free-sequential/classes/[id]/route.ts": {
@@ -6115,8 +6115,8 @@
     "semantic_hash": ""
   },
   "src/components/PageComponent/FreeSequential/FreeSequentialClassPractice.tsx": {
-    "mtime": 1786807424.9433365,
-    "ast_hash": "7f878b97e24f672b9e8efa6efe57c7d5",
+    "mtime": 1786717223.8577626,
+    "ast_hash": "9803c5c3bb2155a6b37b9db0b61b794c",
     "semantic_hash": ""
   },
   "src/components/PageComponent/FreeSequential/FreeSequentialProductList.tsx": {
@@ -6190,18 +6190,13 @@
     "semantic_hash": ""
   },
   "src/app/api/vimeo/thumb/[id]/route.ts": {
-    "mtime": 1786807225.3588479,
-    "ast_hash": "fe7f3a57b8b2c8229b861e3ec35aa990",
+    "mtime": 1786805691.735604,
+    "ast_hash": "37f269bf2e15d482a0fda204b3328ce9",
     "semantic_hash": ""
   },
   "src/lib/subscribeFreeSequentialLead.ts": {
     "mtime": 1786719497.326832,
     "ast_hash": "94f5a086900f8360d6560a627019ca02",
-    "semantic_hash": ""
-  },
-  "src/lib/vimeoMeta.ts": {
-    "mtime": 1786807210.8678067,
-    "ast_hash": "7e7f405b55d431ebcad93a67c0df8e54",
     "semantic_hash": ""
   }
 }

@@ -166,7 +166,10 @@ const nextConfig = {
         ],
       },
       {
-        source: '/(.*)', // Aplica a todas las rutas
+        // Todas las rutas menos /api/vimeo/thumb: ese endpoint sirve imágenes
+        // inmutables y necesita el cache del CDN para no pegarle a la API de
+        // Vimeo en cada request.
+        source: '/:path((?!api/vimeo/thumb/).*)',
         headers: [
           {
             key: 'Cache-Control',

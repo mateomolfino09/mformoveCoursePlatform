@@ -54,7 +54,11 @@ export async function GET(
     const product = await Product.findOne({
       tipo: 'curso',
       'cursoConfig.slug': slug,
-    }).lean();
+    })
+      .select(
+        'nombre cursoConfig invitacionGrupoWhatsapp grupoWhatsapp descripcion programaTransformacional'
+      )
+      .lean();
 
     if (!product) {
       return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
@@ -147,7 +151,13 @@ export async function GET(
     const aboutLines = resolveCursoAboutDescriptionLines(cursoConfig);
     const aboutDescription = joinAboutDescriptionLines(aboutLines);
 
-    const moveCrewEvents = await MoveCrewEvent.find().lean();
+    // Solo eventos recurrentes o de una vez que todavía no pasaron — evita traer
+    // toda la colección (crece indefinidamente) solo para calcular el próximo.
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const moveCrewEvents = await MoveCrewEvent.find({
+      $or: [{ repeatsWeekly: true }, { eventDate: { $gte: todayStart } }],
+    }).lean();
     const proximoEncuentroRaw = resolveNextMoveCrewEventOccurrence(moveCrewEvents);
     const proximoEncuentro = proximoEncuentroRaw
       ? {
