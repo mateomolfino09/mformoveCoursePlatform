@@ -6,6 +6,7 @@ import connectDB from '../../../../config/connectDB';
 import WeeklyLogbook from '../../../../models/weeklyLogbookModel';
 import Users from '../../../../models/userModel';
 import ClassModule from '../../../../models/classModuleModel';
+import { fetchVimeoMeta } from '../../../../lib/vimeoMeta';
 
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
@@ -81,21 +82,6 @@ export async function POST(req) {
       );
       }
     }
-
-    const fetchVimeoMeta = async (videoUrl) => {
-      try {
-        if (!videoUrl) return { thumbnail: '', duration: undefined };
-        const resp = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(videoUrl)}`);
-        if (!resp.ok) return { thumbnail: '', duration: undefined };
-        const data = await resp.json();
-        return {
-          thumbnail: data.thumbnail_url || '',
-          duration: data.duration || undefined
-        };
-      } catch {
-        return { thumbnail: '', duration: undefined };
-      }
-    };
 
     const fetchCloudinaryAudioMeta = async (audioUrl) => {
       try {

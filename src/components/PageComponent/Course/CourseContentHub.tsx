@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch } from '../../../redux/hooks';
 import { toggleScroll } from '../../../redux/features/headerLibrarySlice';
 import Link from 'next/link';
@@ -18,18 +18,11 @@ type Props = {
   slug: string;
 };
 
-function hubHasHeroVideo(data: CourseContentHubData | null): boolean {
-  if (!data?.hub?.heroVideoId) return false;
-  return Boolean(data.hub.heroVideoId.trim());
-}
-
 export default function CourseContentHub({ slug }: Props) {
   const dispatch = useAppDispatch();
   const [data, setData] = useState<CourseContentHubData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [videoReady, setVideoReady] = useState(false);
-  const handleVideoReady = useCallback(() => setVideoReady(true), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,10 +33,7 @@ export default function CourseContentHub({ slug }: Props) {
         return json as CourseContentHubData;
       })
       .then((payload) => {
-        if (!cancelled) {
-          setData(payload);
-          setVideoReady(!hubHasHeroVideo(payload));
-        }
+        if (!cancelled) setData(payload);
       })
       .catch((err) => {
         if (!cancelled) setError(err instanceof Error ? err.message : 'Error');
@@ -100,16 +90,5 @@ export default function CourseContentHub({ slug }: Props) {
 
   if (!data) return null;
 
-  const showSkeletonOverlay = hubHasHeroVideo(data) && !videoReady;
-
-  return (
-    <div className="relative">
-      <CourseContentHubView data={data} onVideoReady={handleVideoReady} />
-      {showSkeletonOverlay && (
-        <div className="fixed inset-0 z-[200] pointer-events-none">
-          <ModuleLibrarySkeleton />
-        </div>
-      )}
-    </div>
-  );
+  return <CourseContentHubView data={data} />;
 }

@@ -9,6 +9,7 @@ import ClassModule from '../../../../models/classModuleModel';
 import MoveCrewEvent from '../../../../models/moveCrewEventModel';
 import { EmailService, EmailType } from '../../../../services/email/emailService';
 import { scheduleMoveCrewRemindersForLogbook } from '../../../../lib/scheduleMoveCrewReminders';
+import { fetchVimeoThumbnail } from '../../../../lib/vimeoMeta';
 
 export const dynamic = 'force-dynamic';
 
@@ -355,10 +356,17 @@ export async function GET(req: NextRequest) {
               .replace(/\/default\.jpg/, '/maxresdefault.jpg');
           }
           
-          // Mejorar calidad si es de vumbnail.com (agregar parámetros de calidad)
-          if (coverImage && coverImage.includes('vumbnail.com')) {
-            // vumbnail.com ya proporciona buena calidad, pero podemos asegurar que no tenga parámetros de tamaño
-            coverImage = coverImage.split('?')[0]; // Remover query params si existen
+          // Los covers guardados apuntando a vumbnail.com no sirven: para los videos
+          // `unlisted` devuelven una imagen genérica de relleno. Se re-resuelven contra
+          // la API de Vimeo, igual que los que quedaron sin cover.
+          if (!coverImage || coverImage.includes('vumbnail.com')) {
+            const vimeoSource =
+              firstContent?.videoUrl ||
+              firstContent?.videoId ||
+              (content as any)?.videoUrl ||
+              (content as any)?.videoId ||
+              null;
+            coverImage = (await fetchVimeoThumbnail(vimeoSource)) || null;
           }
           
           const videoDurationSeconds = (content as any)?.videoDuration || null;

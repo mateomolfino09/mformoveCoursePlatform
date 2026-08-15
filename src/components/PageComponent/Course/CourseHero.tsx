@@ -7,6 +7,7 @@ import { PauseIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import Player from '@vimeo/player';
 import { useAuth } from '../../../hooks/useAuth';
 import { useCursoLanding } from './CursoLandingContext';
+import { vimeoThumbnailUrl } from '../../../lib/resolveMediaImageUrl';
 
 const CourseHero = () => {
   const router = useRouter();
@@ -181,7 +182,7 @@ const CourseHero = () => {
                 <div className="absolute inset-0 overflow-hidden">
                   <div className="absolute left-1/2 top-0 h-full w-[106.67vh] -translate-x-1/2 md:left-0 md:w-full md:translate-x-0">
                     <img
-                      src={thumbnailUrl || `https://vumbnail.com/${videoId}.jpg`}
+                      src={thumbnailUrl || vimeoThumbnailUrl(videoId, 1280)}
                       alt={`Preview de sesión ${productName}`}
                       className="w-full h-full object-cover"
                       fetchPriority="high"
@@ -191,7 +192,7 @@ const CourseHero = () => {
                         setThumbnailLoaded(true);
                         const el = e.target as HTMLImageElement;
                         if (thumbnailUrl && el.src === thumbnailUrl) {
-                          el.src = `https://vumbnail.com/${videoId}.jpg`;
+                          el.src = vimeoThumbnailUrl(videoId, 1280);
                           el.onerror = () => { el.style.display = 'none'; };
                         } else {
                           el.style.display = 'none';

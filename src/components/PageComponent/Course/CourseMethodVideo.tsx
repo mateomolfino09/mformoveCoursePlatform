@@ -5,6 +5,7 @@ import { PlayIcon, SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24
 import { PauseIcon } from '@heroicons/react/24/outline';
 import Player from '@vimeo/player';
 import CourseQuickAccess from './CourseQuickAccess';
+import { vimeoThumbnailUrl } from '../../../lib/resolveMediaImageUrl';
 
 const CourseMethodVideo = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -170,7 +171,7 @@ const CourseMethodVideo = () => {
                 {/* Thumbnail/Poster */}
                 <div className="absolute inset-0">
                   <img
-                    src={`https://vumbnail.com/${videoId}.jpg`}
+                    src={vimeoThumbnailUrl(videoId, 1280)}
                     alt="Preview de sesión Cuerpo autónomo"
                     className="w-full h-full object-cover"
                     onError={(e) => {

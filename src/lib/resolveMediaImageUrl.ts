@@ -90,10 +90,20 @@ export function extractVimeoId(link: string | null | undefined): string | null {
   return null;
 }
 
-export function vimeoThumbnailUrl(vimeoId: string | null | undefined): string {
+/**
+ * Miniatura de Vimeo vía proxy propio.
+ *
+ * vumbnail.com y el oEmbed público no sirven acá: los videos `unlisted` no
+ * exponen su miniatura y vumbnail responde 200 con una imagen genérica de
+ * relleno, así que la clase queda con el thumbnail equivocado sin dar error.
+ */
+export function vimeoThumbnailUrl(
+  vimeoId: string | null | undefined,
+  width = 640
+): string {
   const id = (vimeoId || '').trim();
   if (!id) return '';
-  return `https://vumbnail.com/${id}.jpg`;
+  return `/api/vimeo/thumb/${id}?w=${width}`;
 }
 
 type ThumbnailInput = {

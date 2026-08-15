@@ -13,15 +13,28 @@ export const dynamic = 'force-dynamic';
  * cuando la persona entra al link y se registra ahí mismo (sin verificación
  * de mail), vía el modal de registro estándar del sitio.
  */
+const mask = (v: string | null) =>
+  v ? `${v.slice(0, 10)}...${v.slice(-6)} (len ${v.length})` : 'null';
+
 export async function POST(request: Request) {
   try {
-    const expectedSecret = process.env.MANYCHAT_WEBHOOK_SECRET;
+    const expectedSecret = process.env.MANYCHAT_WEBHOOK_SECRET || null;
     const authHeader = request.headers.get('authorization');
-    if (!expectedSecret || authHeader !== `Bearer ${expectedSecret}`) {
+    const match = !!expectedSecret && authHeader === `Bearer ${expectedSecret}`;
+
+    // DEBUG TEMPORAL — sacar una vez resuelto el 401 de ManyChat.
+    console.log('[free-sequential subscribe] DEBUG auth', {
+      expectedSecret: mask(expectedSecret),
+      authHeaderReceived: mask(authHeader),
+      match,
+    });
+
+    if (!match) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
     const body = await request.json().catch(() => null);
+    console.log('[free-sequential subscribe] DEBUG body', body);
     const email = String(body?.email || '').trim().toLowerCase();
     const name = String(body?.name || '').trim();
     const slug = String(body?.slug || '').trim().toLowerCase();
