@@ -27,17 +27,10 @@ import { saveRedirectUrl } from '../../../utils/redirectQueue';
 import { useAuth } from '../../../hooks/useAuth';
 import valtioState from '../../../valtio';
 import { MENTORSHIP_LANDING_CTA } from '../../../constants/mentorshipCta';
-
-function extractVimeoId(link: string | null | undefined): string | null {
-  if (!link || typeof link !== 'string') return null;
-  const trimmed = link.trim();
-  const patterns = [/vimeo\.com\/(?:video\/)?(\d+)/, /player\.vimeo\.com\/video\/(\d+)/, /^(\d+)$/];
-  for (const pattern of patterns) {
-    const match = trimmed.match(pattern);
-    if (match?.[1]) return match[1];
-  }
-  return null;
-}
+import {
+  extractVimeoId,
+  resolveCourseClassThumbnailUrl,
+} from '../../../lib/resolveMediaImageUrl';
 
 function isDirectVideoUrl(url: string | null | undefined): boolean {
   if (!url || typeof url !== 'string') return false;
@@ -352,6 +345,13 @@ export default function FreeSequentialClassPractice({ slug, classId }: Props) {
     : extractVimeoId(practice?.videoUrl);
   const directVideoUrl =
     practice?.videoUrl && isDirectVideoUrl(practice.videoUrl) ? practice.videoUrl : null;
+  const posterUrl = practice
+    ? resolveCourseClassThumbnailUrl({
+        videoThumbnail: practice.videoThumbnail,
+        videoId: practice.videoId,
+        videoUrl: practice.videoUrl,
+      }) || undefined
+    : undefined;
 
   const startVideo = useCallback(() => {
     if (previewLocked) return;
@@ -717,7 +717,7 @@ export default function FreeSequentialClassPractice({ slug, classId }: Props) {
                 src={directVideoUrl}
                 controls={!videoBlocked}
                 className="h-full w-full object-contain bg-palette-ink"
-                poster={practice.videoThumbnail || undefined}
+                poster={posterUrl}
                 playsInline
                 onEnded={() => !requiresAuth && setVideoEnded(true)}
               />
@@ -774,7 +774,7 @@ export default function FreeSequentialClassPractice({ slug, classId }: Props) {
                   src={directVideoUrl}
                   controls={!videoBlocked}
                   className="absolute inset-0 h-full w-full object-cover object-center"
-                  poster={practice.videoThumbnail || undefined}
+                  poster={posterUrl}
                   playsInline
                   onPlay={() => handlePlayingChangeDesktop(true)}
                   onPause={() => handlePlayingChangeDesktop(false)}

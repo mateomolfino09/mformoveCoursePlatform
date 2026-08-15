@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { PlayIcon } from '@heroicons/react/24/solid';
@@ -13,11 +13,13 @@ import { cursoClasePath } from '../../../lib/cursoPaths';
 import {
   resolveCloudinaryOrHttpUrl,
   resolveCourseClassThumbnailUrl,
+  vimeoThumbnailUrl,
 } from '../../../lib/resolveMediaImageUrl';
 import { splitAboutDescriptionText } from '../../../lib/cursoAboutDescription';
 import CourseContentHubCommunity, {
   type CourseHubComunidad,
 } from './CourseContentHubCommunity';
+import CourseDarkSectionBackground from './CourseDarkSectionBackground';
 import {
   hubAccentBorderOnLight,
   hubAccentIconOnLight,
@@ -92,7 +94,6 @@ export type CourseContentHubData = {
 
 type Props = {
   data: CourseContentHubData;
-  onVideoReady?: () => void;
 };
 
 const contentPadding = 'px-6';
@@ -114,7 +115,7 @@ const PUZZLE_SHAPES = [
 /** Eje compartido línea + rombo del timeline de módulos. */
 const timelineAxisClass = 'left-6 md:left-8';
 
-export default function CourseContentHubView({ data, onVideoReady }: Props) {
+export default function CourseContentHubView({ data }: Props) {
   const dispatch = useAppDispatch();
   const [privateToken, setPrivateToken] = useState<string | null>(null);
 
@@ -123,9 +124,7 @@ export default function CourseContentHubView({ data, onVideoReady }: Props) {
   const hasVideo = !!vimeoId;
   const heroThumbnail = hub.heroThumbnailPublicId
     ? resolveCloudinaryOrHttpUrl(hub.heroThumbnailPublicId)
-    : vimeoId
-      ? `https://vumbnail.com/${vimeoId}.jpg`
-      : '';
+    : vimeoThumbnailUrl(vimeoId, 1280);
 
   useEffect(() => {
     const syncScroll = () => {
@@ -173,26 +172,16 @@ export default function CourseContentHubView({ data, onVideoReady }: Props) {
       ? `https://player.vimeo.com/video/${vimeoId}?autoplay=1&loop=1&background=1&muted=1&preload=auto${privateToken ? `&h=${privateToken}` : ''}`
       : '';
 
-  const [videoLoaded, setVideoLoaded] = useState(!hasVideo);
-  const onVideoReadyRef = useRef(onVideoReady);
-  onVideoReadyRef.current = onVideoReady;
+  // El thumbnail queda de poster hasta que el iframe del hero termina de cargar
+  // (fade-in local, no bloquea el render del resto de la página).
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   useEffect(() => {
-    if (!hasVideo) {
-      onVideoReadyRef.current?.();
-      return;
-    }
     setVideoLoaded(false);
-    const t = setTimeout(() => {
-      setVideoLoaded(true);
-      onVideoReadyRef.current?.();
-    }, 8000);
-    return () => clearTimeout(t);
-  }, [hasVideo, vimeoIframeSrc]);
+  }, [vimeoIframeSrc]);
 
   const handleVideoLoaded = () => {
     setVideoLoaded(true);
-    onVideoReadyRef.current?.();
   };
 
   const firstClass = modulos.flatMap((m) =>
@@ -448,8 +437,10 @@ export default function CourseContentHubView({ data, onVideoReady }: Props) {
             </section>
 
             {comunidad ? (
-              <section className="relative bg-palette-ink text-palette-cream py-14 md:py-20 lg:py-24">
-                <div className={`${contentPadding}`}>
+              <section className="relative isolate overflow-hidden border-t border-white/10 bg-palette-ink text-palette-cream py-14 md:py-20 lg:py-24">
+                <CourseDarkSectionBackground />
+
+                <div className={`relative z-20 ${contentPadding}`}>
                   <div className={contentMax}>
                     <CourseContentHubCommunity comunidad={comunidad} />
                   </div>
@@ -457,33 +448,6 @@ export default function CourseContentHubView({ data, onVideoReady }: Props) {
               </section>
             ) : null}
 
-            {showAboutSection ? (
-              <section className="relative border-t border-palette-steel/20 bg-palette-cream text-palette-ink py-14 md:py-20 lg:py-24">
-                <div className={contentPadding}>
-                  <div className={contentMax}>
-                    <div className="max-w-4xl">
-                      <p className={`${hubEyebrowOnLight} mb-3 md:mb-4`}>
-                        Sobre este curso
-                      </p>
-                      {hub.heroHeadline?.trim() ? (
-                        <h2 className={`${hubSectionTitleOnLight} mb-8 md:mb-10 max-w-4xl`}>
-                          {hub.heroHeadline}
-                        </h2>
-                      ) : null}
-                      {aboutLines.length ? (
-                        <div className="space-y-6 md:space-y-8">
-                          {aboutLines.map((line, index) => (
-                            <p key={`about-${index}`} className={hubBodyOnLight}>
-                              {line}
-                            </p>
-                          ))}
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-              </section>
-            ) : null}
           </main>
 
           <section className="w-full">

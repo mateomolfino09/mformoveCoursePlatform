@@ -6,6 +6,7 @@ import Users from '../../../../models/userModel';
 import mongoose from 'mongoose';
 import { cookies } from 'next/headers';
 import { verify } from 'jsonwebtoken';
+import { fetchVimeoThumbnail } from '../../../../lib/vimeoMeta';
 
 connectDB();
 export const revalidate = 0;
@@ -35,24 +36,6 @@ export async function GET(req, { params }) {
       { error: 'Error al obtener el módulo' },
       { status: 500 }
     );
-  }
-}
-
-/** Obtiene thumbnail de Vimeo vía oEmbed. videoUrlOrId: URL completa o id numérico. */
-async function fetchVimeoThumbnail(videoUrlOrId) {
-  try {
-    const url = typeof videoUrlOrId === 'string' && videoUrlOrId.trim()
-      ? /^\d+$/.test(videoUrlOrId.trim())
-        ? `https://vimeo.com/${videoUrlOrId.trim()}`
-        : videoUrlOrId.trim()
-      : '';
-    if (!url || !url.includes('vimeo.com')) return '';
-    const resp = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`);
-    if (!resp.ok) return '';
-    const data = await resp.json();
-    return data.thumbnail_url || '';
-  } catch {
-    return '';
   }
 }
 

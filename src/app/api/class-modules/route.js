@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import connectDB from '../../../config/connectDB';
 import ClassModule from '../../../models/classModuleModel';
 import Users from '../../../models/userModel';
+import { fetchVimeoThumbnail } from '../../../lib/vimeoMeta';
 
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
@@ -43,24 +44,6 @@ export async function GET(req) {
       { error: 'Error al obtener los módulos de clase' },
       { status: 500 }
     );
-  }
-}
-
-/** Obtiene thumbnail de Vimeo vía oEmbed. videoUrlOrId: URL completa o id numérico. */
-async function fetchVimeoThumbnail(videoUrlOrId) {
-  try {
-    const url = typeof videoUrlOrId === 'string' && videoUrlOrId.trim()
-      ? /^\d+$/.test(videoUrlOrId.trim())
-        ? `https://vimeo.com/${videoUrlOrId.trim()}`
-        : videoUrlOrId.trim()
-      : '';
-    if (!url || !url.includes('vimeo.com')) return '';
-    const resp = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`);
-    if (!resp.ok) return '';
-    const data = await resp.json();
-    return data.thumbnail_url || '';
-  } catch {
-    return '';
   }
 }
 

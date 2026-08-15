@@ -12,8 +12,24 @@ import {
   type SessionUser,
 } from '../../../../../lib/freeSequentialAccess';
 import { resolveFreeSequentialCta } from '../../../../../lib/freeSequentialCta';
+import { resolveCourseClassThumbnailUrl } from '../../../../../lib/resolveMediaImageUrl';
 
 export const dynamic = 'force-dynamic';
+
+type ClassThumbnailSource = {
+  videoThumbnail?: string;
+  videoId?: string;
+  videoUrl?: string;
+};
+
+/**
+ * En las clases bloqueadas no se cae al id de Vimeo: la URL del proxy lo dejaría
+ * a la vista y estos videos son `unlisted`, sin más protección que su id.
+ */
+function classThumbnail(cls: ClassThumbnailSource, unlocked: boolean): string {
+  if (!unlocked) return cls.videoThumbnail || '';
+  return resolveCourseClassThumbnailUrl(cls);
+}
 
 async function getSessionUser(): Promise<SessionUser> {
   const token = cookies().get('userToken')?.value;
@@ -69,7 +85,7 @@ export async function GET(
         order: cls.order,
         name: cls.name,
         description: cls.description,
-        videoThumbnail: cls.videoThumbnail,
+        videoThumbnail: classThumbnail(cls, idx === 0),
         duration: cls.duration,
         unlocked: idx === 0,
         status: 'not_started' as const,
@@ -116,7 +132,7 @@ export async function GET(
         order: cls.order,
         name: cls.name,
         description: cls.description,
-        videoThumbnail: cls.videoThumbnail,
+        videoThumbnail: classThumbnail(cls, unlocked),
         duration: cls.duration,
         unlocked,
         status: progressStatus || 'not_started',

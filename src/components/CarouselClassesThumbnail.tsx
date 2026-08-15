@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import imageLoader from '../../imageLoader';
+import { vimeoThumbnailUrl } from '../lib/resolveMediaImageUrl';
 import { IndividualClass, Ricks, User } from '../../typings';
 import {
   ChevronDownIcon,
@@ -105,7 +106,7 @@ const extractVimeoId = (link: string): string | null => {
 // Función para obtener la URL del thumbnail de Vimeo
 const getVimeoThumbnail = (vimeoId: string | null): string | null => {
   if (!vimeoId) return null;
-  return `https://vumbnail.com/${vimeoId}.jpg`;
+  return vimeoThumbnailUrl(vimeoId);
 };
 
 function CarouselClassesThumbnail({

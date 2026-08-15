@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import connectDB from '../../../../config/connectDB';
 import ModuleClass from '../../../../models/moduleClassModel';
 import Users from '../../../../models/userModel';
+import { fetchVimeoMeta } from '../../../../lib/vimeoMeta';
 
 connectDB();
 export const revalidate = 0;
@@ -18,26 +19,6 @@ function getAuthUser(cookieStore) {
     return decoded?.userId || decoded?._id || decoded?.id;
   } catch {
     return null;
-  }
-}
-
-async function fetchVimeoThumbnail(videoUrlOrId) {
-  try {
-    const url = typeof videoUrlOrId === 'string' && videoUrlOrId.trim()
-      ? /^\d+$/.test(videoUrlOrId.trim())
-        ? `https://vimeo.com/${videoUrlOrId.trim()}`
-        : videoUrlOrId.trim()
-      : '';
-    if (!url || !url.includes('vimeo.com')) return { thumbnail: '', duration: undefined };
-    const resp = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`);
-    if (!resp.ok) return { thumbnail: '', duration: undefined };
-    const data = await resp.json();
-    return {
-      thumbnail: data.thumbnail_url || '',
-      duration: data.duration != null ? Number(data.duration) : undefined
-    };
-  } catch {
-    return { thumbnail: '', duration: undefined };
   }
 }
 
@@ -90,7 +71,7 @@ export async function POST(req) {
     let finalDuration = 0;
     const vimeoUrlOrId = (videoUrl && String(videoUrl).trim()) || resolvedVideoId;
     if (vimeoUrlOrId) {
-      const vimeoMeta = await fetchVimeoThumbnail(vimeoUrlOrId);
+      const vimeoMeta = await fetchVimeoMeta(vimeoUrlOrId);
       if (vimeoMeta.thumbnail) finalThumbnail = vimeoMeta.thumbnail;
       if (vimeoMeta.duration != null) finalDuration = vimeoMeta.duration;
     }

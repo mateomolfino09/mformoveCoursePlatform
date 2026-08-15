@@ -2,6 +2,7 @@
 
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import Player from '@vimeo/player';
+import { vimeoThumbnailUrl } from '../../../lib/resolveMediaImageUrl';
 
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
@@ -10,8 +11,7 @@ function formatTime(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-/** Thumbnail en alta calidad (640w). Alternativas: .jpg default, _medium.jpg 200w, _small.jpg 100w */
-const THUMBNAIL_URL = (id: string) => `https://vumbnail.com/${id}_large.jpg`;
+const THUMBNAIL_URL = (id: string) => vimeoThumbnailUrl(id, 960);
 
 const SPEED_OPTIONS = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
 
