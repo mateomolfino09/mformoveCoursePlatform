@@ -389,7 +389,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	const textColorMuted = isIndexStage1 ? 'text-gray-600 hover:text-black' : (isLightText ? 'text-white/60 hover:text-white' : (isAuth || isIndex ? 'text-gray-300 hover:text-gray-100' : 'text-gray-600 hover:text-gray-800'));
 	const underlineFill = isWeeklyPath ? 'white' : (isLightText ? 'white' : 'black');
 
-	// Color del título MMOVE ACADEMY: en weekly path y práctica (video) siempre blanco; en módulo de biblioteca o hub de curso blanco sin scroll, negro con scroll; resto de library negro. Con navegación abierta: siempre claro.
+	// Color del título ACADEMIA DE MOVIMIENTO / logo: en weekly path y práctica (video) siempre blanco; en módulo de biblioteca o hub de curso blanco sin scroll, negro con scroll; resto de library negro. Con navegación abierta: siempre claro.
 	const headerTitleLight = (isWeeklyPath
 		? true
 		: (isLibraryPracticePage
@@ -427,7 +427,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 				? 'text-palette-ink border-palette-stone/40 hover:bg-palette-cream hover:border-palette-stone/60'
 				: 'text-palette-ink border-palette-stone/40 hover:bg-palette-sage/30 hover:border-palette-sage';
 
-	// Logo MMOVE ACADEMY en blanco en weekly path y cuando el menú o el navegador Cuerpo autónomo están abiertos
+	// Logo en blanco en weekly path y cuando el menú o el navegador Cuerpo autónomo están abiertos
 	const logoLight = headerTitleLight || showNav || snap.weeklyPathNavOpen || isWeeklyPath;
 
 	const linkBase = `block text-base/6 cursor-pointer focus:outline-none transition-colors duration-200`;
@@ -539,7 +539,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 											<Link href={routes.navegation.eventos} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isEvents ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-sage/25'}`} onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
 											<Link href={routes.navegation.mentorship} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMentorship ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-white/10'}`} onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
 											{!auth?.user && (
-												<button type="button" className="block w-full text-left px-4 py-2.5 font-montserrat font-light text-xs tracking-[0.12em] uppercase text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.authModalMode = 'login'; state.loginForm = true; }}>Iniciar sesión</button>
+												<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.authModalMode = 'login'; state.loginForm = true; }}>Iniciar sesión</button>
 											)}
 										</div>
 									)}
@@ -753,7 +753,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 									<Link href={routes.navegation.mentorship} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isMentorship ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-white/10'}`} onClick={() => setEventsMentorshipOpen(false)}>Mentoría</Link>
 									<Link href={routes.navegation.eventos} className={`block px-4 py-2.5 text-sm font-montserrat transition-colors ${isEvents ? 'text-palette-cream font-semibold bg-palette-stone/20' : 'text-palette-cream hover:bg-palette-sage/25'}`} onClick={() => setEventsMentorshipOpen(false)}>Eventos</Link>
 									{!auth?.user && (
-										<button type="button" className="block w-full text-left px-4 py-2.5 font-montserrat font-light text-xs tracking-[0.12em] uppercase text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.authModalMode = 'login'; state.loginForm = true; }}>Iniciar sesión</button>
+										<button type="button" className="block w-full text-left px-4 py-2.5 text-sm font-montserrat text-palette-cream hover:bg-palette-sage/25 transition-colors" onClick={() => { setEventsMentorshipOpen(false); state.authModalMode = 'login'; state.loginForm = true; }}>Iniciar sesión</button>
 									)}
 								</div>
 							)}

@@ -63,7 +63,7 @@ const MembershipLoading = ({ show }: { show: boolean }) => {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-4xl md:text-6xl font-bold mb-6"
             >
-              MMOVE ACADEMY
+              ACADEMIA DE MOVIMIENTO
             </motion.h1>
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
