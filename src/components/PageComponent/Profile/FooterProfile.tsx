@@ -36,7 +36,7 @@ const FooterProfile = () => {
             href={homeHref}
             className="text-sm font-medium tracking-[0.2em] text-palette-cream/80 transition hover:text-palette-cream"
           >
-            MMOVE ACADEMY
+            ACADEMIA DE MOVIMIENTO
           </Link>
           <div className="flex items-center gap-6">
             <Link

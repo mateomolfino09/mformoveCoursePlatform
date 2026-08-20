@@ -24,7 +24,7 @@ const Footer = () => {
             href={auth?.user?.subscription?.active || auth?.user?.isVip ? '/biblioteca' : '/'}
             className="text-sm font-medium tracking-[0.2em] text-black/80 transition hover:text-black"
           >
-            MMOVE ACADEMY
+            ACADEMIA DE MOVIMIENTO
           </Link>
           <div className="flex items-center gap-6">
             <Link
