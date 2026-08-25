@@ -3025,8 +3025,8 @@
     "semantic_hash": ""
   },
   "src/components/Footer.tsx": {
-    "mtime": 1787162165.0668914,
-    "ast_hash": "fb563e8ca1358f9d06eef9b7c9b25884",
+    "mtime": 1782737678.4669077,
+    "ast_hash": "286fc39edbd1f2e9bd04ecd2e9e77cdc",
     "semantic_hash": ""
   },
   "src/components/GetMembershipModal.tsx": {
@@ -3055,8 +3055,8 @@
     "semantic_hash": ""
   },
   "src/components/HeaderUnified.tsx": {
-    "mtime": 1787162203.7196465,
-    "ast_hash": "d216baa401cf919b41c302f412ba3425",
+    "mtime": 1786388143.5262232,
+    "ast_hash": "65d78a62aa9082d1161467ad8f27c41c",
     "semantic_hash": ""
   },
   "src/components/HomeSkeleton.tsx": {
@@ -3510,8 +3510,8 @@
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/Course.tsx": {
-    "mtime": 1787699812.4747608,
-    "ast_hash": "0d63102211918079dda41a448a261182",
+    "mtime": 1786386094.085715,
+    "ast_hash": "0f9ef9e7475a4835b87bafdf79626061",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/CourseBetweenHeroSection.tsx": {
@@ -3680,8 +3680,8 @@
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/MembershipLoading.tsx": {
-    "mtime": 1787162165.5917895,
-    "ast_hash": "9480e104bb7f06c3880d28aa6130be42",
+    "mtime": 1784741636.9145944,
+    "ast_hash": "213162dd6e8e54383877e9f6e494a59d",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/WeeklyPathBaseLoading.tsx": {
@@ -3830,8 +3830,8 @@
     "semantic_hash": ""
   },
   "src/components/PageComponent/Index/NewsletterForm.tsx": {
-    "mtime": 1787162165.9625866,
-    "ast_hash": "1b2dd1aa06feaae7f8e3b2645f7dfcad",
+    "mtime": 1780865771.9859853,
+    "ast_hash": "ba49b66fb1c7daaf90aba1a9c6adada4",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Library.tsx": {
@@ -4165,8 +4165,8 @@
     "semantic_hash": ""
   },
   "src/components/PageComponent/Profile/FooterProfile.tsx": {
-    "mtime": 1787162165.3245332,
-    "ast_hash": "810519ba9391762d4197f605e48c3878",
+    "mtime": 1784408495.7882712,
+    "ast_hash": "cb3f1046c3a21581960047e4c41409d3",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Profile/Profile.tsx": {
@@ -4205,32 +4205,32 @@
     "semantic_hash": ""
   },
   "src/components/PageComponent/Register/RegisterForm.tsx": {
-    "mtime": 1787162585.7590623,
-    "ast_hash": "4338c064e33b2da32448d8439d2ede40",
+    "mtime": 1787159671.6640446,
+    "ast_hash": "362c6820051576ef1770675872bc75a6",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Register/RegisterStepCero.tsx": {
-    "mtime": 1787162582.675369,
-    "ast_hash": "fb0d651237640e0681361381af1afc2f",
+    "mtime": 1787159639.672401,
+    "ast_hash": "cb253d0d6591611506e6580e55292254",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Register/RegisterStepOne.tsx": {
-    "mtime": 1787159796.121453,
+    "mtime": 1787159645.3166718,
     "ast_hash": "a69891c19c9483411e80c10801b62e7e",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Register/RegisterStepThree.tsx": {
-    "mtime": 1787159796.166296,
+    "mtime": 1787159649.2662954,
     "ast_hash": "b8f1fc0a026691438c269a3e9098c4ca",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Register/RegisterStepTwo.tsx": {
-    "mtime": 1787159796.1338367,
+    "mtime": 1787159647.412562,
     "ast_hash": "281f934cf2ac44578d0691cfeed4ea2a",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Register/ResendEmail.tsx": {
-    "mtime": 1787159796.1841567,
+    "mtime": 1787159651.0298352,
     "ast_hash": "cddced3e20e07ce069adacd5d1769230",
     "semantic_hash": ""
   },
@@ -6180,8 +6180,8 @@
     "semantic_hash": ""
   },
   "src/app/api/dev/grant-cuerpo-autonomo/route.ts": {
-    "mtime": 1787584436.9796185,
-    "ast_hash": "32853ad65f71e2acd338b94c7f012d49",
+    "mtime": 1787159011.3000817,
+    "ast_hash": "673d681c1d584795a3aa0dfdc479b4c5",
     "semantic_hash": ""
   },
   "src/app/api/dev/test-free-sequential-subscribe/route.ts": {
@@ -6205,23 +6205,8 @@
     "semantic_hash": ""
   },
   "src/constants/authFormDesign.ts": {
-    "mtime": 1787162372.8193517,
-    "ast_hash": "7dcf223b655248299d74701b1396af84",
-    "semantic_hash": ""
-  },
-  "src/components/PageComponent/Course/CourseScheduleCall.tsx": {
-    "mtime": 1787699811.515375,
-    "ast_hash": "9343d3df7769fd8e6c6407749dd4a4e4",
-    "semantic_hash": ""
-  },
-  "src/constants/cursoSalesCall.ts": {
-    "mtime": 1787699811.1351154,
-    "ast_hash": "5b230c2afbfb3e6fa833a9155f938a9f",
-    "semantic_hash": ""
-  },
-  ".github/workflows/branch-to-develop-pr.yml": {
-    "mtime": 1787162747.7179825,
-    "ast_hash": "de0d1018b55ed4a6ad139f654d24a5f8",
+    "mtime": 1787159616.1730096,
+    "ast_hash": "4c030ff9080e1b77bbe3a434d6122652",
     "semantic_hash": ""
   }
 }

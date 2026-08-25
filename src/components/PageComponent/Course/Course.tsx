@@ -14,6 +14,7 @@ import CourseFullWidthBanner from './CourseFullWidthBanner';
 import CourseOutcomesHighlights from './CourseOutcomesHighlights';
 import CourseHighlightsIntro from './CourseHighlightsIntro';
 import CourseCTA from './CourseCTA';
+import CourseScheduleCall from './CourseScheduleCall';
 import PromocionFooter from '../Membership/PromocionFooter';
 import { useCursoLanding } from './CursoLandingContext';
 
@@ -159,6 +160,9 @@ const Course = ({ plans = [], promociones = [], checkoutPlans = [] }: CourseProp
         
         {/* 6. Plans - Precios y CTA principal (momento de decisión) */}
         <CoursePlans plans={plans} promociones={promociones} checkoutPlans={checkoutPlans} />
+
+        {/* 6.5. Llamada de consulta — después de precios, antes de objeciones (FAQ) */}
+        <CourseScheduleCall />
 
         {/* 9. FAQ - Objecciones finales (resuelve dudas antes del cierre) */}
         <CourseFAQ />
