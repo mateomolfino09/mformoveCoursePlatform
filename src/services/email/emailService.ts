@@ -1,6 +1,7 @@
 import mailchimp from '@mailchimp/mailchimp_transactional';
 import { palette } from '../../constants/colors';
 import { routes } from '../../constants/routes';
+import { resolveMentorshipBookingUrl } from '../../constants/mentorshipBooking';
 
 const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL || 'https://mateomove.com';
 const DEFAULT_PROGRAM_URL = `${APP_ORIGIN}${routes.navegation.moveCrew}`;
@@ -345,7 +346,7 @@ const emailTemplates = {
         Una vez completado, agenda tu llamada de consulta inicial para evaluar tus objetivos y crear tu plan personalizado:
       </p>
       <div style="text-align: center; margin: 28px 0;">
-        ${EMAIL_BRAND.btnStyleFilled(data.calendlyLink || 'https://calendly.com/mformovers/consulta-mentoria', 'Agendar consulta')}
+        ${EMAIL_BRAND.btnStyleFilled(data.calendlyLink || resolveMentorshipBookingUrl(), 'Agendar consulta')}
       </div>
       
       <div style="background-color: ${p.cream}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
@@ -858,7 +859,7 @@ const emailTemplates = {
       </div>
       
       <div style="text-align: center; margin: 28px 0;">
-        ${EMAIL_BRAND.btnStyleFilled(data.calendlyLink || 'https://calendly.com/mformovers/consulta-mentoria', 'Agendar consulta')}
+        ${EMAIL_BRAND.btnStyleFilled(data.calendlyLink || resolveMentorshipBookingUrl(), 'Agendar consulta')}
       </div>
     `;
     return getBaseTemplate(content);

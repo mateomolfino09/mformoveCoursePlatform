@@ -1,6 +1,8 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
+import { CldImage } from 'next-cloudinary';
+import imageLoader from '../../../../imageLoader';
 import CourseDarkSectionBackground from './CourseDarkSectionBackground';
 import {
   landingCtaInverted,
@@ -8,7 +10,30 @@ import {
   landingSectionContainer,
   landingSectionTitleDark,
 } from '../../../constants/landingSectionDesign';
-import { CURSO_SALES_CALL_BOOKING_URL } from '../../../constants/cursoSalesCall';
+import {
+  CURSO_SALES_CALL_BOOKING_URL,
+  CURSO_SALES_CALL_HOST,
+  CURSO_SALES_CALL_HOST_AVATAR_FALLBACK,
+} from '../../../constants/cursoSalesCall';
+import { resolveCloudinaryOrHttpUrl } from '../../../lib/resolveMediaImageUrl';
+
+function resolveHostPhoto(rawSrc: string) {
+  const trimmed = rawSrc.trim();
+  if (!trimmed) {
+    return {
+      kind: 'external' as const,
+      src: CURSO_SALES_CALL_HOST_AVATAR_FALLBACK,
+    };
+  }
+  if (/^https?:\/\//i.test(trimmed)) {
+    return { kind: 'external' as const, src: trimmed };
+  }
+  return {
+    kind: 'cloudinary' as const,
+    publicId: trimmed,
+    src: resolveCloudinaryOrHttpUrl(trimmed),
+  };
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -29,6 +54,7 @@ const itemVariants = {
 
 export default function CourseScheduleCall() {
   const reduceMotion = useReducedMotion();
+  const hostPhoto = resolveHostPhoto(CURSO_SALES_CALL_HOST.imageSrc);
 
   return (
     <section
@@ -83,72 +109,119 @@ export default function CourseScheduleCall() {
             viewport={{ once: true, margin: '-40px' }}
             className="relative px-6 py-10 text-center md:px-12 md:py-14"
           >
-                <motion.div variants={itemVariants} className="mb-4 flex justify-center">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-palette-sage/40 bg-palette-sage/15 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-palette-cream/90 backdrop-blur-sm">
-                    <motion.span
-                      className="relative flex h-2 w-2"
-                      animate={reduceMotion ? undefined : { scale: [1, 1.35, 1] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                    >
-                      <span className="absolute inline-flex h-full w-full rounded-full bg-palette-sage opacity-75" />
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-palette-sage" />
-                    </motion.span>
-                    ¿Todavía tenés dudas?
-                  </span>
-                </motion.div>
-
-                <motion.h2
-                  id="course-schedule-call-heading"
-                  variants={itemVariants}
-                  className={`${landingSectionTitleDark} mx-auto max-w-2xl !mt-0`}
+            <motion.div variants={itemVariants} className="mb-4 flex justify-center">
+              <span className="inline-flex items-center gap-2 rounded-full border border-palette-sage/40 bg-palette-sage/15 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-palette-cream/90 backdrop-blur-sm">
+                <motion.span
+                  className="relative flex h-2 w-2"
+                  animate={reduceMotion ? undefined : { scale: [1, 1.35, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                  Hablemos antes de que decidas
-                </motion.h2>
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-palette-sage opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-palette-sage" />
+                </motion.span>
+                ¿Todavía tenés dudas?
+              </span>
+            </motion.div>
 
-                <motion.div
-                  variants={itemVariants}
-                  className="mx-auto mt-5 max-w-2xl space-y-4 text-left md:text-center"
-                >
-                  <p className={landingCardBodyDark}>
-                    Si querés entender mejor cómo funciona Cuerpo Autónomo, saber si es para vos o
-                    simplemente charlar sobre lo que estás buscando, podés agendar una llamada conmigo.
-                  </p>
-                  <p className={landingCardBodyDark}>
-                    Son 20 minutos, sin compromiso. Te escucho, respondo tus preguntas y vemos juntos
-                    si este programa tiene sentido para vos.
-                  </p>
-                </motion.div>
+            <motion.h2
+              id="course-schedule-call-heading"
+              variants={itemVariants}
+              className={`${landingSectionTitleDark} mx-auto max-w-2xl !mt-0`}
+            >
+              Hablemos antes de que decidas
+            </motion.h2>
 
-                <motion.p
-                  variants={itemVariants}
-                  className="mt-7 text-sm font-semibold tracking-wide text-palette-cream/90"
-                >
-                  20 min · Videollamada · Sin costo
-                </motion.p>
+            <motion.div
+              variants={itemVariants}
+              className="mx-auto mt-5 max-w-2xl space-y-4 text-left md:text-center"
+            >
+              <p className={landingCardBodyDark}>
+                Si querés entender mejor cómo funciona Cuerpo Autónomo, saber si es para vos o
+                simplemente charlar sobre lo que estás buscando, podés agendar una videollamada con
+                alguien del equipo.
+              </p>
+              <p className={landingCardBodyDark}>
+                Son 20 minutos, sin compromiso. La idea es conocerte, responder tus dudas y ver si
+                este programa tiene sentido para vos.
+              </p>
+            </motion.div>
 
-                <motion.div variants={itemVariants} className="mt-9 flex justify-center">
-                  <motion.a
-                    href={CURSO_SALES_CALL_BOOKING_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`${landingCtaInverted} relative w-full overflow-hidden sm:w-auto`}
-                    whileHover={reduceMotion ? undefined : { scale: 1.03, y: -2 }}
-                    whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-                    transition={{ type: 'spring', stiffness: 420, damping: 22 }}
-                  >
-                    <motion.span
-                      className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/35 to-transparent"
-                      animate={reduceMotion ? undefined : { x: ['-120%', '220%'] }}
-                      transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 1.2, ease: 'easeInOut' }}
-                      aria-hidden
+            <motion.div
+              variants={itemVariants}
+              className="mx-auto mt-8 max-w-xl text-left md:max-w-2xl"
+            >
+              <div className="flex flex-col items-center gap-4 rounded-2xl border border-palette-cream/12 bg-palette-ink/45 p-5 backdrop-blur-sm md:flex-row md:items-start md:gap-5 md:p-6">
+                <div className="relative h-[4.25rem] w-[4.25rem] shrink-0 overflow-hidden rounded-full border-2 border-palette-sage/35 bg-palette-sage/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] md:h-[4.75rem] md:w-[4.75rem]">
+                  {hostPhoto.kind === 'cloudinary' ? (
+                    <CldImage
+                      src={hostPhoto.publicId}
+                      alt={`Foto de ${CURSO_SALES_CALL_HOST.name}`}
+                      fill
+                      sizes="76px"
+                      className="object-cover object-center"
+                      loader={imageLoader}
                     />
-                    <span className="relative z-[1]">Agendar una llamada</span>
-                    <span className="relative z-[1] transition-transform duration-200 group-hover:translate-x-1">
-                      →
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={hostPhoto.src}
+                      alt={`Foto de ${CURSO_SALES_CALL_HOST.name}`}
+                      referrerPolicy="no-referrer"
+                      className="h-full w-full object-cover object-center"
+                    />
+                  )}
+                </div>
+
+                <div className="min-w-0 flex-1 text-center md:text-left">
+                  <p className="font-montserrat text-base font-semibold tracking-tight text-palette-cream md:text-[1.05rem]">
+                    {CURSO_SALES_CALL_HOST.name}
+                  </p>
+                  <p className="mt-1 text-sm font-normal leading-snug text-palette-cream/75">
+                    {CURSO_SALES_CALL_HOST.roleLine}
+                  </p>
+                  <blockquote className="mt-3 border-0 p-0 text-[0.8125rem] font-normal not-italic leading-[1.48] text-palette-cream/70 md:text-[0.875rem] md:leading-[1.5]">
+                    <span aria-hidden className="text-palette-cream/45">
+                      «
                     </span>
-                  </motion.a>
-                </motion.div>
-              </motion.div>
+                    {CURSO_SALES_CALL_HOST.bio}
+                    <span aria-hidden className="text-palette-cream/45">
+                      »
+                    </span>
+                  </blockquote>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.p
+              variants={itemVariants}
+              className="mt-7 text-sm font-semibold tracking-wide text-palette-cream/90"
+            >
+              20 min · Videollamada · Sin costo
+            </motion.p>
+
+            <motion.div variants={itemVariants} className="mt-9 flex justify-center">
+              <motion.a
+                href={CURSO_SALES_CALL_BOOKING_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${landingCtaInverted} relative w-full overflow-hidden sm:w-auto`}
+                whileHover={reduceMotion ? undefined : { scale: 1.03, y: -2 }}
+                whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+                transition={{ type: 'spring', stiffness: 420, damping: 22 }}
+              >
+                <motion.span
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/35 to-transparent"
+                  animate={reduceMotion ? undefined : { x: ['-120%', '220%'] }}
+                  transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 1.2, ease: 'easeInOut' }}
+                  aria-hidden
+                />
+                <span className="relative z-[1]">Agendar una llamada</span>
+                <span className="relative z-[1] transition-transform duration-200 group-hover:translate-x-1">
+                  →
+                </span>
+              </motion.a>
+            </motion.div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '../../../../../../config/connectDB';
 import mailchimp from '@mailchimp/mailchimp_transactional';
 import { getAdminEmails } from '../../../../../../lib/getAdminEmails';
+import { resolveMentorshipBookingUrl } from '../../../../../../constants/mentorshipBooking';
 const MentorshipRequest = require('../../../../../../models/mentorshipRequestModel');
-
-const CALENDLY_LINK = 'https://calendly.com/mformovers/consulta-mentoria';
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   await connectDB();
@@ -25,6 +24,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     // Si se aprueba, email al solicitante + notificación a todos los admins
     if (estado === 'aprobada') {
       const mailchimpClient = mailchimp(process.env.MAILCHIMP_TRANSACTIONAL_API_KEY || "");
+      const bookingUrl = resolveMentorshipBookingUrl();
       
       const emailHtml = `
         <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
@@ -37,7 +37,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
               Agenda tu llamada de consulta inicial para evaluar tus objetivos y crear tu plan personalizado:
             </p>
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${CALENDLY_LINK}" style="background-color: #234C8C; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
+              <a href="${bookingUrl}" style="background-color: #234C8C; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
                 Agendar Consulta
               </a>
             </div>
@@ -77,7 +77,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
                   Se aprobó la solicitud de mentoría de <strong>${solicitud.nombre}</strong> (${solicitud.email}).
                 </p>
                 <p style="font-size: 16px; color: #666666; line-height: 1.6; margin-bottom: 20px; text-align: center;">
-                  Se le envió el link de Calendly para agendar la consulta.
+                  Se le envió el link de Cal.com para agendar la consulta.
                 </p>
                 <div style="text-align: center; margin: 30px 0;">
                   <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://mateomove.com'}/admin/mentorias/solicitudes" style="background-color: #234C8C; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block;">
