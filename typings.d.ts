@@ -613,6 +613,9 @@ export interface ProductDB {
   // --- Stripe ---
   stripeProductId?: string;
 
+  // --- Suscripción (solo tipo:'curso') ---
+  esSuscripcion?: boolean;
+
   // --- Programas Transformacionales ---
   esProgramaTransformacional?: boolean;
   programaTransformacional?: {

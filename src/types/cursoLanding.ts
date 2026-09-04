@@ -68,7 +68,14 @@ export type CursoPlanPago = {
   merchantCheckoutToken?: string;
   mercadoPagoPreferenceId?: string;
   mercadoPagoExternalReference?: string;
+  /** 1 = mensual (o pago único), 4 = cada 4 meses. */
+  intervaloMeses?: number;
 };
+
+export function cursoPlanPagoKey(plan: CursoPlanPago, index: number): string {
+  if (plan.stripePriceId) return plan.stripePriceId;
+  return `${plan.proveedor}-${plan.intervaloMeses ?? 1}-${index}`;
+}
 
 /**
  * Clase dentro de un módulo de contenido del curso.
@@ -253,6 +260,9 @@ export type CursoLandingConfig = {
     /** stripe | dlocalgo | mercadopago — si falta, se asume stripe+dlocal (legacy). */
     proveedoresHabilitados?: Array<'stripe' | 'dlocalgo' | 'mercadopago'>;
     opcionesPago: CursoPlanPago[];
+    /** Checklist "Tu membresía incluye" — solo tiene sentido cuando esSuscripcion:true. */
+    beneficiosTitulo: string;
+    beneficios: string[];
   };
   whatsapp: {
     imagenMobilePublicId: string;
@@ -676,6 +686,17 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
       'Estoy actualizando los planes en este momento. Si querés reservar tu lugar, escribime o tocá el botón para recibir novedades.',
     proveedoresHabilitados: ['stripe', 'mercadopago'],
     opcionesPago: [],
+    beneficiosTitulo: 'Al formar parte de Cuerpo Autónomo tenés acceso a:',
+    beneficios: [
+      'Los 3 módulos principales y sus *20 clases*.',
+      'Una llamada grupal semanal para acompañar cada módulo.',
+      'Encuentros acompañados por Mateo, Nico y profesionales invitados.',
+      'Un encuentro presencial cada 2 meses.',
+      'Una comunidad de personas recorriendo el mismo proceso.',
+      'Material nuevo semanalmente.',
+      'Nuevas herramientas y contenidos dentro de la academia.',
+      'Una sesión individual online con el profesional del equipo que elijas.',
+    ],
   },
   whatsapp: {
     imagenMobilePublicId: CURSO_WHATSAPP_BANNER_MOBILE_PUBLIC_ID,
@@ -791,7 +812,9 @@ const mergeHighlightItems = (
   items: CursoHighlight[] | undefined,
   defaults: CursoHighlight[]
 ): CursoHighlight[] => {
-  if (!items?.length) return defaults;
+  if (!items) return defaults;
+  // Array vacío es una edición válida (el admin borró todos los ítems).
+  if (items.length === 0) return [];
 
   return items.map((item, index) => ({
     ...(defaults[index] || {}),

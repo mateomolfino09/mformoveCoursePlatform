@@ -270,71 +270,63 @@ function Banner({ onVideoLoaded }) {
   return (
     <>
     
-    {/* Título a ~1/4 de pantalla (más presencia) */}
+    {/* Título + CTAs: en mobile el bloque de texto queda compacto arriba y los botones más abajo */}
     <div 
-      className='fixed top-[22%] left-1/2 z-[100] flex w-full max-w-[100vw] -translate-x-1/2 flex-col items-stretch gap-2.5 px-4 pointer-events-none text-start text-white md:top-[28%] md:items-start md:gap-4 md:px-32'
+      className='pointer-events-none fixed left-1/2 z-[100] flex w-full max-w-[100vw] -translate-x-1/2 flex-col items-stretch justify-between px-4 text-start text-white top-[20%] bottom-[18%] md:top-[28%] md:bottom-auto md:justify-start md:gap-10 md:px-32'
       style={{ 
         opacity: textOpacity,
         transition: 'opacity 0.3s ease-out'
       }}
     >
-      <p className='text-sm font-light uppercase tracking-[0.2em] text-white/90 md:text-lg md:tracking-wider'>
-        Academia de movimiento
-      </p>
-      
-      <h1
-        className='text-[3.1rem] font-bold leading-[1.02] tracking-wide sm:text-6xl md:text-[7rem] md:font-semibold'
-        style={{ textShadow: '0 2px 20px rgba(0, 0, 0, 0.45), 0 1px 8px rgba(0, 0, 0, 0.35)' }}
-      >
-        <span className='inline-block'>
-          <AnimatePresence mode="wait" initial={false}>
-            {words.map((word, index) => {
-              if (index !== currentWord) return null;
-              
-              return (
-                <m.span
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={index === 2 ? 
-                    { 
-                      opacity: [1, 0.5, 0],
-                      y: -40,
-                      x: 30,
-                      scale: 0.8,
-                      transition: { 
-                        duration: 0.4,
-                        ease: "easeIn"
+      <div className='flex flex-col items-stretch gap-2.5 md:items-start md:gap-4'>
+        <p className='text-sm font-light uppercase tracking-[0.2em] text-white/90 md:text-lg md:tracking-wider'>
+          Academia de movimiento
+        </p>
+        
+        <h1
+          className='flex flex-col text-[3.1rem] font-bold leading-[1.05] tracking-wide sm:text-6xl md:text-[7rem] md:font-semibold'
+          style={{ textShadow: '0 2px 20px rgba(0, 0, 0, 0.45), 0 1px 8px rgba(0, 0, 0, 0.35)' }}
+        >
+          <span className='relative block h-[1.12em] overflow-hidden'>
+            <AnimatePresence mode="wait" initial={false}>
+              {words.map((word, index) => {
+                if (index !== currentWord) return null;
+                
+                return (
+                  <m.span
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={index === 2 ? 
+                      { 
+                        opacity: [1, 0.5, 0],
+                        y: -28,
+                        scale: 0.92,
+                        transition: { 
+                          duration: 0.4,
+                          ease: "easeIn"
+                        }
+                      } : 
+                      { 
+                        opacity: 0, 
+                        y: -18,
+                        transition: { duration: 0.5 }
                       }
-                    } : 
-                    { 
-                      opacity: 0, 
-                      y: -20,
-                      transition: { duration: 0.5 }
                     }
-                  }
-                  transition={{ duration: 0.5 }}
-                  className='inline-block lg:text-gray-500xl'
-                >
-                  {word}
-                </m.span>
-              );
-            })}
-          </AnimatePresence>
-        </span>
-        <span className='ml-2'>mejor</span>
-      </h1>
-    </div>
+                    transition={{ duration: 0.5 }}
+                    className='absolute inset-x-0 top-0 whitespace-nowrap'
+                  >
+                    {word}
+                  </m.span>
+                );
+              })}
+            </AnimatePresence>
+          </span>
+          <span className='block whitespace-nowrap'>mejor</span>
+        </h1>
+      </div>
 
-    {/* Botones debajo del título */}
-    <div
-      className='pointer-events-none fixed left-1/2 top-[42%] z-[100] w-full max-w-[100vw] -translate-x-1/2 px-4 md:top-[52%] md:px-32'
-      style={{
-        opacity: textOpacity,
-        transition: 'opacity 0.3s ease-out',
-      }}
-    >
-      <div className='pointer-events-auto flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:items-center md:gap-4'>
+      <div className='pointer-events-auto flex w-full max-w-sm flex-col gap-3 pb-2 sm:max-w-none sm:flex-row sm:items-center md:mt-0 md:gap-4 md:pb-0'>
         <Link 
           href={primaryCta.href}
           className='inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3.5 text-center text-sm font-semibold text-black shadow-[0_8px_24px_-8px_rgba(0,0,0,0.45)] transition-all duration-300 hover:bg-gray-100 active:scale-[0.98] sm:w-auto sm:px-8 md:py-3 md:text-base md:font-medium'

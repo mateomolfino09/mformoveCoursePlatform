@@ -30,107 +30,6 @@ const classUser = new mongoose.Schema({
   }
 });
 
-const subscriptionSchema = new mongoose.Schema(
-  {
-    id: {
-      type: String,
-    },
-    planId: {
-        type: String,
-
-    },
-    country: {
-      type: String,
-    },
-    subscription_token: {
-      type: String,
-    },
-    status: {
-      type: String,
-    },
-    payment_method_code: {
-      type: String,
-    },
-    client_id: {
-      type: String,
-    },
-    created_at: {
-      type: Date,
-      immutable: true,
-    },
-    client_first_name: {
-      type: String,
-    },
-    client_last_name: {
-      type: String,
-
-    },
-    client_document_type: {
-      type: String,
-
-    },
-    client_document: {
-      type: String,
-
-    },
-    client_email: {
-      type: String,
-
-    },
-    active: {
-      type: Boolean,
-      default: () => false
-    },
-    isCanceled: {
-      type: Boolean,
-      default: () => false
-    },
-    cancellation_reason: {
-      type: String,
-      default: () => ''
-    },
-    // Onboarding "Primer Círculo" - Solo para usuarios con suscripción activa
-    onboarding: {
-      contratoAceptado: {
-        type: Boolean,
-        default: false
-      },
-      fechaAceptacionContrato: {
-        type: Date
-      },
-      bitacoraBaseCompletada: {
-        type: Boolean,
-        default: false
-      },
-      bitacoraBaseProgreso: {
-        elCinturon: { type: Boolean, default: false },
-        laEspiral: { type: Boolean, default: false },
-        elRango: { type: Boolean, default: false },
-        elCuerpoUtil: { type: Boolean, default: false }
-      },
-      fechaCompletacionBitacora: {
-        type: Date
-      },
-      tutorialBitacoraCompletado: {
-        type: Boolean,
-        default: false
-      },
-      fechaTutorialBitacora: {
-        type: Date
-      },
-      // Tracking de prácticas semanales para reporte
-      practicasSemanales: [{
-        semana: { type: String }, // Formato: "YYYY-WW" (año-semana)
-        cantidadPracticas: { type: Number, default: 0 },
-        reporteCompletado: { type: Boolean, default: false },
-        fechaReporte: { type: Date },
-        feedbackSensorial: { type: String },
-        feedbackTecnico: { type: String }
-      }]
-    }
-  },
-);
-
 const mentorshipSchema = new mongoose.Schema(
   {
     active: {
@@ -283,7 +182,6 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: 'IndividualClassUser'
     }],
-    subscription: subscriptionSchema,
     freeSubscription: freeSubscriptionSchema,
     memberShip: { token: String, productId: String },
     productToken: { token: String, productId: String },
@@ -296,6 +194,22 @@ const userSchema = new mongoose.Schema(
       moneda: { type: String, default: 'USD' },
       /** Onboarding post-compra: redirige a /pago/exito hasta completar bienvenida. */
       bienvenidaPendiente: { type: Boolean, default: false },
+      /** Origen del acceso: compra única (default), suscripción, otorgado a mano, o beta. */
+      source: {
+        type: String,
+        enum: ['compra_unica', 'suscripcion', 'manual', 'beta'],
+        default: 'compra_unica',
+      },
+      /** Vigencia del acceso. Las de source='compra_unica'/'manual'/'beta' quedan 'active' para siempre. */
+      status: {
+        type: String,
+        enum: ['active', 'expired', 'revoked'],
+        default: 'active',
+      },
+      /** Solo aplica a source='suscripcion': fin del período pago vigente. null = no expira. */
+      expiresAt: { type: Date, default: null },
+      /** Solo aplica a source='suscripcion': permite ubicar la entrada desde los webhooks de Stripe. */
+      stripeSubscriptionId: { type: String },
     }],
     mentorship: mentorshipSchema,
     pendingMentorshipDlocal: pendingMentorshipDlocalSchema,

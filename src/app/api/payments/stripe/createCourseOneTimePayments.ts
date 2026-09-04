@@ -8,6 +8,11 @@ import {
   resolveProveedoresHabilitados,
   type PaymentProveedor,
 } from '../../../../constants/paymentProveedores';
+import {
+  CURSO_SUSCRIPCION_INTERVALO_4_MESES,
+  CURSO_SUSCRIPCION_INTERVALO_MENSUAL,
+  precioCursoSuscripcion4Meses,
+} from '../../../../lib/cursoSuscripcion';
 
 type CreateCourseOneTimePaymentsParams = {
   productId: string;
@@ -90,6 +95,87 @@ export async function createStripeCoursePaymentLink({
     productId: stripeProduct.id,
     priceId: stripePrice.id,
     paymentLink: stripePaymentLink.url,
+  };
+}
+
+/**
+ * Igual que createStripeCoursePaymentLink, pero el Price es recurrente — Stripe convierte
+ * automáticamente el Payment Link resultante en un checkout mode:'subscription'.
+ * intervalMonths=1 es mensual; 4 es cada 4 meses. Si se pasa stripeProductId, reusa ese
+ * Product de Stripe (un curso tiene un Product y varios Prices).
+ */
+export async function createStripeCourseSubscriptionPaymentLink({
+  productId,
+  nombre,
+  descripcion,
+  precio,
+  moneda = 'USD',
+  portadaUrl,
+  successUrl,
+  intervalMonths = CURSO_SUSCRIPCION_INTERVALO_MENSUAL,
+  stripeProductId,
+}: Omit<CreateCourseOneTimePaymentsParams, 'origin' | 'dlocalOrderSuffix' | 'proveedores'> & {
+  intervalMonths?: number;
+  stripeProductId?: string;
+}) {
+  const stripeCurrency = toStripeCurrency(moneda);
+  const portadaStripeUrl = resolvePortadaUrl(portadaUrl);
+  const intervalo =
+    intervalMonths === CURSO_SUSCRIPCION_INTERVALO_4_MESES
+      ? CURSO_SUSCRIPCION_INTERVALO_4_MESES
+      : CURSO_SUSCRIPCION_INTERVALO_MENSUAL;
+
+  let resolvedProductId = stripeProductId;
+  if (!resolvedProductId) {
+    const stripeProduct = await stripe.products.create({
+      name: nombre,
+      description: descripcion,
+      ...(portadaStripeUrl ? { images: [portadaStripeUrl] } : {}),
+      metadata: {
+        productId,
+        purchaseType: 'curso_suscripcion',
+      },
+    });
+    resolvedProductId = stripeProduct.id;
+  }
+
+  const stripePrice = await stripe.prices.create({
+    unit_amount: toStripeAmount(precio, moneda),
+    currency: stripeCurrency,
+    recurring: {
+      interval: 'month',
+      ...(intervalo > 1 ? { interval_count: intervalo } : {}),
+    },
+    product: resolvedProductId,
+    nickname: intervalo === CURSO_SUSCRIPCION_INTERVALO_4_MESES ? 'Cada 4 meses' : 'Mensual',
+    metadata: {
+      productId,
+      purchaseType: 'curso_suscripcion',
+      intervaloMeses: String(intervalo),
+    },
+  });
+
+  // Stripe no permite `customer_creation` en Payment Links con precio recurrente — para
+  // suscripciones el customer se crea siempre, a diferencia del Payment Link de pago único.
+  const stripePaymentLink = await stripe.paymentLinks.create({
+    line_items: [{ price: stripePrice.id, quantity: 1 }],
+    after_completion: {
+      type: 'redirect',
+      redirect: { url: successUrl },
+    },
+    metadata: {
+      productId,
+      purchaseType: 'curso_suscripcion',
+      intervaloMeses: String(intervalo),
+    },
+    phone_number_collection: { enabled: true },
+  });
+
+  return {
+    productId: resolvedProductId,
+    priceId: stripePrice.id,
+    paymentLink: stripePaymentLink.url,
+    intervaloMeses: intervalo,
   };
 }
 
@@ -194,16 +280,64 @@ export async function createCourseOneTimePayments({
   };
 }
 
+/**
+ * Equivalente a createCourseOneTimePayments para cursos con esSuscripcion:true — hoy solo Stripe
+ * soporta el cobro recurrente en este proyecto. Crea dos Prices: mensual y cada 4 meses
+ * (paga 3, se lleva 4) sobre el mismo Product de Stripe.
+ */
+export async function createCourseSubscriptionPayments({
+  productId,
+  nombre,
+  descripcion,
+  precio,
+  moneda = 'USD',
+  portadaUrl,
+  successUrl,
+}: Omit<CreateCourseOneTimePaymentsParams, 'origin' | 'dlocalOrderSuffix' | 'proveedores'>) {
+  const stripeMonthly = await createStripeCourseSubscriptionPaymentLink({
+    productId,
+    nombre,
+    descripcion,
+    precio,
+    moneda,
+    portadaUrl,
+    successUrl,
+    intervalMonths: CURSO_SUSCRIPCION_INTERVALO_MENSUAL,
+  });
+
+  const stripe4Meses = await createStripeCourseSubscriptionPaymentLink({
+    productId,
+    nombre,
+    descripcion,
+    precio: precioCursoSuscripcion4Meses(precio),
+    moneda,
+    portadaUrl,
+    successUrl,
+    intervalMonths: CURSO_SUSCRIPCION_INTERVALO_4_MESES,
+    stripeProductId: stripeMonthly.productId,
+  });
+
+  return {
+    stripe: stripeMonthly,
+    stripeMonthly,
+    stripe4Meses,
+    dlocalgo: emptyDlocal(),
+    mercadopago: emptyMercadoPago(),
+  };
+}
+
 export function buildCursoOpcionesPago({
   precio,
   moneda = 'USD',
   pagos,
   proveedores,
+  esSuscripcion,
 }: {
   precio: number;
   moneda?: string;
   pagos: Awaited<ReturnType<typeof createCourseOneTimePayments>>;
   proveedores?: PaymentProveedor[];
+  esSuscripcion?: boolean;
 }) {
   const enabled = resolveProveedoresHabilitados(
     proveedores ?? ['stripe', 'mercadopago']
@@ -224,6 +358,7 @@ export function buildCursoOpcionesPago({
     merchantCheckoutToken?: string;
     mercadoPagoPreferenceId?: string;
     mercadoPagoExternalReference?: string;
+    intervaloMeses?: number;
   };
 
   const opciones: Opcion[] = [];
@@ -231,9 +366,10 @@ export function buildCursoOpcionesPago({
   if (enabled.includes('stripe')) {
     opciones.push({
       proveedor: 'stripe',
-      etiqueta: 'Empezar AHORA',
-      descripcion:
-        'Pago único con tarjetas internacionales, Apple Pay y Google Pay.',
+      etiqueta: esSuscripcion ? 'Suscribirme' : 'Empezar AHORA',
+      descripcion: esSuscripcion
+        ? 'Suscripción mensual con tarjetas internacionales, Apple Pay y Google Pay.'
+        : 'Pago único con tarjetas internacionales, Apple Pay y Google Pay.',
       monto: precio,
       moneda,
       paymentLink: pagos.stripe.paymentLink,
@@ -275,6 +411,45 @@ export function buildCursoOpcionesPago({
   }
 
   return opciones;
+}
+
+export function buildCursoSuscripcionOpcionesPago({
+  precioMensual,
+  moneda = 'USD',
+  pagos,
+}: {
+  precioMensual: number;
+  moneda?: string;
+  pagos: Awaited<ReturnType<typeof createCourseSubscriptionPayments>>;
+}) {
+  const precio4Meses = precioCursoSuscripcion4Meses(precioMensual);
+
+  return [
+    {
+      proveedor: 'stripe' as const,
+      etiqueta: 'Mensual',
+      descripcion: 'Suscripción mensual. Cancelás cuando quieras.',
+      monto: precioMensual,
+      moneda,
+      paymentLink: pagos.stripeMonthly.paymentLink,
+      activo: Boolean(pagos.stripeMonthly.paymentLink),
+      stripePriceId: pagos.stripeMonthly.priceId,
+      stripeProductId: pagos.stripeMonthly.productId,
+      intervaloMeses: CURSO_SUSCRIPCION_INTERVALO_MENSUAL,
+    },
+    {
+      proveedor: 'stripe' as const,
+      etiqueta: 'Cada 4 meses',
+      descripcion: 'Pagas 3 meses y te llevás 4. Un mes gratis.',
+      monto: precio4Meses,
+      moneda,
+      paymentLink: pagos.stripe4Meses.paymentLink,
+      activo: Boolean(pagos.stripe4Meses.paymentLink),
+      stripePriceId: pagos.stripe4Meses.priceId,
+      stripeProductId: pagos.stripe4Meses.productId,
+      intervaloMeses: CURSO_SUSCRIPCION_INTERVALO_4_MESES,
+    },
+  ];
 }
 
 type PreventaTierInput = {

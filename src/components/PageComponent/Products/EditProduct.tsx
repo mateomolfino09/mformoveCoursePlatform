@@ -69,7 +69,8 @@ const EditProduct = ({ product }: Props) => {
     programaTransformacionalData?: any,
     cursoConfig?: import('../../../types/cursoLanding').CursoLandingConfig,
     invitacionGrupoWhatsapp?: string,
-    bioImageFile?: File | null
+    bioImageFile?: File | null,
+    esSuscripcion?: boolean
   ) {
     setLoading(true);
 
@@ -230,6 +231,7 @@ const EditProduct = ({ product }: Props) => {
             programaTransformacional: programaTransformacionalData,
           }),
         ...(productType === 'curso' && cursoConfig ? { cursoConfig } : {}),
+        ...(productType === 'curso' && { esSuscripcion: Boolean(esSuscripcion) }),
         ...(productType === 'curso' && {
           invitacionGrupoWhatsapp:
             (typeof invitacionGrupoWhatsapp === 'string' ? invitacionGrupoWhatsapp.trim() : '') ||

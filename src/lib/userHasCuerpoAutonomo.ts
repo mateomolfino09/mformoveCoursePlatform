@@ -1,10 +1,14 @@
 import Product from '../models/productModel';
-import { userHasPurchasedCourse } from './courseAccess';
+import { userHasCourseAccess } from './courseAccess';
 import { CUERPO_AUTONOMO_COURSE_SLUG } from '../constants/mentorshipCuerpoAutonomoDiscount';
 
 type UserWithCourses = {
   rol?: string;
-  cursosAdquiridos?: Array<{ productoId?: { toString(): string } | string }>;
+  cursosAdquiridos?: Array<{
+    productoId?: { toString(): string } | string;
+    status?: 'active' | 'expired' | 'revoked';
+    expiresAt?: Date | string | null;
+  }>;
 };
 
 let cachedProductId: string | null | undefined;
@@ -29,5 +33,5 @@ export async function userHasCuerpoAutonomo(
   if (!user) return false;
   const productId = await resolveCuerpoAutonomoProductId();
   if (!productId) return false;
-  return userHasPurchasedCourse(user, productId);
+  return userHasCourseAccess(user, productId);
 }

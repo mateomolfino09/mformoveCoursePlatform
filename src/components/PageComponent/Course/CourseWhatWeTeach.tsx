@@ -8,6 +8,8 @@ import {
   PiMonitorPlayLight,
   PiMicrophoneStageLight,
   PiUsersThreeLight,
+  PiUsersFourLight,
+  PiHeartbeatLight,
 } from 'react-icons/pi';
 import { useCursoLanding } from './CursoLandingContext';
 import CourseDarkSectionBackground from './CourseDarkSectionBackground';
@@ -24,6 +26,8 @@ const offerIconByKey = {
   video: PiMonitorPlayLight,
   live: PiMicrophoneStageLight,
   community: PiUsersThreeLight,
+  experts: PiUsersFourLight,
+  health: PiHeartbeatLight,
 } as const;
 
 const offerGridVariants = {

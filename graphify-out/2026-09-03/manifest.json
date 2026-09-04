@@ -3065,8 +3065,8 @@
     "semantic_hash": ""
   },
   "src/components/IndexBanner.jsx": {
-    "mtime": 1788536837.9775248,
-    "ast_hash": "5464100876babb713411f2480f522215",
+    "mtime": 1785637960.2807271,
+    "ast_hash": "6d7f0402891f3e5d76c5df1559b27ebd",
     "semantic_hash": ""
   },
   "src/components/IndexSkeleton.tsx": {
@@ -3625,8 +3625,8 @@
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/CoursePlans.tsx": {
-    "mtime": 1788538889.5280292,
-    "ast_hash": "97845263a0b27cc28dd27934865cc811",
+    "mtime": 1788450967.757996,
+    "ast_hash": "eec57ac2cda03fc031833ecd62d9799a",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/CourseQuickAccess.tsx": {
@@ -3665,8 +3665,8 @@
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/CourseWhatWeTeach.tsx": {
-    "mtime": 1788464273.0352407,
-    "ast_hash": "457a0fc3fab5d38150bf3453135d1f17",
+    "mtime": 1787700427.9527903,
+    "ast_hash": "7aae75fdbee11940b72c1e0fdcf3189c",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/CourseWhatsAppBanner.tsx": {
@@ -4070,8 +4070,8 @@
     "semantic_hash": ""
   },
   "src/components/PageComponent/Products/CursoLandingConfigForm.tsx": {
-    "mtime": 1788464275.4201376,
-    "ast_hash": "118b10c793dc06252406d8c06111df59",
+    "mtime": 1788462828.1563916,
+    "ast_hash": "757cce74b0bdc66b4e96e39e98f46496",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Products/CursoProductDetails.tsx": {
@@ -5165,8 +5165,8 @@
     "semantic_hash": ""
   },
   "src/models/productModel.js": {
-    "mtime": 1788465104.6599746,
-    "ast_hash": "99166aefafbec88d5bd4f80f0f8be0e6",
+    "mtime": 1788446939.178877,
+    "ast_hash": "472b118f52387d507b1154af09c7201d",
     "semantic_hash": ""
   },
   "src/models/programaTransformacionalUserModel.js": {
@@ -5325,8 +5325,8 @@
     "semantic_hash": ""
   },
   "src/types/cursoLanding.ts": {
-    "mtime": 1788540533.2850046,
-    "ast_hash": "51ccc40aca3d538b9258d6ae09cfd9eb",
+    "mtime": 1788462828.1989665,
+    "ast_hash": "0e8479578a6023127c33106236e79aaf",
     "semantic_hash": ""
   },
   "src/types/indexLatestCurso.ts": {
@@ -6250,13 +6250,13 @@
     "semantic_hash": ""
   },
   ".claude/specs/cuerpo-autonomo-subscription-cursor-handoff.md": {
-    "mtime": 1788467362.5230448,
-    "ast_hash": "96589db57c93da5e2d4f7cc29277915e",
+    "mtime": 1788446461.4076366,
+    "ast_hash": "7df749772904cf56dd046a2c8e64f160",
     "semantic_hash": ""
   },
   "src/app/api/product/regenerateSuscripcionPaymentLinks/route.ts": {
-    "mtime": 1788467210.0925424,
-    "ast_hash": "8960bf656b4a93ce21b063cc48feff6f",
+    "mtime": 1788461377.068196,
+    "ast_hash": "a0e1d1baf8f32885bd3c4fda672ad766",
     "semantic_hash": ""
   },
   "src/lib/ensureCursoSuscripcionPaymentLinks.ts": {
@@ -6267,16 +6267,6 @@
   ".claude/specs/cuerpo-autonomo-regenerar-links-claude-handoff.md": {
     "mtime": 1788461377.0681834,
     "ast_hash": "04547e0bd79197b7950d1b9af3257daa",
-    "semantic_hash": ""
-  },
-  "scripts/_tmpRecopyModulos.js": {
-    "mtime": 1788534082.000967,
-    "ast_hash": "75e28aeb32abf3973fed022afad13617",
-    "semantic_hash": ""
-  },
-  "src/constants/cursoSuscripcionIncludes.ts": {
-    "mtime": 1788540533.1140382,
-    "ast_hash": "4792d978050dbfbf8ac04fd564dac0f9",
     "semantic_hash": ""
   }
 }

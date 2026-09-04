@@ -34,6 +34,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
   const [courseType, setCourseType] = useState<string>('');
   const [diplomaUrl, setDiplomaUrl] = useState<string>('');
   const [tipo, setTipo] = useState<string>('curso');
+  const [esSuscripcion, setEsSuscripcion] = useState<boolean>(false);
   const [cursoConfig, setCursoConfig] = useState<CursoLandingConfig>(() => createInitialCursoLandingConfig());
   const [galleryImageArray, setGalleryImageArray] = useState<any[]>([]);
   
@@ -382,7 +383,8 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       programaTransformacionalData,
       tipo === 'curso' ? cursoConfig : undefined,
       invitacionGrupoResuelta || undefined,
-      bioImageFile ?? undefined
+      bioImageFile ?? undefined,
+      tipo === 'curso' ? esSuscripcion : undefined
     );
   };
 
@@ -798,6 +800,25 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                    <option value='recurso'>Recurso descargable</option>
                  </select>
                </label>
+
+               {tipo === 'curso' && (
+                 <label className='flex items-start gap-3 sm:col-span-2'>
+                   <input
+                     type='checkbox'
+                     className='mt-0.5 h-4 w-4'
+                     checked={esSuscripcion}
+                     onChange={e => setEsSuscripcion(e.target.checked)}
+                   />
+                   <span className='flex flex-col gap-1'>
+                     <span className='text-sm font-medium text-gray-700'>
+                       Vender por suscripción (en vez de pago único)
+                     </span>
+                     <span className='text-xs text-gray-500'>
+                       El precio de arriba es el mensual. Se genera además un plan cada 4 meses (paga 3, se lleva 4).
+                     </span>
+                   </span>
+                 </label>
+               )}
 
                {/* Precio para productos que no son eventos/programas */}
                {(tipo !== 'evento' && tipo !== 'programa_transformacional') && (

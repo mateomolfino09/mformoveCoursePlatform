@@ -18,6 +18,7 @@ type CursoLandingContextValue = {
   checkoutStartPath: string;
   plansSectionId: string;
   faqSectionId: string;
+  esSuscripcion: boolean;
   scrollToPlans: () => void;
   scrollToSection: (sectionId: string) => void;
 };
@@ -29,6 +30,7 @@ type ProviderProps = {
   cursoConfig: CursoLandingConfig;
   productName: string;
   slug: string;
+  esSuscripcion?: boolean;
 };
 
 export function CursoLandingProvider({
@@ -36,6 +38,7 @@ export function CursoLandingProvider({
   cursoConfig,
   productName,
   slug,
+  esSuscripcion = false,
 }: ProviderProps) {
   const displayProductName = useMemo(
     () => formatTitleCaseWords(productName),
@@ -81,10 +84,11 @@ export function CursoLandingProvider({
       checkoutStartPath,
       plansSectionId,
       faqSectionId,
+      esSuscripcion,
       scrollToPlans,
       scrollToSection,
     }),
-    [resolvedConfig, checkoutStartPath, displayProductName, faqSectionId, landingPath, plansSectionId, scrollToPlans, scrollToSection, slug]
+    [resolvedConfig, checkoutStartPath, displayProductName, esSuscripcion, faqSectionId, landingPath, plansSectionId, scrollToPlans, scrollToSection, slug]
   );
 
   return (
@@ -108,6 +112,7 @@ export function useCursoLanding() {
       checkoutStartPath: cursoEmpezarPath(fallback.slug),
       plansSectionId,
       faqSectionId,
+      esSuscripcion: false,
       scrollToPlans: () => {
         document.getElementById(plansSectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       },
