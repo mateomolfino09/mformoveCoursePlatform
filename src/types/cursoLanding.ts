@@ -688,14 +688,13 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
     opcionesPago: [],
     beneficiosTitulo: 'Al formar parte de Cuerpo Autónomo tenés acceso a:',
     beneficios: [
-      'Los 3 módulos principales y sus *20 clases*.',
-      'Una llamada grupal semanal para acompañar cada módulo.',
-      'Encuentros acompañados por Mateo, Nico y profesionales invitados.',
-      'Un encuentro presencial cada 2 meses.',
-      'Una comunidad de personas recorriendo el mismo proceso.',
-      'Material nuevo semanalmente.',
-      'Nuevas herramientas y contenidos dentro de la academia.',
-      'Una sesión individual online con el profesional del equipo que elijas.',
+      'Los 3 módulos principales y sus 20 clases.',
+      'Una llamada grupal semanal para acompañar el proceso.',
+      'Una clase virtual mensual para practicar juntos.',
+      'Encuentros con Mateo, Nico y profesionales invitados.',
+      'Una comunidad de personas recorriendo el mismo camino.',
+      'Material nuevo semanalmente para seguir aprendiendo y practicando.',
+      'Una sesión individual online, por única vez, con el profesional del equipo que elijas.'
     ],
   },
   whatsapp: {
