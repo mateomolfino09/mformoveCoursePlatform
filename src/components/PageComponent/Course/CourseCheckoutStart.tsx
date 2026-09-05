@@ -10,7 +10,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useDetectedCountry } from '../../../hooks/useDetectedCountry';
 import { toast } from '../../../hooks/useToast';
 import state from '../../../valtio';
-import { CursoClaseContenido, CursoPlanPago } from '../../../types/cursoLanding';
+import { CursoClaseContenido, CursoPlanPago, cursoPlanPagoKey } from '../../../types/cursoLanding';
 import { formatTitleCaseWords } from '../../../lib/formatDisplayTitle';
 import { resolveClaseDescripcionCorta } from '../../../lib/cursoClaseDescripcion';
 import { MiniLoadingSpinner } from '../Products/MiniSpinner';
@@ -26,6 +26,12 @@ import type { DlocalLocalizedAmount } from '../../../lib/dlocalLocalCurrency';
 import dynamic from 'next/dynamic';
 import { scrollMercadoPagoPanelIntoView } from '../../../lib/scrollMercadoPagoPanel';
 import { resolveProveedoresHabilitados } from '../../../constants/paymentProveedores';
+import {
+  CURSO_SUSCRIPCION_INTERVALO_4_MESES,
+  CURSO_SUSCRIPCION_INTERVALO_MENSUAL,
+  isCursoCheckoutSuscripcion,
+  resolveCursoPlanIntervaloMeses,
+} from '../../../lib/cursoSuscripcion';
 
 const MercadoPagoPaymentBrick = dynamic(
   () => import('../Payments/MercadoPagoPaymentBrick'),
@@ -143,7 +149,7 @@ export default function CourseCheckoutStart({
   const auth = useAuth();
   const snap = useSnapshot(state);
   const { dlocalCountryLabel: geoCountryLabel } = useDetectedCountry();
-  const { cursoConfig, productName } = useCursoLanding();
+  const { cursoConfig, productName, esSuscripcion } = useCursoLanding();
   const [loadingMethod, setLoadingMethod] = useState<PaymentMethodId | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId | null>(null);
   const [transferCooldownUntilMs, setTransferCooldownUntilMs] = useState(0);
@@ -154,6 +160,18 @@ export default function CourseCheckoutStart({
   const [mpBrickAmount, setMpBrickAmount] = useState<number | null>(null);
   const [mpBrickCurrency, setMpBrickCurrency] = useState<string | null>(null);
   const [mpBrickLoading, setMpBrickLoading] = useState(false);
+  const [selectedIntervalo, setSelectedIntervalo] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const raw = Number(new URLSearchParams(window.location.search).get('intervalo'));
+      if (
+        raw === CURSO_SUSCRIPCION_INTERVALO_MENSUAL ||
+        raw === CURSO_SUSCRIPCION_INTERVALO_4_MESES
+      ) {
+        return raw;
+      }
+    }
+    return CURSO_SUSCRIPCION_INTERVALO_4_MESES;
+  });
   const mpPanelRef = useRef<HTMLDivElement | null>(null);
   const pendingCheckoutRan = useRef(false);
 
@@ -170,7 +188,20 @@ export default function CourseCheckoutStart({
     profileCountry || dlocalQuote?.payerCountry || geoCountryLabel || '';
   const countryFromGeo = !profileCountry && Boolean(dlocalQuote?.localized);
 
-  const stripePlan = checkoutPlans.find((plan) => plan.proveedor === 'stripe');
+  const stripePlans = checkoutPlans
+    .filter((plan) => plan.proveedor === 'stripe' && plan.activo !== false)
+    .slice()
+    .sort(
+      (a, b) => resolveCursoPlanIntervaloMeses(a) - resolveCursoPlanIntervaloMeses(b)
+    );
+  const mostrarSuscripcion = isCursoCheckoutSuscripcion(esSuscripcion, checkoutPlans);
+
+  const stripePlan =
+    (mostrarSuscripcion
+      ? stripePlans.find(
+          (plan) => resolveCursoPlanIntervaloMeses(plan) === selectedIntervalo
+        )
+      : stripePlans[0]) || stripePlans[0];
   const dlocalPlan = checkoutPlans.find((plan) => plan.proveedor === 'dlocalgo');
   const mercadoPagoPlan = checkoutPlans.find((plan) => plan.proveedor === 'mercadopago');
 
@@ -211,11 +242,16 @@ export default function CourseCheckoutStart({
 
   const checkoutPriceLabel = useMemo(() => {
     if (!displayPrice) return null;
-    if (selectedMethod === 'dlocalgo' && dlocalQuote?.localized) {
-      return formatPrice(dlocalQuote.currency, dlocalQuote.amount);
-    }
-    return formatPrice(displayPrice.moneda, displayPrice.monto);
-  }, [displayPrice, dlocalQuote, selectedMethod]);
+    const amountLabel =
+      selectedMethod === 'dlocalgo' && dlocalQuote?.localized
+        ? formatPrice(dlocalQuote.currency, dlocalQuote.amount)
+        : formatPrice(displayPrice.moneda, displayPrice.monto);
+    if (!mostrarSuscripcion) return amountLabel;
+    const intervalo = resolveCursoPlanIntervaloMeses(stripePlan);
+    return intervalo === CURSO_SUSCRIPCION_INTERVALO_4_MESES
+      ? `${amountLabel} cada 4 meses`
+      : `${amountLabel} / mes`;
+  }, [displayPrice, dlocalQuote, selectedMethod, mostrarSuscripcion, stripePlan]);
 
   const checkoutPriceHint = useMemo(() => {
     if (!displayPrice) return null;
@@ -272,7 +308,9 @@ export default function CourseCheckoutStart({
             subtitle: 'Pagos internacionales / International Payments',
             description:
               stripePlan?.descripcion ||
-              'Pago internacional en USD con tarjetas, Apple Pay y Google Pay.',
+              (mostrarSuscripcion
+                ? 'Suscripción con tarjetas internacionales, Apple Pay y Google Pay.'
+                : 'Pago internacional en USD con tarjetas, Apple Pay y Google Pay.'),
             methods: ['Visa', 'Mastercard', 'Amex', 'Apple Pay', 'Google Pay'],
             plan: stripePlan,
             available: Boolean(stripePlan?.activo && stripePlan?.paymentLink),
@@ -324,7 +362,7 @@ export default function CourseCheckoutStart({
         );
       });
     },
-    [dlocalPlan, enabledProviders, mercadoPagoPlan, stripePlan]
+    [dlocalPlan, enabledProviders, mercadoPagoPlan, stripePlan, mostrarSuscripcion]
   );
 
   const heroImagePublicId =
@@ -616,6 +654,7 @@ export default function CourseCheckoutStart({
 
       const link =
         paymentLink ||
+        (methodId === 'stripe' ? stripePlan?.paymentLink : undefined) ||
         checkoutPlans.find((plan) => plan.proveedor === methodId && plan.activo && plan.paymentLink)
           ?.paymentLink;
 
@@ -649,6 +688,7 @@ export default function CourseCheckoutStart({
       pricingModo,
       productId,
       preventaTierIndex,
+      stripePlan?.paymentLink,
     ]
   );
 
@@ -738,9 +778,42 @@ export default function CourseCheckoutStart({
                 ) : null}
               </div>
             ) : null}
+            {mostrarSuscripcion && stripePlans.length > 1 ? (
+              <div className="mb-6 grid grid-cols-1 gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Plan de suscripción">
+                {stripePlans.map((plan, index) => {
+                  const intervalo = resolveCursoPlanIntervaloMeses(plan);
+                  const isSelected = selectedIntervalo === intervalo;
+                  const is4Meses = intervalo === CURSO_SUSCRIPCION_INTERVALO_4_MESES;
+                  return (
+                    <button
+                      key={cursoPlanPagoKey(plan, index)}
+                      type="button"
+                      onClick={() => setSelectedIntervalo(intervalo)}
+                      aria-pressed={isSelected}
+                      className={`rounded-2xl border px-4 py-3 text-left transition-colors duration-200 ${
+                        isSelected
+                          ? 'border-palette-ink/30 bg-palette-ink/[0.06]'
+                          : 'border-palette-stone/15 hover:border-palette-stone/30'
+                      }`}
+                    >
+                      <p className="font-montserrat text-sm font-semibold text-palette-ink">
+                        {is4Meses ? 'Cada 4 meses' : 'Mensual'}
+                      </p>
+                      <p className="mt-1 font-montserrat text-base font-bold tabular-nums text-palette-ink">
+                        {formatPrice(plan.moneda, plan.monto)}
+                      </p>
+                      <p className="mt-0.5 font-raleway text-xs text-palette-stone">
+                        {is4Meses ? 'Pagas 3, te llevás 4' : 'Cancelás cuando quieras'}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
             <p className="mb-6 max-w-xl font-raleway text-base leading-relaxed text-palette-stone md:text-lg">
-              Elegí cómo querés pagar. Mercado Pago se completa acá mismo (hasta 12 cuotas). Stripe es
-              para pagos internacionales; también podés pagar por transferencia.
+              {mostrarSuscripcion
+                ? 'Elegí el plan y cómo querés pagar. Stripe es para pagos internacionales; también podés pagar por transferencia.'
+                : 'Elegí cómo querés pagar. Mercado Pago se completa acá mismo (hasta 12 cuotas). Stripe es para pagos internacionales; también podés pagar por transferencia.'}
             </p>
 
             <div className="space-y-2" role="radiogroup" aria-label="Métodos de pago">

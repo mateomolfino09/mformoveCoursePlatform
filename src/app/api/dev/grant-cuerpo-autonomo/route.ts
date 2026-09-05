@@ -2,17 +2,19 @@ import { NextResponse } from 'next/server';
 import connectDB from '../../../../config/connectDB';
 import Users from '../../../../models/userModel';
 import { resolveCuerpoAutonomoProductId } from '../../../../lib/userHasCuerpoAutonomo';
+import { sendCourseWelcomeEmail } from '../../../../lib/sendCourseWelcomeEmail';
 
 /**
  * SOLO LOCAL — bloqueado en producción a propósito (ver guard abajo).
  * Da acceso gratuito al curso Cuerpo Autónomo a uno o varios usuarios ya
  * existentes, igual que a alguien que lo pagó (misma forma de entrada en
- * cursosAdquiridos que arma fulfillCoursePurchase, pero sin transacción real
- * ni mail de bienvenida — mismo criterio que grantAnnualMentorshipProductGifts).
+ * cursosAdquiridos y mismo mail de bienvenida que arma fulfillCoursePurchase,
+ * pero sin transacción real).
  *
  * Body acepta { email: string } o { emails: string[] }. Un email que no
  * corresponde a ningún usuario no aborta el resto del lote: se reporta en
- * `notFound` y la respuesta sigue siendo 200.
+ * `notFound` y la respuesta sigue siendo 200. Si el mail de bienvenida falla
+ * para alguno, el acceso igual queda otorgado — se reporta en `emailSent`.
  */
 async function grantToEmail(email: string, productId: string) {
   const user = await Users.findOne({ email });
@@ -35,11 +37,25 @@ async function grantToEmail(email: string, productId: string) {
     transaccionId: `dev-grant-cuerpo-autonomo:${Date.now()}`,
     monto: 0,
     moneda: 'USD',
-    bienvenidaPendiente: false,
+    bienvenidaPendiente: true,
   });
   await user.save();
 
-  return { email, found: true as const, alreadyHadAccess: false, userId: user._id.toString() };
+  let emailSent = false;
+  try {
+    await sendCourseWelcomeEmail({ user: { email: user.email, name: user.name }, productId });
+    emailSent = true;
+  } catch (emailError) {
+    console.error('[dev/grant-cuerpo-autonomo] welcome email failed', email, emailError);
+  }
+
+  return {
+    email,
+    found: true as const,
+    alreadyHadAccess: false,
+    userId: user._id.toString(),
+    emailSent,
+  };
 }
 
 export async function POST(req: Request) {
@@ -86,7 +102,7 @@ export async function POST(req: Request) {
         alreadyHadAccess: alreadyHadAccess.length,
         notFound: notFound.length,
       },
-      granted: granted.map((r) => ({ email: r.email, userId: r.userId })),
+      granted: granted.map((r) => ({ email: r.email, userId: r.userId, emailSent: r.emailSent })),
       alreadyHadAccessList: alreadyHadAccess.map((r) => ({ email: r.email, userId: r.userId })),
       notFound,
     });

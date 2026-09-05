@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import {
@@ -8,6 +8,8 @@ import {
   PiMonitorPlayLight,
   PiMicrophoneStageLight,
   PiUsersThreeLight,
+  PiUsersFourLight,
+  PiHeartbeatLight,
 } from 'react-icons/pi';
 import { useCursoLanding } from './CursoLandingContext';
 import CourseDarkSectionBackground from './CourseDarkSectionBackground';
@@ -24,47 +26,45 @@ const offerIconByKey = {
   video: PiMonitorPlayLight,
   live: PiMicrophoneStageLight,
   community: PiUsersThreeLight,
+  experts: PiUsersFourLight,
+  health: PiHeartbeatLight,
 } as const;
 
-const iconShell =
-  'bg-gradient-to-br from-palette-ink to-[#2a2a22] text-palette-cream shadow-[0_12px_26px_-12px_rgba(20,20,17,0.75),inset_0_1px_0_rgba(255,255,255,0.1)]';
+const offerGridVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.09, delayChildren: 0.08 },
+  },
+};
 
-const offerCardShell =
-  'group/offer-card relative isolate flex min-h-[12.5rem] cursor-default flex-col items-center gap-3 overflow-hidden rounded-2xl border border-palette-cream/40 bg-palette-cream px-4 py-6 pt-8 text-center shadow-[0_14px_44px_-18px_rgba(0,0,0,0.38),inset_0_1px_0_rgba(255,253,253,0.85)] ring-1 ring-palette-sage/15 transition-[transform,box-shadow,border-color,ring-color] duration-300 ease-out hover:-translate-y-1.5 hover:border-palette-sage/50 hover:shadow-[0_24px_54px_-20px_rgba(0,0,0,0.44),inset_0_1px_0_rgba(255,253,253,1)] hover:ring-palette-sage/35 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:min-h-[13rem] sm:px-5 sm:py-7 sm:pt-9 md:min-h-[14rem] md:rounded-[1.35rem] md:px-6 md:py-8 md:pt-10';
+const offerCardVariants = {
+  hidden: { opacity: 0, y: 22, scale: 0.98 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.48, ease: [0.16, 1, 0.3, 1] },
+  },
+};
 
-/** Ruido muy suave sobre fondo cream. */
-const OFFER_CARD_NOISE_BG =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E\")";
-
-/** Grilla uniforme: todos los módulos con el mismo peso visual. */
-const modulesGridClass =
-  'grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6';
-
-function ModuleNumberWatermark({ step }: { step: number }) {
-  const num = step.toString().padStart(2, '0');
-
-  return (
-    <span
-      className="pointer-events-none absolute right-2 top-2 z-0 inline-block select-none px-2 py-1 font-montserrat text-[2.75rem] font-semibold tabular-nums leading-none text-palette-ink/[0.08] sm:right-3 sm:top-3 sm:text-[3.1rem] md:right-4 md:top-4 md:text-[3.5rem]"
-      aria-hidden
-    >
-      {num}
-    </span>
-  );
-}
+/** Grilla 2 columnas en desktop (módulos). */
+const modulesGridClass = 'grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6';
 
 export default function CourseWhatWeTeach() {
+  const reduceMotion = useReducedMotion();
   const { cursoConfig } = useCursoLanding();
   const { queIncluye } = cursoConfig;
-  const offerBlocks = queIncluye.offerBlocks.map((block) => ({
-    lines: block.lineas,
-    Icon: offerIconByKey[block.iconKey as keyof typeof offerIconByKey] || PiBookOpenLight,
-    iconShell,
+
+  const offerBlocks = queIncluye.offerBlocks.map((block, index) => ({
+    step: String(index + 1).padStart(2, '0'),
+    title: block.lineas.join(' '),
     hint: block.hint,
-    highlightedLineIndex:
-      typeof block.lineaDestacadaIndice === 'number' ? block.lineaDestacadaIndice : null,
+    Icon: offerIconByKey[block.iconKey as keyof typeof offerIconByKey] || PiBookOpenLight,
   }));
-  const modules = queIncluye.modulos.map((modulo) => ({
+
+  const modules = queIncluye.modulos.map((modulo, index) => ({
+    step: String(index + 1).padStart(2, '0'),
     title: modulo.titulo,
     line: modulo.descripcion,
     src: modulo.imagenPublicId,
@@ -72,190 +72,172 @@ export default function CourseWhatWeTeach() {
 
   return (
     <>
-    <section
-      className="relative isolate overflow-hidden border-t border-white/10 bg-palette-ink py-16 font-montserrat md:py-20 lg:py-24"
-      id={queIncluye.anclaId}
-      aria-labelledby={`${queIncluye.anclaId}-heading`}
-    >
-      <CourseDarkSectionBackground />
+      <section
+        className="relative isolate overflow-hidden border-t border-white/10 bg-palette-ink py-16 font-montserrat md:py-20 lg:py-24"
+        id={queIncluye.anclaId}
+        aria-labelledby={`${queIncluye.anclaId}-heading`}
+      >
+        <CourseDarkSectionBackground />
 
-      <div className={`relative z-20 ${landingSectionContainer} text-center`}>
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
-          viewport={{ once: true, margin: '-36px' }}
-          className="mx-auto mb-10 max-w-4xl md:mb-12"
-        >
-          <h2
-            id={`${queIncluye.anclaId}-heading`}
-            className={landingSectionTitleDark}
+        <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden" aria-hidden>
+          <motion.div
+            className="absolute -left-[10%] top-[12%] h-64 w-64 rounded-full bg-palette-sage/18 blur-[100px] md:h-80 md:w-80"
+            animate={
+              reduceMotion
+                ? { opacity: 0.3 }
+                : { x: [0, 40, -20, 0], y: [0, -24, 16, 0], opacity: [0.22, 0.38, 0.28, 0.22] }
+            }
+            transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <motion.div
+            className="absolute -right-[6%] bottom-[10%] h-72 w-72 rounded-full bg-palette-cream/8 blur-[110px]"
+            animate={
+              reduceMotion
+                ? { opacity: 0.2 }
+                : { x: [0, -36, 18, 0], y: [0, 20, -12, 0], opacity: [0.14, 0.28, 0.18, 0.14] }
+            }
+            transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
+          />
+        </div>
+
+        <div className={`relative z-20 ${landingSectionContainer} text-center`}>
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: '-36px' }}
+            className="mx-auto mb-10 max-w-4xl md:mb-14"
           >
-            {queIncluye.titulo}
-          </h2>
-        </motion.div>
+            <h2 id={`${queIncluye.anclaId}-heading`} className={landingSectionTitleDark}>
+              {queIncluye.titulo}
+            </h2>
+          </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.05 }}
-          viewport={{ once: true }}
-          className="mx-auto mb-14 max-w-7xl md:mb-16"
-        >
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4">
-            {offerBlocks.map((block, i) => {
-              const Icon = block.Icon;
-              return (
-                <div key={i} className={offerCardShell}>
-                  <span
-                    aria-hidden
-                    className="absolute left-4 top-3.5 z-[2] font-montserrat text-[10px] font-semibold tabular-nums tracking-[0.22em] text-palette-stone/45 md:left-5 md:top-4"
+          <motion.div
+            variants={offerGridVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-40px' }}
+            className="mx-auto max-w-5xl"
+          >
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6">
+              {offerBlocks.map((block) => {
+                const Icon = block.Icon;
+                return (
+                  <motion.article
+                    key={block.step}
+                    variants={offerCardVariants}
+                    whileHover={reduceMotion ? undefined : { y: -4, transition: { duration: 0.22 } }}
+                    className="group/offer-card relative flex min-h-[16rem] flex-col overflow-hidden rounded-2xl border border-palette-cream/20 bg-palette-ink/75 p-5 text-left shadow-[0_18px_50px_-26px_rgba(0,0,0,0.6)] backdrop-blur-md transition-[border-color,box-shadow] duration-300 hover:border-palette-sage/40 hover:shadow-[0_22px_56px_-22px_rgba(0,0,0,0.68)] md:min-h-0 md:flex-row md:items-start md:gap-6 md:p-7 md:rounded-[1.35rem]"
                   >
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 rounded-[inherit] bg-[length:160px_160px] opacity-[0.035] mix-blend-multiply"
-                    style={{ backgroundImage: OFFER_CARD_NOISE_BG }}
-                  />
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-sage/35 to-transparent"
-                  />
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-white/55 via-transparent to-palette-sage/[0.1] opacity-90 transition-opacity duration-300 group-hover/offer-card:opacity-100"
-                  />
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-palette-sage/12 blur-2xl transition-all duration-500 group-hover/offer-card:bg-palette-sage/25 group-hover/offer-card:scale-125"
-                  />
-                  <div className="relative z-[1] mb-1">
                     <span
                       aria-hidden
-                      className="pointer-events-none absolute -inset-2 rounded-[1.35rem] border border-palette-sage/25 transition-colors duration-300 group-hover/offer-card:border-palette-sage/45"
+                      className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-palette-sage/8 via-transparent to-palette-cream/5"
                     />
+
+                    <div className="relative z-[1] flex shrink-0 items-start gap-4 md:w-[7.5rem] md:flex-col md:gap-5">
+                      <span
+                        className="font-montserrat text-[1.75rem] font-semibold tabular-nums leading-none text-palette-cream/25 md:text-[2rem]"
+                        aria-hidden
+                      >
+                        {block.step}
+                      </span>
+                      <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-palette-sage/35 bg-palette-ink/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-transform duration-300 group-hover/offer-card:scale-[1.04] motion-reduce:transition-none md:h-14 md:w-14 md:rounded-2xl">
+                        <Icon className="h-7 w-7 text-palette-sage" aria-hidden />
+                      </span>
+                    </div>
+
+                    <div className="relative z-[1] mt-5 flex min-w-0 flex-1 flex-col md:mt-0">
+                      <h3 className="font-montserrat text-[1.05rem] font-bold uppercase leading-[1.15] tracking-[0.03em] text-palette-cream sm:text-[1.125rem] md:text-[1.2rem] lg:text-[1.28rem]">
+                        {block.title}
+                      </h3>
+
+                      <p className="mt-2.5 text-left text-[0.8125rem] font-normal leading-[1.42] text-palette-cream/75 md:mt-3 md:text-[0.875rem] md:leading-[1.44]">
+                        {block.hint}
+                      </p>
+                    </div>
+                  </motion.article>
+                );
+              })}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section
+        className="border-t border-palette-stone/20 bg-palette-cream font-montserrat py-16 md:py-24"
+        aria-label="Módulos del programa"
+      >
+        <div className={`${landingSectionContainer} max-w-5xl`}>
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: '-36px' }}
+            className="mb-9 max-w-3xl md:mb-11"
+          >
+            <p className={landingEyebrow}>El recorrido</p>
+            <h2 className={landingSectionTitle}>
+              {modules.length} módulo{modules.length !== 1 ? 's' : ''} que se complementan entre sí
+            </h2>
+            <p className={`${landingSectionBody} !leading-[1.55] md:!leading-[1.58]`}>
+              No son bloques sueltos: cada pieza ordena la siguiente. Podés avanzar en secuencia o
+              volver al módulo que tu cuerpo necesita hoy.
+            </p>
+          </motion.div>
+
+          <motion.div
+            variants={offerGridVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-40px' }}
+          >
+            <div className={modulesGridClass}>
+              {modules.map((item) => (
+                <motion.article
+                  key={item.title}
+                  variants={offerCardVariants}
+                  whileHover={reduceMotion ? undefined : { y: -4, transition: { duration: 0.22 } }}
+                  className="group/module relative flex min-h-[15rem] flex-col overflow-hidden rounded-2xl border border-palette-stone/22 bg-white/90 p-5 text-left shadow-[0_14px_40px_-24px_rgba(20,20,17,0.1)] backdrop-blur-sm transition-[border-color,box-shadow] duration-300 hover:border-palette-sage/40 hover:shadow-[0_18px_48px_-22px_rgba(20,20,17,0.14)] md:min-h-0 md:flex-row md:items-stretch md:gap-5 md:p-6 md:rounded-[1.35rem]"
+                >
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-palette-sage/[0.06] via-transparent to-white/40"
+                  />
+
+                  <div className="relative z-[1] flex shrink-0 flex-col gap-3 md:w-[8.5rem] lg:w-[9.5rem]">
                     <span
-                      aria-hidden
-                      className="pointer-events-none absolute -inset-2 rounded-[1.35rem] bg-palette-sage/0 blur-md transition-colors duration-300 group-hover/offer-card:bg-palette-sage/20"
-                    />
-                    <div
-                      className={`relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl transition-transform duration-300 ease-out group-hover/offer-card:scale-[1.07] group-hover/offer-card:-rotate-2 motion-reduce:transition-none md:h-[4rem] md:w-[4rem] ${block.iconShell}`}
+                      className="font-montserrat text-[1.75rem] font-semibold tabular-nums leading-none text-palette-ink/15 md:text-[2rem]"
                       aria-hidden
                     >
-                      <Icon className="h-8 w-8 text-palette-sage md:h-8 md:w-8" />
+                      {item.step}
+                    </span>
+                    <div className="relative h-28 w-full overflow-hidden rounded-xl border border-palette-stone/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] md:h-full md:min-h-[7.5rem] md:rounded-2xl">
+                      <CldImage
+                        src={item.src}
+                        alt=""
+                        fill
+                        sizes="(max-width: 640px) 100vw, 180px"
+                        className="object-cover object-[center_35%] transition-transform duration-500 ease-out group-hover/module:scale-[1.04]"
+                        loader={imageLoader}
+                      />
                     </div>
                   </div>
-                  <div className="relative z-[1] flex flex-1 flex-col items-center justify-center gap-0.5">
-                    {block.lines.map((line, j) => {
-                      const isHighlighted =
-                        block.highlightedLineIndex !== null && j === block.highlightedLineIndex;
-                      if (isHighlighted) {
-                        return (
-                          <span
-                            key={j}
-                            className="mt-1 font-raleway text-[clamp(0.85rem,2.3vw,1.05rem)] font-semibold normal-case tracking-normal text-palette-teal"
-                          >
-                            {line}
-                          </span>
-                        );
-                      }
-                      return (
-                        <span
-                          key={j}
-                          className={`font-montserrat font-bold uppercase tracking-[-0.02em] text-palette-ink ${
-                            j === 0
-                              ? 'text-[clamp(1rem,3.8vw,1.55rem)] leading-[1.15] md:text-[clamp(1.05rem,2vw,1.65rem)]'
-                              : 'text-[clamp(0.88rem,3vw,1.25rem)] leading-tight md:text-[clamp(0.92rem,1.6vw,1.35rem)]'
-                          }`}
-                        >
-                          {line}
-                        </span>
-                      );
-                    })}
+
+                  <div className="relative z-[1] mt-5 flex min-w-0 flex-1 flex-col md:mt-0 md:py-0.5">
+                    <h3 className="font-montserrat text-[1.05rem] font-bold leading-[1.15] tracking-tight text-palette-ink sm:text-[1.125rem] md:text-[1.2rem] lg:text-[1.28rem]">
+                      {item.title}
+                    </h3>
+                    <p className="mt-2.5 text-[0.8125rem] font-normal leading-[1.42] text-palette-stone md:mt-3 md:text-[0.875rem] md:leading-[1.44]">
+                      {item.line}
+                    </p>
                   </div>
-                  <div
-                    aria-hidden
-                    className="relative z-[1] my-1 h-px w-10 bg-gradient-to-r from-transparent via-palette-sage/40 to-transparent transition-[width] duration-300 group-hover/offer-card:w-16"
-                  />
-                  <p className="relative z-[1] max-w-[16rem] font-raleway text-[0.75rem] font-normal leading-snug text-palette-stone transition-colors duration-300 group-hover/offer-card:text-palette-ink/75 sm:text-[0.8rem] md:text-[0.875rem] md:leading-relaxed lg:max-w-[18rem] lg:text-[0.9375rem]">
-                    {block.hint}
-                  </p>
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-x-0 bottom-0 h-[3px] origin-center scale-x-0 bg-gradient-to-r from-palette-sage/0 via-palette-sage/55 to-palette-sage/0 transition-transform duration-300 ease-out group-hover/offer-card:scale-x-100"
-                  />
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
-      </div>
-    </section>
-
-    <section
-      className="border-t border-palette-stone/20 bg-palette-cream font-montserrat py-16 md:py-24"
-      aria-label="Módulos del programa"
-    >
-      <div className="mx-auto w-[92%] max-w-6xl px-3 sm:px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
-          viewport={{ once: true, margin: '-36px' }}
-          className="mb-9 max-w-3xl md:mb-11"
-        >
-          <p className={landingEyebrow}>
-            El recorrido
-          </p>
-          <h2 className={landingSectionTitle}>
-            {modules.length} módulo{modules.length !== 1 ? 's' : ''} que se complementan entre sí
-          </h2>
-          <p className={landingSectionBody}>
-            No son bloques sueltos: cada pieza ordena la siguiente. Podés avanzar en secuencia o volver al módulo que
-            tu cuerpo necesita hoy.
-          </p>
-        </motion.div>
-
-        <div className={modulesGridClass}>
-          {modules.map((item, index) => (
-            <motion.article
-              key={item.title}
-              initial={{ opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-20px' }}
-              transition={{
-                duration: 0.38,
-                delay: Math.min(index * 0.03, 0.12),
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="group/card relative flex h-full min-h-[20rem] flex-col overflow-hidden rounded-2xl border border-palette-stone/22 bg-gradient-to-br from-white/72 to-palette-cream/90 shadow-[0_6px_22px_rgba(20,20,17,0.05)] md:min-h-[22rem] md:rounded-3xl"
-            >
-              <div className="relative h-40 w-full shrink-0 overflow-hidden sm:h-44 md:h-48">
-                <CldImage
-                  src={item.src}
-                  alt={item.title}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover object-[center_35%] transition-transform duration-[1.05s] ease-out group-hover/card:scale-[1.03]"
-                  loader={imageLoader}
-                />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-palette-cream/95 via-palette-cream/25 to-transparent" />
-              </div>
-              <div className="relative flex flex-1 flex-col px-5 pb-5 pt-4 sm:px-6 sm:pb-6 sm:pt-5">
-                <ModuleNumberWatermark step={index + 1} />
-                <h3 className="relative z-[1] pr-14 font-semibold tracking-tight text-palette-ink text-[1.125rem] leading-snug sm:text-[1.2rem] md:pr-16 md:text-[1.3rem] md:leading-snug">
-                  {item.title}
-                </h3>
-                <p className="relative z-[1] mt-3 text-[0.9375rem] font-light leading-[1.65] text-palette-ink/90 sm:text-[1rem] sm:leading-[1.68] md:mt-3.5 md:text-[1.0625rem] md:leading-[1.7]">
-                  {item.line}
-                </p>
-              </div>
-            </motion.article>
-          ))}
+                </motion.article>
+              ))}
+            </div>
+          </motion.div>
         </div>
-      </div>
-    </section>
+      </section>
     </>
   );
 }

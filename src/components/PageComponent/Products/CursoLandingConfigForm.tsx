@@ -27,6 +27,7 @@ import {
   normalizeCloudinaryAssetId,
   normalizeCursoLandingConfig,
   syncContenidoModulosFromHighlights,
+  cursoPlanPagoKey,
 } from '../../../types/cursoLanding';
 import {
   fromDatetimeLocalValue,
@@ -268,19 +269,40 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
     patchNested('outcomes', { items: next });
   };
 
-  const syncModulosContenido = (highlightItems: CursoHighlight[]) => {
-    patch({
-      contenidoModulos: syncContenidoModulosFromHighlights(
-        highlightItems,
-        value.contenidoModulos
-      ),
+  const commitHighlights = (
+    items: CursoHighlight[],
+    contenidoModulos: CursoModuloContenido[]
+  ) => {
+    onChange({
+      ...value,
+      highlights: {
+        ...value.highlights,
+        items,
+      },
+      contenidoModulos,
     });
   };
 
+  const syncModulosContenidoFromItems = (highlightItems: CursoHighlight[]) =>
+    syncContenidoModulosFromHighlights(highlightItems, value.contenidoModulos);
+
   const updateHighlight = (index: number, partial: Partial<CursoHighlight>) => {
-    const next = value.highlights.items.map((item, i) => (i === index ? { ...item, ...partial } : item));
-    patchNested('highlights', { items: next });
-    syncModulosContenido(next);
+    const next = value.highlights.items.map((item, i) =>
+      i === index ? { ...item, ...partial } : item
+    );
+    commitHighlights(next, syncModulosContenidoFromItems(next));
+  };
+
+  const removeHighlight = (index: number) => {
+    const items = value.highlights.items.filter((_, i) => i !== index);
+    const contenidoModulos = value.contenidoModulos
+      .filter((modulo) => modulo.timelineIndex !== index)
+      .map((modulo) => ({
+        ...modulo,
+        timelineIndex:
+          modulo.timelineIndex > index ? modulo.timelineIndex - 1 : modulo.timelineIndex,
+      }));
+    commitHighlights(items, contenidoModulos);
   };
 
   const updatePrecioPreventa = (index: number, partial: Partial<CursoPrecioPreventa>) => {
@@ -593,8 +615,8 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
                 {tier.opcionesPago.length > 0 ? (
                   <motion.div className="rounded-md border border-gray-200 bg-white p-3 space-y-2">
                     <p className="text-xs font-medium text-gray-700">Links (se generan al crear el producto)</p>
-                    {tier.opcionesPago.map((plan) => (
-                      <p key={`${index}-${plan.proveedor}`} className="text-xs text-gray-600 break-all">
+                    {tier.opcionesPago.map((plan, planIndex) => (
+                      <p key={cursoPlanPagoKey(plan, planIndex)} className="text-xs text-gray-600 break-all">
                         {plan.etiqueta}: {plan.paymentLink || '—'}
                       </p>
                     ))}
@@ -992,11 +1014,7 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
               <button
                 type="button"
                 className={dangerButtonClass}
-                onClick={() => {
-                  const items = value.highlights.items.filter((_, i) => i !== index);
-                  patchNested('highlights', { items });
-                  syncModulosContenido(items);
-                }}
+                onClick={() => removeHighlight(index)}
               >
                 Eliminar ítem
               </button>
@@ -1010,8 +1028,7 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
                 ...value.highlights.items,
                 { titulo: '', resumen: '', detalle: '', imagenPublicId: '' },
               ];
-              patchNested('highlights', { items });
-              syncModulosContenido(items);
+              commitHighlights(items, syncModulosContenidoFromItems(items));
             }}
           >
             Agregar highlight
@@ -1159,12 +1176,14 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
         </Field>
         <div className="space-y-3">
           <p className={labelClass}>Bloques de oferta</p>
-          <p className="text-sm text-gray-500">Cada bloque usa iconKey: book, video, live o community.</p>
+          <p className="text-sm text-gray-500">
+            Cada bloque usa iconKey: book, video, live, community, experts o health.
+          </p>
           {value.queIncluye.offerBlocks.map((block, index) => (
             <motion.div key={`offer-${index}`} className="space-y-2 rounded-lg border border-gray-200 p-3">
               <input className={inputClass} placeholder="Líneas (separadas por |)" value={block.lineas.join(' | ')} onChange={(e) => updateOffer(index, { lineas: e.target.value.split('|').map((s) => s.trim()).filter(Boolean) })} />
               <input className={inputClass} placeholder="Hint" value={block.hint} onChange={(e) => updateOffer(index, { hint: e.target.value })} />
-              <input className={inputClass} placeholder="iconKey (book, video, live, community)" value={block.iconKey} onChange={(e) => updateOffer(index, { iconKey: e.target.value })} />
+              <input className={inputClass} placeholder="iconKey (book, video, live, community, experts, health)" value={block.iconKey} onChange={(e) => updateOffer(index, { iconKey: e.target.value })} />
               <input
                 type="number"
                 min={0}
@@ -1341,8 +1360,8 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
             <p className="text-sm text-gray-500">
               Se generan al crear/guardar el producto según los métodos habilitados arriba.
             </p>
-            {value.planes.opcionesPago.map((plan) => (
-              <motion.div key={plan.proveedor} className="rounded-md border border-gray-200 bg-white p-3 space-y-1">
+            {value.planes.opcionesPago.map((plan, index) => (
+              <motion.div key={cursoPlanPagoKey(plan, index)} className="rounded-md border border-gray-200 bg-white p-3 space-y-1">
                 <p className="text-sm font-medium text-gray-900">
                   {plan.etiqueta}{' '}
                   <span className="text-xs font-normal text-gray-500">({plan.proveedor})</span>

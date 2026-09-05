@@ -7,6 +7,7 @@ import { resolveInvitacionGrupoWhatsappFromPayload } from '../../../../lib/resol
 import { normalizeCursoLandingConfig } from '../../../../types/cursoLanding';
 import { ensureCursoPreventaPaymentLinks } from '../../../../lib/ensureCursoPreventaPaymentLinks';
 import { ensureCursoLanzamientoPaymentLinks } from '../../../../lib/ensureCursoLanzamientoPaymentLinks';
+import { ensureCursoSuscripcionPaymentLinks } from '../../../../lib/ensureCursoSuscripcionPaymentLinks';
 import { revalidateLinkInBio } from '../../../../lib/revalidateLinkInBio';
 
 connectDB();
@@ -74,6 +75,7 @@ export async function PUT(req) {
         esProgramaTransformacional,
         programaTransformacional,
         secuenciaConfig,
+        esSuscripcion,
       } = data;
 
       const invitacionGrupoResolved = resolveInvitacionGrupoWhatsappFromPayload({
@@ -138,21 +140,27 @@ export async function PUT(req) {
           process.env.NEXT_PUBLIC_BASE_URL ||
           'http://localhost:3000';
 
-        const withLanzamientoLinks = await ensureCursoLanzamientoPaymentLinks(
-          {
-            _id: productId,
-            nombre: nombre || existingProduct.nombre,
-            descripcion: descripcion || existingProduct.descripcion,
-            precio: precio ?? existingProduct.precio,
-            moneda: moneda || existingProduct.moneda,
-            portada: portada || existingProduct.portada,
-            cursoConfig: cursoConfigParaGuardar,
-          },
-          origin
-        );
-        if (withLanzamientoLinks) {
+        const resolvedEsSuscripcion = Boolean(esSuscripcion ?? existingProduct.esSuscripcion);
+        const productSnapshot = {
+          _id: productId,
+          nombre: nombre || existingProduct.nombre,
+          descripcion: descripcion || existingProduct.descripcion,
+          precio: precio ?? existingProduct.precio,
+          moneda: moneda || existingProduct.moneda,
+          portada: portada || existingProduct.portada,
+          esSuscripcion: resolvedEsSuscripcion,
+          cursoConfig: cursoConfigParaGuardar,
+        };
+
+        let withLinks;
+        if (resolvedEsSuscripcion) {
+          withLinks = await ensureCursoSuscripcionPaymentLinks(productSnapshot, origin);
+        } else {
+          withLinks = await ensureCursoLanzamientoPaymentLinks(productSnapshot, origin);
+        }
+        if (withLinks) {
           cursoConfigParaGuardar = normalizeCursoLandingConfig(
-            withLanzamientoLinks,
+            withLinks,
             nombre || existingProduct.nombre
           );
         }
@@ -393,6 +401,7 @@ export async function PUT(req) {
         secuenciaConfig: tipo === 'clases_gratuitas_secuenciales' ? secuenciaConfig : undefined,
         esProgramaTransformacional: esProgramaTransformacional ?? undefined,
         programaTransformacional: programaTransformacionalParaGuardar,
+        esSuscripcion: tipo === 'curso' ? Boolean(esSuscripcion) : undefined,
         updatedAt: new Date(),
       };
 

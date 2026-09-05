@@ -22,6 +22,7 @@ type ProductLike = {
   precio?: number;
   moneda?: string;
   portada?: string;
+  esSuscripcion?: boolean;
   cursoConfig?: CursoLandingConfig | null;
 };
 
@@ -64,6 +65,9 @@ export async function ensureCursoLanzamientoPaymentLinks(
 ): Promise<CursoLandingConfig | null | undefined> {
   const cursoConfig = product.cursoConfig;
   if (!cursoConfig) return cursoConfig;
+  // Los cursos por suscripción tienen 2 opciones Stripe (mensual + 4 meses).
+  // Este helper mergea por proveedor y pisaría la segunda.
+  if (product.esSuscripcion) return cursoConfig;
 
   const enabled = resolveProveedoresHabilitados(cursoConfig.planes?.proveedoresHabilitados);
   const opcionesPago = cursoConfig.planes?.opcionesPago;

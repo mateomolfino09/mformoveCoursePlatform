@@ -5,7 +5,9 @@ import { NextResponse } from 'next/server';
 import { createEventProductWithPrices } from '../../payments/stripe/createEventProductWithPrices';
 import {
   createCourseOneTimePayments,
+  createCourseSubscriptionPayments,
   buildCursoOpcionesPago,
+  buildCursoSuscripcionOpcionesPago,
   generateCursoPreciosPreventaLinks,
 } from '../../payments/stripe/createCourseOneTimePayments';
 import { stripe } from '../../payments/stripe/stripeConfig';
@@ -112,6 +114,7 @@ export async function POST(req) {
       esProgramaTransformacional,
       programaTransformacional,
       secuenciaConfig,
+      esSuscripcion,
     } = data;
 
     const invitacionGrupoResolved = resolveInvitacionGrupoWhatsappFromPayload({
@@ -385,6 +388,7 @@ export async function POST(req) {
         invitacionGrupoWhatsapp: invitacionGrupoResolved || undefined,
         esProgramaTransformacional: esProgramaTransformacional || undefined,
         programaTransformacional: programaTransformacionalParaGuardar,
+        esSuscripcion: tipo === 'curso' ? Boolean(esSuscripcion) : undefined,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -404,32 +408,57 @@ export async function POST(req) {
         const { resolveProveedoresHabilitados, DEFAULT_PAYMENT_PROVEEDORES } = await import(
           '../../../../constants/paymentProveedores'
         );
-        const proveedores = resolveProveedoresHabilitados(
-          cursoConfigParaGuardar?.planes?.proveedoresHabilitados?.length
-            ? cursoConfigParaGuardar.planes.proveedoresHabilitados
-            : DEFAULT_PAYMENT_PROVEEDORES
-        );
+        // Un curso por suscripción solo cobra por Stripe (único proveedor con recurrencia acá).
+        const proveedores = esSuscripcion
+          ? ['stripe']
+          : resolveProveedoresHabilitados(
+              cursoConfigParaGuardar?.planes?.proveedoresHabilitados?.length
+                ? cursoConfigParaGuardar.planes.proveedoresHabilitados
+                : DEFAULT_PAYMENT_PROVEEDORES
+            );
 
-        const pagosUnicos = await createCourseOneTimePayments({
-          productId: product._id.toString(),
-          nombre,
-          descripcion,
-          precio,
-          moneda,
-          portadaUrl: cursoPortadaCheckout,
-          successUrl,
-          origin: baseUrl,
-          proveedores,
-        });
+        const pagosUnicos = esSuscripcion
+          ? null
+          : await createCourseOneTimePayments({
+              productId: product._id.toString(),
+              nombre,
+              descripcion,
+              precio,
+              moneda,
+              portadaUrl: cursoPortadaCheckout,
+              successUrl,
+              origin: baseUrl,
+              proveedores,
+            });
 
-        product.stripeProductId = pagosUnicos.stripe.productId;
+        const pagosSuscripcion = esSuscripcion
+          ? await createCourseSubscriptionPayments({
+              productId: product._id.toString(),
+              nombre,
+              descripcion,
+              precio,
+              moneda,
+              portadaUrl: cursoPortadaCheckout,
+              successUrl,
+            })
+          : null;
 
-        const opcionesPago = buildCursoOpcionesPago({
-          precio,
-          moneda,
-          pagos: pagosUnicos,
-          proveedores,
-        });
+        product.stripeProductId = esSuscripcion
+          ? pagosSuscripcion.stripe.productId
+          : pagosUnicos.stripe.productId;
+
+        const opcionesPago = esSuscripcion
+          ? buildCursoSuscripcionOpcionesPago({
+              precioMensual: precio,
+              moneda,
+              pagos: pagosSuscripcion,
+            })
+          : buildCursoOpcionesPago({
+              precio,
+              moneda,
+              pagos: pagosUnicos,
+              proveedores,
+            });
         const existingCfg =
           product.cursoConfig?.toObject?.() ?? product.cursoConfig ?? {};
         const baseCfg = cursoConfigParaGuardar || {};
@@ -452,7 +481,7 @@ export async function POST(req) {
           },
         });
 
-        if (product.cursoConfig?.preciosPreventa?.length) {
+        if (!esSuscripcion && product.cursoConfig?.preciosPreventa?.length) {
           product.cursoConfig.preciosPreventa = await generateCursoPreciosPreventaLinks({
             productId: product._id.toString(),
             nombre,

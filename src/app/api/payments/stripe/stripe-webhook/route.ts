@@ -1,50 +1,10 @@
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { createStripeSubscription } from '../../createSubscription/createStripeSubscription';
-import { updateStripeSubscription } from '../../updateSubscription/updateStripeSubscription';
-import { sendSubscriptionEmail } from '../../createSubscription/getSubscriptionEmail';
-import { getCurrentURL } from '../../../assets/getCurrentURL';
-import { deleteStripeSubscription } from '../../cancelSubscription/deleteStripeSubscription';
-import { getLatestSubscriptionStatusByEmail } from '../getSubscriptionStatusByMail';
 import connectDB from '../../../../../config/connectDB';
-import User from '../../../../../models/userModel.js';
-import { EmailService } from '../../../../../services/email/emailService';
-import CoherenceTracking from '../../../../../models/coherenceTrackingModel';
-import { routes } from '../../../../../constants/routes';
 import { constructStripeEvent } from '../../../../../lib/stripeWebhookVerify';
 import { handleStripeCourseCheckoutCompleted } from '../../../../../lib/handleStripeCourseCheckout';
-
-// Helper robusto para inicializar tracking incluso si el método estático no está disponible
-const ensureCoherenceTracking = async (userId: any) => {
-  const Model: any = CoherenceTracking;
-  // Si el método existe, úsalo
-  if (Model?.getOrCreate) {
-    return Model.getOrCreate(userId);
-  }
-  // Fallback manual
-  let tracking = await Model.findOne({ userId });
-  if (!tracking) {
-    tracking = new Model({
-      userId,
-      totalUnits: 0,
-      currentStreak: 0,
-      longestStreak: 0,
-      achievements: [],
-      level: 1,
-      monthsCompleted: 0,
-      characterEvolution: 0,
-      completedMonths: [],
-      weeklyCompletions: [],
-      completedDays: [],
-      completedWeeks: [],
-      completedVideos: [],
-      completedAudios: []
-    });
-    await tracking.save();
-  }
-  return tracking;
-};
+import { updateCourseSubscriptionStatus } from '../../course/fulfillCoursePurchase';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
 connectDB();
@@ -54,7 +14,6 @@ export const POST = async (req: NextRequest) => {
     const sig = headers().get('stripe-signature') as string;
     const body = await req.text();
     let event;
-    const origin = getCurrentURL();
     try {
       event = constructStripeEvent(stripe, body, sig);
     } catch (err: any) {
@@ -66,326 +25,31 @@ export const POST = async (req: NextRequest) => {
       switch (event.type) {
         case 'checkout.session.completed': {
           const session = event.data.object as Stripe.Checkout.Session;
-          const isMembership = session.metadata?.type === 'membership';
-
-          if (!isMembership) {
-            await handleStripeCourseCheckoutCompleted(session);
-          } else {
-            const customerEmail = session.customer_details?.email || session.metadata?.email;
-            if (customerEmail) {
-              // La suscripción se procesará cuando llegue customer.subscription.created
-            }
-          }
+          await handleStripeCourseCheckoutCompleted(session);
           break;
         }
 
-        case 'customer.subscription.created': {
+        // Renovación: Stripe manda 'updated' con un current_period_end nuevo.
+        case 'customer.subscription.updated': {
           const subscription = event.data.object as Stripe.Subscription;
-          const customerId = subscription.customer as string;
-          const customer = await stripe.customers.retrieve(customerId);
-      const email = (customer as Stripe.Customer).email;
-          
-          // Verificar si es una membresía desde el metadata de la suscripción
-          const isMembership = subscription.metadata?.type === 'membership';
-          
-          if (isMembership && email) {
-            
-            try {
-              const user = await createStripeSubscription(email);
-              const status = await getLatestSubscriptionStatusByEmail(email);
-              
-              if (user) {
-
-                // Inicializar tracking de coherencia para Cuerpo autónomo
-                try {
-                  await ensureCoherenceTracking(user._id);
-                } catch (trackingErr) {
-                  console.error(`❌ Error creando tracking de coherencia para ${user.email}:`, trackingErr);
-                }
-                
-                const emailService = EmailService.getInstance();
-                
-                // Enviar email de bienvenida al usuario (onboarding)
-                try {
-                  await emailService.sendOnboardingWelcome({
-                    email: user.email,
-                    name: user.name || 'Miembro',
-                    onboardingLink: `${origin}/incorporacion/bienvenida`,
-                    whatsappInviteUrl: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/LgVResfArGjIn9qByXXUSo'
-                  });
-                } catch (emailErr) {
-                  console.error(`❌ Error enviando email de bienvenida a ${user.email}:`, emailErr);
-                }
-                
-                // Enviar email de notificación al administrador
-                try {
-                  const adminEmail = 'mateomolfino09@gmail.com';
-                  await emailService.sendAdminMembershipNotification({
-                    userName: user.name || 'Sin nombre',
-                    userEmail: user.email,
-                    userId: user._id?.toString() || 'N/A',
-                    planName: subscription.metadata?.planName || 'Cuerpo autónomo',
-                    subscriptionId: subscription.id,
-                    activationDate: new Date().toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    }),
-                    adminUrl: `${origin}/admin`
-                  }, adminEmail);
-                } catch (adminEmailErr) {
-                  console.error(`❌ Error enviando notificación al administrador:`, adminEmailErr);
-                }
-                
-                // NO enviar email genérico al admin para membresías - ya tenemos emails específicos
-                // El email genérico solo se envía al usuario si es necesario
-              } else {
-                console.error(`❌ Error al crear membresía para: ${email}`);
-              }
-            } catch (err) {
-              console.error("❌ Error al procesar la subscripción creada:", err);
-            }
-          } else if (email) {
-            // Procesar otras suscripciones (no membresías)
-            const status = await getLatestSubscriptionStatusByEmail(email);
-            
-            if(status != null) {
-            try {
-                const user = await createStripeSubscription(email);
-              if (status === "trialing") {
-                await sendSubscriptionEmail(status, "mateomolfino09@gmail.com", origin);
-              }
-            } catch (err) {
-              console.error("Error al procesar la subscripción creada:", err);
-            }
-            }
-          }
-            break;
-          }
-        
-          case 'customer.subscription.updated': {
-          const subscription = event.data.object as Stripe.Subscription;
-          const customerId = subscription.customer as string;
-          const customer = await stripe.customers.retrieve(customerId);
-          const email = (customer as Stripe.Customer).email;
-          const status = await getLatestSubscriptionStatusByEmail(email ?? "");
-      
-          if(status != null) {
-            try {
-              const updatedSubscription = await updateStripeSubscription(email ?? "");
-              const isMembership = subscription.metadata?.type === 'membership';
-              
-              //al cancelar el estado se mantiene hasta el fin del periodo, por eso chequeamos isCanceled
-              if (updatedSubscription?.isCanceled && (status == "trialing" || status == "active")) {
-                // NO enviar email genérico al admin si es una membresía - ya tenemos emails específicos
-                // Si NO es membresía, enviar email genérico al admin
-                if (!isMembership) {
-                  await sendSubscriptionEmail("canceled", "mateomolfino09@gmail.com", origin);
-                }
-                
-                // Si es una membresía, enviar email de cancelación al usuario
-                if (isMembership && email) {
-                  try {
-                    const user = await User.findOne({ email });
-                    if (user) {
-                      const emailService = EmailService.getInstance();
-                      const periodEnd = subscription.current_period_end 
-                        ? new Date(subscription.current_period_end * 1000).toLocaleDateString('es-ES', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })
-                        : null;
-                      
-                      await emailService.sendSubscriptionCancelled({
-                        email: user.email,
-                        name: user.name || 'Miembro',
-                        planName: subscription.metadata?.planName || 'Cuerpo autónomo',
-                        cancellationDate: new Date().toLocaleDateString('es-ES', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        }),
-                        accessUntil: periodEnd,
-                        feedbackUrl: `${origin}/contacto?reason=cancellation&email=${encodeURIComponent(user.email)}`,
-                        reactivateUrl: `${origin}${routes.navegation.moveCrew}`
-                      });
-                      
-                      // Enviar email de notificación al administrador
-                      try {
-                        const adminEmail = 'mateomolfino09@gmail.com';
-                        await emailService.sendAdminSubscriptionCancelled({
-                          userName: user.name || 'Sin nombre',
-                          userEmail: user.email,
-                          userId: user._id?.toString() || 'N/A',
-                          planName: subscription.metadata?.planName || 'Cuerpo autónomo',
-                          subscriptionId: subscription.id,
-                          cancellationDate: new Date().toLocaleDateString('es-ES', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          }),
-                          accessUntil: periodEnd,
-                          adminUrl: `${origin}/admin`
-                        }, adminEmail);
-                      } catch (adminEmailErr) {
-                        console.error(`❌ Error enviando notificación de cancelación al administrador:`, adminEmailErr);
-                      }
-                    }
-                  } catch (emailErr) {
-                    console.error(`❌ Error enviando email de cancelación a ${email}:`, emailErr);
-                  }
-                }
-              } else {
-                // Solo enviar email genérico si NO es una membresía (las membresías tienen emails específicos)
-                if (!isMembership) {
-                  await sendSubscriptionEmail(status, "mateomolfino09@gmail.com", origin);
-                }
-              }
-
-            } catch (err) {
-              console.error("Error al procesar la subscripción actualizada:", err);
-            }
-          }
-            break;
-          }
-        
-          case 'customer.subscription.deleted': {
-          const subscription = event.data.object as Stripe.Subscription;
-          const customerId = subscription.customer as string;
-          const customer = await stripe.customers.retrieve(customerId);
-          const email = (customer as Stripe.Customer).email;
-          const isMembership = subscription.metadata?.type === 'membership';
-          
-          if (email) {
-            const user = await deleteStripeSubscription(email);
-            
-            // Si es una membresía, enviar email de cancelación al usuario
-            if (isMembership && user) {
-              try {
-                const emailService = EmailService.getInstance();
-                await emailService.sendSubscriptionCancelled({
-                  email: user.email,
-                  name: user.name || 'Miembro',
-                  planName: subscription.metadata?.planName || 'Cuerpo autónomo',
-                  cancellationDate: new Date().toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  }),
-                  accessUntil: null, // Ya no tiene acceso
-                  feedbackUrl: `${origin}/contacto?reason=cancellation&email=${encodeURIComponent(user.email)}`,
-                  reactivateUrl: `${origin}${routes.navegation.moveCrew}`
-                });
-                
-                // Enviar email de notificación al administrador
-                try {
-                  const adminEmail = 'mateomolfino09@gmail.com';
-                  await emailService.sendAdminSubscriptionCancelled({
-                    userName: user.name || 'Sin nombre',
-                    userEmail: user.email,
-                    userId: user._id?.toString() || 'N/A',
-                    planName: subscription.metadata?.planName || 'Cuerpo autónomo',
-                    subscriptionId: subscription.id,
-                    cancellationDate: new Date().toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    }),
-                    accessUntil: null,
-                    adminUrl: `${origin}/admin`
-                  }, adminEmail);
-                } catch (adminEmailErr) {
-                  console.error(`❌ Error enviando notificación de cancelación al administrador:`, adminEmailErr);
-                }
-              } catch (emailErr) {
-                console.error(`❌ Error enviando email de cancelación a ${email}:`, emailErr);
-              }
-            }
-          // Aquí podrías revocar acceso a contenido premium
-          }
-            break;
-          }
-        
-        case 'invoice.payment_failed': {
-          const invoice = event.data.object as Stripe.Invoice;
-          const customerId = invoice.customer as string;
-          const customer = await stripe.customers.retrieve(customerId);
-          const email = (customer as Stripe.Customer).email;
-          
-          if (email && invoice.subscription) {
-            try {
-              // Obtener la suscripción para verificar si es una membresía
-              const subscriptionId = typeof invoice.subscription === 'string' 
-                ? invoice.subscription 
-                : invoice.subscription.id;
-              const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-              const isMembership = subscription.metadata?.type === 'membership';
-              
-              if (isMembership) {
-                const user = await User.findOne({ email });
-                if (user) {
-                  const emailService = EmailService.getInstance();
-                  const amount = invoice.amount_due ? (invoice.amount_due / 100).toFixed(2) : null;
-                  const planName = subscription.metadata?.planName || 'Cuerpo autónomo';
-                  
-                  await emailService.sendPaymentFailed({
-                    email: user.email,
-                    name: user.name || 'Miembro',
-                    productName: planName,
-                    amount: amount || undefined,
-                    paymentDate: new Date().toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    }),
-                    errorMessage: (invoice as any).last_payment_error?.message || 'No se pudo procesar el pago. Por favor, verifica tu método de pago.',
-                    retryUrl: `${origin}${routes.navegation.moveCrew}`,
-                    feedbackUrl: `${origin}/contacto?reason=payment&email=${encodeURIComponent(user.email)}`
-                  });
-                  
-                  // Enviar email de notificación al administrador
-                  try {
-                    const adminEmail = 'mateomolfino09@gmail.com';
-                    await emailService.sendAdminPaymentFailed({
-                      userName: user.name || 'Sin nombre',
-                      userEmail: user.email,
-                      userId: user._id?.toString() || 'N/A',
-                      planName: planName,
-                      productName: planName,
-                      amount: amount || undefined,
-                      paymentDate: new Date().toLocaleDateString('es-ES', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      }),
-                      errorMessage: (invoice as any).last_payment_error?.message || 'No se pudo procesar el pago',
-                      subscriptionId: subscription.id,
-                      invoiceId: invoice.id,
-                      adminUrl: `${origin}/admin`
-                    }, adminEmail);
-                  } catch (adminEmailErr) {
-                    console.error(`❌ Error enviando notificación de pago fallido al administrador:`, adminEmailErr);
-                  }
-                }
-              }
-            } catch (err) {
-              console.error(`❌ Error procesando invoice.payment_failed para ${email}:`, err);
-            }
-          }
+          const isExpired = ['canceled', 'unpaid', 'incomplete_expired'].includes(subscription.status);
+          await updateCourseSubscriptionStatus({
+            stripeSubscriptionId: subscription.id,
+            status: isExpired ? 'expired' : 'active',
+            expiresAt: new Date(subscription.current_period_end * 1000),
+          });
           break;
         }
-      
+
+        case 'customer.subscription.deleted': {
+          const subscription = event.data.object as Stripe.Subscription;
+          await updateCourseSubscriptionStatus({
+            stripeSubscriptionId: subscription.id,
+            status: 'expired',
+          });
+          break;
+        }
+
         default:
           break;
       }
