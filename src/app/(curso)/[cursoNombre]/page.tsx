@@ -17,6 +17,7 @@ interface CursoNombrePageProps {
 type CursoLandingPayload = {
   product: {
     nombre: string;
+    esSuscripcion?: boolean;
   };
   cursoConfig: CursoLandingConfig;
   opcionesPago: CursoPlanPago[];
@@ -112,6 +113,7 @@ export default function CursoNombrePage({ params }: CursoNombrePageProps) {
       cursoConfig={landing.cursoConfig}
       productName={landing.product?.nombre || landing.cursoConfig.introHighlights.titulo}
       slug={params.cursoNombre}
+      esSuscripcion={Boolean(landing.product?.esSuscripcion)}
     >
       <Course checkoutPlans={checkoutPlans} />
     </CursoLandingProvider>

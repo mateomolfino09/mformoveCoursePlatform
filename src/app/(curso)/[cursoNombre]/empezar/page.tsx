@@ -105,6 +105,7 @@ export default function CursoEmpezarPage({ params }: CursoEmpezarPageProps) {
             cursoConfig={landing.cursoConfig}
             productName={landing.product?.nombre || landing.cursoConfig.introHighlights.titulo}
             slug={params.cursoNombre}
+            esSuscripcion={Boolean(landing.product?.esSuscripcion)}
           >
             <CourseCheckoutStart
               checkoutPlans={landing.opcionesPago}

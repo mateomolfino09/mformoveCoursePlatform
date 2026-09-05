@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import Product from '../../../../models/productModel';
 import User from '../../../../models/userModel';
+import { userHasPurchasedCourse } from '../../../../lib/courseAccess';
 import { coursePaymentDebug, coursePaymentWarn } from '../../../../lib/coursePaymentDebug';
 import { sendCourseWelcomeEmail } from '../../../../lib/sendCourseWelcomeEmail';
 
@@ -12,6 +13,12 @@ export type FulfillCoursePurchaseInput = {
   userId?: string | null;
   amount?: number;
   moneda?: string;
+  /** 'suscripcion' cuando el checkout fue de una suscripción de Stripe (default 'compra_unica'). */
+  source?: 'compra_unica' | 'suscripcion' | 'manual' | 'beta';
+  /** Solo relevante cuando source==='suscripcion': fin del período pago vigente. */
+  expiresAt?: Date | null;
+  /** Solo relevante cuando source==='suscripcion': id de la suscripción en Stripe. */
+  stripeSubscriptionId?: string;
 };
 
 export type FulfillCoursePurchaseResult = {
@@ -21,10 +28,10 @@ export type FulfillCoursePurchaseResult = {
   user: unknown;
 };
 
-const hasCourseAccess = (user: any, productId: string) => {
-  const target = productId.toString();
-  return (user.cursosAdquiridos || []).some((entry: any) => entry?.productoId?.toString() === target);
-};
+const hasActiveCourseAccess = (
+  user: Parameters<typeof userHasPurchasedCourse>[0],
+  productId: string
+) => userHasPurchasedCourse(user, productId);
 
 export async function fulfillCoursePurchase({
   productId,
@@ -34,6 +41,9 @@ export async function fulfillCoursePurchase({
   userId,
   amount,
   moneda,
+  source = 'compra_unica',
+  expiresAt = null,
+  stripeSubscriptionId,
 }: FulfillCoursePurchaseInput): Promise<FulfillCoursePurchaseResult> {
   coursePaymentDebug('fulfill.start', {
     productId,
@@ -97,7 +107,7 @@ export async function fulfillCoursePurchase({
 
   // Prioridad: sesión autenticada (quien inició el checkout) > email del pago.
   let user = null;
-  if (authenticatedUser && !hasCourseAccess(authenticatedUser, productId)) {
+  if (authenticatedUser && !hasActiveCourseAccess(authenticatedUser, productId)) {
     user = authenticatedUser;
     coursePaymentDebug('fulfill.user_selected', {
       by: 'authenticated_without_access',
@@ -120,7 +130,7 @@ export async function fulfillCoursePurchase({
     throw new Error('No se encontró un usuario para asignar el curso');
   }
 
-  if (hasCourseAccess(user, productId)) {
+  if (hasActiveCourseAccess(user, productId)) {
     coursePaymentDebug('fulfill.already_has_access', {
       userId: user._id.toString(),
       productId,
@@ -146,6 +156,10 @@ export async function fulfillCoursePurchase({
     monto: amount,
     moneda: moneda || product.moneda || 'USD',
     bienvenidaPendiente: true,
+    source,
+    status: 'active',
+    expiresAt,
+    ...(stripeSubscriptionId ? { stripeSubscriptionId } : {}),
   });
 
   await user.save();
@@ -176,4 +190,47 @@ export async function fulfillCoursePurchase({
     productId,
     user,
   };
+}
+
+/**
+ * Actualiza la vigencia de una entrada de cursosAdquiridos con source:'suscripcion',
+ * ubicada por stripeSubscriptionId. La usan los webhooks de renovación/cancelación/expiración
+ * de Stripe — nunca crea la entrada (eso lo hace fulfillCoursePurchase en el checkout inicial).
+ */
+export async function updateCourseSubscriptionStatus({
+  stripeSubscriptionId,
+  status,
+  expiresAt,
+}: {
+  stripeSubscriptionId: string;
+  status: 'active' | 'expired' | 'revoked';
+  expiresAt?: Date | null;
+}): Promise<{ updated: boolean; userId?: string; productId?: string }> {
+  const user = await User.findOne({ 'cursosAdquiridos.stripeSubscriptionId': stripeSubscriptionId });
+  if (!user) {
+    coursePaymentWarn('fulfill.subscription_not_found', { stripeSubscriptionId });
+    return { updated: false };
+  }
+
+  const entry = (user.cursosAdquiridos || []).find(
+    (e: any) => e.stripeSubscriptionId === stripeSubscriptionId
+  );
+  if (!entry) {
+    return { updated: false };
+  }
+
+  entry.status = status;
+  if (expiresAt !== undefined) {
+    entry.expiresAt = expiresAt;
+  }
+  await user.save();
+
+  coursePaymentDebug('fulfill.subscription_status_updated', {
+    stripeSubscriptionId,
+    status,
+    userId: user._id.toString(),
+    productId: entry.productoId?.toString(),
+  });
+
+  return { updated: true, userId: user._id.toString(), productId: entry.productoId?.toString() };
 }

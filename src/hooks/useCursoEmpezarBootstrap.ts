@@ -9,6 +9,7 @@ export type CursoCheckoutPayload = {
     _id?: string;
     nombre: string;
     portada?: string;
+    esSuscripcion?: boolean;
   };
   cursoConfig: CursoLandingConfig;
   opcionesPago: CursoPlanPago[];

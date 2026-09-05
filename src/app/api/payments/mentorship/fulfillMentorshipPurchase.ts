@@ -4,6 +4,7 @@ import User from '../../../../models/userModel';
 import { coursePaymentDebug, coursePaymentWarn } from '../../../../lib/coursePaymentDebug';
 import { grantAnnualMentorshipProductGifts } from '../../../../lib/grantAnnualMentorshipProductGifts';
 import { EmailService } from '../../../../services/email/emailService';
+import { resolveMentorshipBookingUrl } from '../../../../constants/mentorshipBooking';
 
 export type FulfillMentorshipPurchaseInput = {
   planId: string;
@@ -212,9 +213,7 @@ export async function fulfillMentorshipPurchase({
       await emailService.sendWelcomeMentorship({
         email: user.email,
         name: user.name || 'Mover',
-        calendlyLink:
-          process.env.NEXT_PUBLIC_MENTORSHIP_CALENDLY_URL ||
-          'https://calendly.com/mformovers/consulta-mentoria',
+        calendlyLink: resolveMentorshipBookingUrl(),
       });
       coursePaymentDebug('mentorship.fulfill.welcome_email_sent', {
         userId: user._id.toString(),

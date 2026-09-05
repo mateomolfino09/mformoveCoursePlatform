@@ -82,6 +82,8 @@ const cursoPlanPagoSchema = new mongoose.Schema({
   merchantCheckoutToken: { type: String },
   mercadoPagoPreferenceId: { type: String },
   mercadoPagoExternalReference: { type: String },
+  /** 1 = mensual (o pago único), 4 = cada 4 meses. Distingue dos Prices Stripe del mismo proveedor. */
+  intervaloMeses: { type: Number, default: 1 },
 }, { _id: false });
 
 const cursoClaseContenidoSchema = new mongoose.Schema({
@@ -227,6 +229,9 @@ const cursoLandingConfigSchema = new mongoose.Schema({
     emailSinPlanes: { type: String, default: '' },
     ctaSinPlanes: { type: String, default: '' },
     mensajeSinPlanes: { type: String, default: '' },
+    /** Checklist "Tu membresía incluye" — solo tiene sentido cuando esSuscripcion:true. */
+    beneficiosTitulo: { type: String, default: '' },
+    beneficios: [{ type: String }],
     /** Métodos de pago habilitados al crear/editar: stripe | dlocalgo | mercadopago */
     proveedoresHabilitados: {
       type: [{ type: String, enum: ['stripe', 'dlocalgo', 'mercadopago'] }],
@@ -274,6 +279,8 @@ const productSchema = new mongoose.Schema({
   paymentLinks: { type: Object }, // Links de pago para cada precio
   stripeProductId: { type: String }, // ID del producto en Stripe
   activo: { type: Boolean, default: true },
+  /** Si es true (solo aplica a tipo:'curso'), el curso se vende por suscripción recurrente en vez de pago único. */
+  esSuscripcion: { type: Boolean, default: false },
   destacado: { type: Boolean, default: false },
 
   // --- Eventos ---

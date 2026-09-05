@@ -133,7 +133,8 @@ const CreateProduct = () => {
     programaTransformacionalData?: any,
     cursoConfig?: import('../../../types/cursoLanding').CursoLandingConfig,
     invitacionGrupoWhatsapp?: string,
-    bioImageFile?: File | null
+    bioImageFile?: File | null,
+    esSuscripcion?: boolean
   ) {
     setLoading(true);
 
@@ -351,6 +352,7 @@ const CreateProduct = () => {
             programaTransformacional: programaTransformacionalData,
           }),
         ...(productType === 'curso' && cursoConfig ? { cursoConfig } : {}),
+        ...(productType === 'curso' && { esSuscripcion: Boolean(esSuscripcion) }),
         ...(productType === 'curso' && {
           invitacionGrupoWhatsapp:
             invitacionGrupoWhatsapp?.trim() ||

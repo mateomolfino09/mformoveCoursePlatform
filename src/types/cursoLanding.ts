@@ -68,7 +68,14 @@ export type CursoPlanPago = {
   merchantCheckoutToken?: string;
   mercadoPagoPreferenceId?: string;
   mercadoPagoExternalReference?: string;
+  /** 1 = mensual (o pago único), 4 = cada 4 meses. */
+  intervaloMeses?: number;
 };
+
+export function cursoPlanPagoKey(plan: CursoPlanPago, index: number): string {
+  if (plan.stripePriceId) return plan.stripePriceId;
+  return `${plan.proveedor}-${plan.intervaloMeses ?? 1}-${index}`;
+}
 
 /**
  * Clase dentro de un módulo de contenido del curso.
@@ -253,6 +260,9 @@ export type CursoLandingConfig = {
     /** stripe | dlocalgo | mercadopago — si falta, se asume stripe+dlocal (legacy). */
     proveedoresHabilitados?: Array<'stripe' | 'dlocalgo' | 'mercadopago'>;
     opcionesPago: CursoPlanPago[];
+    /** Checklist "Tu membresía incluye" — solo tiene sentido cuando esSuscripcion:true. */
+    beneficiosTitulo: string;
+    beneficios: string[];
   };
   whatsapp: {
     imagenMobilePublicId: string;
@@ -628,13 +638,29 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
     ctaImagenPublicId: 'my_uploads/fondos/DSC01753_qdv9o0',
   },
   queIncluye: {
-    titulo: 'Esto es lo que incluye tu programa:',
+    titulo: 'Esto es lo que incluye tu programa',
     anclaId: 'course-que-incluye',
     offerBlocks: [
-      { lineas: ['WORKBOOK Y', 'EJERCICIOS'], hint: 'Guías y prácticas descargables para ordenar tu entrenamiento durante la semana.', iconKey: 'book' },
-      { lineas: ['+25 CLASES GRABADAS'], hint: 'Clases paso a paso para que aprendas a moverte con seguridad y eficiencia.', iconKey: 'video' },
-      { lineas: ['6 MESES', 'VIVOS Q&A', 'con Mateo'], hint: 'Encuentros mensuales en vivo para dudas, correcciones y profundizar técnica.', iconKey: 'live', lineaDestacadaIndice: 2 },
-      { lineas: ['COMUNIDAD'], hint: 'Canal con otras personas que entrenan el mismo método.', iconKey: 'community' },
+      {
+        lineas: ['WORKBOOK Y GUÍAS PRÁCTICAS'],
+        hint: 'Material descargable para acompañar el proceso, registrar lo que vas aprendiendo y llevarlo a tu práctica semana a semana.',
+        iconKey: 'book',
+      },
+      {
+        lineas: ['+25 CLASES GRABADAS'],
+        hint: 'Clases progresivas para desarrollar movilidad, fuerza y control, y aprender a moverte con más seguridad y autonomía.',
+        iconKey: 'video',
+      },
+      {
+        lineas: ['6 MESES DE ENCUENTROS EN VIVO CON MATEO'],
+        hint: 'Un encuentro mensual para hacer preguntas, resolver dudas, ajustar tu práctica y profundizar en los temas del programa.',
+        iconKey: 'live',
+      },
+      {
+        lineas: ['COMUNIDAD'],
+        hint: 'Un espacio para compartir el proceso con otras personas que también están aprendiendo a entender y desarrollar su cuerpo.',
+        iconKey: 'community',
+      },
     ],
     modulos: CURSO_MODULOS_PRESETS.map((item) => ({ ...item })),
   },
@@ -660,6 +686,16 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
       'Estoy actualizando los planes en este momento. Si querés reservar tu lugar, escribime o tocá el botón para recibir novedades.',
     proveedoresHabilitados: ['stripe', 'mercadopago'],
     opcionesPago: [],
+    beneficiosTitulo: 'Al formar parte de Cuerpo Autónomo tenés acceso a:',
+    beneficios: [
+      'Los 3 módulos principales y sus 20 clases.',
+      'Una llamada grupal semanal para acompañar el proceso.',
+      'Una clase virtual mensual para practicar juntos.',
+      'Encuentros con Mateo, Nico y profesionales invitados.',
+      'Una comunidad de personas recorriendo el mismo camino.',
+      'Material nuevo semanalmente para seguir aprendiendo y practicando.',
+      'Una sesión individual online, por única vez, con el profesional del equipo que elijas.'
+    ],
   },
   whatsapp: {
     imagenMobilePublicId: CURSO_WHATSAPP_BANNER_MOBILE_PUBLIC_ID,
@@ -775,7 +811,9 @@ const mergeHighlightItems = (
   items: CursoHighlight[] | undefined,
   defaults: CursoHighlight[]
 ): CursoHighlight[] => {
-  if (!items?.length) return defaults;
+  if (!items) return defaults;
+  // Array vacío es una edición válida (el admin borró todos los ítems).
+  if (items.length === 0) return [];
 
   return items.map((item, index) => ({
     ...(defaults[index] || {}),

@@ -71,13 +71,30 @@ export async function handleStripeCourseCheckoutCompleted(
     return { fulfilled: false, productId };
   }
 
+  let expiresAt: Date | undefined;
+  let stripeSubscriptionId: string | undefined;
+
+  if (session.mode === 'subscription' && session.subscription) {
+    stripeSubscriptionId =
+      typeof session.subscription === 'string' ? session.subscription : session.subscription.id;
+    try {
+      const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+      expiresAt = new Date(subscription.current_period_end * 1000);
+    } catch (error) {
+      coursePaymentWarn('stripe_checkout.subscription_lookup_failed', { error, stripeSubscriptionId });
+    }
+  }
+
   const result = await fulfillCoursePurchase({
     productId: product._id.toString(),
     provider: 'stripe',
-    transactionId: String(session.payment_intent || session.id),
+    transactionId: stripeSubscriptionId || String(session.payment_intent || session.id),
     email: customerEmail,
     amount: session.amount_total != null ? session.amount_total / 100 : undefined,
     moneda: session.currency?.toUpperCase(),
+    ...(session.mode === 'subscription'
+      ? { source: 'suscripcion' as const, expiresAt, stripeSubscriptionId }
+      : {}),
   });
 
   coursePaymentDebug('stripe_checkout.course_fulfilled', {

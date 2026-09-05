@@ -4,9 +4,22 @@ import {
   parseCursoPublicationDate,
 } from './cursoLandingPublication';
 
+type CursoAdquirido = {
+  productoId?: { toString(): string } | string;
+  status?: 'active' | 'expired' | 'revoked';
+  expiresAt?: Date | string | null;
+};
+
 type UserWithCourses = {
   rol?: string;
-  cursosAdquiridos?: Array<{ productoId?: { toString(): string } | string }>;
+  cursosAdquiridos?: CursoAdquirido[];
+};
+
+const isEntryVigente = (entry: CursoAdquirido, now: Date): boolean => {
+  const status = entry.status ?? 'active';
+  if (status !== 'active') return false;
+  if (!entry.expiresAt) return true;
+  return new Date(entry.expiresAt).getTime() > now.getTime();
 };
 
 export function userHasCourseAccess(user: UserWithCourses | null, productId: string): boolean {
@@ -15,15 +28,16 @@ export function userHasCourseAccess(user: UserWithCourses | null, productId: str
   return userHasPurchasedCourse(user, productId);
 }
 
-/** Compra real en cursosAdquiridos (sin bypass de Admin). */
+/** Compra/suscripción vigente en cursosAdquiridos (sin bypass de Admin). */
 export function userHasPurchasedCourse(
   user: UserWithCourses | null,
-  productId: string
+  productId: string,
+  now: Date = new Date()
 ): boolean {
   if (!user) return false;
   const target = productId.toString();
   return (user.cursosAdquiridos || []).some(
-    (entry) => entry?.productoId?.toString() === target
+    (entry) => entry?.productoId?.toString() === target && isEntryVigente(entry, now)
   );
 }
 

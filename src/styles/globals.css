@@ -794,7 +794,11 @@
   .mentorship-silver-border::before,
   .mentorship-anual-aura-wash,
   .mentorship-anual-draw-line,
-  .mentorship-anual-info-nudge {
+  .mentorship-anual-info-nudge,
+  .curso-oferta-hint,
+  .curso-oferta-hint-glow,
+  .curso-oferta-hint-shine,
+  .curso-oferta-hint-ring {
     animation: none !important;
   }
 }
@@ -874,4 +878,99 @@
 
 .mentorship-anual-info-nudge {
   animation: mentorship-anual-info-nudge 2.4s ease-in-out infinite;
+}
+
+@property --curso-oferta-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes curso-oferta-spin {
+  to {
+    --curso-oferta-angle: 360deg;
+  }
+}
+
+@keyframes curso-oferta-glow {
+  0%,
+  100% {
+    opacity: 0.32;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.14);
+  }
+}
+
+@keyframes curso-oferta-hint-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 0 1px rgba(20, 20, 17, 0.18),
+      0 8px 22px -10px rgba(20, 20, 17, 0.42);
+  }
+  50% {
+    transform: scale(1.045);
+    box-shadow:
+      0 0 0 5px rgba(20, 20, 17, 0.08),
+      0 14px 28px -10px rgba(20, 20, 17, 0.34);
+  }
+}
+
+@keyframes curso-oferta-shine {
+  0% {
+    left: -50%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+
+.curso-oferta-hint-glow {
+  background: radial-gradient(circle, rgba(20, 20, 17, 0.3) 0%, transparent 70%);
+  filter: blur(9px);
+  animation: curso-oferta-glow 2.2s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.curso-oferta-hint-ring {
+  background: conic-gradient(
+    from var(--curso-oferta-angle),
+    transparent 0deg,
+    #141411 55deg,
+    transparent 120deg,
+    transparent 360deg
+  );
+  animation: curso-oferta-spin 2.4s linear infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.curso-oferta-hint {
+  animation: curso-oferta-hint-pulse 2.2s ease-in-out infinite;
+  will-change: transform, box-shadow;
+}
+
+.curso-oferta-hint-shine {
+  pointer-events: none;
+  position: absolute;
+  inset-y: -20%;
+  width: 2.75rem;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(20, 20, 17, 0.2),
+    transparent
+  );
+  transform: skewX(-18deg);
+  animation: curso-oferta-shine 1.85s ease-in-out infinite;
 }

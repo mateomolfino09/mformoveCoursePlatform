@@ -122,6 +122,7 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
 
   // Estados para Programas Transformacionales
   const [esProgramaTransformacional, setEsProgramaTransformacional] = useState<boolean>(product.esProgramaTransformacional || false);
+  const [esSuscripcion, setEsSuscripcion] = useState<boolean>(product.esSuscripcion || false);
   const [duracionSemanas, setDuracionSemanas] = useState<number>(product.programaTransformacional?.duracionSemanas || 8);
   const [fechaFin, setFechaFin] = useState<string>(formatDateForInput(product.programaTransformacional?.fechaFin));
   const [cupoDisponible, setCupoDisponible] = useState<number>(product.programaTransformacional?.cupoDisponible || 50);
@@ -621,7 +622,8 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
       programaTransformacionalData,
       tipo === 'curso' ? cursoConfig : undefined,
       invitacionGrupoResuelta || undefined,
-      bioImageFile ?? undefined
+      bioImageFile ?? undefined,
+      tipo === 'curso' ? esSuscripcion : undefined
     );
   };
 
@@ -705,6 +707,26 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
                   <option value='recurso'>Recurso descargable</option>
                 </select>
               </label>
+
+              {tipo === 'curso' && (
+                <div className='flex flex-col gap-1'>
+                  <label className='flex items-center gap-3'>
+                    <input
+                      type='checkbox'
+                      className='h-4 w-4'
+                      checked={esSuscripcion}
+                      onChange={e => setEsSuscripcion(e.target.checked)}
+                    />
+                    <span className='text-sm font-medium text-gray-700'>
+                      Vender por suscripción (en vez de pago único)
+                    </span>
+                  </label>
+                  <p className='text-xs text-gray-500 pl-7'>
+                    El precio de arriba es el mensual. Se genera además un plan cada 4 meses (paga 3, se lleva 4).
+                    Cambiar esto en un curso ya publicado no regenera los links de pago existentes.
+                  </p>
+                </div>
+              )}
 
               {tipo === 'curso' && (
                 <div className='border-t border-gray-200 pt-6 mt-2'>

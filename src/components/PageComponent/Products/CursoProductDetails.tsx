@@ -7,6 +7,7 @@ import InfoModalSection from '../../InfoModalSection';
 import { toast } from '../../../hooks/useToast';
 import { toDatetimeLocalValue } from '../../../lib/cursoLandingPublication';
 import type { CursoLandingConfig } from '../../../types/cursoLanding';
+import { cursoPlanPagoKey } from '../../../types/cursoLanding';
 import { routes } from '../../../constants/routes';
 import { resolveClaseDescripcionGeneral } from '../../../lib/cursoClaseDescripcion';
 
@@ -171,13 +172,14 @@ export default function CursoProductDetails({
         )}
         {opcionesPago.length > 0 ? (
           <div className="mt-4 space-y-3">
-            {opcionesPago.map((plan) => (
-              <div key={plan.proveedor} className="rounded-lg border border-gray-200 p-3 space-y-2">
+            {opcionesPago.map((plan, index) => (
+              <div key={cursoPlanPagoKey(plan, index)} className="rounded-lg border border-gray-200 p-3 space-y-2">
                 <InfoModalField
                   label={plan.etiqueta}
                   value={
                     <span className="text-sm text-gray-700">
                       {plan.activo ? 'Activo' : 'Inactivo'} · {plan.monto} {plan.moneda}
+                      {plan.intervaloMeses === 4 ? ' · cada 4 meses' : ''}
                     </span>
                   }
                   showBorder={false}
@@ -345,8 +347,8 @@ export default function CursoProductDetails({
                   · cupos {tier.cuposUsados}/{tier.cuposLimite}
                 </p>
                 <p className="text-sm text-gray-500">{tier.descripcion || '—'}</p>
-                {(tier.opcionesPago || []).map((plan) => (
-                  <p key={plan.proveedor} className="text-xs text-gray-500 break-all">
+                {(tier.opcionesPago || []).map((plan, planIndex) => (
+                  <p key={cursoPlanPagoKey(plan, planIndex)} className="text-xs text-gray-500 break-all">
                     {plan.etiqueta}: {plan.paymentLink || 'sin link'}
                   </p>
                 ))}
