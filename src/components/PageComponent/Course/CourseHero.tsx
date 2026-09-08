@@ -158,14 +158,12 @@ const CourseHero = () => {
 
   return (
     <section
-      className="relative w-full min-h-[100vh] flex items-center justify-center font-montserrat bg-palette-cream"
+      className="relative flex min-h-[100vh] w-full flex-col items-center justify-center bg-palette-cream font-montserrat"
     >
-      <div className="text-center flex md:left-[2.3rem] justify-start items-start w-full px-7 absolute top-16 md:top-[3.3rem] right-0">
-        <p className="font-raleway text-center text-palette-ink text-lg font-normal leading-tight md:text-left md:text-xl lg:text-[1.15rem] lg:leading-[1.0] mb-1 md:mb-0 md:pt-2 md:shrink-0">
-          {tagline}
-        </p>
-      </div>
-      <div className="w-[90%] max-w-6xl mx-auto pt-12 mt-20 pb-10 md:py-6 flex flex-col md:flex-row md:items-start md:gap-10 lg:gap-14 px-3 sm:px-4">
+      <p className="w-full shrink-0 px-7 pt-24 text-center font-raleway text-lg font-normal leading-snug text-palette-ink md:absolute md:left-[2.3rem] md:right-0 md:top-[3.3rem] md:w-full md:px-7 md:pt-2 md:text-left md:text-xl md:leading-tight lg:text-[1.15rem] lg:leading-[1.0]">
+        {tagline}
+      </p>
+      <div className="mx-auto mt-4 flex w-[90%] max-w-6xl flex-col px-3 pb-10 sm:px-4 md:mt-20 md:flex-row md:items-start md:gap-10 md:py-6 lg:gap-14">
 
         <div className="w-full min-w-0 order-2 md:order-1 md:flex-1 text-center">
         {/* Contenedor LCP sin opacity:0 — el thumbnail debe ser visible desde el primer paint */}
