@@ -42,10 +42,7 @@ import {
   isCursoCheckoutSuscripcion,
   resolveCursoPlanIntervaloMeses,
 } from '../../../lib/cursoSuscripcion';
-import {
-  CURSO_SUSCRIPCION_INCLUDES,
-  CURSO_SUSCRIPCION_INCLUDES_TITULO,
-} from '../../../constants/cursoSuscripcionIncludes';
+import CourseIncludesBlock from './CourseIncludesBlock';
 
 interface Promocion {
   _id: string;
@@ -96,23 +93,6 @@ const countdownUnitVariants = {
     opacity: 1,
     y: 0,
     transition: { duration: 0.42, ease: countdownEase },
-  },
-};
-
-const beneficioListVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.07, delayChildren: 0.06 },
-  },
-};
-
-const beneficioItemVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.45, ease: countdownEase },
   },
 };
 
@@ -244,83 +224,6 @@ function OfertaSelectorButton({
         <span className="relative z-10">Oferta</span>
       </button>
     </span>
-  );
-}
-
-function EmphasisText({ text }: { text: string }) {
-  const parts = text.split(/(\*[^*]+\*)/g);
-  return (
-    <>
-      {parts.map((part, i) => {
-        if (part.startsWith('*') && part.endsWith('*') && part.length >= 3) {
-          return (
-            <em key={i} className="font-semibold italic text-palette-ink">
-              {part.slice(1, -1)}
-            </em>
-          );
-        }
-        return <span key={i}>{part}</span>;
-      })}
-    </>
-  );
-}
-
-function PlanesBeneficiosList({
-  titulo,
-  beneficios,
-}: {
-  titulo?: string;
-  beneficios: readonly string[];
-}) {
-  const reduceMotion = useReducedMotion();
-
-  return (
-    <div className="mx-auto mt-16 w-full max-w-[36rem] md:mt-20">
-      {titulo ? (
-        <motion.h3
-          initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: countdownEase }}
-          viewport={{ once: true, margin: '-48px' }}
-          className="text-pretty font-montserrat text-[1.35rem] font-semibold leading-[1.25] tracking-tight text-palette-ink md:text-[1.65rem] md:leading-[1.22]"
-        >
-          {titulo}
-        </motion.h3>
-      ) : null}
-      <motion.ul
-        className="mt-7 space-y-[1.15rem] md:mt-9 md:space-y-5"
-        variants={beneficioListVariants}
-        initial={reduceMotion ? false : 'hidden'}
-        whileInView="visible"
-        viewport={{ once: true, margin: '-48px' }}
-      >
-        {beneficios.map((beneficio, i) => (
-          <motion.li
-            key={`${beneficio}-${i}`}
-            variants={beneficioItemVariants}
-            className="flex items-start gap-3.5 text-left md:gap-4"
-          >
-            <svg
-              aria-hidden
-              viewBox="0 0 20 20"
-              fill="none"
-              className="mt-[0.28em] h-[1.05rem] w-[1.05rem] shrink-0 text-palette-ink md:mt-[0.32em] md:h-[1.15rem] md:w-[1.15rem]"
-            >
-              <path
-                d="M3.5 10.4 8 15l8.5-10"
-                stroke="currentColor"
-                strokeWidth="2.15"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="font-montserrat text-[1.05rem] font-normal leading-[1.45] text-palette-ink md:text-[1.18rem] md:leading-[1.48]">
-              <EmphasisText text={beneficio} />
-            </span>
-          </motion.li>
-        ))}
-      </motion.ul>
-    </div>
   );
 }
 
@@ -1107,6 +1010,8 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
             })}
           </motion.div>
 
+          <CourseIncludesBlock isOferta={is4Meses} />
+
           <PlansCheckoutFooter
             cta={
               <button
@@ -1131,11 +1036,6 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
               </button>
             }
             disclaimer="Sin contratos largos. Cancelá cuando quieras."
-          />
-
-          <PlanesBeneficiosList
-            titulo={CURSO_SUSCRIPCION_INCLUDES_TITULO}
-            beneficios={CURSO_SUSCRIPCION_INCLUDES}
           />
         </motion.div>
       );

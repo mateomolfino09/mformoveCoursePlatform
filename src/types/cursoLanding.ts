@@ -408,49 +408,64 @@ const CURSO_MODULOS_PRESETS: Omit<CursoModuloLanding, 'orden'>[] = [
 
 const CURSO_FAQ_PRESETS: Omit<CursoFaqItem, 'orden'>[] = [
   {
-    pregunta: '¿Qué es Cuerpo autónomo y qué incluye?',
+    pregunta: '¿Qué es Cuerpo Autónomo y qué incluye?',
     respuesta:
-      'Es un programa de soberanía física para recuperar postura, regular tensión y moverte con más libertad y menos dolor. Incluye workbook y ejercicios, más de 25 clases grabadas, 6 meses de encuentros en vivo Q&A conmigo, comunidad y acceso al material para avanzar a tu ritmo.',
+      'Cuerpo Autónomo es una academia para aprender a construir un cuerpo fuerte, sin restricciones de movimiento y saludable. Al sumarte accedés a los 3 módulos principales y sus 20 clases, llamadas grupales semanales, una clase virtual mensual, comunidad, material nuevo semanalmente y una sesión individual online con un profesional del equipo.',
   },
   {
-    pregunta: '¿En qué se diferencia de la mentoría?',
+    pregunta: '¿Es un curso o una membresía?',
     respuesta:
-      'En la mentoría trabajo con vos de forma individual y el plan se arma a tu medida. Cuerpo autónomo es un programa grupal con un camino estructurado, contenido grabado y vivo en comunidad. Si necesitás seguimiento uno a uno y un plan totalmente personalizado, la mentoría suele encajar mejor.',
+      'Es una academia por suscripción. Los módulos principales te dan un camino claro para empezar, pero Cuerpo Autónomo no termina cuando completás las clases. Mientras formes parte de la academia seguís teniendo acceso a la comunidad, las llamadas, las clases virtuales y a los nuevos materiales y herramientas que vayamos incorporando.',
+  },
+  {
+    pregunta: '¿Qué pasa cuando termino los 3 módulos?',
+    respuesta:
+      'Ahí empieza otra etapa. Los módulos te dan las bases para entender tu cuerpo y desarrollar movilidad, fuerza y coordinación. Después podés seguir practicando, profundizando y utilizando los nuevos contenidos, clases y encuentros de la academia para continuar construyendo tu cuerpo según tus propios objetivos.',
   },
   {
     pregunta: '¿Necesito experiencia previa?',
     respuesta:
-      'No. El método está pensado para distintos puntos de partida: podés empezar desde cero, retomar después de un tiempo o profundizar si ya tenés base. Vos regulás la intensidad según cómo te sentís cada semana.',
+      'No. Podés empezar desde cero o sumarte aunque ya entrenes. El recorrido comienza por aprender a percibir y entender mejor tu cuerpo antes de avanzar hacia el desarrollo de capacidades más complejas. Cada persona adapta la práctica a su propio punto de partida.',
   },
   {
-    pregunta: '¿Cuánto tiempo tengo que dedicar?',
+    pregunta: '¿Cuánto tiempo tengo que dedicarle?',
     respuesta:
-      'Como referencia, unas 2 horas por semana alcanzan para sostener el ritmo. Las clases grabadas duran entre 20 y 30 minutos y podés hacerlas cuando te quede cómodo; los encuentros en vivo de Q&A son mensuales durante 6 meses.',
+      'No buscamos que Cuerpo Autónomo se convierta en otra obligación difícil de sostener. Como referencia, podés empezar dedicando entre 2 y 3 momentos por semana a las clases y prácticas. El contenido está disponible para que avances a tu ritmo y puedas integrarlo a tu vida.',
   },
   {
-    pregunta: '¿Cómo funciona el soporte?',
+    pregunta: '¿Cómo funciona el acompañamiento?',
     respuesta:
-      'Tenés un canal por WhatsApp para consultas puntuales y, además, los encuentros en vivo de Q&A para dudas, correcciones y profundizar técnica con el grupo.',
+      'No hacés el proceso completamente solo. Durante tu recorrido tenés acceso a la comunidad para compartir dudas y avances, llamadas grupales semanales para profundizar en los temas que estamos trabajando y una clase virtual mensual para practicar juntos. Los encuentros pueden estar acompañados por Mateo, Nico y otros profesionales invitados.',
   },
   {
-    pregunta: '¿Qué pasa si me pierdo una semana o pauso?',
+    pregunta: '¿Qué es la sesión individual con un profesional?',
     respuesta:
-      'El contenido queda disponible para retomarlo cuando quieras. No perdés tu avance: volvés por donde te quedaste, sin penalidad ni culpa.',
+      'Al formar parte de la academia tenés acceso a una sesión individual online, por única vez, con el profesional del equipo que consideres más adecuado para tu momento. Podés elegir una mirada más orientada al movimiento y entrenamiento, los hábitos o situaciones físicas puntuales.',
   },
   {
-    pregunta: '¿Puedo pagar en cuotas?',
+    pregunta: '¿Qué pasa si me pierdo una semana?',
     respuesta:
-      'Sí. En Uruguay y Latinoamérica podés financiar el programa en tu moneda local con hasta 12 cuotas, según el medio de pago y el país que elijas al checkout.',
+      'No pasa nada. No necesitás seguir el ritmo de nadie. Las clases principales están disponibles para que avances a tu propio ritmo y puedas retomar cuando lo necesites. La idea es construir una práctica sostenible, no agregar presión.',
+  },
+  {
+    pregunta: '¿En qué se diferencia de una mentoría personalizada?',
+    respuesta:
+      'En una mentoría trabajamos de forma individual sobre tus objetivos y necesidades específicas. Cuerpo Autónomo ofrece un camino estructurado dentro de una experiencia grupal, con contenido, comunidad y acompañamiento profesional. Si buscás construir una práctica propia mientras aprendés junto a otras personas, la academia probablemente sea para vos.',
+  },
+  {
+    pregunta: '¿Puedo cancelar mi suscripción?',
+    respuesta:
+      'Sí. Cuerpo Autónomo está pensado para que permanezcas porque seguís encontrando valor en la academia, no porque estés atado a un contrato. Podés cancelar tu suscripción cuando decidas dejar de formar parte.',
   },
   {
     pregunta: '¿Qué métodos de pago aceptan?',
     respuesta:
-      'En Uruguay y Latinoamérica procesamos el pago con dLocal: tarjetas locales y cuotas en moneda local. En el resto del mundo usamos Stripe en USD, con tarjetas internacionales, Apple Pay y Google Pay.',
+      'En Uruguay y Latinoamérica podés pagar utilizando los medios disponibles en tu moneda local. Para el resto del mundo procesamos pagos internacionales en USD mediante tarjeta.',
   },
   {
     pregunta: '¿Tienen políticas de reembolso?',
     respuesta:
-      'Por tratarse de un programa digital con acceso inmediato, no ofrecemos reembolsos una vez activado el acceso. Si tenés un problema con el cobro o necesitás revisar tu caso, escribinos por WhatsApp o a hola@mformove.com antes de completar la compra si todavía tenés dudas.',
+      'Al tratarse de una academia digital con acceso inmediato al contenido y los espacios de la comunidad, no ofrecemos reembolsos una vez activada la suscripción. Si antes de sumarte tenés dudas sobre si Cuerpo Autónomo es para vos, podés hablar con nuestro equipo para ayudarte a decidir.',
   },
 ];
 
@@ -710,7 +725,8 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
   faq: {
     anclaId: 'membership-faq',
     titulo: 'Respuestas claras antes de sumarte',
-    intro: 'Si todavía tenés dudas, revisá esta lista o escribime. Quiero que tomes una decisión informada.',
+    intro:
+      'Cuerpo Autónomo es una academia en movimiento. Estas son algunas de las preguntas más comunes antes de empezar.',
     items: CURSO_FAQ_PRESETS.map((item, orden) => ({ ...item, orden })),
   },
   ctaFinal: {

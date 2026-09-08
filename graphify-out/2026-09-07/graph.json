@@ -888,8 +888,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "package_dependencies_anthropic_ai_sdk",
-      "community": 394,
-      "community_name": "@anthropic-ai/sdk",
+      "community": 62,
+      "community_name": "dependencies",
       "norm_label": "@anthropic-ai/sdk"
     },
     {
@@ -899,8 +899,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "anthropic_ai_sdk",
-      "community": 394,
-      "community_name": "@anthropic-ai/sdk",
+      "community": 62,
+      "community_name": "dependencies",
       "norm_label": "@anthropic-ai/sdk"
     },
     {
@@ -1526,8 +1526,8 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "package_dependencies_axios",
-      "community": 62,
-      "community_name": "dependencies",
+      "community": 393,
+      "community_name": "axios",
       "norm_label": "axios"
     },
     {
@@ -1537,8 +1537,8 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "axios",
-      "community": 62,
-      "community_name": "dependencies",
+      "community": 393,
+      "community_name": "axios",
       "norm_label": "axios"
     },
     {
@@ -3121,8 +3121,8 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "package_devdependencies_eslint",
-      "community": 100,
-      "community_name": "devDependencies",
+      "community": 394,
+      "community_name": "eslint",
       "norm_label": "eslint"
     },
     {
@@ -3132,8 +3132,8 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "eslint",
-      "community": 100,
-      "community_name": "devDependencies",
+      "community": 394,
+      "community_name": "eslint",
       "norm_label": "eslint"
     },
     {
@@ -3143,8 +3143,8 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "package_devdependencies_eslint_config_next",
-      "community": 399,
-      "community_name": "eslint-config-next",
+      "community": 100,
+      "community_name": "devDependencies",
       "norm_label": "eslint-config-next"
     },
     {
@@ -3154,8 +3154,8 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "eslint_config_next",
-      "community": 399,
-      "community_name": "eslint-config-next",
+      "community": 100,
+      "community_name": "devDependencies",
       "norm_label": "eslint-config-next"
     },
     {
@@ -4298,8 +4298,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "scripts_ensurementorshipcuerpoautonomodiscount",
-      "community": 77,
-      "community_name": "checkout/route.ts",
+      "community": 417,
+      "community_name": "main",
       "norm_label": "ensurementorshipcuerpoautonomodiscount.js"
     },
     {
@@ -4309,8 +4309,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "scripts_ensurementorshipcuerpoautonomodiscount_loadenv",
-      "community": 77,
-      "community_name": "checkout/route.ts",
+      "community": 417,
+      "community_name": "main",
       "norm_label": "loadenv()"
     },
     {
@@ -4320,8 +4320,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "scripts_ensurementorshipcuerpoautonomodiscount_ensurediscount",
-      "community": 77,
-      "community_name": "checkout/route.ts",
+      "community": 417,
+      "community_name": "main",
       "norm_label": "ensurediscount()"
     },
     {
@@ -4331,8 +4331,8 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "scripts_ensurementorshipcuerpoautonomodiscount_main",
-      "community": 77,
-      "community_name": "checkout/route.ts",
+      "community": 417,
+      "community_name": "main",
       "norm_label": "main()"
     },
     {
@@ -6707,8 +6707,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_ai_management_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "ai-management/page.tsx"
     },
     {
@@ -6718,8 +6718,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_app_admin_ai_management_page_aimanagementpage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "aimanagementpage()"
     },
     {
@@ -6729,8 +6729,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_ai_management_settings_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "settings/page.tsx"
     },
     {
@@ -6740,8 +6740,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_app_admin_ai_management_settings_page_aisettingspage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "aisettingspage()"
     },
     {
@@ -6751,8 +6751,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_ai_management_voice_brand_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "voice-brand/page.tsx"
     },
     {
@@ -6762,8 +6762,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_app_admin_ai_management_voice_brand_page_voicebrandmanagementpage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "voicebrandmanagementpage()"
     },
     {
@@ -6773,8 +6773,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_auto_emails_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "auto-emails/page.tsx"
     },
     {
@@ -6784,8 +6784,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_app_admin_auto_emails_page_autogeneratedemail",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "autogeneratedemail"
     },
     {
@@ -6795,8 +6795,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_app_admin_auto_emails_page_autoemailspage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "autoemailspage()"
     },
     {
@@ -7048,8 +7048,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_clases_crear_tipo_clase_page",
-      "community": 30,
-      "community_name": "requests.ts",
+      "community": 246,
+      "community_name": "CreateClassType.tsx",
       "norm_label": "admin/clases/crear-tipo-clase/page.tsx"
     },
     {
@@ -7059,8 +7059,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_app_admin_clases_crear_tipo_clase_page_page",
-      "community": 30,
-      "community_name": "requests.ts",
+      "community": 246,
+      "community_name": "CreateClassType.tsx",
       "norm_label": "page()"
     },
     {
@@ -7169,8 +7169,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_classes_createclasstype_page",
-      "community": 30,
-      "community_name": "requests.ts",
+      "community": 246,
+      "community_name": "CreateClassType.tsx",
       "norm_label": "admin/classes/createclasstype/page.tsx"
     },
     {
@@ -7180,8 +7180,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_app_admin_classes_createclasstype_page_page",
-      "community": 30,
-      "community_name": "requests.ts",
+      "community": 246,
+      "community_name": "CreateClassType.tsx",
       "norm_label": "page()"
     },
     {
@@ -7213,8 +7213,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_correos_automaticos_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "correos-automaticos/page.tsx"
     },
     {
@@ -7224,8 +7224,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_app_admin_correos_automaticos_page_autogeneratedemail",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "autogeneratedemail"
     },
     {
@@ -7235,8 +7235,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_app_admin_correos_automaticos_page_autoemailspage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "autoemailspage()"
     },
     {
@@ -7269,7 +7269,7 @@
       "_origin": "ast",
       "id": "src_app_admin_faq_page",
       "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community_name": "CreateFAQ.tsx",
       "norm_label": "admin/faq/page.tsx"
     },
     {
@@ -7280,7 +7280,7 @@
       "_origin": "ast",
       "id": "src_app_admin_faq_page_page",
       "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community_name": "CreateFAQ.tsx",
       "norm_label": "page()"
     },
     {
@@ -7290,8 +7290,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_gestion_ia_configuracion_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "configuracion/page.tsx"
     },
     {
@@ -7301,8 +7301,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_app_admin_gestion_ia_configuracion_page_aisettingspage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "aisettingspage()"
     },
     {
@@ -7312,8 +7312,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_gestion_ia_generador_correos_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "generador-correos/page.tsx"
     },
     {
@@ -7323,8 +7323,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_app_admin_gestion_ia_generador_correos_page_emailgeneratormanagementpage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "emailgeneratormanagementpage()"
     },
     {
@@ -7356,8 +7356,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_gestion_ia_marca_voz_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "marca-voz/page.tsx"
     },
     {
@@ -7367,8 +7367,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_app_admin_gestion_ia_marca_voz_page_voicebrandmanagementpage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "voicebrandmanagementpage()"
     },
     {
@@ -7378,8 +7378,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_gestion_ia_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "gestion-ia/page.tsx"
     },
     {
@@ -7389,8 +7389,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_app_admin_gestion_ia_page_aimanagementpage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "aimanagementpage()"
     },
     {
@@ -7543,8 +7543,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_memberships_bitacora_create_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 410,
+      "community_name": "bitacora/create/page.tsx",
       "norm_label": "bitacora/create/page.tsx"
     },
     {
@@ -7554,8 +7554,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_app_admin_memberships_bitacora_create_page_contenttype",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 410,
+      "community_name": "bitacora/create/page.tsx",
       "norm_label": "contenttype"
     },
     {
@@ -7565,8 +7565,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_app_admin_memberships_bitacora_create_page_weekcontentitem",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 410,
+      "community_name": "bitacora/create/page.tsx",
       "norm_label": "weekcontentitem"
     },
     {
@@ -7576,8 +7576,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_app_admin_memberships_bitacora_create_page_weekcontent",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 410,
+      "community_name": "bitacora/create/page.tsx",
       "norm_label": "weekcontent"
     },
     {
@@ -7587,8 +7587,8 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_app_admin_memberships_bitacora_create_page_emptycontentitem",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 410,
+      "community_name": "bitacora/create/page.tsx",
       "norm_label": "emptycontentitem()"
     },
     {
@@ -7598,8 +7598,8 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "src_app_admin_memberships_bitacora_create_page_createbitacorapage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 410,
+      "community_name": "bitacora/create/page.tsx",
       "norm_label": "createbitacorapage()"
     },
     {
@@ -7609,8 +7609,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_memberships_bitacora_edit_id_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "bitacora/edit/[id]/page.tsx"
     },
     {
@@ -7620,8 +7620,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_app_admin_memberships_bitacora_edit_id_page_contenttype",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "contenttype"
     },
     {
@@ -7631,8 +7631,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_app_admin_memberships_bitacora_edit_id_page_weekcontentitem",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "weekcontentitem"
     },
     {
@@ -7642,8 +7642,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "src_app_admin_memberships_bitacora_edit_id_page_weekcontent",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "weekcontent"
     },
     {
@@ -7653,8 +7653,8 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "src_app_admin_memberships_bitacora_edit_id_page_pageprops",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "pageprops"
     },
     {
@@ -7664,8 +7664,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "src_app_admin_memberships_bitacora_edit_id_page_sortablecontentcard",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "sortablecontentcard()"
     },
     {
@@ -7675,8 +7675,8 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "src_app_admin_memberships_bitacora_edit_id_page_editbitacorapage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "editbitacorapage()"
     },
     {
@@ -7774,8 +7774,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_memberships_class_modules_id_edit_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "edit/page.tsx"
     },
     {
@@ -7796,8 +7796,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_memberships_class_modules_create_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "class-modules/create/page.tsx"
     },
     {
@@ -7807,8 +7807,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_app_admin_memberships_class_modules_create_page_createclassmodulepage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "createclassmodulepage()"
     },
     {
@@ -7818,8 +7818,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_memberships_class_modules_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "class-modules/page.tsx"
     },
     {
@@ -7829,8 +7829,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_app_admin_memberships_class_modules_page_modulewithclasses",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "modulewithclasses"
     },
     {
@@ -7917,8 +7917,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_memberships_classes_createclasstype_page",
-      "community": 30,
-      "community_name": "requests.ts",
+      "community": 246,
+      "community_name": "CreateClassType.tsx",
       "norm_label": "memberships/classes/createclasstype/page.tsx"
     },
     {
@@ -7928,8 +7928,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_app_admin_memberships_classes_createclasstype_page_page",
-      "community": 30,
-      "community_name": "requests.ts",
+      "community": 246,
+      "community_name": "CreateClassType.tsx",
       "norm_label": "page()"
     },
     {
@@ -8093,8 +8093,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_memberships_module_classes_edit_id_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "module-classes/edit/[id]/page.tsx"
     },
     {
@@ -8104,8 +8104,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_app_admin_memberships_module_classes_edit_id_page_moduleclassdata",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "moduleclassdata"
     },
     {
@@ -8115,8 +8115,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_app_admin_memberships_module_classes_edit_id_page_editmoduleclasspage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "editmoduleclasspage()"
     },
     {
@@ -8214,8 +8214,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_memberships_promociones_page",
-      "community": 149,
-      "community_name": "AllPromociones.tsx",
+      "community": 118,
+      "community_name": "useToast.ts",
       "norm_label": "memberships/promociones/page.tsx"
     },
     {
@@ -8225,8 +8225,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_admin_memberships_promociones_page_page",
-      "community": 149,
-      "community_name": "AllPromociones.tsx",
+      "community": 118,
+      "community_name": "useToast.ts",
       "norm_label": "page()"
     },
     {
@@ -8236,8 +8236,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_memberships_submodules_moduleid_submoduleslug_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "submodules/[moduleid]/[submoduleslug]/page.tsx"
     },
     {
@@ -8247,8 +8247,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_app_admin_memberships_submodules_moduleid_submoduleslug_page_moduleclassitem",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "moduleclassitem"
     },
     {
@@ -8269,8 +8269,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_memberships_submodules_create_class_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "create-class/page.tsx"
     },
     {
@@ -8335,8 +8335,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_crear_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 412,
+      "community_name": "membresias/bitacora/crear/page.tsx",
       "norm_label": "membresias/bitacora/crear/page.tsx"
     },
     {
@@ -8346,8 +8346,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_crear_page_contenttype",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 412,
+      "community_name": "membresias/bitacora/crear/page.tsx",
       "norm_label": "contenttype"
     },
     {
@@ -8357,8 +8357,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_crear_page_weekcontentitem",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 412,
+      "community_name": "membresias/bitacora/crear/page.tsx",
       "norm_label": "weekcontentitem"
     },
     {
@@ -8368,8 +8368,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_crear_page_weekcontent",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 412,
+      "community_name": "membresias/bitacora/crear/page.tsx",
       "norm_label": "weekcontent"
     },
     {
@@ -8379,8 +8379,8 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_crear_page_emptycontentitem",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 412,
+      "community_name": "membresias/bitacora/crear/page.tsx",
       "norm_label": "emptycontentitem()"
     },
     {
@@ -8390,8 +8390,8 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_crear_page_createbitacorapage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 412,
+      "community_name": "membresias/bitacora/crear/page.tsx",
       "norm_label": "createbitacorapage()"
     },
     {
@@ -8401,8 +8401,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_editar_id_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "bitacora/editar/[id]/page.tsx"
     },
     {
@@ -8412,8 +8412,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_editar_id_page_contenttype",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "contenttype"
     },
     {
@@ -8423,8 +8423,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_editar_id_page_weekcontentitem",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "weekcontentitem"
     },
     {
@@ -8434,8 +8434,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_editar_id_page_weekcontent",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "weekcontent"
     },
     {
@@ -8445,8 +8445,8 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_editar_id_page_pageprops",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "pageprops"
     },
     {
@@ -8456,8 +8456,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_editar_id_page_sortablecontentcard",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "sortablecontentcard()"
     },
     {
@@ -8467,8 +8467,8 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_editar_id_page_editbitacorapage",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "editbitacorapage()"
     },
     {
@@ -8479,7 +8479,7 @@
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_lista_page",
       "community": 184,
-      "community_name": "lista/page.tsx",
+      "community_name": "mentorias/planes/page.tsx",
       "norm_label": "lista/page.tsx"
     },
     {
@@ -8490,7 +8490,7 @@
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_lista_page_weekcontentitem",
       "community": 184,
-      "community_name": "lista/page.tsx",
+      "community_name": "mentorias/planes/page.tsx",
       "norm_label": "weekcontentitem"
     },
     {
@@ -8501,7 +8501,7 @@
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_lista_page_individualclassforpreview",
       "community": 184,
-      "community_name": "lista/page.tsx",
+      "community_name": "mentorias/planes/page.tsx",
       "norm_label": "individualclassforpreview"
     },
     {
@@ -8512,7 +8512,7 @@
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_lista_page_weeklycontent",
       "community": 184,
-      "community_name": "lista/page.tsx",
+      "community_name": "mentorias/planes/page.tsx",
       "norm_label": "weeklycontent"
     },
     {
@@ -8523,7 +8523,7 @@
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_lista_page_logbook",
       "community": 184,
-      "community_name": "lista/page.tsx",
+      "community_name": "mentorias/planes/page.tsx",
       "norm_label": "logbook"
     },
     {
@@ -8534,7 +8534,7 @@
       "_origin": "ast",
       "id": "src_app_admin_membresias_bitacora_lista_page_bitacoralistpage",
       "community": 184,
-      "community_name": "lista/page.tsx",
+      "community_name": "mentorias/planes/page.tsx",
       "norm_label": "bitacoralistpage()"
     },
     {
@@ -8566,8 +8566,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_membresias_clases_modulo_editar_id_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "clases-modulo/editar/[id]/page.tsx"
     },
     {
@@ -8577,8 +8577,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_app_admin_membresias_clases_modulo_editar_id_page_moduleclassdata",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "moduleclassdata"
     },
     {
@@ -8643,8 +8643,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_membresias_clases_crear_tipo_clase_page",
-      "community": 30,
-      "community_name": "requests.ts",
+      "community": 246,
+      "community_name": "CreateClassType.tsx",
       "norm_label": "membresias/clases/crear-tipo-clase/page.tsx"
     },
     {
@@ -8654,8 +8654,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_app_admin_membresias_clases_crear_tipo_clase_page_page",
-      "community": 30,
-      "community_name": "requests.ts",
+      "community": 246,
+      "community_name": "CreateClassType.tsx",
       "norm_label": "page()"
     },
     {
@@ -8951,8 +8951,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_membresias_modulos_clase_id_editar_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "editar/page.tsx"
     },
     {
@@ -8973,8 +8973,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_membresias_modulos_clase_crear_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "modulos-clase/crear/page.tsx"
     },
     {
@@ -8995,8 +8995,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_membresias_modulos_clase_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "modulos-clase/page.tsx"
     },
     {
@@ -9006,8 +9006,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_app_admin_membresias_modulos_clase_page_modulewithclasses",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "modulewithclasses"
     },
     {
@@ -9116,8 +9116,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_membresias_promociones_page",
-      "community": 149,
-      "community_name": "AllPromociones.tsx",
+      "community": 118,
+      "community_name": "useToast.ts",
       "norm_label": "membresias/promociones/page.tsx"
     },
     {
@@ -9127,8 +9127,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_admin_membresias_promociones_page_page",
-      "community": 149,
-      "community_name": "AllPromociones.tsx",
+      "community": 118,
+      "community_name": "useToast.ts",
       "norm_label": "page()"
     },
     {
@@ -9138,8 +9138,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_membresias_submodulos_moduleid_submoduleslug_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "submodulos/[moduleid]/[submoduleslug]/page.tsx"
     },
     {
@@ -9149,8 +9149,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_app_admin_membresias_submodulos_moduleid_submoduleslug_page_moduleclassitem",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "moduleclassitem"
     },
     {
@@ -9171,8 +9171,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_membresias_submodulos_crear_clase_page",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "submodulos/crear-clase/page.tsx"
     },
     {
@@ -9303,7 +9303,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_mentorias_planes_page",
-      "community": 246,
+      "community": 184,
       "community_name": "mentorias/planes/page.tsx",
       "norm_label": "mentorias/planes/page.tsx"
     },
@@ -9314,7 +9314,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_app_admin_mentorias_planes_page_mentorshipplanpagooption",
-      "community": 246,
+      "community": 184,
       "community_name": "mentorias/planes/page.tsx",
       "norm_label": "mentorshipplanpagooption"
     },
@@ -9325,7 +9325,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_app_admin_mentorias_planes_page_mentorshipplan",
-      "community": 246,
+      "community": 184,
       "community_name": "mentorias/planes/page.tsx",
       "norm_label": "mentorshipplan"
     },
@@ -9336,7 +9336,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_app_admin_mentorias_planes_page_paymentlinkfield",
-      "community": 246,
+      "community": 184,
       "community_name": "mentorias/planes/page.tsx",
       "norm_label": "paymentlinkfield()"
     },
@@ -9347,7 +9347,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "src_app_admin_mentorias_planes_page_emptyplan",
-      "community": 246,
+      "community": 184,
       "community_name": "mentorias/planes/page.tsx",
       "norm_label": "emptyplan"
     },
@@ -9358,7 +9358,7 @@
       "source_location": "L99",
       "_origin": "ast",
       "id": "src_app_admin_mentorias_planes_page_levels",
-      "community": 246,
+      "community": 184,
       "community_name": "mentorias/planes/page.tsx",
       "norm_label": "levels"
     },
@@ -9479,8 +9479,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_mentorship_plans_page",
-      "community": 393,
-      "community_name": "mentorship/plans/page.tsx",
+      "community": 184,
+      "community_name": "mentorias/planes/page.tsx",
       "norm_label": "mentorship/plans/page.tsx"
     },
     {
@@ -9490,8 +9490,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_app_admin_mentorship_plans_page_mentorshipplanpagooption",
-      "community": 393,
-      "community_name": "mentorship/plans/page.tsx",
+      "community": 184,
+      "community_name": "mentorias/planes/page.tsx",
       "norm_label": "mentorshipplanpagooption"
     },
     {
@@ -9501,8 +9501,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_app_admin_mentorship_plans_page_mentorshipplan",
-      "community": 393,
-      "community_name": "mentorship/plans/page.tsx",
+      "community": 184,
+      "community_name": "mentorias/planes/page.tsx",
       "norm_label": "mentorshipplan"
     },
     {
@@ -9512,8 +9512,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_app_admin_mentorship_plans_page_paymentlinkfield",
-      "community": 393,
-      "community_name": "mentorship/plans/page.tsx",
+      "community": 184,
+      "community_name": "mentorias/planes/page.tsx",
       "norm_label": "paymentlinkfield()"
     },
     {
@@ -9523,8 +9523,8 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "src_app_admin_mentorship_plans_page_emptyplan",
-      "community": 393,
-      "community_name": "mentorship/plans/page.tsx",
+      "community": 184,
+      "community_name": "mentorias/planes/page.tsx",
       "norm_label": "emptyplan"
     },
     {
@@ -9534,8 +9534,8 @@
       "source_location": "L105",
       "_origin": "ast",
       "id": "src_app_admin_mentorship_plans_page_levels",
-      "community": 393,
-      "community_name": "mentorship/plans/page.tsx",
+      "community": 184,
+      "community_name": "mentorias/planes/page.tsx",
       "norm_label": "levels"
     },
     {
@@ -9623,7 +9623,7 @@
       "_origin": "ast",
       "id": "src_app_admin_preguntas_frecuentes_page",
       "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community_name": "CreateFAQ.tsx",
       "norm_label": "admin/preguntas-frecuentes/page.tsx"
     },
     {
@@ -9634,7 +9634,7 @@
       "_origin": "ast",
       "id": "src_app_admin_preguntas_frecuentes_page_page",
       "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community_name": "CreateFAQ.tsx",
       "norm_label": "page()"
     },
     {
@@ -12339,8 +12339,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_api_debug_regenerate_payment_links_route",
-      "community": 273,
-      "community_name": "productModel.js",
+      "community": 413,
+      "community_name": "createEventProductWithPrices.ts",
       "norm_label": "regenerate-payment-links/route.ts"
     },
     {
@@ -12350,8 +12350,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_app_api_debug_regenerate_payment_links_route_post",
-      "community": 273,
-      "community_name": "productModel.js",
+      "community": 413,
+      "community_name": "createEventProductWithPrices.ts",
       "norm_label": "post()"
     },
     {
@@ -14199,7 +14199,7 @@
       "_origin": "ast",
       "id": "src_app_api_link_in_bio_products_route",
       "community": 266,
-      "community_name": "bio/page.tsx",
+      "community_name": "products/route.ts",
       "norm_label": "products/route.ts"
     },
     {
@@ -14210,7 +14210,7 @@
       "_origin": "ast",
       "id": "src_app_api_link_in_bio_products_route_runtime",
       "community": 266,
-      "community_name": "bio/page.tsx",
+      "community_name": "products/route.ts",
       "norm_label": "runtime"
     },
     {
@@ -14221,7 +14221,7 @@
       "_origin": "ast",
       "id": "src_app_api_link_in_bio_products_route_dynamic",
       "community": 266,
-      "community_name": "bio/page.tsx",
+      "community_name": "products/route.ts",
       "norm_label": "dynamic"
     },
     {
@@ -14232,7 +14232,7 @@
       "_origin": "ast",
       "id": "src_app_api_link_in_bio_products_route_get",
       "community": 266,
-      "community_name": "bio/page.tsx",
+      "community_name": "products/route.ts",
       "norm_label": "get()"
     },
     {
@@ -16123,8 +16123,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_api_payments_course_mercadopago_checkout_route",
-      "community": 33,
-      "community_name": "coursePaymentWarn",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "course/mercadopago-checkout/route.ts"
     },
     {
@@ -16134,8 +16134,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_app_api_payments_course_mercadopago_checkout_route_runtime",
-      "community": 33,
-      "community_name": "coursePaymentWarn",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "runtime"
     },
     {
@@ -16145,8 +16145,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_app_api_payments_course_mercadopago_checkout_route_post",
-      "community": 33,
-      "community_name": "coursePaymentWarn",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "post()"
     },
     {
@@ -17278,8 +17278,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_app_api_payments_mentorship_mercadopago_process_route_post",
-      "community": 36,
-      "community_name": "coursePaymentDebug",
+      "community": 33,
+      "community_name": "coursePaymentWarn",
       "norm_label": "post()"
     },
     {
@@ -17377,8 +17377,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "src_app_api_payments_mercadopagoconfig_mercado_pago_max_installments",
-      "community": 48,
-      "community_name": "course/mercadoPagoWebhook/route.ts",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "mercado_pago_max_installments"
     },
     {
@@ -17861,8 +17861,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_api_payments_stripe_createeventproductwithprices",
-      "community": 273,
-      "community_name": "productModel.js",
+      "community": 413,
+      "community_name": "createEventProductWithPrices.ts",
       "norm_label": "createeventproductwithprices.ts"
     },
     {
@@ -17872,8 +17872,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_app_api_payments_stripe_createeventproductwithprices_preciosevento",
-      "community": 273,
-      "community_name": "productModel.js",
+      "community": 413,
+      "community_name": "createEventProductWithPrices.ts",
       "norm_label": "preciosevento"
     },
     {
@@ -17883,8 +17883,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_app_api_payments_stripe_createeventproductwithprices_createeventproductwithpricesparams",
-      "community": 273,
-      "community_name": "productModel.js",
+      "community": 413,
+      "community_name": "createEventProductWithPrices.ts",
       "norm_label": "createeventproductwithpricesparams"
     },
     {
@@ -17894,8 +17894,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_app_api_payments_stripe_createeventproductwithprices_createeventproductwithprices",
-      "community": 273,
-      "community_name": "productModel.js",
+      "community": 413,
+      "community_name": "createEventProductWithPrices.ts",
       "norm_label": "createeventproductwithprices()"
     },
     {
@@ -20853,7 +20853,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_bio_page",
-      "community": 266,
+      "community": 399,
       "community_name": "bio/page.tsx",
       "norm_label": "bio/page.tsx"
     },
@@ -20864,7 +20864,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_app_bio_page_dynamic",
-      "community": 266,
+      "community": 399,
       "community_name": "bio/page.tsx",
       "norm_label": "dynamic"
     },
@@ -20875,7 +20875,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_bio_page_revalidate",
-      "community": 266,
+      "community": 399,
       "community_name": "bio/page.tsx",
       "norm_label": "revalidate"
     },
@@ -20886,7 +20886,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_app_bio_page_fetchcache",
-      "community": 266,
+      "community": 399,
       "community_name": "bio/page.tsx",
       "norm_label": "fetchcache"
     },
@@ -20897,7 +20897,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_app_bio_page_metadata",
-      "community": 266,
+      "community": 399,
       "community_name": "bio/page.tsx",
       "norm_label": "metadata"
     },
@@ -20908,8 +20908,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_app_bio_page_biopage",
-      "community": 266,
-      "community_name": "bio/page.tsx",
+      "community": 135,
+      "community_name": "latestPublishedCurso.ts",
       "norm_label": "biopage()"
     },
     {
@@ -24417,8 +24417,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_components_admimdashboardlayout_admimdashboardlayout",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "admimdashboardlayout()"
     },
     {
@@ -26936,8 +26936,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_pagecomponent_adminmembership_allpromociones",
-      "community": 149,
-      "community_name": "AllPromociones.tsx",
+      "community": 118,
+      "community_name": "useToast.ts",
       "norm_label": "allpromociones.tsx"
     },
     {
@@ -26947,8 +26947,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_components_pagecomponent_adminmembership_allpromociones_promocion",
-      "community": 149,
-      "community_name": "AllPromociones.tsx",
+      "community": 118,
+      "community_name": "useToast.ts",
       "norm_label": "promocion"
     },
     {
@@ -26958,8 +26958,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_components_pagecomponent_adminmembership_allpromociones_allpromociones",
-      "community": 149,
-      "community_name": "AllPromociones.tsx",
+      "community": 118,
+      "community_name": "useToast.ts",
       "norm_label": "allpromociones()"
     },
     {
@@ -27134,8 +27134,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_pagecomponent_adminmentorship_adminmentorshipindex",
-      "community": 0,
-      "community_name": "useAuth",
+      "community": 149,
+      "community_name": "CreateMentorshipPlan.tsx",
       "norm_label": "adminmentorshipindex.tsx"
     },
     {
@@ -27189,8 +27189,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_pagecomponent_adminmentorship_creatementorshipplan",
-      "community": 0,
-      "community_name": "useAuth",
+      "community": 149,
+      "community_name": "CreateMentorshipPlan.tsx",
       "norm_label": "creatementorshipplan.tsx"
     },
     {
@@ -27200,8 +27200,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_components_pagecomponent_adminmentorship_creatementorshipplan_mentorshiplevels",
-      "community": 0,
-      "community_name": "useAuth",
+      "community": 149,
+      "community_name": "CreateMentorshipPlan.tsx",
       "norm_label": "mentorshiplevels"
     },
     {
@@ -27277,8 +27277,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_pagecomponent_adminmentorship_linkinbiomentoriasettings",
-      "community": 0,
-      "community_name": "useAuth",
+      "community": 149,
+      "community_name": "CreateMentorshipPlan.tsx",
       "norm_label": "linkinbiomentoriasettings.tsx"
     },
     {
@@ -27288,8 +27288,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_components_pagecomponent_adminmentorship_linkinbiomentoriasettings_mentoriaconfig",
-      "community": 0,
-      "community_name": "useAuth",
+      "community": 149,
+      "community_name": "CreateMentorshipPlan.tsx",
       "norm_label": "mentoriaconfig"
     },
     {
@@ -27299,8 +27299,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_components_pagecomponent_adminmentorship_linkinbiomentoriasettings_uploadtocloudinary",
-      "community": 0,
-      "community_name": "useAuth",
+      "community": 149,
+      "community_name": "CreateMentorshipPlan.tsx",
       "norm_label": "uploadtocloudinary()"
     },
     {
@@ -27310,8 +27310,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "src_components_pagecomponent_adminmentorship_linkinbiomentoriasettings_linkinbiomentoriasettings",
-      "community": 0,
-      "community_name": "useAuth",
+      "community": 149,
+      "community_name": "CreateMentorshipPlan.tsx",
       "norm_label": "linkinbiomentoriasettings()"
     },
     {
@@ -28333,8 +28333,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_pagecomponent_classpage_vimeoplayer",
-      "community": 118,
-      "community_name": "useToast.ts",
+      "community": 55,
+      "community_name": "redirectQueue.ts",
       "norm_label": "vimeoplayer.tsx"
     },
     {
@@ -28344,8 +28344,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_components_pagecomponent_classpage_vimeoplayer_vimeoplayer",
-      "community": 118,
-      "community_name": "useToast.ts",
+      "community": 55,
+      "community_name": "redirectQueue.ts",
       "norm_label": "vimeoplayer()"
     },
     {
@@ -30918,8 +30918,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_pagecomponent_createclasstype_createclasstype",
-      "community": 30,
-      "community_name": "requests.ts",
+      "community": 246,
+      "community_name": "CreateClassType.tsx",
       "norm_label": "createclasstype.tsx"
     },
     {
@@ -30929,8 +30929,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_components_pagecomponent_createclasstype_createclasstype_user",
-      "community": 30,
-      "community_name": "requests.ts",
+      "community": 246,
+      "community_name": "CreateClassType.tsx",
       "norm_label": "user"
     },
     {
@@ -30940,8 +30940,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_components_pagecomponent_createclasstype_createclasstype_createclasstype",
-      "community": 30,
-      "community_name": "requests.ts",
+      "community": 246,
+      "community_name": "CreateClassType.tsx",
       "norm_label": "createclasstype()"
     },
     {
@@ -31337,7 +31337,7 @@
       "_origin": "ast",
       "id": "src_components_pagecomponent_faq_createfaq",
       "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community_name": "CreateFAQ.tsx",
       "norm_label": "createfaq.tsx"
     },
     {
@@ -31348,7 +31348,7 @@
       "_origin": "ast",
       "id": "src_components_pagecomponent_faq_createfaq_createfaq",
       "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community_name": "CreateFAQ.tsx",
       "norm_label": "createfaq()"
     },
     {
@@ -31996,8 +31996,8 @@
       "source_location": "L166",
       "_origin": "ast",
       "id": "src_components_pagecomponent_linkinbio_linkinbiopage_linkinbiopage",
-      "community": 81,
-      "community_name": "LinkInBioPage.tsx",
+      "community": 399,
+      "community_name": "bio/page.tsx",
       "norm_label": "linkinbiopage()"
     },
     {
@@ -32326,8 +32326,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "src_components_pagecomponent_membership_selectyourplan_selectyourplan",
-      "community": 118,
-      "community_name": "useToast.ts",
+      "community": 55,
+      "community_name": "redirectQueue.ts",
       "norm_label": "selectyourplan()"
     },
     {
@@ -33536,8 +33536,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_pagecomponent_payments_mercadopagopaymentbrick",
-      "community": 8,
-      "community_name": "MercadoPagoPaymentBrick.tsx",
+      "community": 33,
+      "community_name": "coursePaymentWarn",
       "norm_label": "mercadopagopaymentbrick.tsx"
     },
     {
@@ -33547,8 +33547,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_components_pagecomponent_payments_mercadopagopaymentbrick_brand",
-      "community": 8,
-      "community_name": "MercadoPagoPaymentBrick.tsx",
+      "community": 33,
+      "community_name": "coursePaymentWarn",
       "norm_label": "brand"
     },
     {
@@ -33558,8 +33558,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_components_pagecomponent_payments_mercadopagopaymentbrick_mp_brick_customization",
-      "community": 8,
-      "community_name": "MercadoPagoPaymentBrick.tsx",
+      "community": 33,
+      "community_name": "coursePaymentWarn",
       "norm_label": "mp_brick_customization"
     },
     {
@@ -33569,8 +33569,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "src_components_pagecomponent_payments_mercadopagopaymentbrick_mercadopagobrickformdata",
-      "community": 8,
-      "community_name": "MercadoPagoPaymentBrick.tsx",
+      "community": 33,
+      "community_name": "coursePaymentWarn",
       "norm_label": "mercadopagobrickformdata"
     },
     {
@@ -33580,8 +33580,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "src_components_pagecomponent_payments_mercadopagopaymentbrick_mercadopagopaymentbrickprops",
-      "community": 8,
-      "community_name": "MercadoPagoPaymentBrick.tsx",
+      "community": 33,
+      "community_name": "coursePaymentWarn",
       "norm_label": "mercadopagopaymentbrickprops"
     },
     {
@@ -33591,8 +33591,8 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "src_components_pagecomponent_payments_mercadopagopaymentbrick_istestpublickey",
-      "community": 8,
-      "community_name": "MercadoPagoPaymentBrick.tsx",
+      "community": 33,
+      "community_name": "coursePaymentWarn",
       "norm_label": "istestpublickey"
     },
     {
@@ -33602,8 +33602,8 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "src_components_pagecomponent_payments_mercadopagopaymentbrick_ensuremercadopagoinit",
-      "community": 8,
-      "community_name": "MercadoPagoPaymentBrick.tsx",
+      "community": 33,
+      "community_name": "coursePaymentWarn",
       "norm_label": "ensuremercadopagoinit()"
     },
     {
@@ -33613,8 +33613,8 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "src_components_pagecomponent_payments_mercadopagopaymentbrick_friendlybrickerror",
-      "community": 8,
-      "community_name": "MercadoPagoPaymentBrick.tsx",
+      "community": 33,
+      "community_name": "coursePaymentWarn",
       "norm_label": "friendlybrickerror()"
     },
     {
@@ -33624,8 +33624,8 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "src_components_pagecomponent_payments_mercadopagopaymentbrick_mercadopagopaymentbrick",
-      "community": 8,
-      "community_name": "MercadoPagoPaymentBrick.tsx",
+      "community": 33,
+      "community_name": "coursePaymentWarn",
       "norm_label": "mercadopagopaymentbrick()"
     },
     {
@@ -35626,8 +35626,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_pagecomponent_selectplan_selectyourplanintro",
-      "community": 118,
-      "community_name": "useToast.ts",
+      "community": 55,
+      "community_name": "redirectQueue.ts",
       "norm_label": "selectyourplanintro.tsx"
     },
     {
@@ -35637,8 +35637,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_components_pagecomponent_selectplan_selectyourplanintro_props",
-      "community": 118,
-      "community_name": "useToast.ts",
+      "community": 55,
+      "community_name": "redirectQueue.ts",
       "norm_label": "props"
     },
     {
@@ -35648,8 +35648,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_components_pagecomponent_selectplan_selectyourplanintro_selectyourplanintro",
-      "community": 118,
-      "community_name": "useToast.ts",
+      "community": 55,
+      "community_name": "redirectQueue.ts",
       "norm_label": "selectyourplanintro()"
     },
     {
@@ -35659,8 +35659,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_pagecomponent_selectplan_vimeoplayerplan",
-      "community": 118,
-      "community_name": "useToast.ts",
+      "community": 55,
+      "community_name": "redirectQueue.ts",
       "norm_label": "vimeoplayerplan.tsx"
     },
     {
@@ -35670,8 +35670,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_components_pagecomponent_selectplan_vimeoplayerplan_vimeoplayerplan",
-      "community": 118,
-      "community_name": "useToast.ts",
+      "community": 55,
+      "community_name": "redirectQueue.ts",
       "norm_label": "vimeoplayerplan()"
     },
     {
@@ -38838,8 +38838,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_constants_moduleclassconstants",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "moduleclassconstants.ts"
     },
     {
@@ -38849,8 +38849,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_constants_moduleclassconstants_no_submodule_slug",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "no_submodule_slug"
     },
     {
@@ -38860,8 +38860,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_constants_moduleclassmaterials",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "moduleclassmaterials.ts"
     },
     {
@@ -38871,8 +38871,8 @@
       "source_location": "L2",
       "_origin": "ast",
       "id": "src_constants_moduleclassmaterials_module_class_materials",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "module_class_materials"
     },
     {
@@ -38882,8 +38882,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_constants_moduleclassmaterials_moduleclassmaterial",
-      "community": 408,
-      "community_name": "AdmimDashboardLayout",
+      "community": 0,
+      "community_name": "useAuth",
       "norm_label": "moduleclassmaterial"
     },
     {
@@ -40774,8 +40774,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_cursomercadopagopaymentlink",
-      "community": 48,
-      "community_name": "course/mercadoPagoWebhook/route.ts",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "cursomercadopagopaymentlink.ts"
     },
     {
@@ -40785,8 +40785,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_lib_cursomercadopagopaymentlink_createcursomercadopagopaymentresult",
-      "community": 48,
-      "community_name": "course/mercadoPagoWebhook/route.ts",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "createcursomercadopagopaymentresult"
     },
     {
@@ -41897,7 +41897,7 @@
       "_origin": "ast",
       "id": "src_lib_linkinbiomentoria",
       "community": 266,
-      "community_name": "bio/page.tsx",
+      "community_name": "products/route.ts",
       "norm_label": "linkinbiomentoria.ts"
     },
     {
@@ -41908,7 +41908,7 @@
       "_origin": "ast",
       "id": "src_lib_linkinbiomentoria_linkinbiomentoriaconfig",
       "community": 266,
-      "community_name": "bio/page.tsx",
+      "community_name": "products/route.ts",
       "norm_label": "linkinbiomentoriaconfig"
     },
     {
@@ -41919,7 +41919,7 @@
       "_origin": "ast",
       "id": "src_lib_linkinbiomentoria_trimid",
       "community": 266,
-      "community_name": "bio/page.tsx",
+      "community_name": "products/route.ts",
       "norm_label": "trimid()"
     },
     {
@@ -41930,7 +41930,7 @@
       "_origin": "ast",
       "id": "src_lib_linkinbiomentoria_mentorshipplanslandinghref",
       "community": 266,
-      "community_name": "bio/page.tsx",
+      "community_name": "products/route.ts",
       "norm_label": "mentorshipplanslandinghref()"
     },
     {
@@ -41941,7 +41941,7 @@
       "_origin": "ast",
       "id": "src_lib_linkinbiomentoria_buildmentorialinkinbiocards",
       "community": 266,
-      "community_name": "bio/page.tsx",
+      "community_name": "products/route.ts",
       "norm_label": "buildmentorialinkinbiocards()"
     },
     {
@@ -41952,7 +41952,7 @@
       "_origin": "ast",
       "id": "src_lib_linkinbiomentoria_buildmentorialinkinbiocard",
       "community": 266,
-      "community_name": "bio/page.tsx",
+      "community_name": "products/route.ts",
       "norm_label": "buildmentorialinkinbiocard()"
     },
     {
@@ -42831,8 +42831,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_lib_mercadopagoerrors_humanizemercadopagomessage",
-      "community": 8,
-      "community_name": "MercadoPagoPaymentBrick.tsx",
+      "community": 33,
+      "community_name": "coursePaymentWarn",
       "norm_label": "humanizemercadopagomessage()"
     },
     {
@@ -42875,8 +42875,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_mercadopagolocalamount",
-      "community": 48,
-      "community_name": "course/mercadoPagoWebhook/route.ts",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "mercadopagolocalamount.ts"
     },
     {
@@ -42886,8 +42886,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_lib_mercadopagolocalamount_fetchusdtouyurate",
-      "community": 48,
-      "community_name": "course/mercadoPagoWebhook/route.ts",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "fetchusdtouyurate()"
     },
     {
@@ -42897,8 +42897,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_lib_mercadopagolocalamount_mercadopagolocalamount",
-      "community": 48,
-      "community_name": "course/mercadoPagoWebhook/route.ts",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "mercadopagolocalamount"
     },
     {
@@ -42908,8 +42908,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "src_lib_mercadopagolocalamount_resolvemercadopagolocalamount",
-      "community": 48,
-      "community_name": "course/mercadoPagoWebhook/route.ts",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "resolvemercadopagolocalamount()"
     },
     {
@@ -43040,8 +43040,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_persistcursomercadopagopaymentlink",
-      "community": 33,
-      "community_name": "coursePaymentWarn",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "persistcursomercadopagopaymentlink.ts"
     },
     {
@@ -43051,8 +43051,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_lib_persistcursomercadopagopaymentlink_mercadopagolinkpersistpayload",
-      "community": 33,
-      "community_name": "coursePaymentWarn",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "mercadopagolinkpersistpayload"
     },
     {
@@ -43062,8 +43062,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_lib_persistcursomercadopagopaymentlink_patchmercadopagoopcion",
-      "community": 33,
-      "community_name": "coursePaymentWarn",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "patchmercadopagoopcion()"
     },
     {
@@ -43073,8 +43073,8 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "src_lib_persistcursomercadopagopaymentlink_persistcursomercadopagopaymentlink",
-      "community": 33,
-      "community_name": "coursePaymentWarn",
+      "community": 8,
+      "community_name": "course/mercadopago-checkout/route.ts",
       "norm_label": "persistcursomercadopagopaymentlink()"
     },
     {
@@ -43491,8 +43491,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_lib_resolvementorshipmercadopagoexternalref_buildmentorshipmercadopagoexternalref",
-      "community": 36,
-      "community_name": "coursePaymentDebug",
+      "community": 169,
+      "community_name": "createMentorshipPaymentLinks.ts",
       "norm_label": "buildmentorshipmercadopagoexternalref()"
     },
     {
@@ -44107,8 +44107,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_lib_sitemetadata_global_site_description",
-      "community": 0,
-      "community_name": "useAuth",
+      "community": 149,
+      "community_name": "CreateMentorshipPlan.tsx",
       "norm_label": "global_site_description"
     },
     {
@@ -45141,7 +45141,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_models_linkinbioconfigmodel",
-      "community": 266,
+      "community": 399,
       "community_name": "bio/page.tsx",
       "norm_label": "linkinbioconfigmodel.js"
     },
@@ -45152,7 +45152,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_models_linkinbioconfigmodel_linkinbioconfigschema",
-      "community": 266,
+      "community": 399,
       "community_name": "bio/page.tsx",
       "norm_label": "linkinbioconfigschema"
     },
@@ -48562,8 +48562,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_utils_redirectqueue_saveplanintent",
-      "community": 118,
-      "community_name": "useToast.ts",
+      "community": 55,
+      "community_name": "redirectQueue.ts",
       "norm_label": "saveplanintent()"
     },
     {
@@ -142241,7 +142241,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/PageComponent/Course/CourseHero.tsx",
-      "source_location": "L183",
+      "source_location": "L185",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_pagecomponent_course_coursehero_coursehero",

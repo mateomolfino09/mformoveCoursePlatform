@@ -3065,8 +3065,8 @@
     "semantic_hash": ""
   },
   "src/components/IndexBanner.jsx": {
-    "mtime": 1788826246.273484,
-    "ast_hash": "e52b2d60cba8d019b98010654da4e904",
+    "mtime": 1788825392.220717,
+    "ast_hash": "a4d98acf866efd8ad433a7c948ad511d",
     "semantic_hash": ""
   },
   "src/components/IndexSkeleton.tsx": {
@@ -3585,8 +3585,8 @@
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/CourseHero.tsx": {
-    "mtime": 1788826300.6971006,
-    "ast_hash": "40245b45bf72106d5440035b3893b6bd",
+    "mtime": 1786805749.3628404,
+    "ast_hash": "9fb78817b6f310884af0594076e00bbe",
     "semantic_hash": ""
   },
   "src/components/PageComponent/Course/CourseHighlights.tsx": {
