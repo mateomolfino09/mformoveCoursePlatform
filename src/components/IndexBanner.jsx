@@ -272,7 +272,7 @@ function Banner({ onVideoLoaded }) {
     
     {/* Título + CTAs: en mobile el bloque de texto queda compacto arriba y los botones más abajo */}
     <div 
-      className='pointer-events-none fixed left-1/2 z-[100] flex w-full max-w-[100vw] -translate-x-1/2 flex-col items-stretch justify-between px-4 text-start text-white top-[20%] bottom-[18%] md:top-[28%] md:bottom-auto md:justify-start md:gap-10 md:px-32'
+      className='pointer-events-none fixed left-1/2 z-[100] flex w-full max-w-[100vw] -translate-x-1/2 flex-col items-stretch justify-between px-4 text-start text-white top-[27%] bottom-[18%] md:top-[28%] md:bottom-auto md:justify-start md:gap-10 md:px-32'
       style={{ 
         opacity: textOpacity,
         transition: 'opacity 0.3s ease-out'
@@ -284,10 +284,13 @@ function Banner({ onVideoLoaded }) {
         </p>
         
         <h1
-          className='flex flex-col text-[3.1rem] font-bold leading-[1.05] tracking-wide sm:text-6xl md:text-[7rem] md:font-semibold'
+          className='flex flex-col gap-[0.06em] text-[3.45rem] font-bold leading-[1.06] tracking-wide sm:text-6xl md:text-[7rem] md:font-semibold md:leading-[0.95] md:gap-0'
           style={{ textShadow: '0 2px 20px rgba(0, 0, 0, 0.45), 0 1px 8px rgba(0, 0, 0, 0.35)' }}
         >
-          <span className='relative block h-[1.12em] overflow-hidden'>
+          <span className='relative grid overflow-visible'>
+            <span className='invisible col-start-1 row-start-1 whitespace-nowrap' aria-hidden>
+              Respira
+            </span>
             <AnimatePresence mode="wait" initial={false}>
               {words.map((word, index) => {
                 if (index !== currentWord) return null;
@@ -295,26 +298,25 @@ function Banner({ onVideoLoaded }) {
                 return (
                   <m.span
                     key={index}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={index === 2 ? 
                       { 
-                        opacity: [1, 0.5, 0],
-                        y: -28,
-                        scale: 0.92,
+                        opacity: 0,
+                        y: -12,
                         transition: { 
-                          duration: 0.4,
+                          duration: 0.35,
                           ease: "easeIn"
                         }
                       } : 
                       { 
                         opacity: 0, 
-                        y: -18,
-                        transition: { duration: 0.5 }
+                        y: -12,
+                        transition: { duration: 0.35 }
                       }
                     }
-                    transition={{ duration: 0.5 }}
-                    className='absolute inset-x-0 top-0 whitespace-nowrap'
+                    transition={{ duration: 0.4 }}
+                    className='col-start-1 row-start-1 whitespace-nowrap'
                   >
                     {word}
                   </m.span>
