@@ -1,6 +1,11 @@
 /**
  * Reemplaza cursoConfig.faq de Cuerpo Autónomo (slug cuerpo-autonomo).
  *
+ * v2 (2026-09-09): reordena los ítems — las objeciones (nivel, tiempo, consistencia) suben
+ * justo después de las 2 preguntas de orientación, y lo financiero/legal (medios de pago,
+ * cancelación, reembolsos) baja al final. Mismo contenido, sin reescribir texto — ver
+ * comparativa `.claude/specs/cuerpo-autonomo-vs-madamove-comparativa.md` punto 10.
+ *
  * Uso:
  *   node scripts/updateCuerpoAutonomoFaq.js                    # dry-run contra dev
  *   node scripts/updateCuerpoAutonomoFaq.js --confirm          # escribe en dev
@@ -43,39 +48,39 @@ const FAQ = {
       orden: 1,
     },
     {
-      pregunta: '¿Qué pasa cuando termino los 3 módulos?',
-      respuesta:
-        'Ahí empieza otra etapa. Los módulos te dan las bases para entender tu cuerpo y desarrollar movilidad, fuerza y coordinación. Después podés seguir practicando, profundizando y utilizando los nuevos contenidos, clases y encuentros de la academia para continuar construyendo tu cuerpo según tus propios objetivos.',
-      orden: 2,
-    },
-    {
       pregunta: '¿Necesito experiencia previa?',
       respuesta:
         'No. Podés empezar desde cero o sumarte aunque ya entrenes. El recorrido comienza por aprender a percibir y entender mejor tu cuerpo antes de avanzar hacia el desarrollo de capacidades más complejas. Cada persona adapta la práctica a su propio punto de partida.',
-      orden: 3,
+      orden: 2,
     },
     {
       pregunta: '¿Cuánto tiempo tengo que dedicarle?',
       respuesta:
         'No buscamos que Cuerpo Autónomo se convierta en otra obligación difícil de sostener. Como referencia, podés empezar dedicando entre 2 y 3 momentos por semana a las clases y prácticas. El contenido está disponible para que avances a tu ritmo y puedas integrarlo a tu vida.',
-      orden: 4,
-    },
-    {
-      pregunta: '¿Cómo funciona el acompañamiento?',
-      respuesta:
-        'No hacés el proceso completamente solo. Durante tu recorrido tenés acceso a la comunidad para compartir dudas y avances, llamadas grupales semanales para profundizar en los temas que estamos trabajando y una clase virtual mensual para practicar juntos. Los encuentros pueden estar acompañados por Mateo, Nico y otros profesionales invitados.',
-      orden: 5,
-    },
-    {
-      pregunta: '¿Qué es la sesión individual con un profesional?',
-      respuesta:
-        'Al formar parte de la academia tenés acceso a una sesión individual online, por única vez, con el profesional del equipo que consideres más adecuado para tu momento. Podés elegir una mirada más orientada al movimiento y entrenamiento, los hábitos o situaciones físicas puntuales.',
-      orden: 6,
+      orden: 3,
     },
     {
       pregunta: '¿Qué pasa si me pierdo una semana?',
       respuesta:
         'No pasa nada. No necesitás seguir el ritmo de nadie. Las clases principales están disponibles para que avances a tu propio ritmo y puedas retomar cuando lo necesites. La idea es construir una práctica sostenible, no agregar presión.',
+      orden: 4,
+    },
+    {
+      pregunta: '¿Qué pasa cuando termino los 3 módulos?',
+      respuesta:
+        'Ahí empieza otra etapa. Los módulos te dan las bases para entender tu cuerpo y desarrollar movilidad, fuerza y coordinación. Después podés seguir practicando, profundizando y utilizando los nuevos contenidos, clases y encuentros de la academia para continuar construyendo tu cuerpo según tus propios objetivos.',
+      orden: 5,
+    },
+    {
+      pregunta: '¿Cómo funciona el acompañamiento?',
+      respuesta:
+        'No hacés el proceso completamente solo. Durante tu recorrido tenés acceso a la comunidad para compartir dudas y avances, llamadas grupales semanales para profundizar en los temas que estamos trabajando y una clase virtual mensual para practicar juntos. Los encuentros pueden estar acompañados por Mateo, Nico y otros profesionales invitados.',
+      orden: 6,
+    },
+    {
+      pregunta: '¿Qué es la sesión individual con un profesional?',
+      respuesta:
+        'Al formar parte de la academia tenés acceso a una sesión individual online, por única vez, con el profesional del equipo que consideres más adecuado para tu momento. Podés elegir una mirada más orientada al movimiento y entrenamiento, los hábitos o situaciones físicas puntuales.',
       orden: 7,
     },
     {

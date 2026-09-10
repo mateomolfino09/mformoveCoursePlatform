@@ -45,6 +45,8 @@ export type CursoHighlight = {
   detalle: string;
   /** Cloudinary public id; si falta en BD, la landing usa la del módulo con el mismo título o la imagen del CTA del timeline. */
   imagenPublicId?: string;
+  /** Etiqueta de ritmo sugerido para esta etapa (ej. "Semanas 1-4"), opcional. */
+  duracion?: string;
 };
 
 export type CursoFaqItem = {
@@ -213,6 +215,18 @@ export type CursoLandingConfig = {
   };
   testimoniosEscritos: CursoTestimonioEscrito[];
   testimoniosGrabados: CursoTestimonioGrabado[];
+  /** Sección de autoridad ("El Fundador") — opcional, se oculta si `titulo` está vacío. */
+  fundador: {
+    eyebrow: string;
+    titulo: string;
+    bio: string;
+    imagenPublicId: string;
+    stats: {
+      anios: string;
+      estudiantes: string;
+      paises: string;
+    };
+  };
   introHighlights: {
     titulo: string;
     subtitulo: string;
@@ -263,6 +277,13 @@ export type CursoLandingConfig = {
     /** Checklist "Tu membresía incluye" — solo tiene sentido cuando esSuscripcion:true. */
     beneficiosTitulo: string;
     beneficios: string[];
+    /**
+     * Default false. Si es true, la sección de planes oculta los montos y el CTA final
+     * pasa a ser "Aplicar a {nombre del curso}" (venta por conversación) en vez de checkout directo.
+     */
+    ventaPorLlamada?: boolean;
+    /** Texto de urgencia opcional (ej. cohorte/cupos) mostrado sobre el selector de planes. */
+    cohorteUrgenciaTexto?: string;
   };
   whatsapp: {
     imagenMobilePublicId: string;
@@ -624,6 +645,13 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
   bannerAncho: { cuerpo: CURSO_BANNER_ANCHO_CUERPO },
   testimoniosEscritos: [createDefaultTestimonioEscrito(0, nombreProducto)],
   testimoniosGrabados: [],
+  fundador: {
+    eyebrow: '',
+    titulo: '',
+    bio: '',
+    imagenPublicId: '',
+    stats: { anios: '', estudiantes: '', paises: '' },
+  },
   introHighlights: {
     titulo: nombreProducto,
     subtitulo: '¿Como funciona?',

@@ -55,8 +55,15 @@ export const landingFadeUp = {
 export const landingCtaPrimary =
   'group inline-flex items-center justify-center gap-2 rounded-full border-2 border-palette-ink bg-palette-ink px-7 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink';
 
+/** CTA más chico para labels largos (ej. "Aplicar a Cuerpo Autónomo"). */
+export const landingCtaPrimaryCompact =
+  'group inline-flex items-center justify-center gap-1.5 rounded-full border-2 border-palette-ink bg-palette-ink px-5 py-2.5 font-montserrat text-[11px] font-semibold uppercase tracking-[0.12em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink';
+
 export const landingCtaInverted =
   'group inline-flex items-center justify-between gap-4 rounded-full border-2 border-palette-cream/80 bg-palette-cream px-7 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.2em] text-palette-ink transition-all duration-200 hover:border-white hover:bg-white';
+
+export const landingCtaInvertedCompact =
+  'group inline-flex items-center justify-center gap-1.5 rounded-full border-2 border-palette-cream/80 bg-palette-cream px-5 py-2.5 font-montserrat text-[11px] font-semibold uppercase tracking-[0.12em] text-palette-ink transition-all duration-200 hover:border-white hover:bg-white';
 
 /** Ghost / outline sobre fondos ink (secundario frente a landingCtaInverted). */
 export const landingCtaGhostDark =

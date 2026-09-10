@@ -251,13 +251,13 @@ function buildProductDoc() {
       hero: {
         videoPresentacionVimeoId: '1160337707',
         tagline: 'De la rigidez a volver a sentir que tu cuerpo es tuyo.',
-        ctaTexto: 'Quiero empezar →',
+        ctaTexto: 'Agendar una llamada',
         ctaSubcopy:
           'Un programa para entender tu cuerpo, eliminar la rigidez y construir una práctica que te permita moverte con confianza durante toda la vida.',
         rutaUsuarioSuscriptor: '/biblioteca',
         anclaPlanesId: 'membership-plans',
       },
-      navegacion: { ctaBarraMovil: 'Empezar Camino' },
+      navegacion: { ctaBarraMovil: 'Agendar llamada' },
       presentacionTestimonios: {
         tituloVideos: 'Testimonios de alumn@s :)',
         tituloEscritos: 'Testimonios escritos',
@@ -400,7 +400,7 @@ function buildProductDoc() {
         ctaTitulo: 'Volvé a sentir que tu cuerpo es tuyo.',
         ctaDescripcion:
           'Construí una práctica que reduzca la rigidez, te devuelva confianza y puedas sostener durante toda la vida.',
-        ctaBoton: 'Quiero empezar',
+        ctaBoton: 'Agendar una llamada',
         ctaImagenPublicId: 'my_uploads/fondos/DSC01753_qdv9o0',
       },
       queIncluye: {

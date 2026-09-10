@@ -18,6 +18,7 @@ import { CldImage } from 'next-cloudinary';
 import { useCursoLanding } from './CursoLandingContext';
 import {
   landingCtaPrimary,
+  landingCtaPrimaryCompact,
   landingEyebrow,
   landingFadeUp,
   landingHeaderBlock,
@@ -43,6 +44,10 @@ import {
   resolveCursoPlanIntervaloMeses,
 } from '../../../lib/cursoSuscripcion';
 import CourseIncludesBlock from './CourseIncludesBlock';
+import {
+  CURSO_SALES_CALL_BOOKING_URL,
+  cursoSalesCallCtaLabel,
+} from '../../../constants/cursoSalesCall';
 
 interface Promocion {
   _id: string;
@@ -230,8 +235,23 @@ function OfertaSelectorButton({
 const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: CoursePlansProps) => {
   const router = useRouter();
   const auth = useAuth();
-  const { cursoConfig, plansSectionId, checkoutStartPath, slug, esSuscripcion } = useCursoLanding();
+  const { cursoConfig, plansSectionId, checkoutStartPath, slug, esSuscripcion, productName } = useCursoLanding();
   const { planes } = cursoConfig;
+  /** Venta por llamada: oculta montos y el CTA final agenda una llamada en vez de ir a checkout. */
+  const ventaPorLlamada = Boolean(planes.ventaPorLlamada);
+  const agendarCta = (
+    <a
+      href={CURSO_SALES_CALL_BOOKING_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`${landingCtaPrimaryCompact} w-full md:w-auto`}
+    >
+      <span>{cursoSalesCallCtaLabel(productName)}</span>
+      <span className="opacity-80 translate-y-[0.5px] transition-transform duration-200">
+        →
+      </span>
+    </a>
+  );
   const preventaPricing = useCursoPreventaPricing(cursoConfig);
   const lanzamientoMonto = resolveCursoLanzamientoMonto(cursoConfig);
   const planesTitulo =
@@ -455,6 +475,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
     badgeLabel,
     disableViewportEnter = false,
     showBonusUrgency = false,
+    hidePrecio = false,
   }: {
     plan: Plan;
     index: number;
@@ -467,6 +488,8 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
     badgeLabel?: string;
     disableViewportEnter?: boolean;
     showBonusUrgency?: boolean;
+    /** Venta por llamada: oculta montos, muestra el nombre del plan en su lugar. */
+    hidePrecio?: boolean;
   }) => {
     const preventaCountdownRemainingMs = useCountdownTo(
       showPreventaInfo ? preventaFechaFin : null
@@ -520,13 +543,19 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
               </span>
             ) : null}
           </div>
-          <h3 className="mt-2 text-balance font-montserrat text-2xl font-semibold leading-tight tracking-tight text-palette-ink md:mt-2.5 md:text-4xl">
-            <b>PRECIO</b>
-            <br />{' '}
-            <span className="relative bottom-1 text-2xl text-palette-ink md:bottom-2 md:text-4xl">
-              {showPreventaInfo ? 'PREVENTA' : priceCaption || 'HOY'}
-            </span>
-          </h3>
+          {hidePrecio ? (
+            <h3 className="mt-2 text-balance font-montserrat text-2xl font-semibold leading-tight tracking-tight text-palette-ink md:mt-2.5 md:text-4xl">
+              <b>{plan.name}</b>
+            </h3>
+          ) : (
+            <h3 className="mt-2 text-balance font-montserrat text-2xl font-semibold leading-tight tracking-tight text-palette-ink md:mt-2.5 md:text-4xl">
+              <b>PRECIO</b>
+              <br />{' '}
+              <span className="relative bottom-1 text-2xl text-palette-ink md:bottom-2 md:text-4xl">
+                {showPreventaInfo ? 'PREVENTA' : priceCaption || 'HOY'}
+              </span>
+            </h3>
+          )}
           {showPreventaInfo && fechaLanzamiento ? (
             <p className="pointer-events-auto mt-2 font-montserrat text-[0.65rem] font-medium uppercase leading-snug tracking-[0.12em] text-palette-ink md:text-[0.7rem]">
               Lanzamiento: {formatCursoFechaLargo(fechaLanzamiento)}
@@ -534,17 +563,19 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           ) : null}
         </div>
 
-        <div className="relative z-10 flex items-end justify-center gap-1 py-3 md:py-3.5">
-          <p className="text-center font-montserrat text-[2.75rem] font-bold leading-none tracking-[-0.09em] text-palette-ink tabular-nums md:text-[3.5rem]">
-            <b>{new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 }).format(precioPrincipal)}</b>
-          </p>
-          <span className="relative bottom-1 font-montserrat text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-palette-ink md:bottom-1.5 md:text-[0.58rem]">
-            USD
-          </span>
-        </div>
+        {hidePrecio ? null : (
+          <div className="relative z-10 flex items-end justify-center gap-1 py-3 md:py-3.5">
+            <p className="text-center font-montserrat text-[2.75rem] font-bold leading-none tracking-[-0.09em] text-palette-ink tabular-nums md:text-[3.5rem]">
+              <b>{new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 }).format(precioPrincipal)}</b>
+            </p>
+            <span className="relative bottom-1 font-montserrat text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-palette-ink md:bottom-1.5 md:text-[0.58rem]">
+              USD
+            </span>
+          </div>
+        )}
 
         <div className="relative z-10 flex flex-col items-center text-center text-palette-ink">
-          {ahorroPromo !== null && ahorroPromo > 0 ? (
+          {!hidePrecio && ahorroPromo !== null && ahorroPromo > 0 ? (
             <p className="pointer-events-auto mb-3 text-base font-light text-palette-ink">
               Ahorrás{' '}
               <span className="font-semibold text-palette-ink">{formatPrice(plan.currency, ahorroPromo)}</span>
@@ -944,6 +975,18 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
 
       return (
         <motion.div className="mx-auto max-w-6xl">
+          {ventaPorLlamada && planes.cohorteUrgenciaTexto?.trim() ? (
+            <motion.p
+              initial={{ opacity: 0, y: -8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35 }}
+              viewport={{ once: true }}
+              className="mx-auto mb-6 max-w-xl text-balance text-center font-montserrat text-xs font-semibold uppercase tracking-[0.16em] text-palette-ink/80 md:text-sm"
+            >
+              {planes.cohorteUrgenciaTexto.trim()}
+            </motion.p>
+          ) : null}
+
           {stripeCheckoutPlans.length > 1 ? (
             <motion.div
               initial={{ opacity: 0 }}
@@ -999,43 +1042,61 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
-            {renderThreeCardLayout({
-              displayPlan,
-              displayAmount: selectedPlan.monto,
-              priceCaption: is4Meses ? '4 MESES' : 'MENSUAL',
-              badgeLabel: is4Meses ? 'OFERTA' : undefined,
-              disableViewportEnter: true,
-              showPrecioAnterior: !is4Meses,
-              showBonusUrgency: is4Meses,
-            })}
+            {ventaPorLlamada ? (
+              <div className="mx-auto max-w-md">
+                <PlanCard
+                  plan={displayPlan}
+                  index={0}
+                  displayAmount={selectedPlan.monto}
+                  badgeLabel={is4Meses ? 'OFERTA' : undefined}
+                  disableViewportEnter
+                  hidePrecio
+                />
+              </div>
+            ) : (
+              renderThreeCardLayout({
+                displayPlan,
+                displayAmount: selectedPlan.monto,
+                priceCaption: is4Meses ? '4 MESES' : 'MENSUAL',
+                badgeLabel: is4Meses ? 'OFERTA' : undefined,
+                disableViewportEnter: true,
+                showPrecioAnterior: !is4Meses,
+                showBonusUrgency: is4Meses,
+              })
+            )}
           </motion.div>
 
           <CourseIncludesBlock isOferta={is4Meses} />
 
           <PlansCheckoutFooter
-            cta={
-              <button
-                type="button"
-                onClick={handleGoToCheckout}
-                disabled={isNavigatingToCheckout}
-                className={`${landingCtaPrimary} w-full px-10 py-4 disabled:cursor-not-allowed disabled:opacity-50 sm:px-12 md:w-auto md:px-14`}
-              >
-                {isNavigatingToCheckout ? (
-                  <>
-                    <MiniLoadingSpinner />
-                    <span>Redirigiendo...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Quiero formar parte</span>
-                    <span className="opacity-80 translate-y-[0.5px] transition-transform duration-200">
-                      →
-                    </span>
-                  </>
-                )}
-              </button>
+            cta={ventaPorLlamada ? agendarCta : (
+                <button
+                  type="button"
+                  onClick={handleGoToCheckout}
+                  disabled={isNavigatingToCheckout}
+                  className={`${landingCtaPrimary} w-full px-10 py-4 disabled:cursor-not-allowed disabled:opacity-50 sm:px-12 md:w-auto md:px-14`}
+                >
+                  {isNavigatingToCheckout ? (
+                    <>
+                      <MiniLoadingSpinner />
+                      <span>Redirigiendo...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Quiero formar parte</span>
+                      <span className="opacity-80 translate-y-[0.5px] transition-transform duration-200">
+                        →
+                      </span>
+                    </>
+                  )}
+                </button>
+              )
             }
-            disclaimer="Sin contratos largos. Cancelá cuando quieras."
+            disclaimer={
+              ventaPorLlamada
+                ? 'Sin costo ni compromiso. Vemos el plan y la forma de pago en la llamada.'
+                : 'Sin contratos largos. Cancelá cuando quieras.'
+            }
           />
         </motion.div>
       );
@@ -1056,34 +1117,55 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
 
       return (
         <motion.div className="mx-auto max-w-6xl">
-          {renderThreeCardLayout({
-            displayPlan,
-            displayAmount: checkoutDisplayAmount,
-            showPreventaInfo: preventaPricing.enPreventa,
-          })}
+          {ventaPorLlamada ? (
+            <div className="mx-auto max-w-md">
+              <PlanCard
+                plan={displayPlan}
+                index={0}
+                displayAmount={checkoutDisplayAmount}
+                disableViewportEnter
+                hidePrecio
+              />
+            </div>
+          ) : (
+            renderThreeCardLayout({
+              displayPlan,
+              displayAmount: checkoutDisplayAmount,
+              showPreventaInfo: preventaPricing.enPreventa,
+            })
+          )}
 
           <PlansCheckoutFooter
             cta={
-              <button
-                type="button"
-                onClick={handleGoToCheckout}
-                disabled={isNavigatingToCheckout}
-                className={`${landingCtaPrimary} w-full px-10 py-4 disabled:cursor-not-allowed disabled:opacity-50 sm:px-12 md:w-auto md:px-14`}
-              >
-                {isNavigatingToCheckout ? (
-                  <>
-                    <MiniLoadingSpinner />
-                    <span>Redirigiendo...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Empezar AHORA</span>
-                    <span className="opacity-80 translate-y-[0.5px] transition-transform duration-200">
-                      →
-                    </span>
-                  </>
-                )}
-              </button>
+              ventaPorLlamada ? (
+                agendarCta
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleGoToCheckout}
+                  disabled={isNavigatingToCheckout}
+                  className={`${landingCtaPrimary} w-full px-10 py-4 disabled:cursor-not-allowed disabled:opacity-50 sm:px-12 md:w-auto md:px-14`}
+                >
+                  {isNavigatingToCheckout ? (
+                    <>
+                      <MiniLoadingSpinner />
+                      <span>Redirigiendo...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Empezar AHORA</span>
+                      <span className="opacity-80 translate-y-[0.5px] transition-transform duration-200">
+                        →
+                      </span>
+                    </>
+                  )}
+                </button>
+              )
+            }
+            disclaimer={
+              ventaPorLlamada
+                ? 'Sin costo ni compromiso. Vemos el plan y la forma de pago en la llamada.'
+                : undefined
             }
           />
         </motion.div>
@@ -1178,6 +1260,9 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
 
         <PlansCheckoutFooter
           cta={
+            ventaPorLlamada ? (
+              agendarCta
+            ) : (
             <button
               onClick={() => handleSelect(displayPlan)}
               disabled={loadingPlanId === displayPlan._id}
@@ -1197,6 +1282,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
                 </>
               )}
             </button>
+            )
           }
         />
       </div>
@@ -1214,7 +1300,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           {...landingFadeUp}
           className={`${landingHeaderBlock} relative z-10 mx-auto max-w-3xl text-center`}
         >
-          <p className={landingEyebrow}>Inversión</p>
+          <p className={landingEyebrow}>{ventaPorLlamada ? 'El programa' : 'Inversión'}</p>
           <h2 className={landingSectionTitle}>{planesTitulo}</h2>
           {preventaPricing.enPreventa ? (
             <p className="mt-4 font-montserrat text-xs font-semibold uppercase tracking-[0.26em] text-palette-stone md:text-sm">
