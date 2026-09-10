@@ -59,6 +59,8 @@ const cursoHighlightSchema = new mongoose.Schema({
   resumen: { type: String, default: '' },
   detalle: { type: String, default: '' },
   imagenPublicId: { type: String, default: '' },
+  /** Etiqueta de ritmo sugerido para esta etapa (ej. "Semanas 1-4"), opcional. */
+  duracion: { type: String, default: '' },
 }, { _id: false });
 
 const cursoFaqItemSchema = new mongoose.Schema({
@@ -185,6 +187,18 @@ const cursoLandingConfigSchema = new mongoose.Schema({
   },
   testimoniosEscritos: [cursoTestimonioEscritoSchema],
   testimoniosGrabados: [cursoTestimonioGrabadoSchema],
+  /** Sección de autoridad ("El Fundador") — opcional, se oculta si `titulo` está vacío. */
+  fundador: {
+    eyebrow: { type: String, default: '' },
+    titulo: { type: String, default: '' },
+    bio: { type: String, default: '' },
+    imagenPublicId: { type: String, default: '' },
+    stats: {
+      anios: { type: String, default: '' },
+      estudiantes: { type: String, default: '' },
+      paises: { type: String, default: '' },
+    },
+  },
   introHighlights: {
     titulo: { type: String, default: '' },
     subtitulo: { type: String, default: '' },
@@ -232,6 +246,10 @@ const cursoLandingConfigSchema = new mongoose.Schema({
     /** Checklist "Tu membresía incluye" — solo tiene sentido cuando esSuscripcion:true. */
     beneficiosTitulo: { type: String, default: '' },
     beneficios: [{ type: String }],
+    /** Si es true, oculta montos en la landing y el CTA final es "Aplicar a {curso}". */
+    ventaPorLlamada: { type: Boolean, default: false },
+    /** Texto de urgencia opcional (cohorte/cupos) sobre el selector de planes. */
+    cohorteUrgenciaTexto: { type: String, default: '' },
     /** Métodos de pago habilitados al crear/editar: stripe | dlocalgo | mercadopago */
     proveedoresHabilitados: {
       type: [{ type: String, enum: ['stripe', 'dlocalgo', 'mercadopago'] }],

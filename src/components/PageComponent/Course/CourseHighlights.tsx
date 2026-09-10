@@ -7,8 +7,13 @@ import imageLoader from '../../../../imageLoader';
 import CourseHighlightsIntro from './CourseHighlightsIntro';
 import { useCursoLanding } from './CursoLandingContext';
 import {
+  CURSO_SALES_CALL_BOOKING_URL,
+  cursoSalesCallCtaLabel,
+} from '../../../constants/cursoSalesCall';
+import {
   landingCardBody,
   landingCtaPrimary,
+  landingCtaPrimaryCompact,
   landingEyebrow,
   landingSectionBodyMuted,
   landingSectionContainer,
@@ -26,11 +31,13 @@ type TimelineHighlightItem = {
   resumen: string;
   detalle: string;
   imagenPublicId: string;
+  duracion?: string;
 };
 
 const CourseHighlights = ({ hideIntro = false }: CourseHighlightsProps) => {
-  const { cursoConfig, scrollToPlans } = useCursoLanding();
+  const { cursoConfig, scrollToPlans, productName } = useCursoLanding();
   const { highlights } = cursoConfig;
+  const ventaPorLlamada = Boolean(cursoConfig.planes.ventaPorLlamada);
 
   const timelineItems = useMemo((): TimelineHighlightItem[] => {
     const fallbackImg =
@@ -51,6 +58,7 @@ const CourseHighlights = ({ hideIntro = false }: CourseHighlightsProps) => {
         resumen: item.resumen,
         detalle,
         imagenPublicId: fromConfig || fromModulo || fallbackImg,
+        duracion: item.duracion?.trim() || undefined,
       };
     });
   }, [cursoConfig.queIncluye.modulos, highlights.ctaImagenPublicId, highlights.items]);
@@ -112,6 +120,11 @@ const CourseHighlights = ({ hideIntro = false }: CourseHighlightsProps) => {
 
                   <div className="flex min-w-0 flex-1 items-start gap-4 sm:gap-5 md:gap-6 lg:gap-8">
                     <div className="min-w-0 flex-1 py-2 pr-1 md:py-3 md:pr-2 lg:py-4">
+                      {item.duracion ? (
+                        <p className="mb-1 font-montserrat text-[11px] font-semibold uppercase tracking-[0.16em] text-palette-sage md:text-xs">
+                          {item.duracion}
+                        </p>
+                      ) : null}
                       <h3 className="font-semibold text-[16px] leading-snug tracking-tight text-palette-ink md:text-[17px]">
                         {item.titulo}
                       </h3>
@@ -155,14 +168,26 @@ const CourseHighlights = ({ hideIntro = false }: CourseHighlightsProps) => {
                 </h3>
                 <p className={`${landingCardBody} mt-2`}>{highlights.ctaDescripcion}</p>
               </div>
-              <button
-                type="button"
-                onClick={scrollToPlans}
-                className={`${landingCtaPrimary} group shrink-0 self-start md:self-end`}
-              >
-                <span>{highlights.ctaBoton}</span>
-                <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
-              </button>
+              {ventaPorLlamada ? (
+                <a
+                  href={CURSO_SALES_CALL_BOOKING_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${landingCtaPrimaryCompact} group shrink-0 self-start md:self-end`}
+                >
+                  <span>{cursoSalesCallCtaLabel(productName)}</span>
+                  <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={scrollToPlans}
+                  className={`${landingCtaPrimary} group shrink-0 self-start md:self-end`}
+                >
+                  <span>{highlights.ctaBoton}</span>
+                  <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+                </button>
+              )}
             </div>
           </motion.div>
         </div>

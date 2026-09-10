@@ -4,6 +4,10 @@ import { motion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import { useCursoLanding } from './CursoLandingContext';
+import {
+  CURSO_SALES_CALL_BOOKING_URL,
+  cursoSalesCallCtaLabel,
+} from '../../../constants/cursoSalesCall';
 import CourseDarkSectionBackground from './CourseDarkSectionBackground';
 import {
   landingCardBodyDark,
@@ -27,7 +31,8 @@ const CourseTestimonials = ({
   variant = 'community',
   showCta = true,
 }: CourseTestimonialsProps) => {
-  const { cursoConfig, scrollToPlans } = useCursoLanding();
+  const { cursoConfig, scrollToPlans, productName } = useCursoLanding();
+  const ventaPorLlamada = Boolean(cursoConfig.planes.ventaPorLlamada);
   const { presentacionTestimonios } = cursoConfig;
   const testimonials = cursoConfig.testimoniosEscritos.map((item) => ({
     name: item.nombre,
@@ -221,13 +226,24 @@ const CourseTestimonials = ({
 
         {showCta && variant === 'community' ? (
           <div className="text-center">
-            <button
-              type="button"
-              onClick={scrollToPlans}
-              className="font-montserrat text-sm font-medium text-palette-cream underline decoration-palette-cream/30 underline-offset-[3px] transition-colors hover:decoration-palette-sage"
-            >
-              Ver planes
-            </button>
+            {ventaPorLlamada ? (
+              <a
+                href={CURSO_SALES_CALL_BOOKING_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-montserrat text-sm font-medium text-palette-cream underline decoration-palette-cream/30 underline-offset-[3px] transition-colors hover:decoration-palette-sage"
+              >
+                {cursoSalesCallCtaLabel(productName)}
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={scrollToPlans}
+                className="font-montserrat text-sm font-medium text-palette-cream underline decoration-palette-cream/30 underline-offset-[3px] transition-colors hover:decoration-palette-sage"
+              >
+                Ver planes
+              </button>
+            )}
           </div>
         ) : null}
       </div>

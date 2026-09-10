@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSnapshot } from 'valtio';
 import state from '../../valtio';
 import { routes } from '../../constants/routes';
+import { CUERPO_AUTONOMO_COURSE_SLUG } from '../../constants/mentorshipCuerpoAutonomoDiscount';
 import { formatTitleCaseWords } from '../../lib/formatDisplayTitle';
 import { resolveOwnedCursoRedirectPath } from '../../lib/resolveOwnedCursoRedirect';
 
@@ -227,7 +228,9 @@ const WeeklyPathNavigator = () => {
                         className="max-w-full shrink-0 cursor-pointer text-right text-[#fff] transition-colors hover:text-white lg:text-[#d1cfcf6e] lg:hover:text-white"
                       >
                         <span className="mb-1 block font-light text-sm uppercase tracking-[0.18em] text-[#fff]/55 md:text-base">
-                          Método
+                          {item.slug.trim().toLowerCase() === CUERPO_AUTONOMO_COURSE_SLUG
+                            ? 'Escuela de movimiento'
+                            : 'Método'}
                         </span>
                         <span className="block max-w-full overflow-x-auto scrollbar-hide whitespace-nowrap text-right text-3xl font-thin leading-none sm:text-4xl md:text-5xl lg:text-6xl">
                           {formatTitleCaseWords(item.label)}

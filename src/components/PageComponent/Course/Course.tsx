@@ -9,14 +9,19 @@ import { useAuth } from '../../../hooks/useAuth';
 import { Plan } from '../../../../typings';
 import { CursoPlanPago } from '../../../types/cursoLanding';
 import CourseHero from './CourseHero';
+import CourseFounder from './CourseFounder';
 import CourseBetweenHeroSection from './CourseBetweenHeroSection';
 import CourseFullWidthBanner from './CourseFullWidthBanner';
 import CourseOutcomesHighlights from './CourseOutcomesHighlights';
 import CourseHighlightsIntro from './CourseHighlightsIntro';
 import CourseCTA from './CourseCTA';
 import CourseScheduleCall from './CourseScheduleCall';
+import CourseCallCtaBanner from './CourseCallCtaBanner';
+import CourseMobileBottomBar from './CourseMobileBottomBar';
 import PromocionFooter from '../Membership/PromocionFooter';
 import { useCursoLanding } from './CursoLandingContext';
+import { userHasCourseAccessBySlug } from '../../../lib/clientCourseAccess';
+import { CURSO_SALES_CALL_BOOKING_URL } from '../../../constants/cursoSalesCall';
 
 // Below-the-fold: se cargan aparte del bundle inicial para no bloquear el primer render del hero.
 const CourseHighlights = dynamic(() => import('./CourseHighlights'), { ssr: false });
@@ -44,7 +49,8 @@ interface CourseProps {
 const Course = ({ plans = [], promociones = [], checkoutPlans = [] }: CourseProps) => {
   const dispatch = useAppDispatch();
   const auth = useAuth();
-  const { scrollToPlans } = useCursoLanding();
+  const { scrollToPlans, slug, cursoConfig } = useCursoLanding();
+  const ventaPorLlamada = Boolean(cursoConfig.planes.ventaPorLlamada);
   const [promocionActiva, setPromocionActiva] = useState<Promocion | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -122,6 +128,10 @@ const Course = ({ plans = [], promociones = [], checkoutPlans = [] }: CourseProp
   }, [promociones]);
 
   const handlePromocionClick = () => {
+    if (ventaPorLlamada) {
+      window.open(CURSO_SALES_CALL_BOOKING_URL, '_blank', 'noopener,noreferrer');
+      return;
+    }
     scrollToPlans();
   };
 
@@ -135,6 +145,9 @@ const Course = ({ plans = [], promociones = [], checkoutPlans = [] }: CourseProp
       <MainSideBar where={'membership'}>
         {/* 1. Hero - Hook emocional inicial */}
         <CourseHero />
+
+        {/* 1.2. Fundador - Autoridad (años, estudiantes, países) */}
+        <CourseFounder />
 
         {/* 1.5. Nueva narrativa - pantalla completa */}
         <CourseBetweenHeroSection />
@@ -154,24 +167,27 @@ const Course = ({ plans = [], promociones = [], checkoutPlans = [] }: CourseProp
 
         {/* 3.c Highlights - Línea de tiempo del método (sin intro duplicada) */}
         <CourseHighlights hideIntro />
-        
+
+        {/* 3.6. Refuerzo del CTA de llamada a mitad de página */}
+        {ventaPorLlamada ? <CourseCallCtaBanner /> : null}
+
         {/* 3.5. Lo que enseñamos - Disciplinas (fotos de Index) */}
         <CourseWhatWeTeach />
-        
-        {/* 6. Plans - Precios y CTA principal (momento de decisión) */}
-        <CoursePlans plans={plans} promociones={promociones} checkoutPlans={checkoutPlans} />
 
-        {/* 6.5. Llamada de consulta — después de precios, antes de objeciones (FAQ) */}
-        <CourseScheduleCall />
+        {/* 5. Llamada de consulta — antes de planes cuando el camino es agendar */}
+        {ventaPorLlamada ? <CourseScheduleCall /> : null}
+
+        {/* 6. Plans - Planes y qué incluye (ya no muestra precio si el curso vende por llamada) */}
+        <CoursePlans plans={plans} promociones={promociones} checkoutPlans={checkoutPlans} />
 
         {/* 9. FAQ - Objecciones finales (resuelve dudas antes del cierre) */}
         <CourseFAQ />
-        
-        {/* 10. CTA Final - Última oportunidad */}
+
+        {/* 10. CTA Final - Última oportunidad, refuerza la misma oferta */}
         <CourseCTA />
-        
+
         <FooterProfile />
-        {promocionActiva && !auth.user?.subscription?.active && (
+        {promocionActiva && !ventaPorLlamada && !userHasCourseAccessBySlug(auth.user, slug) && (
           <div className="pb-24 md:pb-28">
             <PromocionFooter
               promocion={promocionActiva}
@@ -181,6 +197,7 @@ const Course = ({ plans = [], promociones = [], checkoutPlans = [] }: CourseProp
             />
           </div>
         )}
+        {(ventaPorLlamada || !promocionActiva) && <CourseMobileBottomBar />}
       </MainSideBar>
     </div>
   );
