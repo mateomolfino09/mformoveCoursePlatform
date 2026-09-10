@@ -5,16 +5,26 @@ import { motion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import {
+  landingCtaGhostDark,
   landingCtaInverted,
+  landingCtaInvertedCompact,
   landingEyebrowDark,
   landingSectionContainer,
   landingSectionTitleDark,
 } from '../../../constants/landingSectionDesign';
 import { routes } from '../../../constants/routes';
+import {
+  CURSO_SALES_CALL_BOOKING_URL,
+  cursoSalesCallCtaLabel,
+} from '../../../constants/cursoSalesCall';
+import { useCursoLanding } from './CursoLandingContext';
 
 const CTA_BG = 'my_uploads/plaza/DSC03350_vgjrrh';
 
 const CourseCTA = () => {
+  const { cursoConfig, productName } = useCursoLanding();
+  const ventaPorLlamada = Boolean(cursoConfig.planes.ventaPorLlamada);
+
   return (
     <section className="relative isolate overflow-hidden border-t border-palette-stone/40 bg-palette-ink pb-20 pt-10 font-montserrat md:pt-12">
       <div className={`${landingSectionContainer.replace('w-[92%]', 'w-[85%]')}`}>
@@ -40,26 +50,51 @@ const CourseCTA = () => {
             className="relative z-[2] px-6 py-10 md:px-10 md:py-12"
           >
             <p className={`${landingEyebrowDark} !text-palette-cream/70`}>
-              Mentoría
+              {ventaPorLlamada ? 'Último paso' : 'Mentoría'}
             </p>
             <h2 className={`${landingSectionTitleDark} max-w-2xl`}>
-              ¿Buscas una experiencia personalizada?
+              {ventaPorLlamada
+                ? 'Volvé a sentirte dueño de tus movimientos.'
+                : '¿Buscas una experiencia personalizada?'}
             </h2>
             <p className="mt-4 max-w-2xl text-[15px] font-normal leading-relaxed text-palette-cream/88 md:text-[17px] lg:text-[18px]">
-              Si quieres un acompañamiento evaluado, conmigo como mentor y un plan diseñado
-              específicamente para tu proceso, checkea la mentoría.
+              {ventaPorLlamada
+                ? 'Agendá una llamada corta y sin costo para resolver tus dudas y ver si este programa es para vos.'
+                : 'Si quieres un acompañamiento evaluado, conmigo como mentor y un plan diseñado específicamente para tu proceso, checkea la mentoría.'}
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <Link
-                href={routes.navegation.mentoria}
-                className={`${landingCtaInverted} w-full sm:w-auto`}
-              >
-                <span>Ver mentoría</span>
-                <span className="text-palette-ink/70 transition-transform duration-200 group-hover:translate-x-0.5">
-                  →
-                </span>
-              </Link>
+              {ventaPorLlamada ? (
+                <>
+                  <a
+                    href={CURSO_SALES_CALL_BOOKING_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`${landingCtaInvertedCompact} w-full sm:w-auto`}
+                  >
+                    <span>{cursoSalesCallCtaLabel(productName)}</span>
+                    <span className="text-palette-ink/70 transition-transform duration-200 group-hover:translate-x-0.5">
+                      →
+                    </span>
+                  </a>
+                  <Link
+                    href={routes.navegation.mentoria}
+                    className={`${landingCtaGhostDark} w-full sm:w-auto`}
+                  >
+                    <span>¿Buscás algo más personalizado? Ver mentoría</span>
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  href={routes.navegation.mentoria}
+                  className={`${landingCtaInverted} w-full sm:w-auto`}
+                >
+                  <span>Ver mentoría</span>
+                  <span className="text-palette-ink/70 transition-transform duration-200 group-hover:translate-x-0.5">
+                    →
+                  </span>
+                </Link>
+              )}
             </div>
           </motion.div>
         </div>

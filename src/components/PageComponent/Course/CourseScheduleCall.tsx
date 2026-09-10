@@ -5,25 +5,24 @@ import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import CourseDarkSectionBackground from './CourseDarkSectionBackground';
 import {
-  landingCtaInverted,
+  landingCtaInvertedCompact,
   landingCardBodyDark,
   landingSectionContainer,
   landingSectionTitleDark,
 } from '../../../constants/landingSectionDesign';
+import { resolveCloudinaryOrHttpUrl } from '../../../lib/resolveMediaImageUrl';
+import { useCursoLanding } from './CursoLandingContext';
 import {
   CURSO_SALES_CALL_BOOKING_URL,
+  CURSO_SALES_CALL_DURATION_MIN,
   CURSO_SALES_CALL_HOST,
-  CURSO_SALES_CALL_HOST_AVATAR_FALLBACK,
+  cursoSalesCallCtaLabel,
 } from '../../../constants/cursoSalesCall';
-import { resolveCloudinaryOrHttpUrl } from '../../../lib/resolveMediaImageUrl';
 
 function resolveHostPhoto(rawSrc: string) {
   const trimmed = rawSrc.trim();
   if (!trimmed) {
-    return {
-      kind: 'external' as const,
-      src: CURSO_SALES_CALL_HOST_AVATAR_FALLBACK,
-    };
+    return { kind: 'initials' as const };
   }
   if (/^https?:\/\//i.test(trimmed)) {
     return { kind: 'external' as const, src: trimmed };
@@ -33,6 +32,10 @@ function resolveHostPhoto(rawSrc: string) {
     publicId: trimmed,
     src: resolveCloudinaryOrHttpUrl(trimmed),
   };
+}
+
+function initialsOf(name: string) {
+  return name.trim().slice(0, 2).toUpperCase() || '?';
 }
 
 const containerVariants = {
@@ -54,6 +57,7 @@ const itemVariants = {
 
 export default function CourseScheduleCall() {
   const reduceMotion = useReducedMotion();
+  const { productName } = useCursoLanding();
   const hostPhoto = resolveHostPhoto(CURSO_SALES_CALL_HOST.imageSrc);
 
   return (
@@ -141,8 +145,8 @@ export default function CourseScheduleCall() {
                 alguien del equipo.
               </p>
               <p className={landingCardBodyDark}>
-                Son 20 minutos, sin compromiso. La idea es conocerte, responder tus dudas y ver si
-                este programa tiene sentido para vos.
+                Son {CURSO_SALES_CALL_DURATION_MIN} minutos, sin compromiso. La idea es conocerte,
+                responder tus dudas y ver si este programa tiene sentido para vos.
               </p>
             </motion.div>
 
@@ -151,7 +155,7 @@ export default function CourseScheduleCall() {
               className="mx-auto mt-8 max-w-xl text-left md:max-w-2xl"
             >
               <div className="flex flex-col items-center gap-4 rounded-2xl border border-palette-cream/12 bg-palette-ink/45 p-5 backdrop-blur-sm md:flex-row md:items-start md:gap-5 md:p-6">
-                <div className="relative h-[4.25rem] w-[4.25rem] shrink-0 overflow-hidden rounded-full border-2 border-palette-sage/35 bg-palette-sage/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] md:h-[4.75rem] md:w-[4.75rem]">
+                <div className="relative flex h-[4.25rem] w-[4.25rem] shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-palette-sage/35 bg-palette-sage/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] md:h-[4.75rem] md:w-[4.75rem]">
                   {hostPhoto.kind === 'cloudinary' ? (
                     <CldImage
                       src={hostPhoto.publicId}
@@ -161,7 +165,7 @@ export default function CourseScheduleCall() {
                       className="object-cover object-center"
                       loader={imageLoader}
                     />
-                  ) : (
+                  ) : hostPhoto.kind === 'external' ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={hostPhoto.src}
@@ -169,6 +173,13 @@ export default function CourseScheduleCall() {
                       referrerPolicy="no-referrer"
                       className="h-full w-full object-cover object-center"
                     />
+                  ) : (
+                    <span
+                      aria-hidden
+                      className="font-montserrat text-lg font-semibold text-palette-sage md:text-xl"
+                    >
+                      {initialsOf(CURSO_SALES_CALL_HOST.name)}
+                    </span>
                   )}
                 </div>
 
@@ -196,7 +207,7 @@ export default function CourseScheduleCall() {
               variants={itemVariants}
               className="mt-7 text-sm font-semibold tracking-wide text-palette-cream/90"
             >
-              20 min · Videollamada · Sin costo
+              {CURSO_SALES_CALL_DURATION_MIN} min · Videollamada · Sin costo
             </motion.p>
 
             <motion.div variants={itemVariants} className="mt-9 flex justify-center">
@@ -204,7 +215,7 @@ export default function CourseScheduleCall() {
                 href={CURSO_SALES_CALL_BOOKING_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${landingCtaInverted} relative w-full overflow-hidden sm:w-auto`}
+                className={`${landingCtaInvertedCompact} relative w-full overflow-hidden sm:w-auto`}
                 whileHover={reduceMotion ? undefined : { scale: 1.03, y: -2 }}
                 whileTap={reduceMotion ? undefined : { scale: 0.98 }}
                 transition={{ type: 'spring', stiffness: 420, damping: 22 }}
@@ -215,7 +226,7 @@ export default function CourseScheduleCall() {
                   transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 1.2, ease: 'easeInOut' }}
                   aria-hidden
                 />
-                <span className="relative z-[1]">Agendar una llamada</span>
+                <span className="relative z-[1]">{cursoSalesCallCtaLabel(productName)}</span>
                 <span className="relative z-[1] transition-transform duration-200 group-hover:translate-x-1">
                   →
                 </span>

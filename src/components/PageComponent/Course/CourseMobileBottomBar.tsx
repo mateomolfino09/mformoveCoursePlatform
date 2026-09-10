@@ -1,24 +1,26 @@
 'use client';
 import Link from 'next/link';
 import { IoCloseOutline } from 'react-icons/io5';
-import { useCourseNav } from '../../MainSidebar/CourseNavContext';
+import { useMembershipNav } from '../../MainSidebar/MembershipNavContext';
 import { useCursoLanding } from './CursoLandingContext';
 
-/** Botones Empezar Camino + Menú para reutilizar en barra flotante o en PromocionFooter */
+/** Botones de conversión + Menú para reutilizar en barra flotante. */
 export const CourseBottomBarButtons = () => {
-  const nav = useCourseNav();
+  const nav = useMembershipNav();
   const { cursoConfig, landingPath, plansSectionId } = useCursoLanding();
+  const ventaPorLlamada = Boolean(cursoConfig.planes.ventaPorLlamada);
   if (!nav) return null;
   const { toggleNav, showNav } = nav;
   const ctaBarraMovil = cursoConfig.navegacion.ctaBarraMovil;
+  const ctaClass = `font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 py-2 transition-all duration-200 shrink-0 ${showNav ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : 'bg-black text-white border border-black hover:bg-palette-steel hover:border-palette-steel hover:text-palette-ink'}`;
+
   return (
     <>
-      <Link
-        href={`${landingPath}#${plansSectionId}`}
-        className={`font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full px-4 py-2 transition-all duration-200 shrink-0 ${showNav ? 'text-white border border-white/80 hover:bg-white hover:text-palette-ink hover:border-white' : 'bg-black text-white border border-black hover:bg-palette-steel hover:border-palette-steel hover:text-palette-ink'}`}
-      >
-        {ctaBarraMovil}
-      </Link>
+      {!ventaPorLlamada ? (
+        <Link href={`${landingPath}#${plansSectionId}`} className={ctaClass}>
+          {ctaBarraMovil}
+        </Link>
+      ) : null}
       <button
         type="button"
         onClick={toggleNav}
@@ -35,11 +37,11 @@ export const CourseBottomBarButtons = () => {
 };
 
 /**
- * Barra fija inferior en móvil para Cuerpo autónomo: Empezar Camino + Menú.
- * Se muestra solo en móvil cuando no hay barra de descuento (PromocionFooter).
+ * Barra fija inferior en móvil. Se muestra solo en móvil cuando no hay barra de
+ * descuento (PromocionFooter).
  */
 const CourseMobileBottomBar = () => {
-  const nav = useCourseNav();
+  const nav = useMembershipNav();
   if (!nav) return null;
 
   return (

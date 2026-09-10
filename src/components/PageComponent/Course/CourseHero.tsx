@@ -8,11 +8,18 @@ import Player from '@vimeo/player';
 import { useAuth } from '../../../hooks/useAuth';
 import { useCursoLanding } from './CursoLandingContext';
 import { vimeoThumbnailUrl } from '../../../lib/resolveMediaImageUrl';
+import { userHasPurchasedCourseBySlug } from '../../../lib/clientCourseAccess';
+import { landingCtaPrimaryCompact } from '../../../constants/landingSectionDesign';
+import {
+  CURSO_SALES_CALL_BOOKING_URL,
+  cursoSalesCallCtaLabel,
+} from '../../../constants/cursoSalesCall';
 
 const CourseHero = () => {
   const router = useRouter();
   const auth = useAuth();
-  const { cursoConfig, productName, scrollToPlans } = useCursoLanding();
+  const { cursoConfig, productName, slug, scrollToPlans } = useCursoLanding();
+  const ventaPorLlamada = Boolean(cursoConfig.planes.ventaPorLlamada);
   const videoId = cursoConfig.hero.videoPresentacionVimeoId;
   const [isPlaying, setIsPlaying] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
@@ -55,12 +62,14 @@ const CourseHero = () => {
     fetchPrivateToken();
   }, [videoId]);
 
+  const yaEsAlumno = userHasPurchasedCourseBySlug(auth.user, slug);
+
   const handleButtonClick = () => {
-    if (auth.user?.subscription?.active) {
+    if (yaEsAlumno) {
       router.push(cursoConfig.hero.rutaUsuarioSuscriptor || '/biblioteca');
-    } else {
-      scrollToPlans();
+      return;
     }
+    scrollToPlans();
   };
 
   const handlePlay = () => setIsPlaying(true);
@@ -182,7 +191,7 @@ const CourseHero = () => {
                     <img
                       src={thumbnailUrl || vimeoThumbnailUrl(videoId, 1280)}
                       alt={`Preview de sesión ${productName}`}
-                      className="w-full h-full object-cover"
+                      className="h-full w-full object-cover object-[center_top]"
                       fetchPriority="high"
                       decoding="async"
                       onLoad={() => setThumbnailLoaded(true)}
@@ -270,13 +279,32 @@ const CourseHero = () => {
             transition={{ duration: 0.45, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
             className="mt-2 flex flex-col sm:flex-row gap-3 justify-center"
           >
-            <button
-              type="button"
-              onClick={handleButtonClick}
-              className="rounded-full px-6 py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink transition-all duration-200 font-montserrat font-semibold text-sm uppercase tracking-[0.2em]"
-            >
-              {cursoConfig.hero.ctaTexto}
-            </button>
+            {yaEsAlumno ? (
+              <button
+                type="button"
+                onClick={handleButtonClick}
+                className="rounded-full px-6 py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink transition-all duration-200 font-montserrat font-semibold text-sm uppercase tracking-[0.2em]"
+              >
+                Ir a la biblioteca
+              </button>
+            ) : ventaPorLlamada ? (
+              <a
+                href={CURSO_SALES_CALL_BOOKING_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={landingCtaPrimaryCompact}
+              >
+                {cursoSalesCallCtaLabel(productName)}
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={handleButtonClick}
+                className="rounded-full px-6 py-3 bg-palette-ink text-palette-cream border-2 border-palette-ink hover:bg-palette-sage hover:border-palette-sage hover:text-palette-ink transition-all duration-200 font-montserrat font-semibold text-sm uppercase tracking-[0.2em]"
+              >
+                {cursoConfig.hero.ctaTexto}
+              </button>
+            )}
           </motion.div>
           <p className="mc-text-depth-light mt-4 font-montserrat text-base md:text-lg text-palette-ink/90 font-light leading-relaxed">
             {cursoConfig.hero.ctaSubcopy}

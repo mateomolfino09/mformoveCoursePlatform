@@ -1,22 +1,30 @@
-/** Cal.com — llamada de consulta del funnel de curso (20 min). */
-export const CURSO_SALES_CALL_BOOKING_URL = 'https://cal.com/yoguinico-move/mmove';
+/** Calendly — llamada de venta/cierre del funnel de curso. */
+export const CURSO_SALES_CALL_BOOKING_URL = 'https://calendly.com/murialmatheo/30min';
 
-/** Avatar de respaldo (perfil Cal.com) si no hay foto en Cloudinary. */
-export const CURSO_SALES_CALL_HOST_AVATAR_FALLBACK =
-  'https://lh3.googleusercontent.com/a/ACg8ocIExYH4j67lM3LG7xigdhVuklEARiZrarM399LR1GxOCZosvA=s400-c';
+/** Copy del CTA de conversión cuando el curso vende por llamada. */
+export function cursoSalesCallCtaLabel(courseName: string): string {
+  const name = courseName.trim();
+  return name ? `Aplicar a ${name}` : 'Aplicar';
+}
+
+/** Duración real de la llamada (ver `CURSO_SALES_CALL_BOOKING_URL` — Calendly, 30 min). */
+export const CURSO_SALES_CALL_DURATION_MIN = 30;
 
 /**
- * Persona que acompaña la llamada (no es Mateo).
+ * Persona que atiende la llamada — hoy Theo (closer), no Mateo.
  *
- * Foto: en Cloudinary Media Library, copiá el **Public ID** (panel Summary)
- * o la **URL de entrega** y pegala en `imageSrc`.
- * Ejemplo: `my_uploads/abc123xyz` (como el fondo de `/registro`).
+ * No hay foto real de Theo cargada todavía: `imageSrc` queda vacío a propósito y el avatar
+ * se renderiza como iniciales (ver `CourseScheduleCall.tsx`) en vez de usar una foto de
+ * otra persona con un nombre distinto.
+ *
+ * Foto (cuando haya una real): en Cloudinary Media Library, copiá el **Public ID** (panel
+ * Summary) o la **URL de entrega** y pegala acá. Ejemplo: `my_uploads/abc123xyz`.
  */
 export const CURSO_SALES_CALL_HOST = {
-  name: 'Nico',
-  roleLine: 'Te va a acompañar en esta conversación.',
+  name: 'Theo',
+  roleLine: 'Te ayuda a decidir si Cuerpo Autónomo es para vos.',
   bio:
-    'Practico yoga y me gusta explorar el cuerpo de distintas maneras. Me estoy formando como profe de movimiento y terapeuta gestáltico. Cuando puedo, estoy en la playa o caminando por las montañas.',
-  /** Public ID Cloudinary (`my_uploads/...`) o URL https. Vacío = avatar Cal.com. */
-  imageSrc: 'my_uploads/equipo/nico-llamada2_n14mrv',
+    'Habla con las personas que están evaluando sumarse a Cuerpo Autónomo, para responder dudas concretas y ver si el programa encaja con lo que estás buscando.',
+  /** Public ID Cloudinary (`my_uploads/...`) o URL https. Vacío = avatar de iniciales. */
+  imageSrc: '',
 } as const;
