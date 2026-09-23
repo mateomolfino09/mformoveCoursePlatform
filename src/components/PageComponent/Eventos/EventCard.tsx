@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { ProductDB } from '../../../../typings';
 import { CldImage } from 'next-cloudinary';
-import { CalendarDaysIcon, MapPinIcon, UsersIcon, CurrencyDollarIcon, ClockIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { GlobeAltIcon, SparklesIcon, FireIcon, TrophyIcon } from '@heroicons/react/24/solid';
-import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
+import { CalendarDaysIcon, MapPinIcon, UsersIcon, XMarkIcon, DocumentArrowDownIcon } from '@heroicons/react/24/outline';
+import { GlobeAltIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { formatearPrecioEventoSync, formatearPrecioConDescuentoSync } from '../../../utils/currencyHelpers';
 import { getLocationCity } from '../../../utils/locationHelpers';
@@ -139,9 +139,14 @@ const EventCard: React.FC<Props> = ({ evento }) => {
   };
 
   return (
-    <div className="group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 border border-gray-100 font-montserrat">
-      {/* Imagen de portada con overlay */}
-      <div className="relative h-72 overflow-hidden rounded-t-3xl">
+    <motion.div
+      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-palette-stone/20 bg-white font-montserrat shadow-[0_18px_50px_-28px_rgba(20,20,17,0.16)] transition-[border-color,box-shadow] duration-300 hover:border-palette-stone/45 hover:shadow-[0_22px_56px_-24px_rgba(20,20,17,0.2)]"
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <div className="relative h-60 overflow-hidden md:h-64">
         {evento.portada ? (
           <div 
             className="w-full h-full cursor-pointer relative z-10"
@@ -151,7 +156,7 @@ const EventCard: React.FC<Props> = ({ evento }) => {
               src={evento.portada}
               alt={evento.nombre || 'Evento'}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              className="object-cover"
             />
             {/* Overlay sutil para indicar que es clickeable */}
             <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
@@ -163,8 +168,8 @@ const EventCard: React.FC<Props> = ({ evento }) => {
             </div>
           </div>
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-[#234C8C] to-[#1a3d73] flex items-center justify-center">
-            <CalendarDaysIcon className="h-16 w-16 text-white/50" />
+          <div className="flex h-full w-full items-center justify-center bg-palette-ink">
+            <CalendarDaysIcon className="h-10 w-10 text-palette-cream/40" />
           </div>
         )}
         
@@ -172,69 +177,47 @@ const EventCard: React.FC<Props> = ({ evento }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
         
         {/* Badges superiores */}
-        <div className="absolute top-4 left-4 flex flex-col space-y-2 pointer-events-none">
-          {/* Badge de modalidad */}
-          <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm font-montserrat ${
-            evento.online 
-              ? 'bg-black/60 text-white' 
-              : 'bg-black/60 text-white'
-          }`}>
+        <div className="pointer-events-none absolute left-4 top-4 flex flex-col gap-2">
+          <div className="inline-flex items-center rounded-full bg-palette-cream/95 px-3 py-1.5 font-montserrat text-[11px] font-semibold uppercase tracking-[0.14em] text-palette-ink">
             {evento.online ? (
               <>
-                <GlobeAltIcon className="h-3 w-3 mr-1" />
+                <GlobeAltIcon className="mr-1.5 h-3 w-3" />
                 Online
               </>
             ) : (
               <>
-                <MapPinIcon className="h-3 w-3 mr-1" />
+                <MapPinIcon className="mr-1.5 h-3 w-3" />
                 Presencial
               </>
             )}
           </div>
-          
-          {/* Badge de urgencia/precio */}
           {precioActual?.urgencia && !eventoTerminado && (
-            <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-black/60 text-white backdrop-blur-sm font-montserrat">
-              <FireIcon className="h-3 w-3 mr-1" />
+            <div className="inline-flex items-center rounded-full bg-palette-cream px-3 py-1.5 font-montserrat text-[11px] font-semibold uppercase tracking-[0.14em] text-palette-ink">
               {precioActual.urgencia}
             </div>
           )}
         </div>
 
-        {/* Badge de estado superior derecho */}
-        <div className="absolute top-4 right-4 pointer-events-none">
+        <div className="pointer-events-none absolute right-4 top-4">
           {eventoTerminado ? (
-            <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-black/60 text-white backdrop-blur-sm font-montserrat">
+            <div className="inline-flex items-center rounded-full bg-palette-ink/80 px-3 py-1.5 font-montserrat text-[11px] font-semibold uppercase tracking-[0.14em] text-palette-cream">
               Finalizado
             </div>
-          ) : diasRestantes && diasRestantes <= 7 && diasRestantes > 0 && (
-            <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-black/60 text-white backdrop-blur-sm font-montserrat animate-pulse">
-              <SparklesIcon className="h-3 w-3 mr-1" />
+          ) : diasRestantes && diasRestantes <= 7 && diasRestantes > 0 ? (
+            <div className="inline-flex items-center rounded-full bg-palette-ink/80 px-3 py-1.5 font-montserrat text-[11px] font-semibold uppercase tracking-[0.14em] text-palette-cream">
               {diasRestantes === 1 ? 'Mañana' : `${diasRestantes} días`}
             </div>
-          )}
+          ) : null}
         </div>
-
-        {/* Precio flotante */}
-        {/* {precioActual && !eventoTerminado && (
-          <div className="absolute bottom-4 right-4 bg-white/80 backdrop-blur-sm rounded-xl px-3 py-2 shadow-lg">
-            <div className="text-center">
-              <span className="text-lg font-bold text-gray-900 font-montserrat">
-                ${precioActual.precio}
-              </span>
-            </div>
-          </div>
-        )} */}
       </div>
 
       {/* Contenido de la card */}
-      <div className="p-8 space-y-6">
-        {/* Título y descripción */}
-        <div className="space-y-3">
-          <h3 className="text-2xl font-bold text-gray-900 line-clamp-2 font-montserrat group-hover:text-[#234C8C] transition-colors">
+      <div className="flex flex-1 flex-col space-y-4 p-5 md:p-6">
+        <div className="space-y-2">
+          <h3 className="line-clamp-2 font-montserrat text-xl font-bold tracking-tight text-palette-ink md:text-[1.45rem] md:leading-tight">
             {evento.nombre}
           </h3>
-          <p className="text-gray-600 text-base line-clamp-3 font-montserrat font-light leading-relaxed">
+          <p className="line-clamp-3 font-montserrat text-[15px] leading-relaxed text-palette-stone md:text-[16px]">
             {evento.descripcion}
           </p>
         </div>
@@ -242,24 +225,24 @@ const EventCard: React.FC<Props> = ({ evento }) => {
         {/* Información del evento en grid */}
         <div className="grid grid-cols-2 gap-3">
           {/* Fecha */}
-          <div className="flex items-center space-x-2 bg-gray-50 rounded-xl px-3 py-2">
-            <CalendarDaysIcon className="h-4 w-4 text-gray-600 flex-shrink-0" />
-            <span className="text-sm text-gray-700 font-montserrat font-medium truncate">
+          <div className="flex items-center space-x-2 rounded-md border border-palette-stone/15 bg-palette-cream px-3 py-2">
+            <CalendarDaysIcon className="h-4 w-4 flex-shrink-0 text-palette-stone" />
+            <span className="truncate font-montserrat text-sm text-palette-ink">
               {formatearFecha(evento.fecha)}
             </span>
           </div>
 
           {/* Ubicación/Modalidad */}
-          <div className="flex items-center space-x-2 bg-gray-50 rounded-xl px-3 py-2">
+          <div className="flex items-center space-x-2 rounded-md border border-palette-stone/15 bg-palette-cream px-3 py-2">
             {evento.online ? (
               <>
-                <GlobeAltIcon className="h-4 w-4 text-gray-600 flex-shrink-0" />
-                <span className="text-sm text-gray-700 font-montserrat font-medium">Online</span>
+                <GlobeAltIcon className="h-4 w-4 flex-shrink-0 text-palette-stone" />
+                <span className="font-montserrat text-sm text-palette-ink">Online</span>
               </>
             ) : (
               <>
-                <MapPinIcon className="h-4 w-4 text-gray-600 flex-shrink-0" />
-                <span className="text-sm text-gray-700 font-montserrat font-medium truncate">
+                <MapPinIcon className="h-4 w-4 flex-shrink-0 text-palette-stone" />
+                <span className="truncate font-montserrat text-sm text-palette-ink">
                   {getLocationCity(evento.ubicacion)}
                 </span>
               </>
@@ -269,10 +252,10 @@ const EventCard: React.FC<Props> = ({ evento }) => {
 
         {/* Cupo y detalles adicionales */}
         {evento.cupo && (
-          <div className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
+          <div className="flex items-center justify-between rounded-md border border-palette-stone/15 bg-palette-cream px-3 py-2">
             <div className="flex items-center space-x-2">
-              <UsersIcon className="h-4 w-4 text-gray-600" />
-              <span className="text-sm font-semibold text-gray-700 font-montserrat">
+              <UsersIcon className="h-4 w-4 text-palette-stone" />
+              <span className="font-montserrat text-sm text-palette-ink">
                 Cupo limitado: {evento.cupo} personas
               </span>
             </div>
@@ -284,7 +267,7 @@ const EventCard: React.FC<Props> = ({ evento }) => {
           <div className="flex items-center justify-start">
             <button
               onClick={handleDownloadPDF}
-              className="flex items-center space-x-2 text-gray-500 hover:text-[#234C8C] transition-colors duration-300 font-montserrat text-sm font-medium"
+              className="flex items-center space-x-2 font-montserrat text-[13px] text-palette-stone transition-colors hover:text-palette-ink"
             >
               <DocumentArrowDownIcon className="h-4 w-4" />
               <span>Descargar información</span>
@@ -293,42 +276,38 @@ const EventCard: React.FC<Props> = ({ evento }) => {
         )}
 
         {/* Separador con gradiente */}
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+        <div className="h-px bg-palette-stone/20"></div>
 
         {/* CTA y precio detallado */}
         <div className="space-y-3">
           {/* Información de precio expandida */}
           {precioActual && !eventoTerminado && (
-            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm font-semibold text-gray-700 font-montserrat">
-                    {precioActual.tipo}
-                  </span>
-                </div>
+            <div className="rounded-2xl border border-palette-stone/15 bg-palette-cream p-3">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="font-montserrat text-[11px] font-medium uppercase tracking-[0.14em] text-palette-stone">
+                  {precioActual.tipo}
+                </span>
                 {precioActual.descuento && (
-                  <span className="text-xs bg-gray-200 text-gray-700 px-3 py-1 rounded-full font-montserrat font-semibold">
+                  <span className="rounded-full bg-white px-2 py-0.5 font-montserrat text-[11px] text-palette-ink">
                     Ahorra {precioActual.descuento.ahorro.textoCompleto}
                   </span>
                 )}
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-baseline space-x-2">
-                  <span className="text-2xl font-bold text-gray-900 font-montserrat">
+                  <span className="font-montserrat text-[18px] font-medium text-palette-ink">
                     {precioActual.precioFormateado.textoCompleto}
                   </span>
                   {precioActual.descuento && (
-                    <span className="text-sm text-gray-500 line-through font-montserrat">
+                    <span className="font-montserrat text-[12px] text-palette-stone line-through">
                       {precioActual.descuento.precioOriginal.textoCompleto}
                     </span>
                   )}
                 </div>
                 {precioActual.urgencia && (
-                  <div className="flex items-center space-x-1">
-                    <span className="text-xs text-gray-600 font-montserrat font-medium">
-                      {precioActual.urgencia}
-                    </span>
-                  </div>
+                  <span className="font-montserrat text-[11px] text-palette-stone">
+                    {precioActual.urgencia}
+                  </span>
                 )}
               </div>
             </div>
@@ -340,27 +319,21 @@ const EventCard: React.FC<Props> = ({ evento }) => {
             className="block w-full"
           >
             <button 
-              className={`w-full py-5 px-8 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 font-montserrat ${
+              className={`w-full rounded-full border-2 px-6 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.16em] transition-all duration-200 ${
                 eventoTerminado
-                  ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-[#234C8C] to-[#1a3d73] text-white hover:shadow-xl hover:shadow-blue-500/25'
+                  ? 'cursor-not-allowed border-palette-stone/20 bg-palette-cream text-palette-stone'
+                  : 'border-palette-ink bg-palette-ink text-palette-cream hover:border-palette-cream hover:bg-palette-cream hover:text-palette-ink'
               }`}
               disabled={eventoTerminado}
             >
-              {eventoTerminado 
-                ? 'Evento finalizado' 
-                : precioActual 
-                  ? 'Reservar ahora →' 
-                  : 'Ver detalles →'
-              }
+              {eventoTerminado
+                ? 'Evento finalizado'
+                : precioActual
+                  ? 'Reservar lugar'
+                  : 'Ver el encuentro'}
             </button>
           </Link>
         </div>
-      </div>
-
-      {/* Efecto de brillo en hover */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-x-12 translate-x-full group-hover:-translate-x-full transition-transform duration-1000 rounded-3xl"></div>
       </div>
 
       {/* Modal para imagen ampliada */}
@@ -404,7 +377,7 @@ const EventCard: React.FC<Props> = ({ evento }) => {
                 {evento.nombre}
               </h3>
               <p className="text-gray-300 font-montserrat text-sm">
-                Haz clic fuera de la imagen para cerrar
+                Tocá afuera de la imagen para cerrar
               </p>
             </div>
           </div>
@@ -419,7 +392,7 @@ const EventCard: React.FC<Props> = ({ evento }) => {
           />
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

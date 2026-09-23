@@ -1,111 +1,89 @@
-'use client'
+'use client';
+
 import AdmimDashboardLayout from '../../components/AdmimDashboardLayout';
-import { Bill, User } from '../../../typings';
+import { Bill } from '../../../typings';
 import Head from 'next/head';
-import { useRouter, usePathname } from 'next/navigation';
-import { parseCookies } from 'nookies';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import Cookies from 'js-cookie';
+import { AdminPage, AdminPageHeader, AdminEmptyState, AdminBadge } from '../admin';
 
 interface Props {
   bills: Bill[];
 }
+
 const Billing = ({ bills }: Props) => {
   const router = useRouter();
-  let [isOpen, setIsOpen] = useState(false);
-  const ref = useRef(null);
-
-
-  const auth = useAuth()
+  const auth = useAuth();
 
   useEffect(() => {
+    const cookies: any = Cookies.get('userToken');
 
-    const cookies: any = Cookies.get('userToken')
-    
-    if (!cookies ) {
+    if (!cookies) {
       router.push('/iniciar-sesion');
     }
-    
-    if(!auth.user) {
-      auth.fetchUser()
-    }
-    else if(auth.user.rol != 'Admin') router.push('/iniciar-sesion');
 
-
+    if (!auth.user) {
+      auth.fetchUser();
+    } else if (auth.user.rol != 'Admin') router.push('/iniciar-sesion');
   }, [auth.user]);
 
   return (
-      <AdmimDashboardLayout>
-        <>
-          <Head>
-            <title>Video Streaming</title>
-            <meta name='description' content='Stream Video App' />
-            <link rel='icon' href='/favicon.ico' />
-          </Head>
-          <div className='w-full h-[100vh]'>
-            <div className='flex flex-col'>
-              <div className='overflow-x-auto sm:-mx-6 lg:-mx-8'>
-                <div className='inline-block min-w-full py-2 sm:px-6 lg:px-8'>
-                  <div className='overflow-hidden'>
-                    <h1 className='text-2xl mt-4 mb-4'>Facturación</h1>
-                    <table className='min-w-full text-left text-sm font-light'>
-                      <thead className='border-b font-medium dark:border-neutral-500'>
-                        <tr>
-                          <th scope='col' className='px-6 py-4'>
-                            Usuario
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Estado
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            ID Pago
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Tipo de Pago
-                          </th>
-                          <th scope='col' className='px-6 py-4'>
-                            Fecha
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {bills?.map((bill: Bill) => (
-                          <tr
-                            key={+bill.merchant_order_id}
-                            ref={ref}
-                            className='border-b dark:border-neutral-500'
-                          >
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {bill.user.name}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {bill.status}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {bill.payment_id.toString()}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {bill.payment_type.toString()}
-                            </td>
-                            <td className='whitespace-nowrap px-6 py-4'>
-                              {new Date(bill.createdAt).toLocaleDateString(
-                                'es-ES'
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
+    <AdmimDashboardLayout>
+      <Head>
+        <title>Facturación</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <AdminPage wide>
+        <AdminPageHeader title="Facturación" description="Pagos registrados en la plataforma." />
+        {!bills || bills.length === 0 ? (
+          <AdminEmptyState title="No hay facturas" description="Cuando haya pagos, van a aparecer acá." />
+        ) : (
+          <div className="overflow-hidden rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-[var(--admin-surface)]">
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-left">
+                <thead>
+                  <tr className="border-b border-[var(--admin-border)]">
+                    {['Usuario', 'Estado', 'ID pago', 'Tipo', 'Fecha'].map((label) => (
+                      <th
+                        key={label}
+                        className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--admin-muted)]"
+                      >
+                        {label}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {bills.map((bill: Bill) => (
+                    <tr
+                      key={+bill.merchant_order_id}
+                      className="border-b border-[var(--admin-border)] last:border-b-0 hover:bg-[var(--admin-hover)]"
+                    >
+                      <td className="whitespace-nowrap px-3 py-2.5 text-[13px]">{bill.user.name}</td>
+                      <td className="whitespace-nowrap px-3 py-2.5">
+                        <AdminBadge>{String(bill.status)}</AdminBadge>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2.5 font-mono text-[12px] text-[var(--admin-muted)]">
+                        {bill.payment_id.toString()}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2.5 text-[13px]">
+                        {bill.payment_type.toString()}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2.5 text-[13px] text-[var(--admin-muted)]">
+                        {new Date(bill.createdAt).toLocaleDateString('es-ES')}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-        </>
-      </AdmimDashboardLayout>
+        )}
+      </AdminPage>
+    </AdmimDashboardLayout>
   );
 };
-
 
 export default Billing;

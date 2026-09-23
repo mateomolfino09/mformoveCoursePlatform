@@ -11,7 +11,6 @@ import { useAuth } from '../../../hooks/useAuth';
 import DeleteProduct from './DeleteProduct';
 import { toast } from '../../../hooks/useToast';
 import endpoints from '../../../services/api';
-import { Dialog } from '@headlessui/react';
 import Link from 'next/link';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { CldImage } from 'next-cloudinary';
@@ -163,30 +162,31 @@ const AllProducts = ({ products }: Props) => {
           <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
               <div className="overflow-hidden">
-                <div className="flex justify-between items-center mb-8 mt-8">
+                <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-montserrat">
+                    <h1 className="text-[20px] font-medium tracking-tight text-[var(--admin-fg)]">
                       Productos
                     </h1>
-                    <p className='text-gray-600 text-lg font-montserrat'>Gestiona todos tus productos</p>
+                    <p className="mt-1 text-[13px] text-[var(--admin-muted)]">Listado de productos</p>
                   </div>
                   <Link href="/admin/productos/crear-producto">
-                    <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md hover:bg-[#234C8C] hover:text-white flex items-center space-x-2 font-montserrat transition-colors duration-300">
-                      <PlusCircleIcon className="w-5 h-5" />
-                      <span>Crear Producto</span>
+                    <button className="inline-flex h-8 items-center gap-1.5 rounded-[var(--admin-radius)] bg-[var(--admin-accent)] px-3 text-[13px] font-medium text-[var(--admin-accent-fg)] hover:opacity-90">
+                      <PlusCircleIcon className="h-4 w-4" />
+                      Crear producto
                     </button>
                   </Link>
                 </div>
-                <table className="min-w-full text-left text-sm font-light bg-[#F7F7F7] rounded-xl shadow font-montserrat border border-[#E5E7EB]">
-                  <thead className="border-b font-medium border-[#E5E7EB] bg-white">
-                    <tr>
-                      <th className="px-6 py-4 text-[#1A1A1A]">Nombre</th>
-                      <th className="px-6 py-4 text-[#1A1A1A]">Id</th>
-                      <th className="px-6 py-4 text-[#1A1A1A]">Precio</th>
-                      <th className="px-6 py-4 text-[#1A1A1A]">Moneda</th>
-                      <th className="px-6 py-4 text-[#1A1A1A]">Tipo</th>
-                      <th className="px-6 py-4 text-[#1A1A1A]">Activo</th>
-                      <th className="px-6 py-4 text-[#1A1A1A]">Acciones</th>
+                <div className="overflow-hidden rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-[var(--admin-surface)]">
+                <table className="min-w-full text-left">
+                  <thead>
+                    <tr className="border-b border-[var(--admin-border)]">
+                      <th>Nombre</th>
+                      <th>Id</th>
+                      <th>Precio</th>
+                      <th>Moneda</th>
+                      <th>Tipo</th>
+                      <th>Activo</th>
+                      <th className="text-right">Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -202,31 +202,42 @@ const AllProducts = ({ products }: Props) => {
                             rowRefs.current[productId] = node;
                           }
                         }}
-                        className={`border-b border-[#E5E7EB] text-[#222] font-montserrat ${
-                          isHighlighted ? 'bg-blue-50 ring-2 ring-inset ring-blue-300' : 'bg-[#F7F7F7]'
+                        className={`border-b border-[var(--admin-border)] last:border-0 ${
+                          isHighlighted ? 'bg-[var(--admin-selected)]' : ''
                         }`}
                       >
-                        <td className="whitespace-nowrap px-6 py-4 font-semibold text-[#1A1A1A]">
+                        <td className="whitespace-nowrap font-medium">
                           <button 
+                            type="button"
                             onClick={() => openInfo(product)}
-                            className="hover:text-[#234C8C] hover:underline cursor-pointer transition-colors duration-200"
+                            className="text-left hover:underline"
                           >
                             {product.nombre}
                           </button>
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4 text-[#6B7280]">{product._id}</td>
-                        <td className="whitespace-nowrap px-6 py-4 text-[#1A1A1A]">{product.precio}</td>
-                        <td className="whitespace-nowrap px-6 py-4 text-[#1A1A1A]">{product.moneda}</td>
-                        <td className="whitespace-nowrap px-6 py-4 text-[#1A1A1A]">{product.tipo}</td>
-                        <td className="whitespace-nowrap px-6 py-4 text-[#1A1A1A]">{product.activo ? "Sí" : "No"}</td>
-                        <td className="whitespace-nowrap px-6 py-4">
-                          <div className="flex item-center justify-center border-solid border-transparent border border-collapse text-base">
-                            <div className="w-6 mr-2 transform hover:text-[#A7B6C2] hover:scale-110 cursor-pointer">
-                              <PencilIcon onClick={() => openEdit(product)}/>
-                            </div>
-                            <div className="w-6 mr-2 transform hover:text-[#FFD600] hover:scale-110 cursor-pointer border-solid border-transparent border border-collapse ">
-                              <TrashIcon onClick={() => openModalDelete(product)}/>
-                            </div>
+                        <td className="whitespace-nowrap font-mono text-[12px] text-[var(--admin-muted)]">{product._id}</td>
+                        <td className="whitespace-nowrap tabular-nums">{product.precio}</td>
+                        <td className="whitespace-nowrap">{product.moneda}</td>
+                        <td className="whitespace-nowrap text-[var(--admin-muted)]">{product.tipo}</td>
+                        <td className="whitespace-nowrap">{product.activo ? "Sí" : "No"}</td>
+                        <td className="whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              type="button"
+                              onClick={() => openEdit(product)}
+                              className="rounded-[var(--admin-radius)] p-1.5 text-[var(--admin-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-fg)]"
+                              aria-label="Editar producto"
+                            >
+                              <PencilIcon className="h-4 w-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openModalDelete(product)}
+                              className="rounded-[var(--admin-radius)] p-1.5 text-[var(--admin-muted)] hover:bg-[var(--admin-destructive-bg)] hover:text-[var(--admin-destructive)]"
+                              aria-label="Eliminar producto"
+                            >
+                              <TrashIcon className="h-4 w-4" />
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -234,6 +245,7 @@ const AllProducts = ({ products }: Props) => {
                     })}
                   </tbody>
                 </table>
+                </div>
                 {/* Modal informativo del producto usando InfoModal */}
                 <InfoModal
                   isOpen={isOpenInfo}
@@ -251,8 +263,8 @@ const AllProducts = ({ products }: Props) => {
                             label="Early Bird"
                             value={
                               <div className="flex items-center justify-between">
-                                <span className="text-lg font-bold text-[#234C8C]">${infoProduct.precios.earlyBird.price}</span>
-                                <span className="text-sm text-gray-600">
+                                <span className="text-lg font-medium text-[var(--admin-fg)]">${infoProduct.precios.earlyBird.price}</span>
+                                <span className="text-sm text-[var(--admin-muted)]">
                                   {formatDate(infoProduct.precios.earlyBird.start)} - {formatDate(infoProduct.precios.earlyBird.end)}
                                 </span>
                               </div>
@@ -265,8 +277,8 @@ const AllProducts = ({ products }: Props) => {
                             label="General"
                             value={
                               <div className="flex items-center justify-between">
-                                <span className="text-lg font-bold text-[#234C8C]">${infoProduct.precios.general.price}</span>
-                                <span className="text-sm text-gray-600">
+                                <span className="text-lg font-medium text-[var(--admin-fg)]">${infoProduct.precios.general.price}</span>
+                                <span className="text-sm text-[var(--admin-muted)]">
                                   {formatDate(infoProduct.precios.general.start)} - {formatDate(infoProduct.precios.general.end)}
                                 </span>
                               </div>
@@ -279,8 +291,8 @@ const AllProducts = ({ products }: Props) => {
                             label="Últimos Tickets"
                             value={
                               <div className="flex items-center justify-between">
-                                <span className="text-lg font-bold text-[#234C8C]">${infoProduct.precios.lastTickets.price}</span>
-                                <span className="text-sm text-gray-600">
+                                <span className="text-lg font-medium text-[var(--admin-fg)]">${infoProduct.precios.lastTickets.price}</span>
+                                <span className="text-sm text-[var(--admin-muted)]">
                                   {formatDate(infoProduct.precios.lastTickets.start)} - {formatDate(infoProduct.precios.lastTickets.end)}
                                 </span>
                               </div>
@@ -295,7 +307,7 @@ const AllProducts = ({ products }: Props) => {
                       <InfoModalField
                         label="Precio"
                         value={
-                          <span className="text-2xl font-bold text-[#234C8C]">
+                          <span className="text-[18px] font-medium text-[var(--admin-fg)]">
                             ${infoProduct?.precio} {infoProduct?.moneda}
                           </span>
                         }
@@ -308,7 +320,7 @@ const AllProducts = ({ products }: Props) => {
                   {infoProduct?.portada && infoProduct?.tipo !== 'curso' && (
                     <InfoModalSection title="Imagen de Portada">
                       <div className="flex justify-center">
-                        <div className="w-full max-w-md aspect-video bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                        <div className="flex aspect-video w-full max-w-md items-center justify-center overflow-hidden rounded-lg bg-[var(--admin-hover)]">
                           <CldImage
                             src={infoProduct.portada} 
                             alt="Imagen de portada" 
@@ -358,7 +370,7 @@ const AllProducts = ({ products }: Props) => {
                                     href={infoProduct.precios.earlyBird.paymentLink} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="text-[#234C8C] hover:text-[#1A1A1A] underline text-sm"
+                                    className="text-[13px] text-[var(--admin-fg)] underline underline-offset-2 hover:text-[var(--admin-muted)]"
                                   >
                                     Ver link
                                   </a>
@@ -369,7 +381,7 @@ const AllProducts = ({ products }: Props) => {
                                         toast.success('Link copiado al portapapeles');
                                       }
                                     }}
-                                    className="text-gray-600 hover:text-[#234C8C] text-sm"
+                                    className="text-[13px] text-[var(--admin-muted)] hover:text-[var(--admin-fg)]"
                                   >
                                     Copiar
                                   </button>
@@ -387,7 +399,7 @@ const AllProducts = ({ products }: Props) => {
                                     href={infoProduct.precios.general.paymentLink} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="text-[#234C8C] hover:text-[#1A1A1A] underline text-sm"
+                                    className="text-[13px] text-[var(--admin-fg)] underline underline-offset-2 hover:text-[var(--admin-muted)]"
                                   >
                                     Ver link
                                   </a>
@@ -398,7 +410,7 @@ const AllProducts = ({ products }: Props) => {
                                         toast.success('Link copiado al portapapeles');
                                       }
                                     }}
-                                    className="text-gray-600 hover:text-[#234C8C] text-sm"
+                                    className="text-[13px] text-[var(--admin-muted)] hover:text-[var(--admin-fg)]"
                                   >
                                     Copiar
                                   </button>
@@ -416,7 +428,7 @@ const AllProducts = ({ products }: Props) => {
                                     href={infoProduct.precios.lastTickets.paymentLink} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="text-[#234C8C] hover:text-[#1A1A1A] underline text-sm"
+                                    className="text-[13px] text-[var(--admin-fg)] underline underline-offset-2 hover:text-[var(--admin-muted)]"
                                   >
                                     Ver link
                                   </a>
@@ -427,7 +439,7 @@ const AllProducts = ({ products }: Props) => {
                                         toast.success('Link copiado al portapapeles');
                                       }
                                     }}
-                                    className="text-gray-600 hover:text-[#234C8C] text-sm"
+                                    className="text-[13px] text-[var(--admin-muted)] hover:text-[var(--admin-fg)]"
                                   >
                                     Copiar
                                   </button>
@@ -454,7 +466,7 @@ const AllProducts = ({ products }: Props) => {
                                 href={infoProduct.linkEvento} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-[#234C8C] hover:text-[#1A1A1A] underline text-sm whitespace-nowrap"
+                                className="whitespace-nowrap text-[13px] text-[var(--admin-fg)] underline underline-offset-2 hover:text-[var(--admin-muted)]"
                               >
                                 {infoProduct.tipo === 'evento' ? 'Unirse' : 'Ver ubicación'}
                               </a>
@@ -465,7 +477,7 @@ const AllProducts = ({ products }: Props) => {
                                     toast.success('Link copiado al portapapeles');
                                   }
                                 }}
-                                className="text-gray-600 hover:text-[#234C8C] text-sm whitespace-nowrap"
+                                className="whitespace-nowrap text-[13px] text-[var(--admin-muted)] hover:text-[var(--admin-fg)]"
                               >
                                 Copiar
                               </button>
@@ -488,7 +500,7 @@ const AllProducts = ({ products }: Props) => {
                               <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
                               </svg>
-                              <span className="text-gray-700 font-medium">
+                              <span className="font-medium text-[var(--admin-fg)]">
                                 {infoProduct.nombre || infoProduct.name}-informacion.pdf
                               </span>
                             </div>
@@ -497,7 +509,7 @@ const AllProducts = ({ products }: Props) => {
                                 href={infoProduct.pdfPresentacionUrl} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-[#234C8C] hover:text-[#1A1A1A] underline text-sm whitespace-nowrap"
+                                className="whitespace-nowrap text-[13px] text-[var(--admin-fg)] underline underline-offset-2 hover:text-[var(--admin-muted)]"
                               >
                                 Ver PDF
                               </a>
@@ -513,7 +525,7 @@ const AllProducts = ({ products }: Props) => {
                                     document.body.removeChild(link);
                                   }
                                 }}
-                                className="text-gray-600 hover:text-[#234C8C] text-sm whitespace-nowrap"
+                                className="whitespace-nowrap text-[13px] text-[var(--admin-muted)] hover:text-[var(--admin-fg)]"
                               >
                                 Descargar
                               </button>
@@ -531,7 +543,11 @@ const AllProducts = ({ products }: Props) => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <InfoModalField
                           label="Código"
-                          value={<span className="font-mono bg-gray-100 px-2 py-1 rounded">{infoProduct.descuento.codigo}</span>}
+                          value={
+                            <span className="rounded bg-[var(--admin-hover)] px-2 py-1 font-mono text-[var(--admin-fg)]">
+                              {infoProduct.descuento.codigo}
+                            </span>
+                          }
                           showBorder={false}
                         />
                         <InfoModalField
@@ -563,7 +579,7 @@ const AllProducts = ({ products }: Props) => {
                       <div className="space-y-2">
                         {infoProduct.beneficios.map((beneficio, index) => (
                           <div key={index} className="flex items-center space-x-3">
-                            <span className="text-gray-700">{beneficio}</span>
+                            <span className="text-[var(--admin-fg)]">{beneficio}</span>
                           </div>
                         ))}
                       </div>
@@ -576,7 +592,7 @@ const AllProducts = ({ products }: Props) => {
                       <div className="space-y-2">
                         {infoProduct.paraQuien.map((item, idx) => (
                           <div key={idx} className="flex items-center space-x-3">
-                            <span className="text-gray-700">{item}</span>
+                            <span className="text-[var(--admin-fg)]">{item}</span>
                           </div>
                         ))}
                       </div>
@@ -589,7 +605,7 @@ const AllProducts = ({ products }: Props) => {
                       <div className="space-y-2">
                         {infoProduct.aprendizajes.map((item, idx) => (
                           <div key={idx} className="flex items-center space-x-3">
-                            <span className="text-gray-700">{item}</span>
+                            <span className="text-[var(--admin-fg)]">{item}</span>
                           </div>
                         ))}
                       </div>
@@ -601,7 +617,7 @@ const AllProducts = ({ products }: Props) => {
                     <InfoModalSection title="Galería de Imágenes">
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {infoProduct.imagenes.map((img, idx) => (
-                          <div key={idx} className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                          <div key={idx} className="flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-[var(--admin-hover)]">
                             <CldImage
                               src={img} 
                               alt={`Imagen ${idx + 1}`} 
@@ -623,7 +639,10 @@ const AllProducts = ({ products }: Props) => {
                     <InfoModalSection title="Etiquetas">
                       <div className="flex flex-wrap gap-2">
                         {infoProduct.etiquetas.map((tag, idx) => (
-                          <span key={idx} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
+                          <span
+                            key={idx}
+                            className="rounded-full bg-[var(--admin-hover)] px-2 py-1 text-sm text-[var(--admin-fg)]"
+                          >
                             {tag}
                           </span>
                         ))}
@@ -640,20 +659,12 @@ const AllProducts = ({ products }: Props) => {
                     />
                   </InfoModalSection>
                 </InfoModal>
-                {/* Modal de confirmación de borrado */}
-                {isOpenDelete && (
-                  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 font-montserrat">
-                    <div className="bg-white p-8 rounded-xl shadow-lg border border-[#E5E7EB]">
-                      <h2 className="text-xl font-bold mb-4 text-[#1A1A1A] font-montserrat">
-                        ¿Seguro que deseas eliminar este producto?
-                      </h2>
-                      <div className="flex justify-end space-x-4">
-                        <button className="bg-[#F7F7F7] px-4 py-2 rounded font-montserrat border border-[#E5E7EB] text-[#1A1A1A]" onClick={() => setIsOpenDelete(false)}>Cancelar</button>
-                        <button className="bg-[#FFD600] text-[#1A1A1A] px-4 py-2 rounded font-montserrat border border-[#FFD600]" onClick={deleteProduct}>Eliminar</button>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <DeleteProduct
+                  product={productSelected}
+                  deleteProduct={deleteProduct}
+                  isOpen={isOpenDelete}
+                  setIsOpen={setIsOpenDelete}
+                />
               </div>
             </div>
           </div>

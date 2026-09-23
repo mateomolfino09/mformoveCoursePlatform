@@ -73,14 +73,20 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
     const isCursoLanding = isCursoPublicPath(path);
     /** Hub de contenido del curso (fondo oscuro, header claro). */
     const isCursoContenidoHub = cursoPublicPath?.subpath === 'contenido';
+    const isCursoBiblioteca = cursoPublicPath?.subpath === 'biblioteca';
     /** Reproductor de clase del curso. */
     const isCursoClasePage = cursoPublicPath?.subpath === 'clase';
+    /** Clase de recurso adicional: mismo reproductor oscuro que una clase de módulo. */
+    const isCursoRecursoPage =
+      cursoPublicPath?.subpath === 'biblioteca' &&
+      path.split('/').filter(Boolean).includes('recurso');
     /** Clases gratuitas secuenciales (/clases-gratis/...). */
     const isClasesGratisPage = path.startsWith('/clases-gratis');
     const isClasesGratisClasePage = /^\/clases-gratis\/[^/]+\/clase\//.test(path);
+    const isDarkCoursePlayer = isCursoClasePage || isClasesGratisClasePage || isCursoRecursoPage;
     /** Landing comercial: mentoría, landing y checkout de curso (no contenido/clase). */
     const isCursoCommercialLanding =
-      isCursoLanding && !isCursoContenidoHub && !isCursoClasePage;
+      isCursoLanding && !isCursoContenidoHub && !isCursoClasePage && !isCursoBiblioteca;
 	const isMembershipLanding = isMentorship || isMentorshipCheckout || isCursoCommercialLanding;
 	const showHeaderSecondaryNav = !isCursoCommercialLanding;
     const isPaymentSuccess = path === routes.navegation.paymentSuccess;
@@ -102,7 +108,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 	const isIndex = path === routes.navegation.index;
 	const isClasses = path.startsWith(routes.navegation.classes);
 	const isEmailVerify = path.startsWith(routes.navegation.email);
-	const isLibraryArea = path.startsWith(routes.navegation.membership.library);
+	const isLibraryArea =
+		path.startsWith(routes.navegation.membership.library) || isCursoBiblioteca;
 	/** Logo siempre al inicio (sin enlace a biblioteca desde el header por ahora). */
 	const logoHref = routes.navegation.index;
 	// Solo en página de módulo (/biblioteca/modulo/xxx): texto blanco arriba, al scroll fondo blanco y texto negro
@@ -341,7 +348,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
             ? true
             : (isLibraryModulePage
                 ? !scrolled
-                : (isCursoClasePage || isClasesGratisClasePage
+                : (isDarkCoursePlayer
                     ? true
                     : (isCursoContenidoHub
                         ? !scrolled
@@ -361,6 +368,11 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
     if (isInfoLight && scrolled) {
         headerBgClass = 'bg-white/90 backdrop-blur-sm';
     }
+    // Eventos: el hero es oscuro (texto claro). Al scrollear, el fondo de la página es crema,
+    // así que el header pasa a crema y el texto a tinta.
+    if (isEvents && scrolled && !showNav && !snap.weeklyPathNavOpen) {
+        headerBgClass = 'bg-palette-cream/95 backdrop-blur-sm';
+    }
     // Solo en página de módulo (/biblioteca/modulo/xxx) o hub de curso (/slug/contenido), cuando hay scroll: fondo opaco y texto negro. En práctica (video) el header siempre transparente.
     if (isLibraryModulePage && !isLibraryPracticePage && scrolled) {
         headerBgClass = 'bg-white backdrop-blur-sm';
@@ -369,12 +381,15 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
         headerBgClass = 'bg-palette-cream';
     }
     // Resto de library (/biblioteca, /biblioteca/clases-individuales...) al hacer scroll: fondo crema
-    if (isLibraryArea && !isLibraryModulePage && scrolled) {
+    if (isLibraryArea && !isLibraryModulePage && !isCursoRecursoPage && scrolled) {
         headerBgClass = 'bg-palette-cream/70 backdrop-blur-sm';
+    }
+    if (isCursoRecursoPage && scrolled && !sidebarOpen) {
+        headerBgClass = 'bg-black/40 backdrop-blur-md';
     }
     // Clase de curso con sidebar de clases abierto (desktop): header sólido, mismo color que el sidebar
     // (bg-palette-ink) y sin blur/transparencia, para que ambos se vean como una sola superficie continua.
-    if ((isCursoClasePage || isClasesGratisClasePage) && sidebarOpen) {
+    if (isDarkCoursePlayer && sidebarOpen) {
         headerBgClass = 'bg-palette-ink';
     }
     // Clases gratis: fondo oscuro muy sutil para que logo/botones se lean sobre el video.
@@ -396,7 +411,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 		? true
 		: (isLibraryModulePage
 		? !scrolled
-		: (isCursoClasePage || isClasesGratisClasePage
+		: (isDarkCoursePlayer
 		? true
 		: (isCursoContenidoHub
 		? !scrolled
@@ -413,7 +428,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 							: ((isAuth || isIndex) ? true : isLightText))))))))))) || forceLightByNav;
 
 	// En página de práctica (video) los botones del header con fondo opaco para que se vean
-	const headerButtonsOpaque = isLibraryPracticePage || isCursoClasePage;
+	const headerButtonsOpaque = isLibraryPracticePage || isCursoClasePage || isCursoRecursoPage;
 
 	const membershipLandingButtonClass =
 		'text-palette-ink border border-palette-stone/50 hover:border-palette-ink hover:bg-palette-cream';
@@ -476,7 +491,7 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 				<m.div
 					initial={{ y: 0, opacity: 1 }}
 					animate={{ y: 0, opacity: 1 }}
-					className={`fixed w-full h-16 min-h-14 px-4 py-3 ${(isCursoClasePage || isClasesGratisClasePage) && sidebarOpen ? 'md:py-4' : 'md:py-12'} md:px-8 transition-all duration-500 ease-in-out ${(snap.weeklyPathNavOpen || snap.bitacoraNavOpen) ? 'z-[300]' : 'z-[250]'} ${headerBgClass}`}
+					className={`fixed w-full h-16 min-h-14 px-4 py-3 ${isDarkCoursePlayer && sidebarOpen ? 'md:py-4' : 'md:py-12'} md:px-8 transition-all duration-500 ease-in-out ${(snap.weeklyPathNavOpen || snap.bitacoraNavOpen) ? 'z-[300]' : 'z-[250]'} ${headerBgClass}`}
 				>
 					{isWeeklyPath ? (
 						// Distribución especial para camino: flex en 3 zonas; más espacio a la derecha del logo solo aquí

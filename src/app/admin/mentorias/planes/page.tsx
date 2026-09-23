@@ -333,15 +333,21 @@ export default function AdminMentorshipPlansPage() {
 
                 {/* Modal informativo del plan */}
                 {isOpenInfo && planSelected && (
-                  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 font-montserrat">
-                    <div className="bg-white p-8 rounded-xl shadow-lg border border-[#E5E7EB] max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                      <div className="flex justify-between items-start mb-6">
-                        <h2 className="text-2xl font-bold text-[#1A1A1A] font-montserrat">{planSelected.name}</h2>
-                        <button 
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
+                    <div
+                      role="dialog"
+                      aria-modal="true"
+                      className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[var(--admin-radius-lg)] border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-[var(--admin-shadow-float)]"
+                    >
+                      <div className="mb-4 flex items-start justify-between gap-4 border-b border-[var(--admin-border)] pb-4">
+                        <h2 className="text-[15px] font-medium tracking-tight text-[var(--admin-fg)]">{planSelected.name}</h2>
+                        <button
+                          type="button"
                           onClick={() => setIsOpenInfo(false)}
-                          className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                          className="rounded-[var(--admin-radius)] p-1 text-[var(--admin-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-fg)]"
+                          aria-label="Cerrar diálogo"
                         >
-                          ×
+                          <span className="block text-[18px] leading-none">×</span>
                         </button>
                       </div>
                       

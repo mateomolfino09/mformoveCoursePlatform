@@ -6,6 +6,7 @@ import { CldImage } from 'next-cloudinary';
 import { useDropzone } from 'react-dropzone';
 import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
 import CursoClaseContenidoFields from './CursoClaseContenidoFields';
+import CursoRecursosAdicionalesEditor from './CursoRecursosAdicionalesEditor';
 import {
   CursoClaseContenido,
   CursoFaqItem,
@@ -364,6 +365,9 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
       descripcionCorta: n.descripcionCorta,
       descripcionCompleta: n.descripcionCompleta,
       pdfUrl: n.pdfUrl,
+      pdfNombre: n.pdfNombre,
+      pdfPublicId: n.pdfPublicId,
+      pdfResourceType: n.pdfResourceType,
       videoUrl: n.videoUrl,
       videoId: n.videoId,
       videoThumbnail: n.videoThumbnail,
@@ -1165,6 +1169,17 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
             ))}
           </motion.div>
         )}
+      </Section>
+
+      <Section
+        title="Recursos adicionales"
+        description="Opcional. Clases o archivos que se muestran en la biblioteca del curso, bajo Recursos para tu práctica. Los archivos se suben a Cloudinary."
+        defaultOpen
+      >
+        <CursoRecursosAdicionalesEditor
+          recursos={value.recursosAdicionales || []}
+          onChange={(recursosAdicionales) => onChange({ ...value, recursosAdicionales })}
+        />
       </Section>
 
       <Section title="Qué incluye" description="Bloques de valor y módulos del método con imágenes de Cloudinary.">

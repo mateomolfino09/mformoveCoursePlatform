@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../hooks/useAuth';
 import { routes } from '../constants/routes';
-import { parseCursoPublicPath } from '../lib/cursoPaths';
+import { cursoBibliotecaPath, cursoContenidoPath, parseCursoPublicPath } from '../lib/cursoPaths';
 
 type UserCourseNavItem = {
   productoId: string;
@@ -55,7 +55,9 @@ export default function HeaderCoursesMenu({
 
   const cursoPath = parseCursoPublicPath(pathname);
   const isOnCourseArea =
-    cursoPath?.subpath === 'contenido' || cursoPath?.subpath === 'clase';
+    cursoPath?.subpath === 'contenido' ||
+    cursoPath?.subpath === 'clase' ||
+    cursoPath?.subpath === 'biblioteca';
 
   useEffect(() => {
     const update = () => setIsMobile(window.innerWidth < 768);
@@ -149,27 +151,42 @@ export default function HeaderCoursesMenu({
 
       {open ? (
           <div className="absolute left-0 top-full z-[260] pt-2">
-            <div className="min-w-[12rem] w-max max-w-[min(20rem,calc(100vw-2rem))] rounded-xl border border-palette-stone/20 bg-palette-ink py-2 shadow-xl">
+            <div className="min-w-[16rem] w-max max-w-[min(22rem,calc(100vw-2rem))] rounded-xl border border-palette-stone/20 bg-palette-ink py-2 shadow-xl">
               {courses.map((course) => {
-                const href = resolveCourseContenidoHref(course);
-                if (!href) return null;
-                const isActive =
-                  cursoPath?.slug === course.slug &&
-                  (cursoPath.subpath === 'contenido' || cursoPath.subpath === 'clase');
+                const slug = course.slug?.trim();
+                if (!slug) return null;
+                const onThisCourse = cursoPath?.slug === slug && isOnCourseArea;
+                const caminoActive =
+                  onThisCourse &&
+                  (cursoPath?.subpath === 'contenido' || cursoPath?.subpath === 'clase');
+                const bibliotecaActive = onThisCourse && cursoPath?.subpath === 'biblioteca';
+                const itemClass = (active: boolean) =>
+                  `block rounded-lg px-3 py-2 font-montserrat text-sm transition-colors ${
+                    active
+                      ? 'bg-palette-sage/25 font-semibold text-palette-cream'
+                      : 'text-palette-cream/85 hover:bg-white/10 hover:text-palette-cream'
+                  }`;
 
                 return (
-                  <Link
-                    key={course.productoId}
-                    href={href}
-                    className={`block px-4 py-2.5 font-montserrat text-sm transition-colors ${
-                      isActive
-                        ? 'bg-palette-stone/20 font-semibold text-palette-cream'
-                        : 'text-palette-cream hover:bg-white/10'
-                    }`}
-                    onClick={() => setOpen(false)}
-                  >
-                    {course.nombre}
-                  </Link>
+                  <div key={course.productoId} className="px-2 py-2">
+                    <p className="px-3 pb-1 font-montserrat text-[11px] font-medium uppercase tracking-[0.16em] text-palette-cream/45">
+                      {course.nombre}
+                    </p>
+                    <Link
+                      href={cursoBibliotecaPath(slug)}
+                      className={itemClass(bibliotecaActive)}
+                      onClick={() => setOpen(false)}
+                    >
+                      Biblioteca
+                    </Link>
+                    <Link
+                      href={cursoContenidoPath(slug)}
+                      className={itemClass(caminoActive)}
+                      onClick={() => setOpen(false)}
+                    >
+                      Mi Camino
+                    </Link>
+                  </div>
                 );
               })}
             </div>

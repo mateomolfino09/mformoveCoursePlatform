@@ -37,14 +37,14 @@ const LinkField = ({ label, href }: { label: string; href: string }) => (
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[#234C8C] hover:text-[#1A1A1A] underline text-sm break-all"
+          className="break-all text-[13px] text-[var(--admin-fg)] underline underline-offset-2 hover:text-[var(--admin-muted)]"
         >
           {href}
         </a>
         <button
           type="button"
           onClick={() => copyToClipboard(href, label)}
-          className="text-gray-600 hover:text-[#234C8C] text-sm whitespace-nowrap"
+          className="whitespace-nowrap text-[13px] text-[var(--admin-muted)] hover:text-[var(--admin-fg)]"
         >
           Copiar
         </button>
@@ -56,13 +56,13 @@ const LinkField = ({ label, href }: { label: string; href: string }) => (
 
 const TextList = ({ items, emptyLabel }: { items: string[]; emptyLabel: string }) => {
   if (!items.length) {
-    return <p className="text-sm text-gray-500">{emptyLabel}</p>;
+    return <p className="text-sm text-[var(--admin-muted)]">{emptyLabel}</p>;
   }
 
   return (
     <ul className="space-y-2">
       {items.map((item, index) => (
-        <li key={`${item}-${index}`} className="text-sm text-gray-700">
+        <li key={`${item}-${index}`} className="text-sm text-[var(--admin-fg)]">
           {item}
         </li>
       ))}
@@ -80,7 +80,7 @@ export default function CursoProductDetails({
   if (!cursoConfig) {
     return (
       <InfoModalSection title="Landing del curso">
-        <p className="text-sm text-gray-500">Este producto no tiene configuración de landing cargada.</p>
+        <p className="text-sm text-[var(--admin-muted)]">Este producto no tiene configuración de landing cargada.</p>
       </InfoModalSection>
     );
   }
@@ -112,7 +112,7 @@ export default function CursoProductDetails({
             label="Ruta pública"
             value={
               landingPath ? (
-                <Link href={landingPath} target="_blank" className="text-[#234C8C] hover:underline">
+                <Link href={landingPath} target="_blank" className="text-[var(--admin-fg)] underline underline-offset-2 hover:text-[var(--admin-muted)]">
                   {landingPath}
                 </Link>
               ) : (
@@ -158,7 +158,7 @@ export default function CursoProductDetails({
         </div>
         {checkoutImage && (
           <div className="mt-4 flex justify-center">
-            <div className="w-full max-w-sm aspect-square bg-gray-100 rounded-lg overflow-hidden">
+            <div className="w-full max-w-sm aspect-square bg-[var(--admin-hover)] rounded-lg overflow-hidden">
               <CldImage
                 src={checkoutImage}
                 alt="Imagen de checkout del curso"
@@ -173,11 +173,11 @@ export default function CursoProductDetails({
         {opcionesPago.length > 0 ? (
           <div className="mt-4 space-y-3">
             {opcionesPago.map((plan, index) => (
-              <div key={cursoPlanPagoKey(plan, index)} className="rounded-lg border border-gray-200 p-3 space-y-2">
+              <div key={cursoPlanPagoKey(plan, index)} className="rounded-lg border border-[var(--admin-border)] p-3 space-y-2">
                 <InfoModalField
                   label={plan.etiqueta}
                   value={
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-[var(--admin-fg)]">
                       {plan.activo ? 'Activo' : 'Inactivo'} · {plan.monto} {plan.moneda}
                       {plan.intervaloMeses === 4 ? ' · cada 4 meses' : ''}
                     </span>
@@ -187,13 +187,13 @@ export default function CursoProductDetails({
                 {plan.paymentLink ? (
                   <LinkField label={plan.etiqueta} href={plan.paymentLink} />
                 ) : (
-                  <p className="text-sm text-gray-500">Sin link de pago generado.</p>
+                  <p className="text-sm text-[var(--admin-muted)]">Sin link de pago generado.</p>
                 )}
               </div>
             ))}
           </div>
         ) : (
-          <p className="mt-4 text-sm text-gray-500">Todavía no hay links de pago asociados al curso.</p>
+          <p className="mt-4 text-sm text-[var(--admin-muted)]">Todavía no hay links de pago asociados al curso.</p>
         )}
       </InfoModalSection>
 
@@ -314,20 +314,20 @@ export default function CursoProductDetails({
             value={cursoConfig.highlights.ctaImagenPublicId || '—'}
             showBorder={false}
           />
-          <p className="text-sm font-medium text-gray-700">Resultados ({cursoConfig.outcomes.items.length})</p>
+          <p className="text-sm font-medium text-[var(--admin-fg)]">Resultados ({cursoConfig.outcomes.items.length})</p>
           {cursoConfig.outcomes.items.map((item, index) => (
-            <div key={`outcome-${index}`} className="rounded-lg border border-gray-200 p-3">
-              <p className="font-medium text-gray-900">{item.titulo}</p>
-              <p className="text-sm text-gray-600 mt-1">{item.cuerpo}</p>
+            <div key={`outcome-${index}`} className="rounded-lg border border-[var(--admin-border)] p-3">
+              <p className="font-medium text-[var(--admin-fg)]">{item.titulo}</p>
+              <p className="text-sm text-[var(--admin-muted)] mt-1">{item.cuerpo}</p>
             </div>
           ))}
-          <p className="text-sm font-medium text-gray-700">Highlights ({cursoConfig.highlights.items.length})</p>
+          <p className="text-sm font-medium text-[var(--admin-fg)]">Highlights ({cursoConfig.highlights.items.length})</p>
           {cursoConfig.highlights.items.map((item, index) => (
-            <div key={`highlight-${index}`} className="rounded-lg border border-gray-200 p-3">
-              <p className="font-medium text-gray-900">{item.titulo}</p>
-              <p className="text-sm text-gray-600 mt-1">{item.resumen}</p>
-              <p className="text-sm text-gray-500 mt-2">{item.detalle}</p>
-              <p className="text-xs text-gray-400 mt-2">Imagen (Cloudinary): {item.imagenPublicId?.trim() || '— (usa módulo mismo título o CTA timeline)'}</p>
+            <div key={`highlight-${index}`} className="rounded-lg border border-[var(--admin-border)] p-3">
+              <p className="font-medium text-[var(--admin-fg)]">{item.titulo}</p>
+              <p className="text-sm text-[var(--admin-muted)] mt-1">{item.resumen}</p>
+              <p className="text-sm text-[var(--admin-muted)] mt-2">{item.detalle}</p>
+              <p className="text-xs text-[var(--admin-subtle)] mt-2">Imagen (Cloudinary): {item.imagenPublicId?.trim() || '— (usa módulo mismo título o CTA timeline)'}</p>
             </div>
           ))}
         </div>
@@ -337,18 +337,18 @@ export default function CursoProductDetails({
         {cursoConfig.preciosPreventa?.length ? (
           <div className="space-y-3">
             {cursoConfig.preciosPreventa.map((tier, index) => (
-              <div key={`preventa-${index}`} className="rounded-lg border border-amber-100 bg-amber-50/50 p-3 space-y-2">
-                <p className="font-medium text-gray-900">{tier.etiqueta || `Tier ${index + 1}`}</p>
-                <p className="text-sm text-gray-600">
+              <div key={`preventa-${index}`} className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-warning-bg)] p-3 space-y-2">
+                <p className="font-medium text-[var(--admin-fg)]">{tier.etiqueta || `Tier ${index + 1}`}</p>
+                <p className="text-sm text-[var(--admin-muted)]">
                   {tier.monto} {tier.moneda} · fin{' '}
                   {tier.fechaFin
                     ? toDatetimeLocalValue(tier.fechaFin).replace('T', ' ')
                     : '—'}{' '}
                   · cupos {tier.cuposUsados}/{tier.cuposLimite}
                 </p>
-                <p className="text-sm text-gray-500">{tier.descripcion || '—'}</p>
+                <p className="text-sm text-[var(--admin-muted)]">{tier.descripcion || '—'}</p>
                 {(tier.opcionesPago || []).map((plan, planIndex) => (
-                  <p key={cursoPlanPagoKey(plan, planIndex)} className="text-xs text-gray-500 break-all">
+                  <p key={cursoPlanPagoKey(plan, planIndex)} className="text-xs text-[var(--admin-muted)] break-all">
                     {plan.etiqueta}: {plan.paymentLink || 'sin link'}
                   </p>
                 ))}
@@ -356,7 +356,7 @@ export default function CursoProductDetails({
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-500">Sin tiers de preventa configurados.</p>
+          <p className="text-sm text-[var(--admin-muted)]">Sin tiers de preventa configurados.</p>
         )}
       </InfoModalSection>
 
@@ -364,17 +364,17 @@ export default function CursoProductDetails({
         {cursoConfig.contenidoModulos?.length ? (
           <div className="space-y-3">
             {cursoConfig.contenidoModulos.map((modulo, index) => (
-              <div key={`contenido-${index}`} className="rounded-lg border border-gray-200 p-3">
-                <p className="font-medium text-gray-900">
+              <div key={`contenido-${index}`} className="rounded-lg border border-[var(--admin-border)] p-3">
+                <p className="font-medium text-[var(--admin-fg)]">
                   {index + 1}. {modulo.titulo || 'Sin título'}
                 </p>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-[var(--admin-muted)] mt-1">
                   Tipo: {modulo.bundleTipo === 'vimeo_playlist' ? 'Playlist Vimeo' : 'Videos individuales'}
                 </p>
                 {modulo.bundleTipo === 'vimeo_playlist' ? (
-                  <p className="text-xs text-gray-500 mt-1">Playlist: {modulo.vimeoPlaylistId || '—'}</p>
+                  <p className="text-xs text-[var(--admin-muted)] mt-1">Playlist: {modulo.vimeoPlaylistId || '—'}</p>
                 ) : (
-                  <ul className="mt-2 space-y-2 text-sm text-gray-600">
+                  <ul className="mt-2 space-y-2 text-sm text-[var(--admin-muted)]">
                     {(modulo.clases || []).map((clase, ci) => {
                       const name = clase.name || clase.titulo || 'Clase';
                       const videoId = clase.videoId || clase.vimeoVideoId || '—';
@@ -384,23 +384,23 @@ export default function CursoProductDetails({
                           : clase.duracionMinutos;
                       const descripcionGeneral = resolveClaseDescripcionGeneral(clase);
                       return (
-                        <li key={`clase-${ci}`} className="rounded border border-gray-100 px-2 py-1.5">
-                          <span className="font-medium text-gray-800">{name}</span>
-                          <span className="text-gray-500"> — Vimeo {videoId}</span>
-                          {mins ? <span className="text-gray-500"> ({mins} min)</span> : null}
-                          <span className="text-gray-500"> · Nivel {clase.level ?? 1}</span>
+                        <li key={`clase-${ci}`} className="rounded border border-[var(--admin-border)] px-2 py-1.5">
+                          <span className="font-medium text-[var(--admin-fg)]">{name}</span>
+                          <span className="text-[var(--admin-muted)]"> — Vimeo {videoId}</span>
+                          {mins ? <span className="text-[var(--admin-muted)]"> ({mins} min)</span> : null}
+                          <span className="text-[var(--admin-muted)]"> · Nivel {clase.level ?? 1}</span>
                           {descripcionGeneral ? (
-                            <span className="block text-xs text-gray-600 mt-1 whitespace-pre-line">
+                            <span className="block text-xs text-[var(--admin-muted)] mt-1 whitespace-pre-line">
                               {descripcionGeneral}
                             </span>
                           ) : null}
                           {clase.materials?.length ? (
-                            <span className="block text-xs text-gray-500 mt-0.5">
+                            <span className="block text-xs text-[var(--admin-muted)] mt-0.5">
                               Materiales: {clase.materials.join(', ')}
                             </span>
                           ) : null}
                           {clase.courseClassId ? (
-                            <span className="block text-xs text-gray-400">
+                            <span className="block text-xs text-[var(--admin-subtle)]">
                               CourseClass: {clase.courseClassId}
                             </span>
                           ) : null}
@@ -413,32 +413,32 @@ export default function CursoProductDetails({
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-500">Sin módulos de contenido. Se sincronizan desde el timeline.</p>
+          <p className="text-sm text-[var(--admin-muted)]">Sin módulos de contenido. Se sincronizan desde el timeline.</p>
         )}
       </InfoModalSection>
 
       <InfoModalSection title="Qué incluye">
         <InfoModalField label="Título" value={cursoConfig.queIncluye.titulo || '—'} showBorder={false} />
         <InfoModalField label="Ancla de sección" value={cursoConfig.queIncluye.anclaId || '—'} showBorder={false} />
-        <p className="text-sm font-medium text-gray-700 mt-4">Bloques de oferta ({cursoConfig.queIncluye.offerBlocks.length})</p>
+        <p className="text-sm font-medium text-[var(--admin-fg)] mt-4">Bloques de oferta ({cursoConfig.queIncluye.offerBlocks.length})</p>
         {cursoConfig.queIncluye.offerBlocks.map((block, index) => (
-          <div key={`offer-${index}`} className="rounded-lg border border-gray-200 p-3 mt-2">
+          <div key={`offer-${index}`} className="rounded-lg border border-[var(--admin-border)] p-3 mt-2">
             <TextList items={block.lineas} emptyLabel="Sin líneas." />
-            <p className="text-sm text-gray-500 mt-2">{block.hint}</p>
-            <p className="text-xs text-gray-400 mt-1">Icono: {block.iconKey || '—'}</p>
+            <p className="text-sm text-[var(--admin-muted)] mt-2">{block.hint}</p>
+            <p className="text-xs text-[var(--admin-subtle)] mt-1">Icono: {block.iconKey || '—'}</p>
             {typeof block.lineaDestacadaIndice === 'number' ? (
-              <p className="text-xs text-gray-400 mt-1">Línea destacada: {block.lineaDestacadaIndice + 1}</p>
+              <p className="text-xs text-[var(--admin-subtle)] mt-1">Línea destacada: {block.lineaDestacadaIndice + 1}</p>
             ) : null}
           </div>
         ))}
-        <p className="text-sm font-medium text-gray-700 mt-4">Módulos ({cursoConfig.queIncluye.modulos.length})</p>
+        <p className="text-sm font-medium text-[var(--admin-fg)] mt-4">Módulos ({cursoConfig.queIncluye.modulos.length})</p>
         {cursoConfig.queIncluye.modulos.map((modulo, index) => (
-          <div key={`module-${index}`} className="rounded-lg border border-gray-200 p-3 mt-2">
-            <p className="font-medium text-gray-900">{modulo.titulo}</p>
-            <p className="text-sm text-gray-600 mt-1">{modulo.descripcion}</p>
-            <p className="text-xs text-gray-400 mt-1">Imagen: {modulo.imagenPublicId || '—'}</p>
+          <div key={`module-${index}`} className="rounded-lg border border-[var(--admin-border)] p-3 mt-2">
+            <p className="font-medium text-[var(--admin-fg)]">{modulo.titulo}</p>
+            <p className="text-sm text-[var(--admin-muted)] mt-1">{modulo.descripcion}</p>
+            <p className="text-xs text-[var(--admin-subtle)] mt-1">Imagen: {modulo.imagenPublicId || '—'}</p>
             {modulo.imagenPublicId ? (
-              <div className="relative mt-3 aspect-[4/3] w-full max-w-xs overflow-hidden rounded-lg bg-gray-100">
+              <div className="relative mt-3 aspect-[4/3] w-full max-w-xs overflow-hidden rounded-lg bg-[var(--admin-hover)]">
                 <CldImage
                   src={modulo.imagenPublicId}
                   alt={modulo.titulo}
@@ -453,19 +453,19 @@ export default function CursoProductDetails({
       </InfoModalSection>
 
       <InfoModalSection title="Testimonios">
-        <p className="text-sm font-medium text-gray-700">Escritos ({cursoConfig.testimoniosEscritos.length})</p>
+        <p className="text-sm font-medium text-[var(--admin-fg)]">Escritos ({cursoConfig.testimoniosEscritos.length})</p>
         {cursoConfig.testimoniosEscritos.map((item, index) => (
-          <div key={`written-${index}`} className="rounded-lg border border-gray-200 p-3 mt-2">
-            <p className="font-medium text-gray-900">{item.nombre}</p>
-            <p className="text-sm text-gray-500">{item.planEtiqueta}</p>
-            <p className="text-sm text-gray-600 mt-2">{item.texto}</p>
+          <div key={`written-${index}`} className="rounded-lg border border-[var(--admin-border)] p-3 mt-2">
+            <p className="font-medium text-[var(--admin-fg)]">{item.nombre}</p>
+            <p className="text-sm text-[var(--admin-muted)]">{item.planEtiqueta}</p>
+            <p className="text-sm text-[var(--admin-muted)] mt-2">{item.texto}</p>
           </div>
         ))}
-        <p className="text-sm font-medium text-gray-700 mt-4">Grabados ({cursoConfig.testimoniosGrabados.length})</p>
+        <p className="text-sm font-medium text-[var(--admin-fg)] mt-4">Grabados ({cursoConfig.testimoniosGrabados.length})</p>
         {cursoConfig.testimoniosGrabados.map((item, index) => (
-          <div key={`recorded-${index}`} className="rounded-lg border border-gray-200 p-3 mt-2">
-            <p className="font-medium text-gray-900">{item.titulo || `Video ${index + 1}`}</p>
-            <p className="text-sm text-gray-600">Vimeo: {item.videoVimeoId || '—'}</p>
+          <div key={`recorded-${index}`} className="rounded-lg border border-[var(--admin-border)] p-3 mt-2">
+            <p className="font-medium text-[var(--admin-fg)]">{item.titulo || `Video ${index + 1}`}</p>
+            <p className="text-sm text-[var(--admin-muted)]">Vimeo: {item.videoVimeoId || '—'}</p>
           </div>
         ))}
       </InfoModalSection>
@@ -517,11 +517,11 @@ export default function CursoProductDetails({
         <InfoModalField label="Preguntas frecuentes título" value={cursoConfig.faq.titulo || '—'} showBorder={false} />
         <InfoModalField label="Preguntas frecuentes ancla" value={cursoConfig.faq.anclaId || '—'} showBorder={false} />
         <InfoModalField label="Preguntas frecuentes intro" value={cursoConfig.faq.intro || '—'} showBorder={false} />
-        <p className="text-sm font-medium text-gray-700 mt-4">Preguntas frecuentes ({cursoConfig.faq.items.length})</p>
+        <p className="text-sm font-medium text-[var(--admin-fg)] mt-4">Preguntas frecuentes ({cursoConfig.faq.items.length})</p>
         {cursoConfig.faq.items.map((item, index) => (
-          <div key={`faq-${index}`} className="rounded-lg border border-gray-200 p-3 mt-2">
-            <p className="font-medium text-gray-900">{item.pregunta}</p>
-            <p className="text-sm text-gray-600 mt-1">{item.respuesta}</p>
+          <div key={`faq-${index}`} className="rounded-lg border border-[var(--admin-border)] p-3 mt-2">
+            <p className="font-medium text-[var(--admin-fg)]">{item.pregunta}</p>
+            <p className="text-sm text-[var(--admin-muted)] mt-1">{item.respuesta}</p>
           </div>
         ))}
         <InfoModalField label="CTA final" value={cursoConfig.ctaFinal.titulo || '—'} showBorder={false} />

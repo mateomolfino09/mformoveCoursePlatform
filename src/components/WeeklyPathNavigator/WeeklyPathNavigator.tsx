@@ -10,6 +10,7 @@ import { routes } from '../../constants/routes';
 import { CUERPO_AUTONOMO_COURSE_SLUG } from '../../constants/mentorshipCuerpoAutonomoDiscount';
 import { formatTitleCaseWords } from '../../lib/formatDisplayTitle';
 import { resolveOwnedCursoRedirectPath } from '../../lib/resolveOwnedCursoRedirect';
+import { cursoBibliotecaPath, cursoContenidoPath } from '../../lib/cursoPaths';
 
 interface CursoNavItem {
   slug: string;
@@ -168,16 +169,20 @@ const WeeklyPathNavigator = () => {
     router.push(href);
   };
 
-  const goCurso = (slug: string) => {
+  const goHref = (href: string) => {
     const tutorialActive = document.body.classList.contains('tutorial-active');
     if (tutorialActive) return;
-    const slugKey = slug.trim().toLowerCase();
-    const href =
-      ownedCursoHrefBySlug[slugKey] ?? routes.navegation.membership.curso(slug);
     closeMenu();
     setNavigationTarget(href);
     setIsNavigating(true);
     router.push(href);
+  };
+
+  const goCurso = (slug: string) => {
+    const slugKey = slug.trim().toLowerCase();
+    const href =
+      ownedCursoHrefBySlug[slugKey] ?? routes.navegation.membership.curso(slug);
+    goHref(href);
   };
 
   return (
@@ -220,23 +225,60 @@ const WeeklyPathNavigator = () => {
                       No hay cursos publicados por ahora.
                     </p>
                   ) : (
-                    cursoNavItems.map((item) => (
-                      <button
-                        key={item.slug}
-                        type="button"
-                        onClick={() => goCurso(item.slug)}
-                        className="max-w-full shrink-0 cursor-pointer text-right text-[#fff] transition-colors hover:text-white lg:text-[#d1cfcf6e] lg:hover:text-white"
-                      >
-                        <span className="mb-1 block font-light text-sm uppercase tracking-[0.18em] text-[#fff]/55 md:text-base">
-                          {item.slug.trim().toLowerCase() === CUERPO_AUTONOMO_COURSE_SLUG
-                            ? 'Escuela de movimiento'
-                            : 'Método'}
-                        </span>
-                        <span className="block max-w-full overflow-x-auto scrollbar-hide whitespace-nowrap text-right text-3xl font-thin leading-none sm:text-4xl md:text-5xl lg:text-6xl">
-                          {formatTitleCaseWords(item.label)}
-                        </span>
-                      </button>
-                    ))
+                    cursoNavItems.map((item) => {
+                      const slugKey = item.slug.trim().toLowerCase();
+                      const ownedHref = ownedCursoHrefBySlug[slugKey];
+                      const showDoubleNav = Boolean(ownedHref && !ownedHref.startsWith('/pago/exito'));
+                      return (
+                        <div key={item.slug} className="flex max-w-full flex-col items-end gap-2">
+                          {showDoubleNav ? (
+                            <div className="text-right text-[#fff]">
+                              <span className="mb-1 block font-light text-sm uppercase tracking-[0.18em] text-[#fff]/55 md:text-base">
+                                {slugKey === CUERPO_AUTONOMO_COURSE_SLUG
+                                  ? 'Escuela de movimiento'
+                                  : 'Método'}
+                              </span>
+                              <span className="block max-w-full overflow-x-auto scrollbar-hide whitespace-nowrap text-right text-3xl font-thin leading-none sm:text-4xl md:text-5xl lg:text-6xl">
+                                {formatTitleCaseWords(item.label)}
+                              </span>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => goCurso(item.slug)}
+                              className="max-w-full shrink-0 cursor-pointer text-right text-[#fff] transition-colors hover:text-white lg:text-[#d1cfcf6e] lg:hover:text-white"
+                            >
+                              <span className="mb-1 block font-light text-sm uppercase tracking-[0.18em] text-[#fff]/55 md:text-base">
+                                {slugKey === CUERPO_AUTONOMO_COURSE_SLUG
+                                  ? 'Escuela de movimiento'
+                                  : 'Método'}
+                              </span>
+                              <span className="block max-w-full overflow-x-auto scrollbar-hide whitespace-nowrap text-right text-3xl font-thin leading-none sm:text-4xl md:text-5xl lg:text-6xl">
+                                {formatTitleCaseWords(item.label)}
+                              </span>
+                            </button>
+                          )}
+                          {showDoubleNav ? (
+                            <div className="flex flex-col items-end gap-1">
+                              <button
+                                type="button"
+                                onClick={() => goHref(cursoBibliotecaPath(slugKey))}
+                                className="cursor-pointer text-right text-2xl font-light text-[#fff]/80 transition-colors hover:text-white md:text-3xl"
+                              >
+                                Biblioteca
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => goHref(cursoContenidoPath(slugKey))}
+                                className="cursor-pointer text-right text-2xl font-light text-[#fff]/80 transition-colors hover:text-white md:text-3xl"
+                              >
+                                Mi Camino
+                              </button>
+                            </div>
+                          ) : null}
+                        </div>
+                      );
+                    })
                   )}
                   </div>
                 </div>

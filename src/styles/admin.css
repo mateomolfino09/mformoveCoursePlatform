@@ -1,0 +1,653 @@
+/* Admin shell — scoped. No afecta el sitio público.
+   html[data-admin-active] replica solo tokens (diálogos portaleados al body). */
+[data-admin-shell],
+html[data-admin-active] {
+  --admin-bg: #fafafa;
+  --admin-surface: #ffffff;
+  --admin-fg: #171717;
+  --admin-muted: #737373;
+  --admin-subtle: #a3a3a3;
+  --admin-border: #eaeaea;
+  --admin-hover: #f4f4f4;
+  --admin-selected: #f2f2f2;
+  --admin-accent: #171717;
+  --admin-accent-fg: #ffffff;
+  --admin-destructive: #e5484d;
+  --admin-destructive-bg: #fff0f0;
+  --admin-success: #16a34a;
+  --admin-success-bg: #f0fdf4;
+  --admin-warning: #d97706;
+  --admin-warning-bg: #fffbeb;
+  --admin-focus: #171717;
+  --admin-radius: 6px;
+  --admin-radius-lg: 8px;
+  --admin-shadow-float: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --admin-sidebar: 232px;
+  --admin-topbar: 48px;
+  --admin-ease: 120ms ease;
+  --admin-cream: #faf8f4;
+  --admin-ink: #141411;
+  --admin-label: #171717;
+  --admin-input-bg: #ffffff;
+  --admin-input-fg: #111827;
+  --admin-input-border: #d4d4d4;
+  --admin-input-placeholder: #6b7280;
+  --admin-btn-secondary-hover-bg: var(--admin-hover);
+  --admin-btn-secondary-hover-fg: var(--admin-fg);
+  --admin-btn-primary-hover-bg: var(--admin-accent);
+  --admin-btn-primary-hover-fg: var(--admin-accent-fg);
+}
+
+[data-admin-shell] {
+  min-height: 100vh;
+  background: var(--admin-bg);
+  color: var(--admin-fg);
+  font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-admin-shell] *,
+[data-admin-shell] *::before,
+[data-admin-shell] *::after {
+  border-color: var(--admin-border);
+}
+
+[data-admin-shell] a {
+  color: inherit;
+  text-decoration: none;
+}
+
+[data-admin-shell] h1,
+[data-admin-shell] h2,
+[data-admin-shell] h3,
+[data-admin-shell] h4 {
+  color: var(--admin-fg);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+[data-admin-shell] h1 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+[data-admin-shell] h2 {
+  font-size: 0.9375rem;
+  line-height: 1.35;
+}
+
+[data-admin-shell] h3,
+[data-admin-shell] h4 {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+[data-admin-shell] :focus-visible {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 2px;
+}
+
+[data-admin-shell] input:focus-visible,
+[data-admin-shell] textarea:focus-visible,
+[data-admin-shell] select:focus-visible {
+  outline: none;
+}
+
+[data-admin-shell] input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='range']),
+[data-admin-shell] textarea,
+[data-admin-shell] select {
+  color: var(--admin-input-fg) !important;
+  background-color: var(--admin-input-bg) !important;
+  border: 1px solid var(--admin-input-border);
+  border-radius: var(--admin-radius);
+  font-size: 13px;
+  line-height: 1.4;
+  min-height: 2rem;
+  padding: 0.35rem 0.625rem;
+  box-shadow: none !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-color: transparent !important;
+  accent-color: var(--admin-fg);
+}
+
+[data-admin-shell] textarea {
+  min-height: 5.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+[data-admin-shell] input::placeholder,
+[data-admin-shell] textarea::placeholder {
+  color: var(--admin-input-placeholder) !important;
+}
+
+[data-admin-shell] input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):focus,
+[data-admin-shell] textarea:focus,
+[data-admin-shell] select:focus {
+  border-color: var(--admin-fg) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* Autofill Chrome/Safari: evita el fondo azul cuando el campo está lleno */
+[data-admin-shell] input:-webkit-autofill,
+[data-admin-shell] input:-webkit-autofill:hover,
+[data-admin-shell] input:-webkit-autofill:focus,
+[data-admin-shell] input:-webkit-autofill:active,
+[data-admin-shell] textarea:-webkit-autofill,
+[data-admin-shell] textarea:-webkit-autofill:hover,
+[data-admin-shell] textarea:-webkit-autofill:focus,
+[data-admin-shell] select:-webkit-autofill,
+[data-admin-shell] select:-webkit-autofill:hover,
+[data-admin-shell] select:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--admin-input-fg) !important;
+  caret-color: var(--admin-input-fg);
+  border-color: var(--admin-input-border) !important;
+  box-shadow: 0 0 0 1000px var(--admin-input-bg) inset !important;
+  transition: background-color 99999s ease-in-out 0s;
+  filter: none;
+}
+
+[data-admin-shell] ::selection {
+  background: #e5e5e5;
+}
+
+/* globals.css fija TODOS los <header>. El topbar es hermano de main; los títulos van dentro. */
+[data-admin-shell] main header {
+  position: static;
+  z-index: auto;
+  inset: auto;
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 0;
+}
+
+[data-admin-shell] > header {
+  height: var(--admin-topbar);
+  padding-top: 0;
+  padding-bottom: 0;
+  z-index: 40;
+}
+
+[data-admin-shell] .admin-main {
+  padding-top: calc(var(--admin-topbar) + 2rem);
+}
+
+/* Tipografía de template → escala compacta */
+[data-admin-shell] .text-7xl,
+[data-admin-shell] .text-6xl,
+[data-admin-shell] .text-5xl,
+[data-admin-shell] .text-4xl,
+[data-admin-shell] .md\:text-5xl,
+[data-admin-shell] .md\:text-4xl,
+[data-admin-shell] .lg\:text-5xl {
+  font-size: 1.25rem !important;
+  line-height: 1.3 !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.02em;
+}
+
+[data-admin-shell] .text-3xl,
+[data-admin-shell] .md\:text-3xl {
+  font-size: 1.125rem !important;
+  font-weight: 500 !important;
+}
+
+[data-admin-shell] .text-2xl,
+[data-admin-shell] .text-xl {
+  font-size: 0.9375rem !important;
+  font-weight: 500 !important;
+}
+
+[data-admin-shell] .text-lg {
+  font-size: 0.8125rem !important;
+}
+
+/* Superficies y bordes */
+[data-admin-shell] .rounded-2xl,
+[data-admin-shell] .rounded-xl,
+[data-admin-shell] .rounded-3xl {
+  border-radius: var(--admin-radius-lg) !important;
+}
+
+[data-admin-shell] .shadow,
+[data-admin-shell] .shadow-sm,
+[data-admin-shell] .shadow-md,
+[data-admin-shell] .shadow-lg,
+[data-admin-shell] .shadow-xl,
+[data-admin-shell] .shadow-2xl {
+  box-shadow: none !important;
+}
+
+[data-admin-shell] .backdrop-blur-sm,
+[data-admin-shell] .backdrop-blur,
+[data-admin-shell] .backdrop-blur-md {
+  backdrop-filter: none !important;
+}
+
+/* Cards gigantes de hubs residuales */
+[data-admin-shell] a .h-48,
+[data-admin-shell] .group.h-48 {
+  height: auto !important;
+  min-height: 0;
+  padding: 0.75rem 0.875rem !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+}
+
+[data-admin-shell] .group .w-12.h-12 {
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+[data-admin-shell] .group .p-4.rounded-full {
+  padding: 0 !important;
+  background: transparent !important;
+  margin-bottom: 0 !important;
+}
+
+/* Tablas compactas */
+[data-admin-shell] table {
+  font-size: 13px;
+  border-collapse: collapse;
+}
+
+[data-admin-shell] thead th {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--admin-muted) !important;
+  background: transparent !important;
+  padding: 0.5rem 0.75rem !important;
+}
+
+[data-admin-shell] tbody td {
+  padding: 0.625rem 0.75rem !important;
+  color: var(--admin-fg);
+  vertical-align: middle;
+}
+
+[data-admin-shell] tbody tr {
+  transition: background-color var(--admin-ease);
+}
+
+[data-admin-shell] tbody tr:hover {
+  background: var(--admin-hover);
+}
+
+/* Botones de template → compactos, sin escala */
+[data-admin-shell] button.bg-gradient-to-r,
+[data-admin-shell] a.bg-gradient-to-r {
+  background-image: none !important;
+  background-color: var(--admin-accent) !important;
+  color: var(--admin-accent-fg) !important;
+  box-shadow: none !important;
+  border-radius: var(--admin-radius) !important;
+  font-weight: 500 !important;
+  transform: none !important;
+}
+
+[data-admin-shell] button:hover,
+[data-admin-shell] a:hover {
+  transform: none !important;
+}
+
+[data-admin-shell] .hover\:scale-110:hover,
+[data-admin-shell] .hover\:scale-\[1\.02\]:hover,
+[data-admin-shell] .active\:scale-\[0\.98\]:active {
+  transform: none !important;
+}
+
+/* Formularios: menos aire de marketing */
+[data-admin-shell] form.px-8,
+[data-admin-shell] form.md\:px-12,
+[data-admin-shell] form.py-8,
+[data-admin-shell] form.md\:py-10 {
+  padding: 1.25rem !important;
+}
+
+[data-admin-shell] .px-8.py-3,
+[data-admin-shell] .px-6.py-3 {
+  padding: 0.375rem 0.75rem !important;
+  min-height: 2rem;
+  font-size: 13px !important;
+}
+
+/* Superficies oscuras de IA → light */
+[data-admin-shell] .bg-gray-800,
+[data-admin-shell] .bg-gray-900,
+[data-admin-shell] .bg-gray-700,
+[data-admin-shell] .bg-slate-800,
+[data-admin-shell] .bg-slate-900,
+[data-admin-shell] .bg-\[\#141414\] {
+  background-color: var(--admin-surface) !important;
+  color: var(--admin-fg) !important;
+}
+
+[data-admin-shell] .border-gray-700,
+[data-admin-shell] .border-gray-600,
+[data-admin-shell] .border-slate-700 {
+  border-color: var(--admin-border) !important;
+}
+
+[data-admin-shell] .bg-gray-800 .text-white,
+[data-admin-shell] .bg-gray-900 .text-white,
+[data-admin-shell] .bg-gray-700 .text-white,
+[data-admin-shell] .bg-\[\#141414\] .text-white,
+[data-admin-shell] h1.text-white,
+[data-admin-shell] h2.text-white,
+[data-admin-shell] h3.text-white,
+[data-admin-shell] p.text-white,
+[data-admin-shell] span.text-white,
+[data-admin-shell] .text-gray-200,
+[data-admin-shell] .text-gray-300 {
+  color: var(--admin-fg) !important;
+}
+
+[data-admin-shell] .text-gray-400,
+[data-admin-shell] .hover\:text-gray-200:hover {
+  color: var(--admin-muted) !important;
+}
+
+[data-admin-shell] .bg-green-900,
+[data-admin-shell] .bg-blue-900,
+[data-admin-shell] .bg-emerald-900,
+[data-admin-shell] .from-green-900,
+[data-admin-shell] .to-emerald-900 {
+  background-color: var(--admin-hover) !important;
+  background-image: none !important;
+}
+
+[data-admin-shell] .text-green-200,
+[data-admin-shell] .text-green-300,
+[data-admin-shell] .text-blue-200,
+[data-admin-shell] .text-blue-300 {
+  color: var(--admin-fg) !important;
+}
+
+/* Iconos decorativos de cabecera IA */
+[data-admin-shell] .bg-gradient-to-r.from-green-500,
+[data-admin-shell] .bg-gradient-to-r.from-blue-500,
+[data-admin-shell] .p-3.bg-gradient-to-r {
+  background-image: none !important;
+  background-color: var(--admin-hover) !important;
+  color: var(--admin-fg) !important;
+}
+
+[data-admin-shell] .text-\[\#234C8C\],
+[data-admin-shell] .text-\[\#4F7CCF\] {
+  color: var(--admin-fg) !important;
+}
+
+[data-admin-shell] .border-l-4.border-\[\#234C8C\],
+[data-admin-shell] .border-\[\#234C8C\] {
+  border-color: var(--admin-border) !important;
+}
+
+[data-admin-shell] .from-\[\#234C8C\]:not(button):not(a) {
+  background-image: none !important;
+  background-color: var(--admin-surface) !important;
+  color: var(--admin-fg) !important;
+}
+
+[data-admin-shell] .from-\[\#234C8C\]:not(button):not(a) .text-white,
+[data-admin-shell] .from-\[\#234C8C\]:not(button):not(a) .text-blue-100 {
+  color: var(--admin-muted) !important;
+}
+
+/* Diálogos / overlays: sombra solo donde hay elevación */
+[data-admin-shell] [role='dialog'],
+[data-admin-shell] [data-headlessui-state],
+html[data-admin-active] [role='dialog'] {
+  --tw-shadow: var(--admin-shadow-float);
+  color: var(--admin-fg);
+}
+
+/* Detalle en modales (productos, mentoría, etc.) */
+[data-admin-shell] [role='dialog'] .admin-info-modal,
+[data-admin-shell] [role='dialog'] .admin-info-modal p,
+[data-admin-shell] [role='dialog'] .admin-info-modal li,
+[data-admin-shell] [role='dialog'] .admin-info-modal span:not([class*='text-']) {
+  color: inherit;
+}
+
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .text-gray-400,
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .text-gray-500,
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .text-gray-600 {
+  color: var(--admin-muted) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .text-gray-700,
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .text-gray-800,
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .text-gray-900 {
+  color: var(--admin-fg) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .bg-gray-50,
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .bg-gray-100 {
+  background-color: var(--admin-hover) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .border-gray-100,
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .border-gray-200 {
+  border-color: var(--admin-border) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .bg-blue-100 {
+  background-color: var(--admin-hover) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .text-blue-800,
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .text-blue-700 {
+  color: var(--admin-fg) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .bg-amber-50 {
+  background-color: var(--admin-warning-bg) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] [role='dialog'] .border-amber-100 {
+  border-color: var(--admin-border) !important;
+}
+
+[data-admin-shell] .fixed.inset-0.flex [class*='bg-white'] {
+  box-shadow: var(--admin-shadow-float) !important;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg) !important;
+}
+
+/* Scrollbars discretos */
+[data-admin-shell] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-admin-shell] ::-webkit-scrollbar-thumb {
+  background: #d4d4d4;
+  border-radius: 8px;
+}
+
+[data-admin-shell] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-admin-shell] * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Dark theme — solo admin. Gama charcoal; cream + tinta en botones primarios e inputs. */
+[data-admin-shell][data-admin-theme='dark'],
+html[data-admin-active][data-admin-theme='dark'] {
+  --admin-bg: #0a0a09;
+  --admin-surface: #181816;
+  --admin-fg: #faf8f4;
+  --admin-muted: #c4c0b4;
+  --admin-subtle: #8a877c;
+  --admin-border: #3d3c36;
+  --admin-hover: #242422;
+  --admin-selected: #2a2a26;
+  --admin-accent: #faf8f4;
+  --admin-accent-fg: #141411;
+  --admin-destructive: #fca5a5;
+  --admin-destructive-bg: #2a1515;
+  --admin-success: #a3c49a;
+  --admin-success-bg: #1a2218;
+  --admin-warning: #e8c872;
+  --admin-warning-bg: #241c10;
+  --admin-focus: #faf8f4;
+  --admin-shadow-float: 0 10px 28px rgba(0, 0, 0, 0.55);
+  --admin-label: #faf8f4;
+  --admin-input-bg: #faf8f4;
+  --admin-input-fg: #141411;
+  --admin-input-border: #8a877c;
+  --admin-input-placeholder: #5c5952;
+  --admin-btn-secondary-hover-bg: var(--admin-cream);
+  --admin-btn-secondary-hover-fg: var(--admin-ink);
+  --admin-btn-primary-hover-bg: var(--admin-cream);
+  --admin-btn-primary-hover-fg: var(--admin-ink);
+  color-scheme: dark;
+}
+
+[data-admin-shell][data-admin-theme='dark'] ::selection {
+  background: #3a3a34;
+}
+
+[data-admin-shell][data-admin-theme='dark'] .bg-white:not(input):not(textarea):not(select):not(button):not(a):not(label),
+[data-admin-shell][data-admin-theme='dark'] .bg-[#F7F7F7],
+[data-admin-shell][data-admin-theme='dark'] .bg-gray-50,
+[data-admin-shell][data-admin-theme='dark'] .bg-gray-100 {
+  background-color: var(--admin-surface) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] .text-gray-900:not(input):not(textarea):not(select):not(button):not(a),
+[data-admin-shell][data-admin-theme='dark'] .text-gray-800:not(input):not(textarea):not(select):not(button):not(a),
+[data-admin-shell][data-admin-theme='dark'] .text-[#1A1A1A],
+[data-admin-shell][data-admin-theme='dark'] .text-[#222] {
+  color: var(--admin-fg) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] .text-gray-700:not(input):not(textarea):not(select):not(button):not(a),
+[data-admin-shell][data-admin-theme='dark'] .text-gray-600:not(input):not(textarea):not(select):not(button):not(a),
+[data-admin-shell][data-admin-theme='dark'] .text-gray-500:not(input):not(textarea):not(select):not(button):not(a),
+[data-admin-shell][data-admin-theme='dark'] .text-[#6B7280] {
+  color: var(--admin-muted) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] label:not(.admin-choice),
+[data-admin-shell][data-admin-theme='dark'] legend,
+[data-admin-shell][data-admin-theme='dark'] form p.text-sm,
+[data-admin-shell][data-admin-theme='dark'] form .text-xs:not(input):not(textarea):not(select) {
+  color: var(--admin-label);
+}
+
+[data-admin-shell][data-admin-theme='dark'] form {
+  color: var(--admin-fg);
+}
+
+[data-admin-shell][data-admin-theme='dark'] input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='range']),
+[data-admin-shell][data-admin-theme='dark'] textarea,
+[data-admin-shell][data-admin-theme='dark'] select {
+  color: var(--admin-input-fg) !important;
+  background-color: var(--admin-input-bg) !important;
+  border-color: var(--admin-input-border) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] input::placeholder,
+[data-admin-shell][data-admin-theme='dark'] textarea::placeholder {
+  color: var(--admin-input-placeholder) !important;
+}
+
+/* Formularios legacy (.input de globals.css) dentro del admin */
+[data-admin-shell] .input,
+[data-admin-shell] .inputAnswer {
+  color: var(--admin-input-fg) !important;
+  background-color: var(--admin-input-bg) !important;
+  border: 1px solid var(--admin-input-border) !important;
+  border-radius: var(--admin-radius);
+  padding: 0.5rem 0.75rem !important;
+  font-size: 13px !important;
+  line-height: 1.4;
+  box-shadow: none !important;
+}
+
+[data-admin-shell] .input:focus,
+[data-admin-shell] .inputAnswer:focus {
+  background-color: var(--admin-input-bg) !important;
+  border-color: var(--admin-fg) !important;
+  outline: none;
+}
+
+[data-admin-shell] .input::placeholder,
+[data-admin-shell] .inputAnswer::placeholder {
+  color: var(--admin-input-placeholder) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] form.border,
+[data-admin-shell][data-admin-theme='dark'] form[class*='border'] {
+  border-color: var(--admin-border) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] option {
+  background-color: var(--admin-cream);
+  color: var(--admin-ink);
+}
+
+/* Botones claros / primarios: cream + texto negro */
+[data-admin-shell][data-admin-theme='dark'] button.bg-gradient-to-r,
+[data-admin-shell][data-admin-theme='dark'] a.bg-gradient-to-r,
+[data-admin-shell][data-admin-theme='dark'] .bg-\[var\(--admin-accent\)\],
+[data-admin-shell][data-admin-theme='dark'] button.bg-white,
+[data-admin-shell][data-admin-theme='dark'] a.bg-white,
+[data-admin-shell][data-admin-theme='dark'] button.bg-gray-100,
+[data-admin-shell][data-admin-theme='dark'] a.bg-gray-100 {
+  background-color: var(--admin-cream) !important;
+  background-image: none !important;
+  color: var(--admin-ink) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] button.bg-gradient-to-r *,
+[data-admin-shell][data-admin-theme='dark'] a.bg-gradient-to-r *,
+[data-admin-shell][data-admin-theme='dark'] .bg-\[var\(--admin-accent\)\] *,
+[data-admin-shell][data-admin-theme='dark'] button.bg-white *,
+[data-admin-shell][data-admin-theme='dark'] a.bg-white * {
+  color: var(--admin-ink) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] button.bg-\[var\(--admin-destructive\)\],
+[data-admin-shell][data-admin-theme='dark'] button.bg-\[var\(--admin-destructive\)\] * {
+  color: #ffffff !important;
+}
+
+/* AdminButton: cream → texto ink (normal, hover y disabled con fondo claro) */
+[data-admin-shell][data-admin-theme='dark'] .admin-btn--primary,
+[data-admin-shell][data-admin-theme='dark'] .admin-btn--primary:hover,
+[data-admin-shell][data-admin-theme='dark'] .admin-btn--secondary:hover,
+[data-admin-shell][data-admin-theme='dark'] .admin-btn--ghost:hover {
+  color: var(--admin-ink) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] .admin-btn--primary *,
+[data-admin-shell][data-admin-theme='dark'] .admin-btn--primary:hover *,
+[data-admin-shell][data-admin-theme='dark'] .admin-btn--secondary:hover *,
+[data-admin-shell][data-admin-theme='dark'] .admin-btn--ghost:hover * {
+  color: var(--admin-ink) !important;
+}
+
+[data-admin-shell] .admin-choice--selected,
+[data-admin-shell] .admin-choice:hover {
+  border-color: var(--admin-cream) !important;
+  background-color: var(--admin-cream) !important;
+  color: var(--admin-ink) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: #3a3a34;
+}

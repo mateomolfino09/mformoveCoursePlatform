@@ -132,7 +132,7 @@ const EventDetailPage: React.FC<Props> = ({ evento }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white font-montserrat">
+    <div className="min-h-screen bg-palette-cream font-montserrat text-palette-ink">
       <MainSideBar where={'events'}>
         <main className="">
           {/* Hero Section */}

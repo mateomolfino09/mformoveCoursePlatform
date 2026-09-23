@@ -16,6 +16,7 @@ import DeletePlan from './DeletePlan';
 import { Plan } from '../../../../typings';
 import { Dialog } from '@headlessui/react';
 import { planFrequencys } from '../../../constants/planFrequency';
+import { AdminPage, AdminPageHeader, AdminBadge, AdminButton, AdminInput, AdminSelect, AdminTextarea, AdminEmptyState } from '../../admin';
 
 interface Props {
   plans: Plan[];
@@ -183,103 +184,85 @@ const AllPlans = ({ plans }: Props) => {
             <meta name='description' content='Stream Video App' />
             <link rel='icon' href='/favicon.ico' />
           </Head>
-          <div className='w-full h-[100vh]'>
-            <div className='flex flex-col'>
-              <div className='overflow-x-auto sm:-mx-6 lg:-mx-8'>
-                <div className='inline-block min-w-full py-2 sm:px-6 lg:px-8'>
-                  <div className='overflow-hidden'>
-                    <div className='mb-8 mt-8'>
-                      <h1 className='text-4xl md:text-5xl font-bold text-gray-900 font-montserrat mb-4'>Planes</h1>
-                      <p className='text-gray-600 text-lg font-montserrat'>Gestiona tus planes de membresía</p>
-                    </div>
-                    <div className='bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden'>
-                      <table className='min-w-full text-left text-sm font-light font-montserrat'>
-                        <thead className='border-b font-medium border-gray-200 bg-gray-50'>
-                          <tr>
-                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
-                              Nombre
-                            </th>
-                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
-                              Id
-                            </th>
-                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
-                              Precio
-                            </th>
-                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
-                              Tipo
-                            </th>
-                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
-                              Fecha
-                            </th>
-                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
-                              Activo
-                            </th>
-                            <th scope='col' className='px-6 py-4 text-gray-900 font-semibold'>
-                              Acciones
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {elementos?.map((plan: Plan) => (
-                            <tr
-                              key={plan._id}
-                              ref={ref}
-                              className='border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200'
-                            >
-                              <td className='whitespace-nowrap px-6 py-4 font-medium text-gray-900'>
-                                {plan.name}
-                              </td>
-                              <td className='whitespace-nowrap px-6 py-4 text-gray-600'>
-                                {plan.id}
-                              </td>
-                              <td className='whitespace-nowrap px-6 py-4 text-gray-900 font-semibold'>
-                                {plan.amount} {plan.currency}
-                              </td>
-                              <td className='whitespace-nowrap px-6 py-4 text-gray-600'>
-                                {plan.frequency_label}
-                              </td>
-                              <td className='whitespace-nowrap px-6 py-4 text-gray-600'>
-                                {new Date(plan.createdAt).toLocaleDateString(
-                                  'es-ES'
-                                )}
-                              </td>
-                              <td className='whitespace-nowrap px-6 py-4'>
-                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                                  plan.active 
-                                    ? 'bg-green-100 text-green-800 border border-green-300' 
-                                    : 'bg-red-100 text-red-800 border border-red-300'
-                                }`}>
-                                  {plan.active ? 'Sí' : 'No'}
-                                </span>
-                              </td>
-                              <td className='whitespace-nowrap px-6 py-4'>
-                                <div className='flex items-center justify-center gap-3'>
-                                  <button
-                                    onClick={() => openEdit(plan)}
-                                    className='text-[#4F7CCF] hover:text-[#234C8C] hover:scale-110 cursor-pointer transition-all duration-200'
-                                    title='Editar'
-                                  >
-                                    <PencilIcon className='w-5 h-5'/>
-                                  </button>
-                                  <button
-                                    onClick={() => openModalDelete(plan)}
-                                    className='text-red-600 hover:text-red-700 hover:scale-110 cursor-pointer transition-all duration-200'
-                                    title='Eliminar'
-                                  >
-                                    <TrashIcon className='w-5 h-5'/>
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+          <AdminPage wide>
+            <AdminPageHeader title="Planes" description="Planes de membresía." />
+            {elementos?.length ? (
+              <div className="overflow-hidden rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-[var(--admin-surface)]">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-left">
+                    <thead>
+                      <tr className="border-b border-[var(--admin-border)]">
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Id</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Tipo</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Activo</th>
+                        <th scope="col" className="text-right">
+                          Acciones
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {elementos.map((plan: Plan) => (
+                        <tr
+                          key={plan._id}
+                          ref={ref}
+                          className="border-b border-[var(--admin-border)] last:border-0"
+                        >
+                          <td className="whitespace-nowrap font-medium">{plan.name}</td>
+                          <td className="whitespace-nowrap font-mono text-[12px] text-[var(--admin-muted)]">
+                            {plan.id}
+                          </td>
+                          <td className="whitespace-nowrap tabular-nums">
+                            {plan.amount} {plan.currency}
+                          </td>
+                          <td className="whitespace-nowrap text-[var(--admin-muted)]">
+                            {plan.frequency_label}
+                          </td>
+                          <td className="whitespace-nowrap tabular-nums text-[var(--admin-muted)]">
+                            {new Date(plan.createdAt).toLocaleDateString('es-ES')}
+                          </td>
+                          <td className="whitespace-nowrap">
+                            <AdminBadge variant={plan.active ? 'success' : 'destructive'}>
+                              {plan.active ? 'Activo' : 'Inactivo'}
+                            </AdminBadge>
+                          </td>
+                          <td className="whitespace-nowrap">
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                type="button"
+                                onClick={() => openEdit(plan)}
+                                className="rounded-[var(--admin-radius)] p-1.5 text-[var(--admin-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-fg)]"
+                                title="Editar"
+                                aria-label="Editar plan"
+                              >
+                                <PencilIcon className="h-4 w-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => openModalDelete(plan)}
+                                className="rounded-[var(--admin-radius)] p-1.5 text-[var(--admin-muted)] hover:bg-[var(--admin-destructive-bg)] hover:text-[var(--admin-destructive)]"
+                                title="Eliminar"
+                                aria-label="Eliminar plan"
+                              >
+                                <TrashIcon className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            </div>
-          </div>
+            ) : (
+              <AdminEmptyState
+                title="No hay planes"
+                description="Cuando existan planes de membresía aparecerán en esta tabla."
+              />
+            )}
+          </AdminPage>
           <DeletePlan
             isOpen={isOpenDelete}
             setIsOpen={setIsOpenDelete}
@@ -289,101 +272,75 @@ const AllPlans = ({ plans }: Props) => {
           <Dialog open={isOpenEdit} onClose={() => setIsOpenEdit(false)} className="relative z-50">
             <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
             <div className="fixed inset-0 flex items-center justify-center p-4">
-              <Dialog.Panel className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-                <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">Editar plan</Dialog.Title>
-                <form className="space-y-4" onSubmit={handleEdit}>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                    <input
-                      type="text"
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900"
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-                    <textarea
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900"
-                      value={editDescription}
-                      minLength={10}
-                      onChange={(e) => setEditDescription(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Monto</label>
-                    <input
-                      type="text"
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900"
-                      value={editAmountDisplay}
-                      onChange={(e) => {
-                        let val = e.target.value;
-                        // Permitir números, coma y punto
-                        val = val.replace(/[^0-9,.]/g, '');
-                        // Si hay múltiples comas o puntos, mantener solo el primero
-                        const commaIndex = val.indexOf(',');
-                        const dotIndex = val.indexOf('.');
-                        if (commaIndex !== -1 && dotIndex !== -1) {
-                          // Si hay ambos, mantener el primero que aparezca
-                          if (commaIndex < dotIndex) {
-                            val = val.replace(/\./g, '');
-                          } else {
-                            val = val.replace(/,/g, '');
-                          }
+              <Dialog.Panel className="w-full max-w-md rounded-[var(--admin-radius-lg)] border border-[var(--admin-border)] bg-white p-5">
+                <Dialog.Title className="mb-4 text-[15px] font-medium text-[var(--admin-fg)]">Editar plan</Dialog.Title>
+                <form className="space-y-3" onSubmit={handleEdit}>
+                  <AdminInput
+                    label="Nombre"
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    required
+                  />
+                  <AdminTextarea
+                    label="Descripción"
+                    value={editDescription}
+                    minLength={10}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    required
+                  />
+                  <AdminInput
+                    label="Monto"
+                    type="text"
+                    value={editAmountDisplay}
+                    onChange={(e) => {
+                      let val = e.target.value;
+                      val = val.replace(/[^0-9,.]/g, '');
+                      const commaIndex = val.indexOf(',');
+                      const dotIndex = val.indexOf('.');
+                      if (commaIndex !== -1 && dotIndex !== -1) {
+                        if (commaIndex < dotIndex) {
+                          val = val.replace(/\./g, '');
+                        } else {
+                          val = val.replace(/,/g, '');
                         }
-                        setEditAmountDisplay(val);
-                        // Normalizar: convertir coma a punto para el valor numérico
-                        const normalizedVal = val.replace(',', '.');
-                        const numValue = normalizedVal === '' ? 0 : parseFloat(normalizedVal) || 0;
-                        setEditAmount(numValue);
-                      }}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Frecuencia</label>
-                    <select
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900"
-                      value={editFrequencyType}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setEditFrequencyType(val);
-                        const label = planFrequencys.find((f) => f.value === val)?.label || '';
-                        setEditFrequencyLabel(label);
-                      }}
-                      required
-                    >
-                      {planFrequencys.map((f) => (
-                        <option key={f.value} value={f.value}>{f.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Moneda</label>
-                    <input
-                      type="text"
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900"
-                      value={editCurrency}
-                      onChange={(e) => setEditCurrency(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex justify-end gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setIsOpenEdit(false)}
-                      className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100"
-                    >
+                      }
+                      setEditAmountDisplay(val);
+                      const normalizedVal = val.replace(',', '.');
+                      const numValue = normalizedVal === '' ? 0 : parseFloat(normalizedVal) || 0;
+                      setEditAmount(numValue);
+                    }}
+                    required
+                  />
+                  <AdminSelect
+                    label="Frecuencia"
+                    value={editFrequencyType}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setEditFrequencyType(val);
+                      const label = planFrequencys.find((f) => f.value === val)?.label || '';
+                      setEditFrequencyLabel(label);
+                    }}
+                    required
+                  >
+                    {planFrequencys.map((f) => (
+                      <option key={f.value} value={f.value}>{f.label}</option>
+                    ))}
+                  </AdminSelect>
+                  <AdminInput
+                    label="Moneda"
+                    type="text"
+                    value={editCurrency}
+                    onChange={(e) => setEditCurrency(e.target.value)}
+                    required
+                  />
+                  <div className="flex justify-end gap-2 pt-2">
+                    <AdminButton type="button" variant="ghost" onClick={() => setIsOpenEdit(false)}>
                       Cancelar
-                    </button>
-                    <button
-                      type="submit"
-                      className="px-4 py-2 rounded-lg bg-[#4F7CCF] text-white hover:bg-[#234C8C]"
-                    >
+                    </AdminButton>
+                    <AdminButton type="submit" variant="primary">
                       Guardar
-                    </button>
+                    </AdminButton>
                   </div>
                 </form>
               </Dialog.Panel>

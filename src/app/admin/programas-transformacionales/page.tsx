@@ -1,7 +1,15 @@
 'use client';
 
 import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
-import { PlusCircleIcon, TableCellsIcon, CogIcon, UsersIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import {
+  AdminPage,
+  AdminPageHeader,
+  AdminNavGrid,
+  AdminEmptyState,
+  AdminBadge,
+  AdminButton,
+} from '../../../components/admin';
+import { PlusCircleIcon, CogIcon, UsersIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { useRouter } from 'next13-progressbar';
 import { useAuth } from '../../../hooks/useAuth';
@@ -15,18 +23,16 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const cookies: any = Cookies.get('userToken')
-    
+    const cookies: any = Cookies.get('userToken');
+
     if (!cookies) {
       router.push('/iniciar-sesion');
     }
-    
-    if(!auth.user) {
-      auth.fetchUser()
-    }
-    else if(auth.user.rol != 'Admin') router.push('/iniciar-sesion');
 
-    // Cargar programas transformacionales
+    if (!auth.user) {
+      auth.fetchUser();
+    } else if (auth.user.rol != 'Admin') router.push('/iniciar-sesion');
+
     fetchTransformationalPrograms();
   }, [auth.user]);
 
@@ -44,119 +50,88 @@ const Index = () => {
     }
   };
 
+  const cohortBadge = (estado?: string) => {
+    if (estado === 'abierta') return <AdminBadge variant="success">Abierta</AdminBadge>;
+    if (estado === 'en_curso') return <AdminBadge>En curso</AdminBadge>;
+    return <AdminBadge>{estado || 'N/A'}</AdminBadge>;
+  };
+
   return (
     <AdmimDashboardLayout>
-      <div className='bg-gray-700 w-full md:h-[100vh]'>
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <p className='text-white font-montserrat text-3xl font-bold'>
-              Programas Transformacionales
-            </p>
-            <p className='text-gray-300 text-sm mt-2'>
-              Gestiona los programas de 8 semanas con contenido automático
-            </p>
-          </div>
-          <div className="flex items-center space-x-2">
-            <SparklesIcon className="w-8 h-8 text-blue-400" />
-          </div>
-        </div>
+      <AdminPage wide>
+        <AdminPageHeader
+          title="Programas transformacionales"
+          description="Cohortes de 8 semanas con contenido automático."
+        />
+        <AdminNavGrid
+          columns={2}
+          items={[
+            {
+              href: '/admin/productos/crear-producto',
+              title: 'Crear programa',
+              description: 'Programa de 8 semanas con automatización',
+              icon: PlusCircleIcon,
+            },
+            {
+              href: '/admin/programas-transformacionales/analitica',
+              title: 'Analytics',
+              description: 'Métricas y progreso de participantes',
+              icon: CogIcon,
+            },
+            {
+              href: '/admin/programas-transformacionales/participantes',
+              title: 'Participantes',
+              description: 'Inscripciones y progreso',
+              icon: UsersIcon,
+            },
+            {
+              href: '/admin/programas-transformacionales/automatizacion',
+              title: 'Automatización',
+              description: 'Emails y contenido automático',
+              icon: SparklesIcon,
+            },
+          ]}
+        />
 
-        <div className='grid lg:grid-cols-2 xl:grid-cols-4 gap-5 mb-16'>
-          <Link href={'/admin/productos/crear-producto'}>
-            <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer border-2 border-dashed border-gray-400'>
-              <PlusCircleIcon className='w-16 h-16 text-blue-400 mb-2' />
-              <p className="text-white font-semibold">Crear Nuevo Programa</p>
-              <p className="text-gray-300 text-xs text-center mt-1">
-                Programa de 8 semanas con automatización
-              </p>
-            </div>
-          </Link>
-          
-          <Link href={'/admin/programas-transformacionales/analitica'}>
-            <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
-              <CogIcon className='w-16 h-16 text-green-400 mb-2' />
-              <p className="text-white font-semibold">Analytics</p>
-              <p className="text-gray-300 text-xs text-center mt-1">
-                Métricas y progreso de participantes
-              </p>
-            </div>
-          </Link>
-
-          <Link href={'/admin/programas-transformacionales/participantes'}>
-            <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
-              <UsersIcon className='w-16 h-16 text-purple-400 mb-2' />
-              <p className="text-white font-semibold">Participantes</p>
-              <p className="text-gray-300 text-xs text-center mt-1">
-                Gestionar inscripciones y progreso
-              </p>
-            </div>
-          </Link>
-
-          <Link href={'/admin/programas-transformacionales/automatizacion'}>
-            <div className='rounded bg-gray-500 h-40 shadow-sm flex justify-center items-center flex-col hover:scale-105 transition duration-500 cursor-pointer'>
-              <SparklesIcon className='w-16 h-16 text-yellow-400 mb-2' />
-              <p className="text-white font-semibold">Automatización</p>
-              <p className="text-gray-300 text-xs text-center mt-1">
-                Configurar emails y contenido automático
-              </p>
-            </div>
-          </Link>
-        </div>
-
-        {/* Lista de programas existentes */}
-        <div className="bg-gray-600 rounded-lg p-6">
-          <h3 className="text-white text-xl font-semibold mb-4">Programas Activos</h3>
-          
+        <section className="mt-8">
+          <h2 className="mb-3 text-[13px] font-medium text-[var(--admin-fg)]">Programas activos</h2>
           {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
-              <p className="text-gray-300 mt-2">Cargando programas...</p>
+            <div className="space-y-2">
+              <div className="h-16 animate-pulse rounded border border-[var(--admin-border)] bg-[var(--admin-surface)]" />
+              <div className="h-16 animate-pulse rounded border border-[var(--admin-border)] bg-[var(--admin-surface)]" />
             </div>
           ) : programs.length === 0 ? (
-            <div className="text-center py-8">
-              <SparklesIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-300">No hay programas transformacionales creados</p>
-              <p className="text-gray-400 text-sm mt-1">Crea tu primer programa para comenzar</p>
-            </div>
+            <AdminEmptyState
+              title="No hay programas creados"
+              description="Creá el primero para comenzar una cohorte."
+            />
           ) : (
-            <div className="grid gap-4">
+            <div className="overflow-hidden rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-[var(--admin-surface)]">
               {programs.map((program: any) => (
-                <div key={program._id} className="bg-gray-500 rounded-lg p-4 flex items-center justify-between">
-                  <div className="flex-1">
-                    <h4 className="text-white font-semibold">{program.nombre}</h4>
-                                          <p className="text-gray-300 text-sm mt-1">
-                        Tipo: <span className="px-2 py-1 rounded text-xs bg-purple-600 text-white">
-                          Programa Transformacional
-                        </span>
-                      </p>
-                      <p className="text-gray-300 text-sm mt-1">
-                        Estado: <span className={`px-2 py-1 rounded text-xs ${
-                          program.programaTransformacional?.estadoCohorte === 'abierta' ? 'bg-green-600 text-white' :
-                          program.programaTransformacional?.estadoCohorte === 'en_curso' ? 'bg-blue-600 text-white' :
-                          'bg-gray-600 text-white'
-                        }`}>
-                          {program.programaTransformacional?.estadoCohorte || 'N/A'}
-                        </span>
-                      </p>
-                    <p className="text-gray-300 text-sm mt-1">
-                      Cupo: {program.programaTransformacional?.cupoDisponible || 0} disponibles
-                    </p>
+                <div
+                  key={program._id}
+                  className="flex flex-col gap-3 border-b border-[var(--admin-border)] px-4 py-3 last:border-b-0 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <p className="text-[13px] font-medium">{program.nombre}</p>
+                    <div className="mt-1 flex flex-wrap items-center gap-2 text-[12px] text-[var(--admin-muted)]">
+                      {cohortBadge(program.programaTransformacional?.estadoCohorte)}
+                      <span>
+                        Cupo: {program.programaTransformacional?.cupoDisponible || 0} disponibles
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex space-x-2">
-                    <Link href={`/admin/programas-transformacionales/ver/${program._id}`}>
-                      <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
-                        Ver / Editar
-                      </button>
-                    </Link>
-                  </div>
+                  <Link href={`/admin/programas-transformacionales/ver/${program._id}`}>
+                    <AdminButton size="sm">Ver / Editar</AdminButton>
+                  </Link>
                 </div>
               ))}
             </div>
           )}
-        </div>
-      </div>
-    </AdmimDashboardLayout> 
+        </section>
+      </AdminPage>
+    </AdmimDashboardLayout>
   );
-}
+};
 
-export default Index; 
+export default Index;

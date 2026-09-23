@@ -4,12 +4,13 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { PlayIcon } from '@heroicons/react/24/solid';
+import { CldImage } from 'next-cloudinary';
 import Head from 'next/head';
 import MainSideBar from '../../MainSidebar/MainSideBar';
 import Footer from '../../Footer';
 import { useAppDispatch } from '../../../redux/hooks';
 import { toggleScroll } from '../../../redux/features/headerLibrarySlice';
-import { cursoClasePath } from '../../../lib/cursoPaths';
+import { cursoBibliotecaPath, cursoClasePath } from '../../../lib/cursoPaths';
 import {
   resolveCloudinaryOrHttpUrl,
   resolveCourseClassThumbnailUrl,
@@ -21,19 +22,14 @@ import CourseContentHubCommunity, {
 } from './CourseContentHubCommunity';
 import CourseDarkSectionBackground from './CourseDarkSectionBackground';
 import {
-  hubAccentBorderOnLight,
-  hubAccentIconOnLight,
-  hubAccentLineOnLight,
-  hubBlockTitleOnLight,
   hubBodyMuted,
   hubBodyMutedOnLight,
-  hubBodyOnLight,
+  hubBlockTitleOnLight,
   hubEyebrow,
   hubEyebrowOnLight,
   hubHeroTitle,
   hubMetaOnLight,
   hubMicroLabelOnLight,
-  hubPieceNumberOnLight,
   hubSectionTitleOnLight,
 } from './courseHubTypography';
 
@@ -96,30 +92,18 @@ type Props = {
   data: CourseContentHubData;
 };
 
-const contentPadding = 'px-6';
-const contentMax = 'max-w-6xl mx-auto';
+const contentPadding = 'px-5 md:px-8';
+const contentMax = 'max-w-5xl mx-auto';
 
 /** Mismos CTAs que secciones oscuras de la landing (CourseCTA, CoursePlans). */
 const btnPrimaryDarkClass =
-  'inline-flex items-center justify-center rounded-full bg-palette-cream text-palette-ink border-2 border-palette-cream/80 font-montserrat font-semibold text-sm md:text-base uppercase tracking-[0.14em] px-6 py-3 md:px-8 md:py-3.5 hover:bg-palette-sage hover:border-palette-sage transition-all duration-200 shadow-lg';
-const btnOutlineDarkClass =
-  'inline-flex items-center justify-center rounded-full border-2 border-palette-cream/55 text-palette-cream font-montserrat font-medium text-sm md:text-base uppercase tracking-[0.12em] px-5 py-2.5 md:px-6 md:py-3 hover:bg-palette-cream/10 transition-all duration-200';
-
-const PUZZLE_SHAPES = [
-  'rounded-tl-[2rem] rounded-br-[2rem]',
-  'rounded-tr-[2rem] rounded-bl-[2rem]',
-  'rounded-tl-[2.5rem] rounded-tr-[1rem] rounded-bl-[1rem] rounded-br-[2.5rem]',
-  'rounded-tr-[2.5rem] rounded-tl-[1rem] rounded-br-[1rem] rounded-bl-[2.5rem]',
-];
-
-/** Eje compartido línea + rombo del timeline de módulos. */
-const timelineAxisClass = 'left-6 md:left-8';
+  'inline-flex items-center justify-center rounded-full bg-palette-cream text-palette-ink border-2 border-palette-cream/80 font-montserrat font-semibold text-xs uppercase tracking-[0.1em] px-4 py-2 md:text-base md:tracking-[0.14em] md:px-8 md:py-3.5 hover:bg-palette-sage hover:border-palette-sage hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-lg';
 
 export default function CourseContentHubView({ data }: Props) {
   const dispatch = useAppDispatch();
   const [privateToken, setPrivateToken] = useState<string | null>(null);
 
-  const { slug, nombre, modulos, hub, invitacionGrupoWhatsapp, comunidad } = data;
+  const { slug, nombre, modulos, hub, comunidad } = data;
   const vimeoId = extractVimeoId(hub.heroVideoId);
   const hasVideo = !!vimeoId;
   const heroThumbnail = hub.heroThumbnailPublicId
@@ -172,8 +156,6 @@ export default function CourseContentHubView({ data }: Props) {
       ? `https://player.vimeo.com/video/${vimeoId}?autoplay=1&loop=1&background=1&muted=1&preload=auto${privateToken ? `&h=${privateToken}` : ''}`
       : '';
 
-  // El thumbnail queda de poster hasta que el iframe del hero termina de cargar
-  // (fade-in local, no bloquea el render del resto de la página).
   const [videoLoaded, setVideoLoaded] = useState(false);
 
   useEffect(() => {
@@ -210,27 +192,27 @@ export default function CourseContentHubView({ data }: Props) {
     return (
       <Link
         href={cursoClasePath(slug, clase._id, moduloIndex)}
-        className="group block relative w-full aspect-video rounded-xl overflow-hidden bg-palette-ink ring-1 ring-palette-stone/25 hover:ring-palette-stone/50 transition-all duration-300"
+        className="group block relative w-full aspect-video overflow-hidden rounded-md bg-palette-ink border border-palette-stone/20 transition-colors hover:border-palette-stone/45"
       >
         <div className="absolute inset-0 overflow-hidden">
           {thumb ? (
             <img
               src={thumb}
               alt=""
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-90"
             />
           ) : (
             <div className="absolute inset-0 bg-palette-ink" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         </div>
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="w-12 h-12 rounded-full bg-palette-cream/90 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-            <PlayIcon className="w-6 h-6 text-palette-ink ml-0.5" />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-palette-cream/95">
+            <PlayIcon className="ml-0.5 h-4 w-4 text-palette-ink" />
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 p-4 pb-5 text-left">
-          <p className="text-palette-cream text-xs md:text-sm font-light line-clamp-2 drop-shadow-sm group-hover:text-palette-stone transition-colors">
+        <div className="absolute bottom-0 left-0 right-0 p-3 text-left">
+          <p className="line-clamp-2 text-[12px] font-medium leading-snug text-palette-cream">
             {clase.name}
           </p>
         </div>
@@ -239,221 +221,181 @@ export default function CourseContentHubView({ data }: Props) {
   }
 
   return (
-      <div className="relative isolate min-h-screen overflow-x-hidden bg-palette-ink font-montserrat">
-        <MainSideBar where="membership" flowLayout>
-          <Head>
-            <title>Contenido — {nombre}</title>
-            <meta name="description" content={hub.aboutDescription || `Contenido del curso ${nombre}`} />
-            <link rel="icon" href="/favicon.ico" />
-          </Head>
+    <div className="relative isolate min-h-screen overflow-x-hidden bg-palette-ink font-montserrat">
+      <MainSideBar where="membership" flowLayout>
+        <Head>
+          <title>Contenido — {nombre}</title>
+          <meta name="description" content={hub.aboutDescription || `Contenido del curso ${nombre}`} />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
 
-          <main className="relative">
-            {/* Hero 100vh — video de presentación del curso (hero.videoPresentacionVimeoId) */}
-            <section className="relative flex min-h-[100vh] flex-col justify-end overflow-visible">
-              <div className="absolute inset-0 z-0 bg-palette-ink overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  {vimeoIframeSrc ? (
-                    <iframe
-                      src={vimeoIframeSrc}
-                      onLoad={handleVideoLoaded}
-                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[56.25vw] min-w-[177.78vh] min-h-[100vh] pointer-events-none"
-                      style={{ width: '100vw', height: '56.25vw', minWidth: '177.78vh' }}
-                      frameBorder="0"
-                      allow="autoplay; fullscreen; picture-in-picture"
-                      title=""
-                      aria-hidden
-                    />
-                  ) : null}
-                </div>
-                {!hasVideo && heroThumbnail ? (
-                  <div
-                    className="absolute inset-0 w-full h-full bg-cover"
-                    style={{ backgroundImage: `url(${heroThumbnail})`, backgroundPosition: 'center center' }}
+        <main className="relative">
+          <section className="relative flex min-h-[78vh] flex-col justify-end overflow-hidden md:min-h-[85vh]">
+            <div className="absolute inset-0 z-0 overflow-hidden bg-palette-ink">
+              <div className="absolute inset-0 flex items-center justify-center">
+                {vimeoIframeSrc ? (
+                  <iframe
+                    src={vimeoIframeSrc}
+                    onLoad={handleVideoLoaded}
+                    className="pointer-events-none absolute left-1/2 top-1/2 min-h-[100vh] min-w-[177.78vh] h-[56.25vw] w-[100vw] -translate-x-1/2 -translate-y-1/2"
+                    style={{ width: '100vw', height: '56.25vw', minWidth: '177.78vh' }}
+                    frameBorder="0"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    title=""
                     aria-hidden
                   />
                 ) : null}
-                <div className="absolute inset-0 z-[5] bg-black/45" aria-hidden />
+              </div>
+              {!hasVideo && heroThumbnail ? (
                 <div
-                  className="absolute inset-0 z-10"
-                  style={{
-                    background:
-                      'linear-gradient(to bottom, transparent 0%, transparent 20%, rgba(20,20,17,0.08) 40%, rgba(20,20,17,0.35) 58%, rgba(20,20,17,0.62) 72%, rgba(20,20,17,0.88) 88%, rgb(20,20,17) 96%, rgb(20,20,17) 100%)',
-                  }}
+                  className="absolute inset-0 h-full w-full bg-cover"
+                  style={{ backgroundImage: `url(${heroThumbnail})`, backgroundPosition: 'center center' }}
                   aria-hidden
                 />
-                {hasVideo && !videoLoaded && (
-                  <div className="absolute inset-0 z-20 flex items-center justify-center bg-palette-ink/80" aria-hidden>
-                    <div className="w-10 h-10 border-2 border-palette-cream/30 border-t-palette-cream rounded-full animate-spin" />
-                  </div>
-                )}
-              </div>
-
-              <div className={`relative z-20 ${contentPadding} pt-28 md:pt-32 pb-12 md:pb-16`}>
-                <div className={contentMax}>
-      
-
-                  <p className={`${hubEyebrow} mb-3 md:mb-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]`}>
-                    {hub.heroEyebrow || nombre}
-                  </p>
-
-                  <h1 className={`${hubHeroTitle} mb-5 md:mb-6 max-w-4xl`}>
-                    {hub.heroTagline}
-                  </h1>
-
-                  <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-5 md:mb-6">
-                    <Link
-                      href={beginPracticeHref}
-                      className={`${btnPrimaryDarkClass} hover:scale-[1.02] active:scale-[0.98]`}
-                    >
-                      Comenzar práctica
-                    </Link>
-                    {invitacionGrupoWhatsapp ? (
-                      <a
-                        href={invitacionGrupoWhatsapp}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={btnOutlineDarkClass}
-                      >
-                        Grupo WhatsApp
-                      </a>
-                    ) : null}
-                  </div>
-
-                  <p className={`${hubBodyMuted} max-w-3xl drop-shadow-[0_1px_4px_rgba(0,0,0,0.3)]`}>
-                    {hub.practicesCount} práctica{hub.practicesCount !== 1 ? 's' : ''} ·{' '}
-                    {hub.modulosCount} pieza{hub.modulosCount !== 1 ? 's' : ''} del recorrido
-                  </p>
+              ) : null}
+              <div className="absolute inset-0 z-[5] bg-black/40" aria-hidden />
+              <div
+                className="absolute inset-0 z-10"
+                style={{
+                  background:
+                    'linear-gradient(to bottom, transparent 0%, transparent 28%, rgba(20,20,17,0.25) 52%, rgba(20,20,17,0.75) 78%, rgb(20,20,17) 100%)',
+                }}
+                aria-hidden
+              />
+              {hasVideo && !videoLoaded && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center bg-palette-ink/80" aria-hidden>
+                  <div className="h-8 w-8 animate-spin rounded-full border border-palette-cream/25 border-t-palette-cream" />
                 </div>
-              </div>
-            </section>
+              )}
+            </div>
 
+            <div className={`relative z-20 ${contentPadding} pb-10 pt-28 md:pb-14 md:pt-32`}>
+              <div className={contentMax}>
+                <p className={`${hubEyebrow} mb-3`}>{hub.heroEyebrow || nombre}</p>
 
+                <h1 className={`${hubHeroTitle} mb-4 max-w-2xl`}>{hub.heroTagline}</h1>
 
-            <section className="relative bg-palette-cream text-palette-ink py-14 md:py-20 lg:py-24">
-              <div className={`${contentPadding}`}>
-                <div className={contentMax}>
-                  <div className="mb-12 md:mb-16">
-                    <p className={`${hubEyebrowOnLight} mb-2`}>
-                      El recorrido completo
-                    </p>
-                    <h2 id="modulos" className={`${hubSectionTitleOnLight} max-w-3xl`}>
-                      Cada módulo es una pieza del mismo rompecabezas
-                    </h2>
-                    <p className={`mt-3 ${hubBodyMutedOnLight} max-w-2xl`}>
-                      No son bloques sueltos: se complementan. Avanzá en orden o volvé a la pieza que tu cuerpo necesita hoy.
-                    </p>
-                  </div>
+                {showAboutSection && hub.heroHeadline?.trim() ? (
+                  <p className={`${hubBodyMuted} mb-5 max-w-xl`}>{hub.heroHeadline}</p>
+                ) : null}
 
-                  <div className="relative space-y-10 md:space-y-14">
-                    <div
-                      className={`pointer-events-none absolute ${timelineAxisClass} top-0 bottom-0 w-px ${hubAccentLineOnLight}`}
-                      aria-hidden
-                    />
-
-                    {modulos.map((modulo, index) => {
-                      const sortedClases = [...modulo.clases].sort(
-                        (a, b) => (a.order ?? 0) - (b.order ?? 0)
-                      );
-                      const pieceNumber = String(index + 1).padStart(2, '0');
-                      const shapeClass = PUZZLE_SHAPES[index % PUZZLE_SHAPES.length];
-
-                      return (
-                        <motion.section
-                          key={modulo.timelineIndex}
-                          initial={{ opacity: 0, y: 24 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true, margin: '-60px' }}
-                          transition={{ duration: 0.45, delay: index * 0.06 }}
-                          className="relative pl-12 md:pl-16"
-                        >
-                          <div
-                            className={`absolute ${timelineAxisClass} top-8 md:top-9 z-10 h-4 w-4 -translate-x-1/2 rotate-45 border-2 ${hubAccentBorderOnLight} bg-palette-cream shadow-[0_0_0_4px_rgba(250,248,244,1)]`}
-                            aria-hidden
-                          />
-
-                          <article
-                            className={`relative overflow-hidden border border-palette-stone/30 bg-light-cream ${shapeClass} shadow-[0_18px_48px_-22px_rgba(20,20,17,0.1)] ring-1 ring-palette-stone/15`}
-                          >
-                            <div className="absolute top-0 right-0 w-32 h-32 md:w-40 md:h-40 opacity-[0.06] pointer-events-none">
-                              <svg viewBox="0 0 100 100" className={`w-full h-full ${hubAccentIconOnLight}`} aria-hidden>
-                                <path
-                                  fill="currentColor"
-                                  d="M20 10 h35 a8 8 0 0 1 8 8 v12 a8 8 0 0 0 8 8 h12 a8 8 0 0 1 8 8 v35 a8 8 0 0 1-8 8 h-35 a8 8 0 0 1-8-8 v-12 a8 8 0 0 0-8-8 h-12 a8 8 0 0 1-8-8 v-35 a8 8 0 0 1 8-8z"
-                                />
-                              </svg>
-                            </div>
-
-                            <div className="p-5 md:p-7 lg:p-8">
-                              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-6">
-                                <span className={hubPieceNumberOnLight}>
-                                  {pieceNumber}
-                                </span>
-
-                                <div className="min-w-0 flex-1">
-                                  <p className={`${hubMicroLabelOnLight} mb-1.5`}>
-                                    Pieza {index + 1} de {modulos.length}
-                                  </p>
-                                  <h3 className={`${hubBlockTitleOnLight} mb-2`}>
-                                    {modulo.titulo || `Módulo ${modulo.timelineIndex + 1}`}
-                                  </h3>
-                                  {modulo.esencia?.trim() ? (
-                                    <p className={`${hubBodyMutedOnLight} max-w-2xl`}>
-                                      {modulo.esencia}
-                                    </p>
-                                  ) : modulo.descripcion ? (
-                                    <p className={`${hubBodyMutedOnLight} max-w-2xl`}>
-                                      {modulo.descripcion}
-                                    </p>
-                                  ) : null}
-                                  <p className={`mt-3 ${hubMetaOnLight}`}>
-                                    {sortedClases.length} clase{sortedClases.length !== 1 ? 's' : ''} en esta pieza
-                                  </p>
-                                </div>
-                              </div>
-
-                              {sortedClases.length > 0 ? (
-                                <div className="mt-8 md:mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6">
-                                  {sortedClases.map((clase) => (
-                                    <CoursePracticeCard
-                                      key={clase._id}
-                                      clase={clase}
-                                      moduloIndex={modulo.timelineIndex}
-                                    />
-                                  ))}
-                                </div>
-                              ) : (
-                                <p className={`mt-6 ${hubBodyMutedOnLight}`}>
-                                  Todavía no hay clases en este módulo.
-                                </p>
-                              )}
-                            </div>
-                          </article>
-                        </motion.section>
-                      );
-                    })}
-                  </div>
+                <div className="mb-5 flex flex-wrap items-center gap-3 md:mb-6 md:gap-4">
+                  <Link href={beginPracticeHref} className={btnPrimaryDarkClass}>
+                    Comenzar práctica
+                  </Link>
+                  <Link href={cursoBibliotecaPath(slug)} className={btnPrimaryDarkClass}>
+                    Biblioteca
+                  </Link>
                 </div>
+
+                <p className={hubBodyMuted}>
+                  {hub.practicesCount} práctica{hub.practicesCount !== 1 ? 's' : ''} ·{' '}
+                  {hub.modulosCount} módulo{hub.modulosCount !== 1 ? 's' : ''}
+                </p>
               </div>
-            </section>
-
-            {comunidad ? (
-              <section className="relative isolate overflow-hidden border-t border-white/10 bg-palette-ink text-palette-cream py-14 md:py-20 lg:py-24">
-                <CourseDarkSectionBackground />
-
-                <div className={`relative z-20 ${contentPadding}`}>
-                  <div className={contentMax}>
-                    <CourseContentHubCommunity comunidad={comunidad} />
-                  </div>
-                </div>
-              </section>
-            ) : null}
-
-          </main>
-
-          <section className="w-full">
-            <Footer />
+            </div>
           </section>
-        </MainSideBar>
-      </div>
+
+          <section className="relative border-t border-palette-ink/5 bg-palette-cream py-12 text-palette-ink md:py-16">
+            <div className={contentPadding}>
+              <div className={contentMax}>
+                <div className="mb-8 max-w-xl md:mb-10">
+                  <p className={`${hubEyebrowOnLight} mb-2`}>Recorrido</p>
+                  <h2 id="modulos" className={hubSectionTitleOnLight}>
+                    Módulos y prácticas
+                  </h2>
+                  <p className={`mt-2 ${hubBodyMutedOnLight}`}>
+                    Avanzá en orden o volvé al módulo que tu cuerpo necesita hoy.
+                  </p>
+                </div>
+
+                <div className="space-y-4 md:space-y-5">
+                  {modulos.map((modulo, index) => {
+                    const sortedClases = [...modulo.clases].sort(
+                      (a, b) => (a.order ?? 0) - (b.order ?? 0)
+                    );
+                    const pieceNumber = String(index + 1).padStart(2, '0');
+
+                    return (
+                      <motion.section
+                        key={modulo.timelineIndex}
+                        initial={{ opacity: 0, y: 12 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: '-40px' }}
+                        transition={{ duration: 0.35, delay: Math.min(index * 0.04, 0.2) }}
+                      >
+                        <article className="rounded-lg border border-palette-stone/20 bg-white/60">
+                          <div className="border-b border-palette-stone/15 px-4 py-4 md:px-5 md:py-5">
+                            <div className="flex items-start gap-3">
+                              {modulo.imagenPublicId ? (
+                                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-palette-stone/10 md:h-20 md:w-20">
+                                  <CldImage
+                                    src={modulo.imagenPublicId}
+                                    alt={modulo.titulo || 'Módulo'}
+                                    fill
+                                    className="object-cover"
+                                    sizes="80px"
+                                  />
+                                </div>
+                              ) : null}
+                              <span className={`${hubMicroLabelOnLight} mt-0.5`}>{pieceNumber}</span>
+                              <div className="min-w-0 flex-1">
+                                <h3 className={hubBlockTitleOnLight}>
+                                  {modulo.titulo || `Módulo ${modulo.timelineIndex + 1}`}
+                                </h3>
+                                {modulo.esencia?.trim() ? (
+                                  <p className={`mt-1.5 ${hubBodyMutedOnLight}`}>{modulo.esencia}</p>
+                                ) : modulo.descripcion ? (
+                                  <p className={`mt-1.5 ${hubBodyMutedOnLight}`}>{modulo.descripcion}</p>
+                                ) : null}
+                                <p className={`mt-2 ${hubMetaOnLight}`}>
+                                  {sortedClases.length} clase
+                                  {sortedClases.length !== 1 ? 's' : ''}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {sortedClases.length > 0 ? (
+                            <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 md:gap-4 md:p-5 lg:grid-cols-3">
+                              {sortedClases.map((clase) => (
+                                <CoursePracticeCard
+                                  key={clase._id}
+                                  clase={clase}
+                                  moduloIndex={modulo.timelineIndex}
+                                />
+                              ))}
+                            </div>
+                          ) : (
+                            <p className={`px-4 py-5 ${hubBodyMutedOnLight} md:px-5`}>
+                              Todavía no hay clases en este módulo.
+                            </p>
+                          )}
+                        </article>
+                      </motion.section>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {comunidad ? (
+            <section className="relative isolate overflow-hidden border-t border-white/10 bg-palette-ink py-12 text-palette-cream md:py-16">
+              <CourseDarkSectionBackground />
+              <div className={`relative z-20 ${contentPadding}`}>
+                <div className={contentMax}>
+                  <CourseContentHubCommunity comunidad={comunidad} />
+                </div>
+              </div>
+            </section>
+          ) : null}
+        </main>
+
+        <section className="w-full">
+          <Footer />
+        </section>
+      </MainSideBar>
+    </div>
   );
 }

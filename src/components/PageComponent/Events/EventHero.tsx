@@ -265,10 +265,10 @@ const EventHero: React.FC<Props> = ({
                 />
               </div>
               
-              <h1 className="text-5xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight relative z-10">
+              <h1 className="relative z-10 font-montserrat text-[clamp(2.8rem,6.5vw,5rem)] font-medium leading-[0.98] tracking-tight text-palette-cream">
                 {evento.nombre}
               </h1>
-              <p className="text-base sm:text-lg md:text-2xl text-gray-200 font-light max-w-2xl leading-relaxed relative z-10">
+              <p className="relative z-10 max-w-xl font-montserrat text-lg font-normal leading-relaxed text-palette-cream/85 md:text-xl">
                 {evento.descripcion}
               </p>
             </motion.div>
@@ -290,7 +290,7 @@ const EventHero: React.FC<Props> = ({
                   <button
                     onClick={onBuyTicket}
                     disabled={loading}
-                    className="w-full bg-black text-white py-3 px-6 rounded-xl font-light text-base hover:bg-gray-800 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 group"
+                    className="flex w-full items-center justify-center space-x-2 rounded-full border-2 border-palette-cream bg-palette-cream px-6 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-ink transition-colors hover:border-palette-sage hover:bg-palette-sage disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {loading ? (
                       <>
@@ -371,7 +371,7 @@ const EventHero: React.FC<Props> = ({
             whileInView="visible"
             viewport={{ once: true }}
           >
-            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-4 md:p-8 border hidden md:block border-white/20 w-full max-w-md">
+            <div className="hidden w-full max-w-md rounded-lg border border-palette-cream/25 bg-palette-cream/10 p-6 md:block md:p-8">
               {precioActual && !eventoTerminado ? (
                 <div className="text-center space-y-6">
                   <div>
@@ -391,7 +391,7 @@ const EventHero: React.FC<Props> = ({
                   <button
                     onClick={onBuyTicket}
                     disabled={loading}
-                    className="w-full bg-white text-black py-3 md:py-4 px-6 md:px-8 rounded-2xl font-light text-base md:text-lg hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 group"
+                    className="flex w-full items-center justify-center space-x-2 rounded-full border-2 border-palette-cream bg-palette-cream px-6 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-ink transition-colors hover:border-palette-sage hover:bg-palette-sage disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {loading ? (
                       <span>Procesando...</span>
