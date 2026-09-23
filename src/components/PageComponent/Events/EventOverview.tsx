@@ -85,16 +85,16 @@ const EventOverview: React.FC<Props> = ({
   });
 
   return (
-    <section className="py-20 bg-white">
+    <section className="bg-palette-cream py-14 md:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header de la sección */}
         <div className="text-center mb-16 relative">
           {/* Animal decorativo sutil */}
           
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 relative z-10">
-            Detalles del Evento
+          <h2 className="relative z-10 mb-4 font-montserrat text-[clamp(1.9rem,4vw,2.6rem)] font-medium tracking-tight text-palette-ink">
+            Detalles del evento
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light relative z-10">
+          <p className="relative z-10 mx-auto max-w-2xl font-montserrat text-base text-palette-stone md:text-lg">
             Toda la información que necesitas para tomar la mejor decisión
           </p>
         </div>
@@ -107,7 +107,7 @@ const EventOverview: React.FC<Props> = ({
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 hover:bg-gray-900/10 transition-colors duration-200"
+            className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 transition-colors hover:bg-white"
           >
             <div className="flex items-center space-x-4 mb-4">
               <div className="w-12 h-12 bg-black/5 rounded-xl flex items-center justify-center">
@@ -139,7 +139,7 @@ const EventOverview: React.FC<Props> = ({
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 hover:bg-gray-900/10 transition-colors duration-200"
+              className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 transition-colors hover:bg-white"
             >
               <div className="flex items-center space-x-4 mb-4">
                 <div className="w-12 h-12 bg-black/5 rounded-xl flex items-center  opacity-70 justify-center">
@@ -172,7 +172,7 @@ const EventOverview: React.FC<Props> = ({
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 hover:bg-gray-900/10 transition-colors duration-200"
+              className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 transition-colors hover:bg-white"
             >
               <div className="flex items-center space-x-4 mb-4">
                 <div className="w-12 h-12 bg-black/5 rounded-xl flex items-center justify-center">
@@ -230,7 +230,7 @@ const EventOverview: React.FC<Props> = ({
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 hover:bg-gray-900/10 transition-colors duration-200"
+            className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 transition-colors hover:bg-white"
           >
             <div className="flex items-center space-x-4 mb-4">
               <div className="w-12 h-12 bg-black/5 rounded-xl flex items-center justify-center">
@@ -273,7 +273,7 @@ const EventOverview: React.FC<Props> = ({
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className={`rounded-2xl p-6 border shadow-sm bg-gray-900/5 border-black/10 hover:bg-gray-900/10 transition-colors duration-200`}
+            className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 transition-colors hover:bg-white"
           >
             <div className="flex items-center space-x-4 mb-4">
               <div className={`w-14 h-14 rounded-xl flex items-center justify-center bg-black/5 p-2`}>
@@ -316,7 +316,7 @@ const EventOverview: React.FC<Props> = ({
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="bg-gray-900/5 rounded-2xl p-4 border border-black/10 hover:bg-gray-900/10 transition-colors duration-200"
+              className="rounded-lg border border-palette-stone/20 bg-white/70 p-4 transition-colors hover:bg-white"
             >
               <div className="flex items-center space-x-3 mb-3">
                 <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center">

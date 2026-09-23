@@ -107,6 +107,9 @@ const cursoClaseContenidoSchema = new mongoose.Schema({
   },
   visibleInLibrary: { type: Boolean, default: true },
   pdfUrl: { type: String, default: '' },
+  pdfNombre: { type: String, default: '' },
+  pdfPublicId: { type: String, default: '' },
+  pdfResourceType: { type: String, default: '' },
   /** Legacy */
   titulo: { type: String, default: '' },
   vimeoVideoId: { type: String, default: '' },
@@ -156,6 +159,21 @@ const cursoLandingConfigSchema = new mongoose.Schema({
   /** session_id de Stripe u otros IDs para no contar dos veces el mismo pago en preventa */
   preventaRedencionesSessionIds: [{ type: String }],
   contenidoModulos: [cursoModuloContenidoSchema],
+  recursosAdicionales: [{
+    recursoId: { type: String, default: '' },
+    tipo: { type: String, enum: ['clase', 'archivo'], default: 'archivo' },
+    titulo: { type: String, default: '' },
+    descripcion: { type: String, default: '' },
+    videoUrl: { type: String, default: '' },
+    videoId: { type: String, default: '' },
+    videoThumbnail: { type: String, default: '' },
+    duration: { type: Number, default: 0 },
+    archivoUrl: { type: String, default: '' },
+    archivoNombre: { type: String, default: '' },
+    archivoPublicId: { type: String, default: '' },
+    archivoResourceType: { type: String, default: '' },
+    orden: { type: Number, default: 0 },
+  }],
   imagenCheckoutPublicId: { type: String, default: '' },
   vimeoGaleriaId: { type: String, default: '' },
   hero: {

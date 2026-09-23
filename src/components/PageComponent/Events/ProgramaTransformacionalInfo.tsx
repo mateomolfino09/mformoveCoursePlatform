@@ -34,7 +34,7 @@ const ProgramaTransformacionalInfo: React.FC<Props> = ({ evento }) => {
     comunidad.grupoWhatsapp;
 
   return (
-    <section className="py-20 px-4 bg-white">
+    <section className="bg-palette-cream px-4 py-14 md:py-16">
       <div className="max-w-7xl mx-auto">
         
         {/* Header */}
@@ -63,7 +63,7 @@ const ProgramaTransformacionalInfo: React.FC<Props> = ({ evento }) => {
             </div>
             Programa Transformacional de {programa.duracionSemanas} Semanas
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 relative z-10">
+          <h2 className="relative z-10 mb-4 font-montserrat text-[clamp(1.9rem,4vw,2.6rem)] font-medium tracking-tight text-palette-ink">
             Estructura del Programa
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light relative z-10">
@@ -78,7 +78,7 @@ const ProgramaTransformacionalInfo: React.FC<Props> = ({ evento }) => {
           transition={{ duration: 0.3 }}
           className="grid md:grid-cols-4 gap-6 mb-16"
         >
-          <div className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 text-center">
+          <div className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 text-center">
             <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center mx-auto mb-4">
               <CalendarIcon className="w-6 h-6 text-white" />
             </div>
@@ -86,7 +86,7 @@ const ProgramaTransformacionalInfo: React.FC<Props> = ({ evento }) => {
             <div className="text-gray-600">Semanas</div>
           </div>
           
-          <div className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 text-center">
+          <div className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 text-center">
             <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center mx-auto mb-4">
               <VideoCameraIcon className="w-6 h-6 text-white" />
             </div>
@@ -94,7 +94,7 @@ const ProgramaTransformacionalInfo: React.FC<Props> = ({ evento }) => {
             <div className="text-gray-600">Sesiones en Vivo</div>
           </div>
           
-          <div className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 text-center">
+          <div className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 text-center">
             <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center mx-auto mb-4">
               <UserGroupIcon className="w-6 h-6 text-white" />
             </div>
@@ -104,7 +104,7 @@ const ProgramaTransformacionalInfo: React.FC<Props> = ({ evento }) => {
             <div className="text-gray-600">Cupos Disponibles</div>
           </div>
           
-          <div className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 text-center">
+          <div className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 text-center">
             <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center mx-auto mb-4">
               <AcademicCapIcon className="w-6 h-6 text-white" />
             </div>
@@ -130,7 +130,7 @@ const ProgramaTransformacionalInfo: React.FC<Props> = ({ evento }) => {
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
-                className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 hover:bg-gray-900/10 transition-colors duration-200"
+                className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 transition-colors hover:bg-white"
               >
                 <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mb-4 text-white font-light text-xl">
                   {semana.numero}
@@ -177,7 +177,7 @@ const ProgramaTransformacionalInfo: React.FC<Props> = ({ evento }) => {
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 hover:bg-gray-900/10 transition-colors duration-200"
+                  className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 transition-colors hover:bg-white"
                 >
                   <div className="flex items-center mb-4">
                     <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center mr-3">
@@ -212,7 +212,7 @@ const ProgramaTransformacionalInfo: React.FC<Props> = ({ evento }) => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="bg-black rounded-3xl p-8 text-white"
+            className="rounded-lg border border-palette-ink bg-palette-ink p-8 text-palette-cream"
           >
             <div className="grid lg:grid-cols-2 gap-8 items-center">
               <div>

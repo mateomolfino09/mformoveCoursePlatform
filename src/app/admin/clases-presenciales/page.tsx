@@ -1,16 +1,13 @@
 'use client';
+
 import AdmimDashboardLayout from '../../../components/AdmimDashboardLayout';
-import {
-  PlusCircleIcon,
-  TableCellsIcon,
-} from '@heroicons/react/24/solid';
-import Link from 'next/link';
+import { AdminPage, AdminPageHeader, AdminNavGrid } from '../../../components/admin';
+import { PlusCircleIcon, TableCellsIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
-import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 
 const Index = () => {
   const router = useRouter();
@@ -18,11 +15,11 @@ const Index = () => {
 
   useEffect(() => {
     const cookies: any = Cookies.get('userToken');
-    
+
     if (!cookies) {
       router.push('/iniciar-sesion');
     }
-    
+
     if (!auth.user) {
       auth.fetchUser();
     } else if (auth.user.rol != 'Admin') {
@@ -33,53 +30,26 @@ const Index = () => {
   return (
     <AdmimDashboardLayout>
       <Head>
-        <title>MForMove Platform - Horarios</title>
-        <meta name='description' content='Administración de Horarios' />
-        <link rel='icon' href='/favicon.ico' />
+        <title>Horarios</title>
+        <meta name="description" content="Administración de Horarios" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className='w-full md:h-[100vh]'>
-        <div className='mb-12 mt-8'>
-          <h1 className='text-4xl md:text-5xl font-bold text-gray-900 font-montserrat mb-4'>
-            Dashboard de Horarios
-          </h1>
-          <p className='text-gray-600 text-lg font-montserrat'>
-            Gestiona tus clases presenciales y virtuales
-          </p>
-        </div>
-
-        <div className='grid lg:grid-cols-3 gap-6 mb-8'>
-          <Link href={'/admin/clases-presenciales/crear'}>
-            <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
-              <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
-              <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
-                <PlusCircleIcon className='w-12 h-12 text-white transition-colors duration-300' />
-              </div>
-              <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Crear Clase</p>
-            </div>
-          </Link>
-          <Link href={'/admin/clases-presenciales/todas'}>
-            <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
-              <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
-              <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
-                <TableCellsIcon className='w-12 h-12 text-white transition-colors duration-300' />
-              </div>
-              <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Ver Todas</p>
-            </div>
-          </Link>
-          <Link href={'/horario-clases'}>
-            <div className='group relative bg-white backdrop-blur-sm border border-gray-200 rounded-2xl h-48 shadow-lg hover:shadow-xl hover:border-[#4F7CCF]/50 flex flex-col justify-center items-center transition-all duration-300 cursor-pointer overflow-hidden'>
-              <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#234C8C] via-[#4F7CCF] to-[#A6C8F5] opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
-              <div className='p-4 rounded-full bg-gray-800 group-hover:bg-[#4F7CCF] transition-all duration-300 mb-4'>
-                <CalendarDaysIcon className='w-12 h-12 text-white transition-colors duration-300' />
-              </div>
-              <p className='text-gray-900 font-medium text-lg font-montserrat group-hover:text-[#4F7CCF] transition-colors duration-300'>Vista Pública</p>
-            </div>
-          </Link>
-        </div>
-      </div>
+      <AdminPage>
+        <AdminPageHeader
+          title="Horarios"
+          description="Clases presenciales y virtuales."
+        />
+        <AdminNavGrid
+          columns={2}
+          items={[
+            { href: '/admin/clases-presenciales/crear', title: 'Crear clase', description: 'Nueva clase en el calendario', icon: PlusCircleIcon },
+            { href: '/admin/clases-presenciales/todas', title: 'Ver todas', description: 'Listado de horarios', icon: TableCellsIcon },
+            { href: '/horario-clases', title: 'Vista pública', description: 'Calendario visible en el sitio', icon: CalendarDaysIcon },
+          ]}
+        />
+      </AdminPage>
     </AdmimDashboardLayout>
   );
 };
 
 export default Index;
-

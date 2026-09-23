@@ -3,6 +3,7 @@
 import type { CursoClaseContenido } from '../../../types/cursoLanding';
 import { COURSE_CLASS_MATERIALS } from '../../../types/courseClass';
 import { getClassMaterialLabel } from '../../icons/ClassMaterialIcon';
+import CloudinaryFileField from './CloudinaryFileField';
 
 const inputClass =
   'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900';
@@ -126,12 +127,27 @@ export default function CursoClaseContenidoFields({
           />
         </div>
         <div className="md:col-span-2">
-          <label className={labelClass}>PDF de la clase (URL)</label>
-          <input
-            className={inputClass}
-            value={clase.pdfUrl ?? ''}
-            onChange={(e) => onChange({ pdfUrl: e.target.value })}
-            placeholder="https://…/material.pdf (opcional)"
+          <CloudinaryFileField
+            label="PDF de la clase"
+            url={clase.pdfUrl ?? ''}
+            filename={clase.pdfNombre}
+            onUploaded={(file) =>
+              onChange({
+                pdfUrl: file.url,
+                pdfNombre: file.filename,
+                pdfPublicId: file.publicId,
+                pdfResourceType: file.resourceType,
+              })
+            }
+            onUrlChange={(pdfUrl) => onChange({ pdfUrl })}
+            onClear={() =>
+              onChange({
+                pdfUrl: '',
+                pdfNombre: '',
+                pdfPublicId: '',
+                pdfResourceType: '',
+              })
+            }
           />
         </div>
       </div>

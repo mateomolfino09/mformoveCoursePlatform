@@ -27,6 +27,10 @@ export type CourseClassFields = {
   visibleInLibrary: boolean;
   /** URL del PDF descargable asociado a la clase (Cloudinary u otra). */
   pdfUrl?: string;
+  pdfNombre?: string;
+  pdfPublicId?: string;
+  /** image | raw | video, según Cloudinary. */
+  pdfResourceType?: string;
 };
 
 export type CourseClassDocument = CourseClassFields & {

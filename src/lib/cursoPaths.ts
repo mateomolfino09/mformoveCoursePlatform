@@ -65,6 +65,14 @@ export function cursoContenidoPath(slug: string): string {
   return `${cursoLandingPath(slug)}/contenido`
 }
 
+export function cursoBibliotecaPath(slug: string): string {
+  return `${cursoLandingPath(slug)}/biblioteca`
+}
+
+export function cursoRecursoPath(slug: string, recursoId: string): string {
+  return `${cursoBibliotecaPath(slug)}/recurso/${encodeURIComponent(recursoId)}`
+}
+
 export function cursoClasePath(slug: string, classId: string, moduloIndex?: number): string {
   const base = `${cursoContenidoPath(slug)}/clase/${encodeURIComponent(classId)}`
   if (moduloIndex == null) return base
@@ -73,7 +81,7 @@ export function cursoClasePath(slug: string, classId: string, moduloIndex?: numb
 
 export type CursoPublicPath = {
   slug: string
-  subpath: 'landing' | 'empezar' | 'contenido' | 'clase'
+  subpath: 'landing' | 'empezar' | 'contenido' | 'clase' | 'biblioteca'
 }
 
 /** true si la URL corresponde a landing, checkout o hub de un curso */
@@ -88,6 +96,7 @@ export function parseCursoPublicPath(pathname: string): CursoPublicPath | null {
   if (rest.length === 0) return { slug, subpath: 'landing' }
   if (rest.length === 1 && rest[0] === 'empezar') return { slug, subpath: 'empezar' }
   if (rest.length === 1 && rest[0] === 'contenido') return { slug, subpath: 'contenido' }
+  if (rest[0] === 'biblioteca') return { slug, subpath: 'biblioteca' }
   if (rest.length === 3 && rest[0] === 'contenido' && rest[1] === 'clase' && rest[2]) {
     return { slug, subpath: 'clase' }
   }

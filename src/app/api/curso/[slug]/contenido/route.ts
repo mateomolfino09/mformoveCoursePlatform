@@ -119,6 +119,9 @@ export async function GET(
                 descripcionCorta: c.descripcionCorta,
                 descripcionCompleta: c.descripcionCompleta,
                 pdfUrl: c.pdfUrl,
+                pdfNombre: c.pdfNombre,
+                pdfPublicId: c.pdfPublicId,
+                pdfResourceType: c.pdfResourceType,
                 videoUrl: c.videoUrl,
                 videoId: c.videoId,
                 videoThumbnail: c.videoThumbnail,
@@ -131,6 +134,15 @@ export async function GET(
 
       const highlight = cursoConfig.highlights.items[mod.timelineIndex];
       const landingModulo = cursoConfig.queIncluye.modulos[mod.timelineIndex];
+      const tituloKey = (mod.titulo || '').trim().toLowerCase();
+      const fotoPorTitulo =
+        cursoConfig.queIncluye.modulos.find(
+          (item) => (item.titulo || '').trim().toLowerCase() === tituloKey && item.imagenPublicId?.trim()
+        )?.imagenPublicId ||
+        cursoConfig.highlights.items.find(
+          (item) => (item.titulo || '').trim().toLowerCase() === tituloKey && item.imagenPublicId?.trim()
+        )?.imagenPublicId ||
+        '';
 
       return {
         timelineIndex: mod.timelineIndex,
@@ -138,8 +150,9 @@ export async function GET(
         esencia: mod.esencia?.trim() || '',
         descripcion: highlight?.resumen || highlight?.detalle || landingModulo?.descripcion || '',
         imagenPublicId:
-          highlight?.imagenPublicId?.trim() ||
+          fotoPorTitulo.trim() ||
           landingModulo?.imagenPublicId?.trim() ||
+          highlight?.imagenPublicId?.trim() ||
           '',
         bundleTipo: mod.bundleTipo,
         vimeoPlaylistId: mod.vimeoPlaylistId,
@@ -177,6 +190,7 @@ export async function GET(
         fechaLanzamiento: launchDate?.toISOString() ?? null,
         invitacionGrupoWhatsapp: invitacionGrupo,
         modulos,
+        recursosAdicionales: cursoConfig.recursosAdicionales || [],
         comunidad: {
           whatsappGrupo: {
             url: invitacionGrupo,

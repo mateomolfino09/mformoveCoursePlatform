@@ -1,71 +1,79 @@
-import { User } from '../../typings';
+'use client';
+
 import AdminDashboardSideBar from './AdminDashboardSideBar';
 import AdminDashboardTopBar from './AdminDashboardTopBar';
-import { Transition } from '@headlessui/react';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import { parseCookies } from 'nookies';
-import React, { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { useAdminTheme } from './admin/useAdminTheme';
 
 interface Props {
-  children: any;
+  children: React.ReactNode;
 }
 
 const AdmimDashboardLayout = ({ children }: Props) => {
   const [showNav, setShowNav] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const cookies = parseCookies();
-  const router = useRouter();
-  const auth = useAuth()
-
-  function handleResize() {
-    if (innerWidth <= 640) {
-      setShowNav(false);
-      setIsMobile(true);
-    } else {
-      setShowNav(true);
-      setIsMobile(false);
-    }
-  }
+  const auth = useAuth();
+  const { theme, setTheme } = useAdminTheme();
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      addEventListener('resize', handleResize);
-    }
-
-    return () => {
-      removeEventListener('resize', handleResize);
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      setShowNav(!mobile);
     };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute('data-admin-active', 'true');
+    root.setAttribute('data-admin-theme', theme);
+    return () => {
+      root.removeAttribute('data-admin-active');
+      root.removeAttribute('data-admin-theme');
+    };
+  }, [theme]);
+
+  const closeIfMobile = () => {
+    if (isMobile) setShowNav(false);
+  };
+
   return (
-    <div className='bg-gray-50 min-h-screen'>
+    <div
+      data-admin-shell
+      data-admin-theme={theme}
+      className="min-h-screen bg-[var(--admin-bg)] text-[var(--admin-fg)]"
+    >
       <AdminDashboardTopBar
         showNav={showNav}
         setShowNav={setShowNav}
+        isMobile={isMobile}
         dbUser={auth.user}
+        theme={theme}
+        onThemeChange={setTheme}
       />
-      <Transition
-        as={Fragment}
-        show={showNav}
-        enter='transform transition duration-[400ms]'
-        enterFrom='-translate-x-full'
-        enterTo='translate-x-0'
-        leave='transform duration-[400ms] transition ease-in-out'
-        leaveFrom='translate-x-0'
-        leaveTo='-translate-x-full'
-      >
-        <AdminDashboardSideBar />
-      </Transition>
+      {showNav && isMobile ? (
+        <button
+          type="button"
+          aria-label="Cerrar menú"
+          className="fixed inset-0 z-20 bg-black/30"
+          onClick={() => setShowNav(false)}
+        />
+      ) : null}
+      <AdminDashboardSideBar
+        showNav={showNav}
+        isMobile={isMobile}
+        onNavigate={closeIfMobile}
+      />
       <main
-        className={`bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 min-h-screen h-full pt-16 transition-all duration-[400ms] ${
-          showNav && !isMobile ? 'pl-56' : ''
+        className={`admin-main min-h-screen transition-[padding] duration-[var(--admin-ease)] ${
+          showNav && !isMobile ? 'pl-[var(--admin-sidebar)]' : ''
         }`}
       >
-        <div className='flex flex-col justify-start items-start px-4 md:px-16 rounded-sm min-h-0 w-full flex-1 overflow-x-hidden overflow-y-auto pb-8'>
-          {children}
-        </div>
+        <div className="w-full px-4 pb-16 md:px-8">{children}</div>
       </main>
     </div>
   );

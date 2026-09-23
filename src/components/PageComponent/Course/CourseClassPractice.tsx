@@ -17,6 +17,7 @@ import MoveCrewVideoPlayer, {
 } from '../ClassPage/MoveCrewVideoPlayer';
 import CourseDarkSectionBackground from './CourseDarkSectionBackground';
 import { cursoClasePath } from '../../../lib/cursoPaths';
+import { cloudinaryAttachmentUrl } from '../../../lib/cloudinaryFiles';
 import { MENTORSHIP_LANDING_CTA, MENTORSHIP_START_CTA } from '../../../constants/mentorshipCta';
 import {
   CUERPO_AUTONOMO_DISCOUNT_PERCENT_ANUAL,
@@ -65,6 +66,9 @@ type Practice = {
   descripcionCorta?: string;
   descripcionCompleta?: string;
   pdfUrl?: string;
+  pdfNombre?: string;
+  pdfPublicId?: string;
+  pdfResourceType?: string;
   videoUrl?: string;
   videoId?: string;
   videoThumbnail?: string;
@@ -265,7 +269,15 @@ export default function CourseClassPractice({ slug, classId }: Props) {
   const descripcionCompleta = practice
     ? resolveClaseDescripcionCompleta(practice)
     : '';
-  const pdfUrl = practice?.pdfUrl?.trim() || '';
+  const pdfHref = practice
+    ? cloudinaryAttachmentUrl({
+        url: practice.pdfUrl,
+        publicId: practice.pdfPublicId,
+        resourceType: practice.pdfResourceType,
+        filename: practice.pdfNombre || 'material.pdf',
+      })
+    : '';
+  const pdfLabel = practice?.pdfNombre?.trim() || 'Material de la clase';
 
   const classDetails = (
     <>
@@ -277,16 +289,27 @@ export default function CourseClassPractice({ slug, classId }: Props) {
           </p>
         </section>
       )}
-      {pdfUrl && (
-        <a
-          href={pdfUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex w-fit items-center gap-2 rounded-full border border-palette-cream/45 bg-transparent px-4 py-2 font-montserrat text-[11px] font-semibold uppercase tracking-[0.16em] text-palette-cream transition-colors hover:border-palette-cream hover:bg-palette-cream/10"
-        >
-          <DocumentArrowDownIcon className="w-4 h-4 shrink-0" />
-          Descargar PDF
-        </a>
+      {pdfHref && (
+        <section>
+          <h3 className={`${landingEyebrowDark} mb-3`}>Archivos incluidos</h3>
+          <a
+            href={pdfHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+            className="flex items-center gap-3 rounded-2xl border border-palette-cream/20 bg-palette-cream/5 px-3 py-3 text-palette-cream transition-colors hover:border-palette-cream/45 hover:bg-palette-cream/10"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-palette-cream/30">
+              <DocumentArrowDownIcon className="w-5 h-5" />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-[13px] font-medium">{pdfLabel}</span>
+              <span className="block text-[11px] uppercase tracking-[0.14em] text-palette-cream/60">
+                Descargar
+              </span>
+            </span>
+          </a>
+        </section>
       )}
     </>
   );

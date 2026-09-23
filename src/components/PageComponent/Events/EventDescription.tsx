@@ -18,20 +18,20 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
   });
 
   return (
-    <section className="md:py-20 bg-gray-50">
+    <section className="bg-palette-cream py-14 md:py-16">
       <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           
           {/* Columna principal - Descripción */}
           <div className="lg:col-span-2">
             <motion.div 
-              className="md:bg-white bg-gray-50 rounded-3xl p-8 shadow-sm"
+              className="rounded-lg border border-palette-stone/15 bg-white/70 p-6 md:p-8"
               variants={fadeIn()}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+              <h2 className="mb-4 font-montserrat text-[clamp(1.9rem,4vw,2.6rem)] font-medium tracking-tight text-palette-ink">
                 Sobre este evento
               </h2>
               
@@ -88,7 +88,7 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
                         {evento.aprendizajes.map((apr, idx) => (
                           <motion.div 
                             key={idx} 
-                            className="group flex items-center space-x-4 p-4 bg-gray-900/5 border border-black/10 rounded-2xl hover:bg-gray-900/10 transition-colors duration-200"
+                            className="group flex items-center space-x-4 p-4 rounded-lg border border-palette-stone/20 bg-white/70 transition-colors hover:bg-white"
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
                             transition={{ duration: 0.3 }}
@@ -111,7 +111,7 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
                       </div>
                     ) : (
                       <motion.div 
-                        className="group flex items-center space-x-4 p-4 bg-gray-900/5 border border-black/10 rounded-2xl"
+                        className="group flex items-center space-x-4 p-4 rounded-lg border border-palette-stone/20 bg-white/70"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         transition={{ duration: 0.3 }}
@@ -146,7 +146,7 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
                         {evento.paraQuien.map((pq, idx) => (
                           <motion.div 
                             key={idx} 
-                            className="bg-gray-900/5 border border-black/10 rounded-2xl p-6 hover:bg-gray-900/10 transition-colors duration-200"
+                            className="rounded-lg border border-palette-stone/20 bg-white/70 p-6 hover:bg-gray-900/10 transition-colors duration-200"
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
                             transition={{ duration: 0.3 }}
@@ -171,7 +171,7 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
                       </div>
                     ) : (
                       <motion.div 
-                        className="bg-gray-900/5 border border-black/10 rounded-2xl p-6"
+                        className="rounded-lg border border-palette-stone/20 bg-white/70 p-6"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         transition={{ duration: 0.3 }}
@@ -204,13 +204,13 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {evento.beneficios && evento.beneficios.length > 0 ? (
                       evento.beneficios.map((beneficio, idx) => (
-                        <div key={idx} className="flex items-center space-x-3 p-4 bg-gray-900/5 border border-black/10 rounded-xl">
+                        <div key={idx} className="flex items-center space-x-3 p-4 rounded-lg border border-palette-stone/20 bg-white/70">
                           <CheckCircleIcon className="h-5 w-5 text-black/60 flex-shrink-0" />
                           <span className="text-gray-700 font-light">{beneficio}</span>
                         </div>
                       ))
                     ) : (
-                      <div className="flex items-center space-x-3 p-4 bg-gray-900/5 border border-black/10 rounded-xl">
+                      <div className="flex items-center space-x-3 p-4 rounded-lg border border-palette-stone/20 bg-white/70">
                         <CheckCircleIcon className="h-5 w-5 text-black/60 flex-shrink-0" />
                         <span className="text-gray-700 font-light">Acceso completo al evento</span>
                       </div>
@@ -244,7 +244,7 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
           <div className="space-y-6 pb-10 px-4 md:px-0 md:py-0 ">
             {/* Card de instructor */}
             <motion.div 
-              className="bg-white rounded-2xl p-6 shadow-sm flex flex-col items-center"
+              className="flex flex-col items-center rounded-lg border border-palette-stone/15 bg-white/70 p-6"
               variants={fadeIn()}
               initial="hidden"
               whileInView="visible"
@@ -275,7 +275,7 @@ const EventDescription: React.FC<Props> = ({ evento }) => {
 
             {/* Card premium personalizada */}
             <motion.div 
-              className="bg-gray-900/5 rounded-2xl p-6 border border-black/10 flex flex-col items-center"
+              className="flex flex-col items-center rounded-lg border border-palette-stone/20 bg-white/70 p-5"
               variants={fadeIn()}
               initial="hidden"
               whileInView="visible"
