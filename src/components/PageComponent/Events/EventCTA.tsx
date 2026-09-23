@@ -127,17 +127,9 @@ const EventCTA: React.FC<Props> = ({
   });
 
   return (
-    <section className="py-16 md:py-24 bg-gray-50 relative overflow-hidden">
+    <section className="relative overflow-hidden bg-palette-cream py-14 md:py-16">
       {/* Fondo con patrón sutil basado en ciencia */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-100 via-white to-gray-100"></div>
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, gray 1px, transparent 0)',
-            backgroundSize: '40px 40px'
-          }}></div>
-        </div>
-      </div>
+      <div className="absolute inset-0 bg-palette-cream" />
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Principal */}
@@ -148,7 +140,7 @@ const EventCTA: React.FC<Props> = ({
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 md:mb-8 font-montserrat leading-tight">
+          <h2 className="mb-4 font-montserrat text-[clamp(2rem,4.2vw,2.85rem)] font-medium leading-tight tracking-tight text-palette-ink">
             El movimiento como
             <span className="text-gray-700"> herramienta de transformación</span>
           </h2>
@@ -238,7 +230,7 @@ const EventCTA: React.FC<Props> = ({
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8 items-stretch">
-              <div className="bg-gray-100/80 backdrop-blur-sm rounded-2xl md:rounded-3xl lg:rounded-3xl p-6 md:p-8 lg:p-10 border border-gray-200/60 hover:bg-gray-100 transition-all duration-300 flex flex-col justify-between h-full relative overflow-hidden">
+              <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-lg border border-palette-stone/20 bg-white/80 p-6 md:p-8">
                 <div className="relative z-10">
                   <div className="flex items-center space-x-1 mb-3 md:mb-4 lg:mb-5">
                     {[...Array(5)].map((_, i) => (
@@ -260,7 +252,7 @@ const EventCTA: React.FC<Props> = ({
                 </div>
               </div>
 
-              <div className="bg-gray-100/80 backdrop-blur-sm rounded-2xl md:rounded-3xl lg:rounded-3xl p-6 md:p-8 lg:p-10 border border-gray-200/60 hover:bg-gray-100 transition-all duration-300 flex flex-col justify-between h-full relative overflow-hidden">
+              <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-lg border border-palette-stone/20 bg-white/80 p-6 md:p-8">
                 <div className="relative z-10">
                   <div className="flex items-center space-x-1 mb-3 md:mb-4 lg:mb-5">
                     {[...Array(5)].map((_, i) => (
@@ -294,7 +286,7 @@ const EventCTA: React.FC<Props> = ({
             whileInView="visible"
             viewport={{ once: true }}
           >
-            <div className="bg-gray-900/95 backdrop-blur-xl rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10 border border-gray-800/40 relative overflow-hidden">
+            <div className="relative overflow-hidden rounded-lg border border-palette-ink bg-palette-ink p-6 md:p-8">
                 {precioActual && !eventoTerminado ? (
                                      <div className="text-center space-y-6 md:space-y-8 lg:space-y-10 relative z-10">
                      {/* Header del CTA */}
@@ -391,7 +383,7 @@ const EventCTA: React.FC<Props> = ({
                   <button
                     onClick={onBuyTicket}
                     disabled={loading}
-                    className="w-full bg-white text-gray-900 py-3 md:py-4 lg:py-5 px-6 md:px-8 lg:px-10 rounded-2xl font-light text-base md:text-lg lg:text-xl hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 md:space-x-3 group"
+                    className="flex w-full items-center justify-center space-x-2 rounded-full border-2 border-palette-cream bg-palette-cream px-6 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-ink transition-colors hover:border-palette-sage hover:bg-palette-sage disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {loading ? (
                       <>

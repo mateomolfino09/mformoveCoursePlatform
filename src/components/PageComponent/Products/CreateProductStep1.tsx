@@ -945,7 +945,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                  Landing del curso
                </h2>
                <p className='text-sm text-gray-600 mb-4'>
-                 Configurá textos, videos, testimonios, sellos de validación, Preguntas frecuentes y CTAs de la página comercial. Los links de pago se generan al crear el producto.
+                 Configurá textos, videos, testimonios, sellos, preguntas frecuentes y CTAs. En módulos podés subir el PDF de cada clase a Cloudinary. En Recursos adicionales sumás clases o archivos para la biblioteca. Los links de pago se generan al crear el producto.
                </p>
                <p className='mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900'>
                  La portada (checkout / Stripe) y la imagen de bio están en la sección{' '}

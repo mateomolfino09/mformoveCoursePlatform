@@ -5,12 +5,13 @@ import DeleteUser from '../../components/DeleteUser';
 import { useAuth } from '../../hooks/useAuth';
 import AdmimDashboardLayout from '../AdmimDashboardLayout';
 import DataTable from '../snippets/DataTable/DataTable';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Cookies from 'js-cookie';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from '../../hooks/useToast';
+import { AdminPage, AdminPageHeader, AdminButton, AdminBadge } from '../admin';
 
 interface Props {
   initialData: {
@@ -120,31 +121,29 @@ const AdminUsers = ({ initialData }: Props) => {
 
   return (
     <AdmimDashboardLayout>
-      <div className='w-full h-auto min-h-screen p-8'>
-        <div className='mb-12 mt-8'>
-          <h1 className='text-4xl md:text-5xl font-bold text-gray-900 font-montserrat mb-4'>Usuarios</h1>
-          <p className='text-gray-600 text-lg font-montserrat'>Gestiona todos los usuarios de la plataforma</p>
-        </div>
+      <AdminPage wide>
+        <AdminPageHeader
+          title="Usuarios"
+          description="Cuentas, roles y estado VIP."
+        />
 
-        {/* Selector de Filtros */}
-        <div className='mb-6'>
-          <label className='block text-sm font-medium text-gray-700 mb-2 font-montserrat'>Filtrar por:</label>
+        <div className="mb-4">
+          <label htmlFor="filter-select" className="mb-1.5 block text-[12px] font-medium text-[var(--admin-fg)]">
+            Filtrar
+          </label>
           <select
-            id='filter-select'
+            id="filter-select"
             value={filter}
             onChange={(e) => {
-              const selectedFilter = e.target.value as
-                | 'ALL'
-                | 'VIP'
-                | 'NON_VIP';
+              const selectedFilter = e.target.value as 'ALL' | 'VIP' | 'NON_VIP';
               setFilter(selectedFilter);
               fetchUsers(1, selectedFilter);
             }}
-            className='w-full md:w-64 px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4F7CCF]/20 focus:border-[#4F7CCF] transition-all duration-300 font-montserrat'
+            className="h-8 w-full max-w-xs rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-white px-2.5 text-[13px] text-gray-900"
           >
-            <option value='ALL'>Todos los usuarios</option>
-            <option value='VIP'>Solo VIP</option>
-            <option value='NON_VIP'>No VIP</option>
+            <option value="ALL">Todos</option>
+            <option value="VIP">Solo VIP</option>
+            <option value="NON_VIP">No VIP</option>
           </select>
         </div>
 
@@ -156,41 +155,40 @@ const AdminUsers = ({ initialData }: Props) => {
           totalPages={totalPages}
           onPageChange={handlePageChange}
           customRenderers={{
-            subscription: (value) => (
-              <div
-                className={`w-4 h-4 rounded-full ${
-                  value ? 'bg-green-500' : 'bg-red-500'
-                }`}
-              />
-            ),
+            subscription: (value) =>
+              value ? <AdminBadge variant="success">VIP</AdminBadge> : <AdminBadge>No</AdminBadge>,
             removeVIP: (_, user) =>
               user.subscription ? (
-                <button
+                <AdminButton
+                  size="sm"
+                  variant="ghost"
                   onClick={() => {
                     setUserSelected(user);
                     setIsOpenRemoveVIP(true);
                   }}
-                  className='bg-red-500 text-white px-2 py-1 rounded text-sm'
                 >
                   Quitar VIP
-                </button>
+                </AdminButton>
               ) : null,
             actions: (_, user) => (
-              <div className='flex items-center justify-center space-x-2'>
+              <div className="flex items-center gap-2">
                 <Link
                   href={`/admin/actualizar-usuario/${user._id}`}
-                  className='text-[#234C8C]'
+                  className="text-[var(--admin-muted)] hover:text-[var(--admin-fg)]"
+                  aria-label="Editar usuario"
                 >
-                  <PencilIcon className='h-5 w-5' />
+                  <PencilIcon className="h-4 w-4" />
                 </Link>
                 <button
+                  type="button"
                   onClick={() => openModalDelete(user)}
-                  className='text-red-500'
+                  className="text-[var(--admin-muted)] hover:text-[var(--admin-destructive)]"
+                  aria-label="Eliminar usuario"
                 >
-                  <TrashIcon className='h-5 w-5' />
+                  <TrashIcon className="h-4 w-4" />
                 </button>
               </div>
-            )
+            ),
           }}
         />
 
@@ -201,32 +199,27 @@ const AdminUsers = ({ initialData }: Props) => {
           user={userSelected}
         />
 
-        {isOpenRemoveVIP && (
-          <div className='fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50'>
-            <div className='bg-white p-6 rounded-xl shadow-2xl border border-gray-200 max-w-md w-full mx-4'>
-              <h2 className='text-xl font-bold text-gray-900 mb-4 font-montserrat'>Confirmar</h2>
-              <p className='text-gray-700 mb-6 font-montserrat'>
-                ¿Seguro que quieres quitar la suscripción VIP a{' '}
-                <span className='font-semibold'>{userSelected?.name}</span>?
+        {isOpenRemoveVIP ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+            <div
+              role="dialog"
+              aria-modal="true"
+              className="w-full max-w-md rounded-[var(--admin-radius-lg)] border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-[var(--admin-shadow-float)]"
+            >
+              <h2 className="text-[15px] font-medium">Quitar VIP</h2>
+              <p className="mt-2 text-[13px] text-[var(--admin-muted)]">
+                ¿Quitar la suscripción VIP a <span className="text-[var(--admin-fg)]">{userSelected?.name}</span>?
               </p>
-              <div className='flex justify-end space-x-3'>
-                <button
-                  onClick={() => setIsOpenRemoveVIP(false)}
-                  className='px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-300 font-montserrat border border-gray-200'
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={removeVIP}
-                  className='px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-all duration-300 font-montserrat'
-                >
+              <div className="mt-5 flex justify-end gap-2">
+                <AdminButton onClick={() => setIsOpenRemoveVIP(false)}>Cancelar</AdminButton>
+                <AdminButton variant="destructive" onClick={removeVIP}>
                   Confirmar
-                </button>
+                </AdminButton>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        ) : null}
+      </AdminPage>
     </AdmimDashboardLayout>
   );
 };

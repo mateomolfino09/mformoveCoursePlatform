@@ -134,7 +134,80 @@ export function normalizeClaseContenido(
     materials,
     visibleInLibrary: raw?.visibleInLibrary !== false,
     pdfUrl: String(raw?.pdfUrl || '').trim(),
+    pdfNombre: String(raw?.pdfNombre || '').trim(),
+    pdfPublicId: String(raw?.pdfPublicId || '').trim(),
+    pdfResourceType: String(raw?.pdfResourceType || '').trim(),
   };
+}
+
+export type CursoRecursoTipo = 'clase' | 'archivo';
+
+/** Recurso extra del curso, fuera de los módulos. Clase (video) o archivo descargable. */
+export type CursoRecursoAdicional = {
+  recursoId: string;
+  tipo: CursoRecursoTipo;
+  titulo: string;
+  descripcion: string;
+  videoUrl: string;
+  videoId: string;
+  videoThumbnail: string;
+  duration: number;
+  archivoUrl: string;
+  archivoNombre: string;
+  archivoPublicId: string;
+  archivoResourceType: string;
+  orden: number;
+};
+
+export function createDefaultRecursoAdicional(orden = 0): CursoRecursoAdicional {
+  return {
+    recursoId:
+      typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : `recurso-${Date.now()}-${orden}`,
+    tipo: 'archivo',
+    titulo: '',
+    descripcion: '',
+    videoUrl: '',
+    videoId: '',
+    videoThumbnail: '',
+    duration: 0,
+    archivoUrl: '',
+    archivoNombre: '',
+    archivoPublicId: '',
+    archivoResourceType: '',
+    orden,
+  };
+}
+
+export function normalizeRecursoAdicional(
+  raw: Partial<CursoRecursoAdicional> | null | undefined,
+  orden = 0
+): CursoRecursoAdicional {
+  const tipo: CursoRecursoTipo = raw?.tipo === 'clase' ? 'clase' : 'archivo';
+  const duration = Number(raw?.duration) || 0;
+  return {
+    recursoId: String(raw?.recursoId || '').trim() || `recurso-${orden}`,
+    tipo,
+    titulo: String(raw?.titulo || '').trim(),
+    descripcion: String(raw?.descripcion || '').trim(),
+    videoUrl: String(raw?.videoUrl || '').trim(),
+    videoId: String(raw?.videoId || '').trim(),
+    videoThumbnail: String(raw?.videoThumbnail || '').trim(),
+    duration,
+    archivoUrl: String(raw?.archivoUrl || '').trim(),
+    archivoNombre: String(raw?.archivoNombre || '').trim(),
+    archivoPublicId: String(raw?.archivoPublicId || '').trim(),
+    archivoResourceType: String(raw?.archivoResourceType || '').trim(),
+    orden: typeof raw?.orden === 'number' ? raw.orden : orden,
+  };
+}
+
+export function normalizeRecursosAdicionales(
+  items: CursoRecursoAdicional[] | undefined
+): CursoRecursoAdicional[] {
+  if (!items?.length) return [];
+  return items.map((item, index) => normalizeRecursoAdicional(item, index));
 }
 
 /** Contenido entregable por ítem del timeline (highlights.items). */
@@ -184,6 +257,8 @@ export type CursoLandingConfig = {
   sellosValidacion: CursoSelloValidacion[];
   preciosPreventa: CursoPrecioPreventa[];
   contenidoModulos: CursoModuloContenido[];
+  /** Clases o archivos extra, fuera de los módulos. Se muestran en la biblioteca del curso. */
+  recursosAdicionales: CursoRecursoAdicional[];
   imagenCheckoutPublicId: string;
   vimeoGaleriaId: string;
   hero: {
@@ -571,6 +646,9 @@ export const createDefaultClaseContenido = (orden = 0): CursoClaseContenido =>
       materials: [],
       visibleInLibrary: true,
       pdfUrl: '',
+      pdfNombre: '',
+      pdfPublicId: '',
+      pdfResourceType: '',
     },
     orden
   );
@@ -616,6 +694,7 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
   contenidoModulos: syncContenidoModulosFromHighlights(
     CURSO_HIGHLIGHTS_PRESETS.map((item) => ({ ...item }))
   ),
+  recursosAdicionales: [],
   imagenCheckoutPublicId: '',
   vimeoGaleriaId: '',
   hero: {
@@ -935,6 +1014,7 @@ export const normalizeCursoLandingConfig = (
       : defaults.sellosValidacion,
     preciosPreventa: mergePreciosPreventa(partial.preciosPreventa),
     contenidoModulos: mergeContenidoModulos(partial.contenidoModulos, mergedHighlights),
+    recursosAdicionales: normalizeRecursosAdicionales(partial.recursosAdicionales),
     hero: {
       ...defaults.hero,
       ...partial.hero,

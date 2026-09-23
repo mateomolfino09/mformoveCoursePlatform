@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import { useEffect } from 'react';
 
 interface InfoModalProps {
   isOpen: boolean;
@@ -15,38 +17,61 @@ const InfoModal: React.FC<InfoModalProps> = ({
   title,
   subtitle,
   children,
-  maxWidth = "max-w-2xl"
+  maxWidth = 'max-w-2xl',
 }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className={`bg-white rounded-xl shadow-2xl ${maxWidth} w-full max-h-[90vh] relative overflow-hidden`}>
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#234C8C] to-[#1a365d] text-white p-6 relative">
-          <button 
-            className="absolute top-4 right-4 text-white hover:text-gray-200 text-2xl font-bold transition-colors"
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <button
+        type="button"
+        aria-label="Cerrar"
+        className="absolute inset-0 bg-black/30"
+        onClick={onClose}
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="info-modal-title"
+        className={`relative ${maxWidth} w-full max-h-[90vh] overflow-hidden rounded-[var(--admin-radius-lg)] border border-[var(--admin-border)] bg-[var(--admin-surface)] shadow-[var(--admin-shadow-float)]`}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-[var(--admin-border)] px-5 py-4">
+          <div className="min-w-0">
+            <h2
+              id="info-modal-title"
+              className="text-[15px] font-medium tracking-tight text-[var(--admin-fg)]"
+            >
+              {title}
+            </h2>
+            {subtitle ? (
+              <p className="mt-0.5 text-[13px] text-[var(--admin-muted)]">{subtitle}</p>
+            ) : null}
+          </div>
+          <button
+            type="button"
             onClick={onClose}
+            className="rounded-[var(--admin-radius)] p-1 text-[var(--admin-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-fg)]"
+            aria-label="Cerrar diálogo"
           >
-            ×
+            <span className="block text-[18px] leading-none">×</span>
           </button>
-          <h2 className="text-2xl font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-            {title}
-          </h2>
-          {subtitle && (
-            <p className="text-blue-100 mt-1">{subtitle}</p>
-          )}
         </div>
 
-        {/* Content */}
-        <div className="p-6 max-h-[calc(90vh-120px)] overflow-y-auto">
-          <div className="space-y-6 font-montserrat">
-            {children}
-          </div>
+        <div className="admin-info-modal max-h-[calc(90vh-4.5rem)] overflow-y-auto px-5 py-4 text-[var(--admin-fg)]">
+          <div className="space-y-5">{children}</div>
         </div>
       </div>
     </div>
   );
 };
 
-export default InfoModal; 
+export default InfoModal;

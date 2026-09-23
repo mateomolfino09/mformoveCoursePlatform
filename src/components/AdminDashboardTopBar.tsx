@@ -1,218 +1,208 @@
+'use client';
+
 import { Notification, User } from '../../typings';
 import { Menu, Popover, Transition } from '@headlessui/react';
 import { BellIcon, CheckIcon } from '@heroicons/react/24/outline';
-import {
-  Bars3CenterLeftIcon,
-  ChevronDownIcon,
-  Cog8ToothIcon,
-  CreditCardIcon,
-  PencilIcon
-} from '@heroicons/react/24/solid';
+import { Bars3Icon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import Link from 'next/link';
-import { Fragment, useContext, useEffect, useState } from 'react';
-import { AiOutlineUser } from 'react-icons/ai';
+import { Fragment, useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from 'js-cookie';
 import { useRouter, usePathname } from 'next/navigation';
+import { findAdminNavItem } from './admin/adminNav';
+import { AdminLogo } from './admin/AdminLogo';
+import { AdminThemeToggle } from './admin/AdminThemeToggle';
+import type { AdminTheme } from './admin/useAdminTheme';
 
 interface Props {
-  showNav: any;
-  setShowNav: any;
+  showNav: boolean;
+  setShowNav: (value: boolean | ((prev: boolean) => boolean)) => void;
+  isMobile?: boolean;
   dbUser: User | null;
+  theme: AdminTheme;
+  onThemeChange: (theme: AdminTheme) => void;
 }
 
-const AdminDashboardTopBar = ({ showNav, setShowNav }: Props) => {
-  const auth = useAuth()
-  const router = useRouter()
-  const [notificationList, setNotificationList] = useState<Notification[] | null>(
-    null
-  );
+const AdminDashboardTopBar = ({ showNav, setShowNav, theme, onThemeChange }: Props) => {
+  const auth = useAuth();
+  const router = useRouter();
+  const pathname = usePathname() || '';
+  const current = findAdminNavItem(pathname);
+  const [notificationList, setNotificationList] = useState<Notification[] | null>(null);
 
   useEffect(() => {
+    const cookies: any = Cookies.get('userToken');
 
-    const cookies: any = Cookies.get('userToken')
-    
-    if (!cookies ) {
+    if (!cookies) {
       router.push('/iniciar-sesion');
     }
-    
-    if(!auth.user) {
-      auth.fetchUser()
-    }
-    else if(auth.user.rol != 'Admin') router.push('/iniciar-sesion');
-    else {
-      setNotificationList(auth.user.notifications.filter((x: Notification) => !x.read).slice(-5).reverse())
-    }
 
-
+    if (!auth.user) {
+      auth.fetchUser();
+    } else if (auth.user.rol != 'Admin') {
+      router.push('/iniciar-sesion');
+    } else {
+      setNotificationList(
+        auth.user.notifications.filter((x: Notification) => !x.read).slice(-5).reverse()
+      );
+    }
   }, [auth.user]);
 
   const checkReadNotis = async () => {
     const config = {
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     };
-    const notifications = auth.user.notifications
-      .filter((x: Notification) => !x.read)
-      .slice(-5);
     const userId = auth.user?._id;
     try {
-      const { data } = await axios.put(
-        '/api/user/notifications/checkAsRead',
-        { userId },
-        config
-      );
-      // setListCourse([...listCourse, course])
+      const { data } = await axios.put('/api/user/notifications/checkAsRead', { userId }, config);
       auth.setUserBack(data);
       setNotificationList(
         data.notifications.filter((x: Notification) => !x.read).slice(-5).reverse()
       );
-    } catch (error) {
-      }
+    } catch (error) {}
   };
 
+  const unreadCount = notificationList?.length || 0;
+
   return (
-    <div
-      className={`bg-white/90 backdrop-blur-md border-b border-gray-200 fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] z-10 font-montserrat shadow-sm ${
-        showNav ? 'pl-56' : ''
-      }`}
+    <header
+      className="fixed top-0 z-40 box-border flex h-[var(--admin-topbar)] w-full items-center justify-between border-b border-[var(--admin-border)] bg-[var(--admin-surface)] !px-3 !py-0 md:!px-4"
     >
-      <div className='pl-4 md:pl-16'>
-        <Bars3CenterLeftIcon
-          className='h-8 w-8 text-gray-700 hover:text-gray-900 cursor-pointer transition-colors duration-300'
-          onClick={() => setShowNav(!showNav)}
-        />
+      <div className="flex min-w-0 items-center gap-2">
+        <AdminLogo />
+        <button
+          type="button"
+          aria-label={showNav ? 'Ocultar menú' : 'Mostrar menú'}
+          onClick={() => setShowNav((v) => !v)}
+          className="rounded-[var(--admin-radius)] p-1.5 text-[var(--admin-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-fg)]"
+        >
+          <Bars3Icon className="h-5 w-5" />
+        </button>
+        <p className="truncate text-[13px] text-[var(--admin-muted)]">
+          {current?.label || 'Admin'}
+        </p>
       </div>
-      <div className='flex items-center pr-4 md:pr-16'>
-        <Popover>
-          <Popover.Button className='outline-none mr-5 md:mr-8 cursor-pointer text-gray-700 hover:text-gray-900 transition-colors duration-300'>
-            <BellIcon className='h-6 w-6' />
+
+      <div className="flex items-center gap-2">
+        <AdminThemeToggle theme={theme} onChange={onThemeChange} />
+        <Popover className="relative">
+          <Popover.Button className="relative rounded-[var(--admin-radius)] p-1.5 text-[var(--admin-muted)] outline-none hover:bg-[var(--admin-hover)] hover:text-[var(--admin-fg)]">
+            <BellIcon className="h-5 w-5" />
+            {unreadCount > 0 ? (
+              <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[var(--admin-destructive)]" />
+            ) : null}
           </Popover.Button>
           <Transition
             as={Fragment}
-            enter='transition ease-out duration-200'
-            enterFrom='transform scale-95 opacity-0'
-            enterTo='transform scale-100 opacity-100'
-            leave='transition ease-in duration-150'
-            leaveFrom='transform scale-100 opacity-100'
-            leaveTo='transform scale-95 opacity-0'
+            enter="transition ease-out duration-100"
+            enterFrom="opacity-0 translate-y-1"
+            enterTo="opacity-100 translate-y-0"
+            leave="transition ease-in duration-75"
+            leaveFrom="opacity-100 translate-y-0"
+            leaveTo="opacity-0 translate-y-1"
           >
-            <Popover.Panel className='absolute -right-16 sm:right-4 z-50 mt-2 bg-white backdrop-blur-md border border-gray-200 shadow-2xl rounded-xl max-w-xs sm:max-w-sm w-screen'>
-              <div className='relative p-4'>
-                <div className='flex justify-between items-center w-full mb-4'>
-                  <p className='text-gray-900 font-medium font-montserrat'>Notificaciones</p>
-                  <a
-                    className='text-sm text-[#4F7CCF] hover:text-[#234C8C] transition-colors duration-300 font-medium'
-                    href='#'
-                    onClick={checkReadNotis}
-                  >
-                    Marcar como leidos
-                  </a>
-                </div>
-
-                <div className='mt-4 grid gap-3 grid-cols-1 overflow-hidden'>
-                  {auth.user?.notifications && notificationList && notificationList.length > 0 ? (
-                    <>
-                      {notificationList.map((notification: Notification) => (
-                        <div className='flex items-start p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-all duration-300' key={notification.title}>
-                          <div
-                            className={`rounded-full shrink-0 ${
-                              notification.status === 'green'
-                                ? 'bg-green-100 border border-green-300'
-                                : notification.status === 'red'
-                                ? 'bg-red-100 border border-red-300'
-                                : 'bg-yellow-100 border border-yellow-300'
-                            } h-8 w-8 flex items-center justify-center`}
-                          >
-                            <CheckIcon className={`h-4 w-4 ${
-                              notification.status === 'green'
-                                ? 'text-green-600'
-                                : notification.status === 'red'
-                                ? 'text-red-600'
-                                : 'text-yellow-600'
-                            }`} />
-                          </div>
-                          <div className='ml-3 flex-1 min-w-0'>
-                            <p className='font-medium text-gray-900 text-sm font-montserrat'>
-                              {notification.title}
-                            </p>
-                            <p className='text-xs text-gray-600 truncate break-all whitespace-normal mt-1'>
-                              {notification.message}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  ) : (
-                    <div className='flex p-3 rounded-lg bg-gray-50'>
-                      <div className='ml-0'>
-                        <p className='font-medium text-gray-600 text-sm font-montserrat'>
-                          No hay Notificaciones por el momento
+            <Popover.Panel className="absolute right-0 z-50 mt-2 w-80 rounded-[var(--admin-radius-lg)] border border-[var(--admin-border)] bg-[var(--admin-surface)] shadow-[var(--admin-shadow-float)]">
+              <div className="flex items-center justify-between border-b border-[var(--admin-border)] px-3 py-2">
+                <p className="text-[13px] font-medium">Notificaciones</p>
+                <button
+                  type="button"
+                  className="text-[12px] text-[var(--admin-muted)] hover:text-[var(--admin-fg)]"
+                  onClick={checkReadNotis}
+                >
+                  Marcar como leídas
+                </button>
+              </div>
+              <div className="max-h-80 overflow-y-auto p-2">
+                {notificationList && notificationList.length > 0 ? (
+                  notificationList.map((notification: Notification) => (
+                    <div
+                      className="flex items-start gap-2 rounded-[var(--admin-radius)] px-2 py-2"
+                      key={notification.title}
+                    >
+                      <div
+                        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+                          notification.status === 'green'
+                            ? 'bg-[var(--admin-success-bg)]'
+                            : notification.status === 'red'
+                              ? 'bg-[var(--admin-destructive-bg)]'
+                              : 'bg-[var(--admin-warning-bg)]'
+                        }`}
+                      >
+                        <CheckIcon
+                          className={`h-3 w-3 ${
+                            notification.status === 'green'
+                              ? 'text-[var(--admin-success)]'
+                              : notification.status === 'red'
+                                ? 'text-[var(--admin-destructive)]'
+                                : 'text-[var(--admin-warning)]'
+                          }`}
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[13px] font-medium">{notification.title}</p>
+                        <p className="mt-0.5 text-[12px] text-[var(--admin-muted)]">
+                          {notification.message}
                         </p>
                       </div>
                     </div>
-                  )}
-                </div>
+                  ))
+                ) : (
+                  <p className="px-2 py-6 text-center text-[12px] text-[var(--admin-muted)]">
+                    No hay notificaciones
+                  </p>
+                )}
               </div>
             </Popover.Panel>
           </Transition>
         </Popover>
-        <Menu as='div' className='relative inline-block text-left'>
-          <div>
-            <Menu.Button className='inline-flex w-full justify-center items-center hover:opacity-80 transition-opacity duration-300'>
-              <AiOutlineUser className='cursor-pointer text-gray-700 rounded h-6 w-6 md:mr-2 border-2 border-gray-200 shadow-sm bg-gray-50 p-1' />
-              <span className='hidden md:block font-medium text-gray-900 font-montserrat'>
-                {auth.user?.name}
-              </span>
-              <ChevronDownIcon className='ml-2 h-4 w-4 text-gray-700' />
-            </Menu.Button>
-          </div>
+
+        <Menu as="div" className="relative">
+          <Menu.Button className="inline-flex items-center gap-1.5 rounded-[var(--admin-radius)] px-1.5 py-1 text-[13px] text-[var(--admin-fg)] hover:bg-[var(--admin-hover)]">
+            <span className="hidden max-w-[140px] truncate md:block">{auth.user?.name}</span>
+            <ChevronDownIcon className="h-3.5 w-3.5 text-[var(--admin-muted)]" />
+          </Menu.Button>
           <Transition
             as={Fragment}
-            enter='transition ease-out duration-200'
-            enterFrom='transform scale-95 opacity-0'
-            enterTo='transform scale-100 opacity-100'
-            leave='transition ease-in duration-150'
-            leaveFrom='transform scale-100 opacity-100'
-            leaveTo='transform scale-95 opacity-0'
+            enter="transition ease-out duration-100"
+            enterFrom="opacity-0 translate-y-1"
+            enterTo="opacity-100 translate-y-0"
+            leave="transition ease-in duration-75"
+            leaveFrom="opacity-100 translate-y-0"
+            leaveTo="opacity-0 translate-y-1"
           >
-            <Menu.Items className='absolute right-0 w-56 z-50 mt-2 origin-top-right bg-white backdrop-blur-md border border-gray-200 rounded-xl shadow-2xl'>
-              <div className='p-1'>
-                <Menu.Item>
+            <Menu.Items className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-[var(--admin-radius-lg)] border border-[var(--admin-border)] bg-[var(--admin-surface)] p-1 shadow-[var(--admin-shadow-float)]">
+              <Menu.Item>
+                {({ active }) => (
                   <Link
-                    href='#'
-                    className='flex hover:bg-gray-50 hover:text-gray-900 text-gray-700 rounded-lg p-3 text-sm group transition-all duration-300 items-center font-montserrat'
+                    href="/admin/facturacion"
+                    className={`block rounded-[var(--admin-radius)] px-2 py-1.5 text-[13px] ${
+                      active ? 'bg-[var(--admin-hover)]' : ''
+                    }`}
                   >
-                    <PencilIcon className='h-4 w-4 mr-3 text-gray-500 group-hover:text-[#4F7CCF] transition-colors duration-300' />
-                    Editar
-                  </Link>
-                </Menu.Item>
-                <Menu.Item>
-                  <Link
-                    href='/admin/facturacion'
-                    className='flex hover:bg-gray-50 hover:text-gray-900 text-gray-700 rounded-lg p-3 text-sm group transition-all duration-300 items-center font-montserrat'
-                  >
-                    <CreditCardIcon className='h-4 w-4 mr-3 text-gray-500 group-hover:text-[#4F7CCF] transition-colors duration-300' />
                     Facturas
                   </Link>
-                </Menu.Item>
-                <Menu.Item>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
                   <Link
-                    href='#'
-                    className='flex hover:bg-gray-50 hover:text-gray-900 text-gray-700 rounded-lg p-3 text-sm group transition-all duration-300 items-center font-montserrat'
+                    href="/cuenta"
+                    className={`block rounded-[var(--admin-radius)] px-2 py-1.5 text-[13px] ${
+                      active ? 'bg-[var(--admin-hover)]' : ''
+                    }`}
                   >
-                    <Cog8ToothIcon className='h-4 w-4 mr-3 text-gray-500 group-hover:text-[#4F7CCF] transition-colors duration-300' />
-                    Configuración
+                    Cuenta
                   </Link>
-                </Menu.Item>
-              </div>
+                )}
+              </Menu.Item>
             </Menu.Items>
           </Transition>
         </Menu>
       </div>
-    </div>
+    </header>
   );
 };
 

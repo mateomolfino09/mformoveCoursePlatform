@@ -2,15 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  PhotoIcon, 
-  SparklesIcon, 
   EyeIcon, 
   CheckCircleIcon,
   XCircleIcon,
-  ArrowRightIcon,
   QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline';
-import InstagramService, { InstagramAnalysis } from '../../../services/instagram';
+import type { InstagramAnalysis } from '../../../services/instagram';
 import { toast } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
@@ -98,15 +95,10 @@ const InstagramAnalyzer: React.FC<InstagramAnalyzerProps> = ({ onAnalysisComplet
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
-          <PhotoIcon className="w-6 h-6 text-white" />
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold text-white">Datos de Instagram</h3>
-          <p className="text-sm text-gray-300">Conecta tu cuenta y carga tus videos automáticamente</p>
-        </div>
+    <div className="rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-[var(--admin-surface)] p-4">
+      <div className="mb-4">
+        <h3 className="text-[13px] font-medium text-[var(--admin-fg)]">Datos de Instagram</h3>
+        <p className="text-[12px] text-[var(--admin-muted)]">Conectá tu cuenta y cargá tus videos.</p>
       </div>
 
       {/* Campos de conexión */}

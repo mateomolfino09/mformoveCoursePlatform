@@ -9,14 +9,16 @@ interface InfoModalSectionProps {
 const InfoModalSection: React.FC<InfoModalSectionProps> = ({
   title,
   children,
-  className = ""
+  className = '',
 }) => {
   return (
-    <div className={`bg-gray-50 rounded-lg p-4 ${className}`}>
-      <h3 className="text-lg font-bold text-[#234C8C] mb-3">{title}</h3>
+    <section className={`border-t border-[var(--admin-border)] pt-4 first:border-t-0 first:pt-0 ${className}`}>
+      <h3 className="mb-2 text-[11px] font-medium uppercase tracking-wider text-[var(--admin-muted)]">
+        {title}
+      </h3>
       {children}
-    </div>
+    </section>
   );
 };
 
-export default InfoModalSection; 
+export default InfoModalSection;

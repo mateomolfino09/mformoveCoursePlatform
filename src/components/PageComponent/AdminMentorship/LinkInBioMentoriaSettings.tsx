@@ -157,11 +157,11 @@ export default function LinkInBioMentoriaSettings() {
   return (
     <form
       onSubmit={handleSave}
-      className="mt-10 max-w-2xl space-y-6 rounded-2xl border border-gray-200 bg-white p-6 pb-8 shadow-sm"
+      className="mt-8 max-w-2xl space-y-5 rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-[var(--admin-surface)] p-4"
     >
       <div>
-        <h2 className="font-montserrat text-xl font-semibold text-gray-900">Carrusel de /bio — Mentoría</h2>
-        <p className="mt-1 text-sm text-gray-600">
+        <h2 className="text-[13px] font-medium text-[var(--admin-fg)]">Carrusel de /bio — Mentoría</h2>
+        <p className="mt-1 text-[12px] text-[var(--admin-muted)]">
           Dos cards en la bio: una para el plan trimestral y otra para el anual (beneficios distintos).
         </p>
       </div>
@@ -180,7 +180,7 @@ export default function LinkInBioMentoriaSettings() {
         <label className="flex flex-col gap-1">
           <span className="text-sm font-medium text-gray-700">Título base</span>
           <input
-            className="input border-gray-300"
+            className="h-8 w-full rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-white px-2.5 text-[13px] text-gray-900 placeholder:text-gray-500"
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
             placeholder="Mentoría 1:1"
@@ -189,7 +189,7 @@ export default function LinkInBioMentoriaSettings() {
         <label className="flex flex-col gap-1">
           <span className="text-sm font-medium text-gray-700">Subtítulo base (legacy)</span>
           <input
-            className="input border-gray-300"
+            className="h-8 w-full rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-white px-2.5 text-[13px] text-gray-900 placeholder:text-gray-500"
             value={subtitulo}
             onChange={(e) => setSubtitulo(e.target.value)}
           />
@@ -204,7 +204,7 @@ export default function LinkInBioMentoriaSettings() {
           <label className="flex flex-col gap-1">
             <span className="text-sm font-medium text-gray-700">Título (opcional)</span>
             <input
-              className="input border-gray-300"
+              className="h-8 w-full rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-white px-2.5 text-[13px] text-gray-900 placeholder:text-gray-500"
               value={tituloTrimestral}
               onChange={(e) => setTituloTrimestral(e.target.value)}
               placeholder={`${titulo || 'Mentoría 1:1'} · Trimestral`}
@@ -213,7 +213,7 @@ export default function LinkInBioMentoriaSettings() {
           <label className="flex flex-col gap-1">
             <span className="text-sm font-medium text-gray-700">Subtítulo (opcional)</span>
             <input
-              className="input border-gray-300"
+              className="h-8 w-full rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-white px-2.5 text-[13px] text-gray-900 placeholder:text-gray-500"
               value={subtituloTrimestral}
               onChange={(e) => setSubtituloTrimestral(e.target.value)}
               placeholder="Ciclo de 3 meses · seguimiento personalizado"
@@ -241,7 +241,7 @@ export default function LinkInBioMentoriaSettings() {
           <label className="flex flex-col gap-1">
             <span className="text-sm font-medium text-gray-700">Título (opcional)</span>
             <input
-              className="input border-gray-300"
+              className="h-8 w-full rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-white px-2.5 text-[13px] text-gray-900 placeholder:text-gray-500"
               value={tituloAnual}
               onChange={(e) => setTituloAnual(e.target.value)}
               placeholder={`${titulo || 'Mentoría 1:1'} · Anual`}
@@ -250,7 +250,7 @@ export default function LinkInBioMentoriaSettings() {
           <label className="flex flex-col gap-1">
             <span className="text-sm font-medium text-gray-700">Subtítulo (opcional)</span>
             <input
-              className="input border-gray-300"
+              className="h-8 w-full rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-white px-2.5 text-[13px] text-gray-900 placeholder:text-gray-500"
               value={subtituloAnual}
               onChange={(e) => setSubtituloAnual(e.target.value)}
               placeholder="12 meses · beneficios y bonos exclusivos"
@@ -279,7 +279,7 @@ export default function LinkInBioMentoriaSettings() {
       <button
         type="submit"
         disabled={saving}
-        className="sticky bottom-4 z-10 w-full rounded-lg bg-[#234C8C] px-6 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-[#1a3a6b] disabled:opacity-60 md:static md:shadow-none"
+        className="h-8 rounded-[var(--admin-radius)] bg-[var(--admin-accent)] px-3 text-[13px] font-medium text-[var(--admin-accent-fg)] hover:opacity-90 disabled:opacity-40 md:w-auto"
       >
         {saving ? 'Guardando…' : 'Guardar configuración bio'}
       </button>

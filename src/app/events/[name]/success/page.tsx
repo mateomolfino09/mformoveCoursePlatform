@@ -73,8 +73,8 @@ const EventSuccessPageContent: React.FC<EventSuccessProps> = ({ params }) => {
   // Mostrar loading mientras se monta el componente
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#234C8C]"></div>
+      <div className="min-h-screen bg-palette-cream flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-palette-ink"></div>
       </div>
     );
   }
@@ -82,8 +82,8 @@ const EventSuccessPageContent: React.FC<EventSuccessProps> = ({ params }) => {
   if (loading) {
     return (
       <MainSideBar where={'events'}>
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#234C8C]"></div>
+        <div className="min-h-screen bg-palette-cream flex items-center justify-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-palette-ink"></div>
         </div>
         <Footer />
       </MainSideBar>
@@ -93,10 +93,10 @@ const EventSuccessPageContent: React.FC<EventSuccessProps> = ({ params }) => {
   if (error || !evento) {
     return (
       <MainSideBar where={'events'}>
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white font-montserrat">
+        <div className="min-h-screen bg-palette-cream font-montserrat">
           <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
             {/* Fondo con gradiente */}
-            <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-blue-50 to-indigo-50" />
+            <div className="absolute inset-0 bg-palette-cream" />
             
             {/* Patrón de fondo */}
             <div className="absolute inset-0 opacity-10">
@@ -107,13 +107,13 @@ const EventSuccessPageContent: React.FC<EventSuccessProps> = ({ params }) => {
             <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
               <div className="text-center space-y-8">
                 {/* Icono de éxito */}
-                <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full shadow-2xl mb-8">
-                  <CheckCircleIcon className="h-12 w-12 text-white" />
+                <div className="mb-8 inline-flex h-16 w-16 items-center justify-center rounded-full border border-palette-sage/40 bg-palette-sage/20">
+                  <CheckCircleIcon className="h-8 w-8 text-palette-ink" />
                 </div>
 
                 {/* Título */}
                 <div className="space-y-4">
-                  <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
+                  <h1 className="font-montserrat text-[clamp(1.8rem,4vw,2.6rem)] font-medium leading-tight tracking-tight text-palette-ink">
                     ¡Reserva confirmada!
                   </h1>
                   <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -122,16 +122,16 @@ const EventSuccessPageContent: React.FC<EventSuccessProps> = ({ params }) => {
                 </div>
 
                 {/* Información general */}
-                <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20 max-w-2xl mx-auto">
+                <div className="mx-auto max-w-2xl rounded-lg border border-palette-stone/20 bg-white/80 p-6 md:p-8">
                   <div className="space-y-6">
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6">
-                      <h3 className="font-bold text-blue-900 mb-3 text-lg">📧 Email de confirmación</h3>
-                      <p className="text-blue-800">Recibirás un email con todos los detalles de tu reserva en los próximos minutos.</p>
+                    <div className="rounded-lg border border-palette-stone/15 bg-palette-cream p-5 text-left">
+                      <h3 className="mb-2 font-montserrat text-sm font-medium text-palette-ink">Email de confirmación</h3>
+                      <p className="font-montserrat text-[14px] text-palette-stone">Recibirás un email con todos los detalles de tu reserva en los próximos minutos.</p>
                     </div>
 
-                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6">
-                      <h3 className="font-bold text-green-900 mb-3 text-lg">🎯 Próximos pasos</h3>
-                      <ul className="text-green-800 space-y-2">
+                    <div className="rounded-lg border border-palette-stone/15 bg-palette-cream p-5 text-left">
+                      <h3 className="mb-2 font-montserrat text-sm font-medium text-palette-ink">Próximos pasos</h3>
+                      <ul className="space-y-2 font-montserrat text-[14px] text-palette-stone">
                         <li className="flex items-center">
                           <CheckCircleIcon className="h-5 w-5 mr-3 text-green-600" />
                           Revisa tu email de confirmación
@@ -147,11 +147,11 @@ const EventSuccessPageContent: React.FC<EventSuccessProps> = ({ params }) => {
                       </ul>
                     </div>
 
-                    <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl p-6">
-                      <h3 className="font-bold text-amber-900 mb-3 text-lg">💬 ¿Necesitas ayuda?</h3>
-                      <p className="text-amber-800">
+                    <div className="rounded-lg border border-palette-stone/15 bg-palette-cream p-5 text-left">
+                      <h3 className="mb-2 font-montserrat text-sm font-medium text-palette-ink">¿Necesitas ayuda?</h3>
+                      <p className="font-montserrat text-[14px] text-palette-stone">
                         Si tienes alguna pregunta, contáctanos en{' '}
-                        <a href="mailto:soporte@mateomove.com" className="underline font-semibold text-amber-700 hover:text-amber-900">
+                        <a href="mailto:soporte@mateomove.com" className="underline text-palette-ink">
                         soporte@mateomove.com
                         </a>
                       </p>
@@ -163,7 +163,7 @@ const EventSuccessPageContent: React.FC<EventSuccessProps> = ({ params }) => {
                 <div className="space-y-4">
                   <button
                     onClick={() => window.location.href = '/events'}
-                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#234C8C] to-blue-700 text-white font-bold text-lg rounded-2xl hover:from-[#1a3a6b] hover:to-blue-800 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+                    className="inline-flex items-center rounded-full border-2 border-palette-ink bg-palette-ink px-8 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-cream transition-colors hover:bg-palette-ink/90"
                   >
                     <SparklesIcon className="h-6 w-6 mr-3" />
                     Ver más eventos
@@ -181,7 +181,7 @@ const EventSuccessPageContent: React.FC<EventSuccessProps> = ({ params }) => {
   // Si encontramos el evento, mostrar la página completa con estética de events
   return (
     <MainSideBar where={'events'}>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white font-montserrat">
+      <div className="min-h-screen bg-palette-cream font-montserrat">
         <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
           {/* Imagen de fondo con overlay - Banner del evento */}
           <div className="absolute inset-0">
@@ -252,10 +252,10 @@ const EventSuccessPageContent: React.FC<EventSuccessProps> = ({ params }) => {
 
                 {/* Título principal */}
                 <div className="space-y-4">
-                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+                  <h1 className="font-montserrat text-[clamp(2rem,5vw,3.2rem)] font-medium leading-[1.08] tracking-tight text-palette-cream">
                     ¡Reserva confirmada!
                   </h1>
-                  <p className="text-xl md:text-2xl text-gray-200 leading-relaxed">
+                  <p className="font-montserrat text-[15px] leading-relaxed text-palette-cream/80">
                     Tu lugar en <span className="font-bold text-white">{evento.nombre}</span> ha sido reservado exitosamente.
                   </p>
                 </div>
@@ -311,7 +311,7 @@ const EventSuccessPageContent: React.FC<EventSuccessProps> = ({ params }) => {
 
               {/* Columna derecha - Detalles */}
               <div className="flex justify-center lg:justify-end">
-                <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl max-w-md w-full">
+                <div className="w-full max-w-md rounded-lg border border-palette-cream/25 bg-palette-ink/55 p-6 md:p-8">
                   <div className="space-y-6">
                     <div className="text-center">
                       <h3 className="text-2xl font-bold text-white mb-4">Detalles de tu reserva</h3>
@@ -406,7 +406,7 @@ const EventSuccessPageContent: React.FC<EventSuccessProps> = ({ params }) => {
                     <div className="space-y-3">
                       <button
                         onClick={() => window.location.href = '/events'}
-                        className="w-full bg-white text-black py-4 px-6 rounded-2xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                        className="w-full rounded-full border-2 border-palette-cream bg-palette-cream px-6 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-ink transition-colors hover:border-palette-sage hover:bg-palette-sage"
                       >
                         Ver más eventos
                       </button>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { AdminEmptyState } from '../../admin';
 
 interface Column<T> {
   key: keyof T | string;
@@ -64,114 +65,96 @@ const DataTable = <T extends Record<string, any>>({
     }
   };
 
-  const renderPaginationControls = () => (
-    <div className="flex items-center justify-between">
-      {/* <div className="flex items-center space-x-2">
-        <label htmlFor="rowsPerPage" className="text-sm text-gray-600">
-          Reg./Pág
-        </label>
-        <select
-          id="rowsPerPage"
-          value={rowsPerPage}
-          onChange={handleRowsPerPageChange}
-          className="text-sm border border-gray-300 rounded px-2 py-1 bg-white text-black"
-        >
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={15}>15</option>
-          <option value={20}>20</option>
-        </select>
-      </div> */}
-      <div className="flex items-center space-x-2">
-        <button
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className={`px-2 py-1 text-sm border rounded ${
-            currentPage === 1 ? 'text-gray-400' : 'text-gray-700 hover:bg-gray-200'
-          }`}
-        >
-          &lt;
-        </button>
-        <span className="text-sm text-gray-600">
-          {`${(currentPage - 1) * rowsPerPage + 1} - ${
-            Math.min(currentPage * rowsPerPage, total)
-          } de ${total}`}
-        </span>
-        <button
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className={`px-2 py-1 text-sm border rounded ${
-            currentPage === totalPages ? 'text-gray-400' : 'text-gray-700 hover:bg-gray-200'
-          }`}
-        >
-          &gt;
-        </button>
-      </div>
-    </div>
-  );
-
   return (
-    <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            {columns.map((col) => (
-              <th
-                key={String(col.key)}
-                className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
-                  col.sortable ? 'cursor-pointer' : ''
-                }`}
-                onClick={() => col.sortable && handleSort(String(col.key))}
-              >
-                {col.label}
-                {col.sortable && sortKey === col.key && (
-                  <span className="ml-2 text-gray-400">
-                    {sortDirection === 'asc' ? '▲' : '▼'}
-                  </span>
-                )}
-              </th>
-            ))}
-            {renderActions && (
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Acciones
-              </th>
-            )}
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {data.length > 0 ? (
-            <>
-              {data.map((row, rowIndex) => (
-                <tr key={rowIndex}>
+    <div className="overflow-hidden rounded-[var(--admin-radius)] border border-[var(--admin-border)] bg-[var(--admin-surface)]">
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-left">
+          <thead>
+            <tr className="border-b border-[var(--admin-border)]">
+              {columns.map((col) => (
+                <th
+                  key={String(col.key)}
+                  className={`px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--admin-muted)] ${
+                    col.sortable ? 'cursor-pointer select-none hover:text-[var(--admin-fg)]' : ''
+                  }`}
+                  onClick={() => col.sortable && handleSort(String(col.key))}
+                >
+                  {col.label}
+                  {col.sortable && sortKey === col.key ? (
+                    <span className="ml-1 text-[var(--admin-subtle)]">
+                      {sortDirection === 'asc' ? '↑' : '↓'}
+                    </span>
+                  ) : null}
+                </th>
+              ))}
+              {renderActions ? (
+                <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--admin-muted)]">
+                  Acciones
+                </th>
+              ) : null}
+            </tr>
+          </thead>
+          <tbody>
+            {data.length > 0 ? (
+              data.map((row, rowIndex) => (
+                <tr
+                  key={rowIndex}
+                  className="border-b border-[var(--admin-border)] last:border-b-0 hover:bg-[var(--admin-hover)]"
+                >
                   {columns.map((col) => (
-                    <td key={String(col.key)} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td
+                      key={String(col.key)}
+                      className="whitespace-nowrap px-3 py-2.5 text-[13px] text-[var(--admin-fg)]"
+                    >
                       {customRenderers && customRenderers[String(col.key)]
                         ? customRenderers[String(col.key)](row[col.key], row)
                         : row[col.key] !== undefined
-                        ? String(row[col.key])
-                        : ''}
+                          ? String(row[col.key])
+                          : ''}
                     </td>
                   ))}
-                  {renderActions && (
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-center text-base">
-                        {renderActions(row)}
-                      </div>
+                  {renderActions ? (
+                    <td className="px-3 py-2.5">
+                      <div className="flex items-center gap-2">{renderActions(row)}</div>
                     </td>
-                  )}
+                  ) : null}
                 </tr>
-              ))}
-            </>
-          ) : (
-            <tr>
-              <td colSpan={columns.length + (renderActions ? 1 : 0)} className="px-6 py-4 text-center text-gray-500">
-                No hay datos para mostrar.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-      {data.length > 0 && <div className="p-4 bg-white">{renderPaginationControls()}</div>}
+              ))
+            ) : (
+              <tr>
+                <td colSpan={columns.length + (renderActions ? 1 : 0)} className="p-4">
+                  <AdminEmptyState title="No hay datos para mostrar." />
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      {data.length > 0 ? (
+        <div className="flex items-center justify-between border-t border-[var(--admin-border)] px-3 py-2">
+          <p className="text-[12px] text-[var(--admin-muted)]">
+            {(currentPage - 1) * rowsPerPage + 1}–{Math.min(currentPage * rowsPerPage, total)} de {total}
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="h-7 rounded-[var(--admin-radius)] px-2 text-[12px] text-[var(--admin-fg)] hover:bg-[var(--admin-hover)] disabled:text-[var(--admin-subtle)]"
+            >
+              Anterior
+            </button>
+            <button
+              type="button"
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="h-7 rounded-[var(--admin-radius)] px-2 text-[12px] text-[var(--admin-fg)] hover:bg-[var(--admin-hover)] disabled:text-[var(--admin-subtle)]"
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
