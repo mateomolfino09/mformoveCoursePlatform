@@ -59,7 +59,17 @@ export async function uploadFileToCloudinary(
   };
 }
 
-/** URL de descarga. Si hay public id, fuerza attachment; si no, usa la URL guardada. */
+/** Nombre sin extensión: un punto dentro de fl_attachment invalida la URL de Cloudinary. */
+function attachmentFlag(filename?: string) {
+  const base = (filename || '')
+    .replace(/\.[^.]+$/, '')
+    .replace(/[^\w\- ]+/g, '')
+    .trim()
+    .replace(/\s+/g, '_');
+  return base ? `fl_attachment:${base}` : 'fl_attachment';
+}
+
+/** URL que fuerza la descarga. Conserva la URL de Cloudinary y le agrega fl_attachment. */
 export function cloudinaryAttachmentUrl(input: {
   url?: string;
   publicId?: string;
@@ -68,15 +78,23 @@ export function cloudinaryAttachmentUrl(input: {
 }): string {
   const url = (input.url || '').trim();
   const publicId = (input.publicId || '').trim();
+  const flag = attachmentFlag(input.filename);
+  const marker = '/upload/';
+
+  if (url.includes('res.cloudinary.com') && url.includes(marker) && !url.includes('/fl_attachment')) {
+    const index = url.indexOf(marker);
+    return `${url.slice(0, index + marker.length)}${flag}/${url.slice(index + marker.length)}`;
+  }
+
   if (!publicId) return url;
 
   const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dbeem2avp';
   const resourceType = (input.resourceType || '').trim();
   const type = resourceType === 'raw' || resourceType === 'video' ? resourceType : 'image';
-  const safeName = (input.filename || 'archivo')
-    .replace(/[^\w.\- ]+/g, '')
-    .trim()
-    .replace(/\s+/g, '_');
-  const flag = safeName ? `fl_attachment:${safeName}` : 'fl_attachment';
-  return `https://res.cloudinary.com/${cloud}/${type}/upload/${flag}/v1/${publicId}`;
+  const extension = (input.filename || '').match(/\.([a-z0-9]+)$/i)?.[1]?.toLowerCase();
+  let id = publicId.replace(/^\/+/, '');
+  if (type !== 'raw' && extension && !id.toLowerCase().endsWith(`.${extension}`)) {
+    id = `${id}.${extension}`;
+  }
+  return `https://res.cloudinary.com/${cloud}/${type}/upload/${flag}/${id}`;
 }

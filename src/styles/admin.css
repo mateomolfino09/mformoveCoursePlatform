@@ -520,8 +520,9 @@ html[data-admin-active][data-admin-theme='dark'] {
   background: #3a3a34;
 }
 
+/* Modo oscuro del admin: superficies y texto. Vale para todos los formularios del panel. */
 [data-admin-shell][data-admin-theme='dark'] .bg-white:not(input):not(textarea):not(select):not(button):not(a):not(label),
-[data-admin-shell][data-admin-theme='dark'] .bg-[#F7F7F7],
+[data-admin-shell][data-admin-theme='dark'] .bg-\[\#F7F7F7\],
 [data-admin-shell][data-admin-theme='dark'] .bg-gray-50,
 [data-admin-shell][data-admin-theme='dark'] .bg-gray-100 {
   background-color: var(--admin-surface) !important;
@@ -529,16 +530,20 @@ html[data-admin-active][data-admin-theme='dark'] {
 
 [data-admin-shell][data-admin-theme='dark'] .text-gray-900:not(input):not(textarea):not(select):not(button):not(a),
 [data-admin-shell][data-admin-theme='dark'] .text-gray-800:not(input):not(textarea):not(select):not(button):not(a),
-[data-admin-shell][data-admin-theme='dark'] .text-[#1A1A1A],
-[data-admin-shell][data-admin-theme='dark'] .text-[#222] {
+[data-admin-shell][data-admin-theme='dark'] .text-\[\#1A1A1A\],
+[data-admin-shell][data-admin-theme='dark'] .text-\[\#222\] {
   color: var(--admin-fg) !important;
 }
 
 [data-admin-shell][data-admin-theme='dark'] .text-gray-700:not(input):not(textarea):not(select):not(button):not(a),
 [data-admin-shell][data-admin-theme='dark'] .text-gray-600:not(input):not(textarea):not(select):not(button):not(a),
 [data-admin-shell][data-admin-theme='dark'] .text-gray-500:not(input):not(textarea):not(select):not(button):not(a),
-[data-admin-shell][data-admin-theme='dark'] .text-[#6B7280] {
+[data-admin-shell][data-admin-theme='dark'] .text-\[\#6B7280\] {
   color: var(--admin-muted) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] .text-black:not(button):not(a):not(input):not(textarea):not(select) {
+  color: var(--admin-fg) !important;
 }
 
 [data-admin-shell][data-admin-theme='dark'] label:not(.admin-choice),
@@ -550,6 +555,13 @@ html[data-admin-active][data-admin-theme='dark'] {
 
 [data-admin-shell][data-admin-theme='dark'] form {
   color: var(--admin-fg);
+}
+
+[data-admin-shell][data-admin-theme='dark'] form.bg-white,
+[data-admin-shell][data-admin-theme='dark'] form.rounded-xl {
+  background-color: var(--admin-surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--admin-border);
 }
 
 [data-admin-shell][data-admin-theme='dark'] input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='range']),
@@ -598,6 +610,153 @@ html[data-admin-active][data-admin-theme='dark'] {
 [data-admin-shell][data-admin-theme='dark'] option {
   background-color: var(--admin-cream);
   color: var(--admin-ink);
+}
+
+/* Enlaces de texto sobre superficie oscura (el remap de text-gray excluye <a>) */
+[data-admin-shell][data-admin-theme='dark'] a.text-gray-900,
+[data-admin-shell][data-admin-theme='dark'] a.text-gray-800,
+[data-admin-shell][data-admin-theme='dark'] a.text-gray-700,
+[data-admin-shell][data-admin-theme='dark'] a.text-blue-600,
+[data-admin-shell][data-admin-theme='dark'] a.text-blue-700,
+[data-admin-shell][data-admin-theme='dark'] a.text-blue-800 {
+  color: var(--admin-fg) !important;
+}
+
+/*
+  Secciones legacy del formulario de producto: pasteles, gradientes y
+  bordes claros quedan ilegibles cuando el texto ya es cream.
+*/
+[data-admin-shell][data-admin-theme='dark'] .bg-white\/40,
+[data-admin-shell][data-admin-theme='dark'] .bg-white\/50,
+[data-admin-shell][data-admin-theme='dark'] .bg-white\/60,
+[data-admin-shell][data-admin-theme='dark'] .bg-white\/70,
+[data-admin-shell][data-admin-theme='dark'] .bg-white\/80,
+[data-admin-shell][data-admin-theme='dark'] .bg-white\/85,
+[data-admin-shell][data-admin-theme='dark'] .bg-white\/90,
+[data-admin-shell][data-admin-theme='dark'] .bg-white\/95,
+[data-admin-shell][data-admin-theme='dark'] .bg-slate-50,
+[data-admin-shell][data-admin-theme='dark'] .bg-slate-100,
+[data-admin-shell][data-admin-theme='dark'] .bg-slate-50\/60,
+[data-admin-shell][data-admin-theme='dark'] .bg-blue-50\/60 {
+  background-color: var(--admin-hover) !important;
+  background-image: none !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] .border-slate-200 {
+  border-color: var(--admin-border) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] input[type='checkbox'],
+[data-admin-shell][data-admin-theme='dark'] input[type='radio'] {
+  accent-color: var(--admin-cream);
+}
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-blue-50'],
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-green-50'],
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-orange-50'],
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-purple-50'],
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-yellow-50'],
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-emerald-50'],
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-blue-100'],
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-green-100'],
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-orange-100'],
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-purple-100'],
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-yellow-100'],
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-emerald-100'],
+[data-admin-shell][data-admin-theme='dark'] [class~='from-blue-50'],
+[data-admin-shell][data-admin-theme='dark'] [class~='from-green-50'],
+[data-admin-shell][data-admin-theme='dark'] [class~='from-orange-50'],
+[data-admin-shell][data-admin-theme='dark'] [class~='from-purple-50'],
+[data-admin-shell][data-admin-theme='dark'] [class~='from-yellow-50'],
+[data-admin-shell][data-admin-theme='dark'] [class~='to-blue-100'],
+[data-admin-shell][data-admin-theme='dark'] [class~='to-green-100'],
+[data-admin-shell][data-admin-theme='dark'] [class~='to-orange-100'],
+[data-admin-shell][data-admin-theme='dark'] [class~='to-purple-100'],
+[data-admin-shell][data-admin-theme='dark'] [class~='to-yellow-100'] {
+  background-color: var(--admin-hover) !important;
+  background-image: none !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-amber-50'],
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-amber-50/40'],
+[data-admin-shell][data-admin-theme='dark'] [class~='from-amber-50'] {
+  background-color: var(--admin-warning-bg) !important;
+  background-image: none !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] [class~='bg-red-50'] {
+  background-color: var(--admin-destructive-bg) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] [class~='border-gray-100']:not(input):not(textarea):not(select),
+[data-admin-shell][data-admin-theme='dark'] [class~='border-gray-200']:not(input):not(textarea):not(select),
+[data-admin-shell][data-admin-theme='dark'] [class~='border-gray-300']:not(input):not(textarea):not(select),
+[data-admin-shell][data-admin-theme='dark'] [class~='border-green-200']:not(input):not(textarea):not(select),
+[data-admin-shell][data-admin-theme='dark'] [class~='border-green-300']:not(input):not(textarea):not(select),
+[data-admin-shell][data-admin-theme='dark'] [class~='border-blue-200']:not(input):not(textarea):not(select),
+[data-admin-shell][data-admin-theme='dark'] [class~='border-blue-300']:not(input):not(textarea):not(select),
+[data-admin-shell][data-admin-theme='dark'] [class~='border-orange-200']:not(input):not(textarea):not(select),
+[data-admin-shell][data-admin-theme='dark'] [class~='border-orange-300']:not(input):not(textarea):not(select),
+[data-admin-shell][data-admin-theme='dark'] [class~='border-purple-200']:not(input):not(textarea):not(select),
+[data-admin-shell][data-admin-theme='dark'] [class~='border-purple-300']:not(input):not(textarea):not(select),
+[data-admin-shell][data-admin-theme='dark'] [class~='border-amber-100']:not(input):not(textarea):not(select),
+[data-admin-shell][data-admin-theme='dark'] [class~='border-amber-200']:not(input):not(textarea):not(select),
+[data-admin-shell][data-admin-theme='dark'] [class~='border-amber-200/80']:not(input):not(textarea):not(select) {
+  border-color: var(--admin-border) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] .text-blue-600,
+[data-admin-shell][data-admin-theme='dark'] .text-blue-700,
+[data-admin-shell][data-admin-theme='dark'] .text-blue-800,
+[data-admin-shell][data-admin-theme='dark'] .text-purple-600,
+[data-admin-shell][data-admin-theme='dark'] .text-purple-700,
+[data-admin-shell][data-admin-theme='dark'] .text-orange-600,
+[data-admin-shell][data-admin-theme='dark'] .text-yellow-600,
+[data-admin-shell][data-admin-theme='dark'] .text-yellow-700 {
+  color: var(--admin-fg) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] .text-green-600,
+[data-admin-shell][data-admin-theme='dark'] .text-green-700,
+[data-admin-shell][data-admin-theme='dark'] .text-green-800 {
+  color: var(--admin-success) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] .text-amber-800,
+[data-admin-shell][data-admin-theme='dark'] .text-amber-900 {
+  color: var(--admin-warning) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] .hover\:bg-gray-50:hover,
+[data-admin-shell][data-admin-theme='dark'] .hover\:bg-gray-100:hover,
+[data-admin-shell][data-admin-theme='dark'] .hover\:bg-blue-50:hover,
+[data-admin-shell][data-admin-theme='dark'] .hover\:bg-green-50:hover,
+[data-admin-shell][data-admin-theme='dark'] .hover\:bg-orange-50:hover,
+[data-admin-shell][data-admin-theme='dark'] .hover\:bg-purple-50:hover,
+[data-admin-shell][data-admin-theme='dark'] .hover\:bg-red-50:hover {
+  background-color: var(--admin-selected) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] input[type='file'] {
+  color: var(--admin-input-fg) !important;
+  background-color: var(--admin-input-bg) !important;
+  border: 1px solid var(--admin-input-border) !important;
+}
+
+[data-admin-shell][data-admin-theme='dark'] input[type='file']::file-selector-button {
+  background-color: var(--admin-ink);
+  color: var(--admin-cream);
+  border: 0;
+  border-radius: 9999px;
+}
+
+[data-admin-shell][data-admin-theme='dark'] button.bg-green-500,
+[data-admin-shell][data-admin-theme='dark'] button.bg-blue-500,
+[data-admin-shell][data-admin-theme='dark'] button.bg-blue-600,
+[data-admin-shell][data-admin-theme='dark'] button.bg-purple-600,
+[data-admin-shell][data-admin-theme='dark'] button.bg-\[\#234C8C\] {
+  background-color: var(--admin-cream) !important;
+  background-image: none !important;
+  color: var(--admin-ink) !important;
 }
 
 /* Botones claros / primarios: cream + texto negro */

@@ -4,6 +4,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
 import { clearData } from '../../../redux/features/filterClass';
 import requests from '../../../utils/requests';
+import { uploadFileToCloudinary } from '../../../lib/cloudinaryFiles';
 import AdmimDashboardLayout from '../../AdmimDashboardLayout';
 import { LoadingSpinner } from '../../LoadingSpinner';
 import CreateProductStep2 from './CreateProductStep2';
@@ -134,7 +135,9 @@ const CreateProduct = () => {
     cursoConfig?: import('../../../types/cursoLanding').CursoLandingConfig,
     invitacionGrupoWhatsapp?: string,
     bioImageFile?: File | null,
-    esSuscripcion?: boolean
+    esSuscripcion?: boolean,
+    archivo?: File | null,
+    tipoArchivo?: string
   ) {
     setLoading(true);
 
@@ -198,11 +201,8 @@ const CreateProduct = () => {
     if (galleryImageArray && galleryImageArray.length > 0) {
       galleryImageArray.forEach((img: any) => totalSize += img.size);
     }
-    if (pdfPresentacion) {
-      totalSize += pdfPresentacion.size;
-    }
-    
-    // Verificar que el total no exceda 15MB (para acomodar PDFs de hasta 10MB)
+
+    // El PDF y el archivo de recurso se suben aparte a Cloudinary, no van en este total.
     if (totalSize / 1000000 > 15) {
       toast.error('El tamaño total de todos los archivos excede 15MB. Por favor, reduce el tamaño de los archivos.');
       setLoading(false);
@@ -366,31 +366,29 @@ const CreateProduct = () => {
 
 
 
-      // Subir PDF a Cloudinary si existe (antes de crear el producto)
-      let pdfPresentacionUrl = undefined;
       if ((productType === 'evento' || productType === 'programa_transformacional') && pdfPresentacion) {
-        const pdfFormData = new FormData();
-        pdfFormData.append('file', pdfPresentacion);
-        pdfFormData.append('upload_preset', 'my_uploads');
-        
         try {
-          const pdfResponse = await fetch(requests.fetchCloudinary, {
-            method: 'POST',
-            body: pdfFormData
-          });
-          const pdfData = await pdfResponse.json();
-          pdfPresentacionUrl = pdfData.public_id;
+          const uploaded = await uploadFileToCloudinary(pdfPresentacion, 'productos/pdfPresentacion');
+          productData.pdfPresentacionUrl = uploaded.url;
         } catch (pdfError) {
-          console.error('❌ Error subiendo PDF:', pdfError);
-          toast.error('Error al subir el PDF. Intenta con un archivo más pequeño.');
+          toast.error(pdfError instanceof Error ? pdfError.message : 'No se pudo subir el PDF');
           setLoading(false);
           return;
         }
       }
 
-      // Agregar la URL del PDF a los datos del producto
-      if (pdfPresentacionUrl) {
-        productData.pdfPresentacionUrl = pdfPresentacionUrl;
+      if (productType === 'recurso' && archivo) {
+        try {
+          const uploaded = await uploadFileToCloudinary(archivo, 'productos/recursos');
+          productData.archivo = uploaded.url;
+          productData.tipoArchivo = tipoArchivo || 'pdf';
+        } catch (fileError) {
+          toast.error(fileError instanceof Error ? fileError.message : 'No se pudo subir el archivo');
+          setLoading(false);
+          return;
+        }
+      } else if (productType === 'recurso') {
+        productData.tipoArchivo = tipoArchivo || 'pdf';
       }
 
       // Ahora enviar solo los datos JSON (sin archivos)

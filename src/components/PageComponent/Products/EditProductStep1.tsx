@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import { RxCrossCircled } from 'react-icons/rx';
+import { DocumentIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import { toast } from '../../../hooks/useToast';
 import { ProductDB } from '../../../../typings';
 import { CldImage } from 'next-cloudinary';
@@ -212,7 +213,16 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
   });
 
   const { getRootProps: getRootPropsPdfPresentacion, getInputProps: getInputPropsPdfPresentacion, isDragActive: isDragActivePdfPresentacion } = useDropzone({
-    onDrop: (acceptedFiles) => setPdfPresentacion(acceptedFiles[0]),
+    onDrop: (acceptedFiles) => {
+      const file = acceptedFiles[0];
+      if (!file) return;
+      const fileSizeMB = file.size / (1024 * 1024);
+      if (fileSizeMB > 10) {
+        toast.error(`El PDF es demasiado grande (${fileSizeMB.toFixed(1)}MB). Máximo 10MB.`);
+        return;
+      }
+      setPdfPresentacion(file);
+    },
     accept: { 'application/pdf': ['.pdf'] },
     multiple: false
   });
@@ -522,7 +532,7 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
       }
     }
     if (tipo === 'recurso') {
-      if (!archivo) {
+      if (!archivo && !product.archivoUrl) {
         toast.error('Debes subir un archivo para el recurso');
         return;
       }
@@ -623,7 +633,9 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
       tipo === 'curso' ? cursoConfig : undefined,
       invitacionGrupoResuelta || undefined,
       bioImageFile ?? undefined,
-      tipo === 'curso' ? esSuscripcion : undefined
+      tipo === 'curso' ? esSuscripcion : undefined,
+      tipo === 'recurso' ? archivo : undefined,
+      tipo === 'recurso' ? tipoArchivo : undefined
     );
   };
 
@@ -784,6 +796,46 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
               </div>
             </div>
           </div>
+
+          {tipo === 'recurso' && (
+            <div className='border-b border-gray-200 pb-6 space-y-4'>
+              <h2 className='text-xl font-semibold text-gray-900'>Archivo del recurso</h2>
+              <label className='flex flex-col space-y-2'>
+                <p className='text-sm font-medium text-gray-700'>Archivo</p>
+                <div
+                  {...getRootPropsArchivo()}
+                  className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white p-6 ${
+                    isDragActiveArchivo ? 'border-gray-900' : 'border-gray-300'
+                  }`}
+                >
+                  <input {...getInputPropsArchivo()} className='text-gray-900 bg-white' />
+                  <ArrowUpTrayIcon className='mb-2 h-8 w-8 text-gray-400' />
+                  <span className='text-center text-sm text-gray-900'>Arrastrá el archivo o hacé click para subirlo</span>
+                  <span className='text-center text-xs text-gray-500'>PDF, video, audio o ZIP</span>
+                  {archivo ? (
+                    <span className='mt-3 text-sm font-medium text-gray-900'>{archivo.name}</span>
+                  ) : product.archivoUrl ? (
+                    <a href={product.archivoUrl} target='_blank' rel='noreferrer' className='mt-3 text-sm font-medium text-gray-900 underline'>
+                      Ver archivo actual
+                    </a>
+                  ) : null}
+                </div>
+              </label>
+              <label className='flex flex-col space-y-2'>
+                <p className='text-sm font-medium text-gray-700'>Tipo de archivo</p>
+                <select
+                  className='input border-gray-300 bg-white text-gray-900 focus:border-gray-900 focus:ring-gray-900'
+                  value={tipoArchivo}
+                  onChange={e => setTipoArchivo(e.target.value)}
+                >
+                  <option value='pdf'>PDF</option>
+                  <option value='video'>Video</option>
+                  <option value='audio'>Audio</option>
+                  <option value='zip'>ZIP</option>
+                </select>
+              </label>
+            </div>
+          )}
 
           <ProductImageFields
             existingPortada={product.portada}
@@ -1037,6 +1089,35 @@ const EditProductStep1 = ({ handleSubmit, product }: Props) => {
                     </div>
                   )}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {(tipo === 'evento' || tipo === 'programa_transformacional') && (
+            <div className='border-b border-gray-200 pb-6'>
+              <h2 className='mb-4 text-xl font-semibold text-gray-900'>PDF de presentación</h2>
+              <div
+                {...getRootPropsPdfPresentacion()}
+                className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white p-6 ${
+                  isDragActivePdfPresentacion ? 'border-gray-900' : 'border-gray-300'
+                }`}
+              >
+                <input {...getInputPropsPdfPresentacion()} className='text-gray-900 bg-white' />
+                <DocumentIcon className='mb-2 h-8 w-8 text-gray-400' />
+                <span className='text-center text-sm text-gray-900'>Arrastrá el PDF o hacé click para subirlo</span>
+                <span className='text-center text-xs text-gray-500'>Solo PDF, hasta 10MB</span>
+                {pdfPresentacion ? (
+                  <span className='mt-3 text-sm font-medium text-gray-900'>{pdfPresentacion.name}</span>
+                ) : product.pdfPresentacionUrl ? (
+                  <a
+                    href={product.pdfPresentacionUrl}
+                    target='_blank'
+                    rel='noreferrer'
+                    className='mt-3 text-sm font-medium text-gray-900 underline'
+                  >
+                    Ver PDF actual
+                  </a>
+                ) : null}
               </div>
             </div>
           )}
