@@ -21,19 +21,24 @@ connectDB();
 
 // Función auxiliar para subir archivos a Cloudinary
 async function uploadToCloudinary(file, folder = 'productos') {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', 'my_uploads');
-  formData.append('folder', folder);
-  
-  const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`;
-  
-  const res = await fetch(cloudinaryUrl, {
-    method: 'POST',
-    body: formData,
-  });
-  const data = await res.json();
-  return data.secure_url;
+  const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const name = String(file?.name || '').toLowerCase();
+  const isPdf = file?.type === 'application/pdf' || name.endsWith('.pdf');
+  const resources = isPdf ? ['raw', 'auto', 'image'] : ['image', 'auto', 'raw'];
+  let last = {};
+  for (const resource of resources) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'my_uploads');
+    formData.append('folder', folder);
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloud}/${resource}/upload`,
+      { method: 'POST', body: formData }
+    );
+    last = await res.json();
+    if (last?.secure_url) return last.secure_url;
+  }
+  throw new Error(last?.error?.message || 'No se pudo subir el archivo');
 }
 
 export async function POST(req) {
@@ -283,7 +288,10 @@ export async function POST(req) {
         portada: data.portada,
         portadaMobile: data.portadaMobile,
         imagenBio: data.imagenBio || undefined,
-        pdfPresentacionUrl: tipo === 'evento' ? (pdfPresentacionUrl || data.pdfPresentacionUrl) : undefined,
+        pdfPresentacionUrl:
+          tipo === 'evento' || tipo === 'programa_transformacional'
+            ? pdfPresentacionUrl || data.pdfPresentacionUrl
+            : undefined,
         cursosIncluidos: tipo === 'bundle' ? cursosIncluidos : undefined,
         fecha: tipo === 'evento' ? fecha : undefined,
         ubicacion: tipo === 'evento' ? ubicacion : undefined,
@@ -365,7 +373,10 @@ export async function POST(req) {
         portada: data.portada,
         portadaMobile: data.portadaMobile,
         imagenBio: data.imagenBio || undefined,
-        pdfPresentacionUrl: tipo === 'evento' ? (pdfPresentacionUrl || data.pdfPresentacionUrl) : undefined,
+        pdfPresentacionUrl:
+          tipo === 'evento' || tipo === 'programa_transformacional'
+            ? pdfPresentacionUrl || data.pdfPresentacionUrl
+            : undefined,
         cursosIncluidos: tipo === 'bundle' ? cursosIncluidos : undefined,
         fecha: tipo === 'evento' ? fecha : undefined,
         ubicacion: tipo === 'evento' ? ubicacion : undefined,

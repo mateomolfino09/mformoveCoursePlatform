@@ -3,6 +3,7 @@
 import { useAuth } from '../../../hooks/useAuth';
 import { useAppDispatch } from '../../../hooks/useTypeSelector';
 import requests from '../../../utils/requests';
+import { uploadFileToCloudinary } from '../../../lib/cloudinaryFiles';
 import AdmimDashboardLayout from '../../AdmimDashboardLayout';
 import { LoadingSpinner } from '../../LoadingSpinner';
 import EditProductStep1 from './EditProductStep1';
@@ -70,7 +71,9 @@ const EditProduct = ({ product }: Props) => {
     cursoConfig?: import('../../../types/cursoLanding').CursoLandingConfig,
     invitacionGrupoWhatsapp?: string,
     bioImageFile?: File | null,
-    esSuscripcion?: boolean
+    esSuscripcion?: boolean,
+    archivo?: File | null,
+    tipoArchivo?: string
   ) {
     setLoading(true);
 
@@ -243,27 +246,20 @@ const EditProduct = ({ product }: Props) => {
         ...(descuentoObj && { descuento: descuentoObj })
       };
 
-      // Debug: ver qué datos se envían (solo para eventos)
-      if (productType === 'evento') {
-        
+      if ((productType === 'evento' || productType === 'programa_transformacional') && pdfPresentacion) {
+        const uploaded = await uploadFileToCloudinary(pdfPresentacion, 'productos/pdfPresentacion');
+        productData.pdfPresentacionUrl = uploaded.url;
       }
 
-      let response;
-      if (productType === 'evento' && pdfPresentacion) {
-        // Usar FormData para enviar archivos
-        const formData = new FormData();
-        formData.append('data', JSON.stringify(productData));
-        formData.append('pdfPresentacion', pdfPresentacion);
-        
-        response = await axios.put('/api/product/updateProduct', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-      } else {
-        // Usar JSON para datos sin archivos
-        response = await axios.put('/api/product/updateProduct', productData, config);
+      if (productType === 'recurso') {
+        if (archivo) {
+          const uploaded = await uploadFileToCloudinary(archivo, 'productos/recursos');
+          productData.archivoUrl = uploaded.url;
+        }
+        productData.tipoArchivo = tipoArchivo || product.tipoArchivo || 'pdf';
       }
+
+      const response = await axios.put('/api/product/updateProduct', productData, config);
 
       const { data } = response;
 

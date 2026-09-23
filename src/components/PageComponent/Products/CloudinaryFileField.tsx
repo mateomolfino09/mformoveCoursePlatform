@@ -1,10 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import { uploadFileToCloudinary, type CloudinaryUploadedFile } from '../../../lib/cloudinaryFiles';
-
-const inputClass =
-  'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900';
 
 type Props = {
   label: string;
@@ -17,25 +16,47 @@ type Props = {
   onClear: () => void;
 };
 
+function dropzoneAccept(accept: string) {
+  const map: Record<string, string[]> = {};
+  for (const part of accept.split(',').map((item) => item.trim()).filter(Boolean)) {
+    if (part.startsWith('.')) {
+      const mime =
+        part === '.pdf'
+          ? 'application/pdf'
+          : part === '.zip'
+            ? 'application/zip'
+            : part === '.doc'
+              ? 'application/msword'
+              : part === '.docx'
+                ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                : 'application/octet-stream';
+      map[mime] = [...(map[mime] || []), part];
+    } else {
+      map[part] = map[part] || [];
+    }
+  }
+  return map;
+}
+
 export default function CloudinaryFileField({
   label,
   url,
   filename,
   accept = 'application/pdf,.pdf',
-  placeholder = 'https://…/archivo.pdf',
   onUploaded,
-  onUrlChange,
   onClear,
 }: Props) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const [localName, setLocalName] = useState('');
 
-  const onFile = async (file: File | undefined) => {
+  const upload = async (file: File | undefined) => {
     if (!file) return;
     setError('');
     setUploading(true);
     try {
       const uploaded = await uploadFileToCloudinary(file);
+      setLocalName(uploaded.filename || file.name);
       onUploaded(uploaded);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No se pudo subir el archivo');
@@ -44,34 +65,44 @@ export default function CloudinaryFileField({
     }
   };
 
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    multiple: false,
+    disabled: uploading,
+    accept: dropzoneAccept(accept),
+    onDrop: (files) => {
+      void upload(files[0]);
+    },
+  });
+
+  const shownName = localName || filename || '';
+
   return (
     <div className="space-y-2">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">{label}</p>
-      <input
-        type="file"
-        accept={accept}
-        disabled={uploading}
-        className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 file:mr-3 file:rounded-full file:border-0 file:bg-gray-900 file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-wide file:text-white"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          e.target.value = '';
-          void onFile(file);
-        }}
-      />
-      <input
-        className={inputClass}
-        value={url}
-        onChange={(e) => onUrlChange(e.target.value)}
-        placeholder={placeholder}
-      />
-      {filename ? <p className="text-xs text-gray-600">{filename}</p> : null}
-      {uploading ? <p className="text-xs text-gray-500">Subiendo a Cloudinary…</p> : null}
-      {error ? <p className="text-xs text-red-600">{error}</p> : null}
+      <div
+        {...getRootProps()}
+        className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed bg-[var(--admin-input-bg)] px-4 py-6 text-center text-[var(--admin-input-fg)] ${
+          isDragActive ? 'border-[var(--admin-fg)]' : 'border-[var(--admin-input-border)]'
+        } ${uploading ? 'pointer-events-none opacity-60' : ''}`}
+      >
+        <input {...getInputProps()} className="bg-white text-gray-900" />
+        <ArrowUpTrayIcon className="h-6 w-6" />
+        <span className="text-sm font-medium">
+          {uploading ? 'Subiendo…' : isDragActive ? 'Soltá el archivo' : 'Arrastrá el archivo o hacé click'}
+        </span>
+        <span className="text-xs opacity-70">Se sube a Cloudinary al soltarlo</span>
+      </div>
       {url ? (
-        <button type="button" onClick={onClear} className="text-sm font-medium text-red-600 hover:text-red-700">
-          Quitar archivo
-        </button>
+        <div className="flex flex-wrap items-center gap-3 text-sm">
+          <a href={url} target="_blank" rel="noreferrer" className="font-medium text-gray-900 underline">
+            {shownName || 'Ver archivo'}
+          </a>
+          <button type="button" onClick={onClear} className="font-medium text-red-600 hover:text-red-700">
+            Quitar
+          </button>
+        </div>
       ) : null}
+      {error ? <p className="text-xs text-red-600">{error}</p> : null}
     </div>
   );
 }

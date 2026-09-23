@@ -6,7 +6,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ProductDB } from '../../../../typings';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Cookies from 'js-cookie';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next13-progressbar';
 import { useAuth } from '../../../hooks/useAuth';
 import DeleteProduct from './DeleteProduct';
 import { toast } from '../../../hooks/useToast';
@@ -56,6 +57,7 @@ const AllProducts = ({ products }: Props) => {
     const [infoProduct, setInfoProduct] = useState<ProductDB | null>(null);
     const [isOpenInfo, setIsOpenInfo] = useState(false);
     const [highlightedProductId, setHighlightedProductId] = useState<string | null>(null);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const rowRefs = useRef<Record<string, HTMLTableRowElement | null>>({});
     const hasFocusedCreatedProduct = useRef(false);
 
@@ -116,7 +118,10 @@ const AllProducts = ({ products }: Props) => {
       }
     
       function openEdit(product: ProductDB) {
-        router.push(`/admin/productos/editar-producto/${product._id}`);
+        const id = product._id?.toString();
+        if (!id || editingId) return;
+        setEditingId(id);
+        router.push(`/admin/productos/editar-producto/${id}`);
       }
 
     // Función para abrir el modal informativo
@@ -225,10 +230,16 @@ const AllProducts = ({ products }: Props) => {
                             <button
                               type="button"
                               onClick={() => openEdit(product)}
-                              className="rounded-[var(--admin-radius)] p-1.5 text-[var(--admin-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-fg)]"
+                              disabled={Boolean(editingId)}
+                              className="rounded-[var(--admin-radius)] p-1.5 text-[var(--admin-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-fg)] disabled:cursor-wait disabled:opacity-80"
                               aria-label="Editar producto"
+                              aria-busy={editingId === productId}
                             >
-                              <PencilIcon className="h-4 w-4" />
+                              {editingId === productId ? (
+                                <span className="block h-4 w-4 animate-spin rounded-full border-2 border-[var(--admin-border)] border-t-[var(--admin-fg)]" />
+                              ) : (
+                                <PencilIcon className="h-4 w-4" />
+                              )}
                             </button>
                             <button
                               type="button"

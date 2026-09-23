@@ -45,11 +45,12 @@ type Props = {
 };
 
 const inputClass =
-  'input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors w-full text-palette-cream placeholder:text-palette-cream/50';
+  'input w-full border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:border-gray-900 focus:ring-gray-900 transition-colors';
 const textareaClass =
-  'input border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors w-full min-h-[88px] text-palette-cream placeholder:text-palette-cream/50';
+  'input w-full min-h-[88px] border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:border-gray-900 focus:ring-gray-900 transition-colors';
 const labelClass = 'text-sm font-medium text-gray-700';
-const sectionClass = 'border border-gray-200 rounded-xl p-5 space-y-4 bg-white/70';
+const sectionClass =
+  'space-y-4 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-hover)] p-5';
 const addButtonClass =
   'rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50';
 const dangerButtonClass = 'text-sm font-medium text-red-600 hover:text-red-700';
@@ -1053,9 +1054,9 @@ export default function CursoLandingConfigForm({ value, onChange, productName }:
             {value.contenidoModulos.map((modulo, moduloIndex) => (
               <motion.div
                 key={`contenido-mod-${modulo.timelineIndex}`}
-                className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 space-y-4"
+                className="space-y-4 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-selected)] p-4"
               >
-                <p className="text-sm font-semibold text-palette-cream">Módulo {moduloIndex + 1}</p>
+                <p className="text-sm font-semibold text-gray-900">Módulo {moduloIndex + 1}</p>
                 <Field label="Título del módulo">
                   <input
                     className={inputClass}

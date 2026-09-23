@@ -11,6 +11,7 @@ import Footer from '../../Footer';
 import { useAppDispatch } from '../../../redux/hooks';
 import { toggleScroll } from '../../../redux/features/headerLibrarySlice';
 import { cursoBibliotecaPath, cursoClasePath } from '../../../lib/cursoPaths';
+import { cloudinaryAttachmentUrl } from '../../../lib/cloudinaryFiles';
 import {
   resolveCloudinaryOrHttpUrl,
   resolveCourseClassThumbnailUrl,
@@ -59,6 +60,10 @@ export type CourseHubClass = {
   level?: number;
   materials?: string[];
   order?: number;
+  pdfUrl?: string;
+  pdfNombre?: string;
+  pdfPublicId?: string;
+  pdfResourceType?: string;
 };
 
 export type CourseHubModulo = {
@@ -189,34 +194,58 @@ export default function CourseContentHubView({ data }: Props) {
       videoId: clase.videoId,
       videoUrl: clase.videoUrl,
     });
+    const pdfHref =
+      clase.pdfUrl?.trim() || clase.pdfPublicId?.trim()
+        ? cloudinaryAttachmentUrl({
+            url: clase.pdfUrl,
+            publicId: clase.pdfPublicId,
+            resourceType: clase.pdfResourceType,
+            filename: clase.pdfNombre || 'material.pdf',
+          })
+        : '';
     return (
-      <Link
-        href={cursoClasePath(slug, clase._id, moduloIndex)}
-        className="group block relative w-full aspect-video overflow-hidden rounded-md bg-palette-ink border border-palette-stone/20 transition-colors hover:border-palette-stone/45"
-      >
-        <div className="absolute inset-0 overflow-hidden">
-          {thumb ? (
-            <img
-              src={thumb}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-90"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-palette-ink" />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        </div>
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-palette-cream/95">
-            <PlayIcon className="ml-0.5 h-4 w-4 text-palette-ink" />
+      <div className="relative aspect-video overflow-hidden rounded-md border border-palette-stone/20 bg-palette-ink transition-colors hover:border-palette-stone/45">
+        <Link
+          href={cursoClasePath(slug, clase._id, moduloIndex)}
+          className="group absolute inset-0 block"
+          aria-label={clase.name}
+        >
+          <div className="absolute inset-0 overflow-hidden">
+            {thumb ? (
+              <img
+                src={thumb}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-90"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-palette-ink" />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
           </div>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 p-3 text-left">
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-palette-cream/95">
+              <PlayIcon className="ml-0.5 h-4 w-4 text-palette-ink" />
+            </div>
+          </div>
+        </Link>
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-10 p-3 text-left">
           <p className="line-clamp-2 text-[12px] font-medium leading-snug text-palette-cream">
             {clase.name}
           </p>
         </div>
-      </Link>
+        {pdfHref ? (
+          <a
+            href={pdfHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+            aria-label="Descargar PDF de la clase"
+            className="absolute -right-7 top-2.5 z-20 w-24 rotate-45 bg-palette-ink py-[2px] text-center text-[8px] font-semibold uppercase tracking-[0.16em] text-palette-cream shadow-[0_1px_2px_rgba(0,0,0,0.28)] transition-colors hover:bg-palette-ink/90"
+          >
+            PDF
+          </a>
+        ) : null}
+      </div>
     );
   }
 

@@ -384,7 +384,9 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
       tipo === 'curso' ? cursoConfig : undefined,
       invitacionGrupoResuelta || undefined,
       bioImageFile ?? undefined,
-      tipo === 'curso' ? esSuscripcion : undefined
+      tipo === 'curso' ? esSuscripcion : undefined,
+      tipo === 'recurso' ? archivo : undefined,
+      tipo === 'recurso' ? tipoArchivo : undefined
     );
   };
 
@@ -489,7 +491,12 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     isDragActive: isDragActiveArchivo,
   } = useDropzone({
     onDrop: onDropArchivo,
-    accept: { 'application/pdf': [], 'video/*': [], 'audio/*': [], 'application/zip': [] },
+    accept: {
+      'application/pdf': ['.pdf'],
+      'video/*': ['.mp4', '.mov', '.webm'],
+      'audio/*': ['.mp3', '.wav', '.m4a'],
+      'application/zip': ['.zip'],
+    },
     multiple: false,
   });
 
@@ -511,7 +518,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
     isDragActive: isDragActivePdfPresentacion,
   } = useDropzone({
     onDrop: onDropPdfPresentacion,
-    accept: { 'application/pdf': [] },
+    accept: { 'application/pdf': ['.pdf'] },
     multiple: false,
   });
 
@@ -906,7 +913,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                          : 'border-gray-300 bg-gray-50 hover:border-orange-400 hover:bg-orange-50'
                      }`}
                    >
-                     <input {...getInputPropsArchivo()} />
+                     <input {...getInputPropsArchivo()} className='bg-white text-gray-900' />
                      <ArrowUpTrayIcon className='w-8 h-8 text-gray-400 mb-2' />
                      <span className='text-gray-600 text-sm text-center mb-1'>Arrastra el archivo aquí o haz click</span>
                      <span className='text-xs text-gray-500 text-center'>Formatos: PDF, video, audio, ZIP</span>
@@ -921,9 +928,9 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                  
                  <label className='flex flex-col space-y-2'>
                    <p className='text-sm font-medium text-gray-700'>Tipo de archivo</p>
-                   <select 
-                     className='input border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-colors' 
-                     value={tipoArchivo} 
+                   <select
+                     className='input border-gray-300 bg-white text-gray-900 focus:border-gray-900 focus:ring-gray-900 transition-colors'
+                     value={tipoArchivo}
                      onChange={e => setTipoArchivo(e.target.value)}
                    >
                      <option value='pdf'>PDF</option>
@@ -975,7 +982,7 @@ const CreateProductStep1 = ({ handleSubmit }: Props) => {
                         : 'border-gray-300 bg-gray-50 hover:border-purple-400 hover:bg-purple-50'
                     }`}
                   >
-                    <input {...getInputPropsPdfPresentacion()} />
+                    <input {...getInputPropsPdfPresentacion()} className='bg-white text-gray-900' />
                     <DocumentIcon className='mb-2 h-8 w-8 text-gray-400' />
                     <span className='mb-1 text-center text-sm text-gray-600'>
                       Arrastra el PDF aquí o haz click
