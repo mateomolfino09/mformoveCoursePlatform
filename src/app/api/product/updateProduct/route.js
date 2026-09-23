@@ -14,19 +14,24 @@ connectDB();
 
 // Función auxiliar para subir archivos a Cloudinary
 async function uploadToCloudinary(file, folder = 'productos') {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', 'my_uploads');
-  formData.append('folder', folder);
-  
-  const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`;
-  
-  const res = await fetch(cloudinaryUrl, {
-    method: 'POST',
-    body: formData,
-  });
-  const data = await res.json();
-  return data.secure_url;
+  const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const name = String(file?.name || '').toLowerCase();
+  const isPdf = file?.type === 'application/pdf' || name.endsWith('.pdf');
+  const resources = isPdf ? ['raw', 'auto', 'image'] : ['image', 'auto', 'raw'];
+  let last = {};
+  for (const resource of resources) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'my_uploads');
+    formData.append('folder', folder);
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloud}/${resource}/upload`,
+      { method: 'POST', body: formData }
+    );
+    last = await res.json();
+    if (last?.secure_url) return last.secure_url;
+  }
+  throw new Error(last?.error?.message || 'No se pudo subir el archivo');
 }
 
 export async function PUT(req) {
@@ -229,7 +234,11 @@ export async function PUT(req) {
       }
 
       // Subir PDF de presentación si viene en FormData
-      if (tipo === 'evento' && pdfPresentacion && pdfPresentacion instanceof File) {
+      if (
+        (tipo === 'evento' || tipo === 'programa_transformacional') &&
+        pdfPresentacion &&
+        pdfPresentacion instanceof File
+      ) {
         pdfPresentacionUrl = await uploadToCloudinary(pdfPresentacion, 'productos/pdfPresentacion');
       }
 
@@ -379,7 +388,10 @@ export async function PUT(req) {
         portadaMobile,
         imagenBio:
           imagenBio !== undefined ? imagenBio : existingProduct.imagenBio,
-        pdfPresentacionUrl: tipo === 'evento' ? (pdfPresentacionUrl || existingProduct.pdfPresentacionUrl) : undefined,
+        pdfPresentacionUrl:
+          tipo === 'evento' || tipo === 'programa_transformacional'
+            ? pdfPresentacionUrl || data.pdfPresentacionUrl || existingProduct.pdfPresentacionUrl
+            : existingProduct.pdfPresentacionUrl,
         precios: tipo === 'evento' ? preciosConLinks : undefined,
         fecha: tipo === 'evento' ? fecha : undefined,
         ubicacion: tipo === 'evento' ? ubicacion : undefined,
@@ -389,8 +401,8 @@ export async function PUT(req) {
         beneficios: tipo === 'evento' ? (beneficios || []) : undefined,
         aprendizajes: tipo === 'evento' ? (aprendizajes || []) : undefined,
         paraQuien: tipo === 'evento' ? (paraQuien || []) : undefined,
-        archivoUrl: tipo === 'recurso' ? archivoUrl : undefined,
-        tipoArchivo: tipo === 'recurso' ? tipoArchivo : undefined,
+        archivoUrl: tipo === 'recurso' ? archivoUrl || existingProduct.archivoUrl : existingProduct.archivoUrl,
+        tipoArchivo: tipo === 'recurso' ? tipoArchivo || existingProduct.tipoArchivo : existingProduct.tipoArchivo,
         descuento: descuento ? {
           ...descuento,
           stripeCouponId,
