@@ -174,8 +174,8 @@ const Course = ({ plans = [], promociones = [], checkoutPlans = [] }: CourseProp
         {/* 3.5. Lo que enseñamos - Disciplinas (fotos de Index) */}
         <CourseWhatWeTeach />
 
-        {/* 5. Llamada de consulta — antes de planes cuando el camino es agendar */}
-        {ventaPorLlamada ? <CourseScheduleCall /> : null}
+        {/* 5. Llamada de consulta — en Cuerpo Autónomo siempre; en otros cursos, si venden por llamada */}
+        {ventaPorLlamada || slug === 'cuerpo-autonomo' ? <CourseScheduleCall /> : null}
 
         {/* 6. Plans - Planes y qué incluye (ya no muestra precio si el curso vende por llamada) */}
         <CoursePlans plans={plans} promociones={promociones} checkoutPlans={checkoutPlans} />

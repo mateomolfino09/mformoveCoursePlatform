@@ -7,7 +7,6 @@ import CourseDarkSectionBackground from './CourseDarkSectionBackground';
 import {
   landingCtaInvertedCompact,
   landingCardBodyDark,
-  landingSectionContainer,
   landingSectionTitleDark,
 } from '../../../constants/landingSectionDesign';
 import { resolveCloudinaryOrHttpUrl } from '../../../lib/resolveMediaImageUrl';
@@ -55,14 +54,27 @@ const itemVariants = {
   },
 };
 
-export default function CourseScheduleCall() {
+type CourseScheduleCallProps = {
+  /** Título de la sección. En la landing queda el copy original. */
+  title?: string;
+  /** Línea bajo el título, por ejemplo en el checkout. */
+  subtitle?: string;
+  /** El eyebrow ya dice «¿Todavía tenés dudas?»; ocultarlo si el título lo repite. */
+  showEyebrow?: boolean;
+};
+
+export default function CourseScheduleCall({
+  title = 'Hablemos antes de que decidas',
+  subtitle,
+  showEyebrow = true,
+}: CourseScheduleCallProps = {}) {
   const reduceMotion = useReducedMotion();
   const { productName } = useCursoLanding();
   const hostPhoto = resolveHostPhoto(CURSO_SALES_CALL_HOST.imageSrc);
 
   return (
     <section
-      className="relative isolate overflow-hidden border-t border-palette-stone/30 bg-palette-ink py-16 font-montserrat md:py-20"
+      className="relative isolate overflow-hidden border-t border-palette-stone/30 bg-palette-ink py-0 font-montserrat md:py-20"
       aria-labelledby="course-schedule-call-heading"
     >
       <CourseDarkSectionBackground />
@@ -89,13 +101,13 @@ export default function CourseScheduleCall() {
         />
       </div>
 
-      <div className={`relative z-10 ${landingSectionContainer}`}>
+      <div className="relative z-10 w-full md:mx-auto md:w-[92%] md:max-w-6xl md:px-4">
         <motion.div
           initial={{ opacity: 0, y: 24, scale: 0.98 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true, margin: '-60px' }}
-          className="relative mx-auto max-w-3xl overflow-hidden rounded-[1.75rem] border border-palette-cream/15 bg-palette-ink/72 shadow-[0_28px_80px_-32px_rgba(0,0,0,0.75)] backdrop-blur-xl md:rounded-[2rem]"
+          className="relative w-full overflow-hidden border-y border-palette-cream/15 bg-palette-ink/72 shadow-[0_28px_80px_-32px_rgba(0,0,0,0.75)] backdrop-blur-xl md:mx-auto md:max-w-3xl md:rounded-[2rem] md:border"
         >
           <div
             className="pointer-events-none absolute inset-0 bg-gradient-to-br from-palette-sage/12 via-transparent to-palette-cream/8"
@@ -113,27 +125,38 @@ export default function CourseScheduleCall() {
             viewport={{ once: true, margin: '-40px' }}
             className="relative px-6 py-10 text-center md:px-12 md:py-14"
           >
-            <motion.div variants={itemVariants} className="mb-4 flex justify-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-palette-sage/40 bg-palette-sage/15 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-palette-cream/90 backdrop-blur-sm">
-                <motion.span
-                  className="relative flex h-2 w-2"
-                  animate={reduceMotion ? undefined : { scale: [1, 1.35, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  <span className="absolute inline-flex h-full w-full rounded-full bg-palette-sage opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-palette-sage" />
-                </motion.span>
-                ¿Todavía tenés dudas?
-              </span>
-            </motion.div>
+            {showEyebrow ? (
+              <motion.div variants={itemVariants} className="mb-4 flex justify-center">
+                <span className="inline-flex items-center gap-2 rounded-full border border-palette-sage/40 bg-palette-sage/15 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-palette-cream/90 backdrop-blur-sm">
+                  <motion.span
+                    className="relative flex h-2 w-2"
+                    animate={reduceMotion ? undefined : { scale: [1, 1.35, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  >
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-palette-sage opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-palette-sage" />
+                  </motion.span>
+                  ¿Todavía tenés dudas?
+                </span>
+              </motion.div>
+            ) : null}
 
             <motion.h2
               id="course-schedule-call-heading"
               variants={itemVariants}
               className={`${landingSectionTitleDark} mx-auto max-w-2xl !mt-0`}
             >
-              Hablemos antes de que decidas
+              {title}
             </motion.h2>
+
+            {subtitle ? (
+              <motion.p
+                variants={itemVariants}
+                className="mx-auto mt-4 max-w-2xl text-[17px] font-medium leading-[1.68] text-palette-cream/90 md:text-[19px] md:leading-[1.7]"
+              >
+                {subtitle}
+              </motion.p>
+            ) : null}
 
             <motion.div
               variants={itemVariants}

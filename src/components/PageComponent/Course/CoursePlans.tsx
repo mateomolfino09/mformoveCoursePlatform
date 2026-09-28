@@ -77,10 +77,25 @@ const formatPrice = (currency: string, amount: number) => {
   }
 };
 
-/** Copy de valor por encima del bloque de planes. */
-const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
-/** Una sola deadline por sesión: el toggle de plan no debe reiniciar ni remountar el árbol entero. */
-let bonusUrgencyDeadlineMs = Date.now() + TWELVE_HOURS_MS;
+/** Medianoche local de quien está mirando. Se recalcula en el cliente para usar su reloj. */
+function msUntilLocalEndOfDay(now = Date.now()) {
+  const end = new Date(now);
+  end.setHours(24, 0, 0, 0);
+  return Math.max(0, end.getTime() - now);
+}
+
+function useMsUntilLocalEndOfDay() {
+  const [remainingMs, setRemainingMs] = useState<number | null>(null);
+
+  useEffect(() => {
+    const tick = () => setRemainingMs(msUntilLocalEndOfDay());
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return remainingMs;
+}
 
 const countdownEase = [0.16, 1, 0.3, 1] as const;
 
@@ -104,12 +119,16 @@ const countdownUnitVariants = {
 function CountdownUnits({
   remainingMs,
   tone = 'default',
+  omitDays = false,
 }: {
   remainingMs: number;
   tone?: 'default' | 'urgency';
+  omitDays?: boolean;
 }) {
   const reduceMotion = useReducedMotion();
-  const countUnits = splitCountdownUnits(remainingMs);
+  const countUnits = splitCountdownUnits(remainingMs).filter(
+    (unit) => !omitDays || unit.label !== 'días'
+  );
   const isUrgency = tone === 'urgency';
   return (
     <motion.div
@@ -149,23 +168,7 @@ function CountdownUnits({
 }
 
 function BonusUrgencyFooter() {
-  const [remainingMs, setRemainingMs] = useState(() =>
-    Math.max(0, bonusUrgencyDeadlineMs - Date.now())
-  );
-
-  useEffect(() => {
-    const tick = () => {
-      let diff = bonusUrgencyDeadlineMs - Date.now();
-      if (diff <= 0) {
-        bonusUrgencyDeadlineMs = Date.now() + TWELVE_HOURS_MS;
-        diff = bonusUrgencyDeadlineMs - Date.now();
-      }
-      setRemainingMs(Math.max(0, diff));
-    };
-    tick();
-    const id = window.setInterval(tick, 1000);
-    return () => window.clearInterval(id);
-  }, []);
+  const remainingMs = useMsUntilLocalEndOfDay();
 
   return (
     <div className="pointer-events-auto w-full border-t border-palette-ink/15 pt-4 md:pt-3">
@@ -179,11 +182,27 @@ function BonusUrgencyFooter() {
         </span>
       </p>
       <p className="mt-3 font-montserrat text-[0.82rem] font-black uppercase leading-snug tracking-[0.08em] text-[#DC2626]">
-        Esta oportunidad termina en:
+        Esta oportunidad termina hoy
       </p>
-      <div className="mt-2 md:mt-1.5">
-        <CountdownUnits remainingMs={remainingMs} tone="urgency" />
-      </div>
+      {remainingMs != null ? (
+        <div className="mt-2 md:mt-1.5">
+          <CountdownUnits remainingMs={remainingMs} tone="urgency" omitDays />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function EndOfDayUrgency() {
+  const remainingMs = useMsUntilLocalEndOfDay();
+  if (remainingMs == null) return null;
+
+  return (
+    <div className="mx-auto mb-8 max-w-md text-center">
+      <p className="font-montserrat text-[0.82rem] font-black uppercase leading-snug tracking-[0.08em] text-[#DC2626]">
+        Esta oportunidad termina hoy
+      </p>
+      <CountdownUnits remainingMs={remainingMs} tone="urgency" omitDays />
     </div>
   );
 }
@@ -986,6 +1005,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
               {planes.cohorteUrgenciaTexto.trim()}
             </motion.p>
           ) : null}
+          {ventaPorLlamada ? <EndOfDayUrgency /> : null}
 
           {stripeCheckoutPlans.length > 1 ? (
             <motion.div
@@ -1066,8 +1086,6 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
             )}
           </motion.div>
 
-          <CourseIncludesBlock isOferta={is4Meses} />
-
           <PlansCheckoutFooter
             cta={ventaPorLlamada ? agendarCta : (
                 <button
@@ -1098,6 +1116,8 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
                 : 'USD 149 en un pago, o 4 pagos de USD 50 con compromiso de completar los 4 meses.'
             }
           />
+
+          <CourseIncludesBlock isOferta={is4Meses} />
         </motion.div>
       );
     }
