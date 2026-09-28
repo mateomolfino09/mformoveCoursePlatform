@@ -6,7 +6,7 @@ import imageLoader from '../../../../imageLoader';
 import { useCursoLanding } from './CursoLandingContext';
 import {
   CURSO_SALES_CALL_BOOKING_URL,
-  cursoSalesCallCtaLabel,
+  CURSO_SALES_CALL_CTA_LABEL,
 } from '../../../constants/cursoSalesCall';
 import CourseDarkSectionBackground from './CourseDarkSectionBackground';
 import {
@@ -31,7 +31,7 @@ const CourseTestimonials = ({
   variant = 'community',
   showCta = true,
 }: CourseTestimonialsProps) => {
-  const { cursoConfig, scrollToPlans, productName } = useCursoLanding();
+  const { cursoConfig, scrollToPlans } = useCursoLanding();
   const ventaPorLlamada = Boolean(cursoConfig.planes.ventaPorLlamada);
   const { presentacionTestimonios } = cursoConfig;
   const testimonials = cursoConfig.testimoniosEscritos.map((item) => ({
@@ -233,7 +233,7 @@ const CourseTestimonials = ({
                 rel="noopener noreferrer"
                 className="font-montserrat text-sm font-medium text-palette-cream underline decoration-palette-cream/30 underline-offset-[3px] transition-colors hover:decoration-palette-sage"
               >
-                {cursoSalesCallCtaLabel(productName)}
+                {CURSO_SALES_CALL_CTA_LABEL}
               </a>
             ) : (
               <button

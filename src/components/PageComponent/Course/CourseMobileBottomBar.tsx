@@ -6,13 +6,14 @@ import { useMembershipNav } from '../../MainSidebar/MembershipNavContext';
 import { useCursoLanding } from './CursoLandingContext';
 import { useAuth } from '../../../hooks/useAuth';
 import { userHasPurchasedCourseBySlug } from '../../../lib/clientCourseAccess';
+import { cursoCheckoutApplyCtaLabel } from '../../../constants/cursoSalesCall';
 
 /** Botones de conversión + Menú para reutilizar en barra flotante. */
 export const CourseBottomBarButtons = () => {
   const router = useRouter();
   const auth = useAuth();
   const nav = useMembershipNav();
-  const { cursoConfig, slug, checkoutStartPath } = useCursoLanding();
+  const { cursoConfig, slug, checkoutStartPath, productName } = useCursoLanding();
   const [applyPressed, setApplyPressed] = useState(false);
   if (!nav) return null;
   const { toggleNav, showNav } = nav;
@@ -26,7 +27,7 @@ export const CourseBottomBarButtons = () => {
     router.push(checkoutStartPath);
   };
 
-  const ctaClass = `font-montserrat font-light text-xs tracking-[0.12em] uppercase rounded-full border px-4 py-2 transition-colors duration-100 shrink-0 active:border-palette-sage active:bg-palette-sage active:text-palette-ink ${
+  const ctaClass = `max-w-[16.5rem] whitespace-normal text-center font-montserrat font-light text-[11px] leading-snug tracking-[0.06em] uppercase rounded-full border px-3.5 py-2 transition-colors duration-100 active:border-palette-sage active:bg-palette-sage active:text-palette-ink ${
     applyPressed
       ? 'border-palette-sage bg-palette-sage text-palette-ink'
       : showNav
@@ -52,7 +53,8 @@ export const CourseBottomBarButtons = () => {
         onPointerCancel={() => setApplyPressed(false)}
         className={ctaClass}
       >
-        Aplicar
+        {cursoCheckoutApplyCtaLabel(productName)}
+        <span aria-hidden> →</span>
       </button>
       <button
         type="button"

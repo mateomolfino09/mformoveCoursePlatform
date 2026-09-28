@@ -15,14 +15,14 @@ import {
 import { routes } from '../../../constants/routes';
 import {
   CURSO_SALES_CALL_BOOKING_URL,
-  cursoSalesCallCtaLabel,
+  CURSO_SALES_CALL_CTA_LABEL,
 } from '../../../constants/cursoSalesCall';
 import { useCursoLanding } from './CursoLandingContext';
 
 const CTA_BG = 'my_uploads/plaza/DSC03350_vgjrrh';
 
 const CourseCTA = () => {
-  const { cursoConfig, productName } = useCursoLanding();
+  const { cursoConfig } = useCursoLanding();
   const ventaPorLlamada = Boolean(cursoConfig.planes.ventaPorLlamada);
 
   return (
@@ -72,7 +72,7 @@ const CourseCTA = () => {
                     rel="noopener noreferrer"
                     className={`${landingCtaInvertedCompact} w-full sm:w-auto`}
                   >
-                    <span>{cursoSalesCallCtaLabel(productName)}</span>
+                    <span>{CURSO_SALES_CALL_CTA_LABEL}</span>
                     <span className="text-palette-ink/70 transition-transform duration-200 group-hover:translate-x-0.5">
                       →
                     </span>
