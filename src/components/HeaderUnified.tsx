@@ -737,6 +737,8 @@ const HeaderUnified = ({ user, toggleNav, where, showNav, forceStandardHeader = 
 								);
 							}
 							if (isCursoCommercialLanding) {
+								const isPublicCourseLanding = cursoPublicPath?.subpath === 'landing';
+								if (isPublicCourseLanding && !showNav) return null;
 								return (
 									<button
 										type="button"
