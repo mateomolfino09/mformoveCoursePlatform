@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import MainSideBar from '../../../../components/MainSidebar/MainSideBar';
 import FooterProfile from '../../../../components/PageComponent/Profile/FooterProfile';
 import CourseCheckoutStart from '../../../../components/PageComponent/Course/CourseCheckoutStart';
+import CourseScheduleCall from '../../../../components/PageComponent/Course/CourseScheduleCall';
 import { CourseCheckoutSkeletonBody } from '../../../../components/PageComponent/Course/CourseCheckoutSkeleton';
 import { CursoLandingProvider } from '../../../../components/PageComponent/Course/CursoLandingContext';
 import state from '../../../../valtio';
@@ -118,6 +119,13 @@ export default function CursoEmpezarPage({ params }: CursoEmpezarPageProps) {
               pricingModo={landing.pricingModo}
               preventaTierIndex={landing.preventaTierIndex}
             />
+            {params.cursoNombre === 'cuerpo-autonomo' ? (
+              <CourseScheduleCall
+                title="¿Todavía tenés dudas?"
+                subtitle="Agendá una llamada…"
+                showEyebrow={false}
+              />
+            ) : null}
           </CursoLandingProvider>
         ) : null}
         <FooterProfile />

@@ -2,10 +2,11 @@ import { useAuth } from '../../hooks/useAuth';
 import state from '../../valtio';
 import { motion as m, useAnimation } from 'framer-motion';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import './MainSidebarDashboard.css';
 import { routes } from '../../constants/routes';
+import { parseCursoPublicPath } from '../../lib/cursoPaths';
 
 interface Props {
   showNav: boolean;
@@ -15,6 +16,8 @@ interface Props {
 
 const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
   const router = useRouter();
+  const pathname = usePathname() || '';
+  const isCursoPublicLanding = parseCursoPublicPath(pathname)?.subpath === 'landing';
   const animation = useAnimation();
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const animationPhones = useAnimation();
@@ -71,7 +74,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
 
   return (
     <div className='fixed inset-0 z-[200] flex flex-col bg-black font-montserrat overflow-hidden'>
-      <div className='flex flex-1 flex-col min-h-0 justify-center gap-7 md:gap-9 px-6 pb-10 pt-[4.5rem] md:px-12 md:pt-24 md:pb-14 lg:px-16 lg:pr-24 overflow-y-auto scrollbar-hide overscroll-contain'>
+      <div className='flex flex-1 flex-col min-h-0 justify-start mt-24 gap-7 md:gap-9 px-6 pb-10 pt-[4.5rem] md:px-12 md:pt-24 md:pb-14 lg:px-16 lg:pr-24 overflow-y-auto scrollbar-hide overscroll-contain'>
         {!IS_MEMBERSHIP_PAUSED && (
           <Link href={routes.navegation.membership.library} className='block w-full shrink-0'>
             <m.div
@@ -134,7 +137,7 @@ const MainSideBarDash = ({ showNav, where, toggleNav }: Props) => {
             </h1>
           </m.div>
         </Link>
-        {!auth.user && (where != 'products' || where != 'productsLibrary') ? (
+        {!auth.user && isCursoPublicLanding ? null : !auth.user && (where != 'products' || where != 'productsLibrary') ? (
           <Link href={'/iniciar-sesion'} className='block w-full shrink-0'>
             <m.div
               {...navMotionProps}
