@@ -10,12 +10,11 @@ import {
   landingSectionTitleDark,
 } from '../../../constants/landingSectionDesign';
 import { resolveCloudinaryOrHttpUrl } from '../../../lib/resolveMediaImageUrl';
-import { useCursoLanding } from './CursoLandingContext';
 import {
   CURSO_SALES_CALL_BOOKING_URL,
+  CURSO_SALES_CALL_CTA_LABEL,
   CURSO_SALES_CALL_DURATION_MIN,
   CURSO_SALES_CALL_HOST,
-  cursoSalesCallCtaLabel,
 } from '../../../constants/cursoSalesCall';
 
 function resolveHostPhoto(rawSrc: string) {
@@ -69,7 +68,6 @@ export default function CourseScheduleCall({
   showEyebrow = true,
 }: CourseScheduleCallProps = {}) {
   const reduceMotion = useReducedMotion();
-  const { productName } = useCursoLanding();
   const hostPhoto = resolveHostPhoto(CURSO_SALES_CALL_HOST.imageSrc);
 
   return (
@@ -249,7 +247,7 @@ export default function CourseScheduleCall({
                   transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 1.2, ease: 'easeInOut' }}
                   aria-hidden
                 />
-                <span className="relative z-[1]">{cursoSalesCallCtaLabel(productName)}</span>
+                <span className="relative z-[1]">{CURSO_SALES_CALL_CTA_LABEL}</span>
                 <span className="relative z-[1] transition-transform duration-200 group-hover:translate-x-1">
                   →
                 </span>

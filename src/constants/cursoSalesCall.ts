@@ -1,8 +1,18 @@
 /** Cal.com — llamada de consulta del funnel de curso. La atiende Nico. */
 export const CURSO_SALES_CALL_BOOKING_URL = 'https://cal.com/yoguinico-move/mmove';
 
-/** Copy del CTA de conversión cuando el curso vende por llamada. */
-export function cursoSalesCallCtaLabel(courseName: string): string {
+/**
+ * Texto del botón que abre Cal.com.
+ * No hereda el copy de aplicar: ese va al checkout (`cursoCheckoutApplyCtaLabel`).
+ */
+export const CURSO_SALES_CALL_CTA_LABEL = 'Agendar llamada';
+
+export function cursoSalesCallCtaLabel(): string {
+  return CURSO_SALES_CALL_CTA_LABEL;
+}
+
+/** Texto del botón que va al checkout / pago. No usar en CTAs de Cal.com. */
+export function cursoCheckoutApplyCtaLabel(courseName: string): string {
   const name = courseName.trim();
   return name ? `Aplicar a ${name}` : 'Aplicar';
 }

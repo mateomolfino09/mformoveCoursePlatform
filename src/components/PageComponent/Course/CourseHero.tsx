@@ -200,7 +200,7 @@ const CourseHero = () => {
       className="relative flex min-h-[100dvh] w-full flex-col bg-palette-cream font-montserrat md:h-[100dvh] md:min-h-0"
     >
       <div className="mx-auto flex min-h-0 w-[90%] max-w-6xl flex-1 flex-col px-3 pb-0 sm:px-4 md:pb-8 md:pt-28">
-      <p className="w-full shrink-0 px-0 pt-16 pb-4 text-justify font-raleway text-lg font-normal leading-snug text-palette-ink md:absolute md:left-16 md:top-[3.75rem] md:w-[min(72rem,calc(100%-4rem))] md:max-w-6xl md:px-0 md:pb-0 md:pt-0 md:text-left md:text-xl md:leading-tight lg:text-[1.15rem] lg:leading-[1.0]">
+      <p className="w-full shrink-0 px-0 pt-16 pb-8 text-center font-raleway text-base font-normal leading-snug text-palette-ink md:absolute md:left-16 md:top-[3.75rem] md:w-[min(72rem,calc(100%-4rem))] md:max-w-6xl md:px-0 md:pb-0 md:pt-0 md:text-left md:text-xl md:leading-tight lg:text-[1.15rem] lg:leading-[1.0]">
         {tagline}
       </p>
 
@@ -321,7 +321,10 @@ const CourseHero = () => {
               onClick={handleButtonClick}
               className={landingCtaPrimaryCompact}
             >
-              Aplicar a cuerpo autónomo
+              <span>{productName ? `Aplicar a ${productName}` : 'Aplicar'}</span>
+              <span className="opacity-80 transition-transform duration-200 group-hover:translate-x-0.5">
+                →
+              </span>
             </button>
           )}
         </motion.div>

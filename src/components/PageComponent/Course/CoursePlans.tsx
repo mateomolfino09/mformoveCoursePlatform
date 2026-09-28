@@ -46,7 +46,8 @@ import {
 import CourseIncludesBlock from './CourseIncludesBlock';
 import {
   CURSO_SALES_CALL_BOOKING_URL,
-  cursoSalesCallCtaLabel,
+  CURSO_SALES_CALL_CTA_LABEL,
+  cursoCheckoutApplyCtaLabel,
 } from '../../../constants/cursoSalesCall';
 
 interface Promocion {
@@ -265,7 +266,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
       rel="noopener noreferrer"
       className={`${landingCtaPrimaryCompact} w-full md:w-auto`}
     >
-      <span>{cursoSalesCallCtaLabel(productName)}</span>
+      <span>{CURSO_SALES_CALL_CTA_LABEL}</span>
       <span className="opacity-80 translate-y-[0.5px] transition-transform duration-200">
         →
       </span>
@@ -1092,7 +1093,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
                   type="button"
                   onClick={handleGoToCheckout}
                   disabled={isNavigatingToCheckout}
-                  className={`${landingCtaPrimary} w-full px-10 py-4 disabled:cursor-not-allowed disabled:opacity-50 sm:px-12 md:w-auto md:px-14`}
+                  className={`${landingCtaPrimaryCompact} disabled:cursor-not-allowed disabled:opacity-50`}
                 >
                   {isNavigatingToCheckout ? (
                     <>
@@ -1101,7 +1102,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
                     </>
                   ) : (
                     <>
-                      <span>Quiero formar parte</span>
+                      <span>{cursoCheckoutApplyCtaLabel(productName)}</span>
                       <span className="opacity-80 translate-y-[0.5px] transition-transform duration-200">
                         →
                       </span>

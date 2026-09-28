@@ -5,8 +5,7 @@ import {
   landingCtaPrimaryCompact,
   landingSectionContainer,
 } from '../../../constants/landingSectionDesign';
-import { CURSO_SALES_CALL_BOOKING_URL, cursoSalesCallCtaLabel } from '../../../constants/cursoSalesCall';
-import { useCursoLanding } from './CursoLandingContext';
+import { CURSO_SALES_CALL_BOOKING_URL, CURSO_SALES_CALL_CTA_LABEL } from '../../../constants/cursoSalesCall';
 
 type CourseCallCtaBannerProps = {
   titulo?: string;
@@ -22,8 +21,7 @@ export default function CourseCallCtaBanner({
   titulo = '¿Todavía no sabés si es para vos?',
   boton,
 }: CourseCallCtaBannerProps) {
-  const { productName } = useCursoLanding();
-  const label = boton || cursoSalesCallCtaLabel(productName);
+  const label = boton || CURSO_SALES_CALL_CTA_LABEL;
   return (
     <section className="border-t border-palette-stone/20 bg-palette-cream py-10 font-montserrat md:py-12">
       <div className={landingSectionContainer}>

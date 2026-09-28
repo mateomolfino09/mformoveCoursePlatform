@@ -8,7 +8,7 @@ import CourseHighlightsIntro from './CourseHighlightsIntro';
 import { useCursoLanding } from './CursoLandingContext';
 import {
   CURSO_SALES_CALL_BOOKING_URL,
-  cursoSalesCallCtaLabel,
+  CURSO_SALES_CALL_CTA_LABEL,
 } from '../../../constants/cursoSalesCall';
 import {
   landingCardBody,
@@ -35,7 +35,7 @@ type TimelineHighlightItem = {
 };
 
 const CourseHighlights = ({ hideIntro = false }: CourseHighlightsProps) => {
-  const { cursoConfig, scrollToPlans, productName } = useCursoLanding();
+  const { cursoConfig, scrollToPlans } = useCursoLanding();
   const { highlights } = cursoConfig;
   const ventaPorLlamada = Boolean(cursoConfig.planes.ventaPorLlamada);
 
@@ -175,7 +175,7 @@ const CourseHighlights = ({ hideIntro = false }: CourseHighlightsProps) => {
                   rel="noopener noreferrer"
                   className={`${landingCtaPrimaryCompact} group shrink-0 self-start md:self-end`}
                 >
-                  <span>{cursoSalesCallCtaLabel(productName)}</span>
+                  <span>{CURSO_SALES_CALL_CTA_LABEL}</span>
                   <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
                 </a>
               ) : (
