@@ -1095,7 +1095,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
             disclaimer={
               ventaPorLlamada
                 ? 'Sin costo ni compromiso. Vemos el plan y la forma de pago en la llamada.'
-                : 'Sin contratos largos. Cancelá cuando quieras.'
+                : 'USD 149 en un pago, o 4 pagos de USD 50 con compromiso de completar los 4 meses.'
             }
           />
         </motion.div>

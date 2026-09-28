@@ -9,7 +9,6 @@ import {
   CURSO_SUSCRIPCION_INCLUDES,
   CURSO_SUSCRIPCION_INCLUDES_LEAD_MENSUAL,
   CURSO_SUSCRIPCION_INCLUDES_LEAD_OFERTA,
-  CURSO_SUSCRIPCION_OFERTA_BONUS,
   CURSO_SUSCRIPCION_PARA_VOS,
   CURSO_SUSCRIPCION_RESULTADO,
 } from '../../../constants/cursoSuscripcionIncludes';
@@ -191,45 +190,22 @@ export default function CourseIncludesBlock({ isOferta }: { isOferta: boolean })
             open={openId === 'incluye'}
             onToggle={toggle}
           >
-            {isOferta ? (
-              <div className="space-y-5 md:space-y-6">
-                <ul className="space-y-3 md:space-y-3.5">
-                  {CURSO_SUSCRIPCION_INCLUDES.map((item, index) => (
-                    <IncludesCheckItem key={item} highlight delay={0.28 + index * 0.04}>
-                      {item}
-                    </IncludesCheckItem>
-                  ))}
-                </ul>
-                <div>
-                  <motion.p
-                    initial={{ opacity: 0, letterSpacing: '0.35em' }}
-                    animate={{ opacity: 1, letterSpacing: '0.22em' }}
-                    transition={{ delay: 0.4, duration: 0.5 }}
-                    className="mb-3 font-montserrat text-[11px] font-semibold uppercase tracking-[0.22em] text-palette-sage md:text-xs"
-                  >
-                    Además
-                  </motion.p>
-                  <ul className="space-y-3 md:space-y-3.5">
-                    {CURSO_SUSCRIPCION_OFERTA_BONUS.map((item, index) => (
-                      <IncludesCheckItem key={item} highlight delay={0.6 + index * 0.1}>
-                        {item}
-                      </IncludesCheckItem>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ) : (
-              <ul className="space-y-3 md:space-y-3.5">
-                {CURSO_SUSCRIPCION_INCLUDES.map((item) => (
-                  <IncludesCheckItem key={item}>{item}</IncludesCheckItem>
-                ))}
-              </ul>
-            )}
+            <ul className="space-y-3 md:space-y-3.5">
+              {CURSO_SUSCRIPCION_INCLUDES.map((item, index) => (
+                <IncludesCheckItem
+                  key={item}
+                  highlight={isOferta}
+                  delay={isOferta ? 0.28 + index * 0.04 : 0}
+                >
+                  {item}
+                </IncludesCheckItem>
+              ))}
+            </ul>
           </IncludesAccordion>
 
           <IncludesAccordion
             id="para-vos"
-            title="Para vos si"
+            title="Acceso"
             open={openId === 'para-vos'}
             onToggle={toggle}
           >
@@ -240,7 +216,7 @@ export default function CourseIncludesBlock({ isOferta }: { isOferta: boolean })
 
           <IncludesAccordion
             id="resultado"
-            title="Resultado"
+            title="Inversión"
             open={openId === 'resultado'}
             onToggle={toggle}
           >

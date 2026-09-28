@@ -1,27 +1,26 @@
 /** Listados de “Qué incluye” debajo de los planes (suscripción). */
 
 export const CURSO_SUSCRIPCION_INCLUDES = [
-  'Los 3 módulos principales y sus 20 clases.',
-  'Una llamada grupal semanal para acompañar el proceso.',
-  'Una clase virtual mensual para practicar juntos.',
-  'Encuentros con Mateo, Nico y profesionales invitados.',
-  'Una comunidad de personas recorriendo el mismo camino.',
-  'Material nuevo semanalmente para seguir aprendiendo y practicando.',
-  'Una sesión individual online, por única vez, con el profesional del equipo que elijas.',
+  '3 módulos + 20 clases progresivas de movilidad, fuerza, coordinación y movimiento.',
+  'Acceso para siempre a las clases de los 3 módulos, para que puedas volver a recorrerlas cuando quieras.',
+  'Recursos y clases adicionales, que se van sumando semana a semana para seguir explorando y desarrollando distintas capacidades.',
+  'Encuentro grupal semanal conmigo durante los 4 meses para acompañar el proceso, resolver dudas y profundizar en lo que vamos trabajando.',
+  '1 clase práctica en vivo por mes, de 40–60 minutos, para movernos y entrenar juntos.',
+  'Material y herramientas prácticas para llevar lo aprendido a tu entrenamiento y a tu día a día.',
+  'Comunidad privada para compartir el proceso con los demás miembros.',
+  '1 sesión individual 1:1 para trabajar específicamente sobre vos, tus objetivos y lo que necesitás.',
 ] as const;
 
-export const CURSO_SUSCRIPCION_OFERTA_BONUS = [
-  'Llamada 1:1 de 40 min con Mateo',
-] as const;
+export const CURSO_SUSCRIPCION_OFERTA_BONUS = [] as const;
 
 export const CURSO_SUSCRIPCION_INCLUDES_LEAD_OFERTA =
-  'Cuatro meses para entrar con más calma y aprovechar el bonus de quienes se suman ahora.';
+  'USD 149 — pago único por los 4 meses.';
 
 export const CURSO_SUSCRIPCION_INCLUDES_LEAD_MENSUAL =
-  'Aprendés, practicás y seguís construyendo tu cuerpo mientras formes parte.';
+  '4 pagos de USD 50 — uno por mes, con compromiso de completar los 4 meses.';
 
 export const CURSO_SUSCRIPCION_PARA_VOS =
-  'Querés dejar de copiar rutinas sueltas y aprender a construir un cuerpo fuerte, sin restricciones de movimiento y saludable, con un camino claro y una comunidad en el mismo proceso.';
+  'Los 4 meses corresponden al período de acompañamiento: encuentros semanales, clases prácticas en vivo, comunidad y proceso conmigo. Las clases de los módulos quedan para vos para siempre.';
 
 export const CURSO_SUSCRIPCION_RESULTADO =
-  'Entendés mejor tu cuerpo, te movés con criterio y tenés un lugar para seguir practicando, profundizando y construyendo durante toda la vida.';
+  'USD 149 — pago único por los 4 meses. O 4 pagos de USD 50 — uno por mes, con compromiso de completar los 4 meses.';
