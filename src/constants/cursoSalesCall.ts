@@ -1,5 +1,5 @@
-/** Calendly — llamada de venta/cierre del funnel de curso. */
-export const CURSO_SALES_CALL_BOOKING_URL = 'https://calendly.com/murialmatheo/30min';
+/** Cal.com — llamada de consulta del funnel de curso. La atiende Nico. */
+export const CURSO_SALES_CALL_BOOKING_URL = 'https://cal.com/yoguinico-move/mmove';
 
 /** Copy del CTA de conversión cuando el curso vende por llamada. */
 export function cursoSalesCallCtaLabel(courseName: string): string {
@@ -7,24 +7,18 @@ export function cursoSalesCallCtaLabel(courseName: string): string {
   return name ? `Aplicar a ${name}` : 'Aplicar';
 }
 
-/** Duración real de la llamada (ver `CURSO_SALES_CALL_BOOKING_URL` — Calendly, 30 min). */
-export const CURSO_SALES_CALL_DURATION_MIN = 30;
+/** Duración de la llamada de Nico en Cal.com. */
+export const CURSO_SALES_CALL_DURATION_MIN = 20;
 
 /**
- * Persona que atiende la llamada — hoy Theo (closer), no Mateo.
- *
- * No hay foto real de Theo cargada todavía: `imageSrc` queda vacío a propósito y el avatar
- * se renderiza como iniciales (ver `CourseScheduleCall.tsx`) en vez de usar una foto de
- * otra persona con un nombre distinto.
- *
- * Foto (cuando haya una real): en Cloudinary Media Library, copiá el **Public ID** (panel
- * Summary) o la **URL de entrega** y pegala acá. Ejemplo: `my_uploads/abc123xyz`.
+ * Persona que atiende la llamada — Nico, no Mateo.
+ * Foto en Cloudinary: public id `my_uploads/equipo/nico-llamada2_n14mrv`.
  */
 export const CURSO_SALES_CALL_HOST = {
-  name: 'Theo',
-  roleLine: 'Te ayuda a decidir si Cuerpo Autónomo es para vos.',
+  name: 'Nico',
+  roleLine: 'Te va a acompañar en esta conversación.',
   bio:
-    'Habla con las personas que están evaluando sumarse a Cuerpo Autónomo, para responder dudas concretas y ver si el programa encaja con lo que estás buscando.',
+    'Practico yoga y me gusta explorar el cuerpo de distintas maneras. Me estoy formando como profe de movimiento y terapeuta gestáltico. Cuando puedo, estoy en la playa o caminando por las montañas.',
   /** Public ID Cloudinary (`my_uploads/...`) o URL https. Vacío = avatar de iniciales. */
-  imageSrc: '',
+  imageSrc: 'my_uploads/equipo/nico-llamada2_n14mrv',
 } as const;
