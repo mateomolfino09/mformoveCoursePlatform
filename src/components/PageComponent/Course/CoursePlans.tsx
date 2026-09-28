@@ -1300,7 +1300,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           {...landingFadeUp}
           className={`${landingHeaderBlock} relative z-10 mx-auto max-w-3xl text-center`}
         >
-          <p className={landingEyebrow}>{ventaPorLlamada ? 'El programa' : 'Inversión'}</p>
+          <p className={landingEyebrow}>{ventaPorLlamada ? 'Cómo empezar' : 'Inversión'}</p>
           <h2 className={landingSectionTitle}>{planesTitulo}</h2>
           {preventaPricing.enPreventa ? (
             <p className="mt-4 font-montserrat text-xs font-semibold uppercase tracking-[0.26em] text-palette-stone md:text-sm">
