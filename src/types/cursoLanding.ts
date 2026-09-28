@@ -506,17 +506,17 @@ const CURSO_FAQ_PRESETS: Omit<CursoFaqItem, 'orden'>[] = [
   {
     pregunta: '¿Qué es Cuerpo Autónomo y qué incluye?',
     respuesta:
-      'Cuerpo Autónomo es una academia para aprender a construir un cuerpo fuerte, sin restricciones de movimiento y saludable. Al sumarte accedés a los 3 módulos principales y sus 20 clases, llamadas grupales semanales, una clase virtual mensual, comunidad, material nuevo semanalmente y una sesión individual online con un profesional del equipo.',
+      'Cuerpo Autónomo es un proceso de 4 meses para construir un cuerpo fuerte, móvil y capaz, mientras aprendés a entenderlo y entrenarlo cada vez con más criterio. Incluye 3 módulos y 20 clases progresivas, acceso para siempre a esas clases, recursos que se suman semana a semana, un encuentro grupal semanal, una clase práctica en vivo por mes, material práctico, comunidad privada y una sesión individual 1:1.',
   },
   {
     pregunta: '¿Es un curso o una membresía?',
     respuesta:
-      'Es una academia por suscripción. Los módulos principales te dan un camino claro para empezar, pero Cuerpo Autónomo no termina cuando completás las clases. Mientras formes parte de la academia seguís teniendo acceso a la comunidad, las llamadas, las clases virtuales y a los nuevos materiales y herramientas que vayamos incorporando.',
+      'Es un proceso de 4 meses de acompañamiento y una base educativa que conservás. Durante esos 4 meses tenés encuentros semanales, clases prácticas en vivo, comunidad y el proceso conmigo. Las clases de los módulos quedan para vos para siempre.',
   },
   {
     pregunta: '¿Qué pasa cuando termino los 3 módulos?',
     respuesta:
-      'Ahí empieza otra etapa. Los módulos te dan las bases para entender tu cuerpo y desarrollar movilidad, fuerza y coordinación. Después podés seguir practicando, profundizando y utilizando los nuevos contenidos, clases y encuentros de la academia para continuar construyendo tu cuerpo según tus propios objetivos.',
+      'Las clases de los módulos siguen disponibles para que vuelvas a recorrerlas cuando quieras. El acompañamiento —encuentros semanales, clases en vivo y comunidad— corresponde a los 4 meses del proceso.',
   },
   {
     pregunta: '¿Necesito experiencia previa?',
@@ -531,12 +531,12 @@ const CURSO_FAQ_PRESETS: Omit<CursoFaqItem, 'orden'>[] = [
   {
     pregunta: '¿Cómo funciona el acompañamiento?',
     respuesta:
-      'No hacés el proceso completamente solo. Durante tu recorrido tenés acceso a la comunidad para compartir dudas y avances, llamadas grupales semanales para profundizar en los temas que estamos trabajando y una clase virtual mensual para practicar juntos. Los encuentros pueden estar acompañados por Mateo, Nico y otros profesionales invitados.',
+      'Durante los 4 meses hay un encuentro grupal semanal para acompañar el proceso, resolver dudas y profundizar, y una clase práctica en vivo por mes, de 40 a 60 minutos, para movernos y entrenar juntos.',
   },
   {
     pregunta: '¿Qué es la sesión individual con un profesional?',
     respuesta:
-      'Al formar parte de la academia tenés acceso a una sesión individual online, por única vez, con el profesional del equipo que consideres más adecuado para tu momento. Podés elegir una mirada más orientada al movimiento y entrenamiento, los hábitos o situaciones físicas puntuales.',
+      'Incluye una sesión individual 1:1 para trabajar específicamente sobre vos, tus objetivos y lo que necesitás.',
   },
   {
     pregunta: '¿Qué pasa si me pierdo una semana?',
@@ -551,7 +551,7 @@ const CURSO_FAQ_PRESETS: Omit<CursoFaqItem, 'orden'>[] = [
   {
     pregunta: '¿Puedo cancelar mi suscripción?',
     respuesta:
-      'Sí. Cuerpo Autónomo está pensado para que permanezcas porque seguís encontrando valor en la academia, no porque estés atado a un contrato. Podés cancelar tu suscripción cuando decidas dejar de formar parte.',
+      'El pago único de USD 149 cubre los 4 meses. La otra opción son 4 pagos de USD 50, uno por mes, con compromiso de completar los 4 meses. En los dos casos, las clases de los módulos quedan para vos para siempre.',
   },
   {
     pregunta: '¿Qué métodos de pago aceptan?',
@@ -790,9 +790,9 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
     anclaId: 'membership-plans',
     titulo: 'Accedé a todo el método',
     parrafosValor: [
-      'Un entrenador privado te cobraría más de $2,000 USD por este nivel de estructura y seguimiento.',
-      'Un entrenamiento sin criterio te hace perder años de vida y dinero en cursos que no funcionan.',
-      'Hoy, podés tener el mapa completo para recuperar tu soberanía, los encuentros en vivo conmigo y un rehabilitador por una parte mínima de este monto.',
+      'Cuerpo Autónomo es un proceso de 4 meses para construir un cuerpo fuerte, móvil y capaz, mientras aprendés a entenderlo y entrenarlo cada vez con más criterio.',
+      'Los 4 meses corresponden al período de acompañamiento: encuentros semanales, clases prácticas en vivo, comunidad y proceso conmigo.',
+      'Las clases de los módulos quedan para vos para siempre.',
     ],
     etiquetaFormasPago: 'Formas de pago y financiación',
     copyUruguayLatam:
@@ -808,15 +808,16 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
       'Estoy actualizando los planes en este momento. Si querés reservar tu lugar, escribime o tocá el botón para recibir novedades.',
     proveedoresHabilitados: ['stripe', 'mercadopago'],
     opcionesPago: [],
-    beneficiosTitulo: 'Al formar parte de Cuerpo Autónomo tenés acceso a:',
+    beneficiosTitulo: 'Qué incluye',
     beneficios: [
-      'Los 3 módulos principales y sus 20 clases.',
-      'Una llamada grupal semanal para acompañar el proceso.',
-      'Una clase virtual mensual para practicar juntos.',
-      'Encuentros con Mateo, Nico y profesionales invitados.',
-      'Una comunidad de personas recorriendo el mismo camino.',
-      'Material nuevo semanalmente para seguir aprendiendo y practicando.',
-      'Una sesión individual online, por única vez, con el profesional del equipo que elijas.'
+      '3 módulos + 20 clases progresivas de movilidad, fuerza, coordinación y movimiento.',
+      'Acceso para siempre a las clases de los 3 módulos, para que puedas volver a recorrerlas cuando quieras.',
+      'Recursos y clases adicionales, que se van sumando semana a semana para seguir explorando y desarrollando distintas capacidades.',
+      'Encuentro grupal semanal conmigo durante los 4 meses para acompañar el proceso, resolver dudas y profundizar en lo que vamos trabajando.',
+      '1 clase práctica en vivo por mes, de 40–60 minutos, para movernos y entrenar juntos.',
+      'Material y herramientas prácticas para llevar lo aprendido a tu entrenamiento y a tu día a día.',
+      'Comunidad privada para compartir el proceso con los demás miembros.',
+      '1 sesión individual 1:1 para trabajar específicamente sobre vos, tus objetivos y lo que necesitás.',
     ],
   },
   whatsapp: {
