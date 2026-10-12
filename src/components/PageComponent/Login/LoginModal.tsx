@@ -120,7 +120,7 @@ const LoginModal = () => {
       if (data.ok) {
         const { token, newUser } = data;
         await auth.signInPostRegister(token).then(async (res: any) => {
-          toast.success('¡Cuenta creada! Revisa tu correo para confirmar.');
+          toast.success('¡Cuenta creada!');
           close({ allowForced: true });
           const userEmail = newUser?.email || res?.user?.email || auth.user?.email;
           const userId = newUser?._id || res?.user?._id || auth.user?._id;

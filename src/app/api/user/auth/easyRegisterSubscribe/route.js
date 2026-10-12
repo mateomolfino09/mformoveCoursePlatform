@@ -12,8 +12,6 @@ import { serialize } from 'cookie';
 import axios from 'axios';
 import { generateMd5 } from '../../../helper/generateMd5';
 import mailchimp from "@mailchimp/mailchimp_marketing";
-import { getCurrentURL } from '../../../assets/getCurrentURL';
-import { emailService, EmailType } from '../../../../../services/email/emailService';
 import { resolveCountryFromHeaders } from '../../../../../lib/resolveRequestCountry';
 
 connectDB();
@@ -52,7 +50,7 @@ export async function POST(request) {
         await user.save()
 
 
-        const res = await mailchimp.lists.setListMember(
+        await mailchimp.lists.setListMember(
           MailchimpNewsletterAudience,
           hashedEmail,
           {
@@ -64,9 +62,18 @@ export async function POST(request) {
                   },
               status_if_new: "subscribed",
               status: "subscribed",
-              tags: ["RUTINA", "PLATAFORMA"],
+              tags: ["RUTINA", "PLATAFORMA", "mailchimp_ok"],
           }
           );
+        await mailchimp.lists.updateListMemberTags(
+          MailchimpNewsletterAudience,
+          hashedEmail,
+          { tags: [{ name: "mailchimp_ok", status: "active" }] }
+        );
+        if (!user.freeSubscription?.active) {
+          user.freeSubscription = { email: user.email, active: true };
+          await user.save();
+        }
 
         return NextResponse.json({ error: 'Ya hay una cuenta con este usuario'}, { status: 422 })
       }
@@ -120,22 +127,7 @@ export async function POST(request) {
       newUser.token = `${token}`
       await newUser.save()
 
-      // Enviar email con credenciales y link para cambiar contraseña
-      const origin = getCurrentURL();
-      const resetLink = `${origin}/restablecer/${token}`;
-      try {
-        await emailService.sendAccountCreated({
-          email,
-          name: name || 'Mover',
-          password,
-          resetLink
-        });
-      } catch (err) {
-        console.error('sendAccountCreated failed', err);
-      }
-
-      //SUBSCRIBO A MAILCHIMP PLATFORa    
-
+      // El mail de ingreso lo manda la automatización de Mailchimp (tag mailchimp_ok).
       try {
         const responseNews = await fetch(customNewsletterUrl, {
           method: "POST",
@@ -153,11 +145,23 @@ export async function POST(request) {
               },
             status: "subscribed",
             vip: false,
-            tags: ["PLATAFORMA", "RUTINA"]
+            tags: ["PLATAFORMA", "RUTINA", "mailchimp_ok"]
           }),
         });
         if (!responseNews.ok) {
           console.error('Mailchimp subscribe failed', await responseNews.text());
+        } else {
+          const hashedEmail = generateMd5(email);
+          await mailchimp.lists.updateListMemberTags(
+            MailchimpNewsletterAudience,
+            hashedEmail,
+            { tags: [{ name: "mailchimp_ok", status: "active" }] }
+          );
+          newUser.freeSubscription = {
+            email,
+            active: true,
+          };
+          await newUser.save();
         }
       } catch (err) {
         console.error('Mailchimp subscribe error', err);
