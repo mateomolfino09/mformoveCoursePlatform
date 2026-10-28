@@ -24,7 +24,7 @@ export async function GET(_req: Request, { params }: { params: { slug: string } 
       return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
     }
 
-    if (!isCursoLandingPublished(product.cursoConfig)) {
+    if (!isCursoLandingPublished(product.cursoConfig) && process.env.NODE_ENV !== 'development') {
       return NextResponse.json({ error: 'Este curso aún no está publicado' }, { status: 404 });
     }
 

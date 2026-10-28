@@ -12,6 +12,7 @@ import { formatTitleCaseWords } from '../../../../lib/formatDisplayTitle';
 import { useCursoEmpezarBootstrap } from '../../../../hooks/useCursoEmpezarBootstrap';
 import { useAppDispatch } from '../../../../redux/hooks';
 import { toggleScroll } from '../../../../redux/features/headerLibrarySlice';
+import { trackCursoLandingEvent } from '../../../../lib/cursoLandingAnalytics';
 
 interface CursoEmpezarPageProps {
   params: {
@@ -55,6 +56,13 @@ export default function CursoEmpezarPage({ params }: CursoEmpezarPageProps) {
       dispatch(toggleScroll(false));
     };
   }, [dispatch]);
+
+  useEffect(() => {
+    if (bootstrap.status !== 'checkout') return;
+    if (params.cursoNombre === 'cuerpo-autonomo') {
+      trackCursoLandingEvent('curso_checkout_start', { slug: params.cursoNombre });
+    }
+  }, [bootstrap.status, params.cursoNombre]);
 
   useEffect(() => {
     if (bootstrap.status !== 'checkout') return;
@@ -121,9 +129,12 @@ export default function CursoEmpezarPage({ params }: CursoEmpezarPageProps) {
             />
             {params.cursoNombre === 'cuerpo-autonomo' ? (
               <CourseScheduleCall
-                title="¿Todavía tenés dudas?"
-                subtitle="Agendá una llamada…"
+                tone="quiet"
+                hideHost
                 showEyebrow={false}
+                title="Si tenés dudas, podemos conversarlo."
+                body="Si querés saber si Cuerpo Autónomo encaja con lo que estás buscando, podés agendar una llamada corta y sin compromiso."
+                ctaLabel="Tengo una duda, quiero conversar"
               />
             ) : null}
           </CursoLandingProvider>

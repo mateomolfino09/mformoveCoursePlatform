@@ -18,8 +18,11 @@ export default function CourseHighlightsIntro() {
   const { introHighlights } = cursoConfig;
   const bodyParagraphs = introHighlights.cuerpo.split('\n\n').filter(Boolean);
 
+  const bloques = introHighlights.bloques || [];
+  const groupFrame = 'object-[center_32%]';
+
   return (
-    <section className="relative isolate w-full overflow-hidden bg-palette-cream font-montserrat">
+    <section id="como-se-vive" className="relative isolate w-full scroll-mt-28 overflow-hidden bg-palette-cream font-montserrat">
       <div className={landingSplitSectionLayout}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -48,7 +51,7 @@ export default function CourseHighlightsIntro() {
               src={introHighlights.imagenMobilePublicId}
               alt={introHighlights.imagenAlt || productName}
               fill
-              className="object-cover object-[center_22%] md:hidden"
+              className={`object-cover md:hidden ${introHighlights.imagenMobilePublicId.includes('DSC03366') ? groupFrame : 'object-[center_22%]'}`}
               sizes="100vw"
               loader={imageLoader}
               priority={false}
@@ -57,7 +60,7 @@ export default function CourseHighlightsIntro() {
               src={introHighlights.imagenDesktopPublicId}
               alt={introHighlights.imagenAlt || productName}
               fill
-              className="hidden object-cover object-[center_28%] md:block"
+              className={`hidden object-cover md:block ${introHighlights.imagenDesktopPublicId.includes('DSC03366') ? groupFrame : 'object-[center_28%]'}`}
               sizes="min(42vw, 520px)"
               loader={imageLoader}
               priority={false}
@@ -65,6 +68,26 @@ export default function CourseHighlightsIntro() {
           </div>
         </motion.div>
       </div>
+      {bloques.length > 0 ? (
+        <ol className="mx-auto grid w-[92%] max-w-6xl gap-4 px-3 pb-14 sm:px-4 md:grid-cols-3 md:gap-5 md:pb-16">
+          {bloques.map((bloque, index) => (
+            <li
+              key={bloque.titulo}
+              className="rounded-2xl border border-palette-stone/20 bg-white/80 p-5 text-left shadow-[0_14px_40px_-24px_rgba(20,20,17,0.12)] md:p-6"
+            >
+              <p className="font-montserrat text-sm font-semibold tabular-nums text-palette-ink/40">
+                {String(index + 1).padStart(2, '0')}
+              </p>
+              <h3 className="mt-3 font-montserrat text-lg font-semibold leading-snug text-palette-ink">
+                {bloque.titulo}
+              </h3>
+              <p className="mt-2 text-[15px] font-normal leading-relaxed text-palette-ink/85">
+                {bloque.cuerpo}
+              </p>
+            </li>
+          ))}
+        </ol>
+      ) : null}
     </section>
   );
 }

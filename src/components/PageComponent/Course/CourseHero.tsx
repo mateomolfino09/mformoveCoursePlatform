@@ -1,5 +1,4 @@
 'use client'
-import { motion } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { PlayIcon, SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
@@ -9,11 +8,12 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useCursoLanding } from './CursoLandingContext';
 import { vimeoThumbnailUrl } from '../../../lib/resolveMediaImageUrl';
 import { userHasPurchasedCourseBySlug } from '../../../lib/clientCourseAccess';
-import { landingCtaPrimaryCompact } from '../../../constants/landingSectionDesign';
+import { landingCtaUniformGhost, landingCtaUniformPrimary } from '../../../constants/landingSectionDesign';
+import { trackCursoLandingEvent } from '../../../lib/cursoLandingAnalytics';
 const CourseHero = () => {
   const router = useRouter();
   const auth = useAuth();
-  const { cursoConfig, productName, slug, checkoutStartPath } = useCursoLanding();
+  const { cursoConfig, productName, slug, checkoutStartPath, scrollToSection } = useCursoLanding();
   const videoId = cursoConfig.hero.videoPresentacionVimeoId;
   const [isPlaying, setIsPlaying] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
@@ -64,6 +64,7 @@ const CourseHero = () => {
       router.push(cursoConfig.hero.rutaUsuarioSuscriptor || '/biblioteca');
       return;
     }
+    trackCursoLandingEvent('curso_inscripcion_click', { slug });
     router.push(checkoutStartPath);
   };
 
@@ -194,19 +195,47 @@ const CourseHero = () => {
   }, []);
 
   const tagline = cursoConfig.hero.tagline;
+  const eyebrow = cursoConfig.hero.eyebrow?.trim();
+  const ctaLabel = yaEsAlumno
+    ? 'Entrar a la escuela'
+    : cursoConfig.hero.ctaTexto?.trim() || 'Quiero sumarme';
+  const bannerButton = 'w-full sm:w-auto sm:min-w-[18rem]';
 
   return (
-    <section
-      className="relative flex min-h-[100dvh] w-full flex-col bg-palette-cream font-montserrat md:h-[100dvh] md:min-h-0"
-    >
-      <div className="mx-auto flex min-h-0 w-[90%] max-w-6xl flex-1 flex-col px-3 pb-0 sm:px-4 md:pb-8 md:pt-28">
-      <p className="w-full shrink-0 px-0 pt-16 pb-8 text-center font-raleway text-base font-normal leading-snug text-palette-ink md:absolute md:left-16 md:top-[3.75rem] md:w-[min(72rem,calc(100%-4rem))] md:max-w-6xl md:px-0 md:pb-0 md:pt-0 md:text-left md:text-xl md:leading-tight lg:text-[1.15rem] lg:leading-[1.0]">
-        {tagline}
-      </p>
+    <section className="relative flex w-full flex-col bg-palette-cream font-montserrat">
+      <div className="mx-auto flex w-[90%] max-w-6xl flex-col px-3 pb-12 pt-24 sm:px-4 md:pb-16 md:pt-28">
+        <div className="max-w-4xl text-left">
+          {eyebrow ? (
+            <p className="font-montserrat text-[11px] font-semibold uppercase tracking-[0.22em] text-palette-ink md:text-xs">
+              {eyebrow}
+            </p>
+          ) : null}
+          <h1 className="mt-3 max-w-[12em] text-balance text-[2.4rem] font-bold leading-[1.02] tracking-tight text-palette-ink sm:text-[3rem] md:mt-4 md:text-[3.75rem] lg:text-[4.35rem]">
+            {tagline}
+          </h1>
+          {cursoConfig.hero.ctaSubcopy ? (
+            <p className="mt-4 max-w-2xl text-[17px] font-normal leading-relaxed text-palette-ink md:mt-5 md:text-[1.15rem] lg:text-[1.25rem]">
+              {cursoConfig.hero.ctaSubcopy}
+            </p>
+          ) : null}
+          <div className="mt-6 flex flex-col items-stretch gap-3 sm:mt-7 sm:flex-row sm:items-center">
+            <button type="button" onClick={handleButtonClick} className={`${landingCtaUniformPrimary} ${bannerButton}`}>
+              <span>{ctaLabel}</span>
+              <span className="opacity-80 transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+            </button>
+            {!yaEsAlumno ? (
+              <button
+                type="button"
+                onClick={() => scrollToSection('como-se-vive')}
+                className={`${landingCtaUniformGhost} ${bannerButton}`}
+              >
+                Conocer cómo funciona
+              </button>
+            ) : null}
+          </div>
+        </div>
 
-        <div className="flex min-h-0 w-full flex-1 flex-col text-center">
-        {/* Contenedor LCP sin opacity:0 — el thumbnail debe ser visible desde el primer paint */}
-        <div className="relative mb-3 h-[60dvh] w-full shrink-0 overflow-hidden rounded-2xl bg-black shadow-[0_22px_55px_rgba(20,20,17,0.09)] ring-1 ring-palette-stone/20 md:h-auto md:min-h-0 md:flex-1 md:rounded-3xl">
+        <div className="relative mt-8 aspect-video max-h-[38vh] w-full overflow-hidden rounded-2xl bg-black shadow-[0_22px_55px_rgba(20,20,17,0.09)] ring-1 ring-palette-stone/20 md:mt-10 md:max-h-[min(46vh,520px)] md:rounded-3xl">
           <div className="absolute inset-0">
             {!isPlaying ? (
               <>
@@ -300,37 +329,6 @@ const CourseHero = () => {
               </div>
             )}
           </div>
-        </div>
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-1 hidden shrink-0 justify-center md:flex"
-        >
-          {yaEsAlumno ? (
-            <button
-              type="button"
-              onClick={handleButtonClick}
-              className="rounded-full border-2 border-palette-ink bg-palette-ink px-6 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.2em] text-palette-cream transition-all duration-200 hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink"
-            >
-              Ir a la biblioteca
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleButtonClick}
-              className={landingCtaPrimaryCompact}
-            >
-              <span>{productName ? `Aplicar a ${productName}` : 'Aplicar'}</span>
-              <span className="opacity-80 transition-transform duration-200 group-hover:translate-x-0.5">
-                →
-              </span>
-            </button>
-          )}
-        </motion.div>
-        <p className="mc-text-depth-light mx-auto mt-4 max-w-3xl shrink-0 font-montserrat text-base font-light leading-relaxed text-palette-ink/90 md:text-lg">
-          {cursoConfig.hero.ctaSubcopy}
-        </p>
         </div>
       </div>
     </section>

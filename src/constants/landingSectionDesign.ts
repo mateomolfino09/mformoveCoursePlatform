@@ -20,7 +20,7 @@ export const landingEyebrowDark =
   'text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-cream/55';
 
 export const landingSectionTitle =
-  'mt-3 text-[2.15rem] font-bold leading-[1.1] tracking-tight text-palette-ink sm:text-[2.35rem] md:text-[2.85rem] md:leading-[1.08] lg:text-[3.35rem]';
+  'mt-3 text-[2.15rem] font-extrabold leading-[1.1] tracking-tight text-palette-ink sm:text-[2.35rem] md:text-[2.85rem] md:leading-[1.08] lg:text-[3.35rem]';
 
 export const landingSectionTitleDark =
   'mt-3 text-[2.15rem] font-bold leading-[1.1] tracking-tight text-palette-cream sm:text-[2.35rem] md:text-[2.85rem] md:leading-[1.08] lg:text-[3.35rem]';
@@ -64,6 +64,25 @@ export const landingCtaInverted =
 
 export const landingCtaInvertedCompact =
   'group inline-flex items-center justify-center gap-1.5 rounded-full border-2 border-palette-cream/80 bg-palette-cream px-5 py-2.5 font-montserrat text-[11px] font-semibold uppercase tracking-[0.12em] text-palette-ink transition-all duration-200 hover:border-white hover:bg-white';
+
+/**
+ * Alto, padding y tipografía compartidos para que los CTA de una misma
+ * sección midan igual aunque el texto sea más largo.
+ */
+export const landingCtaUniform =
+  'group inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 px-6 font-montserrat text-[13px] font-semibold uppercase leading-none tracking-[0.12em] transition-all duration-200';
+
+export const landingCtaUniformPrimary =
+  `${landingCtaUniform} border-palette-ink bg-palette-ink text-palette-cream hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink`;
+
+export const landingCtaUniformGhost =
+  `${landingCtaUniform} border-palette-ink/40 bg-transparent text-palette-ink hover:border-palette-ink hover:bg-palette-ink hover:text-palette-cream`;
+
+export const landingCtaUniformInverted =
+  `${landingCtaUniform} border-palette-cream/80 bg-palette-cream text-palette-ink hover:border-white hover:bg-white`;
+
+/** Ghost sobre fondo claro. Secundario, no compite con el CTA principal. */
+export const landingCtaGhost = landingCtaUniformGhost;
 
 /** Ghost / outline sobre fondos ink (secundario frente a landingCtaInverted). */
 export const landingCtaGhostDark =

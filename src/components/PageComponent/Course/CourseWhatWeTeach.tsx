@@ -51,9 +51,9 @@ const offerCardVariants = {
 /** Grilla 2 columnas en desktop (módulos). */
 const modulesGridClass = 'grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6';
 
-export default function CourseWhatWeTeach() {
+export default function CourseWhatWeTeach({ showModulos = true }: { showModulos?: boolean }) {
   const reduceMotion = useReducedMotion();
-  const { cursoConfig } = useCursoLanding();
+  const { cursoConfig, slug } = useCursoLanding();
   const { queIncluye } = cursoConfig;
 
   const offerBlocks = queIncluye.offerBlocks.map((block, index) => ({
@@ -121,14 +121,18 @@ export default function CourseWhatWeTeach() {
             className="mx-auto max-w-5xl"
           >
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6">
-              {offerBlocks.map((block) => {
+              {offerBlocks.map((block, index) => {
                 const Icon = block.Icon;
+                const centerOrphan =
+                  slug === 'cuerpo-autonomo' &&
+                  offerBlocks.length % 2 === 1 &&
+                  index === offerBlocks.length - 1;
                 return (
                   <motion.article
                     key={block.step}
                     variants={offerCardVariants}
                     whileHover={reduceMotion ? undefined : { y: -4, transition: { duration: 0.22 } }}
-                    className="group/offer-card relative flex min-h-[16rem] flex-col overflow-hidden rounded-2xl border border-palette-cream/20 bg-palette-ink/75 p-5 text-left shadow-[0_18px_50px_-26px_rgba(0,0,0,0.6)] backdrop-blur-md transition-[border-color,box-shadow] duration-300 hover:border-palette-sage/40 hover:shadow-[0_22px_56px_-22px_rgba(0,0,0,0.68)] md:min-h-0 md:flex-row md:items-start md:gap-6 md:p-7 md:rounded-[1.35rem]"
+                    className={`group/offer-card relative flex min-h-[16rem] flex-col overflow-hidden rounded-2xl border border-palette-cream/20 bg-palette-ink/75 p-5 text-left shadow-[0_18px_50px_-26px_rgba(0,0,0,0.6)] backdrop-blur-md transition-[border-color,box-shadow] duration-300 hover:border-palette-sage/40 hover:shadow-[0_22px_56px_-22px_rgba(0,0,0,0.68)] md:min-h-0 md:flex-row md:items-start md:gap-6 md:p-7 md:rounded-[1.35rem]${centerOrphan ? ' sm:col-span-2 sm:w-[calc(50%-0.625rem)] sm:justify-self-center md:w-[calc(50%-0.75rem)]' : ''}`}
                   >
                     <span
                       aria-hidden
@@ -164,7 +168,7 @@ export default function CourseWhatWeTeach() {
         </div>
       </section>
 
-      <section
+      {showModulos ? <section
         className="border-t border-palette-stone/20 bg-palette-cream font-montserrat py-16 md:py-24"
         aria-label="Módulos del programa"
       >
@@ -237,7 +241,7 @@ export default function CourseWhatWeTeach() {
             </div>
           </motion.div>
         </div>
-      </section>
+      </section> : null}
     </>
   );
 }

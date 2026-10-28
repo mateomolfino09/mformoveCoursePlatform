@@ -53,7 +53,7 @@ export default function CourseOutcomesHighlights() {
   }));
 
   return (
-    <section className="relative isolate w-full overflow-hidden bg-palette-cream font-montserrat">
+    <section id="capacidades" className="relative isolate w-full scroll-mt-28 overflow-hidden bg-palette-cream font-montserrat">
       <div className={landingSplitSectionLayout}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}

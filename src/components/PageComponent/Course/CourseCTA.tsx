@@ -1,29 +1,30 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import {
   landingCtaGhostDark,
-  landingCtaInverted,
-  landingCtaInvertedCompact,
+  landingCtaUniformInverted,
   landingEyebrowDark,
   landingSectionContainer,
   landingSectionTitleDark,
 } from '../../../constants/landingSectionDesign';
-import { routes } from '../../../constants/routes';
 import {
   CURSO_SALES_CALL_BOOKING_URL,
   CURSO_SALES_CALL_CTA_LABEL,
 } from '../../../constants/cursoSalesCall';
+import { trackCursoLandingEvent } from '../../../lib/cursoLandingAnalytics';
 import { useCursoLanding } from './CursoLandingContext';
 
 const CTA_BG = 'my_uploads/plaza/DSC03350_vgjrrh';
 
 const CourseCTA = () => {
-  const { cursoConfig } = useCursoLanding();
+  const router = useRouter();
+  const { cursoConfig, checkoutStartPath, slug } = useCursoLanding();
   const ventaPorLlamada = Boolean(cursoConfig.planes.ventaPorLlamada);
+  const { ctaFinal } = cursoConfig;
 
   return (
     <section className="relative isolate overflow-hidden border-t border-palette-stone/40 bg-palette-ink pb-20 pt-10 font-montserrat md:pt-12">
@@ -35,12 +36,11 @@ const CourseCTA = () => {
               alt=""
               fill
               sizes="(max-width: 1280px) 85vw, 1152px"
-              className="object-cover object-[center_42%] opacity-80"
+              className="object-cover object-[center_42%] opacity-70"
               loader={imageLoader}
             />
           </div>
-          <div className="absolute inset-0 z-[1] bg-gradient-to-r from-palette-ink/92 via-palette-ink/75 to-palette-ink/40" />
-          <div className="absolute inset-0 z-[1] bg-palette-ink/25" />
+          <div className="absolute inset-0 z-[1] bg-[linear-gradient(to_bottom,rgba(20,20,17,0.92),rgba(20,20,17,0.86))] md:bg-[linear-gradient(to_right,rgba(20,20,17,0.94)_0%,rgba(20,20,17,0.9)_38%,rgba(20,20,17,0.45)_72%,rgba(20,20,17,0.28)_100%)]" />
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -49,51 +49,43 @@ const CourseCTA = () => {
             viewport={{ once: true }}
             className="relative z-[2] px-6 py-10 md:px-10 md:py-12"
           >
-            <p className={`${landingEyebrowDark} !text-palette-cream/70`}>
-              {ventaPorLlamada ? 'Último paso' : 'Mentoría'}
+            <p className={`${landingEyebrowDark} !text-palette-cream/80`}>
+              {ventaPorLlamada ? 'Último paso' : 'Inscripción'}
             </p>
-            <h2 className={`${landingSectionTitleDark} max-w-2xl`}>
-              {ventaPorLlamada
-                ? 'Volvé a sentirte dueño de tus movimientos.'
-                : '¿Buscas una experiencia personalizada?'}
+            <h2 className={`${landingSectionTitleDark} max-w-xl`}>
+              {ventaPorLlamada ? 'Si tenés dudas, podemos conversarlo.' : ctaFinal.titulo}
             </h2>
-            <p className="mt-4 max-w-2xl text-[15px] font-normal leading-relaxed text-palette-cream/88 md:text-[17px] lg:text-[18px]">
+            <p className="mt-4 max-w-lg text-[15px] font-normal leading-relaxed text-palette-cream md:text-[17px]">
               {ventaPorLlamada
-                ? 'Agendá una llamada corta y sin costo para resolver tus dudas y ver si este programa es para vos.'
-                : 'Si quieres un acompañamiento evaluado, conmigo como mentor y un plan diseñado específicamente para tu proceso, checkea la mentoría.'}
+                ? 'Si querés saber si Cuerpo Autónomo encaja con lo que estás buscando, podés agendar una llamada corta y sin compromiso.'
+                : ctaFinal.cuerpo}
             </p>
 
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-8 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center">
               {ventaPorLlamada ? (
-                <>
-                  <a
-                    href={CURSO_SALES_CALL_BOOKING_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`${landingCtaInvertedCompact} w-full sm:w-auto`}
-                  >
-                    <span>{CURSO_SALES_CALL_CTA_LABEL}</span>
-                    <span className="text-palette-ink/70 transition-transform duration-200 group-hover:translate-x-0.5">
-                      →
-                    </span>
-                  </a>
-                  <Link
-                    href={routes.navegation.mentoria}
-                    className={`${landingCtaGhostDark} w-full sm:w-auto`}
-                  >
-                    <span>¿Buscás algo más personalizado? Ver mentoría</span>
-                  </Link>
-                </>
-              ) : (
-                <Link
-                  href={routes.navegation.mentoria}
-                  className={`${landingCtaInverted} w-full sm:w-auto`}
+                <a
+                  href={CURSO_SALES_CALL_BOOKING_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackCursoLandingEvent('curso_llamada_click', { slug })}
+                  className={`${landingCtaGhostDark} w-full sm:w-auto`}
                 >
-                  <span>Ver mentoría</span>
+                  <span>{CURSO_SALES_CALL_CTA_LABEL}</span>
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    trackCursoLandingEvent('curso_inscripcion_click', { slug });
+                    router.push(checkoutStartPath);
+                  }}
+                  className={`${landingCtaUniformInverted} w-full min-w-0 max-w-full !px-4 sm:w-auto sm:min-w-[18rem] sm:!px-6`}
+                >
+                  <span>{ctaFinal.boton || 'Quiero sumarme'}</span>
                   <span className="text-palette-ink/70 transition-transform duration-200 group-hover:translate-x-0.5">
                     →
                   </span>
-                </Link>
+                </button>
               )}
             </div>
           </motion.div>

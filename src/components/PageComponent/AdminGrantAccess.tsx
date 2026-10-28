@@ -35,6 +35,7 @@ type AccessRow = {
   vigente: boolean;
   status: string | null;
   expiresAt: string | null;
+  viaStripe?: boolean;
 };
 
 const AdminGrantAccess = () => {
@@ -53,6 +54,7 @@ const AdminGrantAccess = () => {
   const [metodoPago, setMetodoPago] = useState<'transferencia' | 'gratis'>('transferencia');
   const [sendWelcomeEmail, setSendWelcomeEmail] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [revoking, setRevoking] = useState(false);
 
   useEffect(() => {
     const userToken = Cookies.get('userToken');
@@ -203,6 +205,44 @@ const AdminGrantAccess = () => {
     }
   };
 
+  const handleRevoke = async () => {
+    if (!selectedAccess?.vigente || revoking || !email.trim() || !productId) return;
+    const productName = products.find((product) => product.id === productId)?.nombre || 'este curso';
+    const who = lookupUser?.email || email.trim().toLowerCase();
+    const stripeNote = selectedAccess.viaStripe
+      ? ' También cancela la suscripción de Stripe, así que deja de cobrarse.'
+      : '';
+    const confirmed = window.confirm(
+      `¿Quitar el acceso de ${who} a ${productName}? Deja de ver el contenido.${stripeNote}`
+    );
+    if (!confirmed) return;
+
+    setRevoking(true);
+    try {
+      const response = await fetch('/api/admin/grant-access', {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          productId,
+        }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) {
+        toast.error(data?.error || 'No se pudo quitar el acceso');
+        return;
+      }
+      toast.success(data?.message || 'Acceso quitado');
+      await lookupUserByEmail();
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al quitar el acceso');
+    } finally {
+      setRevoking(false);
+    }
+  };
+
   if (auth.user && auth.user.rol !== 'Admin') {
     return null;
   }
@@ -210,17 +250,17 @@ const AdminGrantAccess = () => {
   return (
     <AdmimDashboardLayout>
       <Head>
-        <title>Otorgar acceso | Admin</title>
+        <title>Accesos | Admin</title>
       </Head>
       <AdminPage>
         <AdminPageHeader
-          title="Otorgar acceso"
-          description="Da un curso a un email que ya tenga cuenta."
+          title="Accesos"
+          description="Da un curso a un email que ya tenga cuenta, o quitale el acceso si ya lo tiene."
         />
 
         <p className="mb-5 text-[12px] text-[var(--admin-muted)]">
-          Esta acción da acceso real al contenido. Usá Buscar para verificar el usuario antes de
-          otorgar.
+          Buscá el usuario antes de otorgar o quitar. Quitar acceso deja de mostrar el contenido de
+          inmediato.
         </p>
 
         <form
@@ -287,13 +327,24 @@ const AdminGrantAccess = () => {
               )}
             </select>
             {selectedAccess?.vigente ? (
-              <p className="mt-2 text-[12px] text-[var(--admin-warning)]">
-                Este usuario ya tiene acceso vigente
-                {selectedAccess.expiresAt
-                  ? ` hasta ${new Date(selectedAccess.expiresAt).toLocaleDateString('es-AR')}`
-                  : ' (sin vencimiento)'}
-                .
-              </p>
+              <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-[12px] text-[var(--admin-warning)]">
+                  Este usuario ya tiene acceso vigente
+                  {selectedAccess.expiresAt
+                    ? ` hasta ${new Date(selectedAccess.expiresAt).toLocaleDateString('es-AR')}`
+                    : ' (sin vencimiento)'}
+                  .
+                </p>
+                <AdminButton
+                  type="button"
+                  variant="destructive"
+                  onClick={handleRevoke}
+                  loading={revoking}
+                  disabled={revoking || submitting}
+                >
+                  Quitar acceso
+                </AdminButton>
+              </div>
             ) : null}
           </div>
 
@@ -369,7 +420,13 @@ const AdminGrantAccess = () => {
             Enviar mail de bienvenida
           </label>
 
-          <AdminButton type="submit" variant="primary" disabled={!canSubmit} loading={submitting} className="w-full">
+          <AdminButton
+            type="submit"
+            variant="primary"
+            disabled={!canSubmit || revoking}
+            loading={submitting}
+            className="w-full"
+          >
             Otorgar acceso
           </AdminButton>
         </form>

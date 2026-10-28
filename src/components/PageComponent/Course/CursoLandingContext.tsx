@@ -61,7 +61,13 @@ export function CursoLandingProvider({
   const checkoutStartPath = cursoEmpezarPath(slug);
 
   const scrollToSection = useCallback((sectionId: string) => {
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const reduce =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById(sectionId)?.scrollIntoView({
+      behavior: reduce ? 'auto' : 'smooth',
+      block: 'start',
+    });
   }, []);
 
   const scrollToPlans = useCallback(() => {

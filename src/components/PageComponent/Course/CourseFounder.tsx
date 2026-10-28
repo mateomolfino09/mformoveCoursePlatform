@@ -20,7 +20,7 @@ const StatItem = ({ value, label }: { value: string; label: string }) => {
       <p className="font-montserrat text-3xl font-bold tracking-tight text-palette-ink md:text-4xl">
         {value}
       </p>
-      <p className="mt-1 font-montserrat text-xs font-semibold uppercase tracking-[0.16em] text-palette-stone md:text-sm">
+      <p className="mt-1 whitespace-nowrap font-montserrat text-[11px] font-semibold uppercase tracking-[0.12em] text-palette-stone sm:text-xs md:text-sm">
         {label}
       </p>
     </div>
@@ -39,7 +39,7 @@ export default function CourseFounder() {
   const hasStats = Boolean(stats.anios?.trim() || stats.estudiantes?.trim() || stats.paises?.trim());
 
   return (
-    <section className={`${landingSectionShell} relative overflow-hidden`}>
+    <section id="profesor" className={`${landingSectionShell} relative scroll-mt-28 overflow-hidden`}>
       <div className={landingSectionContainer}>
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-10 md:flex-row md:items-center md:gap-14">
           {hasImage ? (
@@ -67,10 +67,16 @@ export default function CourseFounder() {
           >
             {fundador.eyebrow ? <p className={landingEyebrow}>{fundador.eyebrow}</p> : null}
             <h2 className={landingSectionTitle}>{fundador.titulo}</h2>
-            {fundador.bio ? <p className={landingSectionBody}>{fundador.bio}</p> : null}
+            {fundador.bio
+              ? fundador.bio.split(/\n\n+/).map((paragraph) => (
+                  <p key={paragraph.slice(0, 24)} className={landingSectionBody}>
+                    {paragraph}
+                  </p>
+                ))
+              : null}
 
             {hasStats ? (
-              <div className="mt-8 grid grid-cols-3 gap-4 md:mt-10 md:max-w-md md:gap-8">
+              <div className="mt-8 grid grid-cols-3 gap-3 sm:gap-6 md:mt-10 md:max-w-xl md:gap-10">
                 <StatItem value={stats.anios} label="Años" />
                 <StatItem value={stats.estudiantes} label="Estudiantes" />
                 <StatItem value={stats.paises} label="Países" />

@@ -219,6 +219,15 @@ export async function updateCourseSubscriptionStatus({
     return { updated: false };
   }
 
+  // Un admin puede revocar el acceso. Una renovación atrasada de Stripe no debe devolverlo.
+  if (entry.status === 'revoked' && status === 'active') {
+    coursePaymentDebug('fulfill.subscription_reactivation_skipped', {
+      stripeSubscriptionId,
+      userId: user._id.toString(),
+    });
+    return { updated: false, userId: user._id.toString(), productId: entry.productoId?.toString() };
+  }
+
   entry.status = status;
   if (expiresAt !== undefined) {
     entry.expiresAt = expiresAt;

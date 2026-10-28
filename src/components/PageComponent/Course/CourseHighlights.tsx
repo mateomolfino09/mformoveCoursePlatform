@@ -66,7 +66,7 @@ const CourseHighlights = ({ hideIntro = false }: CourseHighlightsProps) => {
   return (
     <>
       {!hideIntro && <CourseHighlightsIntro />}
-      <section className={`${landingSectionShell} relative isolate overflow-hidden py-10 md:py-14`}>
+      <section id="modulos" className={`${landingSectionShell} relative isolate scroll-mt-28 overflow-hidden py-10 md:py-14`}>
         <div className={`${landingSectionContainer} relative z-10 text-left`}>
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -153,7 +153,7 @@ const CourseHighlights = ({ hideIntro = false }: CourseHighlightsProps) => {
               ))}
           </ol>
 
-          <motion.div
+          {highlights.ctaTitulo?.trim() ? <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
@@ -189,7 +189,7 @@ const CourseHighlights = ({ hideIntro = false }: CourseHighlightsProps) => {
                 </button>
               )}
             </div>
-          </motion.div>
+          </motion.div> : null}
         </div>
       </section>
     </>

@@ -7,6 +7,7 @@ import { landingSectionContainer } from '../../../constants/landingSectionDesign
 
 export default function CourseFullWidthBanner() {
   const { cursoConfig } = useCursoLanding();
+  if (!cursoConfig.bannerAncho.cuerpo?.trim()) return null;
   return (
     <section className="relative isolate w-full overflow-hidden border-t border-white/10 bg-palette-ink py-12 font-montserrat text-palette-cream md:py-14">
       <CourseDarkSectionBackground />

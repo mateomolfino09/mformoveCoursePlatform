@@ -16,7 +16,6 @@ import CourseOutcomesHighlights from './CourseOutcomesHighlights';
 import CourseHighlightsIntro from './CourseHighlightsIntro';
 import CourseCTA from './CourseCTA';
 import CourseScheduleCall from './CourseScheduleCall';
-import CourseCallCtaBanner from './CourseCallCtaBanner';
 import CourseMobileBottomBar from './CourseMobileBottomBar';
 import PromocionFooter from '../Membership/PromocionFooter';
 import { useCursoLanding } from './CursoLandingContext';
@@ -143,47 +142,27 @@ const Course = ({ plans = [], promociones = [], checkoutPlans = [] }: CourseProp
       className="relative lg:h-full min-h-screen overflow-scroll overflow-x-hidden bg-palette-cream"
     >
       <MainSideBar where={'membership'}>
-        {/* 1. Hero - Hook emocional inicial */}
         <CourseHero />
-
-        {/* 1.2. Fundador - Autoridad (años, estudiantes, países) */}
-        <CourseFounder />
-
-        {/* 1.5. Nueva narrativa - pantalla completa */}
         <CourseBetweenHeroSection />
-
-        <CourseFullWidthBanner />
-
-        {/* 2. Testimonios en video (tras el banner); los escritos van después de Outcomes */}
-        <CourseTestimonials variant="clientVideos" showCta={false} />
-
-        {/* 3. Intro método (banda + texto/foto) */}
         <CourseHighlightsIntro />
-
-        {/* 3.b Resultados esperables (outcomes) */}
+        <CourseFullWidthBanner />
         <CourseOutcomesHighlights />
-
-        <CourseTestimonials variant="written" />
-
-        {/* 3.c Highlights - Línea de tiempo del método (sin intro duplicada) */}
         <CourseHighlights hideIntro />
-
-        {/* 3.6. Refuerzo del CTA de llamada a mitad de página */}
-        {ventaPorLlamada ? <CourseCallCtaBanner /> : null}
-
-        {/* 3.5. Lo que enseñamos - Disciplinas (fotos de Index) */}
-        <CourseWhatWeTeach />
-
-        {/* 5. Llamada de consulta — en Cuerpo Autónomo siempre; en otros cursos, si venden por llamada */}
-        {ventaPorLlamada || slug === 'cuerpo-autonomo' ? <CourseScheduleCall /> : null}
-
-        {/* 6. Plans - Planes y qué incluye (ya no muestra precio si el curso vende por llamada) */}
+        <CourseFounder />
+        <CourseTestimonials variant="written" showCta={false} />
+        <CourseWhatWeTeach showModulos={false} />
         <CoursePlans plans={plans} promociones={promociones} checkoutPlans={checkoutPlans} />
-
-        {/* 9. FAQ - Objecciones finales (resuelve dudas antes del cierre) */}
+        {ventaPorLlamada || slug === 'cuerpo-autonomo' ? (
+          <CourseScheduleCall
+            tone="quiet"
+            hideHost
+            showEyebrow={false}
+            title="Si tenés dudas, podemos conversarlo."
+            body="Si querés saber si Cuerpo Autónomo encaja con lo que estás buscando, podés agendar una llamada corta y sin compromiso."
+            ctaLabel="Tengo una duda, quiero conversar"
+          />
+        ) : null}
         <CourseFAQ />
-
-        {/* 10. CTA Final - Última oportunidad, refuerza la misma oferta */}
         <CourseCTA />
 
         <FooterProfile />

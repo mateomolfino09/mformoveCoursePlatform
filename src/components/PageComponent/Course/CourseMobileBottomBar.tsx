@@ -6,14 +6,14 @@ import { useMembershipNav } from '../../MainSidebar/MembershipNavContext';
 import { useCursoLanding } from './CursoLandingContext';
 import { useAuth } from '../../../hooks/useAuth';
 import { userHasPurchasedCourseBySlug } from '../../../lib/clientCourseAccess';
-import { cursoCheckoutApplyCtaLabel } from '../../../constants/cursoSalesCall';
+import { trackCursoLandingEvent } from '../../../lib/cursoLandingAnalytics';
 
 /** Botones de conversión + Menú para reutilizar en barra flotante. */
 export const CourseBottomBarButtons = () => {
   const router = useRouter();
   const auth = useAuth();
   const nav = useMembershipNav();
-  const { cursoConfig, slug, checkoutStartPath, productName } = useCursoLanding();
+  const { cursoConfig, slug, checkoutStartPath } = useCursoLanding();
   const [applyPressed, setApplyPressed] = useState(false);
   if (!nav) return null;
   const { toggleNav, showNav } = nav;
@@ -24,6 +24,7 @@ export const CourseBottomBarButtons = () => {
       router.push(cursoConfig.hero.rutaUsuarioSuscriptor || '/biblioteca');
       return;
     }
+    trackCursoLandingEvent('curso_inscripcion_click', { slug });
     router.push(checkoutStartPath);
   };
 
@@ -53,7 +54,7 @@ export const CourseBottomBarButtons = () => {
         onPointerCancel={() => setApplyPressed(false)}
         className={ctaClass}
       >
-        {cursoCheckoutApplyCtaLabel(productName)}
+        {yaEsAlumno ? 'Entrar a la escuela' : cursoConfig.hero.ctaTexto?.trim() || 'Quiero sumarme'}
         <span aria-hidden> →</span>
       </button>
       <button

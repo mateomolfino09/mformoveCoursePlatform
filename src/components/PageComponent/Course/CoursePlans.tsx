@@ -17,6 +17,7 @@ import imageLoader from '../../../../imageLoader';
 import { CldImage } from 'next-cloudinary';
 import { useCursoLanding } from './CursoLandingContext';
 import {
+  landingCtaUniformPrimary,
   landingCtaPrimary,
   landingCtaPrimaryCompact,
   landingEyebrow,
@@ -43,6 +44,8 @@ import {
   isCursoCheckoutSuscripcion,
   resolveCursoPlanIntervaloMeses,
 } from '../../../lib/cursoSuscripcion';
+import { CUERPO_AUTONOMO_PRECIO_LANDING_USD } from '../../../constants/cursoSuscripcionIncludes';
+import { trackCursoLandingEvent } from '../../../lib/cursoLandingAnalytics';
 import CourseIncludesBlock from './CourseIncludesBlock';
 import {
   CURSO_SALES_CALL_BOOKING_URL,
@@ -313,7 +316,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
       : CURSO_SUSCRIPCION_INTERVALO_MENSUAL
   );
 
-  const handleGoToCheckout = useCallback(async () => {
+  const handleGoToCheckout = useCallback(async (intervaloOverride?: number) => {
     if (isNavigatingToCheckout) return;
     setIsNavigatingToCheckout(true);
     try {
@@ -322,9 +325,10 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
         router.push(ownedPath);
         return;
       }
+      const intervalo = intervaloOverride ?? selectedIntervalo;
       router.push(
         mostrarSuscripcion
-          ? `${checkoutStartPath}?intervalo=${selectedIntervalo}`
+          ? `${checkoutStartPath}?intervalo=${intervalo}`
           : checkoutStartPath
       );
     } catch {
@@ -859,9 +863,11 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
   const PlansCheckoutFooter = ({
     cta,
     disclaimer,
+    secondary,
   }: {
     cta: ReactNode;
     disclaimer?: string;
+    secondary?: ReactNode;
   }) => (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -871,10 +877,11 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
       className="mx-auto mt-10 max-w-3xl px-4 text-center md:mt-14"
     >
       {cta}
+      {secondary ? <div className="mt-4 flex justify-center">{secondary}</div> : null}
       {disclaimer ? (
         <p className="mt-4 font-raleway text-sm text-palette-stone">{disclaimer}</p>
       ) : (
-        <div className="mx-auto mt-6 max-w-2xl space-y-3.5 text-balance text-palette-stone md:mt-8 md:max-w-3xl md:space-y-4">
+        <div className="mx-auto mt-6 max-w-2xl space-y-3.5 text-balance text-palette-ink/80 md:mt-8 md:max-w-3xl md:space-y-4">
           <p className="font-montserrat text-xs font-semibold uppercase tracking-[0.14em] text-palette-ink md:text-sm">
             {planes.etiquetaFormasPago}
           </p>
@@ -980,6 +987,126 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
 
   const renderPlans = () => {
     if (mostrarSuscripcion && stripeCheckoutPlans.length > 0) {
+      if (slug === 'cuerpo-autonomo') {
+        const incluye = [
+          {
+            titulo: 'Entrenamos juntos todas las semanas',
+            cuerpo:
+              'Nos encontramos en vivo para practicar movimiento, aprender y resolver dudas. No estás siguiendo videos por tu cuenta.',
+          },
+          {
+            titulo: 'Desarrollás fuerza, movilidad y coordinación',
+            cuerpo:
+              'Tenés un camino de clases progresivas para entrenar a tu ritmo, con propuestas que podés adaptar a tus capacidades.',
+          },
+          {
+            titulo: 'Aprendés a entender y entrenar tu cuerpo',
+            cuerpo:
+              'A través de los módulos Percibir, Ordenar y Construir, desarrollás herramientas para tomar mejores decisiones sobre tu práctica.',
+          },
+          {
+            titulo: 'Formás parte de una comunidad de movimiento',
+            cuerpo:
+              'Un grupo donde compartir experiencias, hacer preguntas y encontrar motivación para seguir practicando semana a semana.',
+          },
+        ];
+
+        return (
+          <div className="mx-auto w-full max-w-5xl">
+            <div className="grid items-stretch gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] md:gap-8 lg:gap-10">
+            <figure className="relative order-2 h-44 overflow-hidden rounded-2xl border border-palette-stone/25 shadow-[0_16px_48px_-20px_rgba(20,20,17,0.14)] sm:h-52 md:order-1 md:h-full md:min-h-[24rem] md:rounded-3xl">
+              <CldImage
+                src="my_uploads/plaza/DSC03350_vgjrrh"
+                alt="Encuentro grupal de Cuerpo Autónomo"
+                fill
+                className="object-cover object-[center_42%]"
+                sizes="(max-width: 768px) 100vw, 480px"
+              />
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-sage/55 to-transparent"
+              />
+            </figure>
+            <article className={`${landingPlanCard} relative order-1 overflow-hidden px-6 py-7 text-left sm:px-8 sm:py-8 md:order-2`}>
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-palette-sage/40 to-transparent"
+              />
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-palette-sage/10 blur-3xl"
+              />
+              <p className="relative font-montserrat text-[11px] font-semibold uppercase tracking-[0.18em] text-palette-stone">
+                Cuerpo Autónomo · 4 meses
+              </p>
+              <p className="relative mt-3 font-montserrat text-[3.25rem] font-bold leading-none tracking-tight text-palette-ink sm:text-[3.75rem]">
+                USD {CUERPO_AUTONOMO_PRECIO_LANDING_USD}
+              </p>
+              <p className="mt-3 text-[15px] leading-relaxed text-palette-ink">
+                Por cuatro meses. Se renueva cada 4 meses si decidís seguir.
+              </p>
+              <p className="mt-6 font-montserrat text-xs font-semibold uppercase tracking-[0.16em] text-palette-ink">
+                Incluye
+              </p>
+              <ul className="mt-3 space-y-4 text-palette-ink">
+                {incluye.map((item) => (
+                  <li key={item.titulo} className="flex gap-2.5">
+                    <span aria-hidden className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-palette-sage" />
+                    <span>
+                      <span className="block text-[15px] font-semibold leading-snug">{item.titulo}</span>
+                      <span className="mt-1 block text-[14px] font-normal leading-relaxed text-palette-ink/80">{item.cuerpo}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <button
+                type="button"
+                onClick={() => {
+                  trackCursoLandingEvent('curso_inscripcion_click', { slug });
+                  void handleGoToCheckout(CURSO_SUSCRIPCION_INTERVALO_4_MESES);
+                }}
+                disabled={isNavigatingToCheckout}
+                className={`${landingCtaUniformPrimary} mt-7 w-full disabled:cursor-not-allowed disabled:opacity-50`}
+              >
+                {isNavigatingToCheckout ? (
+                  <>
+                    <MiniLoadingSpinner />
+                    <span>Redirigiendo...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Quiero sumarme</span>
+                    <span className="opacity-80">→</span>
+                  </>
+                )}
+              </button>
+              <p className="mt-4 text-center text-[13px] leading-relaxed text-palette-stone">
+                Pagá de forma segura con los medios disponibles para tu país. Si el medio ofrece cuotas, se confirman al pagar.
+              </p>
+            </article>
+            </div>
+
+            <div className="mx-auto mt-8 max-w-md text-center">
+              <p className="font-montserrat text-base font-semibold text-palette-ink">
+                ¿Tenés alguna duda antes de sumarte?
+              </p>
+              <p className="mt-2 text-[15px] leading-relaxed text-palette-ink/80">
+                Podés conversar con nosotros para saber si Cuerpo Autónomo encaja con lo que estás buscando.
+              </p>
+              <a
+                href={CURSO_SALES_CALL_BOOKING_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackCursoLandingEvent('curso_llamada_click', { slug })}
+                className="mt-4 inline-flex items-center justify-center rounded-full border border-palette-ink/30 bg-transparent px-5 py-2.5 font-montserrat text-[12px] font-semibold uppercase tracking-[0.14em] text-palette-ink/80 transition-colors hover:border-palette-ink hover:text-palette-ink"
+              >
+                Resolver mis dudas
+              </a>
+            </div>
+          </div>
+        );
+      }
+
       const selectedPlan =
         stripeCheckoutPlans.find(
           (plan) => resolveCursoPlanIntervaloMeses(plan) === selectedIntervalo
@@ -1321,7 +1448,9 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           {...landingFadeUp}
           className={`${landingHeaderBlock} relative z-10 mx-auto max-w-3xl text-center`}
         >
-          <p className={landingEyebrow}>{ventaPorLlamada ? 'Cómo empezar' : 'Inversión'}</p>
+          <p className={landingEyebrow}>
+            {slug === 'cuerpo-autonomo' ? 'Inscripción' : ventaPorLlamada ? 'Cómo empezar' : 'Inversión'}
+          </p>
           <h2 className={landingSectionTitle}>{planesTitulo}</h2>
           {preventaPricing.enPreventa ? (
             <p className="mt-4 font-montserrat text-xs font-semibold uppercase tracking-[0.26em] text-palette-stone md:text-sm">
@@ -1335,7 +1464,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true }}
-          className={`${landingSectionBody} relative z-10 mx-auto mb-10 max-w-3xl space-y-4 text-balance text-center md:mb-14 md:max-w-4xl md:space-y-5`}
+          className={`${landingSectionBody} relative z-10 mx-auto max-w-3xl space-y-4 text-balance text-center md:max-w-4xl md:space-y-5 ${slug === 'cuerpo-autonomo' ? 'mb-8 md:mb-10' : 'mb-10 md:mb-14'}`}
         >
           {planes.parrafosValor.map((paragraph, i) => (
             <p key={i}>{paragraph}</p>

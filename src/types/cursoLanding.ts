@@ -263,6 +263,7 @@ export type CursoLandingConfig = {
   vimeoGaleriaId: string;
   hero: {
     videoPresentacionVimeoId: string;
+    eyebrow: string;
     tagline: string;
     ctaTexto: string;
     ctaSubcopy: string;
@@ -284,6 +285,7 @@ export type CursoLandingConfig = {
     eyebrow: string;
     titulo: string;
     parrafos: string[];
+    cierre: string;
   };
   bannerAncho: {
     cuerpo: string;
@@ -306,6 +308,7 @@ export type CursoLandingConfig = {
     titulo: string;
     subtitulo: string;
     cuerpo: string;
+    bloques: { titulo: string; cuerpo: string }[];
     imagenMobilePublicId: string;
     imagenDesktopPublicId: string;
     imagenAlt: string;
@@ -387,181 +390,163 @@ export type CursoLandingConfig = {
 };
 
 const CURSO_BETWEEN_HERO_PARRAFOS = [
-  "1. dejar atrás la rigidez y las limitaciones, convirtiendo el 'no saber qué hacer' en seguridad para moverte sin lesionarte, recuperar tu agilidad y permitirte aprovechar al máximo el potencial de tu cuerpo.",
-  '2. ganar resultados disfrutando, sin necesidad de un gimnasio, rutinas que no querés hacer y ejercicios monótonos, sino despertando un cuerpo ágil, instintivo y con ganas.',
-  '3. eliminar el miedo a lesionarte, construyendo tu versión más soberana, comprometida y creativa, que se hace cargo de su propia salud física y entrena creando movimientos con criterio — sin depender de nadie más.',
+  'Capaz ya entrenás, pero sentís que la movilidad siempre queda pendiente. O querés empezar a moverte más y no sabés bien por dónde arrancar.',
+  'En Cuerpo Autónomo trabajamos fuerza, movilidad y coordinación, mientras aprendemos a entender nuestro cuerpo y construir una práctica que podamos sostener en el tiempo.',
 ];
 
+const CURSO_BETWEEN_HERO_CIERRE = '';
+
 const CURSO_BANNER_ANCHO_CUERPO =
-  'Un recorrido 100 % a tu ritmo, con más de 20 sesiones prácticas listas para usar. Vas a estar acompañado por un grupo de gente que está en la misma. El mapa lo tenés para siempre, pero el camino lo hacemos juntos.';
+  'Cada persona empieza desde un lugar distinto. Lo que compartimos es la práctica.';
 
 const CURSO_INTRO_CUERPO =
-  'Un programa 100% online con +25 clases, material para implementar, manuales de práctica, comunidad de practicantes y 6 meses de encuentros en vivo para profundizar.\n\nJunté rehabilitación, danza, artes marciales, juego, entrenamiento y deportes en un programa solo. Cuerpo autónomo es un proceso completo donde bajás los principios del movimiento del cuerpo y la mente y los convertís en decisiones concretas: cómo ser funcional, qué áreas priorizar según tu rigidez, cómo ganar movilidad y el trabajo mental necesario para sostener y transformar tu cuerpo en un aliado que te responde y se mueve sin depender de nadie más.';
+  'En Cuerpo Autónomo tenés un camino para seguir a tu ritmo y un grupo con el que encontrarte todas las semanas para practicar, compartir experiencias y resolver dudas.';
+
+const CURSO_INTRO_BLOQUES: { titulo: string; cuerpo: string }[] = [
+  {
+    titulo: 'Practicá a tu ritmo',
+    cuerpo:
+      'Clases organizadas para desarrollar tus capacidades, repetir lo que necesites y avanzar según tus tiempos.',
+  },
+  {
+    titulo: 'Nos encontramos todas las semanas',
+    cuerpo:
+      'Encuentros grupales conmigo para practicar movimiento, profundizar en lo que estamos aprendiendo y resolver dudas.',
+  },
+  {
+    titulo: 'Compartí el proceso',
+    cuerpo:
+      'Una comunidad donde podés preguntar, contar cómo te va y aprender junto a otras personas que también están construyendo sus capacidades.',
+  },
+];
 
 const CURSO_OUTCOMES_PRESETS: Omit<CursoOutcome, 'orden'>[] = [
   {
-    titulo: 'Entendés de qué estás hecho',
-    cuerpo:
-      'Mirás tu cuerpo y entendés por qué te duele lo que te duele. Dejás de ser un extraño para vos mismo y empezás a ver el potencial que tenés guardado.',
+    titulo: 'Fuerza y movilidad',
+    cuerpo: 'Desarrollá capacidades que te ayuden a moverte con mayor libertad y control.',
   },
   {
-    titulo: 'Dejás de copiar "ejercicios" y empezás a moverte con sentido',
-    cuerpo:
-      'Chau a ser el que hace "un poco de gym". Empezás a moverte con criterio. Entendés qué hacer cada día, lo indispensable, lo elegible y a fluir en tus necesidades',
+    titulo: 'Confianza para explorar',
+    cuerpo: 'Aprendé a acercarte progresivamente a posiciones y movimientos nuevos.',
   },
   {
-    titulo: 'Construís un cuerpo que no se rompe',
+    titulo: 'Criterio para entrenar',
     cuerpo:
-      'Te volvés el "ágil" del grupo, esa que te permite hacer deporte, sentirte comod@, experimentar y jugar sin lastimarte.',
+      'Entendé qué estás practicando, cómo progresar y cuándo adaptar un ejercicio a tu situación.',
   },
   {
-    titulo: 'Chau miedo, hola seguridad',
-    cuerpo:
-      'Dejás de dudar de si te vas a lesionar o si "ya estás viejo" para esto. Te movés donde tu cuerpo te permite y ganas nuevos espacios con movilidad.',
-  },
-  {
-    titulo: 'De una carga a tu aliado',
-    cuerpo:
-      'Ya no es "ir a entrenar": es una relación nueva. Te haces caso, te sentís cómodo en tu piel y aprovechás esa conexión para hacer lo que quieras en tu vida diaria.',
-  },
-  {
-    titulo: 'Te movés porque querés, no porque te obligan',
-    cuerpo:
-      'Cuando entendés la técnica, entrenar deja de ser pesado. No necesitás fuerza de voluntad infinita porque el movimiento te recarga. Encontrás tu propio momento, ritmo y fluís sin esfuerzo.',
-  },
-  {
-    titulo: 'Limpiás lo que no sirve y te enfocás en lo que rinde',
-    cuerpo:
-      'Dejás de perder tiempo en clases aburridas o rutinas que no te dan nada. Metés toda tu energía en un solo método que funciona.',
-  },
-  {
-    titulo: 'Este mapa es para toda la vida',
-    cuerpo:
-      'Aprendés un método claro que es tuyo para siempre. No necesitás más cursos, ni más suscripciones, solo disfrutar de tu cuerpo y compartir tu practica como te guste. Ya sabés cómo cuidarte y cómo evolucionar por tu cuenta.',
+    titulo: 'Una práctica sostenible',
+    cuerpo: 'Encontrá maneras de incorporar el movimiento a tu semana y retomar cuando perdés el ritmo.',
   },
 ];
 
 const CURSO_HIGHLIGHTS_PRESETS: Omit<CursoHighlight, 'orden'>[] = [
   {
-    titulo: 'Regulación (trabajos internos)',
-    resumen: 'Aprendés a respirar y moverte para calmar el sistema nervioso.',
-    detalle:
-      'Cuando el sistema baja revoluciones, el cuerpo deja de sostenerse desde la rigidez. Practicas de yoga, respiración, mentalidad y meditación',
+    titulo: 'Percibir',
+    resumen:
+      'Aprendé a prestar atención al cuerpo, reconocer sensaciones y explorar cómo te movés.',
+    detalle: '',
   },
   {
-    titulo: 'Arquitectura corporal (postura: pies y columna)',
-    resumen: 'Reordenás la base y el eje para que sostenerte no sea un desgaste.',
-    detalle:
-      'Pies que informan al suelo y columna que organiza el resto. Movimiento, biomecánica, técnicas de liberación de tejido conectivo y masajes. No es un tema de postura, es no perpetuarlas',
+    titulo: 'Ordenar',
+    resumen:
+      'Descubrí cómo tus hábitos, tu entorno y tu vida cotidiana influyen sobre tu práctica, y cómo crear condiciones para sostenerla.',
+    detalle: '',
   },
   {
-    titulo: 'Capacidades (movilidad, fuerza y coordinación)',
-    resumen: 'Construís confianza y agilidad para los desafíos de la vida.',
-    detalle:
-      'No buscamos “rendir”: buscamos estar disponibles. Movilidad que da espacio, fuerza que protege y coordinación que te vuelve eficiente e inteligente.',
-  },
-  {
-    titulo: 'Expresión (el lenguaje: lucha y danza)',
-    resumen: 'Recuperás el placer de moverte: suelo, flow y juego.',
-    detalle:
-      'La expresión aparece cuando hay estructura y calma. Volvés a jugar con el movimiento: girar, desplazarte, caer y levantarte. Entrenar debería ser divertido.',
-  },
-  {
-    titulo: 'Rehabilitación (prevención de lesiones)',
-    resumen: 'Conocimiento para sanar molestias y moverte con seguridad.',
-    detalle:
-      'Entendés qué hacer cuando aparece una molestia: cómo ajustar, cómo progresar y cómo prevenir. La meta es práctica segura y sostenible.',
+    titulo: 'Construir',
+    resumen:
+      'Trabajá fuerza, movilidad y coordinación, aprendiendo principios para desarrollar esas capacidades progresivamente.',
+    detalle: '',
   },
 ];
 
 const CURSO_MODULOS_PRESETS: Omit<CursoModuloLanding, 'orden'>[] = [
   {
-    titulo: 'Regulación (trabajos internos)',
-    descripcion: 'Respiración y calma del sistema para bajar tensión.',
+    titulo: 'Percibir',
+    descripcion:
+      'Aprendé a prestar atención al cuerpo, reconocer sensaciones y explorar cómo te movés.',
     imagenPublicId: 'DSC01884_grva4a',
   },
   {
-    titulo: 'Arquitectura corporal (postura: pies y columna)',
-    descripcion: 'Base y eje para sostenerte con menos esfuerzo.',
+    titulo: 'Ordenar',
+    descripcion:
+      'Descubrí cómo tus hábitos, tu entorno y tu vida cotidiana influyen sobre tu práctica.',
     imagenPublicId: 'my_uploads/fondos/DSC01472_mvzgw7',
   },
   {
-    titulo: 'Capacidades (movilidad, fuerza y coordinación)',
-    descripcion: 'Vigor y agilidad para el día a día real.',
+    titulo: 'Construir',
+    descripcion:
+      'Trabajá fuerza, movilidad y coordinación, con principios para desarrollarlas progresivamente.',
     imagenPublicId: 'my_uploads/fondos/DSC01753_qdv9o0',
-  },
-  {
-    titulo: 'Expresión (el lenguaje: lucha y danza)',
-    descripcion: 'Suelo, flujo y juego cuando ya hay estructura.',
-    imagenPublicId: 'my_uploads/plaza/DSC03366_ctiejt',
-  },
-  {
-    titulo: 'Rehabilitación (prevención de lesiones)',
-    descripcion: 'Criterio para ajustar, sanar molestias y progresar con seguridad.',
-    imagenPublicId: 'my_uploads/fondos/DSC01642_rioxq5',
   },
 ];
 
 const CURSO_FAQ_PRESETS: Omit<CursoFaqItem, 'orden'>[] = [
   {
-    pregunta: '¿Qué es Cuerpo Autónomo y qué incluye?',
+    pregunta: '¿Para quién es Cuerpo Autónomo?',
     respuesta:
-      'Cuerpo Autónomo es un proceso de 4 meses para construir un cuerpo fuerte, móvil y capaz, mientras aprendés a entenderlo y entrenarlo cada vez con más criterio. Incluye 3 módulos y 20 clases progresivas, acceso para siempre a esas clases, recursos que se suman semana a semana, un encuentro grupal semanal, una clase práctica en vivo por mes, material práctico, comunidad privada y una sesión individual 1:1.',
-  },
-  {
-    pregunta: '¿Es un curso o una membresía?',
-    respuesta:
-      'Es un proceso de 4 meses de acompañamiento y una base educativa que conservás. Durante esos 4 meses tenés encuentros semanales, clases prácticas en vivo, comunidad y el proceso conmigo. Las clases de los módulos quedan para vos para siempre.',
-  },
-  {
-    pregunta: '¿Qué pasa cuando termino los 3 módulos?',
-    respuesta:
-      'Las clases de los módulos siguen disponibles para que vuelvas a recorrerlas cuando quieras. El acompañamiento —encuentros semanales, clases en vivo y comunidad— corresponde a los 4 meses del proceso.',
+      'Es para quien quiere construir fuerza, movilidad y coordinación, y aprender a entender y entrenar su cuerpo. Sirve si ya te movés y sentís que te falta un criterio, o si querés empezar y no sabés por dónde. No es rehabilitación, terapia ni un entrenamiento individual.',
   },
   {
     pregunta: '¿Necesito experiencia previa?',
     respuesta:
-      'No. Podés empezar desde cero o sumarte aunque ya entrenes. El recorrido comienza por aprender a percibir y entender mejor tu cuerpo antes de avanzar hacia el desarrollo de capacidades más complejas. Cada persona adapta la práctica a su propio punto de partida.',
+      'No. Podés empezar desde cero o sumarte si ya entrenás. Cada persona adapta la práctica a su punto de partida.',
   },
   {
     pregunta: '¿Cuánto tiempo tengo que dedicarle?',
     respuesta:
-      'No buscamos que Cuerpo Autónomo se convierta en otra obligación difícil de sostener. Como referencia, podés empezar dedicando entre 2 y 3 momentos por semana a las clases y prácticas. El contenido está disponible para que avances a tu ritmo y puedas integrarlo a tu vida.',
+      'No hay una carga obligatoria. Las clases están para avanzar a tu ritmo. Como referencia, podés empezar con dos o tres momentos por semana e integrarlos a tu vida.',
   },
   {
-    pregunta: '¿Cómo funciona el acompañamiento?',
+    pregunta: '¿Puedo hacerlo si ya voy al gimnasio o practico otro deporte?',
     respuesta:
-      'Durante los 4 meses hay un encuentro grupal semanal para acompañar el proceso, resolver dudas y profundizar, y una clase práctica en vivo por mes, de 40 a 60 minutos, para movernos y entrenar juntos.',
+      'Sí. El gimnasio y otros deportes pueden convivir con la escuela. Cuerpo Autónomo no los reemplaza: suma una práctica para entender y entrenar el cuerpo.',
   },
   {
-    pregunta: '¿Qué es la sesión individual con un profesional?',
+    pregunta: '¿Qué pasa si una semana no puedo entrenar?',
     respuesta:
-      'Incluye una sesión individual 1:1 para trabajar específicamente sobre vos, tus objetivos y lo que necesitás.',
+      'Podés retomar cuando vuelvas. Durante tu inscripción las clases quedan disponibles para repetirlas y avanzar a tu tiempo. No hace falta seguir el ritmo de nadie.',
   },
   {
-    pregunta: '¿Qué pasa si me pierdo una semana?',
+    pregunta: '¿Cómo funcionan los encuentros semanales?',
     respuesta:
-      'No pasa nada. No necesitás seguir el ritmo de nadie. Las clases principales están disponibles para que avances a tu propio ritmo y puedas retomar cuando lo necesites. La idea es construir una práctica sostenible, no agregar presión.',
+      'Son encuentros grupales con Mateo para practicar movimiento, profundizar en lo que estamos aprendiendo y resolver dudas. El día y el horario se confirman dentro de la escuela.',
   },
   {
-    pregunta: '¿En qué se diferencia de una mentoría personalizada?',
+    pregunta: '¿Puedo participar si no llego a los encuentros en vivo?',
     respuesta:
-      'En una mentoría trabajamos de forma individual sobre tus objetivos y necesidades específicas. Cuerpo Autónomo ofrece un camino estructurado dentro de una experiencia grupal, con contenido, comunidad y acompañamiento profesional. Si buscás construir una práctica propia mientras aprendés junto a otras personas, la academia probablemente sea para vos.',
+      'Sí. Podés seguir con las clases a tu ritmo y con la comunidad. No está confirmado que los encuentros en vivo queden grabados.',
   },
   {
-    pregunta: '¿Puedo cancelar mi suscripción?',
+    pregunta: '¿Qué pasa después de los cuatro meses?',
     respuesta:
-      'El pago único de USD 149 cubre los 4 meses. La otra opción son 4 pagos de USD 50, uno por mes, con compromiso de completar los 4 meses. En los dos casos, las clases de los módulos quedan para vos para siempre.',
+      'El checkout actual está armado como una suscripción que se renueva cada 4 meses mientras decidas seguir. No es un acceso de por vida por haber pagado un período. Si la suscripción no se renueva, el acceso de ese período termina.',
+  },
+  {
+    pregunta: '¿Qué acceso conservo a las clases?',
+    respuesta:
+      'Durante la inscripción tenés las clases de los módulos, los encuentros semanales, la comunidad y los recursos complementarios. No prometemos que las clases queden para siempre después de ese período.',
+  },
+  {
+    pregunta: '¿En qué se diferencia de una mentoría individual?',
+    respuesta:
+      'La mentoría es un proceso individual. Cuerpo Autónomo es una escuela grupal: practicás a tu ritmo, te encontrás con el grupo cada semana y compartís el proceso con otras personas. No incluye una sesión individual.',
+  },
+  {
+    pregunta: '¿Cómo me inscribo?',
+    respuesta:
+      'Con el botón «Quiero sumarme», que abre el checkout para pagar directo. La llamada es opcional y no hace falta agendarla para inscribirte.',
   },
   {
     pregunta: '¿Qué métodos de pago aceptan?',
     respuesta:
-      'En Uruguay y Latinoamérica podés pagar utilizando los medios disponibles en tu moneda local. Para el resto del mundo procesamos pagos internacionales en USD mediante tarjeta.',
+      'El checkout operativo cobra con tarjeta en USD a través de Stripe. Si Mercado Pago está habilitado para tu país, también aparece en el checkout. No prometemos una cantidad fija de cuotas.',
   },
   {
-    pregunta: '¿Tienen políticas de reembolso?',
+    pregunta: '¿Cuáles son las condiciones de cancelación y devolución?',
     respuesta:
-      'Al tratarse de una academia digital con acceso inmediato al contenido y los espacios de la comunidad, no ofrecemos reembolsos una vez activada la suscripción. Si antes de sumarte tenés dudas sobre si Cuerpo Autónomo es para vos, podés hablar con nuestro equipo para ayudarte a decidir.',
+      'La condición publicada hasta ahora es que, una vez activado el acceso, no hay reembolso. La suscripción puede dejar de renovarse; no hay otra política de cancelación confirmada en esta página. Si tenés dudas, mejor conversarlo antes de inscribirte.',
   },
 ];
 
@@ -699,106 +684,116 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
   vimeoGaleriaId: '',
   hero: {
     videoPresentacionVimeoId: '1160337707',
-    tagline: 'Recuperá la capacidad de moverte con libertad.',
-    ctaTexto: 'Quiero un cuerpo libre',
-    ctaSubcopy: 'Acceso inmediato. Avanzás a tu ritmo y en comunidad. Material de por vida.',
+    eyebrow: 'CUERPO AUTÓNOMO · ESCUELA ONLINE DE MOVIMIENTO',
+    tagline: 'Construí un cuerpo fuerte, móvil y capaz.',
+    ctaTexto: 'Quiero sumarme',
+    ctaSubcopy:
+      'Aprendé a entrenar y moverte mejor, con clases a tu ritmo, encuentros semanales y un grupo con el que compartir el proceso.',
     rutaUsuarioSuscriptor: '/biblioteca',
     anclaPlanesId: 'membership-plans',
   },
   navegacion: {
-    ctaBarraMovil: 'Empezar Camino',
+    ctaBarraMovil: 'Quiero sumarme',
   },
   presentacionTestimonios: {
     tituloVideos: 'Testimonios de alumn@s :)',
-    tituloEscritos: 'Testimonios escritos',
-    eyebrowEscritos: 'Palabras propias',
+    tituloEscritos: 'Lo que cuentan quienes ya están practicando.',
+    eyebrowEscritos: '',
     textoPlaceholderVideo: 'Acá va un video de cliente (embed próximo).',
     anclaVideos: 'course-testimonios-video',
-    anclaEscritos: 'course-testimonios-escritos',
+    anclaEscritos: 'testimonios',
   },
   betweenHero: {
-    eyebrow: nombreProducto,
-    titulo: 'El método ordenado, claro y profundo para…',
+    eyebrow: 'Por qué existe',
+    titulo: 'No se trata de entrenar más. Se trata de moverte mejor.',
     parrafos: [...CURSO_BETWEEN_HERO_PARRAFOS],
+    cierre: CURSO_BETWEEN_HERO_CIERRE,
   },
   bannerAncho: { cuerpo: CURSO_BANNER_ANCHO_CUERPO },
   testimoniosEscritos: [createDefaultTestimonioEscrito(0, nombreProducto)],
   testimoniosGrabados: [],
   fundador: {
-    eyebrow: '',
-    titulo: '',
-    bio: '',
+    eyebrow: 'Tu profesor',
+    titulo: 'Soy Mateo Molfino.',
+    bio: 'Soy profesor de movimiento, instructor de yoga y calistenia.\n\nMe apasiona estudiar el cuerpo humano, entrenar distintas formas de movimiento y acompañar a otras personas a desarrollar sus capacidades.\n\nCreé Cuerpo Autónomo para reunir lo que enseño en un espacio donde podamos practicar, aprender y seguir explorando juntos.',
     imagenPublicId: '',
-    stats: { anios: '', estudiantes: '', paises: '' },
+    stats: { anios: '+5', estudiantes: '+100', paises: '+5' },
   },
   introHighlights: {
     titulo: nombreProducto,
-    subtitulo: '¿Como funciona?',
+    subtitulo: 'Un espacio para practicar, aprender y seguir avanzando juntos.',
     cuerpo: CURSO_INTRO_CUERPO,
-    imagenMobilePublicId: 'my_uploads/fondos/DSC01488_jb7nit',
-    imagenDesktopPublicId: 'my_uploads/fondos/DSC01832_je5av4',
-    imagenAlt: `${nombreProducto} — cómo funciona el método`,
+    bloques: CURSO_INTRO_BLOQUES.map((item) => ({ ...item })),
+    imagenMobilePublicId: 'my_uploads/plaza/DSC03366_ctiejt',
+    imagenDesktopPublicId: 'my_uploads/plaza/DSC03366_ctiejt',
+    imagenAlt: `${nombreProducto} — la escuela en práctica`,
   },
   outcomes: {
     imagenPublicId: 'my_uploads/fondos/DSC01642_rioxq5',
-    imagenAlt: `${nombreProducto} — resultados en el cuerpo`,
-    titulo: 'Lo que vas a lograr (paso a paso):',
+    imagenAlt: `${nombreProducto} — práctica de movimiento`,
+    titulo: 'Más capacidades para moverte. Más herramientas para seguir aprendiendo.',
     items: CURSO_OUTCOMES_PRESETS.map((item) => ({ ...item })),
   },
   highlights: {
-    titulos: ['Siempre lo tuviste.', 'Solo te falta ordenarlo.'],
-    puente: `Por eso, en ${nombreProducto} lo resolvemos así:`,
+    titulos: [
+      'Un camino para aprender a entender y entrenar tu cuerpo.',
+      'Empezamos por tres módulos que construyen las bases de tu práctica. Son herramientas para seguir desarrollando capacidades dentro de la escuela.',
+    ],
+    puente: '',
     items: CURSO_HIGHLIGHTS_PRESETS.map((item, index) => ({
       ...item,
       imagenPublicId:
         CURSO_MODULOS_PRESETS[index]?.imagenPublicId || 'my_uploads/fondos/DSC01753_qdv9o0',
     })),
-    ctaEyebrow: 'Planes',
-    ctaTitulo: '¿Todo listo para recuperar la soberanía de tu movimiento?',
-    ctaDescripcion: 'Descubrí los planes y empezá hoy mismo a construir un cuerpo libre.',
-    ctaBoton: 'Ver planes disponibles',
+    ctaEyebrow: '',
+    ctaTitulo: '',
+    ctaDescripcion: '',
+    ctaBoton: 'Quiero sumarme',
     ctaImagenPublicId: 'my_uploads/fondos/DSC01753_qdv9o0',
   },
   queIncluye: {
-    titulo: 'Esto es lo que incluye tu programa',
+    titulo: 'Todo lo que necesitás para empezar y seguir practicando.',
     anclaId: 'course-que-incluye',
     offerBlocks: [
       {
-        lineas: ['WORKBOOK Y GUÍAS PRÁCTICAS'],
-        hint: 'Material descargable para acompañar el proceso, registrar lo que vas aprendiendo y llevarlo a tu práctica semana a semana.',
-        iconKey: 'book',
-      },
-      {
-        lineas: ['+25 CLASES GRABADAS'],
-        hint: 'Clases progresivas para desarrollar movilidad, fuerza y control, y aprender a moverte con más seguridad y autonomía.',
-        iconKey: 'video',
-      },
-      {
-        lineas: ['6 MESES DE ENCUENTROS EN VIVO CON MATEO'],
-        hint: 'Un encuentro mensual para hacer preguntas, resolver dudas, ajustar tu práctica y profundizar en los temas del programa.',
+        lineas: ['Encuentros grupales semanales'],
+        hint: 'Practicamos juntos, profundizamos en lo que estamos trabajando y resolvemos dudas.',
         iconKey: 'live',
       },
       {
-        lineas: ['COMUNIDAD'],
-        hint: 'Un espacio para compartir el proceso con otras personas que también están aprendiendo a entender y desarrollar su cuerpo.',
+        lineas: ['Clases para avanzar a tu ritmo'],
+        hint: 'Un camino progresivo que podés adaptar a tus tiempos y volver a recorrer cuando lo necesites.',
+        iconKey: 'video',
+      },
+      {
+        lineas: ['Comunidad privada'],
+        hint: 'Un espacio para compartir tu práctica, tus preguntas y tus descubrimientos.',
         iconKey: 'community',
+      },
+      {
+        lineas: ['Tres módulos fundacionales'],
+        hint: 'Percibir, Ordenar y Construir: las bases para desarrollar capacidades y aprender a entrenarlas.',
+        iconKey: 'book',
+      },
+      {
+        lineas: ['Recursos complementarios'],
+        hint: 'Material y herramientas para llevar lo que aprendés a tu entrenamiento y a tu vida cotidiana.',
+        iconKey: 'health',
       },
     ],
     modulos: CURSO_MODULOS_PRESETS.map((item) => ({ ...item })),
   },
   planes: {
     anclaId: 'membership-plans',
-    titulo: 'Accedé a todo el método',
+    titulo: 'Sumate a Cuerpo Autónomo.',
     parrafosValor: [
-      'Cuerpo Autónomo es un proceso de 4 meses para construir un cuerpo fuerte, móvil y capaz, mientras aprendés a entenderlo y entrenarlo cada vez con más criterio.',
-      'Los 4 meses corresponden al período de acompañamiento: encuentros semanales, clases prácticas en vivo, comunidad y proceso conmigo.',
-      'Las clases de los módulos quedan para vos para siempre.',
+      'Cuatro meses para construir una práctica con dirección, aprender a entrenar tu cuerpo y formar parte de una escuela donde seguimos moviéndonos juntos.',
     ],
-    etiquetaFormasPago: 'Formas de pago y financiación',
+    etiquetaFormasPago: 'Formas de pago',
     copyUruguayLatam:
-      'Uruguay y Latinoamérica: Pagá en tu moneda local y aprovechá hasta 12 cuotas con Mercado Pago.',
-    copyRestoMundo: 'Resto del Mundo (Stripe): Pago rápido en USD mediante tarjetas internacionales, Apple Pay o Google Pay.',
-    copyCuotasTarjeta: 'Hasta 12 cuotas · Uruguay y Latinoamérica con Mercado Pago',
+      'El checkout operativo es con tarjeta en USD. Si Mercado Pago está habilitado para tu país, también aparece ahí.',
+    copyRestoMundo: 'Para el resto del mundo, el pago es en USD con tarjeta a través de Stripe.',
+    copyCuotasTarjeta: '',
     imagenPagosUrl: '/images/logos/tarjetasmpstripe2.png',
     imagenPagosAlt: 'Pagos con Mercado Pago y Stripe.',
     diasUrgencia: 7,
@@ -810,15 +805,13 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
     opcionesPago: [],
     beneficiosTitulo: 'Qué incluye',
     beneficios: [
-      '3 módulos + 20 clases progresivas de movilidad, fuerza, coordinación y movimiento.',
-      'Acceso para siempre a las clases de los 3 módulos, para que puedas volver a recorrerlas cuando quieras.',
-      'Recursos y clases adicionales, que se van sumando semana a semana para seguir explorando y desarrollando distintas capacidades.',
-      'Encuentro grupal semanal conmigo durante los 4 meses para acompañar el proceso, resolver dudas y profundizar en lo que vamos trabajando.',
-      '1 clase práctica en vivo por mes, de 40–60 minutos, para movernos y entrenar juntos.',
-      'Material y herramientas prácticas para llevar lo aprendido a tu entrenamiento y a tu día a día.',
-      'Comunidad privada para compartir el proceso con los demás miembros.',
-      '1 sesión individual 1:1 para trabajar específicamente sobre vos, tus objetivos y lo que necesitás.',
+      'Encuentros grupales semanales para practicar, profundizar y resolver dudas.',
+      'Clases para avanzar a tu ritmo y volver a recorrer cuando lo necesites.',
+      'Comunidad privada para compartir la práctica, las preguntas y los descubrimientos.',
+      'Tres módulos fundacionales: Percibir, Ordenar y Construir.',
+      'Recursos complementarios para llevar lo aprendido al entrenamiento y a la vida cotidiana.',
     ],
+    ventaPorLlamada: false,
   },
   whatsapp: {
     imagenMobilePublicId: CURSO_WHATSAPP_BANNER_MOBILE_PUBLIC_ID,
@@ -832,15 +825,15 @@ export const createDefaultCursoLandingConfig = (nombreProducto = 'Cuerpo autóno
   },
   faq: {
     anclaId: 'membership-faq',
-    titulo: 'Respuestas claras antes de sumarte',
-    intro:
-      'Cuerpo Autónomo es una academia en movimiento. Estas son algunas de las preguntas más comunes antes de empezar.',
+    titulo: 'Preguntas frecuentes',
+    intro: 'Respuestas concretas antes de sumarte.',
     items: CURSO_FAQ_PRESETS.map((item, orden) => ({ ...item, orden })),
   },
   ctaFinal: {
-    titulo: 'Si esto es lo que te pasa — Volvé a sentirte dueño de tus movimientos.',
-    cuerpo: 'Elegí tu forma de pago y empezá con un camino claro: menos dolor, más calma, más fuerza útil y autonomía real.',
-    boton: 'Entrar ahora',
+    titulo: 'Sumate y empecemos a movernos juntos.',
+    cuerpo:
+      'Cuatro meses para construir una práctica con dirección, con clases a tu ritmo y un grupo con el que encontrarte cada semana.',
+    boton: 'Quiero sumarme',
     anclaId: 'membership-plans',
   },
 });
@@ -1035,6 +1028,17 @@ export const normalizeCursoLandingConfig = (
         partial.betweenHero?.parrafos?.filter(Boolean).length
           ? partial.betweenHero.parrafos.filter(Boolean)
           : defaults.betweenHero.parrafos,
+      cierre:
+        partial.betweenHero && Object.prototype.hasOwnProperty.call(partial.betweenHero, 'cierre')
+          ? (partial.betweenHero.cierre || '').trim()
+          : defaults.betweenHero.cierre,
+    },
+    introHighlights: {
+      ...defaults.introHighlights,
+      ...partial.introHighlights,
+      bloques: partial.introHighlights?.bloques?.length
+        ? partial.introHighlights.bloques
+        : defaults.introHighlights.bloques,
     },
     whatsapp: (() => {
       const merged = {

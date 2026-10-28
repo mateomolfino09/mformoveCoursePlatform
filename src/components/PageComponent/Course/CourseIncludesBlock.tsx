@@ -171,7 +171,7 @@ export default function CourseIncludesBlock({ isOferta }: { isOferta: boolean })
             transition={{ delay: isOferta ? 0.15 : 0, duration: 0.4 }}
             className="mb-1 font-montserrat text-xs font-semibold uppercase tracking-[0.22em] text-palette-sage md:text-[13px]"
           >
-            {isOferta ? 'Oferta' : 'Mensual'}
+            {isOferta ? '4 meses' : 'Mensual'}
           </motion.p>
           <motion.p
             initial={isOferta ? { opacity: 0, y: 10 } : false}

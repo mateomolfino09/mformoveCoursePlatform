@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import connectDB from '../../../../config/connectDB';
 import Users from '../../../../models/userModel';
 import { grantCourseAccessToEmail } from '../../../../lib/grantCourseAccess';
+import { revokeCourseAccessFromEmail } from '../../../../lib/revokeCourseAccess';
 import { listGrantableProducts } from '../../../../lib/grantableProducts';
 import { userHasPurchasedCourse } from '../../../../lib/courseAccess';
 
@@ -80,6 +81,9 @@ export async function GET(req: Request) {
       );
       const vigente = userHasPurchasedCourse(user as any, product.id);
       const latest = entries[entries.length - 1];
+      const viaStripe = entries.some(
+        (entry: any) => isEntryVigente(entry, now) && Boolean(entry?.stripeSubscriptionId)
+      );
       return {
         productId: product.id,
         vigente,
@@ -87,6 +91,7 @@ export async function GET(req: Request) {
         expiresAt: latest?.expiresAt ?? null,
         source: latest?.source ?? null,
         isLatestVigente: latest ? isEntryVigente(latest, now) : false,
+        viaStripe,
       };
     });
 
@@ -192,5 +197,74 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('[admin/grant-access POST]', error);
     return NextResponse.json({ error: 'Error al otorgar acceso' }, { status: 500 });
+  }
+}
+
+/** DELETE: quita el acceso vigente a un curso. Si hay suscripción de Stripe, la cancela. */
+export async function DELETE(req: Request) {
+  try {
+    await connectDB();
+    const adminId = await requireAdmin();
+    if (!adminId) {
+      return NextResponse.json({ error: 'Solo administradores' }, { status: 403 });
+    }
+
+    const body = await req.json().catch(() => null);
+    const email = String(body?.email || '')
+      .trim()
+      .toLowerCase();
+    const productId = String(body?.productId || '').trim();
+
+    if (!email || !productId) {
+      return NextResponse.json(
+        { error: 'Email y curso son requeridos' },
+        { status: 400 }
+      );
+    }
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return NextResponse.json({ error: 'Curso inválido' }, { status: 400 });
+    }
+
+    const result = await revokeCourseAccessFromEmail({ email, productId });
+
+    if (!result.ok) {
+      if (result.code === 'user_not_found') {
+        return NextResponse.json(
+          { error: 'No existe un usuario registrado con ese email.' },
+          { status: 404 }
+        );
+      }
+      if (result.code === 'product_not_found') {
+        return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
+      }
+      if (result.code === 'stripe_cancel_failed') {
+        return NextResponse.json(
+          { error: 'No se pudo cancelar la suscripción de Stripe. El acceso no se modificó.' },
+          { status: 502 }
+        );
+      }
+      return NextResponse.json(
+        { error: 'Ese curso no se puede modificar desde esta sección' },
+        { status: 403 }
+      );
+    }
+
+    if (result.alreadyWithoutAccess) {
+      return NextResponse.json({
+        ok: true,
+        alreadyWithoutAccess: true,
+        message: `${result.email} no tiene acceso vigente a ${result.productName}.`,
+      });
+    }
+
+    return NextResponse.json({
+      ok: true,
+      alreadyWithoutAccess: false,
+      message: `Se quitó el acceso de ${result.email} a ${result.productName}.`,
+      stripeCanceled: result.stripeCanceled,
+    });
+  } catch (error) {
+    console.error('[admin/grant-access DELETE]', error);
+    return NextResponse.json({ error: 'Error al quitar acceso' }, { status: 500 });
   }
 }

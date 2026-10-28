@@ -5,10 +5,13 @@ import { CldImage } from 'next-cloudinary';
 import imageLoader from '../../../../imageLoader';
 import CourseDarkSectionBackground from './CourseDarkSectionBackground';
 import {
+  landingCtaUniformGhost,
   landingCtaInvertedCompact,
   landingCardBodyDark,
+  landingSectionTitle,
   landingSectionTitleDark,
 } from '../../../constants/landingSectionDesign';
+import { trackCursoLandingEvent } from '../../../lib/cursoLandingAnalytics';
 import { resolveCloudinaryOrHttpUrl } from '../../../lib/resolveMediaImageUrl';
 import {
   CURSO_SALES_CALL_BOOKING_URL,
@@ -58,17 +61,59 @@ type CourseScheduleCallProps = {
   title?: string;
   /** Línea bajo el título, por ejemplo en el checkout. */
   subtitle?: string;
+  /** Párrafo principal. Si no se pasa, queda el texto histórico de la sección. */
+  body?: string;
+  ctaLabel?: string;
   /** El eyebrow ya dice «¿Todavía tenés dudas?»; ocultarlo si el título lo repite. */
   showEyebrow?: boolean;
+  /** `quiet` no compite con el CTA de inscripción. */
+  tone?: 'feature' | 'quiet';
+  /** Oculta nombre y bio de quien atiende la llamada. */
+  hideHost?: boolean;
 };
 
 export default function CourseScheduleCall({
   title = 'Hablemos antes de que decidas',
   subtitle,
+  body,
+  ctaLabel = CURSO_SALES_CALL_CTA_LABEL,
   showEyebrow = true,
+  tone = 'feature',
+  hideHost = false,
 }: CourseScheduleCallProps = {}) {
   const reduceMotion = useReducedMotion();
   const hostPhoto = resolveHostPhoto(CURSO_SALES_CALL_HOST.imageSrc);
+  const paragraph =
+    body ||
+    'Si querés entender mejor cómo funciona Cuerpo Autónomo, saber si es para vos o simplemente charlar sobre lo que estás buscando, podés agendar una videollamada con alguien del equipo.';
+
+  if (tone === 'quiet') {
+    return (
+      <section
+        id="llamada"
+        className="scroll-mt-28 border-t border-palette-stone/20 bg-palette-cream py-12 font-montserrat md:py-16"
+        aria-labelledby="course-schedule-call-heading"
+      >
+        <div className="mx-auto w-[92%] max-w-3xl px-3 text-center sm:px-4">
+          <h2 id="course-schedule-call-heading" className={`${landingSectionTitle} !text-[1.75rem] md:!text-[2.15rem]`}>
+            {title}
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-[16px] font-normal leading-relaxed text-palette-ink md:text-[18px]">
+            {paragraph}
+          </p>
+          <a
+            href={CURSO_SALES_CALL_BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackCursoLandingEvent('curso_llamada_click')}
+            className={`${landingCtaUniformGhost} mt-6 w-full min-w-0 max-w-full !h-auto !whitespace-normal !px-5 !py-3 text-center !leading-snug sm:w-auto sm:min-w-[18rem] sm:!h-12 sm:!whitespace-nowrap sm:!px-6 sm:!py-0`}
+          >
+            {ctaLabel}
+          </a>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -160,18 +205,16 @@ export default function CourseScheduleCall({
               variants={itemVariants}
               className="mx-auto mt-5 max-w-2xl space-y-4 text-left md:text-center"
             >
-              <p className={landingCardBodyDark}>
-                Si querés entender mejor cómo funciona Cuerpo Autónomo, saber si es para vos o
-                simplemente charlar sobre lo que estás buscando, podés agendar una videollamada con
-                alguien del equipo.
-              </p>
-              <p className={landingCardBodyDark}>
-                Son {CURSO_SALES_CALL_DURATION_MIN} minutos, sin compromiso. La idea es conocerte,
-                responder tus dudas y ver si este programa tiene sentido para vos.
-              </p>
+              <p className={landingCardBodyDark}>{paragraph}</p>
+              {!body ? (
+                <p className={landingCardBodyDark}>
+                  Son {CURSO_SALES_CALL_DURATION_MIN} minutos, sin compromiso. La idea es conocerte,
+                  responder tus dudas y ver si este programa tiene sentido para vos.
+                </p>
+              ) : null}
             </motion.div>
 
-            <motion.div
+            {!hideHost ? <motion.div
               variants={itemVariants}
               className="mx-auto mt-8 max-w-xl text-left md:max-w-2xl"
             >
@@ -222,20 +265,21 @@ export default function CourseScheduleCall({
                   </blockquote>
                 </div>
               </div>
-            </motion.div>
+            </motion.div> : null}
 
-            <motion.p
+            {!hideHost ? <motion.p
               variants={itemVariants}
               className="mt-7 text-sm font-semibold tracking-wide text-palette-cream/90"
             >
               {CURSO_SALES_CALL_DURATION_MIN} min · Videollamada · Sin costo
-            </motion.p>
+            </motion.p> : null}
 
             <motion.div variants={itemVariants} className="mt-9 flex justify-center">
               <motion.a
                 href={CURSO_SALES_CALL_BOOKING_URL}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackCursoLandingEvent('curso_llamada_click')}
                 className={`${landingCtaInvertedCompact} relative w-full overflow-hidden sm:w-auto`}
                 whileHover={reduceMotion ? undefined : { scale: 1.03, y: -2 }}
                 whileTap={reduceMotion ? undefined : { scale: 0.98 }}
@@ -247,7 +291,7 @@ export default function CourseScheduleCall({
                   transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 1.2, ease: 'easeInOut' }}
                   aria-hidden
                 />
-                <span className="relative z-[1]">{CURSO_SALES_CALL_CTA_LABEL}</span>
+                <span className="relative z-[1]">{ctaLabel}</span>
                 <span className="relative z-[1] transition-transform duration-200 group-hover:translate-x-1">
                   →
                 </span>
