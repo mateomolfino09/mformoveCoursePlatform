@@ -38,6 +38,20 @@ export async function obtenerTipoCambioStripe(): Promise<number> {
 }
 
 /**
+ * Moneda en la que se cobra el evento.
+ * `evento.moneda` es el parámetro: UYU o ARS ya están en moneda local y no se convierten.
+ * Si no hay moneda guardada, se infiere por el país (los eventos viejos guardan el número en USD).
+ */
+export function monedaDePago(evento: any): { simbolo: string; moneda: string; yaExpresada: boolean } {
+  const stored = String(evento?.moneda || '').toUpperCase();
+  if (stored === 'UYU' || stored === 'ARS') {
+    return { simbolo: '$', moneda: stored, yaExpresada: true };
+  }
+  const inferida = determinarMonedaEvento(evento);
+  return { ...inferida, yaExpresada: stored === inferida.moneda };
+}
+
+/**
  * Determina la moneda y símbolo según la ubicación del evento
  */
 export function determinarMonedaEvento(evento: any): { simbolo: string; moneda: string } {
@@ -82,23 +96,19 @@ export function determinarMonedaEvento(evento: any): { simbolo: string; moneda: 
 }
 
 /**
- * Formatea un precio según la ubicación del evento (versión síncrona con tasa fija)
+ * Formatea un precio según la moneda de pago del evento (versión síncrona con tasa fija)
  */
 export function formatearPrecioEventoSync(precio: number, evento: any): PrecioFormateado {
-  const { simbolo, moneda } = determinarMonedaEvento(evento);
+  const { simbolo, moneda, yaExpresada } = monedaDePago(evento);
   
-  // Si la moneda es uruguaya, convertir de USD a pesos uruguayos
   let precioConvertido = precio;
-  if (moneda === 'UYU') {
-    // Tasa de conversión fija (actualizada al tipo de cambio actual)
-    const tasaCambio = 40; // Tasa actual aproximada USD/UYU
+  if (!yaExpresada && moneda === 'UYU') {
+    const tasaCambio = 40;
     precioConvertido = Math.round(precio * tasaCambio);
   }
   
-  // Si la moneda es argentina, convertir de USD a pesos argentinos
-  if (moneda === 'ARS') {
-    // Tasa de conversión fija (actualizada al tipo de cambio actual)
-    const tasaCambio = 1000; // Tasa actual aproximada USD/ARS
+  if (!yaExpresada && moneda === 'ARS') {
+    const tasaCambio = 1000;
     precioConvertido = Math.round(precio * tasaCambio);
   }
   
@@ -114,19 +124,16 @@ export function formatearPrecioEventoSync(precio: number, evento: any): PrecioFo
  * Formatea un precio según la ubicación del evento (versión asíncrona con tasa dinámica)
  */
 export async function formatearPrecioEvento(precio: number, evento: any): Promise<PrecioFormateado> {
-  const { simbolo, moneda } = determinarMonedaEvento(evento);
+  const { simbolo, moneda, yaExpresada } = monedaDePago(evento);
   
-  // Si la moneda es uruguaya, convertir de USD a pesos uruguayos usando Stripe
   let precioConvertido = precio;
-  if (moneda === 'UYU') {
+  if (!yaExpresada && moneda === 'UYU') {
     const tasaCambio = await obtenerTipoCambioStripe();
     precioConvertido = Math.round(precio * tasaCambio);
   }
   
-  // Si la moneda es argentina, convertir de USD a pesos argentinos
-  if (moneda === 'ARS') {
-    // Por ahora usar tasa fija, pero se puede implementar API de tipo de cambio
-    const tasaCambio = 1000; // Tasa actual aproximada USD/ARS
+  if (!yaExpresada && moneda === 'ARS') {
+    const tasaCambio = 1000;
     precioConvertido = Math.round(precio * tasaCambio);
   }
   

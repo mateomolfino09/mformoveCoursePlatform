@@ -82,7 +82,7 @@ const EventHero: React.FC<Props> = ({
         className="flex items-center bg-white/10 rounded-2xl p-4 gap-3"
         variants={fadeIn(0.05)}
         initial="hidden"
-        whileInView="visible"
+        animate="visible"
         viewport={{ once: true }}
       >
         <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
@@ -99,7 +99,7 @@ const EventHero: React.FC<Props> = ({
         className="flex items-center bg-white/10 rounded-2xl p-4 gap-3"
         variants={fadeIn()}
         initial="hidden"
-        whileInView="visible"
+        animate="visible"
         viewport={{ once: true }}
       >
         <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
@@ -121,7 +121,7 @@ const EventHero: React.FC<Props> = ({
           className="flex items-center bg-white/10 rounded-2xl p-4 gap-3"
           variants={fadeIn()}
           initial="hidden"
-          whileInView="visible"
+          animate="visible"
           viewport={{ once: true }}
         >
           <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
@@ -141,7 +141,7 @@ const EventHero: React.FC<Props> = ({
           className="flex items-center bg-white/10 rounded-2xl p-4 gap-3"
           variants={fadeIn()}
           initial="hidden"
-          whileInView="visible"
+          animate="visible"
           viewport={{ once: true }}
         >
           <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
@@ -196,7 +196,7 @@ const EventHero: React.FC<Props> = ({
         )}
         
         {/* Overlay simple */}
-        <div className="absolute inset-0 bg-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-r from-palette-ink/80 via-palette-ink/55 to-palette-ink/35" />
       </div>
 
       {/* Contenido principal */}
@@ -210,7 +210,7 @@ const EventHero: React.FC<Props> = ({
               className="flex flex-wrap gap-2 md:gap-3"
               variants={fadeIn()}
               initial="hidden"
-              whileInView="visible"
+              animate="visible"
               viewport={{ once: true }}
             >
               {/* Badge de modalidad */}
@@ -253,23 +253,17 @@ const EventHero: React.FC<Props> = ({
               className="space-y-3 md:space-y-4 relative"
               variants={fadeIn()}
               initial="hidden"
-              whileInView="visible"
+              animate="visible"
               viewport={{ once: true }}
             >
-              {/* Animal decorativo sutil */}
-              <div className="absolute -top-8 -right-8 w-24 h-24 md:w-32 md:h-32 opacity-10 pointer-events-none">
-                <img 
-                  src="/images/svg/owl.svg" 
-                  alt=""
-                  className="w-full h-full object-contain filter invert"
-                />
-              </div>
-              
-              <h1 className="relative z-10 font-montserrat text-[clamp(2.8rem,6.5vw,5rem)] font-medium leading-[0.98] tracking-tight text-palette-cream">
+              <p className="font-montserrat text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-cream/80">
+                {evento.online ? 'Encuentro online' : 'Encuentro presencial'}
+              </p>
+              <h1 className="relative z-10 font-montserrat text-[clamp(2.8rem,6.5vw,5rem)] font-extrabold leading-[0.96] tracking-tight text-palette-cream">
                 {evento.nombre}
               </h1>
-              <p className="relative z-10 max-w-xl font-montserrat text-lg font-normal leading-relaxed text-palette-cream/85 md:text-xl">
-                {evento.descripcion}
+              <p className="relative z-10 max-w-xl whitespace-pre-line font-montserrat text-lg font-normal leading-relaxed text-palette-cream/85 md:text-xl">
+                {(evento.descripcion || '').split(/\n\n/)[0]}
               </p>
             </motion.div>
 
@@ -283,7 +277,7 @@ const EventHero: React.FC<Props> = ({
                 <motion.div
                   variants={fadeIn()}
                   initial="hidden"
-                  whileInView="visible"
+                  animate="visible"
                   viewport={{ once: true }}
                   className="mt-8"
                 >
@@ -314,7 +308,7 @@ const EventHero: React.FC<Props> = ({
               className="hidden md:grid grid-cols-4 gap-6 mt-8"
               variants={fadeIn()}
               initial="hidden"
-              whileInView="visible"
+              animate="visible"
               viewport={{ once: true }}
             >
               <div className="text-center flex flex-col items-center">
@@ -357,7 +351,7 @@ const EventHero: React.FC<Props> = ({
                     <CurrencyDollarIcon className="h-6 w-6 text-white" />
                   </div>
                   <p className="text-sm text-gray-300 mb-1">Precio</p>
-                  <p className="text-white font-light text-sm">${precioActual.precio}</p>
+                  <p className="text-white font-light text-sm">{formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}</p>
                 </div>
               )}
             </motion.div>
@@ -368,20 +362,20 @@ const EventHero: React.FC<Props> = ({
             className="flex justify-center lg:justify-end"
             variants={fadeIn()}
             initial="hidden"
-            whileInView="visible"
+            animate="visible"
             viewport={{ once: true }}
           >
-            <div className="hidden w-full max-w-md rounded-lg border border-palette-cream/25 bg-palette-cream/10 p-6 md:block md:p-8">
+            <div className="hidden w-full max-w-md rounded-2xl border border-palette-stone/20 bg-palette-cream p-6 text-palette-ink shadow-[0_20px_50px_-24px_rgba(20,20,17,0.45)] md:block md:p-8">
               {precioActual && !eventoTerminado ? (
                 <div className="text-center space-y-6">
                   <div>
-                    <p className="text-white/80 text-sm mb-2">{precioActual.tipo}</p>
+                    <p className="mb-2 font-montserrat text-[11px] font-semibold uppercase tracking-[0.22em] text-palette-ink/70">{precioActual.tipo}</p>
                     <div className="flex items-center justify-center space-x-3">
-                      <span className="text-3xl md:text-5xl font-light text-white">
+                      <span className="font-montserrat text-4xl font-extrabold tracking-tight text-palette-ink md:text-5xl">
                         {formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}
                       </span>
                       {precioActual.original && (
-                        <span className="text-lg md:text-2xl text-white/60 line-through">
+                        <span className="font-montserrat text-lg text-palette-ink/40 line-through md:text-2xl">
                           {formatearPrecioEventoSync(precioActual.original, evento).textoCompleto}
                         </span>
                       )}
@@ -391,7 +385,7 @@ const EventHero: React.FC<Props> = ({
                   <button
                     onClick={onBuyTicket}
                     disabled={loading}
-                    className="flex w-full items-center justify-center space-x-2 rounded-full border-2 border-palette-cream bg-palette-cream px-6 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-ink transition-colors hover:border-palette-sage hover:bg-palette-sage disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex w-full items-center justify-center space-x-2 rounded-full border-2 border-palette-ink bg-palette-ink px-6 py-3 font-montserrat text-sm font-semibold uppercase tracking-[0.14em] text-palette-cream transition-colors hover:border-palette-sage hover:bg-palette-sage hover:text-palette-ink disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {loading ? (
                       <span>Procesando...</span>
@@ -406,35 +400,35 @@ const EventHero: React.FC<Props> = ({
                   </button>
                   
                   {precioActual.urgencia === 'Precio aumentará pronto' && countdown && (
-                    <p className="text-center text-sm text-[white] font-light">
-                      Precio sube en <span className="font-light">{countdown}</span>
+                    <p className="text-center font-montserrat text-sm text-palette-ink/70">
+                      Precio sube en <span className="font-semibold">{countdown}</span>
                     </p>
                   )}
                   {precioActual.urgencia && precioActual.urgencia !== 'Precio aumentará pronto' && (
-                    <p className="text-center text-sm text-white font-light">
+                    <p className="text-center font-montserrat text-sm text-palette-ink/70">
                         {precioActual.urgencia}
                     </p>
                   )}
 
-                  <div className="pt-6 border-t border-white/20">
-                    <h3 className="font-light text-white mb-4">Incluye:</h3>
-                    <ul className="space-y-3 text-sm text-white/80">
+                  <div className="border-t border-palette-stone/20 pt-6">
+                    <h3 className="mb-4 font-montserrat text-[11px] font-semibold uppercase tracking-[0.2em] text-palette-ink/60">Incluye</h3>
+                    <ul className="space-y-3 text-left text-sm text-palette-ink/80">
                       {evento.beneficios && evento.beneficios.length > 0 ? (
                         evento.beneficios.map((beneficio, index) => (
-                          <li key={index} className='flex items-center space-x-2 md:space-x-3 hover:text-white transition-colors duration-200 text-xs md:text-sm'>
-                            <div className='w-2 h-2 bg-white rounded-full'/>
+                          <li key={index} className='flex items-start gap-3 text-sm'>
+                            <div className='mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-palette-ink'/>
                             <span>{beneficio}</span>
                           </li>
                         ))
                       ) : (
                         <>
-                          <li className="flex items-center space-x-2 md:space-x-3 hover:text-white transition-colors duration-200 text-xs md:text-sm">
-                            <div className="w-2 h-2 bg-white rounded-full"/>
+                          <li className="flex items-start gap-3 text-sm">
+                            <div className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-palette-ink"/>
                             <span>Acceso completo al evento</span>
                           </li>
                           {evento.online && (
-                            <li className="flex items-center space-x-2 md:space-x-3 hover:text-white transition-colors duration-200 text-xs md:text-sm">
-                              <div className="w-2 h-2 bg-white rounded-full"/>
+                            <li className="flex items-start gap-3 text-sm">
+                              <div className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-palette-ink"/>
                               <span>Grabación del evento</span>
                             </li>
                           )}
@@ -445,13 +439,13 @@ const EventHero: React.FC<Props> = ({
                 </div>
               ) : eventoTerminado ? (
                 <div className="text-center">
-                  <p className="text-2xl font-light text-white mb-4">Evento finalizado</p>
-                  <p className="text-white/80">Este evento ya ha terminado</p>
+                  <p className="mb-4 font-montserrat text-2xl font-medium text-palette-ink">Evento finalizado</p>
+                  <p className="text-palette-ink/70">Este evento ya ha terminado</p>
                 </div>
               ) : (
                 <div className="text-center">
-                  <p className="text-2xl font-light text-white mb-4">Próximamente</p>
-                  <p className="text-white/80">Los tickets estarán disponibles pronto</p>
+                  <p className="mb-4 font-montserrat text-2xl font-medium text-palette-ink">Próximamente</p>
+                  <p className="text-palette-ink/70">Los tickets estarán disponibles pronto</p>
                 </div>
               )}
             </div>

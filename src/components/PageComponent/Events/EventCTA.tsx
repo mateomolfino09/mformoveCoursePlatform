@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { ProductDB } from '../../../../typings';
 import { CheckCircleIcon, FireIcon, ArrowRightIcon, SparklesIcon, ArrowDownIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
-import { formatearPrecioEvento, formatearPrecioConDescuento, PrecioFormateado } from '../../../utils/currencyHelpers';
+import { formatearPrecioEvento, formatearPrecioEventoSync, formatearPrecioConDescuento, PrecioFormateado } from '../../../utils/currencyHelpers';
 
 interface Props {
   evento: ProductDB;
@@ -132,91 +132,10 @@ const EventCTA: React.FC<Props> = ({
       <div className="absolute inset-0 bg-palette-cream" />
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Principal */}
-        <motion.div 
-          className="mb-16 md:mb-20 relative"
-          variants={fadeIn()}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <h2 className="mb-4 font-montserrat text-[clamp(2rem,4.2vw,2.85rem)] font-medium leading-tight tracking-tight text-palette-ink">
-            El movimiento como
-            <span className="text-gray-700"> herramienta de transformación</span>
-          </h2>
-          <p className="text-lg sm:text-xl md:text-2xl text-gray-600 max-w-4xl leading-relaxed font-montserrat font-light">
-            Explorar los límites del cuerpo no es solo ejercicio físico.
-            <br />
-            Es un proceso de <span className="text-gray-800 font-light">descubrimiento personal</span> y conexión con tu potencial.
-            <br />
-            <span className="text-gray-800 font-light">{evento.nombre}</span> te invita a experimentar esto de manera consciente y científica.
-          </p>
-        </motion.div>
-
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16 items-start">
           
           {/* Columna izquierda - Beneficios (7 columnas) */}
           <div className="lg:col-span-7 space-y-8 md:space-y-12">
-            
-          {/* Beneficios principales */}
-          <motion.div 
-            className="space-y-6 md:space-y-8"
-            variants={fadeIn()}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-              <div className="group text-center sm:text-left">
-                <div className="w-14 h-14 md:w-16 md:h-16 bg-gray-200/60 rounded-2xl flex items-center justify-center mb-4 md:mb-6 mx-auto sm:mx-0">
-                  <img 
-                    src="/images/svg/tensegrity-structure.svg" 
-                    alt=""
-                    className="h-6 w-6 md:h-8 md:w-8"
-                  />
-                </div>
-                <h3 className="text-lg md:text-xl font-light text-gray-900 mb-2 md:mb-3 font-montserrat">
-                  Principios de Biotensegridad
-                </h3>
-                <p className="text-sm md:text-base text-gray-600 font-montserrat leading-relaxed">
-                  Comprende cómo funciona la estructura de tu cuerpo desde una perspectiva científica
-                </p>
-              </div>
-
-              <div className="group text-center sm:text-left">
-                <div className="w-14 h-14 md:w-16 md:h-16 bg-gray-200/60 rounded-2xl flex items-center justify-center mb-4 md:mb-6 mx-auto sm:mx-0">
-                  <img 
-                    src="/images/svg/muscle-fiber.svg" 
-                    alt=""
-                    className="h-6 w-6 md:h-8 md:w-8"
-                  />
-                </div>
-                <h3 className="text-lg md:text-xl font-light text-gray-900 mb-2 md:mb-3 font-montserrat">
-                  Conciencia Corporal
-                </h3>
-                <p className="text-sm md:text-base text-gray-600 font-montserrat leading-relaxed">
-                  Desarrolla una conexión más profunda con tu anatomía y patrones de movimiento
-                </p>
-              </div>
-
-              <div className="group text-center sm:text-left">
-                <div className="w-14 h-14 md:w-16 md:h-16 bg-gray-200/60 rounded-2xl flex items-center justify-center mb-4 md:mb-6 mx-auto sm:mx-0">
-                  <img 
-                    src="/images/svg/movement-flow.svg" 
-                    alt=""
-                    className="h-6 w-6 md:h-8 md:w-8"
-                  />
-                </div>
-                <h3 className="text-lg md:text-xl font-light text-gray-900 mb-2 md:mb-3 font-montserrat">
-                  Movimiento Inteligente
-                </h3>
-                <p className="text-sm md:text-base text-gray-600 font-montserrat leading-relaxed">
-                  Aprende a moverte de manera eficiente y consciente, respetando tu biomecánica
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
           {/* Testimonios */}
           <motion.div 
             className="space-y-6"
@@ -295,13 +214,9 @@ const EventCTA: React.FC<Props> = ({
                          {evento.nombre}
                        </h3>
                        <p className="text-sm md:text-base lg:text-lg text-gray-300 font-montserrat">
-                         Un enfoque científico del movimiento
+                         {evento.ubicacion?.ciudad || 'Presencial'} · {formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}
                        </p>
                      </div>
-                     
-                     <p className="text-gray-300 text-sm md:text-base leading-relaxed">
-                       Descubre cómo el movimiento consciente puede transformar tu relación con el cuerpo y la mente.
-                     </p>
 
 
 

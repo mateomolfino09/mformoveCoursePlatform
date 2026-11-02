@@ -88,14 +88,13 @@ const EventOverview: React.FC<Props> = ({
     <section className="bg-palette-cream py-14 md:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header de la sección */}
-        <div className="text-center mb-16 relative">
-          {/* Animal decorativo sutil */}
-          
-          <h2 className="relative z-10 mb-4 font-montserrat text-[clamp(1.9rem,4vw,2.6rem)] font-medium tracking-tight text-palette-ink">
+        <div className="relative mb-12 text-center md:mb-16">
+          <p className="font-montserrat text-[11px] font-semibold uppercase tracking-[0.26em] text-palette-ink">La jornada</p>
+          <h2 className="mt-3 font-montserrat text-[clamp(2.15rem,4vw,3.1rem)] font-extrabold leading-[1.08] tracking-tight text-palette-ink">
             Detalles del evento
           </h2>
-          <p className="relative z-10 mx-auto max-w-2xl font-montserrat text-base text-palette-stone md:text-lg">
-            Toda la información que necesitas para tomar la mejor decisión
+          <p className="mx-auto mt-4 max-w-2xl font-montserrat text-[16px] leading-[1.7] text-palette-stone md:text-[18px]">
+            Fecha, lugar, cupo y cómo pagar.
           </p>
         </div>
 
@@ -105,7 +104,7 @@ const EventOverview: React.FC<Props> = ({
           <motion.div 
             variants={fadeIn()}
             initial="hidden"
-            whileInView="visible"
+            animate="visible"
             viewport={{ once: true }}
             className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 transition-colors hover:bg-white"
           >
@@ -137,7 +136,7 @@ const EventOverview: React.FC<Props> = ({
             <motion.div 
               variants={fadeIn()}
               initial="hidden"
-              whileInView="visible"
+              animate="visible"
               viewport={{ once: true }}
               className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 transition-colors hover:bg-white"
             >
@@ -170,7 +169,7 @@ const EventOverview: React.FC<Props> = ({
             <motion.div 
               variants={fadeIn()}
               initial="hidden"
-              whileInView="visible"
+              animate="visible"
               viewport={{ once: true }}
               className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 transition-colors hover:bg-white"
             >
@@ -228,7 +227,7 @@ const EventOverview: React.FC<Props> = ({
           <motion.div 
             variants={fadeIn()}
             initial="hidden"
-            whileInView="visible"
+            animate="visible"
             viewport={{ once: true }}
             className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 transition-colors hover:bg-white"
           >
@@ -271,7 +270,7 @@ const EventOverview: React.FC<Props> = ({
           <motion.div 
             variants={fadeIn()}
             initial="hidden"
-            whileInView="visible"
+            animate="visible"
             viewport={{ once: true }}
             className="rounded-lg border border-palette-stone/20 bg-white/70 p-5 transition-colors hover:bg-white"
           >
@@ -314,7 +313,7 @@ const EventOverview: React.FC<Props> = ({
             <motion.div 
               variants={fadeIn()}
               initial="hidden"
-              whileInView="visible"
+              animate="visible"
               viewport={{ once: true }}
               className="rounded-lg border border-palette-stone/20 bg-white/70 p-4 transition-colors hover:bg-white"
             >
