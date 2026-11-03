@@ -218,9 +218,7 @@ const EventCTA: React.FC<Props> = ({
                        </h3>
                        <p className="text-sm md:text-base lg:text-lg text-gray-300 font-montserrat">
                          {evento.ubicacion?.ciudad || 'Presencial'}
-                         {tarifas
-                           ? ` · ${tarifas.comunidadTexto} comunidad · ${tarifas.generalTexto} general`
-                           : ` · ${formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}`}
+                         {` · ${tarifas ? tarifas.generalTexto : formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}`}
                        </p>
                      </div>
 

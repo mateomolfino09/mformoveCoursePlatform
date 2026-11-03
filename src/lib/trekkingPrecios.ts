@@ -4,9 +4,7 @@ const ULTIMO_DIA_ANTICIPADO = '2026-11-14';
 export type TarifasTrekking = {
   anticipado: boolean;
   etiqueta: string | null;
-  comunidad: number;
   general: number;
-  comunidadTexto: string;
   generalTexto: string;
 };
 
@@ -46,15 +44,12 @@ export function preciosTrekkingVigentes(
   if (!esTrekkingCanadon(evento?.nombre)) return null;
 
   const anticipado = fechaMontevideo(ahora) <= ULTIMO_DIA_ANTICIPADO;
-  const comunidad = anticipado ? 900 : 1200;
   const general = anticipado ? 1300 : 1600;
 
   return {
     anticipado,
     etiqueta: anticipado ? 'Precio anticipado hasta el 14/11' : null,
-    comunidad,
     general,
-    comunidadTexto: pesosUy(comunidad),
     generalTexto: pesosUy(general),
   };
 }
