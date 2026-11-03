@@ -9,6 +9,8 @@ import { GlobeAltIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { formatearPrecioEventoSync, formatearPrecioConDescuentoSync } from '../../../utils/currencyHelpers';
 import { getLocationCity } from '../../../utils/locationHelpers';
+import { preciosTrekkingVigentes } from '../../../lib/trekkingPrecios';
+import TrekkingPrecioVigente from '../Events/TrekkingPrecioVigente';
 
 interface Props {
   evento: ProductDB;
@@ -109,6 +111,7 @@ const EventCard: React.FC<Props> = ({ evento }) => {
   };
 
   const precioActual = obtenerPrecioActual();
+  const tarifas = preciosTrekkingVigentes(evento);
 
   // Verificar si el evento ya pasó
   const eventoTerminado = evento.fecha ? new Date(evento.fecha) < new Date() : false;
@@ -191,7 +194,7 @@ const EventCard: React.FC<Props> = ({ evento }) => {
               </>
             )}
           </div>
-          {precioActual?.urgencia && !eventoTerminado && (
+          {!tarifas && precioActual?.urgencia && !eventoTerminado && (
             <div className="inline-flex items-center rounded-full bg-palette-cream px-3 py-1.5 font-montserrat text-[11px] font-semibold uppercase tracking-[0.14em] text-palette-ink">
               {precioActual.urgencia}
             </div>
@@ -281,8 +284,12 @@ const EventCard: React.FC<Props> = ({ evento }) => {
         {/* CTA y precio detallado */}
         <div className="space-y-3">
           {/* Información de precio expandida */}
-          {precioActual && !eventoTerminado && (
+          {(tarifas || precioActual) && !eventoTerminado && (
             <div className="rounded-2xl border border-palette-stone/15 bg-palette-cream p-3">
+              {tarifas ? (
+                <TrekkingPrecioVigente tarifas={tarifas} tono="list" />
+              ) : (
+              <>
               <div className="mb-2 flex items-center justify-between">
                 <span className="font-montserrat text-[11px] font-medium uppercase tracking-[0.14em] text-palette-stone">
                   {precioActual.tipo}
@@ -310,6 +317,8 @@ const EventCard: React.FC<Props> = ({ evento }) => {
                   </span>
                 )}
               </div>
+              </>
+              )}
             </div>
           )}
 

@@ -6,6 +6,8 @@ import { GlobeAltIcon, MapPinIcon, UsersIcon, CurrencyDollarIcon, ClockIcon, Spa
 import { motion } from 'framer-motion';
 import { formatearPrecioEvento, formatearPrecioConDescuento, PrecioFormateado } from '../../../utils/currencyHelpers';
 import { getLocationCity } from '../../../utils/locationHelpers';
+import { preciosTrekkingVigentes } from '../../../lib/trekkingPrecios';
+import TrekkingPrecioVigente from './TrekkingPrecioVigente';
 
 interface Props {
   evento: ProductDB;
@@ -24,6 +26,7 @@ const EventOverview: React.FC<Props> = ({
   onBuyTicket,
   esProgramaTransformacional = false
 }) => {
+  const tarifas = preciosTrekkingVigentes(evento);
   // Estado para los precios formateados
   const [precioFormateado, setPrecioFormateado] = useState<PrecioFormateado | null>(null);
   const [precioOriginalFormateado, setPrecioOriginalFormateado] = useState<PrecioFormateado | null>(null);
@@ -165,7 +168,7 @@ const EventOverview: React.FC<Props> = ({
 
 
           {/* Precio */}
-          {precioActual && (
+          {(tarifas || precioActual) && (
             <motion.div 
               variants={fadeIn()}
               initial="hidden"
@@ -179,9 +182,13 @@ const EventOverview: React.FC<Props> = ({
                 </div>
                 <div>
                   <h3 className="text-lg font-light text-gray-900">Precio</h3>
-                  <p className="text-sm text-gray-500">{precioActual.tipo}</p>
+                  {!tarifas && <p className="text-sm text-gray-500">{precioActual.tipo}</p>}
                 </div>
               </div>
+              {tarifas ? (
+                <TrekkingPrecioVigente tarifas={tarifas} tono="overview" />
+              ) : (
+              <>
               <div className="flex items-baseline space-x-2">
                 {cargandoPrecios ? (
                   <span className="text-2xl font-light text-gray-900">Cargando...</span>
@@ -206,6 +213,8 @@ const EventOverview: React.FC<Props> = ({
                   <SparklesIcon className="h-4 w-4 mr-1" />
                   {precioActual.urgencia}
                 </div>
+              )}
+              </>
               )}
               
               {/* Botón CTA Discreto */}

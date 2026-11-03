@@ -5,6 +5,8 @@ import { ProductDB } from '../../../../typings';
 import { CheckCircleIcon, FireIcon, ArrowRightIcon, SparklesIcon, ArrowDownIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
 import { formatearPrecioEvento, formatearPrecioEventoSync, formatearPrecioConDescuento, PrecioFormateado } from '../../../utils/currencyHelpers';
+import { preciosTrekkingVigentes } from '../../../lib/trekkingPrecios';
+import TrekkingPrecioVigente from './TrekkingPrecioVigente';
 
 interface Props {
   evento: ProductDB;
@@ -23,6 +25,7 @@ const EventCTA: React.FC<Props> = ({
   loading,
   esProgramaTransformacional = false
 }) => {
+  const tarifas = preciosTrekkingVigentes(evento);
   // Estado para el countdown
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -206,7 +209,7 @@ const EventCTA: React.FC<Props> = ({
             viewport={{ once: true }}
           >
             <div className="relative overflow-hidden rounded-lg border border-palette-ink bg-palette-ink p-6 md:p-8">
-                {precioActual && !eventoTerminado ? (
+                {(tarifas || precioActual) && !eventoTerminado ? (
                                      <div className="text-center space-y-6 md:space-y-8 lg:space-y-10 relative z-10">
                      {/* Header del CTA */}
                      <div>
@@ -214,13 +217,20 @@ const EventCTA: React.FC<Props> = ({
                          {evento.nombre}
                        </h3>
                        <p className="text-sm md:text-base lg:text-lg text-gray-300 font-montserrat">
-                         {evento.ubicacion?.ciudad || 'Presencial'} · {formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}
+                         {evento.ubicacion?.ciudad || 'Presencial'}
+                         {tarifas
+                           ? ` · ${tarifas.comunidadTexto} comunidad · ${tarifas.generalTexto} general`
+                           : ` · ${formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}`}
                        </p>
                      </div>
 
 
 
                      <div className="bg-gray-800/60 rounded-2xl p-4 md:p-6 lg:p-8 border border-gray-700/40">
+                       {tarifas ? (
+                         <TrekkingPrecioVigente tarifas={tarifas} tono="ink" />
+                       ) : (
+                       <>
                        <p className="text-gray-300 text-xs md:text-sm lg:text-base mb-2 font-montserrat">{precioActual.tipo}</p>
                        <div className="flex items-center justify-center space-x-2 md:space-x-3 lg:space-x-4 mb-2">
                          {cargandoPrecios ? (
@@ -292,6 +302,8 @@ const EventCTA: React.FC<Props> = ({
                              </div>
                          </div>
                        </div>
+                       </>
+                       )}
                      </div>
 
                   {/* Botón principal */}
@@ -314,7 +326,7 @@ const EventCTA: React.FC<Props> = ({
                   </button>
 
                   {/* Urgencia */}
-                  {precioActual.urgencia && (
+                  {!tarifas && precioActual?.urgencia && (
                     <div className="bg-gray-800/40 border border-gray-700/30 rounded-xl p-3 md:p-4 lg:p-5">
                       <div className="flex items-center space-x-2 lg:space-x-3">
                         <FireIcon className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-gray-400" />

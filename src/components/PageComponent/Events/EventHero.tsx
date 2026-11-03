@@ -7,6 +7,8 @@ import { CalendarDaysIcon, MapPinIcon, UsersIcon, CurrencyDollarIcon } from '@he
 import { GlobeAltIcon, SparklesIcon, FireIcon, TrophyIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
 import { formatearPrecioEventoSync } from '../../../utils/currencyHelpers';
+import { preciosTrekkingVigentes } from '../../../lib/trekkingPrecios';
+import TrekkingPrecioVigente from './TrekkingPrecioVigente';
 
 interface Props {
   evento: ProductDB;
@@ -27,7 +29,8 @@ const EventHero: React.FC<Props> = ({
   loading,
   esProgramaTransformacional = false
 }) => {
-  
+  const tarifas = preciosTrekkingVigentes(evento);
+
   
   // Variantes para animación simplificadas
   const fadeIn = (delay = 0) => ({
@@ -136,7 +139,7 @@ const EventHero: React.FC<Props> = ({
           </div>
         </motion.div>
       )}
-      {precioActual && (
+      {(tarifas || precioActual) && (
         <motion.div
           className="flex items-center bg-white/10 rounded-2xl p-4 gap-3"
           variants={fadeIn()}
@@ -148,10 +151,16 @@ const EventHero: React.FC<Props> = ({
             <CurrencyDollarIcon className="h-6 w-6 text-white" />
           </div>
           <div>
-            <div className="text-white font-light text-base">
-              {formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}
-            </div>
-            <div className="text-xs text-gray-300">Precio</div>
+            {tarifas ? (
+              <TrekkingPrecioVigente tarifas={tarifas} tono="chip" />
+            ) : (
+              <>
+                <div className="text-white font-light text-base">
+                  {formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}
+                </div>
+                <div className="text-xs text-gray-300">Precio</div>
+              </>
+            )}
           </div>
         </motion.div>
       )}
@@ -229,7 +238,7 @@ const EventHero: React.FC<Props> = ({
               </div>
               
               {/* Badge de urgencia */}
-              {precioActual?.urgencia === 'Precio aumentará pronto' && countdown && (
+              {!tarifas && precioActual?.urgencia === 'Precio aumentará pronto' && countdown && (
                 <div className="inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-light bg-white/10 backdrop-blur-sm text-white border border-white/20">
                     <p>Precio sube en <span className="font-light"> {` ${countdown}`}</span></p>    
                 </div>
@@ -273,7 +282,7 @@ const EventHero: React.FC<Props> = ({
               <EventHeroInfoMobile evento={evento} precioActual={precioActual} />
               
               {/* Botón de reserva para mobile */}
-              {precioActual && !eventoTerminado && (
+              {(tarifas || precioActual) && !eventoTerminado && (
                 <motion.div
                   variants={fadeIn()}
                   initial="hidden"
@@ -345,13 +354,17 @@ const EventHero: React.FC<Props> = ({
                   <p className="text-white font-light text-sm">{evento.cupo} personas</p>
                 </div>
               )}
-              {precioActual && (
+              {(tarifas || precioActual) && (
                 <div className="text-center flex flex-col items-center">
                   <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-3">
                     <CurrencyDollarIcon className="h-6 w-6 text-white" />
                   </div>
                   <p className="text-sm text-gray-300 mb-1">Precio</p>
-                  <p className="text-white font-light text-sm">{formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}</p>
+                  {tarifas ? (
+                    <TrekkingPrecioVigente tarifas={tarifas} tono="chip" />
+                  ) : (
+                    <p className="text-white font-light text-sm">{formatearPrecioEventoSync(precioActual.precio, evento).textoCompleto}</p>
+                  )}
                 </div>
               )}
             </motion.div>
@@ -366,8 +379,11 @@ const EventHero: React.FC<Props> = ({
             viewport={{ once: true }}
           >
             <div className="hidden w-full max-w-md rounded-2xl border border-palette-stone/20 bg-palette-cream p-6 text-palette-ink shadow-[0_20px_50px_-24px_rgba(20,20,17,0.45)] md:block md:p-8">
-              {precioActual && !eventoTerminado ? (
+              {(tarifas || precioActual) && !eventoTerminado ? (
                 <div className="text-center space-y-6">
+                  {tarifas ? (
+                    <TrekkingPrecioVigente tarifas={tarifas} tono="cream" />
+                  ) : (
                   <div>
                     <p className="mb-2 font-montserrat text-[11px] font-semibold uppercase tracking-[0.22em] text-palette-ink/70">{precioActual.tipo}</p>
                     <div className="flex items-center justify-center space-x-3">
@@ -381,6 +397,7 @@ const EventHero: React.FC<Props> = ({
                       )}
                     </div>
                   </div>
+                  )}
 
                   <button
                     onClick={onBuyTicket}
@@ -399,12 +416,12 @@ const EventHero: React.FC<Props> = ({
                     )}
                   </button>
                   
-                  {precioActual.urgencia === 'Precio aumentará pronto' && countdown && (
+                  {!tarifas && precioActual?.urgencia === 'Precio aumentará pronto' && countdown && (
                     <p className="text-center font-montserrat text-sm text-palette-ink/70">
                       Precio sube en <span className="font-semibold">{countdown}</span>
                     </p>
                   )}
-                  {precioActual.urgencia && precioActual.urgencia !== 'Precio aumentará pronto' && (
+                  {!tarifas && precioActual?.urgencia && precioActual.urgencia !== 'Precio aumentará pronto' && (
                     <p className="text-center font-montserrat text-sm text-palette-ink/70">
                         {precioActual.urgencia}
                     </p>
