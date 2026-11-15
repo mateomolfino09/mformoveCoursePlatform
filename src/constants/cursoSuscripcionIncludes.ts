@@ -1,5 +1,5 @@
-/** Precio comercial que muestra la landing de Cuerpo Autónomo. */
-export const CUERPO_AUTONOMO_PRECIO_LANDING_USD = 149;
+/** Precio comercial que muestra la landing de Cuerpo Autónomo. Cobro único cada 3 meses. */
+export const CUERPO_AUTONOMO_PRECIO_LANDING_USD = 145;
 
 /** Listados de “Qué incluye” debajo de los planes (suscripción). */
 
@@ -13,11 +13,11 @@ export const CURSO_SUSCRIPCION_INCLUDES = [
 
 export const CURSO_SUSCRIPCION_OFERTA_BONUS = [] as const;
 
-export const CURSO_SUSCRIPCION_INCLUDES_LEAD_OFERTA = 'USD 149 por 4 meses.';
+export const CURSO_SUSCRIPCION_INCLUDES_LEAD_OFERTA = 'USD 145 por 3 meses.';
 
-export const CURSO_SUSCRIPCION_INCLUDES_LEAD_MENSUAL = 'USD 149 por 4 meses.';
+export const CURSO_SUSCRIPCION_INCLUDES_LEAD_MENSUAL = 'USD 145 por 3 meses.';
 
 export const CURSO_SUSCRIPCION_PARA_VOS =
-  'Durante los cuatro meses tenés las clases, los encuentros semanales, la comunidad y los recursos. No es un acceso de por vida automático.';
+  'Durante los tres meses tenés las clases, los encuentros semanales, la comunidad y los recursos. No es un acceso de por vida automático.';
 
-export const CURSO_SUSCRIPCION_RESULTADO = 'USD 149 por 4 meses.';
+export const CURSO_SUSCRIPCION_RESULTADO = 'USD 145 por 3 meses.';

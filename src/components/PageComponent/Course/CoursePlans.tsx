@@ -39,9 +39,11 @@ import {
 } from '../../../hooks/useCursoPreventaPricing';
 import { resolveCursoLanzamientoMonto } from '../../../lib/cursoPricing';
 import {
+  CURSO_SUSCRIPCION_INTERVALO_3_MESES,
   CURSO_SUSCRIPCION_INTERVALO_4_MESES,
   CURSO_SUSCRIPCION_INTERVALO_MENSUAL,
   isCursoCheckoutSuscripcion,
+  planesSuscripcionVendibles,
   resolveCursoPlanIntervaloMeses,
 } from '../../../lib/cursoSuscripcion';
 import { CUERPO_AUTONOMO_PRECIO_LANDING_USD } from '../../../constants/cursoSuscripcionIncludes';
@@ -296,8 +298,9 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
         plan.proveedor === 'mercadopago' ||
         Boolean(plan.mercadoPagoPreferenceId))
   );
-  const stripeCheckoutPlans = activeCheckoutPlans
-    .filter((plan) => plan.proveedor === 'stripe')
+  const stripeCheckoutPlans = planesSuscripcionVendibles(
+    activeCheckoutPlans.filter((plan) => plan.proveedor === 'stripe')
+  )
     .slice()
     .sort(
       (a, b) =>
@@ -307,14 +310,16 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
     esSuscripcion,
     activeCheckoutPlans
   );
-  const [selectedIntervalo, setSelectedIntervalo] = useState(() =>
-    stripeCheckoutPlans.some(
-      (plan) =>
-        resolveCursoPlanIntervaloMeses(plan) === CURSO_SUSCRIPCION_INTERVALO_4_MESES
-    )
-      ? CURSO_SUSCRIPCION_INTERVALO_4_MESES
-      : CURSO_SUSCRIPCION_INTERVALO_MENSUAL
-  );
+  const [selectedIntervalo, setSelectedIntervalo] = useState(() => {
+    const intervalos = stripeCheckoutPlans.map((plan) => resolveCursoPlanIntervaloMeses(plan));
+    if (intervalos.includes(CURSO_SUSCRIPCION_INTERVALO_3_MESES)) {
+      return CURSO_SUSCRIPCION_INTERVALO_3_MESES;
+    }
+    if (intervalos.includes(CURSO_SUSCRIPCION_INTERVALO_4_MESES)) {
+      return CURSO_SUSCRIPCION_INTERVALO_4_MESES;
+    }
+    return CURSO_SUSCRIPCION_INTERVALO_MENSUAL;
+  });
 
   const handleGoToCheckout = useCallback(async (intervaloOverride?: number) => {
     if (isNavigatingToCheckout) return;
@@ -1037,13 +1042,13 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
                 className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-palette-sage/10 blur-3xl"
               />
               <p className="relative font-montserrat text-[11px] font-semibold uppercase tracking-[0.18em] text-palette-stone">
-                Cuerpo Autónomo · 4 meses
+                Cuerpo Autónomo · 3 meses
               </p>
               <p className="relative mt-3 font-montserrat text-[3.25rem] font-bold leading-none tracking-tight text-palette-ink sm:text-[3.75rem]">
                 USD {CUERPO_AUTONOMO_PRECIO_LANDING_USD}
               </p>
               <p className="mt-3 text-[15px] leading-relaxed text-palette-ink">
-                Por cuatro meses. Se renueva cada 4 meses si decidís seguir.
+                Por tres meses. Se renueva cada 3 meses si decidís seguir.
               </p>
               <p className="mt-6 font-montserrat text-xs font-semibold uppercase tracking-[0.16em] text-palette-ink">
                 Incluye
@@ -1063,7 +1068,7 @@ const CoursePlans = ({ plans = [], promociones = [], checkoutPlans = [] }: Cours
                 type="button"
                 onClick={() => {
                   trackCursoLandingEvent('curso_inscripcion_click', { slug });
-                  void handleGoToCheckout(CURSO_SUSCRIPCION_INTERVALO_4_MESES);
+                  void handleGoToCheckout(CURSO_SUSCRIPCION_INTERVALO_3_MESES);
                 }}
                 disabled={isNavigatingToCheckout}
                 className={`${landingCtaUniformPrimary} mt-7 w-full disabled:cursor-not-allowed disabled:opacity-50`}

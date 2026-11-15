@@ -14,7 +14,7 @@ import { buildCursoMercadoPagoSuccessUrl } from '../../../../../lib/cursoPayment
 import { coursePaymentDebug, coursePaymentWarn } from '../../../../../lib/coursePaymentDebug';
 import { isProveedorHabilitado } from '../../../../../constants/paymentProveedores';
 import { incrementCursoPreventaCupo } from '../../../../../lib/cursoPreventaCupos';
-import { isCursoEnPreventa } from '../../../../../lib/cursoLandingPublication';
+import { accesoSuscripcionHasta } from '../../../../../lib/cursoSuscripcion';
 import {
   getMercadoPagoApiErrorMessage,
   getMercadoPagoApiStatus,
@@ -220,6 +220,7 @@ export async function POST(req: NextRequest) {
         userId: user._id.toString(),
         amount: payment?.transaction_amount || amountFromBrick,
         moneda: payment?.currency_id || 'UYU',
+        ...(product.esSuscripcion ? { expiresAt: accesoSuscripcionHasta() } : {}),
       });
 
       if (isCursoEnPreventa(product.cursoConfig) && tierIndex != null) {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '../../../../../config/connectDB';
 import mercadoPagoApi, { isMercadoPagoPaidStatus } from '../../mercadoPagoConfig';
-import { fulfillCoursePurchase } from '../fulfillCoursePurchase';
+import { accesoSuscripcionHasta } from '../../../../../lib/cursoSuscripcion';
 import Product from '../../../../../models/productModel';
 import { isCursoEnPreventa } from '../../../../../lib/cursoLandingPublication';
 import { incrementCursoPreventaCupo } from '../../../../../lib/cursoPreventaCupos';
@@ -115,6 +115,8 @@ export async function POST(req: NextRequest) {
 
     const transactionId = String(payment?.id || paymentId);
 
+    const accessProduct = await Product.findById(productId).select('esSuscripcion').lean();
+
     const result = await fulfillCoursePurchase({
       productId,
       provider: 'mercadopago',
@@ -123,6 +125,7 @@ export async function POST(req: NextRequest) {
       userId: metaUserId,
       amount: payment?.transaction_amount,
       moneda: payment?.currency_id,
+      ...(accessProduct?.esSuscripcion ? { expiresAt: accesoSuscripcionHasta() } : {}),
     });
 
     const product = await Product.findById(productId).lean();

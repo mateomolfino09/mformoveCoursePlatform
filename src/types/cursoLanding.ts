@@ -3,6 +3,7 @@ import {
   type CourseClassFields,
   type CourseClassMaterial,
 } from './courseClass';
+import { extractVimeoId } from '../lib/resolveMediaImageUrl';
 
 export type { CourseClassFields, CourseClassMaterial };
 
@@ -103,7 +104,9 @@ export function normalizeClaseContenido(
   orden = 0
 ): CursoClaseContenido {
   const name = String(raw?.name || raw?.titulo || '').trim();
-  const videoId = String(raw?.videoId || raw?.vimeoVideoId || '').trim();
+  const videoUrl = String(raw?.videoUrl || '').trim();
+  // Si la URL de Vimeo y el id guardado no coinciden, manda la URL.
+  const videoId = extractVimeoId(videoUrl) || String(raw?.videoId || raw?.vimeoVideoId || '').trim();
   let duration = Number(raw?.duration) || 0;
   if (!duration && typeof raw?.duracionMinutos === 'number' && raw.duracionMinutos > 0) {
     duration = Math.round(raw.duracionMinutos * 60);
@@ -125,7 +128,7 @@ export function normalizeClaseContenido(
     descripcionGeneral,
     descripcionCorta: String(raw?.descripcionCorta || ''),
     descripcionCompleta: String(raw?.descripcionCompleta || ''),
-    videoUrl: String(raw?.videoUrl || ''),
+    videoUrl,
     videoId,
     videoThumbnail: String(raw?.videoThumbnail || ''),
     duration,
@@ -519,9 +522,9 @@ const CURSO_FAQ_PRESETS: Omit<CursoFaqItem, 'orden'>[] = [
       'Sí. Podés seguir con las clases a tu ritmo y con la comunidad. No está confirmado que los encuentros en vivo queden grabados.',
   },
   {
-    pregunta: '¿Qué pasa después de los cuatro meses?',
+    pregunta: '¿Qué pasa después de los tres meses?',
     respuesta:
-      'El checkout actual está armado como una suscripción que se renueva cada 4 meses mientras decidas seguir. No es un acceso de por vida por haber pagado un período. Si la suscripción no se renueva, el acceso de ese período termina.',
+      'El checkout está armado como una suscripción que se renueva cada 3 meses mientras decidas seguir. No es un acceso de por vida por haber pagado un período. Si la suscripción no se renueva, el acceso de ese período termina.',
   },
   {
     pregunta: '¿Qué acceso conservo a las clases?',

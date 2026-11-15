@@ -27,9 +27,11 @@ import dynamic from 'next/dynamic';
 import { scrollMercadoPagoPanelIntoView } from '../../../lib/scrollMercadoPagoPanel';
 import { resolveProveedoresHabilitados } from '../../../constants/paymentProveedores';
 import {
+  CURSO_SUSCRIPCION_INTERVALO_3_MESES,
   CURSO_SUSCRIPCION_INTERVALO_4_MESES,
   CURSO_SUSCRIPCION_INTERVALO_MENSUAL,
   isCursoCheckoutSuscripcion,
+  planesSuscripcionVendibles,
   resolveCursoPlanIntervaloMeses,
 } from '../../../lib/cursoSuscripcion';
 
@@ -165,12 +167,13 @@ export default function CourseCheckoutStart({
       const raw = Number(new URLSearchParams(window.location.search).get('intervalo'));
       if (
         raw === CURSO_SUSCRIPCION_INTERVALO_MENSUAL ||
+        raw === CURSO_SUSCRIPCION_INTERVALO_3_MESES ||
         raw === CURSO_SUSCRIPCION_INTERVALO_4_MESES
       ) {
         return raw;
       }
     }
-    return CURSO_SUSCRIPCION_INTERVALO_4_MESES;
+    return CURSO_SUSCRIPCION_INTERVALO_3_MESES;
   });
   const mpPanelRef = useRef<HTMLDivElement | null>(null);
   const pendingCheckoutRan = useRef(false);
@@ -188,8 +191,9 @@ export default function CourseCheckoutStart({
     profileCountry || dlocalQuote?.payerCountry || geoCountryLabel || '';
   const countryFromGeo = !profileCountry && Boolean(dlocalQuote?.localized);
 
-  const stripePlans = checkoutPlans
-    .filter((plan) => plan.proveedor === 'stripe' && plan.activo !== false)
+  const stripePlans = planesSuscripcionVendibles(
+    checkoutPlans.filter((plan) => plan.proveedor === 'stripe' && plan.activo !== false)
+  )
     .slice()
     .sort(
       (a, b) => resolveCursoPlanIntervaloMeses(a) - resolveCursoPlanIntervaloMeses(b)
@@ -248,9 +252,9 @@ export default function CourseCheckoutStart({
         : formatPrice(displayPrice.moneda, displayPrice.monto);
     if (!mostrarSuscripcion) return amountLabel;
     const intervalo = resolveCursoPlanIntervaloMeses(stripePlan);
-    return intervalo === CURSO_SUSCRIPCION_INTERVALO_4_MESES
-      ? `${amountLabel} cada 4 meses`
-      : `${amountLabel} / mes`;
+    if (intervalo === CURSO_SUSCRIPCION_INTERVALO_3_MESES) return `${amountLabel} cada 3 meses`;
+    if (intervalo === CURSO_SUSCRIPCION_INTERVALO_4_MESES) return `${amountLabel} cada 4 meses`;
+    return `${amountLabel} / mes`;
   }, [displayPrice, dlocalQuote, selectedMethod, mostrarSuscripcion, stripePlan]);
 
   const checkoutPriceHint = useMemo(() => {
@@ -783,7 +787,18 @@ export default function CourseCheckoutStart({
                 {stripePlans.map((plan, index) => {
                   const intervalo = resolveCursoPlanIntervaloMeses(plan);
                   const isSelected = selectedIntervalo === intervalo;
-                  const is4Meses = intervalo === CURSO_SUSCRIPCION_INTERVALO_4_MESES;
+                  const titulo =
+                    intervalo === CURSO_SUSCRIPCION_INTERVALO_3_MESES
+                      ? 'Cada 3 meses'
+                      : intervalo === CURSO_SUSCRIPCION_INTERVALO_4_MESES
+                        ? 'Cada 4 meses'
+                        : 'Mensual';
+                  const detalle =
+                    intervalo === CURSO_SUSCRIPCION_INTERVALO_3_MESES
+                      ? 'Pagás los 3 meses juntos'
+                      : intervalo === CURSO_SUSCRIPCION_INTERVALO_4_MESES
+                        ? 'Pagas 3, te llevás 4'
+                        : 'Cancelás cuando quieras';
                   return (
                     <button
                       key={cursoPlanPagoKey(plan, index)}
@@ -797,13 +812,13 @@ export default function CourseCheckoutStart({
                       }`}
                     >
                       <p className="font-montserrat text-sm font-semibold text-palette-ink">
-                        {is4Meses ? 'Cada 4 meses' : 'Mensual'}
+                        {titulo}
                       </p>
                       <p className="mt-1 font-montserrat text-base font-bold tabular-nums text-palette-ink">
                         {formatPrice(plan.moneda, plan.monto)}
                       </p>
                       <p className="mt-0.5 font-raleway text-xs text-palette-stone">
-                        {is4Meses ? 'Pagas 3, te llevás 4' : 'Cancelás cuando quieras'}
+                        {detalle}
                       </p>
                     </button>
                   );

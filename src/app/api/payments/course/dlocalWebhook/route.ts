@@ -11,7 +11,7 @@ import {
   coursePaymentWarn,
   resolveCourseDlocalWebhookUrl,
 } from '../../../../../lib/coursePaymentDebug';
-import { resolveProductIdFromDlocalOrderId } from '../../../../../lib/resolveCursoDlocalOrderId';
+import { accesoSuscripcionHasta } from '../../../../../lib/cursoSuscripcion';
 
 export const runtime = 'nodejs';
 
@@ -91,6 +91,8 @@ export async function POST(req: NextRequest) {
 
     coursePaymentDebug('webhook.fulfilling', { productId, transactionId, payerEmail });
 
+    const accessProduct = await Product.findById(productId).select('esSuscripcion').lean();
+
     const result = await fulfillCoursePurchase({
       productId,
       provider: 'dlocalgo',
@@ -98,6 +100,7 @@ export async function POST(req: NextRequest) {
       email: payerEmail,
       amount: payment?.amount,
       moneda: payment?.currency,
+      ...(accessProduct?.esSuscripcion ? { expiresAt: accesoSuscripcionHasta() } : {}),
     });
 
     const product = await Product.findById(productId).lean();

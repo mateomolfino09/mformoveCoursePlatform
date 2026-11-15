@@ -4,8 +4,7 @@ import Product from '../../../../models/productModel';
 import Users from '../../../../models/userModel';
 import { ensureCursoSuscripcionPaymentLinks } from '../../../../lib/ensureCursoSuscripcionPaymentLinks';
 import {
-  CURSO_SUSCRIPCION_INTERVALO_4_MESES,
-  CURSO_SUSCRIPCION_INTERVALO_MENSUAL,
+  CURSO_SUSCRIPCION_INTERVALO_3_MESES,
   resolveCursoPlanIntervaloMeses,
 } from '../../../../lib/cursoSuscripcion';
 import { normalizeCursoLandingConfig } from '../../../../types/cursoLanding';
@@ -13,7 +12,7 @@ import { normalizeCursoLandingConfig } from '../../../../types/cursoLanding';
 connectDB();
 
 /**
- * Regenera los dos Payment Links de Stripe (mensual + cada 4 meses) de un curso
+ * Regenera el Payment Link de Stripe (cada 3 meses) de un curso por suscripción,
  * por suscripción, sin pasar por el PUT completo de updateProduct.
  *
  * POST { userEmail, productId?, slug? }
@@ -102,29 +101,25 @@ export async function POST(req: Request) {
     const stripeOpciones = opciones.filter(
       (opcion) => opcion.proveedor === 'stripe' && Boolean(opcion.paymentLink?.trim())
     );
-    const hasMonthly = stripeOpciones.some(
+    const has3Meses = stripeOpciones.some(
       (opcion) =>
-        resolveCursoPlanIntervaloMeses(opcion) === CURSO_SUSCRIPCION_INTERVALO_MENSUAL
-    );
-    const has4Meses = stripeOpciones.some(
-      (opcion) =>
-        resolveCursoPlanIntervaloMeses(opcion) === CURSO_SUSCRIPCION_INTERVALO_4_MESES
+        resolveCursoPlanIntervaloMeses(opcion) === CURSO_SUSCRIPCION_INTERVALO_3_MESES
     );
 
-    if (!hasMonthly || !has4Meses) {
+    if (!has3Meses) {
       return NextResponse.json(
         {
           error:
-            'Stripe no devolvió los dos Payment Links (mensual + 4 meses). Revisá STRIPE_SECRET_KEY, el precio del producto y los logs del servidor.',
+            'Stripe no devolvió el Payment Link de 3 meses. Revisá STRIPE_SECRET_KEY, el precio del producto y los logs del servidor.',
           opcionesPago: stripeOpciones,
         },
         { status: 502 }
       );
     }
 
-    const monthly = stripeOpciones.find(
+    const plan3Meses = stripeOpciones.find(
       (opcion) =>
-        resolveCursoPlanIntervaloMeses(opcion) === CURSO_SUSCRIPCION_INTERVALO_MENSUAL
+        resolveCursoPlanIntervaloMeses(opcion) === CURSO_SUSCRIPCION_INTERVALO_3_MESES
     );
 
     // Mongoose (tanto document.save() como Model.updateOne()) no persiste de forma confiable
@@ -137,7 +132,7 @@ export async function POST(req: Request) {
         $set: {
           esSuscripcion: true,
           cursoConfig: withLinks,
-          ...(monthly?.stripeProductId ? { stripeProductId: monthly.stripeProductId } : {}),
+          ...(plan3Meses?.stripeProductId ? { stripeProductId: plan3Meses.stripeProductId } : {}),
         },
       }
     );

@@ -21,7 +21,7 @@ type ProductLike = {
 };
 
 /**
- * Crea (o regenera) los dos Payment Links de suscripción (mensual + 4 meses)
+ * Crea (o regenera) el Payment Link de suscripción de 3 meses
  * para un curso con `esSuscripcion: true`.
  *
  * A diferencia de `ensureCursoLanzamientoPaymentLinks`, esta función **siempre

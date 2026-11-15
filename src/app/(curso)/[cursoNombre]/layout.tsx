@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (params.cursoNombre === 'cuerpo-autonomo') {
     return pageMetadata(
       title,
-      'Escuela online de movimiento creada por Mateo Molfino. Clases a tu ritmo, encuentros grupales semanales y una comunidad para construir fuerza, movilidad y coordinación. USD 149 por 4 meses.'
+      'Escuela online de movimiento creada por Mateo Molfino. Clases a tu ritmo, encuentros grupales semanales y una comunidad para construir fuerza, movilidad y coordinación. USD 145 por 3 meses.'
     );
   }
   return pageMetadata(title);
